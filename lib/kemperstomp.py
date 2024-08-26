@@ -1,3 +1,8 @@
+# v 1.2
+# Changes
+# Detect Rig changes via rig date
+# change color for Compressor/Noise Gate to turquoise
+
 # Bopard Infos
 # Raspberry Pi Pico with rp2040
 #
@@ -125,7 +130,9 @@ display = ST7789(display_bus,
 splash = displayio.Group()
 display.rootgroup = splash
 
-font = bitmap_font.load_font("/fonts/PT40.pcf")
+
+font = bitmap_font.load_font("/fonts/PTSans-NarrowBold-40.pcf")
+# font = bitmap_font.load_font("/fonts/PT40.pcf")
 font_H20 = bitmap_font.load_font("/fonts/H20.pcf")
 wrap_with = 220  # in pixel
 
@@ -171,7 +178,7 @@ text_group_B.append(text_B_area)  # Subgroup for text scaling
 # show Rig Name
 text_group_rig = displayio.Group(scale=1)
 text1 = "Kemper\nEffects Slot Modus"
-text_area_rig = label.Label(font, text="\n".join(wrap_text_to_pixels(text1, wrap_with, font)).center(14), color=0xFFFFFF)
+text_area_rig = label.Label(font, text="\n".join(wrap_text_to_pixels(text1, wrap_with, font)).center(14), color=0xFFFFFF, line_spacing=0.8)
 text_area_rig.anchor_point = (0.5, 0.5)
 text_area_rig.anchored_position = (CENTER_X, CENTER_Y)
 text_group_rig.append(text_area_rig)  # Subgroup for text scaling
@@ -218,10 +225,10 @@ class FootSwitch:
             self.bitmap_palette_index = 3
         elif (47 < self.effecttype and self.effecttype < 60):
             # Compressor -> blue
-            self.color = [blue]
-            self.bitmap_palette_index = 6
+            self.color = [turquoise]
+            self.bitmap_palette_index = 5
         elif (60 < self.effecttype and self.effecttype < 64):
-            # Spacee -> green
+            # Space -> green
             self.color = [green]
             self.bitmap_palette_index = 8
         elif (64 < self.effecttype and self.effecttype < 80):
@@ -241,7 +248,7 @@ class FootSwitch:
             self.color = [red]
             self.bitmap_palette_index = 3
         elif (120 < self.effecttype and self.effecttype < 125):
-            # Phaser/Flanger -> purple
+            # Looper -> purple
             self.color = [turquoise]
             self.bitmap_palette_index = 5
         elif (125 < self.effecttype and self.effecttype < 135):
@@ -306,6 +313,12 @@ def request_kpp_rig_name():
     # request rig name
     midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
                                   [0x02, 0x7f, 0x43, 0x00, 0x00, 0x01]))
+
+# function to get Kemper Player Rig Creation Date
+def request_kpp_rig_date():
+    # request rig date
+    midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
+                                  [0x02, 0x7f, 0x43, 0x00, 0x00, 0x03]))
 
 
 # function to get Kemper Player Rig Infos
@@ -419,9 +432,9 @@ LED.fill(0x000000)  # start using
 
 # Kemper Rig Name
 rig_name = ''
+rig_date = ''
 
 pushed = False
-i = 1   # counter to schedule midi requests
 
 # Dim Light on for special switches
 light_dim(2, switch[2].color)
@@ -499,17 +512,22 @@ while True:
 
     elif switch[5].switch.value is False:
         if pushed is False:
-
+            # ig volume booster
             pushed = True
             if switch[5].state == "off":
                 light_active(5, switch[5].color)
                 # switch[5].state = "on"
-                midi_usb.send(ControlChange(7, 127))
-
+                # midi_usb.send(ControlChange(7, 127))
+                # set rig volume to +3dB
+                midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
+                                              [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01, 0x50, 0x00]))
             else:
                 light_dim(5, switch[5].color)
                 # switch[5].state = "off"
-                midi_usb.send(ControlChange(7, 1))
+                # midi_usb.send(ControlChange(7, 1))
+                # set rig volume to 0dB
+                midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
+                                              [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01, 0x40, 0x00]))
 
     else:
         pushed = False
@@ -556,9 +574,8 @@ while True:
                                 if (switch[0].state == 'na'):
                                     switch[0].state = 'off'
 
-                            # request status from  all switches and rig
-                            get_kpp_effect_status()
-                            request_kpp_rig_name()
+                        get_kpp_effect_status()
+
 
                     elif (response[5] == 0x03) and (switch[0].effecttype != 0):   # Effect State Response
                         if (response[-1] == 0x01):
@@ -594,9 +611,7 @@ while True:
                                 if (switch[1].state == 'na'):
                                     switch[1].state = 'off'
 
-                            # request status from  all switches and rig
-                            get_kpp_effect_status()
-                            request_kpp_rig_name()
+                        get_kpp_effect_status()
 
                     elif (response[5] == 0x03) and (switch[1].effecttype != 0):   # Effect State Response
                         if (response[-1] == 0x01):
@@ -631,9 +646,7 @@ while True:
                                 if (switch[3].state == 'na'):
                                     switch[3].state = 'off'
 
-                            # request status from  all switches and rig
-                            get_kpp_effect_status()
-                            request_kpp_rig_name()
+                        get_kpp_effect_status()
 
                     elif (response[5] == 0x03) and (switch[3].effecttype != 0):   # Effect State Response
                         if (response[-1] == 0x01):
@@ -668,9 +681,7 @@ while True:
                                 if (switch[4].state == 'na'):
                                     switch[4].state = 'off'
 
-                            # request status from  all switches and rig
-                            get_kpp_effect_status()
-                            request_kpp_rig_name()
+                        get_kpp_effect_status()
 
                     elif (response[5] == 0x03) and (switch[4].effecttype != 0):   # Effect State Response
                         if (response[-1] == 0x01):
@@ -688,7 +699,8 @@ while True:
                         # print(rig_name)
                         # rigtext = ''
                         if len(rig_name) > 22:
-                            rigtext = rig_name[:22]
+                            # rigtext = rig_name[:22]
+                            rigtext = rig_name
                         else:
                             rigtext = rig_name
 
@@ -699,6 +711,19 @@ while True:
                             light_dim(5, switch[5].color)
                             switch[5].state = "off"
                             midi_usb.send(ControlChange(7, 1))
+
+                # Rig Creation Date
+                elif response[:6] == [0x00, 0x00, 0x03, 0x00, 0x00, 0x03]:
+
+                    ascii_string = ''.join(chr(int(c)) for c in response[6:-1])
+
+                    if ascii_string != rig_date:
+                        rig_date = ascii_string
+                        request_kpp_rig_details()
+                        request_kpp_rig_name()
+                        get_kpp_effect_status()
+
+
                 else:
                     # every other SysEx mesage
                     print('not yet assignt: ' + str(response))
@@ -706,18 +731,9 @@ while True:
             elif isinstance(midimsg, MIDIUnknownEvent):
                 # use Midi keep alive Message as trigger
                 # these statements dectects rig changes
+                request_kpp_rig_date()
                 string_msg = ''
-                if (i == 1):
-                    # request effect modules types
-                    request_kpp_rig_details()
-                elif (i == 2):
-                    request_kpp_rig_name()
-                elif (i == 3):
-                    # request effect modules status
-                    get_kpp_effect_status()
-                    i = 0
 
-                i = i+1
 
             else:
                 # not yet assignt midi messages
