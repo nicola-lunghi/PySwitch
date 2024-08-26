@@ -34,6 +34,6 @@ If you want have both possibilities (original SW and this skript), change code.p
 	 switch2.deinit()
 	 import midicaptain6s_kpp
 
-Than you have two seconds while booting MIDI Captain to press the middle switch in the top row and enter the skript.
+Than you have two seconds while booting MIDI Captain to press the middle switch in the top row and enter the original firmware.
 
-Otherwise the original firmware will be used.
+Otherwise the this firmware will be used.
