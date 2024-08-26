@@ -20,19 +20,20 @@ If you want have both possibilities (original SW and this skript), change code.p
 	import time
 	import digitalio
 	
-	switch2 = digitalio.DigitalInOut(board.GP25)
+	switch2 = digitalio.DigitalInOut(board.GP25)  # change for the final product
 	switch2.direction = digitalio.Direction.INPUT
 	switch2.pull = digitalio.Pull.UP
-  
-	print("Press Switch 2 to enter Kemper Stomp Modus")
+	
+	print("Press Switch 2 to enter PaintAudio Firmware")
 	time.sleep(2)
-  
+	
 	if switch2.value is False:
-	 switch2.deinit()
-	 import kemperstomp
+	    switch2.deinit()
+	    import midicaptain6s_kpp
 	else:
-	 switch2.deinit()
-	 import midicaptain6s_kpp
+	    switch2.deinit()
+	    import kemperstomp
+
 
 Than you have two seconds while booting MIDI Captain to press the middle switch in the top row and enter the original firmware.
 
