@@ -40,425 +40,141 @@ except ImportError:
 from adafruit_st7789 import ST7789
 import neopixel
 import random
+import time
 
 #################################################################################################################################
 
-## Initialize Display first (to have it already going when the configuration is parsed, so the user can
-## debug eventual errors)
-displayio.release_displays()
+# Display properties (cannot be defined in the config file, because the display is initialized before config is loaded)
+DISPLAY_WIDTH = 240
+DISPLAY_HEIGHT = 240
 
-disp_width = 240
-disp_height = 240
+DISPLAY_ROW_START = 80
+DISPLAY_ROTATION = 180
+SPI_BAUDRATE = 24000000         # 24MHz
 
-tft_res = board.GP8
-tft_cs = board.GP13
-tft_dc = board.GP12
-spi_mosi = board.GP15
-spi_clk = board.GP14
+#################################################################################################################################
 
-spi = busio.SPI(
-    spi_clk, 
-    MOSI = spi_mosi
-)
-while not spi.try_lock():
-    pass
-spi.configure(baudrate = 24000000)  # Configure SPI for 24MHz
-spi.unlock()
 
-display_bus = FourWire(
-    spi, 
-    command = tft_dc, 
-    chip_select = tft_cs, 
-    reset = None
-)
+# TFT driver class
+class DisplayDriver:
 
-display = ST7789(
-    display_bus,
-    width=disp_width, 
-    height=disp_height,
-    rowstart = 80, 
-    rotation = 180
-)
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
 
-######################################################################################################################################################
+    def init(self):        
+        displayio.release_displays()
 
-## Load configuration. This is realized with a separate script which contains a dictionary called Config.
-## (this is an efficient way for a microcontroller script, as YAML or XML etc. take much more resources to validate and parse)
+        tft_res = board.GP8
+        tft_cs = board.GP13
+        tft_dc = board.GP12
+        spi_mosi = board.GP15
+        spi_clk = board.GP14
+
+        spi = busio.SPI(
+            spi_clk, 
+            MOSI = spi_mosi
+        )
+        while not spi.try_lock():
+            pass
+        
+        spi.configure(baudrate = SPI_BAUDRATE)  
+        spi.unlock()
+
+        display_bus = FourWire(
+            spi, 
+            command = tft_dc, 
+            chip_select = tft_cs, 
+            reset = None
+        )
+
+        self.tft = ST7789(
+            display_bus,
+            width = self.width, 
+            height = self.height,
+            rowstart = DISPLAY_ROW_START, 
+            rotation = DISPLAY_ROTATION
+        )
+
+
+#################################################################################################################################
+
+# Initialize Display immediately (to have it already going for debug output when the script and configuration is parsed)
+display = DisplayDriver(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+display.init()
+
+# Load configuration and definitions. This is realized with a separate script which contains a dictionary called Config.
+# (this is an efficient way for a microcontroller script, as YAML or XML etc. take much more resources to validate and parse)
+from kemperstomp_def import Actions, Slots, Colors, KemperDefinitions
 from kemperstomp_config import Config
 
-## Initialize Neopixel (status messaging will not really be needed anymore as the longest tast is already done, however
-## we already need the number of switches here so this has to be done after config loading)
-
-# Neopixel documentation:
-# https://docs.circuitpython.org/projects/neopixel/en/latest/
-# https://learn.adafruit.com/adafruit-neopixel-uberguide/python-circuitpython
-NUM_LEDS = len(Config["switches"]) * 3
-LED = neopixel.NeoPixel(board.GP7, NUM_LEDS) #, brightness=0.3)
-
-# Set Constants and initial values
-# Kemper colors
-'''darkgreen = (0, 100, 0)
-green = (0, 255, 0)
-white = (255, 255, 255)
-red = (255, 0, 0)
-yellow = (255, 255, 0)
-purple = (30, 0, 20)
-orange = (255, 165, 0)
-blue = (0, 0, 255)
-turquoise = (64, 242, 208)
-gray = (190, 190, 190)
-
-# Set Bitmap Palette with Kemper Colors
-palette = displayio.Palette(10)
-palette[0] = white
-palette[1] = yellow
-palette[2] = orange
-palette[3] = red
-palette[4] = purple
-palette[5] = turquoise
-palette[6] = blue
-palette[7] = green
-palette[8] = darkgreen
-palette[9] = gray
-# palette[10] = 0x2F4538  # Kemper cover green
-'''
-
-######################################################################################################################################################
-'''
-# Draw Effect Module DLY
-rect = Rect(1, 1, 120, 40, fill=palette[7], outline=0x0, stroke=1)
-splash.append(rect)  # position splash[0] IMPORTANT!
-
-text_group_DLY = displayio.Group(scale=1, x=1, y=1)
-text_DLY = "Delay"
-text_DLY_area = label.Label(font_H20, text=text_DLY, color=0xFFFFFF, anchor_point=(0.5, 0.5), anchored_position=(60, 20))
-text_group_DLY.append(text_DLY_area)  # Subgroup for text scaling
-
-# Draw Effect Module REV
-rect = Rect(120, 1, 120, 40, fill=palette[8], outline=0x0, stroke=1)
-splash.append(rect)  # position splash[1] IMPORTANT!
-
-text_group_REV = displayio.Group(scale=1, x=120, y=1)
-text_REV = "Reverb"
-text_REV_area = label.Label(font_H20, text=text_REV, color=0xFFFFFF, anchor_point=(0.5, 0.5), anchored_position=(60, 20))
-text_group_REV.append(text_REV_area)  # Subgroup for text scaling
-
-# Draw Effect Module A
-rect = Rect(1, 200, 120, 40, fill=palette[5], outline=0x0, stroke=1)
-splash.append(rect)  # position splash[2] IMPORTANT!
-
-text_group_A = displayio.Group(scale=1, x=1, y=200)
-text_A = "Module A"
-text_A_area = label.Label(font_H20, text=text_A, color=0xFFFFFF, anchor_point=(0.5, 0.5), anchored_position=(60, 20))
-text_group_A.append(text_A_area)  # Subgroup for text scaling
-
-# Draw Effect Module A
-rect = Rect(120, 200, 120, 40, fill=palette[6], outline=0x0, stroke=1)
-splash.append(rect)  # position splash[3] IMPORTANT!
-
-text_group_B = displayio.Group(scale=1, x=120, y=200)
-text_B = "Module B"
-text_B_area = label.Label(font_H20, text=text_B, color=0xFFFFFF, anchor_point=(0.5, 0.5), anchored_position=(60, 20))
-text_group_B.append(text_B_area)  # Subgroup for text scaling
-
-# show Rig Name
-text_group_rig = displayio.Group(scale=1)
-text1 = "Kemper\nEffects Slot Modus"
-text_area_rig = label.Label(font, text="\n".join(wrap_text_to_pixels(text1, wrap_width, font)).center(14), color=0xFFFFFF, line_spacing=0.8)
-text_area_rig.anchor_point = (0.5, 0.5)
-text_area_rig.anchored_position = (CENTER_X, CENTER_Y)
-text_group_rig.append(text_area_rig)  # Subgroup for text scaling
-
-# add  text groups
-splash.append(text_group_rig)
-splash.append(text_group_DLY)
-splash.append(text_group_REV)
-splash.append(text_group_A)
-splash.append(text_group_B)
-
-# activate Display
-display.show(splash)
+#################################################################################################################################
 
 
-# pick your USB MIDI out channel here, 1-16
-MIDI_USB_channel = 1
+# Buffered font loader
+class FontLoader:
+    _fonts = {}
 
-midi_usb = adafruit_midi.MIDI(midi_out=usb_midi.ports[1],
-                              out_channel=MIDI_USB_channel - 1,
-                              midi_in=usb_midi.ports[0],
-                              in_buf_size=60, debug=False)
+    # Returns a font (buffered)
+    def get(self, path):
+        if path in self._fonts:
+            return self._fonts[path]
+        
+        font = bitmap_font.load_font(path)
+        self._fonts[path] = font
 
-
-# Define Footswitch Class
-class FootSwitch:
-    def __init__(self, pin, color):
-        self.switch = digitalio.DigitalInOut(pin)          # hardware assingment
-        self.switch.direction = digitalio.Direction.INPUT
-        self.switch.pull = digitalio.Pull.UP
-        self.color = [color]                               # color of assingment
-
-    state = "off"                                          # initial state
-    effecttype = -1
-    bitmap_palette_index = 0
-
-    def setcolor(self):
-        # print('new color for ' + str(self.effecttype))
-
-        if (0 < self.effecttype and self.effecttype < 14):
-            # Wah -> orange
-            self.color = [orange]
-            self.bitmap_palette_index = 2
-        elif (16 < self.effecttype and self.effecttype < 45):
-            # Booster -> red
-            self.color = [red]
-            self.bitmap_palette_index = 3
-        elif (47 < self.effecttype and self.effecttype < 60):
-            # Compressor -> blue
-            self.color = [turquoise]
-            self.bitmap_palette_index = 5
-        elif (60 < self.effecttype and self.effecttype < 64):
-            # Space -> green
-            self.color = [green]
-            self.bitmap_palette_index = 8
-        elif (64 < self.effecttype and self.effecttype < 80):
-            # Chorus -> blue
-            self.color = [blue]
-            self.bitmap_palette_index = 6
-        elif (80 < self.effecttype and self.effecttype < 95):
-            # Phaser/Flanger -> purple
-            self.color = [purple]
-            self.bitmap_palette_index = 4
-        elif (90 < self.effecttype and self.effecttype < 110):
-            # Equalizer -> yellow
-            self.color = [yellow]
-            self.bitmap_palette_index = 1
-        elif (110 < self.effecttype and self.effecttype < 120):
-            # Booster -> red
-            self.color = [red]
-            self.bitmap_palette_index = 3
-        elif (120 < self.effecttype and self.effecttype < 125):
-            # Looper -> purple
-            self.color = [turquoise]
-            self.bitmap_palette_index = 5
-        elif (125 < self.effecttype and self.effecttype < 135):
-            # Pitch -> white
-            self.color = [white]
-            self.bitmap_palette_index = 0
-        elif (135 < self.effecttype and self.effecttype < 140):
-            # Dual -> green
-            self.color = [green]
-            self.bitmap_palette_index = 7
-        elif (140 < self.effecttype and self.effecttype < 170):
-            # Delay -> green
-            self.color = [green]
-            self.bitmap_palette_index = 7
-        else:
-            # Reverb -> green
-            self.color = [darkgreen]
-            self.bitmap_palette_index = 8
-
-        return
+        return font
 
 
-# function to control neopixel segments - color in full brightness
-def light_active(x, c):
-    # print(str(x) + ' : ' + str(c[0]))
-    pixelpin = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11],  
-                [12, 13, 14], [15, 16, 17]]
-
-    for i in pixelpin[x]:
-        LED[i] = c[0]
-
-    switch[x].state = "on"
-    return
-
-
-# function to control neopixel segments - color in smaller brightness
-def light_dim(x, c):
-    # print(str(x) + ' : ' + str(c[0]))
-    pixelpin = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11],
-                [12, 13, 14], [15, 16, 17]]
-    dimcolor = (c[0][0]//10, c[0][1]//10, c[0][2]//10)
-
-    for i in pixelpin[x]:
-        LED[i] = dimcolor
-
-    switch[x].state = "off"
-    return
-
-    
-# function to control neopixel segments - deactivate light
-def light_off(x):
-    pixelpin = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11], 
-                [12, 13, 14], [15, 16, 17]]
-
-    for i in pixelpin[x]:
-        LED[i] = (0, 0, 0)
-
-    # deactivate switch
-    switch[x].state = "na"
-    return
-
-    
-
-# function to get Kemper Player Rig Name
-def request_kpp_rig_name():
-    # request rig name
-    midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                  [0x02, 0x7f, 0x43, 0x00, 0x00, 0x01]))
-
-# function to get Kemper Player Rig Creation Date
-def request_kpp_rig_date():
-    # request rig date
-    midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                  [0x02, 0x7f, 0x43, 0x00, 0x00, 0x03]))
-
-
-# function to get Kemper Player Rig Infos
-def request_kpp_rig_details():
-
-    # KPP Effect Module DLY
-    # Stomp Type
-    midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                  [0x02, 0x7f, 0x41, 0x00, 0x3c, 0x00]))
-    # KPP Effekt Module REV
-    # Stomp Type
-    midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                  [0x02, 0x7f, 0x41, 0x00, 0x3d, 0x00]))
-    # KPP Effect Module A
-    # Stomp Type (Integer)
-    midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                  [0x02, 0x7f, 0x41, 0x00, 0x32, 0x00]))
-    # KPP Effect Module+ B
-    # Stomp Type
-    midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                  [0x02, 0x7f, 0x41, 0x00, 0x33, 0x00]))
-    return
-
-# function to get Kemper Effect Status Infos
-def get_kpp_effect_status():
-    # KPP Effect Module DLY
-    # Stomp DLY Status
-    if switch[0].state != 'na':
-        midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                      [0x02, 0x7f, 0x41, 0x00, 0x3c, 0x03]))
-
-    # KPP Effekt Module REV
-    # Stomp Status
-    if switch[1].state != 'na':
-        midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                      [0x02, 0x7f, 0x41, 0x00, 0x3d, 0x03]))
-    # KPP Effect Module A
-    # Stomp Status
-    if switch[2].state != 'na':
-        midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                      [0x02, 0x7f, 0x41, 0x00, 0x32, 0x03]))
-    # KPP Effect Module+ B
-    # Stomp Status
-    if switch[3].state != 'na':
-        midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                      [0x02, 0x7f, 0x41, 0x00, 0x33, 0x03]))
-    return
-
-
-# function to control neopixel segments - color in full brightness
-def get_module_name(x):
-    name = ''
-    if (0 < x and x < 14):
-        # Wah -> orange
-        name = 'Wah Wah'
-    elif (16 < x and x < 45):
-        # Booster -> red
-        name = 'Distortion'
-    elif (47 < x and x < 55):
-        # Compressor -> blue
-        name = 'Compress'
-    elif (55 < x and x < 60):
-        # Compressor -> blue
-        name = 'Noise Gate'
-    elif (60 < x and x < 64):
-        # Space -> green
-        name = 'Space'
-    elif (64 < x and x < 80):
-        # Chorus -> blue
-        name = 'Chorus'
-    elif (80 < x and x < 95):
-        # Phaser/Flanger -> purple
-        name = 'Phaser'
-    elif (90 < x and x < 110):
-        # Equalizer -> yellow
-        name = 'Equalizer'
-    elif (110 < x and x < 120):
-        # Booster -> red
-        name = 'Booster'
-    elif (120 < x and x < 125):
-        # Phaser/Flanger -> purple
-        name = 'Loop'
-    elif (125 < x and x < 135):
-        # Pitch -> white
-        name = 'Transpose '
-    elif (135 < x and x < 142):
-        # Dual -> green
-        name = 'Dual'
-    elif (140 < x and x < 170):
-        # Dual -> green
-        name = 'Delay'
-    else:
-        name = 'Reverb'
-
-    return name
-'''
-
-######################################################################################################################################################
-
-# Color definitions
-class Colors:
-    DARK_GREEN = (0, 100, 0)
-    GREEN = (0, 255, 0)
-    WHITE = (255, 255, 255)
-    RED = (255, 0, 0)
-    YELLOW = (255, 255, 0)
-    PURPLE = (30, 0, 20)
-    ORANGE = (255, 165, 0)
-    BLUE = (0, 0, 255)
-    TURQUOISE = (64, 242, 208)
-    GRAY = (190, 190, 190)
+#################################################################################################################################
 
 
 # Controller for an effect slot label on the user interface
 class DisplayLabel:
-    def __init__(self, ui, x, y, width, height, font, initial_text = "", initial_color = None, line_spacing = 1):
+
+    # config:
+    # {
+    #     "font": Path to the font, example: "/fonts/H20.pcf"
+    #     "maxTextWidth": Maximum text width in pixels (default: 220) optional
+    #     "lineSpacing": Line spacing (optional), float (default: 1)
+    # }
+    def __init__(self, ui, x, y, width, height, config, text = "", back_color = None, text_color = None):
         self.ui = ui
+
         self.x = int(x)
         self.y = int(y)
         self.width = int(width)
         self.height = int(height)
-        self.initial_color = initial_color   
-        self.initial_text = initial_text            
-        self.font = font
-        self.line_spacing = line_spacing
+
+        self.config = config
+        self.font = self.ui.font_loader.get(self.config["font"])
+
+        self.initial_text = text
+
+        self.back_color = back_color
+        self.text_color = text_color
 
         self._add_to_splash()
 
     # Adds the slot to the splash
     def _add_to_splash(self):
         # Append background, if any
-        if self.initial_color != None:
+        if self.back_color != None:
             self.background_splash_address = len(self.ui.splash)
-            self.ui.splash.append(self._create_background(self.initial_color))        
+            self.ui.splash.append(self._create_background(self.back_color))        
 
         # Append text area
         self.label = label.Label(
-            self.font, 
-            text = self.initial_text, 
-            color = 0xFFFFFF, 
+            self.font,
+            color = self._get_text_color(),
             anchor_point = (0.5, 0.5), 
             anchored_position = (
                 int(self.width / 2), 
                 int(self.height / 2)
             ),
-            line_spacing = self.line_spacing
+            line_spacing = self._get_config_option("lineSpacing")
         )
+        self.set_text(self.initial_text)
         
         group = displayio.Group(
             scale = 1, 
@@ -471,13 +187,37 @@ class DisplayLabel:
         self.label_splash_address = len(self.ui.splash)
         self.ui.splash.append(group)        
 
+    # Reads an option
+    def _get_config_option(self, name, default = False):
+        if name not in self.config:
+            return default        
+        return self.config[name]
+
     # Sets the background color
-    def set_color(self, color):
+    def set_back_color(self, color):
+        self.back_color = color
         self.ui.splash[self.background_splash_address] = self._create_background(color)
+
+        # Also set text color again (might have been changed)
+        if self.text_color == None:
+            self.label.color = self._get_text_color()
 
     # Sets the text
     def set_text(self, text):
-        self.label.text = text
+        if self._get_config_option("maxTextWidth") != False:
+            # Wrap text if requested
+            text_out = "\n".join(
+                wrap_text_to_pixels(
+                    text, 
+                    self.config["maxTextWidth"], 
+                    self.font
+                )
+            )
+        else:
+            text_out = text
+
+        self.text = text_out
+        self.label.text = text_out
 
     # Create background Rect
     def _create_background(self, color):
@@ -491,7 +231,31 @@ class DisplayLabel:
             stroke = 1
         )
 
-######################################################################################################################################################
+    # Text color: If none is set, auto-detect according to the background
+    def _get_text_color(self):        
+        text_color = self.text_color
+        if text_color == None:
+            text_color = self._determine_text_color()
+        return text_color
+
+    # Determines a text color by the current background color.
+    # Algorithm adapted from https://nemecek.be/blog/172/how-to-calculate-contrast-color-in-python
+    def _determine_text_color(self):
+        if self.back_color == None:
+            return Colors.WHITE
+        
+        luminance = self._get_luminance(self.back_color)
+        if luminance < 140:
+            return Colors.WHITE
+        else:
+            return Colors.BLACK
+        
+    # Get the luminance of a color, in range [0..255]. 
+    def _get_luminance(self, color):
+        return color[0] * 0.2126 + color[1] * 0.7151 + color[2] * 0.0721
+
+
+#################################################################################################################################
 
 
 # Implements the UI controller
@@ -501,98 +265,272 @@ class UserInterface:
     # {
     #     "effectLabelHeight": Height of the four effect unit label areas (pixels, default: 40)
     #     "initialInfoText": Text initially shown in the center area (where the rig name goes later on)
-    #     "maxTextWidth": Maximum text width in pixels (default: 220)
-    #     "maxTextWidthCharacters": Maximum text width in characters (default: 14)
+    #     "effectSlotLayout": Layout definition for effect slot labels (see DisplayLabel)
+    #     "infoAreaLayout": Layout definition for the info area (rig name) label (see DisplayLabel)
+    #     "debugAreaLayout": Layout definition for the debug area label (see DisplayLabel)
     # }
-    def __init__(self, display, width, height, config):
+    def __init__(self, display, config):
         self.display = display
-        self.width = width
-        self.height = height
+        self.width = display.width
+        self.height = display.height
         self.config = config
+        self.debug_area = None
+        self.rig_name = None
+        self.rig_date = None
 
         # Effect slots are modeled in a list of DisplayLabel instances (DLY, REV, A, B)
-        self.effectSlots = []
+        self.effect_slots = []
 
-        # Set up needed fonts
-        self.font = bitmap_font.load_font("/fonts/PTSans-NarrowBold-40.pcf")
-        self.font_H20 = bitmap_font.load_font("/fonts/H20.pcf")
+        # Font loader (buffered)
+        self.font_loader = FontLoader()
 
+    # Show the user interface
     def show(self):
         # Init screen stacking (order matters here!)
         self._init_splash()
         self._init_info_area()
         self._init_slots()
+        self._init_debug_area()
         
-        self.display.show(self.splash)
+        self.display.tft.show(self.splash)
 
+    # Set a new rig name. Returns if changed
+    def set_rig_name(self, name):
+        if self.rig_name == name:
+            return False
+        
+        self.rig_name = name
+        self.info.set_text(self.rig_name)
+        return True
+
+    # React to a new rig date. Returns if changed
+    def set_rig_date(self, date):
+        if self.rig_date == date:
+            return False
+        
+        self.rig_date = date
+        return True
+        
     # Initialize display splash container
     def _init_splash(self):
         self.splash = displayio.Group()
-        self.display.rootgroup = self.splash
+        self.display.tft.rootgroup = self.splash
 
     # Initialize the effect slots
     def _init_slots(self):
         # Set up the handlers
         slotHeight = self.config["effectLabelHeight"]
         slotWidth = int(self.width / 2)
-        lowerY = self.width - slotHeight
+        lowerY = self.height - slotHeight
 
-        self.effectSlots.append(DisplayLabel(self, 1,   1,      slotWidth, slotHeight, self.font_H20, "DLY", (50, 50, 50)))
-        self.effectSlots.append(DisplayLabel(self, 120, 1,      slotWidth, slotHeight, self.font_H20, "REV", (50, 50, 50)))
-        self.effectSlots.append(DisplayLabel(self, 1,   lowerY, slotWidth, slotHeight, self.font_H20, "A", (50, 50, 50)))
-        self.effectSlots.append(DisplayLabel(self, 120, lowerY, slotWidth, slotHeight, self.font_H20, "B", (50, 50, 50)))
+        slot_config = self.config["effectSlotLayout"]
 
-    # Initialize the info (rig name) area
+        self.effect_slots.append(DisplayLabel(self, 1,   lowerY, slotWidth, slotHeight, slot_config, "A", Colors.DEFAULT_SLOT_COLOR))
+        self.effect_slots.append(DisplayLabel(self, 120, lowerY, slotWidth, slotHeight, slot_config, "B", Colors.DEFAULT_SLOT_COLOR))
+        self.effect_slots.append(DisplayLabel(self, 1,   1,      slotWidth, slotHeight, slot_config, "DLY", Colors.DEFAULT_SLOT_COLOR))
+        self.effect_slots.append(DisplayLabel(self, 120, 1,      slotWidth, slotHeight, slot_config, "REV", Colors.DEFAULT_SLOT_COLOR))
+
     def _init_info_area(self):
-        text = "\n".join(
-            wrap_text_to_pixels(
-                self.config["initialInfoText"], 
-                self.config["maxTextWidth"], 
-                self.font
-            )
-        ).center(self.config["maxTextWidthCharacters"])
-
-        self.info = DisplayLabel(self, 0, 0, self.width, self.height, self.font, initial_text = text, line_spacing = 0.8)
+        self.info = DisplayLabel(
+            self, 
+            0, 0, 
+            self.width, self.height,
+            self.config["infoAreaLayout"],
+            text = self.config["initialInfoText"], 
+            back_color = Colors.INFO_AREA_BACK_COLOR,
+            text_color = Colors.INFO_AREA_TEXT_COLOR
+        )
         
+    # Initialize the debug area, if debugging is switched on
+    def _init_debug_area(self):
+        if Config["debug"] != True:
+            return
+        
+        slotHeight = self.config["effectLabelHeight"]
+        upperY = self.height - slotHeight * 2
+        self.debug_area = DisplayLabel(
+            self, 
+            1, upperY, 
+            self.width, slotHeight, 
+            self.config["debugAreaLayout"],
+            text = "DLY", 
+            back_color = Colors.DEBUG_BACK_COLOR
+        )
 
-######################################################################################################################################################
+    # Show a debug message on the UI if debugging is switched on
+    def debug(self, message):
+        if self.debug_area == None:
+            return
+        
+        self.debug_area.set_text(message)
 
-# Controller class for a Foot Switch. Each foot switch has three Neopixels.
-class FootSwitch:
 
+#################################################################################################################################
+
+
+# Implements communication with an array of NeoPixels
+class LedDriver:
+    def __init__(self, port, num_leds):
+        self.port = port
+        self.num_leds = num_leds        
+
+        self._init_neopixel()
+
+    # Initialize NeoPixel array. Neopixel documentation:
+    # https://docs.circuitpython.org/projects/neopixel/en/latest/
+    # https://learn.adafruit.com/adafruit-neopixel-uberguide/python-circuitpython
+    def _init_neopixel(self):        
+        self.leds = neopixel.NeoPixel(self.port, self.num_leds)
+
+
+#################################################################################################################################
+
+
+# Factory for Action Implementations
+class ActionImplementations:
+
+    # Returns an action instance (featuring a process() method), created according to the action configuration passed.
+    def get(self, ui, switch, kemper, action_config):
+        type = action_config["type"]
+
+        if type == Actions.EFFECT_ON_OFF:
+            # Enable/disable an effect slot
+            return EffectEnableAction(ui, switch, kemper, action_config)
+        else:
+            raise Exception("Invalid action type: " + type + ", is this defined in kemperstomp_def.py?")
+
+
+#################################################################################################################################
+
+
+# Implements the effect enable/disable footswitch action
+class EffectEnableAction:
+    
     # Switch states
     STATE_ON = "on"
     STATE_OFF = "off"
     STATE_NOT_ASSIGNED = "na"
+
+    def __init__(self, ui, switch, kemper, action_config):
+        self.config = action_config
+        self.ui = ui
+        self.kemper = kemper
+        self.switch = switch
+        self.slot_id = self.config["slot"]
+        self.effect_type = -1
+        self.state = EffectEnableAction.STATE_OFF
+
+    # Process the action
+    def process(self):
+        self.kemper.set_slot_enabled(self.slot_id, self._enabled())
+        self.kemper.request_effect_status(self.slot_id)
+
+    # Receive MIDI messages related to this action
+    def receive(self, midi_message):
+        type = self.kemper.parse_effect_type(midi_message, self.slot_id)
+        status = self.kemper.parse_effect_status(midi_message, self.slot_id)
+
+        if type != None:
+            self._receive_type(type)
+
+        if status != None:
+            self._receive_status(status)
+
+    # Receive a type value (instance of KemperResponse)
+    def _receive_type(self, response):
+        if response.value == self.effect_type:
+            return
+
+        self.effect_type = response.value
+
+        # Set UI background color according to effect type
+        self.switch.set_color(KemperProfilerPlayer.TYPE_COLORS[self.effect_type])
+
+        # Set effect name on UI
+        self.ui.effect_slots[self.slot_id].set_text(KemperProfilerPlayer.TYPE_NAMES[self.effect_type])
+
+        if self.effect_type == KemperProfilerPlayer.TYPE_NONE:
+            # No effect assigned: Switch off lights
+            self.switch.set_brightness(Config["ledBrightness"]["notAssigned"])
+
+        # Request status of the effect after type changes
+        self.kemper.request_effect_status(self.slot_id)
+
+    # Receive a status value (instance of KemperResponse)
+    def _receive_status(self, response):
+        if response.value == True:
+            self.state = EffectEnableAction.STATE_ON
+            self.switch.set_brightness(Config["ledBrightness"]["on"])
+        else:
+            self.state = EffectEnableAction.STATE_OFF
+            self.switch.set_brightness(Config["ledBrightness"]["off"])
+
+    # Returns if the effect is currently enabled
+    def _enabled(self):
+        return self.state == EffectEnableAction.STATE_ON
+
+
+#################################################################################################################################
+
+
+# Controller class for a Foot Switch. Each foot switch has three Neopixels.
+class FootSwitch:
+
+    # Number of NeoPixels for one Footswitch
+    NUM_PIXELS = 3
 
     # config must be a dictionary holding the following attributes:
     # { 
     #     "assignment": {
     #         "port": The board GPIO pin definition to be used for this switch (for example board.GP1)
     #         "pixels": List of three indexes for the Neopixels that belong to this switch, for example (0, 1, 2)
+    #     },
+    #     "actions": {
+    #         "type": Action type. Allowed values: See the Actions class in kemperstomp_def.py
+    #         ...     (individual options depending on the action)
     #     }
     # }
-    def __init__(self, config):
+    def __init__(self, ui, led_driver, kemper, config):
+        self.ui = ui
+        self.led_driver = led_driver
+        self.kemper = kemper
         self.config = config        
+        
         self.colors = ((0, 0, 0), (0, 0, 0), (0, 0, 0))
-        self.state = FootSwitch.STATE_OFF
+        self.pushed = False
         
         if len(self.config["assignment"]["pixels"]) != len(self.colors):
             raise Exception("Invalid configuration: Amount of pixels not matching " + len(self.colors))
         
-        self._random_colors()
-        self._init_switch()
-        
-    # Set random colors on the neopixels
-    def _random_colors(self):
-        random_colors = (Colors.YELLOW, Colors.ORANGE, Colors.RED, Colors.GREEN, Colors.BLUE)    
-        self.set_colors((
-            random_colors[random.randint(0, len(random_colors)-1)],
-            random_colors[random.randint(0, len(random_colors)-1)],
-            random_colors[random.randint(0, len(random_colors)-1)]
-        ))
-        self._set_brightness(1)
+        self._initial_colors()
+        self._init_actions()
+        self._init_switch()        
 
+    # Set up action instances
+    def _init_actions(self):
+        self.actions = []
+        action_factory = ActionImplementations()
+
+        for action_config in self.config["actions"]:
+            action = action_factory.get(
+                self.ui, 
+                self, 
+                self.kemper, 
+                action_config
+            )
+            self.actions.append(action)
+
+    # Set some initial colors on the neopixels
+    def _initial_colors(self):
+        available_colors = (Colors.GREEN, Colors.YELLOW, Colors.RED)  # Colors to be used (in that order)
+        start_index = random.randint(0, len(available_colors)-1)      # Random start index  
+        self.set_colors((
+            available_colors[start_index],
+            available_colors[(start_index + 1 ) % len(available_colors)],
+            available_colors[(start_index + 2 ) % len(available_colors)]
+        ))
+        self.set_brightness(1)
+    
     # Initializes the switch
     def _init_switch(self):
         self.switch = digitalio.DigitalInOut(self.config["assignment"]["port"]) 
@@ -600,40 +538,73 @@ class FootSwitch:
         self.switch.direction = digitalio.Direction.INPUT
         self.switch.pull = digitalio.Pull.UP
         
-    # Set switch colors (all LEDs individually)
+    # Set switch colors (each of the LEDs individually)
     def set_colors(self, colors):
         if len(colors) != len(self.colors):
             raise Exception("Invalid amount of colors: " + len(colors))
-        self.colors = colors
+        self.colors = colors        
 
-    # Set switch color (all LEDs equally)
+    # Set switch color (all three LEDs equally)
     def set_color(self, color):
         for i in range(len(self.colors)):
             self.colors[i] = color
 
-    # Set switch state (on/off/na)
-    def set_state(self, state):
-        self.state = state
-        
-        if state == FootSwitch.STATE_ON:
-            self._set_brightness(1)
-        elif state == FootSwitch.STATE_OFF:
-            self._set_brightness(0.1)
-        else:
-            self._set_brightness(0)
-
     # Set to full brightness
-    def _set_brightness(self, brightness):
+    def set_brightness(self, brightness):
         for i in range(len(self.colors)):
             pixel = self.config["assignment"]["pixels"][i]
-            LED[pixel] = (
+            self.led_driver.leds[pixel] = (
                 int(self.colors[i][0] * brightness), 
                 int(self.colors[i][1] * brightness), 
                 int(self.colors[i][2] * brightness)
             )
     
+    # Return if the switch is currently pushed
+    def is_pushed(self):
+        return self.switch.value == False  # Inverse logic!
 
-######################################################################################################################################################
+    # Process the switch: Check if it is currently pushed, set state accordingly
+    # and send the MIDI messages configured.
+    # Returns boolean if the switch has been down.
+    def process(self):
+        # Is the switch currently pushed? If not, return false.
+        if self.is_pushed() == False:
+            return False
+
+        # Switch is pushed: Has it been pushed before already? If so, return true but 
+        # do not send any MIDI messages again.
+        if self.pushed != False:
+            return True
+        
+        # Mark as pushed (prevents redundant messages in the following ticks, when the switch can still be down)
+        self.pushed = True
+
+        # Process the assigned action
+        self._process_switch_actions()
+        return True    
+
+    # Processes all actions assigned to the switch
+    def _process_switch_actions(self):
+        for action in self.actions:
+            action.process()
+
+    # Receive MIDI messages for all actions
+    def receive(self, midi_message):
+        for action in self.actions:
+            action.receive(midi_message)
+
+
+#################################################################################################################################
+
+
+# Response from Kemper
+class KemperResponse:
+    def __init__(self, type, value):
+        self.type = type
+        self.value = value
+
+
+#################################################################################################################################
 
 
 # Implements all Kemper Player related functionality 
@@ -641,55 +612,58 @@ class FootSwitch:
 class KemperProfilerPlayer:
 
     # Effect types enum (used internally, also for indexing colors, so be sure these are always a row from 0 to n)
-    TYPE_WAH = 0
-    TYPE_DISTORTION = 1
-    TYPE_COMPRESSOR = 2
-    TYPE_NOISE_GATE = 3
-    TYPE_SPACE = 4
-    TYPE_CHORUS = 5
-    TYPE_PHASERFLANGER = 6
-    TYPE_EQUALIZER = 7
-    TYPE_BOOSTER = 8
-    TYPE_LOOPER = 9
-    TYPE_PITCH = 10
-    TYPE_DUAL = 11
-    TYPE_DELAY = 12
-    TYPE_REVERB = 13
+    TYPE_NONE = 0
+    TYPE_WAH = 1
+    TYPE_DISTORTION = 2
+    TYPE_COMPRESSOR = 3
+    TYPE_NOISE_GATE = 4
+    TYPE_SPACE = 5
+    TYPE_CHORUS = 6
+    TYPE_PHASER_FLANGER = 7
+    TYPE_EQUALIZER = 8
+    TYPE_BOOSTER = 9
+    TYPE_LOOPER = 10
+    TYPE_PITCH = 11
+    TYPE_DUAL = 12
+    TYPE_DELAY = 13
+    TYPE_REVERB = 14
 
     # Effect colors. The order must match the enums for the effect types defined above!
     TYPE_COLORS = (
-        Colors.ORANGE,  # Wah
-        Colors.RED,     # Distortion
-        Colors.BLUE,    # Compressor
-        Colors.BLUE,    # Noise Gate
-        Colors.GREEN,   # Space
-        Colors.BLUE,    # Chorus
-        Colors.PURPLE,  # Phaser/Flanger
-        Colors.YELLOW,  # Equalizer
-        Colors.RED,     # Booster
-        Colors.PURPLE,  # Looper
-        Colors.WHITE,   # Pitch
-        Colors.GREEN,   # Dual
-        Colors.GREEN,   # Delay
-        Colors.GREEN    # Reverb
+        KemperDefinitions.EFFECT_COLOR_NONE,
+        KemperDefinitions.EFFECT_COLOR_WAH,
+        KemperDefinitions.EFFECT_COLOR_DISTORTION,
+        KemperDefinitions.EFFECT_COLOR_COMPRESSOR,
+        KemperDefinitions.EFFECT_COLOR_NOISE_GATE,
+        KemperDefinitions.EFFECT_COLOR_SPACE,
+        KemperDefinitions.EFFECT_COLOR_CHORUS,
+        KemperDefinitions.EFFECT_COLOR_PHASER_FLANGER,
+        KemperDefinitions.EFFECT_COLOR_EQUALIZER,
+        KemperDefinitions.EFFECT_COLOR_BOOSTER,
+        KemperDefinitions.EFFECT_COLOR_LOOPER,
+        KemperDefinitions.EFFECT_COLOR_PITCH,
+        KemperDefinitions.EFFECT_COLOR_DUAL,
+        KemperDefinitions.EFFECT_COLOR_DELAY,
+        KemperDefinitions.EFFECT_COLOR_REVERB
     )
 
     # Effect type display names. The order must match the enums for the effect types defined above!
     TYPE_NAMES = (
-        "Wah Wah",
-        "Distortion",
-        "Compressor",
-        "Noise Gate",
-        "Space",
-        "Chorus",
-        "Phaser",
-        "Equalizer",
-        "Booster",
-        "Looper",
-        "Transpose",
-        "Dual",
-        "Delay",
-        "Reverb"
+        KemperDefinitions.EFFECT_NAME_NONE,
+        KemperDefinitions.EFFECT_NAME_WAH,
+        KemperDefinitions.EFFECT_NAME_DISTORTION,
+        KemperDefinitions.EFFECT_NAME_COMPRESSOR,
+        KemperDefinitions.EFFECT_NAME_NOISE_GATE,
+        KemperDefinitions.EFFECT_NAME_SPACE,
+        KemperDefinitions.EFFECT_NAME_CHORUS,
+        KemperDefinitions.EFFECT_NAME_PHASER_FLANGER,
+        KemperDefinitions.EFFECT_NAME_EQUALIZER,
+        KemperDefinitions.EFFECT_NAME_BOOSTER,
+        KemperDefinitions.EFFECT_NAME_LOOPER,
+        KemperDefinitions.EFFECT_NAME_PITCH,
+        KemperDefinitions.EFFECT_NAME_DUAL,
+        KemperDefinitions.EFFECT_NAME_DELAY,
+        KemperDefinitions.EFFECT_NAME_REVERB
     )
 
     # Requires an USB driver instance
@@ -700,7 +674,9 @@ class KemperProfilerPlayer:
     def get_effect_type(self, kpp_effect_type):
         # NOTE: The ranges are defined by Kemper with a lot of unised numbers, so the borders between types
         # could need to be adjusted with future Kemper firmware updates!
-        if (0 < kpp_effect_type and kpp_effect_type <= 14):
+        if (kpp_effect_type == 0):
+            return KemperProfilerPlayer.TYPE_NONE
+        elif (0 < kpp_effect_type and kpp_effect_type <= 14):
             return KemperProfilerPlayer.TYPE_WAH
         elif (14 < kpp_effect_type and kpp_effect_type <= 45):
             return KemperProfilerPlayer.TYPE_DISTORTION
@@ -729,6 +705,12 @@ class KemperProfilerPlayer:
         else:
             return KemperProfilerPlayer.TYPE_REVERB
 
+    # Request all rig info (except date)
+    def request_rig_info(self):
+        self.request_effect_types()
+        self.request_rig_name()
+        self.request_effects_status()
+
     # Request rig name
     def request_rig_name(self):
         self.midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
@@ -739,55 +721,160 @@ class KemperProfilerPlayer:
         self.midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
                                            [0x02, 0x7f, 0x43, 0x00, 0x00, 0x03]))
 
-    # Request types of effect for all available effects
+    # Sets a slot enabled or disabled
+    def set_slot_enabled(self, slot_id, enable):
+        enable_int = 0
+        if enable == True:
+            enable_int = 1
+
+        self.midi_usb.send(ControlChange(Slots.CC_EFFECT_SLOT_ENABLE[slot_id], enable_int))
+
+    # Request types of effect for all slots
     def request_effect_types(self):
-        # Effect Module A
-        self.midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                           [0x02, 0x7f, 0x41, 0x00, 0x32, 0x00]))
-        # Effect Module B
-        self.midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                           [0x02, 0x7f, 0x41, 0x00, 0x33, 0x00]))
-        # Effect Module DLY
-        self. midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                           [0x02, 0x7f, 0x41, 0x00, 0x3c, 0x00]))
-        # Effect Module REV
-        self.midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                           [0x02, 0x7f, 0x41, 0x00, 0x3d, 0x00]))
+        self.request_effect_type(Slots.EFFECT_SLOT_ID_A)
+        self.request_effect_type(Slots.EFFECT_SLOT_ID_B)
+        self.request_effect_type(Slots.EFFECT_SLOT_ID_DLY)
+        self.request_effect_type(Slots.EFFECT_SLOT_ID_REV)
 
-    # Request effect status
-    def request_effect_status(self):
-        # Effect Module A
-        if switch[2].state != 'na':
-            self.midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                               [0x02, 0x7f, 0x41, 0x00, 0x32, 0x03]))
-        # Effect Module B
-        if switch[3].state != 'na':
-            self.midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                               [0x02, 0x7f, 0x41, 0x00, 0x33, 0x03]))
-        # Effect Module DLY
-        if switch[0].state != 'na':
-            self.midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                               [0x02, 0x7f, 0x41, 0x00, 0x3c, 0x03]))
-        # Effect Module REV
-        if switch[1].state != 'na':
-            self.midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                               [0x02, 0x7f, 0x41, 0x00, 0x3d, 0x03]))
+    # Request the effect type of a specific slot
+    def request_effect_type(self, slot_id):     
+        self.request_single_parameter(
+            Slots.SLOT_ADDRESS_PAGE[slot_id], 
+            KemperDefinitions.PARAMETER_ADDRESS_EFFECT_TYPE
+        )
+
+    # Request effect status for all slots
+    def request_effects_status(self):
+        self.request_effect_status(Slots.EFFECT_SLOT_ID_A)
+        self.request_effect_status(Slots.EFFECT_SLOT_ID_B)
+        self.request_effect_status(Slots.EFFECT_SLOT_ID_DLY)
+        self.request_effect_status(Slots.EFFECT_SLOT_ID_REV)
+
+    # Request effect status for a specific slot
+    def request_effect_status(self, slot_id):
+        self.request_single_parameter(
+            Slots.SLOT_ADDRESS_PAGE[slot_id], 
+            KemperDefinitions.PARAMETER_ADDRESS_EFFECT_STATUS
+        )
+
+    def request_single_parameter(self, page, address):
+        self.midi_usb.send(
+            SystemExclusive(
+                [
+                    0x00, 
+                    0x20, 
+                    0x33
+                ],
+                [
+                    0x02, 
+                    0x7f, 
+                    0x41, 
+                    0x00, 
+                    page,
+                    address
+                ]
+            )
+        )
+
+    # Parse a response for the current rig name
+    def parse_rig_name(self, midi_message):
+        return self.parse_global_parameter(midi_message, KemperDefinitions.RESPONSE_PREFIX_RIG_NAME)
+        
+    # Parse a response for the current rig last changed date
+    def parse_rig_date(self, midi_message):
+        return self.parse_global_parameter(midi_message, KemperDefinitions.RESPONSE_PREFIX_RIG_DATE)
+
+    # Parse a global parameter response
+    def parse_global_parameter(self, midi_message, response_prefix):
+        if not isinstance(midi_message, SystemExclusive):
+            return None
+
+        response = list(midi_message.data)
+                
+        if response[:6] != response_prefix:
+            return None
+        
+        return KemperResponse(
+            KemperDefinitions.RESPONSE_ID_GLOBAL_PARAMETER,
+            ''.join(chr(int(c)) for c in response[6:-1])
+        )
+
+    # Parse a response for an effect type. Returns None if not relevant to the context.
+    def parse_effect_type(self, midi_message, slot_id):
+        return self.parse_effect_response(midi_message, slot_id, KemperDefinitions.RESPONSE_ID_EFFECT_TYPE)
+
+    # Parse a response for an effect status. Returns None if not relevant to the context.
+    def parse_effect_status(self, midi_message, slot_id):
+        return self.parse_effect_response(midi_message, slot_id, KemperDefinitions.RESPONSE_ID_EFFECT_STATUS)
+
+    # Parse a response for an effect parameter. Returns None if not relevant to the context.
+    def parse_effect_response(self, midi_message, slot_id, response_type):
+        if not isinstance(midi_message, SystemExclusive):
+            return None
+
+        response = list(midi_message.data)
+                
+        if response[:-3] != [0x00, 0x00, 0x01, 0x00, Slots.SLOT_ADDRESS_PAGE[slot_id]]:
+            # Message does not belong to this slot
+            return None
+
+        if response[5] != response_type:
+            # Message is the wrong response type
+            return None
+
+        if response[5] == KemperDefinitions.RESPONSE_ID_EFFECT_TYPE:
+            # Response to an effect type request
+            kpp_effect_type = response[-2] * 128 + response[-1]
+            
+            return KemperResponse(
+                KemperDefinitions.RESPONSE_ID_EFFECT_TYPE,
+                self.get_effect_type(kpp_effect_type)
+            )
+        
+        elif response[5] == KemperDefinitions.RESPONSE_ID_EFFECT_STATUS:
+            # Response to an effect status request
+            if (response[-1] == KemperDefinitions.RESPONSE_ANSWER_STATUS_ON):
+                # Effect on
+                return KemperResponse(
+                    KemperDefinitions.RESPONSE_ID_EFFECT_TYPE,
+                    True
+                )
+            elif (response[-1] == KemperDefinitions.RESPONSE_ANSWER_STATUS_OFF):
+                # Effect off
+                return KemperResponse(
+                    KemperDefinitions.RESPONSE_ID_EFFECT_TYPE,
+                    False
+                )
+        
 
 
-##########################################################################################################
+#################################################################################################################################
+
 
 # Main application class (controls the processing)    
 class KemperStompController:
-    def __init__(self, ui):        
+    def __init__(self, ui, led_driver):        
         self.ui = ui
-        self._init_switches()
+        self.led_driver = led_driver
+
         self._init_midi()
+        self.kemper = KemperProfilerPlayer(self.midi_usb)
+
+        self._init_switches()
 
     # Initialize switches
     def _init_switches(self):
         self.switches = []
+
         for swDef in Config["switches"]:
-            self.switches.append(FootSwitch(swDef))
+            self.switches.append(
+                FootSwitch(
+                    self.ui, 
+                    self.led_driver, 
+                    self.kemper, 
+                    swDef
+                )
+            )
 
     # Start MIDI communication
     def _init_midi(self):
@@ -803,347 +890,68 @@ class KemperStompController:
 
     # Runs the processing loop (which never ends)
     def process(self):
+        # Show user interface
         self.ui.show()
 
-######################################################################################################################################################
+        # Start processing loop
+        while True:
+            start_time = self._get_current_millis()
+            self._tick()
+            self.ui.debug(str(int((self._get_current_millis() - start_time) * 1000)) + "ms")
+
+    # Processing loop implementation
+    def _tick(self):
+        # Process all switches
+        processed = False
+        
+        for switch in self.switches:
+            processed = switch.process() or processed
+
+        # If any of the switches has been processed, we are done for this tick
+        if processed == True:
+            return
+        
+        # No switch has been processed: Receive MIDI messages
+        midimsg = self.midi_usb.receive()
+        if midimsg == None:
+            return
+        
+        # Receive all switch actions first
+        for switch in self.switches:
+            switch.receive(midimsg)
+
+        # Receive rig name / date
+        self._parse_rig_info(midimsg)
+
+        # Use Midi keep alive Message as trigger to request rig changes
+        if isinstance(midimsg, MIDIUnknownEvent):
+            self.kemper.request_rig_date()
+
+    # Parse rig info messages
+    def _parse_rig_info(self, midi_message):
+        rig_name = self.kemper.parse_rig_name(midi_message)
+        if rig_name != None:
+            self.ui.set_rig_name(rig_name.value)
+
+        rig_date = self.kemper.parse_rig_date(midi_message)
+        if rig_date != None:
+            if self.ui.set_rig_date(rig_date.value) == True:
+                self.kemper.request_rig_info()
+
+    # Returns a current timestmap in milliseconds
+    def _get_current_millis(self):
+        return time.monotonic()
+            
+
+#################################################################################################################################
+#################################################################################################################################
+
+# NeoPixel driver 
+leds = LedDriver(Config["neoPixelPort"], len(Config["switches"]) * FootSwitch.NUM_PIXELS)
 
 # User interface
-ui = UserInterface(display, disp_width, disp_height, Config["userInterface"])
+ui = UserInterface(display, Config["userInterface"])
 
 # Controller instance (runs the processing loop and keeps everything together)
-appl = KemperStompController(ui)
+appl = KemperStompController(ui, leds)
 appl.process()
-
-######################################################################################################################################################
-
-import time
-time.sleep(200)
-import sys
-sys.exit()
-
-'''
-# Define Switch Objects to hold data
-switch = []
-
-# with hardware assingment and color+
-switch.append(FootSwitch(board.GP1, list(darkgreen)))
-switch.append(FootSwitch(board.GP25, list(green)))
-#switch.append(FootSwitch(board.GP24, list(white)))
-switch.append(FootSwitch(board.GP9, list(red)))
-switch.append(FootSwitch(board.GP10, list(yellow)))
-#switch.append(FootSwitch(board.GP11, list(orange)))
-
-
-# set start values
-LED.fill(0x000000)  # start using
-
-# Kemper Rig Name
-rig_name = ''
-rig_date = ''
-
-pushed = False
-
-# Dim Light on for special switches
-#light_dim(2, switch[2].color)
-#light_dim(5, switch[5].color)
-
-
-while True:
-    if switch[0].switch.value is False:
-        if pushed is False:
-
-            pushed = True
-            if switch[0].state == "off":
-                midi_usb.send(ControlChange(27, 1))
-                midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                              [0x02, 0x7f, 0x41, 0x00, 0x3c, 0x03]))
-            else:
-                midi_usb.send(ControlChange(27, 0))
-                midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                              [0x02, 0x7f, 0x41, 0x00, 0x3c, 0x03]))
-
-    elif switch[1].switch.value is False:
-        if pushed is False:
-            # [1][SE][0x002033][0x027f41003d03]
-
-            pushed = True
-            if switch[1].state == "off":
-                midi_usb.send(ControlChange(28, 1))
-                midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                              [0x02, 0x7f, 0x41, 0x00, 0x3d, 0x03]))
-            else:
-                midi_usb.send(ControlChange(28, 0))
-                midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                              [0x02, 0x7f, 0x41, 0x00, 0x3d, 0x03]))
-
-    #elif switch[2].switch.value is False:
-    #    if pushed is False:
-
-    #        pushed = True
-    #        if switch[2].state == "off":
-    #            light_active(2, switch[2].color)
-    #            # switch[2].state = "on"
-    #            midi_usb.send(ControlChange(31, 127))
-    #        else:
-    #            light_dim(2, switch[2].color)
-    #            # switch[2].state = "off"
-    #            midi_usb.send(ControlChange(31, 0))
-
-    elif switch[2].switch.value is False:
-        # [1][SE][0x002033][0x027f41003203]
-        if pushed is False:
-
-            pushed = True
-            if switch[2].state == "off":
-                midi_usb.send(ControlChange(17, 1))
-                midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                              [0x02, 0x7f, 0x41, 0x00, 0x32, 0x03]))
-            else:
-                midi_usb.send(ControlChange(17, 0))
-                midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                              [0x02, 0x7f, 0x41, 0x00, 0x32, 0x03]))
-
-    elif switch[3].switch.value is False:
-        if pushed is False:
-            # [1][SE][0x002033][0x027f41003303]
-
-            pushed = True
-            if switch[3].state == "off":
-                midi_usb.send(ControlChange(18, 1))
-                midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                              [0x02, 0x7f, 0x41, 0x00, 0x33, 0x03]))
-            else:
-                midi_usb.send(ControlChange(18, 0))
-                midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-                                              [0x02, 0x7f, 0x41, 0x00, 0x33, 0x03]))
-
-    #elif switch[5].switch.value is False:
-    #    if pushed is False:
-    #        # ig volume booster
-    #        pushed = True
-    #        if switch[5].state == "off":
-    #            light_active(5, switch[5].color)
-    #            # switch[5].state = "on"
-    #            # midi_usb.send(ControlChange(7, 127))
-    #            # set rig volume to +3dB
-    #            midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-    #                                          [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01, 0x50, 0x00]))
-    #        else:
-    #            light_dim(5, switch[5].color)
-    #            # switch[5].state = "off"
-    #            # midi_usb.send(ControlChange(7, 1))
-    #            # set rig volume to 0dB
-    #            midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
-    #                                          [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01, 0x40, 0x00]))
-
-    else:
-        pushed = False
-
-        # read Midi incomming data
-        midimsg = midi_usb.receive()
-
-        if midimsg is not None:
-            if isinstance(midimsg, ControlChange):
-                string_msg = 'ControlChange'
-                string_val = str(midimsg.control)
-
-            elif isinstance(midimsg, SystemExclusive):
-                string_msg = 'SystemExclusive'
-                string_val = str(midimsg.data)
-                response = list(midimsg.data)
-
-                # Stomp DLY Status
-                if response[:-3] == [0x00, 0x00, 0x01, 0x00, 0x3c]:
-                    if response[5] == 0x00:   # Effect Type Response
-
-                        # Effect Type in last 2 list elements
-                        effecttype = response[-2] * 128 + response[-1]
-
-                        # is detected Effect Type new?
-                        if switch[0].effecttype != effecttype:
-
-                            # update Effect Type in Object
-                            switch[0].effecttype = effecttype
-
-                            # is Effectslot is empty?
-                            if effecttype == 0:
-                                light_off(0)
-                                text_DLY_area.text = 'Empty'
-                                splash[0] = Rect(1, 1, 120, 40, fill=palette[9], outline=0x0, stroke=1)
-
-                            else:
-                                # update new color in object
-                                switch[0].setcolor()
-                                text_DLY_area.text = get_module_name(effecttype)
-                                splash[0] = Rect(1, 1, 120, 40, fill=palette[switch[0].bitmap_palette_index], outline=0x0, stroke=1)
-
-                                # prepare for setting state over SysEx
-                                if (switch[0].state == 'na'):
-                                    switch[0].state = 'off'
-
-                        get_kpp_effect_status()
-
-
-                    elif (response[5] == 0x03) and (switch[0].effecttype != 0):   # Effect State Response
-                        if (response[-1] == 0x01):
-                            light_active(0, switch[0].color)
-                        elif (response[-1] == 0x00):
-                            light_dim(0, switch[0].color)
-
-                # Stomp REV Status
-                elif response[:-3] == [0x00, 0x00, 0x01, 0x00, 0x3d]:
-                    if response[5] == 0x00:   # Effect Type Response
-
-                        # Effect Type in last 2 list elements
-                        received_typ = response[-2] * 128 + response[-1]
-
-                        # is detected Effect Type new?
-                        if switch[1].effecttype != received_typ:
-
-                            # update Effect Type in Object
-                            switch[1].effecttype = received_typ
-                            # is Effectslot is empty?
-                            if received_typ == 0:
-                                light_off(1)
-                                text_REV_area.text = 'Empty'
-                                splash[1] = Rect(120, 1, 120, 40, fill=palette[9], outline=0x0, stroke=1)
-
-                            else:
-                                # update new color in object #### have to be deleted
-                                switch[1].setcolor()
-                                text_REV_area.text = get_module_name(received_typ)
-                                splash[1] = Rect(120, 1, 120, 40, fill=palette[switch[1].bitmap_palette_index], outline=0x0, stroke=1)
-
-                                # prepare for setting state over SysEx
-                                if (switch[1].state == 'na'):
-                                    switch[1].state = 'off'
-
-                        get_kpp_effect_status()
-
-                    elif (response[5] == 0x03) and (switch[1].effecttype != 0):   # Effect State Response
-                        if (response[-1] == 0x01):
-                            light_active(1, switch[1].color)
-                        elif (response[-1] == 0x00):
-                            light_dim(1, switch[1].color)
-
-                # Stomp A Status
-                elif response[:-3] == [0x00, 0x00, 0x01, 0x00, 0x32]:
-                    if response[5] == 0x00:   # Effect Type Response
-
-                        # Effect Type in last 2 list elements
-                        received_typ = response[-2] * 128 + response[-1]
-
-                        # is detected Effect Type new?
-                        if switch[2].effecttype != received_typ:
-
-                            # update Effect Type in Object
-                            switch[2].effecttype = received_typ
-                            # is Effectslot is empty?
-                            if received_typ == 0:
-                                light_off(2)
-                                text_A_area.text = 'Empty'
-                                splash[2] = Rect(1, 200, 120, 40, fill=palette[9], outline=0x0, stroke=1)
-                            else:
-                                # update new color in object
-                                switch[2].setcolor()
-                                splash[2] = Rect(1, 200, 120, 40, fill=palette[switch[2].bitmap_palette_index], outline=0x0, stroke=1)
-                                text_A_area.text = get_module_name(received_typ)
-
-                                # prepare for setting state over SysEx
-                                if (switch[2].state == 'na'):
-                                    switch[2].state = 'off'
-
-                        get_kpp_effect_status()
-
-                    elif (response[5] == 0x03) and (switch[2].effecttype != 0):   # Effect State Response
-                        if (response[-1] == 0x01):
-                            light_active(2, switch[2].color)
-                        elif (response[-1] == 0x00):
-                            light_dim(2, switch[2].color)
-
-                # Stomp B Status
-                elif response[:-3] == [0x00, 0x00, 0x01, 0x00, 0x33]:
-                    if response[5] == 0x00:   # Effect Type Response
-
-                        # Effect Type in last 2 list elements
-                        received_typ = response[-2] * 128 + response[-1]
-
-                        # is detected Effect Type new?
-                        if switch[3].effecttype != received_typ:
-
-                            # update Effect Type in Object
-                            switch[3].effecttype = received_typ
-                            # is Effectslot is empty?
-                            if (received_typ) == 0:
-                                light_off(3)
-                                text_B_area.text = 'Empty'
-                                splash[3] = Rect(120, 200, 120, 40, fill=palette[9], outline=0x0, stroke=1)
-                            else:
-                                # update new color in object #### have to be deleted
-                                switch[3].setcolor()
-                                text_B_area.text = get_module_name(received_typ)
-                                splash[3] = Rect(120, 200, 120, 40, fill=palette[switch[3].bitmap_palette_index], outline=0x0, stroke=1)
-
-                                # prepare for setting state over SysEx
-                                if (switch[3].state == 'na'):
-                                    switch[3].state = 'off'
-
-                        get_kpp_effect_status()
-
-                    elif (response[5] == 0x03) and (switch[3].effecttype != 0):   # Effect State Response
-                        if (response[-1] == 0x01):
-                            light_active(3, switch[3].color)
-                        elif (response[-1] == 0x00):
-                            light_dim(3, switch[3].color)
-
-                # Rig Name
-                elif response[:6] == [0x00, 0x00, 0x03, 0x00, 0x00, 0x01]:
-
-                    ascii_string = ''.join(chr(int(c)) for c in response[6:-1])
-
-                    if ascii_string != rig_name:
-                        rig_name = ascii_string
-                        # print(rig_name)
-                        # rigtext = ''
-                        if len(rig_name) > 22:
-                            # rigtext = rig_name[:22]
-                            rigtext = rig_name
-                        else:
-                            rigtext = rig_name
-
-                        text_area_rig.text = "\n".join(wrap_text_to_pixels(rigtext, wrap_width, font))
-
-                        # reset activated 'Booster' on Switch 5
-                        #if switch[5].state == "on":
-                        #    light_dim(5, switch[5].color)
-                        #    switch[5].state = "off"
-                        #    midi_usb.send(ControlChange(7, 1))
-
-                # Rig Creation Date
-                elif response[:6] == [0x00, 0x00, 0x03, 0x00, 0x00, 0x03]:
-
-                    ascii_string = ''.join(chr(int(c)) for c in response[6:-1])
-
-                    if ascii_string != rig_date:
-                        rig_date = ascii_string
-                        request_kpp_rig_details()
-                        request_kpp_rig_name()
-                        get_kpp_effect_status()
-
-
-                else:
-                    # every other SysEx mesage
-                    print('not yet assignt: ' + str(response))
-
-            elif isinstance(midimsg, MIDIUnknownEvent):
-                # use Midi keep alive Message as trigger
-                # these statements dectects rig changes
-                request_kpp_rig_date()
-                string_msg = ''
-
-
-            else:
-                # not yet assignt midi messages
-                string_msg = ''
-
-#'''
