@@ -396,6 +396,11 @@ class ActionImplementations:
         if type == Actions.EFFECT_ON_OFF:
             # Enable/disable an effect slot
             return EffectEnableAction(ui, switch, kemper, action_config)
+        
+        elif type == Actions.REBOOT:
+            # Reboot the device
+            return RebootAction(switch, action_config)
+        
         else:
             raise Exception("Invalid action type: " + type + ", is this defined in kemperstomp_def.py?")
 
@@ -473,6 +478,31 @@ class EffectEnableAction:
 #################################################################################################################################
 
 
+# Action to reboot the device (for development)
+class RebootAction:
+    
+    def __init__(self, switch, action_config):
+        self.config = action_config
+        self.switch = switch
+
+        self.switch.set_colors((Colors.YELLOW, Colors.ORANGE, Colors.RED))
+        self.switch.set_brightness(1)
+
+        #print(self.switch)
+
+        #time.sleep(5)
+        #self.process()
+
+    def process(self):
+        import supervisor
+        supervisor.reload()
+
+    def receive(self, midi_message):
+        pass
+
+#################################################################################################################################
+
+
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
 class FootSwitch:
 
@@ -503,8 +533,8 @@ class FootSwitch:
             raise Exception("Invalid configuration: Amount of pixels not matching " + len(self.colors))
         
         self._initial_colors()
+        self._init_switch()     
         self._init_actions()
-        self._init_switch()        
 
     # Set up action instances
     def _init_actions(self):
@@ -569,6 +599,7 @@ class FootSwitch:
     def process(self):
         # Is the switch currently pushed? If not, return false.
         if self.is_pushed() == False:
+            self.pushed = False
             return False
 
         # Switch is pushed: Has it been pushed before already? If so, return true but 

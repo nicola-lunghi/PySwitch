@@ -207,3 +207,6 @@ class Actions:
     #     "slot": SLot ID: Use one of the constants defined in Slots, for example Slots.EFFECT_SLOT_A
     # }
     EFFECT_ON_OFF = 0
+
+    # Reboot the device. Useful for development.
+    REBOOT = 1

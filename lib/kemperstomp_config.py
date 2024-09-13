@@ -46,7 +46,7 @@ Config = {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_4,
             "actions": [
                 {
-                    "type": Actions.EFFECT_ON_OFF,
+                    "type": Actions.REBOOT,   #Actions.EFFECT_ON_OFF,
                     "slot": Slots.EFFECT_SLOT_ID_B
                 }
             ]
