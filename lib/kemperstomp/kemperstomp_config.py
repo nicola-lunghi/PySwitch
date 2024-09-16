@@ -45,8 +45,8 @@ Config = {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_4,
             "actions": [
                 {
-                    "type": Actions.REBOOT,   #Actions.EFFECT_ON_OFF,
-                    #"slot": Slots.EFFECT_SLOT_ID_B
+                    "type": Actions.EFFECT_ON_OFF,
+                    "slot": Slots.EFFECT_SLOT_ID_B
                 }
             ]
         }
@@ -92,8 +92,8 @@ Config = {
 
     # Brightness settings for all LEDs. Range: [0..1]
     "ledBrightness": {
-        "on": 0.7,
-        "off": 0.01,
+        "on": 0.4,
+        "off": 0.005,
         "notAssigned": 0
     },
 

@@ -161,7 +161,7 @@ class KemperDefinitions:
     EFFECT_NAME_CHORUS = "Chorus"
     EFFECT_NAME_PHASER_FLANGER = "Phaser"
     EFFECT_NAME_EQUALIZER = "Equalizer"
-    EFFECT_NAME_BOOSTER = "Booster"
+    EFFECT_NAME_BOOSTER = "Boost"
     EFFECT_NAME_LOOPER = "Looper"
     EFFECT_NAME_PITCH = "Transpose"
     EFFECT_NAME_DUAL = "Dual"
