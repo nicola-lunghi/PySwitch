@@ -9,41 +9,62 @@ import board
 
 #################################################################################################################################
 
-# This defines ports and pixel assignments for the foot switches
+
+# This defines the available actions. 
+class Actions:
+
+    # Switches an effect on/off, if the slot is assigned.
+    # Available options:
+    # {
+    #     "type": Actions.EFFECT_ON_OFF
+    #     "slot": SLot ID: Use one of the constants defined in Slots, for example Slots.EFFECT_SLOT_A
+    # }
+    EFFECT_ON_OFF = 0
+
+    # Soft-Reboot the device. Useful for development.
+    REBOOT = 1001
+
+    # Used internally in expore mode to show the pressed IO port. DO NOT USE IN YOUR CONFIGURATION, OR THE CODE WILL CRASH!
+    EXPLORE_IO = 1002
+
+    # Used internally in expore mode to increase/decrease the enlightened foot switch. DO NOT USE IN YOUR CONFIGURATION, OR THE CODE WILL CRASH!
+    # Available options:
+    # {
+    #     "step": Increment step for selecting the next enlightened switch
+    # }
+    EXPLORE_PIXELS = 1003,
+
+    # Simple action that prints a fixed text on the console. Used internally.
+    # Available options:
+    # {
+    #     "text": Text string to show
+    # }
+    PRINT = 1100
+
+
+#################################################################################################################################
+
+
+# This provides known device definitions, ready to use in the config file.
 class Ports:
     # PaintAudio MIDI Captain Nano (4 Switches)
     # Board Infos
     # Raspberry Pi Pico (RP2040)
     #
-    # GP0
     # GP1  - FootSwitch 1
-    # GP2
-    # GP3
     # GP4  bat_chg_led
-    # GP5
     # GP6  charging
     # GP7  NeoPixel
     # GP8  asyncio PWMOut frequency
     # GP9  - FootSwitch 3
     # GP10 - FootSwitch 4
-    # GP11 
     # GP12 tft_dc   (SPI1 RX)
     # GP13 tft_cs   (Chip Select)
     # GP14 spi_clk  (SPI1SCK)
     # GP15 spi_mosi (SPI1 TX)
     # GP16 Midi GP16GP17 baudrate
     # GP17 Midi GP16GP17 baudrate
-    # GP18
-    # GP19
-    # GP20
-    # GP21
-    # GP22
-    # GP23
-    # GP24 
     # GP25 - FootSwitch 2
-    # GP26
-    # GP27
-    # GP28
     PA_MIDICAPTAIN_NANO_SWITCH_1 = { "port": board.GP1,  "pixels": (0, 1, 2) }
     PA_MIDICAPTAIN_NANO_SWITCH_2 = { "port": board.GP25, "pixels": (3, 4, 5) }
     PA_MIDICAPTAIN_NANO_SWITCH_3 = { "port": board.GP9,  "pixels": (6, 7, 8) }
@@ -53,12 +74,8 @@ class Ports:
     # Board Infos
     # Raspberry Pi Pico (RP2040)
     #
-    # GP0
     # GP1  - FootSwitch 1
-    # GP2
-    # GP3
     # GP4  bat_chg_led
-    # GP5
     # GP6  charging
     # GP7  NeoPixel
     # GP8  asyncio PWMOut frequency
@@ -71,17 +88,8 @@ class Ports:
     # GP15 spi_mosi (SPI1 TX)
     # GP16 Midi GP16GP17 baudrate
     # GP17 Midi GP16GP17 baudrate
-    # GP18
-    # GP19
-    # GP20
-    # GP21
-    # GP22
-    # GP23
     # GP24 - FootSwitch 3
     # GP25 - FootSwitch 2
-    # GP26
-    # GP27
-    # GP28
     PA_MIDICAPTAIN_MINI_SWITCH_1 = { "port": board.GP1,  "pixels": (0, 1, 2) }
     PA_MIDICAPTAIN_MINI_SWITCH_2 = { "port": board.GP25, "pixels": (3, 4, 5) }
     PA_MIDICAPTAIN_MINI_SWITCH_3 = { "port": board.GP24, "pixels": (6, 7, 8) }
@@ -89,7 +97,9 @@ class Ports:
     PA_MIDICAPTAIN_MINI_SWITCH_5 = { "port": board.GP10, "pixels": (12, 13, 14) }
     PA_MIDICAPTAIN_MINI_SWITCH_6 = { "port": board.GP11, "pixels": (15, 16, 17) }
 
+
 #################################################################################################################################
+
 
 # Color definitions
 class Colors:
@@ -118,25 +128,27 @@ class Colors:
     DEBUG_BACK_COLOR = (20, 20, 70)               # Debug area: Background color (if debug is enabled in Config)
     DEBUG_TEXT_COLOR = (255, 255, 0)              # Debug area: Text color (if debug is enabled in Config)
 
+
 #################################################################################################################################
+
 
 # Kemper specific definitions
 class KemperDefinitions:
     # Effect type color assignment
     EFFECT_COLOR_NONE = Colors.DEFAULT_SLOT_COLOR
     EFFECT_COLOR_WAH = Colors.ORANGE
-    EFFECT_COLOR_DISTORTION = Colors.RED,
-    EFFECT_COLOR_COMPRESSOR = Colors.BLUE,
-    EFFECT_COLOR_NOISE_GATE = Colors.BLUE,
-    EFFECT_COLOR_SPACE = Colors.GREEN,
-    EFFECT_COLOR_CHORUS = Colors.BLUE,
-    EFFECT_COLOR_PHASER_FLANGER = Colors.PURPLE,
-    EFFECT_COLOR_EQUALIZER = Colors.YELLOW,
-    EFFECT_COLOR_BOOSTER = Colors.RED,
-    EFFECT_COLOR_LOOPER = Colors.PURPLE,
-    EFFECT_COLOR_PITCH = Colors.WHITE,
-    EFFECT_COLOR_DUAL = Colors.GREEN,
-    EFFECT_COLOR_DELAY = Colors.GREEN,
+    EFFECT_COLOR_DISTORTION = Colors.RED
+    EFFECT_COLOR_COMPRESSOR = Colors.BLUE
+    EFFECT_COLOR_NOISE_GATE = Colors.BLUE
+    EFFECT_COLOR_SPACE = Colors.GREEN
+    EFFECT_COLOR_CHORUS = Colors.BLUE
+    EFFECT_COLOR_PHASER_FLANGER = Colors.PURPLE
+    EFFECT_COLOR_EQUALIZER = Colors.YELLOW
+    EFFECT_COLOR_BOOSTER = Colors.RED
+    EFFECT_COLOR_LOOPER = Colors.PURPLE
+    EFFECT_COLOR_PITCH = Colors.WHITE
+    EFFECT_COLOR_DUAL = Colors.GREEN
+    EFFECT_COLOR_DELAY = Colors.GREEN
     EFFECT_COLOR_REVERB = Colors.GREEN
 
     # Effect type display names
@@ -170,7 +182,9 @@ class KemperDefinitions:
     RESPONSE_PREFIX_RIG_NAME = [0x00, 0x00, 0x03, 0x00, 0x00, 0x01]
     RESPONSE_PREFIX_RIG_DATE = [0x00, 0x00, 0x03, 0x00, 0x00, 0x03]
 
+
 #################################################################################################################################
+
 
 # IDs for the available effect slots
 class Slots:
@@ -195,18 +209,4 @@ class Slots:
         0x3d    # Slot REV
     )
 
-#################################################################################################################################
 
-# This defines the available actions. 
-class Actions:
-
-    # Switches an effect on/off, if the slot is assigned.
-    # Available options:
-    # {
-    #     "type": Actions.EFFECT_ON_OFF
-    #     "slot": SLot ID: Use one of the constants defined in Slots, for example Slots.EFFECT_SLOT_A
-    # }
-    EFFECT_ON_OFF = 0
-
-    # Reboot the device. Useful for development.
-    REBOOT = 1
