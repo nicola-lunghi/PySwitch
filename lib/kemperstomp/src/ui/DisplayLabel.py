@@ -18,7 +18,7 @@ class DisplayLabel:
     #     "backColor": Background color (default is none)
     #     "text": Initial text (default is none)
     # }
-    def __init__(self, ui, x, y, width, height, layout):
+    def __init__(self, ui, x, y, width, height, layout, id):
         self.ui = ui
         self.layout = layout
         
@@ -35,6 +35,7 @@ class DisplayLabel:
         self._text_color = Tools.get_option(self.layout, "textColor", None)
         self._back_color = Tools.get_option(self.layout, "backColor", None)
         self._initial_text_color = self._text_color
+        self.id = id
 
         self._background_splash_address = -1
 
@@ -87,6 +88,8 @@ class DisplayLabel:
         if self._back_color == color:
             return
 
+        self._print("Set back color to " + repr(color))
+
         self._back_color = color
         self.ui.splash[self._background_splash_address] = self._create_background(color)
 
@@ -105,6 +108,8 @@ class DisplayLabel:
 
         if self._text_color == text_color:
             return
+        
+        self._print("Set text color to " + repr(color))
 
         self._text_color = text_color
         self._label.color = text_color
@@ -129,6 +134,8 @@ class DisplayLabel:
 
         if self._text == text_out:
             return
+        
+        self._print("Set text to " + text_out)
 
         self._text = text_out
         self._label.text = text_out
@@ -161,3 +168,6 @@ class DisplayLabel:
     def _get_luminance(self, color):
         return color[0] * 0.2126 + color[1] * 0.7151 + color[2] * 0.0721
 
+    # Debug console output
+    def _print(self, msg):
+        Tools.print("Label " + self.id + ": " + msg)

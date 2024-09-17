@@ -18,6 +18,11 @@ class ActionFactory:
             from .RebootAction import RebootAction
             return RebootAction(appl, switch, config)
         
+        elif type == Actions.TERMINATE:
+            # Terminate the script
+            from .TerminateAction import TerminateAction
+            return TerminateAction(appl, switch, config)
+        
         elif type == Actions.EXPLORE_IO:
             # Print port name to console
             from .ExploreIoAction import ExploreIoAction

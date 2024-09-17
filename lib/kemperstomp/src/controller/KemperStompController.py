@@ -4,7 +4,9 @@ import adafruit_midi
 
 from ..hardware.LedDriver import LedDriver
 from ..model.FootSwitch import FootSwitch
-from ..model.KemperProfilerPlayer import KemperProfilerPlayer
+from ..model.Kemper import Kemper
+from ..Tools import Tools
+from ...config import Config
 
 # Main application class (controls the processing)    
 class KemperStompController:
@@ -16,19 +18,21 @@ class KemperStompController:
         self.switches = []                                        # Array of registered switches
         
         self._last_update = 0                                     # Used to store the last update timestamp
-        self._update_interval = self.config["updateInterval"]     # Update interval (seconds)
+        self._update_interval_millis = self.config["updateInterval"]     # Update interval (milliseconds)
         self._midiChannel = self.config["midiChannel"]            # MIDI channel to use
         self._midi_buffer_size = self.config["midiBufferSize"]    # MIDI buffer size (default: 60)
         self._midi_usb = self._get_midi()                         # MIDI communication handler        
         self._current_rig_date = None
 
-        self.kemper = KemperProfilerPlayer(self._midi_usb)        # Kemper adapter instance (implements communication with the Profiler)
+        self.kemper = Kemper(self._midi_usb)                      # Kemper adapter instance (wraps all communication with the Profiler)
 
         # Set up switches
         self._init_switches()
 
     # Initialize switches
     def _init_switches(self):
+        Tools.print("-> Init switches")
+                    
         for swDef in self.config["switches"]:
             self.switches.append(
                 FootSwitch(
@@ -39,18 +43,22 @@ class KemperStompController:
 
     # Start MIDI communication and return the handler
     def _get_midi(self):
+        Tools.print("-> Init MIDI")
+
         return adafruit_midi.MIDI(
             midi_out    = usb_midi.ports[1],
             out_channel = self._midiChannel - 1,
             midi_in     = usb_midi.ports[0],
             in_buf_size = self._midi_buffer_size, 
-            debug       = False
+            debug       = Tools.get_option(Config, "debugMidi")
         )
 
     # Runs the processing loop (which never ends)
     def process(self):
         # Show user interface
         self.ui.show()
+
+        Tools.print("-> Done initializing, starting processing loop")
 
         # Start processing loop
         while True:            
@@ -71,12 +79,16 @@ class KemperStompController:
             switch.process(midimsg)
         
         # Update rig info in a certain interval
-        if self._last_update + self._update_interval < start_time:
+        if self._last_update + self._update_interval_millis < start_time:
             self._last_update = start_time
             self.kemper.request_rig_date()
 
-        # Output debug info
-        self.ui.debug(str(int((self._get_current_millis() - start_time) * 1000)) + "ms")
+            # Update switch actions
+            for switch in self.switches:
+                switch.update()
+
+        # Output statistical info
+        self.ui.set_stats(self._get_current_millis() - start_time)
 
     # Parse rig info messages
     def _parse_rig_info(self, midi_message):
@@ -85,15 +97,18 @@ class KemperStompController:
         
         rig_name = self.kemper.parse_rig_name(midi_message)
         if rig_name != None:
+            Tools.print(" -> Receiving rig name: " + rig_name.value)
             self.ui.info_text = rig_name.value
 
         rig_date = self.kemper.parse_rig_date(midi_message)
         if rig_date != None:
+            Tools.print(" -> Receiving rig date: " + rig_date.value)
             if self._current_rig_date != rig_date.value:
+                Tools.print("   -> Rig date was different from " + repr(self._current_rig_date) + ", requesting rig name, too...")
                 self._current_rig_date = rig_date.value
-                self.kemper.request_rig_info()
+                self.kemper.request_rig_name()
 
-    # Returns a current timestmap in milliseconds
+    # Returns a current timestmap in integer milliseconds
     def _get_current_millis(self):
-        return time.monotonic()
+        return int(time.monotonic() * 1000)
     

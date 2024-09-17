@@ -1,6 +1,5 @@
 from .Action import Action
-from ..KemperProfilerPlayer import KemperProfilerPlayer
-
+from ..Kemper import Kemper
 from ....config import Config
 
 
@@ -26,10 +25,14 @@ class EffectEnableAction(Action):
     # Process the action
     def trigger(self, event):
         # Enable/disable effect slot
-        self.appl.kemper.set_slot_enabled(self.slot_id, self._enabled())
+        self.appl.kemper.set_slot_enabled(self.slot_id, not self._enabled())
 
         # Request status of the effect to update the LEDs
         self.appl.kemper.request_effect_status(self.slot_id)
+
+    # Request effect type (which will trigger a status request)
+    def update(self):
+        self.appl.kemper.request_effect_type(self.slot_id)
 
     # Receive MIDI messages
     def process(self, midi_message):
@@ -49,19 +52,24 @@ class EffectEnableAction(Action):
 
     # Receive a type value (instance of KemperResponse)
     def _receive_type(self, response):
+        self.print(" -> Receiving effect type " + repr(response.value))
+
         if response.value == self._effect_type:
+            # Request status also when type has not changed
+            self.appl.kemper.request_effect_status(self.slot_id)
+
             return
 
         self._effect_type = response.value
 
         # Set UI background color according to effect type
-        self.switch.color = KemperProfilerPlayer.TYPE_COLORS[self._effect_type]
+        self.switch.color = Kemper.TYPE_COLORS[self._effect_type]
 
         # Set effect name on UI, if a label is assigned
         if self.label != None:
-            self.label.text = KemperProfilerPlayer.TYPE_NAMES[self._effect_type]
+            self.label.text = Kemper.TYPE_NAMES[self._effect_type]            
 
-        if self._effect_type == KemperProfilerPlayer.TYPE_NONE:
+        if self._effect_type == Kemper.TYPE_NONE:
             # No effect assigned: Switch off lights
             self.switch.brightness = self._brightness_not_assigned
 
@@ -70,6 +78,8 @@ class EffectEnableAction(Action):
 
     # Receive a status value (instance of KemperResponse)
     def _receive_status(self, response):
+        self.print(" -> Receiving effect status " + repr(response.value))
+
         if response.value == True:
             self._state = EffectEnableAction.STATE_ON
             self.switch.brightness = self._brightness_on

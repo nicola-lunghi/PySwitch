@@ -35,12 +35,15 @@ class FootSwitch:
     def __init__(self, appl, config):
         self.config = config        
         self.pixels = Tools.get_option(self.config["assignment"], "pixels")
-        
+        self.switch = None
+
+        self._port = self.config["assignment"]["port"]
         self._appl = appl
         self._actions = []
         self._colors = [(0, 0, 0), (0, 0, 0), (0, 0, 0)]
         self._brightness = 0
         self._pushed_state = False
+        self.id = Tools.get_option(self.config["assignment"], "name", repr(self._port))
 
         self._initial_switch_colors()
         self._init_switch()     
@@ -48,6 +51,8 @@ class FootSwitch:
 
     # Set up action instances
     def _init_actions(self):        
+        self._print("Init actions")
+        
         action_factory = ActionFactory()
 
         for action_config in self.config["actions"]:
@@ -64,6 +69,8 @@ class FootSwitch:
             # No LEDs defined for the switch
             return
         
+        self._print("Set initial colors")
+
         initial_brightness = Tools.get_option(self.config, "initialBrightness", 1)
 
         if Tools.get_option(self.config, "initialColors") != False:
@@ -84,7 +91,9 @@ class FootSwitch:
     
     # Initializes the switch
     def _init_switch(self):
-        self.switch = digitalio.DigitalInOut(self.config["assignment"]["port"]) 
+        self._print("Init GPIO")
+
+        self.switch = digitalio.DigitalInOut(self._port) 
         
         self.switch.direction = digitalio.Direction.INPUT
         self.switch.pull = digitalio.Pull.UP
@@ -92,6 +101,8 @@ class FootSwitch:
     # Return if the switch is currently pushed
     @property
     def pushed(self):
+        if self.switch == None:
+            return False
         return self.switch.value == False  # Inverse logic!
 
     # Colors of the switch (array)
@@ -106,6 +117,8 @@ class FootSwitch:
         if len(colors) != len(self._colors):
             raise Exception("Invalid amount of colors: " + len(colors))
         
+        self._print(" -> Set colors to " + repr(colors))
+
         self._colors = colors        
 
     # Color (this just uses the first one)
@@ -117,6 +130,8 @@ class FootSwitch:
     # set_brightness is called!
     @color.setter
     def color(self, color):
+        self._print(" -> Set color to " + repr(color))
+
         for i in range(len(self._colors)):
             self._colors[i] = color
 
@@ -131,6 +146,8 @@ class FootSwitch:
         if self.pixels == False:
             return
         
+        self._print(" -> Set brightness to " + repr(brightness))
+
         for i in range(len(self._colors)):
             pixel = self.pixels[i]
             self._appl.led_driver.leds[pixel] = (
@@ -167,6 +184,7 @@ class FootSwitch:
     def _process_actions_event(self, event):
         for action in self._actions:
             if action.has_event(event) == True:
+                self._print("Trigger action " + action.id)
                 action.trigger(event)
 
     # Executes all action's process() method
@@ -174,3 +192,16 @@ class FootSwitch:
         for action in self._actions:
             action.process(midi_message)
 
+    # Called every update interval
+    def update(self):
+        for action in self._actions:
+            action.update()
+
+    # Debug console output
+    def _print(self, msg):
+        state_str = ""
+        if self.pushed == True:
+            state_str = "pushed"
+        else:
+            state_str = "off"
+        Tools.print("Switch " + self.id + " (" + state_str + "): " + msg)

@@ -9,6 +9,7 @@ class Action:
         self.appl = appl
         self.switch = switch
         self.config = config
+        self.id = self.switch.id + " | " + self.__class__.__name__
 
         self.label = self._get_action_display()   # DisplayLabel instance the action is connected to (or None).
 
@@ -21,6 +22,10 @@ class Action:
     # Will be called on every tick, whether a MIDI message has been received or not
     # (in the latter case None is passed).
     def process(self, midi_message):
+        pass
+
+    # Called regularly every update interval to update status of effects etc.
+    def update(self):
         pass
 
     # Returns if the action is registered for a given event 
@@ -46,4 +51,6 @@ class Action:
 
         return area_labels[index]
 
-
+    # Print to the debug console
+    def print(self, msg):
+        Tools.print("Action " + self.id + ": " + msg)

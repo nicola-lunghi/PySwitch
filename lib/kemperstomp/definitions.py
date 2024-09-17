@@ -19,27 +19,32 @@ class Actions:
     #     "type": Actions.EFFECT_ON_OFF
     #     "slot": SLot ID: Use one of the constants defined in Slots, for example Slots.EFFECT_SLOT_A
     # }
-    EFFECT_ON_OFF = 0
+    EFFECT_ON_OFF = 100
+
+    #### Internal and development actions #######################################################################################
 
     # Soft-Reboot the device. Useful for development.
     REBOOT = 1001
 
+    # Terminate the script. Useful for development.
+    TERMINATE = 1002
+
     # Used internally in expore mode to show the pressed IO port. DO NOT USE IN YOUR CONFIGURATION, OR THE CODE WILL CRASH!
-    EXPLORE_IO = 1002
+    EXPLORE_IO = 2000
 
     # Used internally in expore mode to increase/decrease the enlightened foot switch. DO NOT USE IN YOUR CONFIGURATION, OR THE CODE WILL CRASH!
     # Available options:
     # {
     #     "step": Increment step for selecting the next enlightened switch
     # }
-    EXPLORE_PIXELS = 1003,
+    EXPLORE_PIXELS = 2001,
 
     # Simple action that prints a fixed text on the console. Used internally.
     # Available options:
     # {
     #     "text": Text string to show
     # }
-    PRINT = 1100
+    PRINT = 9000
 
 
 #################################################################################################################################
@@ -64,8 +69,8 @@ class Ports:
     # GP6  charging
     # GP7  NeoPixel
     # GP8  asyncio PWMOut frequency
-    # GP9  - FootSwitch 3
-    # GP10 - FootSwitch 4
+    # GP9  - FootSwitch A
+    # GP10 - FootSwitch B
     # GP12 tft_dc   (SPI1 RX)
     # GP13 tft_cs   (Chip Select)
     # GP14 spi_clk  (SPI1SCK)
@@ -73,10 +78,10 @@ class Ports:
     # GP16 Midi GP16GP17 baudrate
     # GP17 Midi GP16GP17 baudrate
     # GP25 - FootSwitch 2
-    PA_MIDICAPTAIN_NANO_SWITCH_1 = { "port": board.GP1,  "pixels": (0, 1, 2) }
-    PA_MIDICAPTAIN_NANO_SWITCH_2 = { "port": board.GP25, "pixels": (3, 4, 5) }
-    PA_MIDICAPTAIN_NANO_SWITCH_3 = { "port": board.GP9,  "pixels": (6, 7, 8) }
-    PA_MIDICAPTAIN_NANO_SWITCH_4 = { "port": board.GP10, "pixels": (9, 10, 11) }
+    PA_MIDICAPTAIN_NANO_SWITCH_1 = { "port": board.GP1,  "pixels": (0, 1, 2), "name": "1" }
+    PA_MIDICAPTAIN_NANO_SWITCH_2 = { "port": board.GP25, "pixels": (3, 4, 5), "name": "2"  }
+    PA_MIDICAPTAIN_NANO_SWITCH_A = { "port": board.GP9,  "pixels": (6, 7, 8), "name": "A"  }
+    PA_MIDICAPTAIN_NANO_SWITCH_B = { "port": board.GP10, "pixels": (9, 10, 11), "name": "B"  }
 
     # PaintAudio MIDI Captain Mini (6 Switches)
     # Board Infos
@@ -87,9 +92,9 @@ class Ports:
     # GP6  charging
     # GP7  NeoPixel
     # GP8  asyncio PWMOut frequency
-    # GP9  - FootSwitch 4
-    # GP10 - FootSwitch 5
-    # GP11 - FootSwitch 6
+    # GP9  - FootSwitch A
+    # GP10 - FootSwitch B
+    # GP11 - FootSwitch C
     # GP12 tft_dc   (SPI1 RX)
     # GP13 tft_cs   (Chip Select)
     # GP14 spi_clk  (SPI1SCK)
@@ -98,12 +103,12 @@ class Ports:
     # GP17 Midi GP16GP17 baudrate
     # GP24 - FootSwitch 3
     # GP25 - FootSwitch 2
-    PA_MIDICAPTAIN_MINI_SWITCH_1 = { "port": board.GP1,  "pixels": (0, 1, 2) }
-    PA_MIDICAPTAIN_MINI_SWITCH_2 = { "port": board.GP25, "pixels": (3, 4, 5) }
-    PA_MIDICAPTAIN_MINI_SWITCH_3 = { "port": board.GP24, "pixels": (6, 7, 8) }
-    PA_MIDICAPTAIN_MINI_SWITCH_4 = { "port": board.GP9,  "pixels": (9, 10, 11) }
-    PA_MIDICAPTAIN_MINI_SWITCH_5 = { "port": board.GP10, "pixels": (12, 13, 14) }
-    PA_MIDICAPTAIN_MINI_SWITCH_6 = { "port": board.GP11, "pixels": (15, 16, 17) }
+    PA_MIDICAPTAIN_MINI_SWITCH_1 = { "port": board.GP1,  "pixels": (0, 1, 2), "name": "1"  }
+    PA_MIDICAPTAIN_MINI_SWITCH_2 = { "port": board.GP25, "pixels": (3, 4, 5), "name": "2"  }
+    PA_MIDICAPTAIN_MINI_SWITCH_3 = { "port": board.GP24, "pixels": (6, 7, 8), "name": "3"  }
+    PA_MIDICAPTAIN_MINI_SWITCH_A = { "port": board.GP9,  "pixels": (9, 10, 11), "name": "A"  }
+    PA_MIDICAPTAIN_MINI_SWITCH_B = { "port": board.GP10, "pixels": (12, 13, 14), "name": "B"  }
+    PA_MIDICAPTAIN_MINI_SWITCH_C = { "port": board.GP11, "pixels": (15, 16, 17), "name": "C"  }
 
 
 #################################################################################################################################
@@ -152,6 +157,7 @@ DisplayAreaDefinitions = [
     # Header area
     {
         "area": DisplayAreas.HEADER,
+        "name": "Header",
 
         "x": 0,
         "y": 0,
@@ -167,6 +173,7 @@ DisplayAreaDefinitions = [
     # Footer area
     {
         "area": DisplayAreas.FOOTER,
+        "name": "Footer",
 
         "x": 0,
         "y": DISPLAY_HEIGHT - SLOT_HEIGHT,

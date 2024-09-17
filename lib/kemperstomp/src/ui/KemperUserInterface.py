@@ -3,7 +3,7 @@ import displayio
 from .DisplayLabel import DisplayLabel
 from ..hardware.FontLoader import FontLoader
 from ..Tools import Tools
-from ...definitions import Colors, DisplayAreaDefinitions
+from ...definitions import DisplayAreaDefinitions
 from ...config import Config
 
 
@@ -18,7 +18,7 @@ class KemperUserInterface:
     #     "initialInfoText": Text initially shown in the center area (where the rig name goes later on)
     #     "slotLayout": Layout definition for effect slot labels (see DisplayLabel)
     #     "infoAreaLayout": Layout definition for the info area (rig name) label (see DisplayLabel)
-    #     "debugAreaLayout": Layout definition for the debug area label (see DisplayLabel)
+    #     "statsAreaLayout": Layout definition for the statistics area label (see DisplayLabel)
     # }
     def __init__(self, display, config, switches_config):
         self.config = config                    # UI configuration
@@ -30,9 +30,9 @@ class KemperUserInterface:
         self._info_area_layout = self.config["infoAreaLayout"]
         self._areas = DisplayAreaDefinitions
 
-        self._debug_area = None
-        self._debug_layout = self.config["debugAreaLayout"]
-        self._debug_height = self.config["debugAreaHeight"]
+        self._stats_area = None
+        self._stats_layout = Tools.get_option(self.config, "statsAreaLayout")
+        self._stats_height = Tools.get_option(self.config, "statsAreaHeight")
 
         # Checks how much slots each area needs, and prepares _areas 
         self._prepare_areas(switches_config)
@@ -41,7 +41,7 @@ class KemperUserInterface:
         self._init_splash()
         self._init_info_area()
         self._init_slot_areas()
-        self._init_debug_area()
+        self._init_stats_area()
 
     @property
     def info_text(self):
@@ -85,7 +85,7 @@ class KemperUserInterface:
         return max + 1
 
     # Show the user interface
-    def show(self):        
+    def show(self):
         self._display.tft.show(self.splash)
 
     # Initialize display splash container
@@ -110,8 +110,9 @@ class KemperUserInterface:
         slot_width = area["width"] / num_slots
         slot_height = area["height"]
         slot_layout = area["layout"]
+        area_name = Tools.get_option(area, "name", "UnknownArea")
 
-        for i in range(num_slots):            
+        for i in range(num_slots):      
             area["labels"].append(
                 DisplayLabel(
                     self, 
@@ -119,7 +120,8 @@ class KemperUserInterface:
                     area_y, 
                     slot_width, 
                     slot_height,
-                    slot_layout
+                    slot_layout,
+                    id = area_name + " | " + str(i)
                 )
             )
         
@@ -131,29 +133,32 @@ class KemperUserInterface:
             0, 
             self.width, 
             self.height,
-            self._info_area_layout
+            self._info_area_layout,
+            id = "Info"
         )
         
     ##############################################################################################################################
 
-    # Initialize the debug area, if debugging is switched on.
-    def _init_debug_area(self):
-        if Tools.get_option(Config, "debug") != True:
+    # Initialize the statistics area, if switched on.
+    def _init_stats_area(self):
+        if Tools.get_option(self.config, "showFrameStats") != True:
             return
         
-        upperY = self.height - self._debug_height * 2
-        self._debug_area = DisplayLabel(
+        upperY = self.height - self._stats_height * 2
+        self._stats_area = DisplayLabel(
             self, 
             1, 
             upperY, 
             self.width, 
-            self._debug_height, 
-            self._debug_layout
+            self._stats_height, 
+            self._stats_layout,
+            id = "Stats"
         )
 
-    # Show a debug message on the UI if debugging is switched on
-    def debug(self, message):
-        if self._debug_area == None:
+    # Show statistics
+    def set_stats(self, frame_time_ms):
+        if self._stats_area == None:
             return
         
-        self._debug_area.text = message
+        self._stats_area.text = str(frame_time_ms) + "ms"
+        

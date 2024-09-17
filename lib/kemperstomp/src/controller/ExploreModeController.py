@@ -27,10 +27,9 @@ class ExploreModeController:
 
         ports_assigned = self._init_switches(available_ports)
 
-        if Tools.get_option(self.config, "debug") == True:
-            print("Listening to: ")
-            print(ports_assigned)        
-            print("")
+        #print("Listening to: ")
+        #print(ports_assigned)        
+        #print("")
 
         self._currently_shown_switch_index = -1
 
@@ -54,9 +53,8 @@ class ExploreModeController:
                 pass
 
             except Exception as ex:
-                if Tools.get_option(self.config, "debug") == True:
-                    print("Error assigning port " + port_def["name"] + ":")
-                    print(ex)
+                print("Error assigning port " + port_def["name"] + ":")
+                print(ex)
 
         return ret
 

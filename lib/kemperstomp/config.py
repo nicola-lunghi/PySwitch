@@ -64,7 +64,7 @@ Config = {
             ]
         },
         {
-            "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_3,
+            "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_A,
             "actions": [
                 {
                     "type": Actions.EFFECT_ON_OFF,
@@ -80,10 +80,10 @@ Config = {
             ]
         },
         {
-            "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_4,
+            "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_B,
             "actions": [
                 {
-                    "type": Actions.REBOOT, #Actions.EFFECT_ON_OFF,
+                    "type": Actions.TERMINATE, #Actions.EFFECT_ON_OFF,
                     "events": [
                         ActionEvents.SWITCH_DOWN
                     ],
@@ -116,15 +116,18 @@ Config = {
             "text": "Kemper\nEffects Slot Mode",
         },
 
-        # Layout for the debug area (when switched on)
-        "debugAreaLayout": {
+        # Shows an area with statistics (for debugging)
+        "showFrameStats": False,
+
+        # Layout for the statistics area (only necessary when switched on)
+        "statsAreaLayout": {
             "font": "/fonts/H20.pcf",
             "backColor": (20, 20, 70),
             "textColor": (255, 255, 0),
         },
 
-        # Height of the debug area (when switched on)
-        "debugAreaHeight": 40
+        # Height of the statistics area (only necessary when switched on)
+        "statsAreaHeight": 40
     },
 
     # Brightness settings for all LEDs. Range: [0..1]
@@ -142,12 +145,13 @@ Config = {
     # MIDI buffer size (default: 60)
     "midiBufferSize": 60,
 
-    # Update interval, for updating rig info (seconds)
-    "updateInterval": 0.05,
+    # Update interval, for updating rig info (milliseconds)
+    "updateInterval": 1000, #50,
 
 ## Development Options #####################################################################################################+
 
-    # Debug mode (shows verbose info)
+    # Debug mode. Shows verbose console output. You can listen to that on the serial REPL port via USB on your computer,
+    # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 
     "debug": True,
 
     # Set this to True to boot into explore mode. This mode listens to all GPIO pins available
