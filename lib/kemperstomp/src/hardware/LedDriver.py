@@ -1,5 +1,6 @@
 import neopixel
 
+
 # Implements communication with an array of NeoPixels
 class LedDriver:
     def __init__(self, port, num_leds):

@@ -29,23 +29,23 @@ display = DisplayDriver(240, 240)
 display.init()
 
 # Load configuration
-from .kemperstomp_config import Config
+from .config import Config
 
 if Tools.get_option(Config, "exploreMode") == True:
     # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
     # on unknown devices, to create layouts for the configuration.
-    from .src.ExploreModeController import ExploreModeController
+    from .src.controller.ExploreModeController import ExploreModeController
 
-    appl = ExploreModeController()
+    appl = ExploreModeController(Config)
     appl.process()
 else:
     # Normal mode
-    from .src.KemperStompController import KemperStompController
     from .src.ui.KemperUserInterface import KemperUserInterface
+    from .src.controller.KemperStompController import KemperStompController
 
     # Create User interface
     ui = KemperUserInterface(display, Config["userInterface"])
 
     # Controller instance (runs the processing loop and keeps everything together)
-    appl = KemperStompController(ui)
+    appl = KemperStompController(ui, Config)
     appl.process()

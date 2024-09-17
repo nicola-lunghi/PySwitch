@@ -1,16 +1,17 @@
 import board
 
-from .Tools import Tools
-from .hardware.LedDriver import LedDriver
-from .model.FootSwitch import FootSwitch
+from ..Tools import Tools
+from ..hardware.LedDriver import LedDriver
+from ..model.FootSwitch import FootSwitch
 
-from ..kemperstomp_config import Config
-from ..kemperstomp_def import Actions, Colors
+from ...definitions import Actions, ActionEvents, Colors
 
 
 # Main application class for Explore Mode
 class ExploreModeController:
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
+
         print("+------------------+")
         print("|   EXPLORE MODE   |")
         print("+------------------+")
@@ -20,18 +21,18 @@ class ExploreModeController:
 
         # NeoPixel driver, initialized to the maximum possible LEDs
         self.led_driver = LedDriver(
-            Config["neoPixelPort"], 
+            self.config["neoPixelPort"], 
             len(available_ports) * FootSwitch.NUM_PIXELS
         )
 
-        switches = self._init_switches(available_ports)
+        ports_assigned = self._init_switches(available_ports)
 
-        if Tools.get_option(Config, "debug") == True:
+        if Tools.get_option(self.config, "debug") == True:
             print("Listening to: ")
-            print(switches)        
+            print(ports_assigned)        
             print("")
 
-        self.currently_shown_switch_index = -1
+        self._currently_shown_switch_index = -1
 
 
     # Initialize switches. Returns a list of port names initialized
@@ -53,7 +54,7 @@ class ExploreModeController:
                 pass
 
             except Exception as ex:
-                if Tools.get_option(Config, "debug") == True:
+                if Tools.get_option(self.config, "debug") == True:
                     print("Error assigning port " + port_def["name"] + ":")
                     print(ex)
 
@@ -71,19 +72,28 @@ class ExploreModeController:
             {
                 "assignment": {
                     "port": port_def["port"],
-                    "pixels": self._get_pixels(index)
+                    "pixels": self._calculate_pixels(index)
                 },
                 "actions": [
                     {
                         "type": Actions.PRINT,
+                        "events": [
+                            ActionEvents.SWITCH_DOWN
+                        ],
                         "text": "---------------------------------"
                     },
                     {
                         "type": Actions.EXPLORE_IO,
+                        "events": [
+                            ActionEvents.SWITCH_DOWN
+                        ],
                         "name": port_def["name"]
                     },
                     {
                         "type": Actions.EXPLORE_PIXELS,
+                        "events": [
+                            ActionEvents.SWITCH_DOWN
+                        ],
                         "step": scan_step
                     }
                 ],
@@ -93,15 +103,15 @@ class ExploreModeController:
                     Colors.WHITE
                 ],
                 "initialBrightness": 0,
-                "index": index              # This is a custom attribute not parsed by FootSwitch, but used internally in this class
+                "index": index              # This is a custom attribute not parsed by FootSwitch, but used internally in this class only
             }
         )
 
         self.switches.append(switch)
         return port_def["name_short"]
 
-    # Get pixel addressing for a switch index
-    def _get_pixels(self, index):
+    # Determine pixel addressing for a switch index, assuming they are linear
+    def _calculate_pixels(self, index):
         i = index * FootSwitch.NUM_PIXELS
         return (
             i, 
@@ -140,22 +150,47 @@ class ExploreModeController:
         for switch in self.switches:
             switch.process(None)
 
-    # Enlightens the next switch in round robin. Returns the pixels list of the switch enlightened.
+    # Enlightens the next switch according to the passed step value. 
+    # Returns the pixels tuple of the switch currently enlightened.
     def show_next_switch(self, step):
-        self.currently_shown_switch_index = self.currently_shown_switch_index + step
+        # Add step and regard bounds
+        self._currently_shown_switch_index = self._currently_shown_switch_index + step
         
-        if self.currently_shown_switch_index >= len(self.switches):
-            self.currently_shown_switch_index = 0
+        if self._currently_shown_switch_index >= len(self.switches):
+            self._currently_shown_switch_index = 0
         
-        if self.currently_shown_switch_index < 0:
-            self.currently_shown_switch_index = len(self.switches) - 1
+        if self._currently_shown_switch_index < 0:
+            self._currently_shown_switch_index = len(self.switches) - 1
 
+        # Show the currently selected switch, and for all others, indicate
+        # whether they increase or decrease.
         ret = None
         for switch in self.switches:
-            if switch.config["index"] == self.currently_shown_switch_index:
-                switch.set_brightness(1)
+            if switch.config["index"] == self._currently_shown_switch_index:
+                switch.color = Colors.WHITE
+                switch.brightness = 1
                 ret = switch.config["assignment"]["pixels"]
             else:
-                switch.set_brightness(0)
+                self._indicate_action_color(switch)
 
         return ret
+    
+    # On a switch instance, set the color indicating whether it switches up or down
+    def _indicate_action_color(self, switch):
+        for action_config in switch.config["actions"]:
+            if action_config["type"] != Actions.EXPLORE_PIXELS:
+                continue
+
+            if action_config["step"] > 0:
+                switch.color = Colors.GREEN
+                switch.brightness = 0.05
+
+            elif action_config["step"] < 0:
+                switch.color = Colors.ORANGE
+                switch.brightness = 0.05
+
+            else:
+                switch.brightness = 0
+
+            return
+

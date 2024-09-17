@@ -1,11 +1,10 @@
 import random
-
 import digitalio
 
+from .actions.ActionFactory import ActionFactory
 from ..Tools import Tools
-from ..actions.ActionFactory import ActionFactory
+from ...definitions import Colors, ActionEvents
 
-from ...kemperstomp_def import Colors
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
 class FootSwitch:
@@ -20,8 +19,11 @@ class FootSwitch:
     #         "pixels": List of three indexes for the Neopixels that belong to this switch, for example (0, 1, 2)
     #     },
     #     "actions": {
-    #         "type": Action type. Allowed values: See the Actions class in kemperstomp_def.py
-    #         ...     (individual options depending on the action)
+    #         "type":               Action type. Allowed values: See the Actions class in kemperstomp_def.py
+    #         "events": [           Array of events to trigger the action 
+    #             ActionEvents.SWITCH_DOWN
+    #         ],
+    #         ...                   (individual options depending on the specific action type)
     #     },
     #     "initialColors": [   Initial colors to set. Optional, if not set, the default initial color set is generated.
     #         Colors.RED,
@@ -31,29 +33,30 @@ class FootSwitch:
     #     "initialBrightness": Initial brightness. If not set, 1 is used. [0..1]
     # }
     def __init__(self, appl, config):
-        self.appl = appl
         self.config = config        
-        
-        self.colors = [(0, 0, 0), (0, 0, 0), (0, 0, 0)]
-        self.pushed = False
         self.pixels = Tools.get_option(self.config["assignment"], "pixels")
+        
+        self._appl = appl
+        self._pushed_state = False
+        self._actions = []
+        self._colors = [(0, 0, 0), (0, 0, 0), (0, 0, 0)]
+        self._brightness = 0
 
         self._initial_colors()
         self._init_switch()     
         self._init_actions()
 
     # Set up action instances
-    def _init_actions(self):
-        self.actions = []
+    def _init_actions(self):        
         action_factory = ActionFactory()
 
         for action_config in self.config["actions"]:
             action = action_factory.get(
-                self.appl,
+                self._appl,
                 self,
                 action_config
             )
-            self.actions.append(action)
+            self._actions.append(action)
 
     # Set some initial colors on the neopixels
     def _initial_colors(self):
@@ -65,19 +68,19 @@ class FootSwitch:
 
         if Tools.get_option(self.config, "initialColors") != False:
             # Colors from config file, if set
-            self.set_colors(self.config["initialColors"])            
-            self.set_brightness(initial_brightness)
+            self.colors = self.config["initialColors"]
+            self.brightness = initial_brightness
             return
 
         # Default color scheme: Random from a list of colors
         available_colors = (Colors.GREEN, Colors.YELLOW, Colors.RED)  # Colors to be used (in that order)
         start_index = random.randint(0, len(available_colors)-1)      # Random start index  
-        self.set_colors([
+        self.colors = [
             available_colors[start_index],
             available_colors[(start_index + 1 ) % len(available_colors)],
             available_colors[(start_index + 2 ) % len(available_colors)]
-        ])
-        self.set_brightness(initial_brightness)
+        ]
+        self.brightness = initial_brightness
     
     # Initializes the switch
     def _init_switch(self):
@@ -87,74 +90,87 @@ class FootSwitch:
         self.switch.pull = digitalio.Pull.UP
         
     # Return if the switch is currently pushed
-    def is_pushed(self):
+    @property
+    def pushed(self):
         return self.switch.value == False  # Inverse logic!
+
+    # Colors of the switch (array)
+    @property
+    def colors(self):
+        return self._colors
 
     # Set switch colors (each of the LEDs individually). Does not take any effect until
     # set_brightness is called!
-    def set_colors(self, colors):
-        if len(colors) != len(self.colors):
+    @colors.setter
+    def colors(self, colors):
+        if len(colors) != len(self._colors):
             raise Exception("Invalid amount of colors: " + len(colors))
         
-        self.colors = colors        
+        self._colors = colors        
+
+    # Color (this just uses the first one)
+    @property
+    def color(self):
+        return self._colors[0]
 
     # Set switch color (all three LEDs equally). Does not take any effect until
     # set_brightness is called!
-    def set_color(self, color):
-        for i in range(len(self.colors)):
-            self.colors[i] = color
+    @color.setter
+    def color(self, color):
+        for i in range(len(self._colors)):
+            self._colors[i] = color
+
+    # Returns current brightness
+    @property
+    def brightness(self):
+        return self._brightness
 
     # Set brightness
-    def set_brightness(self, brightness):
+    @brightness.setter
+    def brightness(self, brightness):
         if self.pixels == False:
             return
         
-        for i in range(len(self.colors)):
+        for i in range(len(self._colors)):
             pixel = self.pixels[i]
-            self.appl.led_driver.leds[pixel] = (
-                int(self.colors[i][0] * brightness),   # R
-                int(self.colors[i][1] * brightness),   # G
-                int(self.colors[i][2] * brightness)    # B
+            self._appl.led_driver.leds[pixel] = (
+                int(self._colors[i][0] * brightness),   # R
+                int(self._colors[i][1] * brightness),   # G
+                int(self._colors[i][2] * brightness)    # B
             )
-    
+
+        self._brightness = brightness
+
     # Process the switch: Check if it is currently pushed, set state accordingly
     # and send the MIDI messages configured.
     def process(self, midi_message):
-        # Call the receive routine on every tick
-        self._process_actions_receive(midi_message)
+        # Let all actions process the message if they like (or do other periodic stuff)
+        self._process_actions_process(midi_message)
 
         # Is the switch currently pushed? If not, return false.
-        if self.is_pushed() == False:
-            if self.pushed == True:
-                self.pushed = False
-                self._process_actions_up()                
+        if self.pushed == False:
+            if self._pushed_state == True:
+                self._pushed_state = False
+                self._process_actions_event(ActionEvents.SWITCH_UP)
 
             return
 
         # Switch is pushed: Has it been pushed before already? 
-        if self.pushed == True:
+        if self._pushed_state == True:
             return 
         
         # Mark as pushed (prevents redundant messages in the following ticks, when the switch can still be down)
-        self.pushed = True
-        self._process_actions_down()
+        self._pushed_state = True
+        self._process_actions_event(ActionEvents.SWITCH_DOWN)
 
-    # Processes all actions assigned to the switch (down)
-    def _process_actions_down(self):
-        for action in self.actions:
-            action.down()
+    # Processes all actions assigned to the switch if they have the given event registered in their config
+    def _process_actions_event(self, event):
+        for action in self._actions:
+            if action.has_event(event) == True:
+                action.trigger(event)
 
-    # Processes all actions assigned to the switch (up)
-    def _process_actions_up(self):
-        for action in self.actions:
-            action.up()
+    # Executes all action's process() method
+    def _process_actions_process(self, midi_message):
+        for action in self._actions:
+            action.process(midi_message)
 
-    # Processes all receive routines
-    def _process_actions_receive(self, midi_message):
-        for action in self.actions:
-            action.receive(midi_message)
-
-    # Sets a value in the config object of all actions
-    def set_action_config(self, name, value):
-        for action in self.actions:
-            action.set_config_value(name, value)

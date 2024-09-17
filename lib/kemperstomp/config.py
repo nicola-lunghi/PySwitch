@@ -5,7 +5,7 @@
 #################################################################################################################################
  
 import board
-from .kemperstomp_def import Ports, Actions, Slots, Colors
+from .definitions import Ports, Actions, ActionEvents, Slots, Colors
 
 Config = {
 
@@ -19,6 +19,9 @@ Config = {
             "actions": [
                 {
                     "type": Actions.EFFECT_ON_OFF,
+                    "events": [
+                        ActionEvents.SWITCH_DOWN
+                    ],
                     "slot": Slots.EFFECT_SLOT_ID_DLY
                 }
             ]
@@ -28,6 +31,9 @@ Config = {
             "actions": [
                 {
                     "type": Actions.EFFECT_ON_OFF,
+                    "events": [
+                        ActionEvents.SWITCH_DOWN
+                    ],
                     "slot": Slots.EFFECT_SLOT_ID_REV
                 }
             ]
@@ -37,6 +43,9 @@ Config = {
             "actions": [
                 {
                     "type": Actions.EFFECT_ON_OFF,
+                    "events": [
+                        ActionEvents.SWITCH_DOWN
+                    ],
                     "slot": Slots.EFFECT_SLOT_ID_A
                 }
             ]
@@ -45,8 +54,11 @@ Config = {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_4,
             "actions": [
                 {
-                    "type": Actions.EFFECT_ON_OFF,
-                    "slot": Slots.EFFECT_SLOT_ID_B
+                    "type": Actions.REBOOT, #Actions.EFFECT_ON_OFF,
+                    "events": [
+                        ActionEvents.SWITCH_DOWN
+                    ],
+                    #"slot": Slots.EFFECT_SLOT_ID_B
                 }
             ]
         }
@@ -92,7 +104,7 @@ Config = {
 
     # Brightness settings for all LEDs. Range: [0..1]
     "ledBrightness": {
-        "on": 0.4,
+        "on": 0.2,
         "off": 0.005,
         "notAssigned": 0
     },

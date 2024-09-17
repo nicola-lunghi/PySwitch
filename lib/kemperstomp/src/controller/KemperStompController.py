@@ -1,41 +1,35 @@
 import time
-
 import usb_midi
 import adafruit_midi 
 
-from .hardware.LedDriver import LedDriver
-from .model.FootSwitch import FootSwitch
-from .model.KemperProfilerPlayer import KemperProfilerPlayer
-
-from ..kemperstomp_config import Config
+from ..hardware.LedDriver import LedDriver
+from ..model.FootSwitch import FootSwitch
+from ..model.KemperProfilerPlayer import KemperProfilerPlayer
 
 
 # Main application class (controls the processing)    
 class KemperStompController:
-    def __init__(self, ui):
+    def __init__(self, ui, config):
         self.ui = ui
-            
-        # NeoPixel driver 
-        self.led_driver = LedDriver(Config["neoPixelPort"], len(Config["switches"]) * FootSwitch.NUM_PIXELS)
-
-        # Initialize MIDI
-        self._init_midi()
-
-        # Kemper adapter instance
-        self.kemper = KemperProfilerPlayer(self.midi_usb)
+        self.config = config
+                    
+        self.led_driver = LedDriver(self.config["neoPixelPort"], len(self.config["switches"]) * FootSwitch.NUM_PIXELS)    # NeoPixel driver 
+        self.switches = []                                        # Array of registered switches
+        
+        self._last_update = 0                                     # Used to store the last update timestamp
+        self._update_interval = self.config["updateInterval"]     # Update interval (seconds)
+        self._midiChannel = self.config["midiChannel"]            # MIDI channel to use
+        self._midi_buffer_size = self.config["midiBufferSize"]    # MIDI buffer size (default: 60)
+        self._midi_usb = self._get_midi()                         # MIDI communication handler
+        
+        self.kemper = KemperProfilerPlayer(self._midi_usb)        # Kemper adapter instance (implements communication with the Profiler)
 
         # Set up switches
         self._init_switches()
 
-        # Reset timer for rig info sensing (seconds)
-        self.last_update = 0
-        self.update_interval = Config["updateInterval"]
-
     # Initialize switches
     def _init_switches(self):
-        self.switches = []
-
-        for swDef in Config["switches"]:
+        for swDef in self.config["switches"]:
             self.switches.append(
                 FootSwitch(
                     self, 
@@ -43,15 +37,13 @@ class KemperStompController:
                 )
             )
 
-    # Start MIDI communication
-    def _init_midi(self):
-        self.midiChannel = Config["midiChannel"]
-        
-        self.midi_usb = adafruit_midi.MIDI(
+    # Start MIDI communication and return the handler
+    def _get_midi(self):
+        return adafruit_midi.MIDI(
             midi_out    = usb_midi.ports[1],
-            out_channel = self.midiChannel - 1,
+            out_channel = self._midiChannel - 1,
             midi_in     = usb_midi.ports[0],
-            in_buf_size = Config["midiBufferSize"], 
+            in_buf_size = self._midi_buffer_size, 
             debug       = False
         )
 
@@ -69,7 +61,7 @@ class KemperStompController:
         start_time = self._get_current_millis()
 
         # Receive MIDI messages
-        midimsg = self.midi_usb.receive()
+        midimsg = self._midi_usb.receive()
 
         # Receive rig name / date
         self._parse_rig_info(midimsg)
@@ -79,8 +71,8 @@ class KemperStompController:
             switch.process(midimsg)
         
         # Update rig info in a certain interval
-        if self.last_update + self.update_interval < start_time:
-            self.last_update = start_time
+        if self._last_update + self._update_interval < start_time:
+            self._last_update = start_time
             self.kemper.request_rig_date()
 
         # Output debug info
@@ -93,11 +85,12 @@ class KemperStompController:
         
         rig_name = self.kemper.parse_rig_name(midi_message)
         if rig_name != None:
-            self.ui.set_rig_name(rig_name.value)
+            self.ui.rig_name = rig_name.value
 
         rig_date = self.kemper.parse_rig_date(midi_message)
         if rig_date != None:
-            if self.ui.set_rig_date(rig_date.value) == True:
+            if self.ui.rig_date != rig_date.value:
+                self.ui.rig_date = rig_date.value
                 self.kemper.request_rig_info()
 
     # Returns a current timestmap in milliseconds

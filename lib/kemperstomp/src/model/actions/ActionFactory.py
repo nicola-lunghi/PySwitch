@@ -1,5 +1,5 @@
+from ....definitions import Actions
 
-from ...kemperstomp_def import Actions
 
 # Factory for Action Implementations
 class ActionFactory:

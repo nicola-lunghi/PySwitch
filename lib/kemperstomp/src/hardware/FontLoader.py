@@ -1,5 +1,6 @@
 from adafruit_bitmap_font import bitmap_font
 
+
 # Buffered font loader
 class FontLoader:
     _fonts = {}

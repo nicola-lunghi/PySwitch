@@ -45,6 +45,14 @@ class Actions:
 #################################################################################################################################
 
 
+# Switch events
+class ActionEvents:
+    SWITCH_DOWN = 0   # At pushing the switch down
+    SWITCH_UP = 1     # At releasing the switch
+
+
+#################################################################################################################################
+
 # This provides known device definitions, ready to use in the config file.
 class Ports:
     # PaintAudio MIDI Captain Nano (4 Switches)

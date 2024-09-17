@@ -1,13 +1,12 @@
 import board
 import busio
 import displayio
+from adafruit_st7789 import ST7789
 
 try:
     from fourwire import FourWire
 except ImportError:
     from displayio import FourWire
-
-from adafruit_st7789 import ST7789
 
 
 # TFT driver class

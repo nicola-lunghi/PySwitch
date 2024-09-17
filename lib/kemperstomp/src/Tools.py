@@ -1,4 +1,3 @@
-
 # Generic tools
 class Tools:
     # Read a value from an option dictionary with an optional default value

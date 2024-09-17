@@ -2,8 +2,7 @@ from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 
 from .KemperResponse import KemperResponse
-
-from ...kemperstomp_def import KemperDefinitions, Slots
+from ...definitions import KemperDefinitions, Slots
 
 
 # Implements all Kemper Player related functionality 
@@ -67,7 +66,7 @@ class KemperProfilerPlayer:
 
     # Requires an USB driver instance
     def __init__(self, midi_usb):
-        self.midi_usb = midi_usb
+        self._midi_usb = midi_usb
 
     # Derives the effect type (enum of this class) from the effect type returned by the profiler.
     def get_effect_type(self, kpp_effect_type):
@@ -112,12 +111,12 @@ class KemperProfilerPlayer:
 
     # Request rig name
     def request_rig_name(self):
-        self.midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
+        self._midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
                                            [0x02, 0x7f, 0x43, 0x00, 0x00, 0x01]))
 
     # Request rig creation date
     def request_rig_date(self):
-        self.midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
+        self._midi_usb.send(SystemExclusive([0x00, 0x20, 0x33],
                                            [0x02, 0x7f, 0x43, 0x00, 0x00, 0x03]))
 
     # Sets a slot enabled or disabled
@@ -126,7 +125,7 @@ class KemperProfilerPlayer:
         if enable == True:
             enable_int = 1
 
-        self.midi_usb.send(ControlChange(Slots.CC_EFFECT_SLOT_ENABLE[slot_id], enable_int))
+        self._midi_usb.send(ControlChange(Slots.CC_EFFECT_SLOT_ENABLE[slot_id], enable_int))
 
     # Request types of effect for all slots
     def request_effect_types(self):
@@ -157,7 +156,7 @@ class KemperProfilerPlayer:
         )
 
     def request_single_parameter(self, page, address):
-        self.midi_usb.send(
+        self._midi_usb.send(
             SystemExclusive(
                 [
                     0x00, 
