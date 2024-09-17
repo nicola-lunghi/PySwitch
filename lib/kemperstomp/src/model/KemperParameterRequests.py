@@ -2,6 +2,7 @@ from adafruit_midi.system_exclusive import SystemExclusive
 
 from ..Tools import Tools
 from ...definitions import KemperDefinitions, Slots
+from ...config import Config
 
 
 # Implements all requests of parameters to the kemper
@@ -62,4 +63,7 @@ class KemperParameterRequests:
             
     # Debug console output
     def _print(self, msg):
+        if Tools.get_option(Config, "debugKemper") != True:
+            return
+        
         Tools.print("KPP: " + msg)

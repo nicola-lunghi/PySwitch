@@ -2,8 +2,8 @@ import time
 import usb_midi
 import adafruit_midi 
 
+from .FootSwitch import FootSwitch
 from ..hardware.LedDriver import LedDriver
-from ..model.FootSwitch import FootSwitch
 from ..model.Kemper import Kemper
 from ..Tools import Tools
 from ...config import Config

@@ -1,4 +1,5 @@
 from ...Tools import Tools
+from ....config import Config
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
 # inheriting from Action.
@@ -53,4 +54,7 @@ class Action:
 
     # Print to the debug console
     def print(self, msg):
+        if Tools.get_option(Config, "debugActions") != True:
+            return
+        
         Tools.print("Action " + self.id + ": " + msg)

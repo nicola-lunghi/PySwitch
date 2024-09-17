@@ -83,7 +83,7 @@ Config = {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_B,
             "actions": [
                 {
-                    "type": Actions.TERMINATE, #Actions.EFFECT_ON_OFF,
+                    "type": Actions.TUNER, #Actions.EFFECT_ON_OFF,
                     "events": [
                         ActionEvents.SWITCH_DOWN
                     ],
@@ -91,7 +91,7 @@ Config = {
                         "area": DisplayAreas.FOOTER,
                         "index": 1
                     },
-                    "slot": Slots.EFFECT_SLOT_ID_B
+                    "mode": "toggle"
                 }
             ]
         }
@@ -130,12 +130,15 @@ Config = {
         "statsAreaHeight": 40
     },
 
-    # Brightness settings for all LEDs. Range: [0..1]
+    # Brightness settings for all switch LEDs. Range: [0..1]
     "ledBrightness": {
         "on": 0.2,
         "off": 0.005,
         "notAssigned": 0
     },
+
+    # Factor used to dim the colors in the display (not the switches!) Range [0..1]
+    "displayDimFactor": 0.2,
 
 ## MIDI and other Options #################################################################################################
 
@@ -153,6 +156,11 @@ Config = {
     # Debug mode. Shows verbose console output. You can listen to that on the serial REPL port via USB on your computer,
     # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 
     "debug": False,
+
+    "debugDisplay": True,       # Show verbose messages from the display user interface
+    "debugActions": True,       # Show verbose messages from actions
+    "debugSwitches": True,      # Show verbose output for switches (color, brightness) or a switches actions are triggered
+    "debugKemper": True,        # Show all requests and responses to/from the Kemper Profiler
 
     # Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 

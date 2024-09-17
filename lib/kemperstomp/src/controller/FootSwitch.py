@@ -4,6 +4,7 @@ import digitalio
 from .actions.ActionFactory import ActionFactory
 from ..Tools import Tools
 from ...definitions import Colors, ActionEvents
+from ...config import Config
 
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
@@ -199,9 +200,13 @@ class FootSwitch:
 
     # Debug console output
     def _print(self, msg):
+        if Tools.get_option(Config, "debugSwitches") != True:
+            return
+        
         state_str = ""
         if self.pushed == True:
             state_str = "pushed"
         else:
             state_str = "off"
+            
         Tools.print("Switch " + self.id + " (" + state_str + "): " + msg)

@@ -13,6 +13,11 @@ class ActionFactory:
             from .EffectEnableAction import EffectEnableAction
             return EffectEnableAction(appl, switch, config)
         
+        if type == Actions.TUNER:
+            # Tuner mode
+            from .TunerAction import TunerAction
+            return TunerAction(appl, switch, config)
+        
         elif type == Actions.REBOOT:
             # Reboot the device
             from .RebootAction import RebootAction

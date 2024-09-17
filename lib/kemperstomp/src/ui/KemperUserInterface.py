@@ -4,7 +4,6 @@ from .DisplayLabel import DisplayLabel
 from ..hardware.FontLoader import FontLoader
 from ..Tools import Tools
 from ...definitions import DisplayAreaDefinitions
-from ...config import Config
 
 
 # Implements the Kemper UI

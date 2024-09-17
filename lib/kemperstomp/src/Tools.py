@@ -15,3 +15,14 @@ class Tools:
         if Tools.get_option(Config, "debug") != True:
             return
         print(msg)
+
+    # Dims a passed color for display of disabled state
+    @staticmethod
+    def dim_color(color):
+        return (
+            int(color[0] * Tools.DIM_FACTOR),
+            int(color[1] * Tools.DIM_FACTOR),
+            int(color[2] * Tools.DIM_FACTOR)
+        )
+
+Tools.DIM_FACTOR = Config["displayDimFactor"]

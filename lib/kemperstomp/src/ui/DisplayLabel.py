@@ -4,6 +4,7 @@ from adafruit_display_shapes.rect import Rect
 
 from ..Tools import Tools
 from ...definitions import Colors
+from ...config import Config
 
 
 # Controller for a generic rectangular label on the user interface.
@@ -94,7 +95,7 @@ class DisplayLabel:
         self.ui.splash[self._background_splash_address] = self._create_background(color)
 
         # Update text color, too (might change when no initial color has been set)
-        self.text_color = self.text_color
+        self.text_color = self._initial_text_color
 
     @property
     def text_color(self):
@@ -159,6 +160,9 @@ class DisplayLabel:
             return Colors.WHITE
         
         luminance = self._get_luminance(self.back_color)
+
+        self._print("Determine text color: luminance " + repr(luminance) + " for back color " + repr(self.back_color))
+
         if luminance < 140:
             return Colors.WHITE
         else:
@@ -170,4 +174,7 @@ class DisplayLabel:
 
     # Debug console output
     def _print(self, msg):
+        if Tools.get_option(Config, "debugDisplay") != True:
+            return
+        
         Tools.print("Label " + self.id + ": " + msg)

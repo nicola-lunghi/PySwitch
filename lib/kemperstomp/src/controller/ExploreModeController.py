@@ -1,9 +1,8 @@
 import board
 
+from .FootSwitch import FootSwitch
 from ..Tools import Tools
 from ..hardware.LedDriver import LedDriver
-from ..model.FootSwitch import FootSwitch
-
 from ...definitions import Actions, ActionEvents, Colors
 
 

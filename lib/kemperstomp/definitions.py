@@ -17,9 +17,17 @@ class Actions:
     # Available options:
     # {
     #     "type": Actions.EFFECT_ON_OFF
-    #     "slot": SLot ID: Use one of the constants defined in Slots, for example Slots.EFFECT_SLOT_A
+    #     "slot": Slot ID: Use one of the constants defined in Slots, for example Slots.EFFECT_SLOT_A
     # }
     EFFECT_ON_OFF = 100
+
+    # Switch tuner mode. 
+    # Available options:
+    # {
+    #     "type": Actions.TUNER
+    #     "mode": Must be either "toggle", "on" or "off"
+    # }
+    TUNER = 101
 
     #### Internal and development actions #######################################################################################
 
@@ -212,22 +220,26 @@ class KemperDefinitions:
 
     # Effect type display names
     EFFECT_NAME_NONE = "-"
-    EFFECT_NAME_WAH = "Wah Wah"
-    EFFECT_NAME_DISTORTION = "Distortion"
-    EFFECT_NAME_COMPRESSOR = "Compressor"
-    EFFECT_NAME_NOISE_GATE = "Noise Gate"
+    EFFECT_NAME_WAH = "Wah"
+    EFFECT_NAME_DISTORTION = "Dist"
+    EFFECT_NAME_COMPRESSOR = "Comp"
+    EFFECT_NAME_NOISE_GATE = "Gate"
     EFFECT_NAME_SPACE = "Space"
     EFFECT_NAME_CHORUS = "Chorus"
     EFFECT_NAME_PHASER_FLANGER = "Phaser"
-    EFFECT_NAME_EQUALIZER = "Equalizer"
+    EFFECT_NAME_EQUALIZER = "EQ"
     EFFECT_NAME_BOOSTER = "Boost"
     EFFECT_NAME_LOOPER = "Looper"
-    EFFECT_NAME_PITCH = "Transpose"
+    EFFECT_NAME_PITCH = "Pitch"
     EFFECT_NAME_DUAL = "Dual"
     EFFECT_NAME_DELAY = "Delay"
     EFFECT_NAME_REVERB = "Reverb"
 
-    # Some internal addressing (acc. to Kemper MIDI specification, should not be needed to change)
+    # Colors for special modes
+    TUNER_MODE_COLOR = Colors.WHITE
+    TUNER_MODE_NAME = "Tuner"
+
+    # Some internal addressing (acc. to Kemper MIDI specification, should not be needed to change)    
     PARAMETER_ADDRESS_EFFECT_TYPE = 0x00   
     PARAMETER_ADDRESS_EFFECT_STATUS = 0x03
 
@@ -241,6 +253,7 @@ class KemperDefinitions:
     RESPONSE_PREFIX_RIG_NAME = [0x00, 0x00, 0x03, 0x00, 0x00, 0x01]
     RESPONSE_PREFIX_RIG_DATE = [0x00, 0x00, 0x03, 0x00, 0x00, 0x03]
 
+    CC_TUNER_MODE = 31
 
 #################################################################################################################################
 

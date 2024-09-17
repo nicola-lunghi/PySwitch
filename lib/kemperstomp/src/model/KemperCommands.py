@@ -1,9 +1,8 @@
 from adafruit_midi.control_change import ControlChange
-from adafruit_midi.system_exclusive import SystemExclusive
 
-from .KemperResponse import KemperResponse
 from ..Tools import Tools
-from ...definitions import KemperDefinitions, Slots
+from ...definitions import Slots, KemperDefinitions
+from ...config import Config
 
 
 # Implements all commands to the kemper (except parameter requests)
@@ -23,6 +22,19 @@ class KemperCommands:
 
         self._midi_usb.send(ControlChange(Slots.CC_EFFECT_SLOT_ENABLE[slot_id], enable_int))
 
+    # Set tuner mode
+    def set_tuner_mode(self, enable):
+        self._print("Set tuner mode to " + repr(enable))
+
+        enable_int = 0
+        if enable == True:
+            enable_int = 127
+            
+        self._midi_usb.send(ControlChange(KemperDefinitions.CC_TUNER_MODE, enable_int))
+
     # Debug console output
     def _print(self, msg):
+        if Tools.get_option(Config, "debugKemper") != True:
+            return
+        
         Tools.print("KPP: " + msg)
