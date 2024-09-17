@@ -6,13 +6,12 @@ from ..hardware.LedDriver import LedDriver
 from ..model.FootSwitch import FootSwitch
 from ..model.KemperProfilerPlayer import KemperProfilerPlayer
 
-
 # Main application class (controls the processing)    
 class KemperStompController:
     def __init__(self, ui, config):
         self.ui = ui
         self.config = config
-                    
+
         self.led_driver = LedDriver(self.config["neoPixelPort"], len(self.config["switches"]) * FootSwitch.NUM_PIXELS)    # NeoPixel driver 
         self.switches = []                                        # Array of registered switches
         
@@ -20,8 +19,9 @@ class KemperStompController:
         self._update_interval = self.config["updateInterval"]     # Update interval (seconds)
         self._midiChannel = self.config["midiChannel"]            # MIDI channel to use
         self._midi_buffer_size = self.config["midiBufferSize"]    # MIDI buffer size (default: 60)
-        self._midi_usb = self._get_midi()                         # MIDI communication handler
-        
+        self._midi_usb = self._get_midi()                         # MIDI communication handler        
+        self._current_rig_date = None
+
         self.kemper = KemperProfilerPlayer(self._midi_usb)        # Kemper adapter instance (implements communication with the Profiler)
 
         # Set up switches
@@ -85,12 +85,12 @@ class KemperStompController:
         
         rig_name = self.kemper.parse_rig_name(midi_message)
         if rig_name != None:
-            self.ui.rig_name = rig_name.value
+            self.ui.info_text = rig_name.value
 
         rig_date = self.kemper.parse_rig_date(midi_message)
         if rig_date != None:
-            if self.ui.rig_date != rig_date.value:
-                self.ui.rig_date = rig_date.value
+            if self._current_rig_date != rig_date.value:
+                self._current_rig_date = rig_date.value
                 self.kemper.request_rig_info()
 
     # Returns a current timestmap in milliseconds

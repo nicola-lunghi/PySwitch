@@ -15,13 +15,13 @@ class EffectEnableAction(Action):
     def __init__(self, appl, switch, config):
         super().__init__(appl, switch, config)
 
-        self.slot_id = self.config["slot"]
-        self.effect_type = -1
-        self.state = EffectEnableAction.STATE_OFF
+        self.slot_id = self.config["slot"]              # Kemper effect slot
+        self._effect_type = -1
+        self._state = EffectEnableAction.STATE_OFF
 
-        self.brightness_not_assigned = Config["ledBrightness"]["notAssigned"]
-        self.brightness_on = Config["ledBrightness"]["on"]
-        self.brightness_off = Config["ledBrightness"]["off"]
+        self._brightness_not_assigned = Config["ledBrightness"]["notAssigned"]
+        self._brightness_on = Config["ledBrightness"]["on"]
+        self._brightness_off = Config["ledBrightness"]["off"]
 
     # Process the action
     def trigger(self, event):
@@ -49,20 +49,21 @@ class EffectEnableAction(Action):
 
     # Receive a type value (instance of KemperResponse)
     def _receive_type(self, response):
-        if response.value == self.effect_type:
+        if response.value == self._effect_type:
             return
 
-        self.effect_type = response.value
+        self._effect_type = response.value
 
         # Set UI background color according to effect type
-        self.switch.color = KemperProfilerPlayer.TYPE_COLORS[self.effect_type]
+        self.switch.color = KemperProfilerPlayer.TYPE_COLORS[self._effect_type]
 
-        # Set effect name on UI
-        self.appl.ui.effect_slots[self.slot_id].text = KemperProfilerPlayer.TYPE_NAMES[self.effect_type]
+        # Set effect name on UI, if a label is assigned
+        if self.label != None:
+            self.label.text = KemperProfilerPlayer.TYPE_NAMES[self._effect_type]
 
-        if self.effect_type == KemperProfilerPlayer.TYPE_NONE:
+        if self._effect_type == KemperProfilerPlayer.TYPE_NONE:
             # No effect assigned: Switch off lights
-            self.switch.brightness = self.brightness_not_assigned
+            self.switch.brightness = self._brightness_not_assigned
 
         # Request status of the effect after type changes
         self.appl.kemper.request_effect_status(self.slot_id)
@@ -70,13 +71,13 @@ class EffectEnableAction(Action):
     # Receive a status value (instance of KemperResponse)
     def _receive_status(self, response):
         if response.value == True:
-            self.state = EffectEnableAction.STATE_ON
-            self.switch.brightness = self.brightness_on
+            self._state = EffectEnableAction.STATE_ON
+            self.switch.brightness = self._brightness_on
         else:
-            self.state = EffectEnableAction.STATE_OFF
-            self.switch.brightness = self.brightness_off
+            self._state = EffectEnableAction.STATE_OFF
+            self.switch.brightness = self._brightness_off
 
     # Returns if the effect is currently enabled
     def _enabled(self):
-        return self.state == EffectEnableAction.STATE_ON
+        return self._state == EffectEnableAction.STATE_ON
 

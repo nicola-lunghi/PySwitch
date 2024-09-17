@@ -9,28 +9,34 @@ from ...definitions import Colors
 # Controller for a generic rectangular label on the user interface.
 class DisplayLabel:
 
-    # config:
+    # layout:
     # {
     #     "font": Path to the font, example: "/fonts/H20.pcf"
     #     "maxTextWidth": Maximum text width in pixels (default: 220) optional
     #     "lineSpacing": Line spacing (optional), float (default: 1)
+    #     "textColor": Text color (default is auto)
+    #     "backColor": Background color (default is none)
+    #     "text": Initial text (default is none)
     # }
-    def __init__(self, ui, x, y, width, height, config, text = "", back_color = None, text_color = None):
+    def __init__(self, ui, x, y, width, height, layout):
         self.ui = ui
-        self.config = config
+        self.layout = layout
         
         self.x = int(x)
         self.y = int(y)
         self.width = int(width)
         self.height = int(height)
 
-        self._font = self.ui.font_loader.get(self.config["font"])
-        self._max_text_width = Tools.get_option(self.config, "maxTextWidth")
-        self._line_spacing = Tools.get_option(self.config, "lineSpacing")
-        self._text = text
+        self._font = self.ui.font_loader.get(self.layout["font"])
 
-        self._back_color = back_color
-        self._text_color = text_color
+        self._max_text_width = Tools.get_option(self.layout, "maxTextWidth")
+        self._line_spacing = Tools.get_option(self.layout, "lineSpacing")
+        self._text = Tools.get_option(self.layout, "text", "")
+        self._text_color = Tools.get_option(self.layout, "textColor", None)
+        self._back_color = Tools.get_option(self.layout, "backColor", None)
+        self._initial_text_color = self._text_color
+
+        self._background_splash_address = -1
 
         self._add_to_splash()
 
@@ -38,7 +44,9 @@ class DisplayLabel:
     def _add_to_splash(self):
         # Append background, if any
         if self.back_color != None:
+            # Remember the index of the background Rect
             self._background_splash_address = len(self.ui.splash)
+
             self.ui.splash.append(self._create_background(self.back_color))        
 
         # Append text area
@@ -53,6 +61,8 @@ class DisplayLabel:
             line_spacing = self._line_spacing
         )
         self.text = self._text
+        self.back_color = self._back_color
+        self.text_color = self._text_color
         
         group = displayio.Group(
             scale = 1, 
@@ -65,27 +75,44 @@ class DisplayLabel:
         self._label_splash_address = len(self.ui.splash)
         self.ui.splash.append(group)        
 
-    # Returns the background color currently set
     @property
     def back_color(self):
         return self._back_color
 
-    # Sets the background color
     @back_color.setter
     def back_color(self, color):
+        if self._background_splash_address < 0:
+            return
+        
+        if self._back_color == color:
+            return
+
         self._back_color = color
         self.ui.splash[self._background_splash_address] = self._create_background(color)
 
-        # Also set text color again (might have been changed)
-        if self._text_color == None:
-            self._label.color = self._get_text_color()
+        # Update text color, too (might change when no initial color has been set)
+        self.text_color = self.text_color
 
-    # Currently shown text
+    @property
+    def text_color(self):
+        return self._text_color
+
+    @text_color.setter
+    def text_color(self, color):
+        text_color = color        
+        if text_color == None:
+            text_color = self._determine_text_color()
+
+        if self._text_color == text_color:
+            return
+
+        self._text_color = text_color
+        self._label.color = text_color
+
     @property
     def text(self):
         return self._text
 
-    # Sets the text
     @text.setter
     def text(self, text):
         if self._max_text_width != False:
@@ -101,19 +128,10 @@ class DisplayLabel:
             text_out = text
 
         if self._text == text_out:
-            return False
+            return
 
-        self._label.text = text_out
         self._text = text_out
-        return True
-
-    # Text color: If none is set, auto-detect according to the background
-    @property
-    def text_color(self):        
-        text_color = self._text_color
-        if text_color == None:
-            text_color = self._determine_text_color()
-        return text_color
+        self._label.text = text_out
 
     # Create background Rect
     def _create_background(self, color):
@@ -127,7 +145,7 @@ class DisplayLabel:
             stroke = 1
         )
 
-    # Determines a text color by the current background color.
+    # Determines a matching text color to the current background color.
     # Algorithm adapted from https://nemecek.be/blog/172/how-to-calculate-contrast-color-in-python
     def _determine_text_color(self):
         if self.back_color == None:

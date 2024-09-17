@@ -5,7 +5,7 @@
 #################################################################################################################################
  
 import board
-from .definitions import Ports, Actions, ActionEvents, Slots, Colors
+from .definitions import Ports, Actions, ActionEvents, Slots, DisplayAreas, Colors
 
 Config = {
 
@@ -15,13 +15,34 @@ Config = {
     # the switches to the correct GPIO ports and LED pixels on your device.
     "switches": [
         {
+            # Selects which switch of your device you want to assign
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_1,
+
+            # Defines the actions you want to happen on different events of the switch. You can 
+            # define as many actions as you want, they will be executed in that order.
             "actions": [
                 {
+                    # Action type. This determines what the action does, and which configuration options it needs.
                     "type": Actions.EFFECT_ON_OFF,
+
+                    # This defines on which switch events the action should be triggered.
                     "events": [
                         ActionEvents.SWITCH_DOWN
                     ],
+
+                    # If this is defined (it is optional!), the action will show stuff on the display.
+                    "display": {
+                        # Defines the area to put the action label. The available display areas (header, footer) 
+                        # will be populated in the order the actions are defined in this file.
+                        "area": DisplayAreas.HEADER,
+
+                        # The index inside the above defined display area. Keep all indices of one area 
+                        # in a row starting from 0 (not 1!), or you will get empty areas!
+                        "index": 0
+                    },
+
+                    # This is an option that is specific to the EFFECT_ON_OFF action: It defines which 
+                    # Kemper effects slot the action should switch on and off. 
                     "slot": Slots.EFFECT_SLOT_ID_DLY
                 }
             ]
@@ -34,6 +55,10 @@ Config = {
                     "events": [
                         ActionEvents.SWITCH_DOWN
                     ],
+                    "display": {
+                        "area": DisplayAreas.HEADER,
+                        "index": 1
+                    },
                     "slot": Slots.EFFECT_SLOT_ID_REV
                 }
             ]
@@ -46,6 +71,10 @@ Config = {
                     "events": [
                         ActionEvents.SWITCH_DOWN
                     ],
+                    "display": {
+                        "area": DisplayAreas.FOOTER,
+                        "index": 0
+                    },
                     "slot": Slots.EFFECT_SLOT_ID_A
                 }
             ]
@@ -58,7 +87,11 @@ Config = {
                     "events": [
                         ActionEvents.SWITCH_DOWN
                     ],
-                    #"slot": Slots.EFFECT_SLOT_ID_B
+                    "display": {
+                        "area": DisplayAreas.FOOTER,
+                        "index": 1
+                    },
+                    "slot": Slots.EFFECT_SLOT_ID_B
                 }
             ]
         }
@@ -71,35 +104,27 @@ Config = {
 
     # Parameters of the user interface
     "userInterface": {
-        # Height of the four effect unit label areas (pixels, default: 40)
-        "effectLabelHeight": 40,
-
-        # Text initially shown in the center area (where the rig name goes later on)
-        "initialInfoText": "Kemper\nEffects Slot Mode",
-
-        # Layout for the effect slot labels
-        "effectSlotLayout": {
-            # Font
-            "font": "/fonts/H20.pcf",
-        },
-
         # Layout for the info area (rig name) label
         "infoAreaLayout": {
-            # Font 
-            "font": "/fonts/PTSans-NarrowBold-40.pcf",
+            "font": "/fonts/PTSans-NarrowBold-40.pcf",     # Font path (mandatory)
+            "lineSpacing": 0.8,                            # Line spacing (optional) default: 1
+            "maxTextWidth": 220,                           # Maximum text width in pixels (for example: 220 at a display width of 240), optional
+            "textColor": (215, 255, 255),                  # Text color (optional, default is automatic detection by back color)
+            "backColor": (20, 50, 30),                     # Back color (optional, default is no background at all)
 
-            # Line spacing
-            "lineSpacing": 0.8,
-
-            # Maximum text width in pixels (default: 220 at a display width of 240)
-            "maxTextWidth": 220            
+            # Text initially shown in the center area (where the rig name goes later on).
+            "text": "Kemper\nEffects Slot Mode",
         },
 
         # Layout for the debug area (when switched on)
         "debugAreaLayout": {
-            # Font
             "font": "/fonts/H20.pcf",
+            "backColor": (20, 20, 70),
+            "textColor": (255, 255, 0),
         },
+
+        # Height of the debug area (when switched on)
+        "debugAreaHeight": 40
     },
 
     # Brightness settings for all LEDs. Range: [0..1]
@@ -128,17 +153,5 @@ Config = {
     # Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 
     # Use this to detect the switch assignments on unknown devices.
-    "exploreMode": False,
-
-    # Layout for the explore mode (when switched on)
-    "exploreModeLayout": {
-        # Font
-        "font": "/fonts/PTSans-NarrowBold-40.pcf",
-
-        # Maximum text width in pixels (default: 220 at a display width of 240)
-        "maxTextWidth": 220,
-
-        # Line spacing
-        "lineSpacing": 0.8
-    },
+    "exploreMode": False
 }

@@ -1,3 +1,5 @@
+from ...Tools import Tools
+
 # Base class for actions. All functionality is encapsulated in a class for each, 
 # inheriting from Action.
 class Action:
@@ -7,6 +9,8 @@ class Action:
         self.appl = appl
         self.switch = switch
         self.config = config
+
+        self.label = self._get_action_display()   # DisplayLabel instance the action is connected to (or None).
 
     # Will be called once to trigger the action (this is not necessarily 
     # on the down press, you can assign actions to different types of events).
@@ -26,3 +30,20 @@ class Action:
             if config_event == event:
                 return True
         return False
+    
+    # Get the assigned label reference from the UI (or None)
+    def _get_action_display(self):
+        if Tools.get_option(self.config, "display") == False:
+            return None
+        
+        display_area = self.config["display"]["area"]
+        index = self.config["display"]["index"]
+
+        area_labels = self.appl.ui.labels(display_area)
+        
+        if index >= len(area_labels):
+            raise Exception("Invalid label index: " + str(index))
+
+        return area_labels[index]
+
+

@@ -44,7 +44,7 @@ else:
     from .src.controller.KemperStompController import KemperStompController
 
     # Create User interface
-    ui = KemperUserInterface(display, Config["userInterface"])
+    ui = KemperUserInterface(display, Config["userInterface"], Config["switches"])
 
     # Controller instance (runs the processing loop and keeps everything together)
     appl = KemperStompController(ui, Config)

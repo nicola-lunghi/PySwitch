@@ -124,17 +124,61 @@ class Colors:
     DARK_GRAY = (50, 50, 50)
     BLACK = (0, 0, 0)
 
-    # UI Colors
-    TEXT_COLOR_BRIGHT = (255, 255, 0)             # Bright text color
-    TEXT_COLOR_DARK = (0, 0, 0)                   # Dark text color
+    # Text colors for automatic color detection by maximum contrast to the back color of the display label
+    TEXT_COLOR_BRIGHT = (255, 255, 0)
+    TEXT_COLOR_DARK = (0, 0, 0)
 
-    DEFAULT_SLOT_COLOR = (50, 50, 50)             # Default backfround color for effect slots (until an effect type is set)
+    # Default background color for display slots
+    DEFAULT_SLOT_COLOR = (50, 50, 50)             
 
-    INFO_AREA_TEXT_COLOR = (215, 255, 255)        # Text color for the info area (rig name).
-    INFO_AREA_BACK_COLOR = (20, 50, 30)           # Background color for the info area (rig name).
-    
-    DEBUG_BACK_COLOR = (20, 20, 70)               # Debug area: Background color (if debug is enabled in Config)
-    DEBUG_TEXT_COLOR = (255, 255, 0)              # Debug area: Text color (if debug is enabled in Config)
+
+#################################################################################################################################
+
+
+# Just used locally here!
+DISPLAY_WIDTH = 240
+DISPLAY_HEIGHT = 240
+SLOT_HEIGHT = 40           # Slot height on the display
+
+
+# Display area IDs for the (optional) switch displays
+class DisplayAreas:
+    HEADER = 0
+    FOOTER = 10
+
+
+# Display area definitions
+DisplayAreaDefinitions = [
+    # Header area
+    {
+        "area": DisplayAreas.HEADER,
+
+        "x": 0,
+        "y": 0,
+        "width": DISPLAY_WIDTH,
+        "height": SLOT_HEIGHT,
+        
+        "layout": {
+            "font": "/fonts/H20.pcf",
+            "backColor": Colors.DEFAULT_SLOT_COLOR
+        }
+    },
+
+    # Footer area
+    {
+        "area": DisplayAreas.FOOTER,
+
+        "x": 0,
+        "y": DISPLAY_HEIGHT - SLOT_HEIGHT,
+        "width": DISPLAY_WIDTH,
+        "height": SLOT_HEIGHT,
+
+        "layout": {
+            "font": "/fonts/H20.pcf",
+            "backColor": Colors.DEFAULT_SLOT_COLOR
+        }        
+    }
+]
 
 
 #################################################################################################################################

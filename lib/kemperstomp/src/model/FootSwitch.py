@@ -37,12 +37,12 @@ class FootSwitch:
         self.pixels = Tools.get_option(self.config["assignment"], "pixels")
         
         self._appl = appl
-        self._pushed_state = False
         self._actions = []
         self._colors = [(0, 0, 0), (0, 0, 0), (0, 0, 0)]
         self._brightness = 0
+        self._pushed_state = False
 
-        self._initial_colors()
+        self._initial_switch_colors()
         self._init_switch()     
         self._init_actions()
 
@@ -59,7 +59,7 @@ class FootSwitch:
             self._actions.append(action)
 
     # Set some initial colors on the neopixels
-    def _initial_colors(self):
+    def _initial_switch_colors(self):
         if self.pixels == False:
             # No LEDs defined for the switch
             return

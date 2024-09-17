@@ -3,75 +3,127 @@ import displayio
 from .DisplayLabel import DisplayLabel
 from ..hardware.FontLoader import FontLoader
 from ..Tools import Tools
-from ...definitions import Colors
+from ...definitions import Colors, DisplayAreaDefinitions
 from ...config import Config
 
 
 # Implements the Kemper UI
 class KemperUserInterface:
 
+    # switches_config is only needed when numHeaderSlots/numFooterSlots are not set).
+    #
     # config must be like:
-    # {
-    #     "effectLabelHeight": Height of the four effect unit label areas (pixels, default: 40)
+    # {    
+    #     "slotLabelHeight": Height of the four effect unit label areas (pixels, default: 40)
     #     "initialInfoText": Text initially shown in the center area (where the rig name goes later on)
-    #     "effectSlotLayout": Layout definition for effect slot labels (see DisplayLabel)
+    #     "slotLayout": Layout definition for effect slot labels (see DisplayLabel)
     #     "infoAreaLayout": Layout definition for the info area (rig name) label (see DisplayLabel)
     #     "debugAreaLayout": Layout definition for the debug area label (see DisplayLabel)
     # }
-    def __init__(self, display, config):
-        self.config = config        
+    def __init__(self, display, config, switches_config):
+        self.config = config                    # UI configuration
+        self.font_loader = FontLoader()         # Buffered font loader
         self.width = display.width
         self.height = display.height        
-        self.effect_slots = []            # Effect slots are modeled in a list of DisplayLabel instances (DLY, REV, A, B)
-        self.font_loader = FontLoader()   # Buffered font loader
-        self.rig_date = None
 
         self._display = display
+        self._info_area_layout = self.config["infoAreaLayout"]
+        self._areas = DisplayAreaDefinitions
+
         self._debug_area = None
+        self._debug_layout = self.config["debugAreaLayout"]
+        self._debug_height = self.config["debugAreaHeight"]
 
-        self._slot_height = self.config["effectLabelHeight"]
-        self._slot_config = self.config["effectSlotLayout"]
-        self._info_area_config = self.config["infoAreaLayout"]
-        self._info_initial_text = self.config["initialInfoText"]
-        self._debug_config = self.config["debugAreaLayout"]
+        # Checks how much slots each area needs, and prepares _areas 
+        self._prepare_areas(switches_config)
 
-    # Show the user interface
-    def show(self):
         # Init screen stacking (order matters here!)
         self._init_splash()
         self._init_info_area()
-        self._init_slots()
+        self._init_slot_areas()
         self._init_debug_area()
-        
-        self._display.tft.show(self.splash)
 
-    # Returns the rig name currently set
     @property
-    def rig_name(self):
+    def info_text(self):
         return self._info.text
 
-    # Set a new rig name. Returns if changed
-    @rig_name.setter
-    def rig_name(self, name):
-        self._info.text = name
+    @info_text.setter
+    def info_text(self, text):
+        self._info.text = text
         
+    # Returns the labels for a given display position, or None if not found
+    def labels(self, display_area):
+        for label_def in self._areas:
+            if label_def["area"] != display_area:
+                continue
+
+            return label_def["labels"]
+        return None
+
+    # If a switches configuration is passed and the number of slots in header/footer
+    # has not been defined manually, this detects the needed areas from the switches 
+    # configuration.
+    def _prepare_areas(self, switches_config):
+        for area in self._areas:
+            area["labels"] = []
+            area["num_slots"] = self._determine_num_of_switch_actions(switches_config, area["area"])
+
+    # Determines how many positions are needed in one area (this is determined by the maximum index)
+    def _determine_num_of_switch_actions(self, switches_config, display_area):
+        max = -1
+        for switch in switches_config:
+            for action in switch["actions"]:
+                if Tools.get_option(action, "display") == False:
+                    continue
+
+                if action["display"]["area"] != display_area:
+                    continue
+
+                if action["display"]["index"] > max:
+                    max = action["display"]["index"]
+                    
+        return max + 1
+
+    # Show the user interface
+    def show(self):        
+        self._display.tft.show(self.splash)
+
     # Initialize display splash container
     def _init_splash(self):
         self.splash = displayio.Group()
         self._display.tft.rootgroup = self.splash
 
-    # Initialize the effect slots
-    def _init_slots(self):
-        # Set up the handlers
-        slot_width = int(self.width / 2)
-        lowerY = self.height - self._slot_height
+    # Initialize the slots
+    def _init_slot_areas(self):
+        for area in self._areas:
+            self._create_area_labels(area)
+        
+    # Create the labels in one area
+    def _create_area_labels(self, area):
+        num_slots = area["num_slots"]
+        if num_slots <= 0:
+            return
+        
+        area_x = area["x"]
+        area_y = area["y"]
 
-        self.effect_slots.append(DisplayLabel(self, 1,   lowerY, slot_width, self._slot_height, self._slot_config , "A", Colors.DEFAULT_SLOT_COLOR))
-        self.effect_slots.append(DisplayLabel(self, 120, lowerY, slot_width, self._slot_height, self._slot_config , "B", Colors.DEFAULT_SLOT_COLOR))
-        self.effect_slots.append(DisplayLabel(self, 1,   1,      slot_width, self._slot_height, self._slot_config , "DLY", Colors.DEFAULT_SLOT_COLOR))
-        self.effect_slots.append(DisplayLabel(self, 120, 1,      slot_width, self._slot_height, self._slot_config , "REV", Colors.DEFAULT_SLOT_COLOR))
+        slot_width = area["width"] / num_slots
+        slot_height = area["height"]
+        slot_layout = area["layout"]
 
-    # Initialize the info area (rig name)
+        for i in range(num_slots):            
+            area["labels"].append(
+                DisplayLabel(
+                    self, 
+                    area_x + i * slot_width, 
+                    area_y, 
+                    slot_width, 
+                    slot_height,
+                    slot_layout
+                )
+            )
+        
+    # Initialize the _info area (normally showing the rig name), which takes the whole screen behind all other stuff
     def _init_info_area(self):
         self._info = DisplayLabel(
             self, 
@@ -79,26 +131,24 @@ class KemperUserInterface:
             0, 
             self.width, 
             self.height,
-            self._info_area_config,
-            text = self._info_initial_text, 
-            back_color = Colors.INFO_AREA_BACK_COLOR,
-            text_color = Colors.INFO_AREA_TEXT_COLOR
+            self._info_area_layout
         )
         
-    # Initialize the debug area, if debugging is switched on
+    ##############################################################################################################################
+
+    # Initialize the debug area, if debugging is switched on.
     def _init_debug_area(self):
         if Tools.get_option(Config, "debug") != True:
             return
         
-        upperY = self.height - self._slot_height * 2
+        upperY = self.height - self._debug_height * 2
         self._debug_area = DisplayLabel(
             self, 
             1, 
             upperY, 
             self.width, 
-            self._slot_height, 
-            self._debug_config,
-            back_color = Colors.DEBUG_BACK_COLOR
+            self._debug_height, 
+            self._debug_layout
         )
 
     # Show a debug message on the UI if debugging is switched on
