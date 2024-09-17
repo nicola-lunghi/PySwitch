@@ -152,7 +152,7 @@ Config = {
 
     # Debug mode. Shows verbose console output. You can listen to that on the serial REPL port via USB on your computer,
     # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 
-    "debug": True,
+    "debug": False,
 
     # Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 
