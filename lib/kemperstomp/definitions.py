@@ -20,10 +20,11 @@ import board
 #              Use the constants defined in Actions, for example Actions.EFFECT_ON_OFF.
 # 
 #      "display": {
-#          "area":  ID of the display area. See DisplayAreas defined below.
-#          "index": Position inside the display area. If omitted, always the first place is used which takes up the whole area space.
-#                   Keep all indices of one area sequentially starting from 0 (not 1!), or you will get empty areas!
-#          "text":  Text to show on the display label initially.
+#          "area":         ID of the display area. See DisplayAreas defined below.
+#          "index":        Position inside the display area. If omitted, always the first place is used which takes up the whole area space.
+#                          Keep all indices of one area sequentially starting from 0 (not 1!), or you will get empty areas!
+#          "text":         Text to show on the display label initially.
+#          "cornerRadius": Optional corner radius. Default is the underlying layout.
 #      }
 # }
 class Actions:
@@ -77,6 +78,26 @@ class Actions:
     #     "text": Text string to print on the console
     # }
     PRINT = "PrintAction"
+
+
+#################################################################################################################################
+
+
+# Some default values for some actions
+class ActionDefaults:
+    DEFAULT_EFFECT_SLOT_CORNER_RADIUS = 15
+
+
+#################################################################################################################################
+
+
+# Some default values for switches
+class FootSwitchDefaults:
+
+    # Brightness values matching the colors well (i prefer darker lights, use other values) range: [0..1]
+    DEFAULT_BRIGHTNESS_ON = 0.25
+    DEFAULT_BRIGHTNESS_OFF = 0.01
+    DEFAULT_BRIGHTNESS_NOT_ASSIGNED = 0
 
 
 #################################################################################################################################
@@ -170,9 +191,9 @@ class Ports:
 class Colors:
     WHITE = (255, 255, 255)
     YELLOW = (255, 255, 0)
-    ORANGE = (255, 165, 0)
+    ORANGE = (255, 125, 0)
     RED = (255, 0, 0)
-    PURPLE = (30, 0, 20)
+    PURPLE = (180, 0, 120)
     GREEN = (0, 255, 0)
     DARK_GREEN = (0, 100, 0)
     TURQUOISE = (64, 242, 208)
@@ -221,7 +242,8 @@ DisplayAreaDefinitions = [
         
         "layout": {
             "font": "/fonts/H20.pcf",
-            "backColor": Colors.DEFAULT_LABEL_COLOR
+            "backColor": Colors.DEFAULT_LABEL_COLOR,
+            "cornerRadius": 5
         }
     },
 
@@ -237,7 +259,8 @@ DisplayAreaDefinitions = [
 
         "layout": {
             "font": "/fonts/H20.pcf",
-            "backColor": Colors.DEFAULT_LABEL_COLOR
+            "backColor": Colors.DEFAULT_LABEL_COLOR,
+            "cornerRadius": 5
         }        
     }
 ]

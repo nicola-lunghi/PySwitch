@@ -61,6 +61,7 @@ class Action:
 
         label = area_labels[index]        
         label.text = Tools.get_option(self.config["display"], "text", "")
+        label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", label.corner_radius)
 
         return label
 

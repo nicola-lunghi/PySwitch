@@ -3,7 +3,7 @@ from ...model.KemperEffectCategories import KemperEffectCategories
 from ...Tools import Tools
 from ....config import Config
 from ....mappings import KemperMappings
-from ....definitions import Colors
+from ....definitions import Colors, ActionDefaults
 
 
 # Implements the effect enable/disable footswitch action
@@ -19,7 +19,9 @@ class EffectEnableAction(BinaryParameterAction):
         self._current_category = -1
 
         # Mapping for effect type
-        self._mapping_fxtype = KemperMappings.MAPPING_EFFECT_SLOT_TYPE(self.config["slot"])        
+        self._mapping_fxtype = KemperMappings.MAPPING_EFFECT_SLOT_TYPE(self.config["slot"])
+
+        self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", ActionDefaults.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)
 
     # Request effect type periodically (which itself will trigger a status request).
     # Does not call super.update because the status is requested here later anyway.

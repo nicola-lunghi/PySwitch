@@ -5,7 +5,7 @@
 #################################################################################################################################
  
 import board
-from .definitions import Ports, Actions, PushButtonModes, DisplayAreas, Colors
+from .definitions import Ports, Actions, PushButtonModes, DisplayAreas, Colors, FootSwitchDefaults
 from .mappings import KemperMidi, KemperMappings
 
 Config = {
@@ -88,7 +88,7 @@ Config = {
             "lineSpacing": 0.8,                            # Line spacing (optional) default: 1
             "maxTextWidth": 220,                           # Maximum text width in pixels (for example: 220 at a display width of 240), optional
             "textColor": (215, 255, 255),                  # Text color (optional, default is automatic detection by back color)
-            "backColor": (20, 50, 30),                     # Back color (optional, default is no background at all)
+            #"backColor": (20, 50, 30),                     # Back color (optional, default is no background at all)
 
             # Text initially shown in the center area (where the rig name goes later on).
             "text": "Kemper\nEffects Slot Mode",
@@ -110,9 +110,9 @@ Config = {
 
     # Brightness settings for all switch LEDs. Range: [0..1]
     "ledBrightness": {
-        "on": 0.2,
-        "off": 0.005,
-        "notAssigned": 0
+        "on": FootSwitchDefaults.DEFAULT_BRIGHTNESS_ON,
+        "off": FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF,
+        "notAssigned": FootSwitchDefaults.DEFAULT_BRIGHTNESS_NOT_ASSIGNED
     },
 
     # Factor used to dim the colors in the display (not the switches!) Range [0..1]

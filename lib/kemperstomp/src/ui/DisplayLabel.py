@@ -1,6 +1,7 @@
 import displayio
 from adafruit_display_text import label, wrap_text_to_pixels
 from adafruit_display_shapes.rect import Rect
+from adafruit_display_shapes.roundrect import RoundRect
 
 from ..Tools import Tools
 from ...definitions import Colors
@@ -17,6 +18,7 @@ class DisplayLabel:
     #     "lineSpacing": Line spacing (optional), float (default: 1)
     #     "textColor": Text color (default is auto)
     #     "backColor": Background color (default is none)
+    #     "cornerRadius": Corner radius (optional: default is 0)
     #     "text": Initial text (default is none)
     # }
     def __init__(self, ui, x, y, width, height, layout, id):
@@ -35,12 +37,13 @@ class DisplayLabel:
         self._text = Tools.get_option(self.layout, "text", "")
         self._text_color = Tools.get_option(self.layout, "textColor", None)
         self._back_color = Tools.get_option(self.layout, "backColor", None)
+        self._corner_radius = Tools.get_option(self.layout, "cornerRadius", 0)
         self._initial_text_color = self._text_color
         self.id = id
 
         self._background_splash_address = -1
 
-        self._add_to_splash()
+        self._add_to_splash()    
 
     # Adds the slot to the splash
     def _add_to_splash(self):
@@ -92,7 +95,7 @@ class DisplayLabel:
         self._print("Set back color to " + repr(color))
 
         self._back_color = color
-        self.ui.splash[self._background_splash_address] = self._create_background(color)
+        self._update_background()
 
         # Update text color, too (might change when no initial color has been set)
         self.text_color = self._initial_text_color
@@ -114,6 +117,19 @@ class DisplayLabel:
 
         self._text_color = text_color
         self._label.color = text_color
+
+    @property
+    def corner_radius(self):
+        return self._corner_radius
+    
+    @corner_radius.setter
+    def corner_radius(self, r):
+        if self._corner_radius == r:
+            return
+        
+        self._corner_radius = r
+
+        self._update_background()
 
     @property
     def text(self):
@@ -141,17 +157,34 @@ class DisplayLabel:
         self._text = text_out
         self._label.text = text_out
 
+    # Updates the display to match the back color
+    def _update_background(self):
+        self.ui.splash[self._background_splash_address] = self._create_background(self._back_color)
+
     # Create background Rect
     def _create_background(self, color):
-        return Rect(
-            self.x, 
-            self.y,
-            self.width, 
-            self.height, 
-            fill = color,
-            outline = 0x0, 
-            stroke = 1
-        )
+        if self._corner_radius <= 0:
+            return Rect(
+                self.x, 
+                self.y,
+                self.width, 
+                self.height, 
+                fill = color,
+                outline = 0x0, 
+                stroke = 1
+            )
+        else:
+            return RoundRect(
+                self.x, 
+                self.y,
+                self.width, 
+                self.height, 
+                fill = color,
+                outline = 0x0, 
+                stroke = 1,
+                r = self._corner_radius
+            )
+
 
     # Determines a matching text color to the current background color.
     # Algorithm adapted from https://nemecek.be/blog/172/how-to-calculate-contrast-color-in-python
