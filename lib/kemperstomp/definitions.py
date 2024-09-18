@@ -19,7 +19,10 @@ class Actions:
     #     "type": Actions.EFFECT_ON_OFF
     #     "slot": Slot ID: Use one of the constants defined in Slots, for example Slots.EFFECT_SLOT_A
     # }
-    EFFECT_ON_OFF = "EffectEnableAction"
+    #EFFECT_ON_OFF = "EffectEnableAction"
+    
+    # Generic binary MIDI parameter (on/off)
+    BINARY_PARAMETER = "BinaryParameterAction"
 
     # Switch tuner mode. 
     # Available options:
@@ -162,7 +165,10 @@ class Colors:
     TEXT_COLOR_DARK = (0, 0, 0)
 
     # Default background color for display slots
-    DEFAULT_SLOT_COLOR = (50, 50, 50)             
+    DEFAULT_SLOT_COLOR = (50, 50, 50)   
+
+    # Default color for switches
+    DEFAULT_SWITCH_COLOR = (255, 255, 255)
 
 
 #################################################################################################################################
@@ -219,7 +225,7 @@ DisplayAreaDefinitions = [
 #################################################################################################################################
 
 
-# Kemper specific definitions
+# Kemper ui specific definitions
 class KemperDefinitions:
     # Effect type color assignment
     EFFECT_COLOR_NONE = Colors.DEFAULT_SLOT_COLOR
@@ -259,46 +265,90 @@ class KemperDefinitions:
     TUNER_MODE_COLOR = Colors.WHITE
     TUNER_MODE_NAME = "Tuner"
 
-    # Some internal addressing (acc. to Kemper MIDI specification, should not be needed to change)    
-    PARAMETER_ADDRESS_EFFECT_TYPE = 0x00   
-    PARAMETER_ADDRESS_EFFECT_STATUS = 0x03
-
-    RESPONSE_ID_GLOBAL_PARAMETER = -1
-    RESPONSE_ID_EFFECT_TYPE = 0x00
-    RESPONSE_ID_EFFECT_STATUS = 0x03
-
-    RESPONSE_ANSWER_STATUS_ON = 0x01
-    RESPONSE_ANSWER_STATUS_OFF = 0x00
-
-    RESPONSE_PREFIX_RIG_NAME = [0x00, 0x00, 0x03, 0x00, 0x00, 0x01]
-    RESPONSE_PREFIX_RIG_DATE = [0x00, 0x00, 0x03, 0x00, 0x00, 0x03]
-
-    CC_TUNER_MODE = 31
 
 #################################################################################################################################
 
 
-# IDs for the available effect slots
-class Slots:
+# Kemper MIDI specification related definitions.
+class KemperMidi:
+    # IDs for the available effect slots
     EFFECT_SLOT_ID_A = 0
     EFFECT_SLOT_ID_B = 1
-    EFFECT_SLOT_ID_DLY = 2
-    EFFECT_SLOT_ID_REV = 3
+    EFFECT_SLOT_ID_C = 2
+    EFFECT_SLOT_ID_D = 3
+    EFFECT_SLOT_ID_X = 4
+    EFFECT_SLOT_ID_MOD = 5
+    EFFECT_SLOT_ID_DLY = 6
+    EFFECT_SLOT_ID_REV = 7
 
     # Slot enable/disable. Order has to match the one defined above!
     CC_EFFECT_SLOT_ENABLE = (
         17,    # Slot A
         18,    # Slot B
-        27,    # Slot DLY (with Spillover)
-        28     # Slot REV (with Spillover)
-    )
-    
-    # Slot address pages. Order has to match the one defined above!
-    SLOT_ADDRESS_PAGE = (
-        0x32,   # Slot A
-        0x33,   # Slot B
-        0x3c,   # Slot DLY
-        0x3d    # Slot REV
+        19,    # Slot C
+        20,    # Slot D
+
+        22,    # Slot X
+        24,    # Slot MOD        
+        27,    # Slot DLY (with Spillover)        
+        29     # Slot REV (with Spillover)
     )
 
+    CC_TUNER_MODE = 31
+
+    # Product types
+    NRPN_PRODUCT_TYPE_PROFILER = 0x00         # Kemper Profiler
+    NRPN_PRODUCT_TYPE_PROFILER_PLAYER = 0x02  # Kemper Profiler Player
+
+    # Device IDs
+    NRPN_DEVICE_ID_OMNI = 0x7f
+
+    # Slot address pages. Order has to match the one defined above!
+    NRPN_SLOT_ADDRESS_PAGE = (
+        0x32,   # Slot A
+        0x33,   # Slot B
+        0x34,   # Slot C
+        0x35,   # Slot D
+
+        0x38,   # Slot X
+        0x3a,   # Slot MOD
+        0x3c,   # Slot DLY
+        0x3d    # Slot REV
+    )    
+
+    # Other adress pages
+    NRPN_ADDRESS_PAGE_STRINGS = 0x00
+
+    # Generally used NRPN values
+    NRPN_MANUFACTURER_ID = [0x00, 0x20, 0x33]             # Kemper manufacturer ID
+    NRPN_INSTANCE = 0x00                                  # Instance ID for NRPN. The profiler only supports instance 0.
+    NRPN_PARAMETER_OFF = 0
+    NRPN_PARAMETER_ON = 1
+
+    # NRPN Function codes
+    NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER = 0x41
+    NRPN_FUNCTION_REQUEST_STRING_PARAMETER = 0x43
+
+    # NRPN parameters for effect slots
+    NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = 0x00   
+    NRPN_EFFECT_PARAMETER_ADDRESS_ON_OFF = 0x03    
+    # ... TODO add further parameters here
+
+    # NRPN String parameters
+    NRPN_STRING_PARAMETER_ID_RIG_NAME = 0x01
+    NRPN_STRING_PARAMETER_ID_RIG_DATE = 0x03
+
+    # Some internal addressing (acc. to Kemper MIDI specification, should not be needed to change)    
+
+    #RESPONSE_ID_GLOBAL_PARAMETER = -1
+    #RESPONSE_ID_EFFECT_TYPE = 0x00
+    #RESPONSE_ID_EFFECT_STATUS = 0x03
+
+    #RESPONSE_ANSWER_STATUS_ON = 0x01
+    #RESPONSE_ANSWER_STATUS_OFF = 0x00
+
+    #RESPONSE_PREFIX_RIG_NAME = [0x00, 0x00, 0x03, 0x00, 0x00, 0x01]
+    #RESPONSE_PREFIX_RIG_DATE = [0x00, 0x00, 0x03, 0x00, 0x00, 0x03]
+
+    #CC_TUNER_MODE = 31
 

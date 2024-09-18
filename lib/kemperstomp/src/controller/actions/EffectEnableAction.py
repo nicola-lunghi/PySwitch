@@ -1,4 +1,4 @@
-from .base.PushButtonAction import PushButtonAction
+'''from .base.PushButtonAction import PushButtonAction
 from ...model.Kemper import Kemper
 from ...Tools import Tools
 from ....config import Config
@@ -117,3 +117,4 @@ class EffectEnableAction(PushButtonAction):
 
         self.feedback_state(response.value)
         self.update_displays()
+'''

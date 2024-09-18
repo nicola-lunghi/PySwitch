@@ -6,8 +6,8 @@ from ..Tools import Tools
 from ...definitions import DisplayAreaDefinitions
 
 
-# Implements the Kemper UI
-class KemperUserInterface:
+# Implements the UI
+class UserInterface:
 
     # switches_config is only needed when numHeaderSlots/numFooterSlots are not set).
     #

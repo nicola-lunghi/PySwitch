@@ -1,11 +1,12 @@
 #################################################################################################################################
 # 
-# Configuration script for the KemperStomp script.
+# Device configuration for the KemperStomp script.
 #
 #################################################################################################################################
  
 import board
-from .definitions import Ports, Actions, TunerActionModes, PushButtonModes, Slots, DisplayAreas, Colors
+from .definitions import Ports, Actions, PushButtonModes, DisplayAreas, Colors
+from .mappings import KemperMidi, KemperMappings
 
 Config = {
 
@@ -23,9 +24,17 @@ Config = {
             "actions": [
                 {
                     # Action type. This determines what the action does, and which configuration options it needs.
-                    "type": Actions.EFFECT_ON_OFF,
+                    "type": Actions.BINARY_PARAMETER,
 
-                    # If this is defined (it is optional!), the action will show stuff on the display.
+                    # MIDI mapping for the BINARY_PARAMETER Action.
+                    "mapping": KemperMappings.MAPPING_EFFECT_SLOT_ON_OFF(KemperMidi.EFFECT_SLOT_ID_A),
+
+                    # On/off values for the BINARY_PARAMETER Action.
+                    "valueEnabled": KemperMidi.NRPN_PARAMETER_ON,
+                    "valueDisabled": KemperMidi.NRPN_PARAMETER_OFF,
+
+                    # If this is defined (it is optional!), the action will show stuff on the display. Valid
+                    # for all action types which want to make use of the display, but optional.
                     "display": {
                         # Defines the area to put the action label. The available display areas (header, footer) 
                         # will be populated in the order the actions are defined in this file.
@@ -35,11 +44,7 @@ Config = {
                         # supports multiple slots, as the header and footer do)). Keep all indices of one area 
                         # in a row starting from 0 (not 1!), or you will get empty areas!
                         "index": 0
-                    },
-
-                    # This is an option that is specific to the EFFECT_ON_OFF action: It defines which 
-                    # Kemper effects slot the action should switch on and off. 
-                    "slot": Slots.EFFECT_SLOT_ID_DLY
+                    }
                 }
             ]
         },
@@ -47,12 +52,12 @@ Config = {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_2,
             "actions": [
                 {
-                    "type": Actions.EFFECT_ON_OFF,
+                    "type": Actions.BINARY_PARAMETER,                    
+                    "mapping": KemperMappings.MAPPING_EFFECT_SLOT_ON_OFF(KemperMidi.EFFECT_SLOT_ID_B),
                     "display": {
                         "area": DisplayAreas.HEADER,
                         "index": 1
-                    },
-                    "slot": Slots.EFFECT_SLOT_ID_REV
+                    }
                 }
             ]
         },
@@ -60,12 +65,12 @@ Config = {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_A,
             "actions": [
                 {
-                    "type": Actions.EFFECT_ON_OFF,
+                    "type": Actions.BINARY_PARAMETER,                    
+                    "mapping": KemperMappings.MAPPING_EFFECT_SLOT_ON_OFF(KemperMidi.EFFECT_SLOT_ID_B),
                     "display": {
                         "area": DisplayAreas.FOOTER,
                         "index": 0
-                    },
-                    "slot": Slots.EFFECT_SLOT_ID_A
+                    }
                 }
             ]
         },
@@ -73,7 +78,8 @@ Config = {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_B,
             "actions": [
                 {
-                    "type": Actions.TUNER, #Actions.EFFECT_ON_OFF,
+                    "type": Actions.BINARY_PARAMETER,
+                    "mapping": KemperMappings.TUNER_MODE_ON_OFF,
                     "display": {
                         "area": DisplayAreas.FOOTER,
                         "index": 1
@@ -141,12 +147,14 @@ Config = {
 
     # Debug mode. Shows verbose console output. You can listen to that on the serial REPL port via USB on your computer,
     # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 
-    "debug": False,
+    "debug": True,
 
-    "debugDisplay": True,       # Show verbose messages from the display user interface
-    "debugActions": True,       # Show verbose messages from actions
-    "debugSwitches": True,      # Show verbose output for switches (color, brightness) or a switches actions are triggered
-    "debugKemper": True,        # Show all requests and responses to/from the Kemper Profiler
+    "debugDisplay": False,       # Show verbose messages from the display user interface
+    "debugActions": False,       # Show verbose messages from actions
+    "debugSwitches": False,      # Show verbose output for switches (color, brightness) or a switches actions are triggered
+    "debugKemper": True,         # Show all requests and responses to/from the Kemper Profiler
+    "debugMidi": False,          # Debug Adafruit MIDI controller. Normally it is sufficient and more readable to  
+                                 # enable "debugKemper" instead, which also shows the MIDI messages sent and received.
 
     # Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 

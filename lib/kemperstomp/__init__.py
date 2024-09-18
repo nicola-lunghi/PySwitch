@@ -40,11 +40,11 @@ if Tools.get_option(Config, "exploreMode") == True:
     appl.process()
 else:
     # Normal mode
-    from .src.ui.KemperUserInterface import KemperUserInterface
+    from .src.ui.UserInterface import UserInterface
     from .src.controller.KemperStompController import KemperStompController
 
     # Create User interface
-    ui = KemperUserInterface(display, Config["userInterface"], Config["switches"])
+    ui = UserInterface(display, Config["userInterface"], Config["switches"])
 
     # Controller instance (runs the processing loop and keeps everything together)
     appl = KemperStompController(ui, Config)

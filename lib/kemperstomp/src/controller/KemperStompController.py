@@ -6,6 +6,7 @@ from ..hardware.LedDriver import LedDriver
 from ..model.Kemper import Kemper
 from ..Tools import Tools
 from ...config import Config
+from ...mappings import KemperMappings
 
 # Main application class (controls the processing)    
 class KemperStompController:
@@ -13,19 +14,23 @@ class KemperStompController:
         self.ui = ui
         self.config = config
 
-        self.led_driver = LedDriver(self.config["neoPixelPort"], len(self.config["switches"]) * FootSwitch.NUM_PIXELS)    # NeoPixel driver 
-        self.switches = []                                        # Array of registered switches
+        # NeoPixel driver 
+        self.led_driver = LedDriver(self.config["neoPixelPort"], len(self.config["switches"]) * FootSwitch.NUM_PIXELS)    
         
         self._last_update = 0                                     # Used to store the last update timestamp
         self._update_interval_millis = self.config["updateInterval"]     # Update interval (milliseconds)
         self._midiChannel = self.config["midiChannel"]            # MIDI channel to use
         self._midi_buffer_size = self.config["midiBufferSize"]    # MIDI buffer size (default: 60)
-        self._midi_usb = self._get_midi()                         # MIDI communication handler        
         self._current_rig_date = None
 
-        self.kemper = Kemper(self._midi_usb)                      # Kemper adapter instance (wraps all communication with the Profiler)
+        # MIDI communication handler        
+        self._midi = self._get_midi()
+
+        # Kemper interface
+        self.kemper = Kemper(self._midi)
 
         # Set up switches
+        self.switches = []                                        # Array of registered switches        
         self._init_switches()
 
     # Initialize switches
@@ -68,7 +73,7 @@ class KemperStompController:
         start_time = Tools.get_current_millis()
 
         # Receive MIDI messages
-        midimsg = self._midi_usb.receive()
+        midimsg = self._midi.receive()
 
         # Receive rig name / date
         self._parse_rig_info(midimsg)
@@ -80,7 +85,7 @@ class KemperStompController:
         # Update rig info in a certain interval
         if self._last_update + self._update_interval_millis < start_time:
             self._last_update = start_time
-            self.kemper.request_rig_date()
+            self.kemper.request(KemperMappings.MAPPING_RIG_DATE)
 
             # Update switch actions
             for switch in self.switches:
@@ -93,19 +98,20 @@ class KemperStompController:
     def _parse_rig_info(self, midi_message):
         if midi_message == None:
             return
-        
-        rig_name = self.kemper.parse_rig_name(midi_message)
+                
+        rig_name = self.kemper.parse(KemperMappings.MAPPING_RIG_NAME, midi_message)
         if rig_name != None:
             Tools.print(" -> Receiving rig name: " + rig_name.value)
             self.ui.info_text = rig_name.value
 
-        rig_date = self.kemper.parse_rig_date(midi_message)
+        rig_date = self.kemper.parse(KemperMappings.MAPPING_RIG_DATE, midi_message)
         if rig_date != None:
             Tools.print(" -> Receiving rig date: " + rig_date.value)
             if self._current_rig_date != rig_date.value:
                 Tools.print("   -> Rig date was different from " + repr(self._current_rig_date) + ", requesting rig name, too...")
                 self._current_rig_date = rig_date.value
-                self.kemper.request_rig_name()
+                
+                self.kemper.request(KemperMappings.MAPPING_RIG_NAME)
 
 
     

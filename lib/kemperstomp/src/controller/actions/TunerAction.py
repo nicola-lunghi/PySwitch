@@ -1,4 +1,4 @@
-from .base.PushButtonAction import PushButtonAction
+'''from .base.PushButtonAction import PushButtonAction
 from ...model.Kemper import Kemper
 from ...Tools import Tools
 from ....config import Config
@@ -37,3 +37,4 @@ class TunerAction(PushButtonAction):
                 self.label.back_color = Tools.dim_color(KemperDefinitions.TUNER_MODE_COLOR)
     
 
+'''
