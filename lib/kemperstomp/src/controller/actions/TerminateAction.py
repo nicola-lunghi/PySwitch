@@ -1,6 +1,6 @@
 import sys
 
-from .Action import Action
+from .base.Action import Action
 from ....definitions import Colors
 
 
@@ -15,6 +15,6 @@ class TerminateAction(Action):
         if self.label != None:
             self.label.text = "Terminate"
 
-    def trigger(self, event):
+    def push(self):
         sys.exit()
 

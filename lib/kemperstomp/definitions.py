@@ -19,52 +19,72 @@ class Actions:
     #     "type": Actions.EFFECT_ON_OFF
     #     "slot": Slot ID: Use one of the constants defined in Slots, for example Slots.EFFECT_SLOT_A
     # }
-    EFFECT_ON_OFF = 100
+    EFFECT_ON_OFF = "EffectEnableAction"
 
     # Switch tuner mode. 
     # Available options:
     # {
     #     "type": Actions.TUNER
-    #     "mode": Must be either "toggle", "on" or "off"
+    #     "mode": One of the switch modes defined in PushButtonModes, see below
     # }
-    TUNER = 101
+    TUNER = "TunerAction"
 
     #### Internal and development actions #######################################################################################
 
     # Soft-Reboot the device. Useful for development.
-    REBOOT = 1001
+    REBOOT = "RebootAction"
 
     # Terminate the script. Useful for development.
-    TERMINATE = 1002
+    TERMINATE = "TerminateAction"
 
     # Used internally in expore mode to show the pressed IO port. DO NOT USE IN YOUR CONFIGURATION, OR THE CODE WILL CRASH!
-    EXPLORE_IO = 2000
+    EXPLORE_IO = "ExploreIoAction"
 
     # Used internally in expore mode to increase/decrease the enlightened foot switch. DO NOT USE IN YOUR CONFIGURATION, OR THE CODE WILL CRASH!
     # Available options:
     # {
     #     "step": Increment step for selecting the next enlightened switch
     # }
-    EXPLORE_PIXELS = 2001,
+    EXPLORE_PIXELS = "ExplorePixelAction"
 
     # Simple action that prints a fixed text on the console. Used internally.
     # Available options:
     # {
     #     "text": Text string to show
     # }
-    PRINT = 9000
+    PRINT = "PrintAction"
 
+
+#################################################################################################################################
+ 
+
+# Modes for all PushButtonAction subclasses 
+class PushButtonModes:
+    ENABLE = 0                      # Switch the functionality on
+    DISABLE = 10                    # Switch the functionality off
+    LATCH = 20                      # Toggle state on every button push
+    MOMENTARY = 30                  # Enable on push, disable on release
+    MOMENTARY_INVERSE = 40          # Disable on push, Enable on release
+    HOLD_MOMENTARY = 50             # Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is 
+                                    # used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is 
+                                    # used (inverse or not: This depends on the current state of the functionality. When it is
+                                    # on, it will momentarily be switched off and vice versa).
+
+    # Hold time for HOLD_MOMENTARY mode (milliseconds)
+    DEFAULT_LATCH_MOMENTARY_HOLD_TIME = 300  
 
 #################################################################################################################################
 
 
-# Switch events
-class ActionEvents:
-    SWITCH_DOWN = 0   # At pushing the switch down
-    SWITCH_UP = 1     # At releasing the switch
+# Modes for the Tuner action
+class TunerActionModes:
+    TOGGLE = 0      # Toggle tuner mode on/off
+    SWITCH_ON = 1   # Enable tuner mode
+    SWITCH_OFF = 2  # Leave tuner mode
 
 
 #################################################################################################################################
+
 
 # This provides known device definitions, ready to use in the config file.
 class Ports:

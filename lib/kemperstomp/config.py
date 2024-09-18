@@ -5,7 +5,7 @@
 #################################################################################################################################
  
 import board
-from .definitions import Ports, Actions, ActionEvents, Slots, DisplayAreas, Colors
+from .definitions import Ports, Actions, TunerActionModes, PushButtonModes, Slots, DisplayAreas, Colors
 
 Config = {
 
@@ -25,18 +25,14 @@ Config = {
                     # Action type. This determines what the action does, and which configuration options it needs.
                     "type": Actions.EFFECT_ON_OFF,
 
-                    # This defines on which switch events the action should be triggered.
-                    "events": [
-                        ActionEvents.SWITCH_DOWN
-                    ],
-
                     # If this is defined (it is optional!), the action will show stuff on the display.
                     "display": {
                         # Defines the area to put the action label. The available display areas (header, footer) 
                         # will be populated in the order the actions are defined in this file.
                         "area": DisplayAreas.HEADER,
 
-                        # The index inside the above defined display area. Keep all indices of one area 
+                        # The index inside the above defined display area (only applicable if the display area
+                        # supports multiple slots, as the header and footer do)). Keep all indices of one area 
                         # in a row starting from 0 (not 1!), or you will get empty areas!
                         "index": 0
                     },
@@ -52,9 +48,6 @@ Config = {
             "actions": [
                 {
                     "type": Actions.EFFECT_ON_OFF,
-                    "events": [
-                        ActionEvents.SWITCH_DOWN
-                    ],
                     "display": {
                         "area": DisplayAreas.HEADER,
                         "index": 1
@@ -68,9 +61,6 @@ Config = {
             "actions": [
                 {
                     "type": Actions.EFFECT_ON_OFF,
-                    "events": [
-                        ActionEvents.SWITCH_DOWN
-                    ],
                     "display": {
                         "area": DisplayAreas.FOOTER,
                         "index": 0
@@ -84,14 +74,10 @@ Config = {
             "actions": [
                 {
                     "type": Actions.TUNER, #Actions.EFFECT_ON_OFF,
-                    "events": [
-                        ActionEvents.SWITCH_DOWN
-                    ],
                     "display": {
                         "area": DisplayAreas.FOOTER,
                         "index": 1
-                    },
-                    "mode": "toggle"
+                    }
                 }
             ]
         }

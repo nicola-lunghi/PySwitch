@@ -1,6 +1,6 @@
 import supervisor
 
-from .Action import Action
+from .base.Action import Action
 from ....definitions import Colors
 
 
@@ -15,6 +15,6 @@ class RebootAction(Action):
         if self.label != None:
             self.label.text = "Reboot"
 
-    def trigger(self, event):
+    def push(self):
         supervisor.reload()
 

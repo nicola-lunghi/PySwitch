@@ -1,9 +1,9 @@
 import random
 import digitalio
 
-from .actions.ActionFactory import ActionFactory
+from .actions.base.Action import Action
 from ..Tools import Tools
-from ...definitions import Colors, ActionEvents
+from ...definitions import Colors
 from ...config import Config
 
 
@@ -21,9 +21,6 @@ class FootSwitch:
     #     },
     #     "actions": {
     #         "type":               Action type. Allowed values: See the Actions class in kemperstomp_def.py
-    #         "events": [           Array of events to trigger the action 
-    #             ActionEvents.SWITCH_DOWN
-    #         ],
     #         ...                   (individual options depending on the specific action type)
     #     },
     #     "initialColors": [   Initial colors to set. Optional, if not set, the default initial color set is generated.
@@ -54,10 +51,8 @@ class FootSwitch:
     def _init_actions(self):        
         self._print("Init actions")
         
-        action_factory = ActionFactory()
-
         for action_config in self.config["actions"]:
-            action = action_factory.get(
+            action = Action.get_instance(
                 self._appl,
                 self,
                 action_config
@@ -169,7 +164,7 @@ class FootSwitch:
         if self.pushed == False:
             if self._pushed_state == True:
                 self._pushed_state = False
-                self._process_actions_event(ActionEvents.SWITCH_UP)
+                self._process_actions_release()
 
             return
 
@@ -179,14 +174,18 @@ class FootSwitch:
         
         # Mark as pushed (prevents redundant messages in the following ticks, when the switch can still be down)
         self._pushed_state = True
-        self._process_actions_event(ActionEvents.SWITCH_DOWN)
+        self._process_actions_push()
 
     # Processes all actions assigned to the switch if they have the given event registered in their config
-    def _process_actions_event(self, event):
+    def _process_actions_release(self):
         for action in self._actions:
-            if action.has_event(event) == True:
-                self._print("Trigger action " + action.id)
-                action.trigger(event)
+            self._print("Release action " + action.id)
+            action.release()
+
+    def _process_actions_push(self):
+        for action in self._actions:
+            self._print("Push action " + action.id)
+            action.push()
 
     # Executes all action's process() method
     def _process_actions_process(self, midi_message):

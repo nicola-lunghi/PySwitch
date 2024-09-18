@@ -1,10 +1,20 @@
-from ...Tools import Tools
-from ....config import Config
+from ....Tools import Tools
+from .....config import Config
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
 # inheriting from Action.
 class Action:
     
+    # Factory for creating actions by type (= class name of derivative of Action).
+    # All created classes must have the same constructor parameters as this method.
+    @staticmethod
+    def get_instance(appl, switch, config):
+        class_name = config["type"]
+
+        module = __import__("kemperstomp.src.controller.actions." + class_name, globals(), locals(), [class_name])
+        class_def = getattr(module, class_name)
+        return class_def(appl, switch, config)
+
     # config: See FootSwitch    
     def __init__(self, appl, switch, config):
         self.appl = appl
@@ -14,10 +24,12 @@ class Action:
 
         self.label = self._get_action_display()   # DisplayLabel instance the action is connected to (or None).
 
-    # Will be called once to trigger the action (this is not necessarily 
-    # on the down press, you can assign actions to different types of events).
-    # event is one of the ActionEvent constants (for example ActionEvent.SWITCH_DOWN).
-    def trigger(self, event):
+    # Called when the switch is pushed down
+    def push(self):
+        pass
+
+    # Called when the switch is released
+    def release(self):
         pass
 
     # Will be called on every tick, whether a MIDI message has been received or not
@@ -29,14 +41,6 @@ class Action:
     def update(self):
         pass
 
-    # Returns if the action is registered for a given event 
-    # (for example ActionEvent.SWITCH_DOWN)
-    def has_event(self, event):
-        for config_event in self.config["events"]:
-            if config_event == event:
-                return True
-        return False
-    
     # Get the assigned label reference from the UI (or None)
     def _get_action_display(self):
         if Tools.get_option(self.config, "display") == False:

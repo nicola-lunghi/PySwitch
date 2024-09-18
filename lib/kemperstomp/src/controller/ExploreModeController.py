@@ -3,7 +3,7 @@ import board
 from .FootSwitch import FootSwitch
 from ..Tools import Tools
 from ..hardware.LedDriver import LedDriver
-from ...definitions import Actions, ActionEvents, Colors
+from ...definitions import Actions, Colors
 
 
 # Main application class for Explore Mode
@@ -74,23 +74,14 @@ class ExploreModeController:
                 "actions": [
                     {
                         "type": Actions.PRINT,
-                        "events": [
-                            ActionEvents.SWITCH_DOWN
-                        ],
                         "text": "---------------------------------"
                     },
                     {
                         "type": Actions.EXPLORE_IO,
-                        "events": [
-                            ActionEvents.SWITCH_DOWN
-                        ],
                         "name": port_def["name"]
                     },
                     {
                         "type": Actions.EXPLORE_PIXELS,
-                        "events": [
-                            ActionEvents.SWITCH_DOWN
-                        ],
                         "step": scan_step
                     }
                 ],

@@ -1,4 +1,3 @@
-import time
 import usb_midi
 import adafruit_midi 
 
@@ -66,7 +65,7 @@ class KemperStompController:
 
     # Processing loop implementation
     def _tick(self):
-        start_time = self._get_current_millis()
+        start_time = Tools.get_current_millis()
 
         # Receive MIDI messages
         midimsg = self._midi_usb.receive()
@@ -88,7 +87,7 @@ class KemperStompController:
                 switch.update()
 
         # Output statistical info
-        self.ui.set_stats(self._get_current_millis() - start_time)
+        self.ui.set_stats(Tools.get_current_millis() - start_time)
 
     # Parse rig info messages
     def _parse_rig_info(self, midi_message):
@@ -108,7 +107,5 @@ class KemperStompController:
                 self._current_rig_date = rig_date.value
                 self.kemper.request_rig_name()
 
-    # Returns a current timestmap in integer milliseconds
-    def _get_current_millis(self):
-        return int(time.monotonic() * 1000)
+
     

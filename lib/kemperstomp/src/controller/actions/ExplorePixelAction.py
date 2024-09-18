@@ -1,10 +1,10 @@
-from .Action import Action
+from .base.Action import Action
 from ..FootSwitch import FootSwitch
 
 
 # Action to explore switch GPIO assignments (used internally only in explore mode!)
 class ExplorePixelAction(Action):
-    def trigger(self, event):
+    def push(self):
         # Enlighten the next available switch
         currently_shown_switch = self.appl.show_next_switch(self.config["step"])
         if currently_shown_switch == None:
