@@ -3,7 +3,8 @@ from adafruit_midi.system_exclusive import SystemExclusive
 
 from .KemperNRPNMessage import KemperNRPNMessage
 from ..Tools import Tools
-from...config import Config
+from ...config import Config
+from ...definitions import KemperMidi
 
 # Implements all MIDI communication to and from the Kemper
 class Kemper:
@@ -26,7 +27,7 @@ class Kemper:
         if isinstance(mapping.set, KemperNRPNMessage):
             raise Exception("Setting Kemper parameters by NRPN is not implemented yet")
         
-        self._print("Send SET message: " + repr(mapping.set))
+        self._print("Send SET message: " + Tools.stringify_midi_message(mapping.set))
 
         self._midi.send(mapping.set)
 
@@ -35,53 +36,62 @@ class Kemper:
         if mapping.request == None:
             raise Exception("No REQUEST message prepared for this MIDI mapping")
         
-        if isinstance(mapping.set, ControlChange):
+        if mapping.response == None:
+            raise Exception("No response template message prepared for this MIDI mapping")
+        
+        if isinstance(mapping.request, ControlChange):
             raise Exception("Parameter requests do not work with ControlChange. Use KemperNRPNMessage (or SystemExclusive) instead.")
 
-        self._print("Send REQUEST message: " + repr(mapping.request))
+        self._print(" -> Send REQUEST message: " + Tools.stringify_midi_message(mapping.request))
 
         self._midi.send(mapping.request)
 
     # Parses an incoming MIDI message. If the message belongs to the mapping's request,
     # returns the received value. If not, returns None.
     def parse(self, mapping, midi_message):
+        if mapping.response == None:
+            raise Exception("No response template message prepared for this MIDI mapping")
+
         if not isinstance(midi_message, SystemExclusive):
             return None
 
-        response = list(midi_message.data)
-        self._print("Receive message: " + repr(response))
+        if not isinstance(mapping.response, SystemExclusive):
+            return None
         
-        if response[:-3] != [0x00, 0x00, 0x01, 0x00, Slots.SLOT_ADDRESS_PAGE[slot_id]]:
-            # Message does not belong to this slot
+        # Compare manufacturer IDs
+        if midi_message.manufacturer_id != mapping.response.manufacturer_id:
             return None
 
-        if response[5] != response_type:
-            # Message is the wrong response type
-            return None
+        #self._print("RAW Receive : " + Tools.stringify_midi_message(midi_message))
+        #self._print("RAW Template: " + Tools.stringify_midi_message(mapping.response))
 
-        if response[5] == KemperDefinitions.RESPONSE_ID_EFFECT_TYPE:
-            # Response to an effect type request
-            kpp_effect_type = response[-2] * 128 + response[-1]
-            
-            return KemperResponse(
-                KemperDefinitions.RESPONSE_ID_EFFECT_TYPE,
-                self.get_effect_type(kpp_effect_type)
-            )
+        # Get data as integer list from both the incoming message and the response
+        # template in the mapping
+        response = list(midi_message.data)                        
+        template = list(mapping.response.data)        
+
+        # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
+        # and device ID as for the request, however the device just sends two zeroes)
+
+        # Check if the message belongs to the mapping. The following have to match:
+        #   2: function code, 
+        #   3: instance ID, 
+        #   4: address page, 
+        #   5: address nunber
+        if response[2:6] != template[2:6]:
+            return None
         
-        elif response[5] == KemperDefinitions.RESPONSE_ID_EFFECT_STATUS:
-            # Response to an effect status request
-            if (response[-1] == KemperDefinitions.RESPONSE_ANSWER_STATUS_ON):
-                # Effect on
-                return KemperResponse(
-                    KemperDefinitions.RESPONSE_ID_EFFECT_TYPE,
-                    True
-                )
-            elif (response[-1] == KemperDefinitions.RESPONSE_ANSWER_STATUS_OFF):
-                # Effect off
-                return KemperResponse(
-                    KemperDefinitions.RESPONSE_ID_EFFECT_TYPE,
-                    False
-                )
+        # The values starting from index 6 are the value of the response.
+        if mapping.type == KemperMidi.NRPN_PARAMETER_TYPE_STRING:
+            # Take as string
+            value = ''.join(chr(int(c)) for c in response[6:-1])
+        else:
+            # Decode 14-bit value to int
+            value = response[-2] * 128 + response[-1]
+        
+        self._print("   -> Received value " + repr(value) + ": " + Tools.stringify_midi_message(midi_message))
+
+        return value
             
     # Debug console output
     def _print(self, msg):

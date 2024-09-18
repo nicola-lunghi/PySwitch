@@ -63,7 +63,8 @@ class KemperEffectCategories:
     ]    
 
     # Derives the effect category from the effect type returned by the profiler.
-    def get_effect_category(self, kpp_effect_type):
+    @staticmethod
+    def get_effect_category(kpp_effect_type):
         # NOTE: The ranges are defined by Kemper with a lot of unused numbers, so the borders between types
         # could need to be adjusted with future Kemper firmware updates!
         if (kpp_effect_type == 0):
@@ -81,7 +82,7 @@ class KemperEffectCategories:
         elif (64 < kpp_effect_type and kpp_effect_type <= 80):
             return KemperEffectCategories.CATEGORY_CHORUS
         elif (80 < kpp_effect_type and kpp_effect_type <= 95):
-            return KemperEffectCategories.CATEGORY_PHASERFLANGER
+            return KemperEffectCategories.CATEGORY_PHASER_FLANGER
         elif (95 < kpp_effect_type and kpp_effect_type <= 110):
             return KemperEffectCategories.CATEGORY_EQUALIZER
         elif (110 < kpp_effect_type and kpp_effect_type <= 120):

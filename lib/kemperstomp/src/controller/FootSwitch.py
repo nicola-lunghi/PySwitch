@@ -57,6 +57,9 @@ class FootSwitch:
                 self,
                 action_config
             )
+
+            action.update_displays()            
+
             self._actions.append(action)
 
     # Set some initial colors on the neopixels

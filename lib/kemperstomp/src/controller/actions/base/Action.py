@@ -1,5 +1,6 @@
 from ....Tools import Tools
 from .....config import Config
+from .....definitions import Colors
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
 # inheriting from Action.
@@ -41,6 +42,10 @@ class Action:
     def update(self):
         pass
 
+    # Called to update the displays (LEDs and label)
+    def update_displays(self):
+        pass
+
     # Get the assigned label reference from the UI (or None)
     def _get_action_display(self):
         if Tools.get_option(self.config, "display") == False:
@@ -54,7 +59,10 @@ class Action:
         if index >= len(area_labels):
             raise Exception("Invalid label index: " + str(index))
 
-        return area_labels[index]
+        label = area_labels[index]        
+        label.text = Tools.get_option(self.config["display"], "text", "")
+
+        return label
 
     # Print to the debug console
     def print(self, msg):

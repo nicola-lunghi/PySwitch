@@ -10,28 +10,47 @@ import board
 #################################################################################################################################
 
 
-# This defines the available actions. 
+# This defines the available actions. All actions have the following common options.
+#
+# If the display attribute is defined, this defines properties for a display label connected 
+# to the action. Optional: if omitted, no display label will be assigned.
+#
+# {
+#      "type": Type of the action. This determines what the action does, and which configuration options it needs.
+#              Use the constants defined in Actions, for example Actions.EFFECT_ON_OFF.
+# 
+#      "display": {
+#          "area":  ID of the display area. See DisplayAreas defined below.
+#          "index": Position inside the display area. If omitted, always the first place is used which takes up the whole area space.
+#                   Keep all indices of one area sequentially starting from 0 (not 1!), or you will get empty areas!
+#          "text":  Text to show on the display label initially.
+#      }
+# }
 class Actions:
 
     # Switches an effect on/off, if the slot is assigned.
-    # Available options:
+    # Additional options:
     # {
-    #     "type": Actions.EFFECT_ON_OFF
-    #     "slot": Slot ID: Use one of the constants defined in Slots, for example Slots.EFFECT_SLOT_A
+    #     "mode":           Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
+    #     "holdTimeMillis": Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
+    #
+    #     "slot":           Slot ID, for example KemperMidi.EFFECT_SLOT_ID_A
     # }
-    #EFFECT_ON_OFF = "EffectEnableAction"
+    EFFECT_ON_OFF = "EffectEnableAction"
     
     # Generic binary MIDI parameter (on/off)
-    BINARY_PARAMETER = "BinaryParameterAction"
-
-    # Switch tuner mode. 
-    # Available options:
+    # Additional options:
     # {
-    #     "type": Actions.TUNER
-    #     "mode": One of the switch modes defined in PushButtonModes, see below
+    #     "mode":           Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
+    #     "holdTimeMillis": Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
+    #
+    #     "mapping":        A KemperParameterMapping instance. See mappings.py for some predeifined ones.
+    #     "color":          Color for switch and display (optional, default: white).
+    #     "valueEnabled":   Value to be interpreted as "enabled". Optional: Default is 1
+    #     "valueDisabled":  Value to be interpreted as "disabled". Optional: Default is 0
     # }
-    TUNER = "TunerAction"
-
+    BINARY_PARAMETER = "BinaryParameterAction"
+    
     #### Internal and development actions #######################################################################################
 
     # Soft-Reboot the device. Useful for development.
@@ -40,20 +59,22 @@ class Actions:
     # Terminate the script. Useful for development.
     TERMINATE = "TerminateAction"
 
-    # Used internally in expore mode to show the pressed IO port. DO NOT USE IN YOUR CONFIGURATION, OR THE CODE WILL CRASH!
+    # Used internally in expore mode to show the pressed IO port. 
+    # DO NOT USE IN YOUR CONFIGURATION, OR THE CODE WILL CRASH!
     EXPLORE_IO = "ExploreIoAction"
 
-    # Used internally in expore mode to increase/decrease the enlightened foot switch. DO NOT USE IN YOUR CONFIGURATION, OR THE CODE WILL CRASH!
-    # Available options:
+    # Used internally in expore mode to increase/decrease the enlightened foot switch. 
+    # DO NOT USE IN YOUR CONFIGURATION, OR THE CODE WILL CRASH!
+    # Additional options:
     # {
     #     "step": Increment step for selecting the next enlightened switch
     # }
     EXPLORE_PIXELS = "ExplorePixelAction"
 
     # Simple action that prints a fixed text on the console. Used internally.
-    # Available options:
+    # Additional options:
     # {
-    #     "text": Text string to show
+    #     "text": Text string to print on the console
     # }
     PRINT = "PrintAction"
 
@@ -165,7 +186,7 @@ class Colors:
     TEXT_COLOR_DARK = (0, 0, 0)
 
     # Default background color for display slots
-    DEFAULT_SLOT_COLOR = (50, 50, 50)   
+    DEFAULT_LABEL_COLOR = (50, 50, 50)   
 
     # Default color for switches
     DEFAULT_SWITCH_COLOR = (255, 255, 255)
@@ -200,7 +221,7 @@ DisplayAreaDefinitions = [
         
         "layout": {
             "font": "/fonts/H20.pcf",
-            "backColor": Colors.DEFAULT_SLOT_COLOR
+            "backColor": Colors.DEFAULT_LABEL_COLOR
         }
     },
 
@@ -216,7 +237,7 @@ DisplayAreaDefinitions = [
 
         "layout": {
             "font": "/fonts/H20.pcf",
-            "backColor": Colors.DEFAULT_SLOT_COLOR
+            "backColor": Colors.DEFAULT_LABEL_COLOR
         }        
     }
 ]
@@ -228,7 +249,7 @@ DisplayAreaDefinitions = [
 # Kemper ui specific definitions
 class KemperDefinitions:
     # Effect type color assignment
-    EFFECT_COLOR_NONE = Colors.DEFAULT_SLOT_COLOR
+    EFFECT_COLOR_NONE = Colors.DEFAULT_LABEL_COLOR
     EFFECT_COLOR_WAH = Colors.ORANGE
     EFFECT_COLOR_DISTORTION = Colors.RED
     EFFECT_COLOR_COMPRESSOR = Colors.BLUE
@@ -263,7 +284,6 @@ class KemperDefinitions:
 
     # Colors for special modes
     TUNER_MODE_COLOR = Colors.WHITE
-    TUNER_MODE_NAME = "Tuner"
 
 
 #################################################################################################################################
@@ -271,6 +291,7 @@ class KemperDefinitions:
 
 # Kemper MIDI specification related definitions.
 class KemperMidi:
+    
     # IDs for the available effect slots
     EFFECT_SLOT_ID_A = 0
     EFFECT_SLOT_ID_B = 1
@@ -303,6 +324,10 @@ class KemperMidi:
     # Device IDs
     NRPN_DEVICE_ID_OMNI = 0x7f
 
+    # Parameter types
+    NRPN_PARAMETER_TYPE_NUMERIC = 0   # Default, also used for on/off
+    NRPN_PARAMETER_TYPE_STRING = 1
+
     # Slot address pages. Order has to match the one defined above!
     NRPN_SLOT_ADDRESS_PAGE = (
         0x32,   # Slot A
@@ -328,6 +353,9 @@ class KemperMidi:
     # NRPN Function codes
     NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER = 0x41
     NRPN_FUNCTION_REQUEST_STRING_PARAMETER = 0x43
+
+    NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER = 0x01
+    NRPN_FUNCTION_RESPONSE_STRING_PARAMETER = 0x03
 
     # NRPN parameters for effect slots
     NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = 0x00   

@@ -12,9 +12,6 @@ class RebootAction(Action):
         self.switch.colors = (Colors.BLUE, Colors.BLUE, Colors.BLUE)
         self.switch.brightness = 1
 
-        if self.label != None:
-            self.label.text = "Reboot"
-
     def push(self):
         supervisor.reload()
 

@@ -1,120 +1,90 @@
-'''from .base.PushButtonAction import PushButtonAction
-from ...model.Kemper import Kemper
+from .BinaryParameterAction import BinaryParameterAction
+from ...model.KemperEffectCategories import KemperEffectCategories
 from ...Tools import Tools
 from ....config import Config
+from ....mappings import KemperMappings
+from ....definitions import Colors
 
 
 # Implements the effect enable/disable footswitch action
-class EffectEnableAction(PushButtonAction):
+class EffectEnableAction(BinaryParameterAction):
     
-    def __init__(self, appl, switch, config):
+    def __init__(self, appl, switch, config):        
+        # Mapping for status (used by BinaryParameterAction)
+        config["mapping"] = KemperMappings.MAPPING_EFFECT_SLOT_ON_OFF(config["slot"])
+        
         super().__init__(appl, switch, config)
 
-        self._slot_id = self.config["slot"]              # Kemper effect slot ID
-        self._effect_type = -1                           # Effect type (as defined in Kemper class)
+        self._effect_category = KemperEffectCategories.CATEGORY_NONE
+        self._current_category = -1
 
-        self._brightness_not_assigned = Config["ledBrightness"]["notAssigned"]
-        self._brightness_on = Config["ledBrightness"]["on"]
-        self._brightness_off = Config["ledBrightness"]["off"]
+        # Mapping for effect type
+        self._mapping_fxtype = KemperMappings.MAPPING_EFFECT_SLOT_TYPE(self.config["slot"])        
 
-        self._current_display_type = -1
-        self._current_display_status = False
-
-        self.update_displays()
-
-    # Set state (called by base class)
-    def set(self, enabled):
-        # Enable/disable effect slot
-        self.appl.kemper.set_slot_enabled(self._slot_id, enabled)
-
-        # Request status of the effect to update the LEDs
-        self.appl.kemper.request_effect_status(self._slot_id)
-
-        self.update_displays()
-
-    # Request effect type periodically (which itself will trigger a status request)
+    # Request effect type periodically (which itself will trigger a status request).
+    # Does not call super.update because the status is requested here later anyway.
     def update(self):
-        self.appl.kemper.request_effect_type(self._slot_id)
+        if self._mapping_fxtype.can_receive == False:
+            return            
+        
+        self.print("Request type")
+        self.appl.kemper.request(self._mapping_fxtype)
 
-    # Update display and LEDs to the current state and effect type
+    # Update display and LEDs to the current state and effect category
     def update_displays(self):
-        # Only update when type of state have been changed
-        if self._current_display_type == self._effect_type and self._current_display_status == self.state:
+        super().update_displays()
+
+        # Only update when category of state have been changed
+        if self._current_category == self._effect_category:
             return
         
-        self._current_display_type = self._effect_type
-        self._current_display_status = self.state
+        self._current_category = self._effect_category
 
-        # Effect type text
+        # Effect category text
         if self.label != None:
-            self.label.text = Kemper.TYPE_NAMES[self._effect_type]            
+            self.label.text = KemperEffectCategories.CATEGORY_NAMES[self._current_category]            
 
-        # Switch LED color (this is dimmed by brightness and stays the same for all states)
-        self.switch.color = Kemper.TYPE_COLORS[self._effect_type]
-
-        if self._effect_type == Kemper.TYPE_NONE:            
-            # No effect assigned
-            self.switch.brightness = self._brightness_not_assigned
-
-            if self.label != None:
-                self.label.back_color = Tools.dim_color(Kemper.TYPE_COLORS[self._effect_type])
-
-        elif self.state == True:
-            # Switched on
-            self.switch.brightness = self._brightness_on
-
-            if self.label != None:
-                self.label.back_color = Kemper.TYPE_COLORS[self._effect_type]
-
-        else:
-            # Switched off
-            self.switch.brightness = self._brightness_off
-
-            if self.label != None:
-                self.label.back_color = Tools.dim_color(Kemper.TYPE_COLORS[self._effect_type])
-
+    # Returns the color of the switch
+    def get_color(self):
+        if self._effect_category == KemperEffectCategories.CATEGORY_NONE:    
+            return Colors.BLACK   # Disables the LEDs effectively
+        
+        return KemperEffectCategories.CATEGORY_COLORS[self._effect_category]
+    
     # Receive MIDI messages
     def process(self, midi_message):
+        super().process(midi_message)
+        
         # Receive MIDI messages related to this action, only if a MIDI message has been received
         if midi_message == None:
             return
         
-        # Effect type
-        type = self.appl.kemper.parse_effect_type(midi_message, self._slot_id)
-        if type != None:
-            self._receive_type(type)
+        # Get effect type
+        type = self.appl.kemper.parse(self._mapping_fxtype, midi_message)
+        if type == None:
+            return
+        
+        # Convert to effect category
+        category = KemperEffectCategories.get_effect_category(type)
+        self._receive_category(category)
 
-        # Effect status
-        status = self.appl.kemper.parse_effect_status(midi_message, self._slot_id)
-        if status != None:
-            self._receive_status(status)
+    # Receive a category value (instance of KemperResponse)
+    def _receive_category(self, response):
+        self.print(" -> Receiving effect category " + repr(response))
 
-    # Receive a type value (instance of KemperResponse)
-    def _receive_type(self, response):
-        self.print(" -> Receiving effect type " + repr(response.value))
-
-        if response.value == self._effect_type:
-            # Request status also when type has not changed
-            self._request_status()
+        if response == self._effect_category:
+            # Request status also when category has not changed
+            super().update()
             return
 
-        # New effect type
-        self._effect_type = response.value
+        # New effect category
+        self._effect_category = response
+
+        if self._effect_category == KemperEffectCategories.CATEGORY_NONE:
+            self.state = False
 
         self.update_displays()
-        self._request_status()
 
-    # Request status of the effect 
-    def _request_status(self):
-        if self._effect_type == Kemper.TYPE_NONE:
-            return
-                
-        self.appl.kemper.request_effect_status(self._slot_id)
+        # Request status, too
+        super().update()
 
-    # Receive a status value (instance of KemperResponse)
-    def _receive_status(self, response):
-        self.print(" -> Receiving effect status " + repr(response.value))
-
-        self.feedback_state(response.value)
-        self.update_displays()
-'''

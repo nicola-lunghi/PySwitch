@@ -101,15 +101,15 @@ class KemperStompController:
                 
         rig_name = self.kemper.parse(KemperMappings.MAPPING_RIG_NAME, midi_message)
         if rig_name != None:
-            Tools.print(" -> Receiving rig name: " + rig_name.value)
-            self.ui.info_text = rig_name.value
+            Tools.print(" -> Receiving rig name: " + rig_name)
+            self.ui.info_text = rig_name
 
         rig_date = self.kemper.parse(KemperMappings.MAPPING_RIG_DATE, midi_message)
         if rig_date != None:
-            Tools.print(" -> Receiving rig date: " + rig_date.value)
-            if self._current_rig_date != rig_date.value:
+            Tools.print(" -> Receiving rig date: " + rig_date)
+            if self._current_rig_date != rig_date:
                 Tools.print("   -> Rig date was different from " + repr(self._current_rig_date) + ", requesting rig name, too...")
-                self._current_rig_date = rig_date.value
+                self._current_rig_date = rig_date
                 
                 self.kemper.request(KemperMappings.MAPPING_RIG_NAME)
 

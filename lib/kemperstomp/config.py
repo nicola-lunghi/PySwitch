@@ -23,26 +23,10 @@ Config = {
             # define as many actions as you want, they will be executed in that order.
             "actions": [
                 {
-                    # Action type. This determines what the action does, and which configuration options it needs.
-                    "type": Actions.BINARY_PARAMETER,
-
-                    # MIDI mapping for the BINARY_PARAMETER Action.
-                    "mapping": KemperMappings.MAPPING_EFFECT_SLOT_ON_OFF(KemperMidi.EFFECT_SLOT_ID_A),
-
-                    # On/off values for the BINARY_PARAMETER Action.
-                    "valueEnabled": KemperMidi.NRPN_PARAMETER_ON,
-                    "valueDisabled": KemperMidi.NRPN_PARAMETER_OFF,
-
-                    # If this is defined (it is optional!), the action will show stuff on the display. Valid
-                    # for all action types which want to make use of the display, but optional.
+                    "type": Actions.EFFECT_ON_OFF,
+                    "slot": KemperMidi.EFFECT_SLOT_ID_A,
                     "display": {
-                        # Defines the area to put the action label. The available display areas (header, footer) 
-                        # will be populated in the order the actions are defined in this file.
                         "area": DisplayAreas.HEADER,
-
-                        # The index inside the above defined display area (only applicable if the display area
-                        # supports multiple slots, as the header and footer do)). Keep all indices of one area 
-                        # in a row starting from 0 (not 1!), or you will get empty areas!
                         "index": 0
                     }
                 }
@@ -52,8 +36,9 @@ Config = {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_2,
             "actions": [
                 {
-                    "type": Actions.BINARY_PARAMETER,                    
-                    "mapping": KemperMappings.MAPPING_EFFECT_SLOT_ON_OFF(KemperMidi.EFFECT_SLOT_ID_B),
+                    "type": Actions.EFFECT_ON_OFF,
+                    "slot": KemperMidi.EFFECT_SLOT_ID_B,
+                    "color": Colors.PURPLE,
                     "display": {
                         "area": DisplayAreas.HEADER,
                         "index": 1
@@ -65,11 +50,11 @@ Config = {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_A,
             "actions": [
                 {
-                    "type": Actions.BINARY_PARAMETER,                    
-                    "mapping": KemperMappings.MAPPING_EFFECT_SLOT_ON_OFF(KemperMidi.EFFECT_SLOT_ID_B),
+                    "type": Actions.REBOOT,
                     "display": {
                         "area": DisplayAreas.FOOTER,
-                        "index": 0
+                        "index": 0,
+                        "text": "Reboot"
                     }
                 }
             ]
@@ -79,10 +64,11 @@ Config = {
             "actions": [
                 {
                     "type": Actions.BINARY_PARAMETER,
-                    "mapping": KemperMappings.TUNER_MODE_ON_OFF,
+                    "mapping": KemperMappings.TUNER_MODE_ON_OFF,                    
                     "display": {
                         "area": DisplayAreas.FOOTER,
-                        "index": 1
+                        "index": 1,
+                        "text": "Tuner"
                     }
                 }
             ]
@@ -147,12 +133,12 @@ Config = {
 
     # Debug mode. Shows verbose console output. You can listen to that on the serial REPL port via USB on your computer,
     # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 
-    "debug": True,
+    "debug": False,
 
     "debugDisplay": False,       # Show verbose messages from the display user interface
-    "debugActions": False,       # Show verbose messages from actions
-    "debugSwitches": False,      # Show verbose output for switches (color, brightness) or a switches actions are triggered
-    "debugKemper": True,         # Show all requests and responses to/from the Kemper Profiler
+    "debugActions": True,       # Show verbose messages from actions
+    "debugSwitches": True,      # Show verbose output for switches (color, brightness) or a switches actions are triggered
+    "debugKemper": False,        # Show all requests and responses to/from the Kemper Profiler
     "debugMidi": False,          # Debug Adafruit MIDI controller. Normally it is sufficient and more readable to  
                                  # enable "debugKemper" instead, which also shows the MIDI messages sent and received.
 

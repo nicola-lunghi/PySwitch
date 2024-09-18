@@ -12,9 +12,6 @@ class TerminateAction(Action):
         self.switch.colors = (Colors.YELLOW, Colors.YELLOW, Colors.YELLOW)
         self.switch.brightness = 1
 
-        if self.label != None:
-            self.label.text = "Terminate"
-
     def push(self):
         sys.exit()
 

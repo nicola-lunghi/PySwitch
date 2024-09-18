@@ -20,7 +20,7 @@ class BinaryParameterAction(PushButtonAction):
         self._brightness_off = Config["ledBrightness"]["off"]
 
         self._current_display_status = -1
-        self.update_displays()
+        self._current_color = -1
 
     # Set state (called by base class)
     def set(self, enabled):
@@ -32,11 +32,17 @@ class BinaryParameterAction(PushButtonAction):
         else:
             self.appl.kemper.set(self._mapping, self._value_off)
 
-        self.appl.kemper.request(self._mapping)
+        self.request_value()
+
         self.update_displays()
 
     # Request real state from controlled device
     def update(self):
+        self.request_value()
+
+    # Request parameter value
+    def request_value(self):
+        self.print("Request value")
         if self._mapping.can_receive == False:
             return            
         
@@ -44,21 +50,42 @@ class BinaryParameterAction(PushButtonAction):
 
     # Update display and LEDs to the current state
     def update_displays(self):
-        # Only update when type of state have been changed
-        if self._current_display_status == self.state:
-            return
+        # Set color, if new
+        color = self.get_color()        
+        if color != self._current_color:
+            self._current_color = color
         
-        self._current_display_status = self.state
+            # Update switch LED color 
+            self.switch.color = color 
 
-        # Switch LED color 
-        self.switch.color = self.get_color() 
+            self._update_switch_brightness()
+            self._update_label_color()
+    
+        # Only update when type of state have been changed
+        if self._current_display_status != self.state:
+            self._current_display_status = self.state
 
+            self._update_switch_brightness()
+            self._update_label_color()
+
+    # Update switch brightness
+    def _update_switch_brightness(self):
         if self.state == True:
             # Switched on
             self.switch.brightness = self._brightness_on
         else:
             # Switched off
             self.switch.brightness = self._brightness_off
+
+    # Update label color, if any
+    def _update_label_color(self):
+        if self.label == None:
+            return
+            
+        if self.state == True:
+            self.label.back_color = self.get_color()
+        else:
+            self.label.back_color = Tools.dim_color(self.get_color())
 
     # Returns the color of the switch
     def get_color(self):
@@ -75,7 +102,8 @@ class BinaryParameterAction(PushButtonAction):
 
     # Receive a status value (instance of KemperResponse)
     def _receive_status(self, response):
-        self.print(" -> Receiving binary switch status " + repr(response.value))
+        self.print(" -> Receiving binary switch status " + repr(response))
 
-        self.feedback_state(response.value)
+        self.feedback_state(response)
+        
         self.update_displays()

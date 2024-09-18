@@ -27,6 +27,11 @@ class KemperMappings:
                 KemperMidi.NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
                 KemperMidi.NRPN_SLOT_ADDRESS_PAGE[slot_id],
                 KemperMidi.NRPN_EFFECT_PARAMETER_ADDRESS_ON_OFF
+            ),
+            response = KemperNRPNMessage(
+                KemperMidi.NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+                KemperMidi.NRPN_SLOT_ADDRESS_PAGE[slot_id],
+                KemperMidi.NRPN_EFFECT_PARAMETER_ADDRESS_ON_OFF
             )
         )
     
@@ -38,6 +43,11 @@ class KemperMappings:
                 KemperMidi.NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
                 KemperMidi.NRPN_SLOT_ADDRESS_PAGE[slot_id],
                 KemperMidi.NRPN_EFFECT_PARAMETER_ADDRESS_TYPE
+            ),
+            response = KemperNRPNMessage(               
+                KemperMidi.NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, 
+                KemperMidi.NRPN_SLOT_ADDRESS_PAGE[slot_id],
+                KemperMidi.NRPN_EFFECT_PARAMETER_ADDRESS_TYPE
             )
         )
 
@@ -47,7 +57,13 @@ class KemperMappings:
             KemperMidi.NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
             KemperMidi.NRPN_ADDRESS_PAGE_STRINGS,
             KemperMidi.NRPN_STRING_PARAMETER_ID_RIG_NAME
-        )
+        ),
+        response = KemperNRPNMessage(
+            KemperMidi.NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
+            KemperMidi.NRPN_ADDRESS_PAGE_STRINGS,
+            KemperMidi.NRPN_STRING_PARAMETER_ID_RIG_NAME
+        ),
+        type = KemperMidi.NRPN_PARAMETER_TYPE_STRING
     )
 
     # Rig date (request only)
@@ -56,7 +72,13 @@ class KemperMappings:
             KemperMidi.NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
             KemperMidi.NRPN_ADDRESS_PAGE_STRINGS,
             KemperMidi.NRPN_STRING_PARAMETER_ID_RIG_DATE
-        )
+        ),
+        response = KemperNRPNMessage(
+            KemperMidi.NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
+            KemperMidi.NRPN_ADDRESS_PAGE_STRINGS,
+            KemperMidi.NRPN_STRING_PARAMETER_ID_RIG_DATE
+        ),
+        type = KemperMidi.NRPN_PARAMETER_TYPE_STRING
     )
 
     # Switch tuner mode on/off (no receive possible!)
