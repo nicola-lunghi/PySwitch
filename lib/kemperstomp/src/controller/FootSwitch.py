@@ -10,9 +10,6 @@ from ...config import Config
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
 class FootSwitch:
 
-    # Number of NeoPixels for one Footswitch
-    NUM_PIXELS = 3
-
     # config must be a dictionary holding the following attributes:
     # { 
     #     "assignment": {
@@ -39,7 +36,7 @@ class FootSwitch:
         self._appl = appl
         self._actions = []
         self._colors = [(0, 0, 0), (0, 0, 0), (0, 0, 0)]
-        self._brightness = 0
+        self._brightnesses = [0, 0, 0]
         self._pushed_state = False
         self.id = Tools.get_option(self.config["assignment"], "name", repr(self._port))
 
@@ -55,7 +52,8 @@ class FootSwitch:
             action = Action.get_instance(
                 self._appl,
                 self,
-                action_config
+                action_config,
+                index = len(self._actions)
             )
 
             action.update_displays()            
@@ -134,28 +132,42 @@ class FootSwitch:
         for i in range(len(self._colors)):
             self._colors[i] = color
 
-    # Returns current brightness
+    # Returns current brightness (this just uses the first one)
     @property
     def brightness(self):
-        return self._brightness
+        return self.brightnesses[0]
 
-    # Set brightness
+    # Set brightness equally of all LEDs
     @brightness.setter
     def brightness(self, brightness):
+        self.brightnesses = [brightness, brightness, brightness]
+    
+    # Returns current brightnesses of all LEDs
+    @property
+    def brightnesses(self):
+        return self._brightnesses
+
+    # Set brightnesses of all LEDs
+    @brightnesses.setter
+    def brightnesses(self, brightnesses):
         if self.pixels == False:
             return
         
-        self._print(" -> Set brightness to " + repr(brightness))
+        self._print(" -> Set brightnesses to " + repr(brightnesses))
 
         for i in range(len(self._colors)):
             pixel = self.pixels[i]
             self._appl.led_driver.leds[pixel] = (
-                int(self._colors[i][0] * brightness),   # R
-                int(self._colors[i][1] * brightness),   # G
-                int(self._colors[i][2] * brightness)    # B
+                int(self._colors[i][0] * brightnesses[i]),   # R
+                int(self._colors[i][1] * brightnesses[i]),   # G
+                int(self._colors[i][2] * brightnesses[i])    # B
             )
 
-        self._brightness = brightness
+        self._brightnesses = brightnesses
+
+    @property
+    def num_actions(self):
+        return len(self.config["actions"])
 
     # Process the switch: Check if it is currently pushed, set state accordingly
     # and send the MIDI messages configured.
@@ -176,6 +188,11 @@ class FootSwitch:
         self._pushed_state = True
         self._process_actions_push()
 
+    # Called every update interval
+    def update(self):
+        for action in self._actions:
+            action.update()
+
     # Processes all push actions assigned to the switch 
     def _process_actions_push(self):
         for action in self._actions:
@@ -187,11 +204,6 @@ class FootSwitch:
         for action in self._actions:
             self._print("Release action " + action.id)
             action.release()
-
-    # Called every update interval
-    def update(self):
-        for action in self._actions:
-            action.update()
 
     # Debug console output
     def _print(self, msg):

@@ -94,6 +94,9 @@ class ActionDefaults:
 # Some default values for switches
 class FootSwitchDefaults:
 
+    # Number of NeoPixels for one Footswitch
+    NUM_PIXELS = 3
+
     # Brightness values matching the colors well (i prefer darker lights, use other values) range: [0..1]
     DEFAULT_BRIGHTNESS_ON = 0.25
     DEFAULT_BRIGHTNESS_OFF = 0.01

@@ -11,8 +11,8 @@ class PushButtonAction(Action):
     #      "mode": Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
     #      "holdTimeMillis": Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
     # }
-    def __init__(self, appl, switch, config):
-        super().__init__(appl, switch, config)
+    def __init__(self, appl, switch, config, index):
+        super().__init__(appl, switch, config, index)
 
         self._mode = Tools.get_option(self.config, "mode", PushButtonModes.HOLD_MOMENTARY)
         self._hold_time_ms = Tools.get_option(self.config, "holdTimeMillis", PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME)
@@ -28,6 +28,9 @@ class PushButtonAction(Action):
     # use feedback_state().
     @state.setter
     def state(self, state):
+        if state == self._state:
+            return
+        
         self._state = state
         self.set(self._state)
 

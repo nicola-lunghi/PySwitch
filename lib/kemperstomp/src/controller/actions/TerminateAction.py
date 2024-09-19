@@ -6,11 +6,11 @@ from ....definitions import Colors
 
 # Action to reboot the device (for development)
 class TerminateAction(Action):
-    def __init__(self, appl, switch, config):
-        super().__init__(appl, switch, config)
+    def __init__(self, appl, switch, config, index):
+        super().__init__(appl, switch, config, index)
 
-        self.switch.colors = (Colors.YELLOW, Colors.YELLOW, Colors.YELLOW)
-        self.switch.brightness = 1
+        self.switch_color = Colors.YELLOW
+        self.switch_brightness = 1
 
     def push(self):
         sys.exit()

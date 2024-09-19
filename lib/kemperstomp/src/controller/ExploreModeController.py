@@ -2,7 +2,7 @@ import board
 
 from .FootSwitch import FootSwitch
 from ..hardware.LedDriver import LedDriver
-from ...definitions import Actions, Colors
+from ...definitions import Actions, Colors, FootSwitchDefaults
 
 
 # Main application class for Explore Mode
@@ -20,7 +20,7 @@ class ExploreModeController:
         # NeoPixel driver, initialized to the maximum possible LEDs
         self.led_driver = LedDriver(
             self.config["neoPixelPort"], 
-            len(available_ports) * FootSwitch.NUM_PIXELS
+            len(available_ports) * FootSwitchDefaults.NUM_PIXELS
         )
 
         ports_assigned = self._init_switches(available_ports)
@@ -99,7 +99,7 @@ class ExploreModeController:
 
     # Determine pixel addressing for a switch index, assuming they are linear
     def _calculate_pixels(self, index):
-        i = index * FootSwitch.NUM_PIXELS
+        i = index * FootSwitchDefaults.NUM_PIXELS
         return (
             i, 
             i + 1, 

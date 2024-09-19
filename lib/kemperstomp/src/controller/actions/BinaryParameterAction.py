@@ -8,8 +8,8 @@ from ....config import Config
 # Implements bipolar parameters on base of the PushButtonAction class
 class BinaryParameterAction(PushButtonAction, KemperRequestListener):
     
-    def __init__(self, appl, switch, config):
-        super().__init__(appl, switch, config)
+    def __init__(self, appl, switch, config, index):
+        super().__init__(appl, switch, config, index)
 
         self.color = Tools.get_option(self.config, "color", Colors.DEFAULT_SWITCH_COLOR)
 
@@ -69,14 +69,14 @@ class BinaryParameterAction(PushButtonAction, KemperRequestListener):
     # Update switch brightness
     def set_switch_color(self, color):
         # Update switch LED color 
-        self.switch.color = color
+        self.switch_color = color
 
         if self.state == True:
             # Switched on
-            self.switch.brightness = self._brightness_on
+            self.switch_brightness = self._brightness_on
         else:
             # Switched off
-            self.switch.brightness = self._brightness_off
+            self.switch_brightness = self._brightness_off
 
     # Update label color, if any
     def set_label_color(self, color):

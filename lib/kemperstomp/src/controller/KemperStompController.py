@@ -8,7 +8,7 @@ from ..model.KemperRequest import KemperRequestListener
 from ..Tools import Tools
 from ...config import Config
 from ...mappings import KemperMappings
-from ...definitions import KemperDefinitions
+from ...definitions import KemperDefinitions, FootSwitchDefaults
 
 
 # Main application class (controls the processing)    
@@ -18,7 +18,7 @@ class KemperStompController(KemperRequestListener):
         self.config = config
 
         # NeoPixel driver 
-        self.led_driver = LedDriver(self.config["neoPixelPort"], len(self.config["switches"]) * FootSwitch.NUM_PIXELS)    
+        self.led_driver = LedDriver(self.config["neoPixelPort"], len(self.config["switches"]) * FootSwitchDefaults.NUM_PIXELS)    
         
         self._last_update = 0                                     # Used to store the last update timestamp
         self._update_interval_millis = self.config["updateInterval"]     # Update interval (milliseconds)
@@ -78,10 +78,10 @@ class KemperStompController(KemperRequestListener):
         # Receive MIDI messages
         midimsg = self._midi.receive()
 
-        # Process the listeners
+        # Process the midi message
         self.kemper.receive(midimsg)
 
-        # Process all switches
+        # Process all switches 
         for switch in self.switches:
             switch.process(midimsg)
         

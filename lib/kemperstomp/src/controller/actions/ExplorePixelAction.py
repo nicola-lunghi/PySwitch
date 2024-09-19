@@ -1,6 +1,5 @@
 from .base.Action import Action
-from ..FootSwitch import FootSwitch
-
+from ....definitions import FootSwitchDefaults
 
 # Action to explore switch GPIO assignments (used internally only in explore mode!)
 class ExplorePixelAction(Action):
@@ -10,7 +9,7 @@ class ExplorePixelAction(Action):
         if currently_shown_switch == None:
             return
         
-        num_switch_leds = len(self.appl.switches) * FootSwitch.NUM_PIXELS
+        num_switch_leds = len(self.appl.switches) * FootSwitchDefaults.NUM_PIXELS
 
         print("Pixels: (" 
                 + str(currently_shown_switch[0]) + ", " 

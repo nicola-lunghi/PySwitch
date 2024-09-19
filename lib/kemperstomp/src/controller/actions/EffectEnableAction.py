@@ -10,11 +10,11 @@ from ....definitions import Colors, ActionDefaults
 # Implements the effect enable/disable footswitch action
 class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
     
-    def __init__(self, appl, switch, config):        
+    def __init__(self, appl, switch, config, index):        
         # Mapping for status (used by BinaryParameterAction)
         config["mapping"] = KemperMappings.MAPPING_EFFECT_SLOT_ON_OFF(config["slot"])
         
-        super().__init__(appl, switch, config)
+        super().__init__(appl, switch, config, index)
 
         self._effect_category = KemperEffectCategories.CATEGORY_NONE        
         self._current_category = -1
@@ -22,7 +22,8 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
         # Mapping for effect type
         self._mapping_fxtype = KemperMappings.MAPPING_EFFECT_SLOT_TYPE(self.config["slot"])
 
-        self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", ActionDefaults.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)
+        if self.label != None:
+            self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", ActionDefaults.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)
 
     # Request effect type periodically (which itself will trigger a status request).
     # Does not call super.update because the status is requested here later anyway.
@@ -35,10 +36,9 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
 
     # Update display and LEDs to the current state and effect category
     def update_displays(self):
-        super().update_displays()
-
         # Only update when category of state have been changed
         if self._current_category == self._effect_category:
+            super().update_displays()
             return
         
         self._current_category = self._effect_category
@@ -50,6 +50,8 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
         if self.label != None:
             self.label.text = KemperEffectCategories.CATEGORY_NAMES[self._current_category]            
     
+        super().update_displays()
+
     # Update switch brightness
     def set_switch_color(self, color):
         if self._effect_category == KemperEffectCategories.CATEGORY_NONE:
@@ -60,6 +62,9 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
     
     # Update label color, if any
     def set_label_color(self, color):
+        if self.label == None:
+            return
+        
         if self._effect_category == KemperEffectCategories.CATEGORY_NONE:
             # Do not dim the color when not assigned (this makes it black effectively) 
             self.label.back_color = color
