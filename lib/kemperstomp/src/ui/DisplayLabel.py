@@ -25,10 +25,10 @@ class DisplayLabel:
         self.ui = ui
         self.layout = layout
         
-        self.x = int(x)
-        self.y = int(y)
-        self.width = int(width)
-        self.height = int(height)
+        self._x = int(x)
+        self._y = int(y)
+        self._width = int(width)
+        self._height = int(height)
 
         self._font = self.ui.font_loader.get(self.layout["font"])
 
@@ -78,7 +78,77 @@ class DisplayLabel:
         group.append(self._label) 
         
         self._label_splash_address = len(self.ui.splash)
-        self.ui.splash.append(group)        
+        self.ui.splash.append(group)    
+
+    # Sets all dimensions at once
+    def set_dimensions(self, x, y, w, h):
+        self._x = x
+        self._y = y
+        self._width = w
+        self._height = h
+
+        self._label.x = x
+        self._label.y = y
+        self._label.width = w
+        self._label.height = h
+
+        self._update_background()
+
+    @property
+    def x(self):
+        return self._x
+    
+    @x.setter
+    def x(self, value):
+        if self._x == value:
+            return
+        
+        self._x = value        
+
+        self._label.x = value
+        self._update_background()
+
+    @property
+    def y(self):
+        return self._y
+    
+    @x.setter
+    def y(self, value):
+        if self._y == value:
+            return
+        
+        self._y = value        
+
+        self._label.y = value
+        self._update_background()
+
+    @property
+    def width(self):
+        return self._width
+    
+    @x.setter
+    def width(self, value):
+        if self._width == value:
+            return
+        
+        self._width = value        
+
+        self._label.width = value
+        self._update_background()
+
+    @property
+    def height(self):
+        return self._height
+    
+    @x.setter
+    def height(self, value):
+        if self._height == value:
+            return
+        
+        self._height = value        
+
+        self._label.height = value
+        self._update_background()    
 
     @property
     def back_color(self):
@@ -163,6 +233,16 @@ class DisplayLabel:
 
     # Create background Rect
     def _create_background(self, color):
+        print(self.x)
+        print(self.y)
+        print(self.width)
+        print(self.height)
+
+        print(self._x)
+        print(self._y)
+        print(self._width)
+        print(self._height)
+
         if self._corner_radius <= 0:
             return Rect(
                 self.x, 
@@ -184,7 +264,6 @@ class DisplayLabel:
                 stroke = 1,
                 r = self._corner_radius
             )
-
 
     # Determines a matching text color to the current background color.
     # Algorithm adapted from https://nemecek.be/blog/172/how-to-calculate-contrast-color-in-python

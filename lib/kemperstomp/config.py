@@ -5,7 +5,8 @@
 #################################################################################################################################
  
 import board
-from .definitions import Ports, Actions, PushButtonModes, DisplayAreas, Colors, FootSwitchDefaults, KemperDefinitions
+from .definitions import Ports, Actions, PushButtonModes, Colors, FootSwitchDefaults
+from .display import DisplayAreas
 from .mappings import KemperMidi, KemperMappings
 
 Config = {
@@ -81,15 +82,6 @@ Config = {
 
     # Parameters of the user interface
     "userInterface": {
-        # Layout for the info area (rig name) label
-        "infoAreaLayout": {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf",     # Font path (mandatory)
-            "lineSpacing": 0.8,                            # Line spacing (optional) default: 1
-            "maxTextWidth": 220,                           # Maximum text width in pixels (for example: 220 at a display width of 240), optional
-            "textColor": (215, 255, 255),                  # Text color (optional, default is automatic detection by back color)
-            "text": KemperDefinitions.OFFLINE_RIG_NAME     # Initial text
-        },
-
         # Shows an area with statistics (for debugging)
         "showFrameStats": False,
 

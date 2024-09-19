@@ -20,7 +20,7 @@ import board
 #              Use the constants defined in Actions, for example Actions.EFFECT_ON_OFF.
 # 
 #      "display": {
-#          "area":         ID of the display area. See DisplayAreas defined below.
+#          "area":         ID of the display area. See display.py.
 #          "index":        Position inside the display area. If omitted, always the first place is used which takes up the whole area space.
 #                          Keep all indices of one area sequentially starting from 0 (not 1!), or you will get empty areas!
 #          "text":         Text to show on the display label initially.
@@ -124,16 +124,6 @@ class PushButtonModes:
 #################################################################################################################################
 
 
-# Modes for the Tuner action
-class TunerActionModes:
-    TOGGLE = 0      # Toggle tuner mode on/off
-    SWITCH_ON = 1   # Enable tuner mode
-    SWITCH_OFF = 2  # Leave tuner mode
-
-
-#################################################################################################################################
-
-
 # This provides known device definitions, ready to use in the config file.
 class Ports:
     # PaintAudio MIDI Captain Nano (4 Switches)
@@ -190,7 +180,7 @@ class Ports:
 #################################################################################################################################
 
 
-# Color definitions
+# Color definitions (used for LEDs and labels)
 class Colors:
     WHITE = (255, 255, 255)
     YELLOW = (255, 255, 0)
@@ -214,59 +204,6 @@ class Colors:
 
     # Default color for switches
     DEFAULT_SWITCH_COLOR = (255, 255, 255)
-
-
-#################################################################################################################################
-
-
-# Just used locally here!
-DISPLAY_WIDTH = 240
-DISPLAY_HEIGHT = 240
-SLOT_HEIGHT = 40           # Slot height on the display
-
-
-# Display area IDs for the (optional) switch displays
-class DisplayAreas:
-    HEADER = 0
-    FOOTER = 10
-
-
-# Display area definitions
-DisplayAreaDefinitions = [
-    # Header area
-    {
-        "area": DisplayAreas.HEADER,
-        "name": "Header",
-
-        "x": 0,
-        "y": 0,
-        "width": DISPLAY_WIDTH,
-        "height": SLOT_HEIGHT,
-        
-        "layout": {
-            "font": "/fonts/H20.pcf",
-            "backColor": Colors.DEFAULT_LABEL_COLOR,
-            "cornerRadius": 5
-        }
-    },
-
-    # Footer area
-    {
-        "area": DisplayAreas.FOOTER,
-        "name": "Footer",
-
-        "x": 0,
-        "y": DISPLAY_HEIGHT - SLOT_HEIGHT,
-        "width": DISPLAY_WIDTH,
-        "height": SLOT_HEIGHT,
-
-        "layout": {
-            "font": "/fonts/H20.pcf",
-            "backColor": Colors.DEFAULT_LABEL_COLOR,
-            "cornerRadius": 5
-        }        
-    }
-]
 
 
 #################################################################################################################################
@@ -399,3 +336,5 @@ class KemperMidi:
     # NRPN String parameters
     NRPN_STRING_PARAMETER_ID_RIG_NAME = 0x01
     NRPN_STRING_PARAMETER_ID_RIG_DATE = 0x03
+
+

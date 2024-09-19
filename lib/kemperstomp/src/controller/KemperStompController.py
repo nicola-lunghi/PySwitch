@@ -9,6 +9,7 @@ from ..Tools import Tools
 from ...config import Config
 from ...mappings import KemperMappings
 from ...definitions import KemperDefinitions, FootSwitchDefaults
+from ...display import DisplayAreas
 
 
 # Main application class (controls the processing)    
@@ -96,13 +97,13 @@ class KemperStompController(KemperRequestListener):
                 switch.update()
 
         # Output statistical info
-        self.ui.set_stats(Tools.get_current_millis() - start_time)
+        self.ui.area(DisplayAreas.STATISTICS).text = str(Tools.get_current_millis() - start_time) + "ms"
 
     # Listen to Kemper value returns
     def parameter_changed(self, mapping):
         if mapping == KemperMappings.MAPPING_RIG_NAME:
             Tools.print(" -> Receiving rig name: " + mapping.value)
-            self.ui.info_text = mapping.value
+            self.ui.area(DisplayAreas.INFO).text = mapping.value
 
         if mapping == KemperMappings.MAPPING_RIG_DATE:
             Tools.print(" -> Receiving rig date: " + mapping.value)
@@ -117,7 +118,7 @@ class KemperStompController(KemperRequestListener):
     def request_terminated(self, mapping):
         if mapping == KemperMappings.MAPPING_RIG_NAME:
             Tools.print(" -> Request for rig name failed, is the device offline?")
-            self.ui.info_text = KemperDefinitions.OFFLINE_RIG_NAME
+            self.ui.area(DisplayAreas.INFO).text = KemperDefinitions.OFFLINE_RIG_NAME
 
         if mapping == KemperMappings.MAPPING_RIG_DATE:
             Tools.print(" -> Request for rig date failed, is the device offline?")

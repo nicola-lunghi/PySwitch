@@ -25,8 +25,8 @@ from .src.hardware.DisplayDriver import DisplayDriver
 from .src.Tools import Tools
 
 # Initialize Display first to get console output on config errors
-display = DisplayDriver(240, 240)
-display.init()
+display_driver = DisplayDriver(240, 240)
+display_driver.init()
 
 # Load configuration
 from .config import Config
@@ -44,7 +44,7 @@ else:
     from .src.controller.KemperStompController import KemperStompController
 
     # Create User interface
-    ui = UserInterface(display, Config["userInterface"], Config["switches"])
+    ui = UserInterface(display_driver, Config["userInterface"])
 
     # Controller instance (runs the processing loop and keeps everything together)
     appl = KemperStompController(ui, Config)

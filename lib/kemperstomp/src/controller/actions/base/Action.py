@@ -86,17 +86,9 @@ class Action:
     def _get_action_display(self):
         if Tools.get_option(self.config, "display") == False:
             return None
-        
-        display_area = self.config["display"]["area"]
-        index = self.config["display"]["index"]
-
-        area_labels = self.appl.ui.labels(display_area)
-        
-        if index >= len(area_labels):
-            raise Exception("Invalid label index: " + str(index))
-
+                
         # Set initial properties
-        label = area_labels[index]
+        label = self.appl.ui.get_label(self.config["display"])
         label.text = Tools.get_option(self.config["display"], "text", "")
         label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", label.corner_radius)
 
