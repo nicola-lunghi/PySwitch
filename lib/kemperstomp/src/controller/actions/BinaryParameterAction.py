@@ -10,8 +10,9 @@ class BinaryParameterAction(PushButtonAction):
     def __init__(self, appl, switch, config):
         super().__init__(appl, switch, config)
 
+        self.color = Tools.get_option(self.config, "color", Colors.DEFAULT_SWITCH_COLOR)
+
         self._mapping = self.config["mapping"]
-        self._color = Tools.get_option(self.config, "color", Colors.DEFAULT_SWITCH_COLOR)
         self._value_on = Tools.get_option(self.config, "valueEnabled", KemperMidi.NRPN_PARAMETER_ON)
         self._value_off = Tools.get_option(self.config, "valueDisabled", KemperMidi.NRPN_PARAMETER_OFF)
         
@@ -51,25 +52,24 @@ class BinaryParameterAction(PushButtonAction):
     # Update display and LEDs to the current state
     def update_displays(self):
         # Set color, if new
-        color = self.get_color()        
-        if color != self._current_color:
-            self._current_color = color
+        if self.color != self._current_color:
+            self._current_color = self.color
         
-            # Update switch LED color 
-            self.switch.color = color 
-
-            self._update_switch_brightness()
-            self._update_label_color()
+            self.set_switch_color(self.color)
+            self.set_label_color(self.color)
     
-        # Only update when type of state have been changed
+        # Only update when state have been changed
         if self._current_display_status != self.state:
             self._current_display_status = self.state
 
-            self._update_switch_brightness()
-            self._update_label_color()
+            self.set_switch_color(self.color)
+            self.set_label_color(self.color)
 
     # Update switch brightness
-    def _update_switch_brightness(self):
+    def set_switch_color(self, color):
+        # Update switch LED color 
+        self.switch.color = color
+
         if self.state == True:
             # Switched on
             self.switch.brightness = self._brightness_on
@@ -78,18 +78,14 @@ class BinaryParameterAction(PushButtonAction):
             self.switch.brightness = self._brightness_off
 
     # Update label color, if any
-    def _update_label_color(self):
+    def set_label_color(self, color):
         if self.label == None:
             return
             
         if self.state == True:
-            self.label.back_color = self.get_color()
+            self.label.back_color = color
         else:
-            self.label.back_color = Tools.dim_color(self.get_color())
-
-    # Returns the color of the switch
-    def get_color(self):
-        return self._color
+            self.label.back_color = Tools.dim_color(color)
 
     # Receive MIDI messages
     def process(self, midi_message):

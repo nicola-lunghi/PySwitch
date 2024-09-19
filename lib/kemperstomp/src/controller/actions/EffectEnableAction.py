@@ -15,12 +15,13 @@ class EffectEnableAction(BinaryParameterAction):
         
         super().__init__(appl, switch, config)
 
-        self._effect_category = KemperEffectCategories.CATEGORY_NONE
+        self._effect_category = KemperEffectCategories.CATEGORY_NONE        
         self._current_category = -1
 
         # Mapping for effect type
         self._mapping_fxtype = KemperMappings.MAPPING_EFFECT_SLOT_TYPE(self.config["slot"])
 
+        self.color = KemperEffectCategories.CATEGORY_COLORS[self._effect_category]
         self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", ActionDefaults.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)
 
     # Request effect type periodically (which itself will trigger a status request).
@@ -45,14 +46,23 @@ class EffectEnableAction(BinaryParameterAction):
         # Effect category text
         if self.label != None:
             self.label.text = KemperEffectCategories.CATEGORY_NAMES[self._current_category]            
-
-    # Returns the color of the switch
-    def get_color(self):
-        if self._effect_category == KemperEffectCategories.CATEGORY_NONE:    
-            return Colors.BLACK   # Disables the LEDs effectively
-        
-        return KemperEffectCategories.CATEGORY_COLORS[self._effect_category]
     
+    # Update switch brightness
+    def set_switch_color(self, color):
+        if self._effect_category == KemperEffectCategories.CATEGORY_NONE:
+            # Set pixels to black (this effectively deactivates the LEDs) 
+            color = Colors.BLACK
+
+        super().set_switch_color(color)
+    
+    # Update label color, if any
+    def set_label_color(self, color):
+        if self._effect_category == KemperEffectCategories.CATEGORY_NONE:
+            # Do not dim the color when not assigned (this makes it black effectively) 
+            self.label.back_color = color
+        else:
+            super().set_label_color(color)
+
     # Receive MIDI messages
     def process(self, midi_message):
         super().process(midi_message)
@@ -85,6 +95,7 @@ class EffectEnableAction(BinaryParameterAction):
         if self._effect_category == KemperEffectCategories.CATEGORY_NONE:
             self.state = False
 
+        self.color = KemperEffectCategories.CATEGORY_COLORS[self._effect_category]
         self.update_displays()
 
         # Request status, too
