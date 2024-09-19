@@ -50,11 +50,7 @@ class Tools:
         ret = ""
         if isinstance(midi_message, SystemExclusive) == True:
             # SysEx
-            ret = "".join((
-                Tools._stringify_midi_message_part(midi_message.manufacturer_id),
-                " " + Tools._stringify_midi_message_part(midi_message.data),
-                " (" + midi_message.__class__.__name__ + ")"
-            ))
+            ret = Tools._stringify_midi_message_part(midi_message.manufacturer_id) + Tools._stringify_midi_message_part(midi_message.data)
 
         elif isinstance(midi_message, ControlChange) == True:
             # CC

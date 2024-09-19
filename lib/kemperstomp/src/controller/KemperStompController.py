@@ -4,12 +4,14 @@ import adafruit_midi
 from .FootSwitch import FootSwitch
 from ..hardware.LedDriver import LedDriver
 from ..model.Kemper import Kemper
+from ..model.KemperRequest import KemperRequestListener
 from ..Tools import Tools
 from ...config import Config
 from ...mappings import KemperMappings
 
+
 # Main application class (controls the processing)    
-class KemperStompController:
+class KemperStompController(KemperRequestListener):
     def __init__(self, ui, config):
         self.ui = ui
         self.config = config
@@ -75,8 +77,11 @@ class KemperStompController:
         # Receive MIDI messages
         midimsg = self._midi.receive()
 
+        # Process the listeners
+        self.kemper.receive(midimsg)
+
         # Receive rig name / date
-        self._parse_rig_info(midimsg)
+        #self._parse_rig_info(midimsg)
 
         # Process all switches
         for switch in self.switches:
@@ -85,7 +90,7 @@ class KemperStompController:
         # Update rig info in a certain interval
         if self._last_update + self._update_interval_millis < start_time:
             self._last_update = start_time
-            self.kemper.request(KemperMappings.MAPPING_RIG_DATE)
+            self.kemper.request(KemperMappings.MAPPING_RIG_DATE, self)
 
             # Update switch actions
             for switch in self.switches:
@@ -94,24 +99,19 @@ class KemperStompController:
         # Output statistical info
         self.ui.set_stats(Tools.get_current_millis() - start_time)
 
-    # Parse rig info messages
-    def _parse_rig_info(self, midi_message):
-        if midi_message == None:
-            return
-                
-        rig_name = self.kemper.parse(KemperMappings.MAPPING_RIG_NAME, midi_message)
-        if rig_name != None:
-            Tools.print(" -> Receiving rig name: " + rig_name)
-            self.ui.info_text = rig_name
+    # Listen to Kemper value returns
+    def parameter_changed(self, mapping):
+        if mapping == KemperMappings.MAPPING_RIG_NAME:
+            Tools.print(" -> Receiving rig name: " + mapping.value)
+            self.ui.info_text = mapping.value
 
-        rig_date = self.kemper.parse(KemperMappings.MAPPING_RIG_DATE, midi_message)
-        if rig_date != None:
-            Tools.print(" -> Receiving rig date: " + rig_date)
-            if self._current_rig_date != rig_date:
+        if mapping == KemperMappings.MAPPING_RIG_DATE:
+            Tools.print(" -> Receiving rig date: " + mapping.value)
+            if self._current_rig_date != mapping.value:
                 Tools.print("   -> Rig date was different from " + repr(self._current_rig_date) + ", requesting rig name, too...")
-                self._current_rig_date = rig_date
+                self._current_rig_date = mapping.value
                 
-                self.kemper.request(KemperMappings.MAPPING_RIG_NAME)
+                self.kemper.request(KemperMappings.MAPPING_RIG_NAME, self)
 
 
     

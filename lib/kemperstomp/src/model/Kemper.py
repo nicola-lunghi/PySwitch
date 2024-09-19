@@ -1,17 +1,31 @@
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 
-from .KemperNRPNMessage import KemperNRPNMessage
+from .KemperRequest import KemperRequest, KemperRequestListener
 from ..Tools import Tools
 from ...config import Config
-from ...definitions import KemperMidi
 
 # Implements all MIDI communication to and from the Kemper
-class Kemper:
+class Kemper(KemperRequestListener):
+
+    _requests = []   # List of KemperRequest objects
 
     def __init__(self, midi):
-        self._midi = midi        
+        self._midi = midi   
+
+        # Buffer for mappings. Whenever possible, existing mappings are used
+        # so values can be buffered.
+        self._mappings_buffer = []     
         
+    # Receive MIDI messages
+    def receive(self, midi_message):
+        # See if one of the waiting requests matches        
+        for request in self._requests:
+            request.parse(midi_message)
+
+        # Check for finished requests
+        self._cleanup_requests()
+
     # Sends the SET message of a mapping
     def set(self, mapping, value):
         if mapping.set == None:
@@ -20,78 +34,80 @@ class Kemper:
         if isinstance(mapping.set, ControlChange):
             # Set value
             mapping.set.value = value
-
-        if isinstance(mapping.set, SystemExclusive):
-            raise Exception("Setting Kemper parameters by SysEx is not implemented yet")
-
-        if isinstance(mapping.set, KemperNRPNMessage):
-            raise Exception("Setting Kemper parameters by NRPN is not implemented yet")
-        
+        else:
+            raise Exception("Setting Kemper parameters by SysEx or other messages than CC is not implemented yet")
+                
         self._print("Send SET message: " + Tools.stringify_midi_message(mapping.set))
 
         self._midi.send(mapping.set)
 
-    # Send the request message of a mapping
-    def request(self, mapping):
-        if mapping.request == None:
-            raise Exception("No REQUEST message prepared for this MIDI mapping")
-        
-        if mapping.response == None:
-            raise Exception("No response template message prepared for this MIDI mapping")
-        
-        if isinstance(mapping.request, ControlChange):
-            raise Exception("Parameter requests do not work with ControlChange. Use KemperNRPNMessage (or SystemExclusive) instead.")
+    # Send the request message of a mapping. Calls the passed listener when the answer has arrived.
+    def request(self, mapping, listener):
+        # Add request to the list and send it
+        req = self._get_matching_request(mapping)
+        if req == None:
+            # New request
+            req = KemperRequest(                
+                self._midi,
+                mapping
+            )
+            
+            req.add_listener(self)          # Listen to fill the buffer
+            req.add_listener(listener)
 
-        self._print(" -> Send REQUEST message: " + Tools.stringify_midi_message(mapping.request))
+            # Add to list
+            self._requests.append(req)
+            
+            self._print("Add new request. Number of open requests: " + str(len(self._requests)))
 
-        self._midi.send(mapping.request)
-
-    # Parses an incoming MIDI message. If the message belongs to the mapping's request,
-    # returns the received value. If not, returns None.
-    def parse(self, mapping, midi_message):
-        if mapping.response == None:
-            raise Exception("No response template message prepared for this MIDI mapping")
-
-        if not isinstance(midi_message, SystemExclusive):
-            return None
-
-        if not isinstance(mapping.response, SystemExclusive):
-            return None
-        
-        # Compare manufacturer IDs
-        if midi_message.manufacturer_id != mapping.response.manufacturer_id:
-            return None
-
-        #self._print("RAW Receive : " + Tools.stringify_midi_message(midi_message))
-        #self._print("RAW Template: " + Tools.stringify_midi_message(mapping.response))
-
-        # Get data as integer list from both the incoming message and the response
-        # template in the mapping
-        response = list(midi_message.data)                        
-        template = list(mapping.response.data)        
-
-        # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
-        # and device ID as for the request, however the device just sends two zeroes)
-
-        # Check if the message belongs to the mapping. The following have to match:
-        #   2: function code, 
-        #   3: instance ID, 
-        #   4: address page, 
-        #   5: address nunber
-        if response[2:6] != template[2:6]:
-            return None
-        
-        # The values starting from index 6 are the value of the response.
-        if mapping.type == KemperMidi.NRPN_PARAMETER_TYPE_STRING:
-            # Take as string
-            value = ''.join(chr(int(c)) for c in response[6:-1])
+            # Send
+            req.send()            
         else:
-            # Decode 14-bit value to int
-            value = response[-2] * 128 + response[-1]
-        
-        self._print("   -> Received value " + repr(value) + ": " + Tools.stringify_midi_message(midi_message))
+            self._print("Add new listener to existing request. Number of open requests: " + str(len(self._requests)))
 
-        return value
+            # Existing request: Add listener
+            req.add_listener(listener)
+
+    # Gets the buffered value (or None) for a formerly requested mapping.
+    def get(self, mapping):
+        m = self._get_buffered_mapping(mapping)
+
+        return m.value
+
+    # Returns a buffered mapping that equals the given one, or None
+    def _get_buffered_mapping(self, mapping):
+        for m in self._mappings_buffer:
+            if m == mapping:
+                return m        
+        return None
+
+    # This always listens to the requests, too, to fill the buffer
+    def parameter_changed(self, mapping):
+        m = self._get_buffered_mapping(mapping)
+        if m == None:
+            # Add to buffer
+            self._mappings_buffer.append(mapping)
+
+            self._print("Added new mapping to buffer, num of buffer entries: " + str(len(self._mappings_buffer)))
+        else:
+            # Update value
+            m.value = mapping.value
+
+    # Returns a matching request from the list if any, or None if no matching
+    # request has been found.
+    def _get_matching_request(self, mapping):
+        if not isinstance(mapping.request, SystemExclusive):
+            return None
+        
+        for request in self._requests:
+            if request.mapping == mapping:
+                return request
+            
+        return None
+
+    # Remove all finished requests
+    def _cleanup_requests(self):
+        self._requests = [i for i in self._requests if i.finished() == False]
             
     # Debug console output
     def _print(self, msg):

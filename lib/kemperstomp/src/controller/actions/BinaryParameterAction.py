@@ -1,11 +1,12 @@
 from .base.PushButtonAction import PushButtonAction
+from ...model.KemperRequest import KemperRequestListener
 from ...Tools import Tools
 from ....definitions import KemperMidi, Colors
 from ....config import Config
 
 
 # Implements bipolar parameters on base of the PushButtonAction class
-class BinaryParameterAction(PushButtonAction):
+class BinaryParameterAction(PushButtonAction, KemperRequestListener):
     
     def __init__(self, appl, switch, config):
         super().__init__(appl, switch, config)
@@ -47,7 +48,7 @@ class BinaryParameterAction(PushButtonAction):
         if self._mapping.can_receive == False:
             return            
         
-        self.appl.kemper.request(self._mapping)
+        self.appl.kemper.request(self._mapping, self)
 
     # Update display and LEDs to the current state
     def update_displays(self):
@@ -87,19 +88,13 @@ class BinaryParameterAction(PushButtonAction):
         else:
             self.label.back_color = Tools.dim_color(color)
 
-    # Receive MIDI messages
-    def process(self, midi_message):
-        if self._mapping.can_receive == False:
+    # Called by the Kemper class when a parameter request has been answered
+    def parameter_changed(self, mapping):
+        if mapping != self._mapping:
             return
-                        
-        status = self.appl.kemper.parse(self._mapping, midi_message)
-        if status != None:
-            self._receive_status(status)
+        
+        self.print(" -> Receiving binary switch status " + repr(mapping.value))
 
-    # Receive a status value (instance of KemperResponse)
-    def _receive_status(self, response):
-        self.print(" -> Receiving binary switch status " + repr(response))
-
-        self.feedback_state(response)
+        self.feedback_state(mapping.value)
         
         self.update_displays()

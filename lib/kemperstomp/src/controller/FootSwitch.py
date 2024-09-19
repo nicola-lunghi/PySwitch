@@ -160,9 +160,6 @@ class FootSwitch:
     # Process the switch: Check if it is currently pushed, set state accordingly
     # and send the MIDI messages configured.
     def process(self, midi_message):
-        # Let all actions process the message if they like (or do other periodic stuff)
-        self._process_actions_process(midi_message)
-
         # Is the switch currently pushed? If not, return false.
         if self.pushed == False:
             if self._pushed_state == True:
@@ -179,21 +176,17 @@ class FootSwitch:
         self._pushed_state = True
         self._process_actions_push()
 
-    # Processes all actions assigned to the switch if they have the given event registered in their config
-    def _process_actions_release(self):
-        for action in self._actions:
-            self._print("Release action " + action.id)
-            action.release()
-
+    # Processes all push actions assigned to the switch 
     def _process_actions_push(self):
         for action in self._actions:
             self._print("Push action " + action.id)
             action.push()
 
-    # Executes all action's process() method
-    def _process_actions_process(self, midi_message):
+    # Processes all release actions assigned to the switch 
+    def _process_actions_release(self):
         for action in self._actions:
-            action.process(midi_message)
+            self._print("Release action " + action.id)
+            action.release()
 
     # Called every update interval
     def update(self):

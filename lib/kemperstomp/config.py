@@ -131,14 +131,14 @@ Config = {
 
 ## Development Options #####################################################################################################+
 
-    # Debug mode. Shows verbose console output. You can listen to that on the serial REPL port via USB on your computer,
+    # Debug mode. Shows verbose console output. You can listen to that on the serial port via USB on your computer,
     # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 
     "debug": False,
 
     "debugDisplay": False,       # Show verbose messages from the display user interface
-    "debugActions": True,       # Show verbose messages from actions
-    "debugSwitches": True,      # Show verbose output for switches (color, brightness) or a switches actions are triggered
-    "debugKemper": False,        # Show all requests and responses to/from the Kemper Profiler
+    "debugActions": False,       # Show verbose messages from actions
+    "debugSwitches": False,      # Show verbose output for switches (color, brightness) or a switches actions are triggered
+    "debugKemper": True,        # Show all requests and responses to/from the Kemper Profiler
     "debugMidi": False,          # Debug Adafruit MIDI controller. Normally it is sufficient and more readable to  
                                  # enable "debugKemper" instead, which also shows the MIDI messages sent and received.
 

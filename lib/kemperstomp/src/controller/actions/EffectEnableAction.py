@@ -1,5 +1,6 @@
 from .BinaryParameterAction import BinaryParameterAction
 from ...model.KemperEffectCategories import KemperEffectCategories
+from ...model.KemperRequest import KemperRequestListener
 from ...Tools import Tools
 from ....config import Config
 from ....mappings import KemperMappings
@@ -7,7 +8,7 @@ from ....definitions import Colors, ActionDefaults
 
 
 # Implements the effect enable/disable footswitch action
-class EffectEnableAction(BinaryParameterAction):
+class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
     
     def __init__(self, appl, switch, config):        
         # Mapping for status (used by BinaryParameterAction)
@@ -31,7 +32,7 @@ class EffectEnableAction(BinaryParameterAction):
             return            
         
         self.print("Request type")
-        self.appl.kemper.request(self._mapping_fxtype)
+        self.appl.kemper.request(self._mapping_fxtype, self)
 
     # Update display and LEDs to the current state and effect category
     def update_displays(self):
@@ -63,34 +64,25 @@ class EffectEnableAction(BinaryParameterAction):
         else:
             super().set_label_color(color)
 
-    # Receive MIDI messages
-    def process(self, midi_message):
-        super().process(midi_message)
+    # Called by the Kemper class when a parameter request has been answered
+    def parameter_changed(self, mapping):
+        super().parameter_changed(mapping)
         
-        # Receive MIDI messages related to this action, only if a MIDI message has been received
-        if midi_message == None:
-            return
-        
-        # Get effect type
-        type = self.appl.kemper.parse(self._mapping_fxtype, midi_message)
-        if type == None:
+        if mapping != self._mapping_fxtype:
             return
         
         # Convert to effect category
-        category = KemperEffectCategories.get_effect_category(type)
-        self._receive_category(category)
+        category = KemperEffectCategories.get_effect_category(mapping.value)
 
-    # Receive a category value (instance of KemperResponse)
-    def _receive_category(self, response):
-        self.print(" -> Receiving effect category " + repr(response))
+        self.print(" -> Receiving effect category " + repr(category))
 
-        if response == self._effect_category:
+        if category == self._effect_category:
             # Request status also when category has not changed
             super().update()
             return
 
         # New effect category
-        self._effect_category = response
+        self._effect_category = category
 
         if self._effect_category == KemperEffectCategories.CATEGORY_NONE:
             self.state = False

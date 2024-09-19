@@ -33,11 +33,6 @@ class Action:
     def release(self):
         pass
 
-    # Will be called on every tick, whether a MIDI message has been received or not
-    # (in the latter case None is passed).
-    def process(self, midi_message):
-        pass
-
     # Called regularly every update interval to update status of effects etc.
     def update(self):
         pass
