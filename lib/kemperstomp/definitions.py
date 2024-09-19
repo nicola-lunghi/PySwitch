@@ -271,6 +271,14 @@ DisplayAreaDefinitions = [
 
 # Kemper ui specific definitions
 class KemperDefinitions:
+    # Rig name to show when offline
+    OFFLINE_RIG_NAME = "Kemper Profiler (offline)"
+
+    # Max. milliseconds until a request is being terminated and it is
+    # assumed that the Kemper device is offline. This is the default value if
+    # "maxRequestLifetimeMillis" is not set in the config.
+    DEFAULT_MAX_REQUEST_LIFETIME_MILLIS = 1000
+
     # Effect type color assignment
     EFFECT_COLOR_NONE = Colors.DEFAULT_LABEL_COLOR
     EFFECT_COLOR_WAH = Colors.ORANGE
@@ -388,18 +396,3 @@ class KemperMidi:
     # NRPN String parameters
     NRPN_STRING_PARAMETER_ID_RIG_NAME = 0x01
     NRPN_STRING_PARAMETER_ID_RIG_DATE = 0x03
-
-    # Some internal addressing (acc. to Kemper MIDI specification, should not be needed to change)    
-
-    #RESPONSE_ID_GLOBAL_PARAMETER = -1
-    #RESPONSE_ID_EFFECT_TYPE = 0x00
-    #RESPONSE_ID_EFFECT_STATUS = 0x03
-
-    #RESPONSE_ANSWER_STATUS_ON = 0x01
-    #RESPONSE_ANSWER_STATUS_OFF = 0x00
-
-    #RESPONSE_PREFIX_RIG_NAME = [0x00, 0x00, 0x03, 0x00, 0x00, 0x01]
-    #RESPONSE_PREFIX_RIG_DATE = [0x00, 0x00, 0x03, 0x00, 0x00, 0x03]
-
-    #CC_TUNER_MODE = 31
-

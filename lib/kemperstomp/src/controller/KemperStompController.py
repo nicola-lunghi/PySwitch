@@ -8,6 +8,7 @@ from ..model.KemperRequest import KemperRequestListener
 from ..Tools import Tools
 from ...config import Config
 from ...mappings import KemperMappings
+from ...definitions import KemperDefinitions
 
 
 # Main application class (controls the processing)    
@@ -80,16 +81,14 @@ class KemperStompController(KemperRequestListener):
         # Process the listeners
         self.kemper.receive(midimsg)
 
-        # Receive rig name / date
-        #self._parse_rig_info(midimsg)
-
         # Process all switches
         for switch in self.switches:
             switch.process(midimsg)
         
-        # Update rig info in a certain interval
+        # Update actions and rig info in a certain interval, less frequently then every tick
         if self._last_update + self._update_interval_millis < start_time:
             self._last_update = start_time
+            Tools.print(" -> Requesting rig date...")
             self.kemper.request(KemperMappings.MAPPING_RIG_DATE, self)
 
             # Update switch actions
@@ -111,7 +110,17 @@ class KemperStompController(KemperRequestListener):
                 Tools.print("   -> Rig date was different from " + repr(self._current_rig_date) + ", requesting rig name, too...")
                 self._current_rig_date = mapping.value
                 
+                Tools.print(" -> Requesting rig name...")
                 self.kemper.request(KemperMappings.MAPPING_RIG_NAME, self)
 
+    # Called when the Kemper is offline (requests took too long)
+    def request_terminated(self, mapping):
+        if mapping == KemperMappings.MAPPING_RIG_NAME:
+            Tools.print(" -> Request for rig name failed, is the device offline?")
+            self.ui.info_text = KemperDefinitions.OFFLINE_RIG_NAME
+
+        if mapping == KemperMappings.MAPPING_RIG_DATE:
+            Tools.print(" -> Request for rig date failed, is the device offline?")
+            self._current_rig_date = None
 
     

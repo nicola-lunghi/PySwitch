@@ -4,6 +4,7 @@ from adafruit_midi.system_exclusive import SystemExclusive
 from .KemperRequest import KemperRequest, KemperRequestListener
 from ..Tools import Tools
 from ...config import Config
+from ...definitions import KemperDefinitions
 
 # Implements all MIDI communication to and from the Kemper
 class Kemper(KemperRequestListener):
@@ -11,11 +12,13 @@ class Kemper(KemperRequestListener):
     _requests = []   # List of KemperRequest objects
 
     def __init__(self, midi):
-        self._midi = midi   
+        self._midi = midi
 
         # Buffer for mappings. Whenever possible, existing mappings are used
         # so values can be buffered.
         self._mappings_buffer = []     
+
+        self._max_request_lifetime = Tools.get_option(Config, "maxRequestLifetimeMillis", KemperDefinitions.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS)
         
     # Receive MIDI messages
     def receive(self, midi_message):
@@ -47,9 +50,13 @@ class Kemper(KemperRequestListener):
         req = self._get_matching_request(mapping)
         if req == None:
             # New request
+            m = self._get_buffered_mapping(mapping)
+            if m == None:
+                m = mapping
+
             req = KemperRequest(                
                 self._midi,
-                mapping
+                m
             )
             
             req.add_listener(self)          # Listen to fill the buffer
@@ -107,6 +114,16 @@ class Kemper(KemperRequestListener):
 
     # Remove all finished requests
     def _cleanup_requests(self):
+        # Terminate requests if they waited too long
+        current_time = Tools.get_current_millis()        
+        for request in self._requests:
+            diff = current_time - request.start_time
+            if diff > self._max_request_lifetime:
+                request.terminate()
+
+                self._print("Terminated request, took " + str(diff) + "ms")
+
+        # Remove finished requests
         self._requests = [i for i in self._requests if i.finished() == False]
             
     # Debug console output

@@ -22,7 +22,6 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
         # Mapping for effect type
         self._mapping_fxtype = KemperMappings.MAPPING_EFFECT_SLOT_TYPE(self.config["slot"])
 
-        self.color = KemperEffectCategories.CATEGORY_COLORS[self._effect_category]
         self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", ActionDefaults.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)
 
     # Request effect type periodically (which itself will trigger a status request).
@@ -43,6 +42,9 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
             return
         
         self._current_category = self._effect_category
+
+        # Effect category color
+        self.color = KemperEffectCategories.CATEGORY_COLORS[self._effect_category]
 
         # Effect category text
         if self.label != None:
@@ -87,9 +89,20 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
         if self._effect_category == KemperEffectCategories.CATEGORY_NONE:
             self.state = False
 
-        self.color = KemperEffectCategories.CATEGORY_COLORS[self._effect_category]
         self.update_displays()
 
         # Request status, too
         super().update()
+
+    # Called when the Kemper is offline (requests took too long)
+    def request_terminated(self, mapping):
+        super().request_terminated(mapping)
+
+        if mapping != self._mapping_fxtype:
+            return
+        
+        self.print(" -> Terminated request for effect type, is the device offline?")
+        self._effect_category = KemperEffectCategories.CATEGORY_NONE
+        
+        self.update_displays()
 

@@ -5,7 +5,7 @@
 #################################################################################################################################
  
 import board
-from .definitions import Ports, Actions, PushButtonModes, DisplayAreas, Colors, FootSwitchDefaults
+from .definitions import Ports, Actions, PushButtonModes, DisplayAreas, Colors, FootSwitchDefaults, KemperDefinitions
 from .mappings import KemperMidi, KemperMappings
 
 Config = {
@@ -38,7 +38,6 @@ Config = {
                 {
                     "type": Actions.EFFECT_ON_OFF,
                     "slot": KemperMidi.EFFECT_SLOT_ID_B,
-                    "color": Colors.PURPLE,
                     "display": {
                         "area": DisplayAreas.HEADER,
                         "index": 1
@@ -88,10 +87,7 @@ Config = {
             "lineSpacing": 0.8,                            # Line spacing (optional) default: 1
             "maxTextWidth": 220,                           # Maximum text width in pixels (for example: 220 at a display width of 240), optional
             "textColor": (215, 255, 255),                  # Text color (optional, default is automatic detection by back color)
-            #"backColor": (20, 50, 30),                     # Back color (optional, default is no background at all)
-
-            # Text initially shown in the center area (where the rig name goes later on).
-            "text": "Kemper\nEffects Slot Mode",
+            "text": KemperDefinitions.OFFLINE_RIG_NAME     # Initial text
         },
 
         # Shows an area with statistics (for debugging)
@@ -131,19 +127,26 @@ Config = {
 
 ## Development Options #####################################################################################################+
 
-    # Debug mode. Shows verbose console output. You can listen to that on the serial port via USB on your computer,
+    # Max. milliseconds until a request is being terminated and it is
+    # assumed that the Kemper device is offline. Optional.
+    "maxRequestLifetimeMillis": 2000,
+
+    # Debug mode, optional. Shows verbose console output. You can listen to that on the serial port via USB on your computer,
     # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 
     "debug": False,
 
-    "debugDisplay": False,       # Show verbose messages from the display user interface
-    "debugActions": False,       # Show verbose messages from actions
-    "debugSwitches": False,      # Show verbose output for switches (color, brightness) or a switches actions are triggered
-    "debugKemper": True,        # Show all requests and responses to/from the Kemper Profiler
-    "debugMidi": False,          # Debug Adafruit MIDI controller. Normally it is sufficient and more readable to  
-                                 # enable "debugKemper" instead, which also shows the MIDI messages sent and received.
+    "debugDisplay": False,        # Show verbose messages from the display user interface. Optional.
+    "debugActions": False,        # Show verbose messages from actions. Optional.
+    "debugSwitches": False,       # Show verbose output for switches (color, brightness) or a switches 
+                                  # actions are triggered. Optional.
+    "debugKemper": False,         # Show all requests and responses to/from the Kemper Profiler. Optional.
+    "debugKemperRawMidi": False,  # Debug raw kemper MIDI messages. Only regarded whe "debugKemper" is enabled, too.
+    "debugMidi": False,           # Debug Adafruit MIDI controller. Normally it is sufficient and more readable 
+                                  # to enable "debugKemperRawMidi" instead, which also shows the MIDI messages sent
+                                  # and received. Optional.
 
     # Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 
-    # Use this to detect the switch assignments on unknown devices.
+    # Use this to detect the switch assignments on unknown devices. Optional.
     "exploreMode": False
 }

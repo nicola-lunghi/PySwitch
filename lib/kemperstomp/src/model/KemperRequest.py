@@ -2,12 +2,15 @@ from adafruit_midi.system_exclusive import SystemExclusive
 
 from ...definitions import KemperMidi
 from ..Tools import Tools
+from ..EventEmitter import EventEmitter
 from ...config import Config
 
 # Model for a request for a value
-class KemperRequest:
+class KemperRequest(EventEmitter):
 
     def __init__(self, midi, mapping):
+        super().__init__(KemperRequestListener)
+
         self.mapping = mapping        
         self._midi = midi
 
@@ -20,14 +23,7 @@ class KemperRequest:
         if not isinstance(self.mapping.request, SystemExclusive):
             raise Exception("Parameter requests do not work with ControlChange or other types. Use KemperNRPNMessage (or SystemExclusive directly) instead.")
 
-        self._listeners = []
-
-    # Adds a listener
-    def add_listener(self, listener):
-        if not isinstance(listener, KemperRequestListener):
-            raise Exception("Listeners must be of type KemperRequestListener")
-        
-        self._listeners.append(listener)
+        self.start_time = Tools.get_current_millis()            
 
     # Sends the request
     def send(self):
@@ -36,11 +32,27 @@ class KemperRequest:
 
     # Returns if the request is finished
     def finished(self):
-        return self._listeners == None
+        return self.listeners == None
+
+    # Send the terminate signal to all listeners and finished it, so it will be
+    # cleared up next time.
+    def terminate(self):
+        if self.finished() == True:
+            return
+        
+        # Call the listeners
+        for listener in self.listeners:
+            listener.request_terminated(self.mapping)
+
+        # Clear listeners
+        self.listeners = None
 
     # Parses an incoming MIDI message. If the message belongs to the mapping's request,
     # calls the listener with the received value.
     def parse(self, midi_message):
+        if self.finished() == True:
+            return
+        
         if self.mapping.response == None:
             raise Exception("No response template message prepared for this MIDI mapping")
 
@@ -50,12 +62,13 @@ class KemperRequest:
         if not isinstance(self.mapping.response, SystemExclusive):
             return
         
+        if Tools.get_option(Config, "debugKemperRawMidi") == True:
+            self._print("RAW Receive : " + Tools.stringify_midi_message(midi_message))
+            self._print("RAW Template: " + Tools.stringify_midi_message(self.mapping.response))
+
         # Compare manufacturer IDs
         if midi_message.manufacturer_id != self.mapping.response.manufacturer_id:
             return 
-
-        #self._print("RAW Receive : " + Tools.stringify_midi_message(midi_message))
-        #self._print("RAW Template: " + Tools.stringify_midi_message(mapping.response))
 
         # Get data as integer list from both the incoming message and the response
         # template in the mapping
@@ -84,18 +97,18 @@ class KemperRequest:
         self._print("   -> Received value " + repr(self.mapping.value) + ": " + Tools.stringify_midi_message(midi_message))
 
         # Call the listeners
-        for listener in self._listeners:
+        for listener in self.listeners:
             listener.parameter_changed(self.mapping)  # The mapping has the values set already
 
         # Clear listeners
-        self._listeners = None
+        self.listeners = None
 
     # Debug console output
     def _print(self, msg):
         if Tools.get_option(Config, "debugKemper") != True:
             return
         
-        Tools.print("Kemper: " + msg)
+        Tools.print("KemperRequest: " + msg)
 
 
 ######################################################################################################################
@@ -107,4 +120,8 @@ class KemperRequestListener:
     # Called by the Kemper class when a parameter request has been answered.
     # The value received is already set on the mapping.
     def parameter_changed(self, mapping):
+        pass
+
+    # Called when the Kemper is offline (requests took too long)
+    def request_terminated(self, mapping):
         pass

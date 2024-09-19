@@ -98,3 +98,14 @@ class BinaryParameterAction(PushButtonAction, KemperRequestListener):
         self.feedback_state(mapping.value)
         
         self.update_displays()
+
+    # Called when the Kemper is offline (requests took too long)
+    def request_terminated(self, mapping):
+        if mapping != self._mapping:
+            return
+        
+        self.print(" -> Terminated request for parameter value, is the device offline?")
+        self.state = False
+
+        self.update_displays()
+
