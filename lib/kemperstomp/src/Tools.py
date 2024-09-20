@@ -2,16 +2,9 @@ import time
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 
-from ..config import Config
 
 # Generic tools
 class Tools:
-
-    # Dim factor for dimming colors. Will be set to configured value on first usage.
-    DIM_FACTOR = -1
-    
-    # Debug mode. Will be set to configured value on first usage.
-    DEBUG = -1
 
     # Read a value from an option dictionary with an optional default value
     @staticmethod
@@ -20,34 +13,16 @@ class Tools:
             return default        
         return config[name]
 
-    # Print if we are in console mode    
+    # Print (for debugging only!)
     @staticmethod
     def print(msg):
-        if Tools.DEBUG == -1:
-            Tools.DEBUG = Tools.get_option(Config, "debug")
-
-        if Tools.DEBUG != True:
-            return
-        
         print(msg)
 
     # Returns a current timestmap in integer milliseconds
     @staticmethod
     def get_current_millis():
         return int(time.monotonic() * 1000)
-    
-    # Dims a passed color for display of disabled state
-    @staticmethod
-    def dim_color(color):
-        if Tools.DIM_FACTOR == -1:
-            Tools.DIM_FACTOR = Config["displayDimFactor"]
-
-        return (
-            int(color[0] * Tools.DIM_FACTOR),
-            int(color[1] * Tools.DIM_FACTOR),
-            int(color[2] * Tools.DIM_FACTOR)
-        )
-    
+        
     # Stringifies a MIDI message.
     @staticmethod
     def stringify_midi_message(midi_message):

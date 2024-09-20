@@ -2,20 +2,31 @@ from .base.PushButtonAction import PushButtonAction
 from ...model.KemperRequest import KemperRequestListener
 from ...Tools import Tools
 from ....definitions import KemperMidi, Colors, FootSwitchDefaults
+from ....display import DisplayAreas
 
 
 # Implements bipolar parameters on base of the PushButtonAction class
 class BinaryParameterAction(PushButtonAction, KemperRequestListener):
-    
+
+    # config:
+    # {
+    #     "mapping":       A KemperParameterMapping instance
+    #     "valueEnabled":  Value to set when enabled
+    #     "valueDisabled": Value to set when disabled
+    #}
     def __init__(self, appl, switch, config, index):
         super().__init__(appl, switch, config, index)
 
+        # Action config
         self.color = Tools.get_option(self.config, "color", Colors.DEFAULT_SWITCH_COLOR)
-
+        
         self._mapping = self.config["mapping"]
         self._value_on = Tools.get_option(self.config, "valueEnabled", KemperMidi.NRPN_PARAMETER_ON)
         self._value_off = Tools.get_option(self.config, "valueDisabled", KemperMidi.NRPN_PARAMETER_OFF)
-        
+
+        # Global config
+        self._dim_factor = Tools.get_option(self.appl.config, "displayDimFactor", DisplayAreas.DEFAULT_SLOT_DIM_FACTOR)
+
         if Tools.get_option(self.appl.config, "ledBrightness") != False:
             self._brightness_on = Tools.get_option(self.appl.config["ledBrightness"], "on", FootSwitchDefaults.DEFAULT_BRIGHTNESS_ON)
             self._brightness_off = Tools.get_option(self.appl.config["ledBrightness"], "off", FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF)
@@ -90,7 +101,15 @@ class BinaryParameterAction(PushButtonAction, KemperRequestListener):
         if self.state == True:
             self.label.back_color = color
         else:
-            self.label.back_color = Tools.dim_color(color)
+            self.label.back_color = self._dim_color(color)
+
+    # Dims a passed color for display of disabled state
+    def _dim_color(self, color):
+        return (
+            int(color[0] * self._dim_factor),
+            int(color[1] * self._dim_factor),
+            int(color[2] * self._dim_factor)
+        )
 
     # Called by the Kemper class when a parameter request has been answered
     def parameter_changed(self, mapping):

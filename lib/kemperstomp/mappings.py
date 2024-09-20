@@ -17,7 +17,7 @@ class KemperMappings:
 
     # Effect slot enable/disable
     @staticmethod
-    def MAPPING_EFFECT_SLOT_ON_OFF(slot_id):
+    def EFFECT_SLOT_ON_OFF(slot_id):
         return KemperParameterMapping(
             set = ControlChange(
                 KemperMidi.CC_EFFECT_SLOT_ENABLE[slot_id], 
@@ -37,7 +37,7 @@ class KemperMappings:
     
     # Effect slot type (request only)
     @staticmethod
-    def MAPPING_EFFECT_SLOT_TYPE(slot_id):
+    def EFFECT_SLOT_TYPE(slot_id):
         return KemperParameterMapping(
             request = KemperNRPNMessage(               
                 KemperMidi.NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
@@ -52,7 +52,7 @@ class KemperMappings:
         )
 
     # Rig name (request only)
-    MAPPING_RIG_NAME = KemperParameterMapping(
+    RIG_NAME = KemperParameterMapping(
         request = KemperNRPNMessage(               
             KemperMidi.NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
             KemperMidi.NRPN_ADDRESS_PAGE_STRINGS,
@@ -67,7 +67,7 @@ class KemperMappings:
     )
 
     # Rig date (request only)
-    MAPPING_RIG_DATE = KemperParameterMapping(
+    RIG_DATE = KemperParameterMapping(
         request = KemperNRPNMessage(               
             KemperMidi.NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
             KemperMidi.NRPN_ADDRESS_PAGE_STRINGS,
@@ -86,5 +86,24 @@ class KemperMappings:
         set = ControlChange(
             KemperMidi.CC_TUNER_MODE, 
             0    # Dummy value, will be overridden
+        ),
+    )
+
+    # Rig volume
+    RIG_VOLUME = KemperParameterMapping(
+        set = KemperNRPNMessage(
+            KemperMidi.NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+            KemperMidi.NRPN_ADDRESS_PAGE_RIG_PARAMETERS,
+            KemperMidi.NRPN_RIG_PARAMETER_VOLUME
+        ),
+        request = KemperNRPNMessage(
+            KemperMidi.NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
+            KemperMidi.NRPN_ADDRESS_PAGE_RIG_PARAMETERS,
+            KemperMidi.NRPN_RIG_PARAMETER_VOLUME
+        ),
+        response = KemperNRPNMessage(
+            KemperMidi.NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+            KemperMidi.NRPN_ADDRESS_PAGE_RIG_PARAMETERS,
+            KemperMidi.NRPN_RIG_PARAMETER_VOLUME
         ),
     )

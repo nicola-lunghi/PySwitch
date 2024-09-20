@@ -11,7 +11,7 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
     
     def __init__(self, appl, switch, config, index):        
         # Mapping for status (used by BinaryParameterAction)
-        config["mapping"] = KemperMappings.MAPPING_EFFECT_SLOT_ON_OFF(config["slot"])
+        config["mapping"] = KemperMappings.EFFECT_SLOT_ON_OFF(config["slot"])
         
         super().__init__(appl, switch, config, index)
 
@@ -19,7 +19,7 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
         self._current_category = -1
 
         # Mapping for effect type
-        self._mapping_fxtype = KemperMappings.MAPPING_EFFECT_SLOT_TYPE(self.config["slot"])
+        self._mapping_fxtype = KemperMappings.EFFECT_SLOT_TYPE(self.config["slot"])
 
         if self.label != None:
             self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", ActionDefaults.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)

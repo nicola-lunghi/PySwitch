@@ -313,6 +313,7 @@ class KemperMidi:
 
     # Other adress pages
     NRPN_ADDRESS_PAGE_STRINGS = 0x00
+    NRPN_ADDRESS_PAGE_RIG_PARAMETERS = 0x04
 
     # Generally used NRPN values
     NRPN_MANUFACTURER_ID = [0x00, 0x20, 0x33]             # Kemper manufacturer ID
@@ -327,9 +328,15 @@ class KemperMidi:
     NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER = 0x01
     NRPN_FUNCTION_RESPONSE_STRING_PARAMETER = 0x03
 
+    NRPN_FUNCTION_SET_SINGLE_PARAMETER = 0x01
+
     # NRPN parameters for effect slots
     NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = 0x00   
     NRPN_EFFECT_PARAMETER_ADDRESS_ON_OFF = 0x03    
+    # ... TODO add further parameters here
+
+    # Rig parameters (page 0x04)
+    NRPN_RIG_PARAMETER_VOLUME = 0x01
     # ... TODO add further parameters here
 
     # NRPN String parameters

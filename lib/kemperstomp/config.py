@@ -50,13 +50,25 @@ Config = {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_A,
             "actions": [
                 {
-                    "type": Actions.REBOOT,
+                    "type": Actions.BINARY_PARAMETER,
+                    "mapping": KemperMappings.RIG_VOLUME,
+                    "valueEnabled": 90,
+                    "valueDisabled": 64,
                     "display": {
                         "area": DisplayAreas.FOOTER,
                         "index": 0,
-                        "text": "Reboot"
+                        "text": "RigBoost"
                     }
                 }
+
+                #{
+                #    "type": Actions.REBOOT,
+                #    "display": {
+                #        "area": DisplayAreas.FOOTER,
+                #        "index": 0,
+                #        "text": "Reboot"
+                #    }
+                #}
             ]
         },
         {
@@ -85,7 +97,7 @@ Config = {
     #},
 
     # Factor used to dim the colors in the display (not the switches!) Range [0..1]
-    "displayDimFactor": 0.2,
+    #"displayDimFactor": DisplayAreas.DEFAULT_SLOT_DIM_FACTOR,
 
 ## MIDI and other Options #################################################################################################
 

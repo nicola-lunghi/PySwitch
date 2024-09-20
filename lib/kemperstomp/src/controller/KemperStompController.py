@@ -121,7 +121,7 @@ class KemperStompController(KemperRequestListener):
         if self._debug == True:
             Tools.print(" -> Requesting rig date...")
         
-        self.kemper.request(KemperMappings.MAPPING_RIG_DATE, self)
+        self.kemper.request(KemperMappings.RIG_DATE, self)
 
         # Update switch actions, so they can requests stuff themselves
         for switch in self.switches:
@@ -130,14 +130,14 @@ class KemperStompController(KemperRequestListener):
     # Listen to Kemper value returns (rig name and date)
     def parameter_changed(self, mapping):
         # Rig name
-        if mapping == KemperMappings.MAPPING_RIG_NAME:
+        if mapping == KemperMappings.RIG_NAME:
             if self._debug == True:
                 Tools.print(" -> Receiving rig name: " + mapping.value)
 
             self.ui.area(DisplayAreas.INFO).text = mapping.value
 
         # Rig date
-        if mapping == KemperMappings.MAPPING_RIG_DATE:
+        if mapping == KemperMappings.RIG_DATE:
             if self._debug == True:
                 Tools.print(" -> Receiving rig date: " + mapping.value)
 
@@ -147,22 +147,23 @@ class KemperStompController(KemperRequestListener):
                     Tools.print("     -> Requesting rig name...")
                 
                 self._current_rig_date = mapping.value
-                self.kemper.request(KemperMappings.MAPPING_RIG_NAME, self)
+                self.kemper.request(KemperMappings.RIG_NAME, self)
 
     # Called when the Kemper is offline (requests took too long)
     def request_terminated(self, mapping):
         # Rig name
-        if mapping == KemperMappings.MAPPING_RIG_NAME:
+        if mapping == KemperMappings.RIG_NAME:
             if self._debug == True:
                 Tools.print(" -> Request for rig name failed, is the device offline?")
 
             self.ui.area(DisplayAreas.INFO).text = KemperDefinitions.OFFLINE_RIG_NAME
 
         # Rig date
-        if mapping == KemperMappings.MAPPING_RIG_DATE:
+        if mapping == KemperMappings.RIG_DATE:
             if self._debug == True:
                 Tools.print(" -> Request for rig date failed, is the device offline?")
 
             self._current_rig_date = None
+            self.ui.area(DisplayAreas.INFO).text = KemperDefinitions.OFFLINE_RIG_NAME
 
     
