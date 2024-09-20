@@ -1,3 +1,5 @@
+import math
+
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 
@@ -38,8 +40,17 @@ class Kemper(KemperRequestListener):
         if isinstance(mapping.set, ControlChange):
             # Set value
             mapping.set.value = value
+        elif isinstance(mapping.set, SystemExclusive):
+            data = list(mapping.set.data)
+            while len(data) < 8:
+                data.append(0)
+            
+            data[6] = int(math.floor(value / 128))
+            data[7] = int(value % 128)
+
+            mapping.set.data = bytes(data)
         else:
-            raise Exception("Setting Kemper parameters by SysEx or other messages than CC is not implemented yet")
+            raise Exception("Invalid mapping.set message")
                 
         if self._debug == True:
             self._print("Send SET message: " + Tools.stringify_midi_message(mapping.set))

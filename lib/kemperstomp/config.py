@@ -52,8 +52,8 @@ Config = {
                 {
                     "type": Actions.BINARY_PARAMETER,
                     "mapping": KemperMappings.RIG_VOLUME,
-                    "valueEnabled": 90,
-                    "valueDisabled": 64,
+                    "valueEnabled": 90 * 128,
+                    "valueDisabled": 64 * 128,
                     "display": {
                         "area": DisplayAreas.FOOTER,
                         "index": 0,
