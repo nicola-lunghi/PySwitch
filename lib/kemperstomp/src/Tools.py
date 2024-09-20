@@ -8,7 +8,10 @@ from ..config import Config
 class Tools:
 
     # Dim factor for dimming colors. Will be set to configured value on first usage.
-    DIM_FACTOR = -1  
+    DIM_FACTOR = -1
+    
+    # Debug mode. Will be set to configured value on first usage.
+    DEBUG = -1
 
     # Read a value from an option dictionary with an optional default value
     @staticmethod
@@ -20,8 +23,12 @@ class Tools:
     # Print if we are in console mode    
     @staticmethod
     def print(msg):
-        if Tools.get_option(Config, "debug") != True:
+        if Tools.DEBUG == -1:
+            Tools.DEBUG = Tools.get_option(Config, "debug")
+
+        if Tools.DEBUG != True:
             return
+        
         print(msg)
 
     # Returns a current timestmap in integer milliseconds

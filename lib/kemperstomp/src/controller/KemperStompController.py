@@ -27,6 +27,8 @@ class KemperStompController(KemperRequestListener):
         self._midi_buffer_size = self.config["midiBufferSize"]    # MIDI buffer size (default: 60)
         self._current_rig_date = None
 
+        self._last_stat_reset = 0
+
         # MIDI communication handler        
         self._midi = self._get_midi()
 
@@ -89,15 +91,35 @@ class KemperStompController(KemperRequestListener):
         # Update actions and rig info in a certain interval, less frequently then every tick
         if self._last_update + self._update_interval_millis < start_time:
             self._last_update = start_time
-            Tools.print(" -> Requesting rig date...")
-            self.kemper.request(KemperMappings.MAPPING_RIG_DATE, self)
-
-            # Update switch actions
-            for switch in self.switches:
-                switch.update()
+            
+            self._update()
 
         # Output statistical info
-        self.ui.area(DisplayAreas.STATISTICS).text = str(Tools.get_current_millis() - start_time) + "ms"
+        self.ui.area(DisplayAreas.STATISTICS).text = self._get_stats(start_time)
+
+    # Get stats string
+    def _get_stats(self, start_time):
+        current = Tools.get_current_millis()
+
+        if self._last_stat_reset + 2 * 1000 < current:
+            self._max_tick_time = 0
+            self._last_stat_reset = current
+
+        diff = current - start_time
+
+        if diff > self._max_tick_time:
+            self._max_tick_time = diff
+
+        return str(diff) + " (max: " + str(self._max_tick_time) + ") ms"
+
+    # Update (called every update interval)
+    def _update(self):
+        Tools.print(" -> Requesting rig date...")
+        self.kemper.request(KemperMappings.MAPPING_RIG_DATE, self)
+
+        # Update switch actions
+        for switch in self.switches:
+            switch.update()
 
     # Listen to Kemper value returns
     def parameter_changed(self, mapping):

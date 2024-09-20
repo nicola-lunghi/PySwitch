@@ -23,6 +23,7 @@ class Action:
         self.config = config
         self.index = index
         self.id = self.switch.id + " | " + self.__class__.__name__
+        self._debug = Tools.get_option(Config, "debugActions")
 
         self.label = self._get_action_display()   # DisplayLabel instance the action is connected to (or None).
 
@@ -129,7 +130,7 @@ class Action:
 
     # Print to the debug console
     def print(self, msg):
-        if Tools.get_option(Config, "debugActions") != True:
+        if self._debug != True:
             return
         
         Tools.print("Action " + self.id + ": " + msg)

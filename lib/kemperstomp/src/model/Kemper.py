@@ -13,6 +13,7 @@ class Kemper(KemperRequestListener):
 
     def __init__(self, midi):
         self._midi = midi
+        self._debug = Tools.get_option(Config, "debugKemper")
 
         # Buffer for mappings. Whenever possible, existing mappings are used
         # so values can be buffered.
@@ -24,7 +25,7 @@ class Kemper(KemperRequestListener):
     def receive(self, midi_message):
         # See if one of the waiting requests matches        
         for request in self._requests:
-            request.parse(midi_message)
+            request.parse(midi_message)            
 
         # Check for finished requests
         self._cleanup_requests()
@@ -40,7 +41,8 @@ class Kemper(KemperRequestListener):
         else:
             raise Exception("Setting Kemper parameters by SysEx or other messages than CC is not implemented yet")
                 
-        self._print("Send SET message: " + Tools.stringify_midi_message(mapping.set))
+        if self._debug == True:
+            self._print("Send SET message: " + Tools.stringify_midi_message(mapping.set))
 
         self._midi.send(mapping.set)
 
@@ -65,12 +67,14 @@ class Kemper(KemperRequestListener):
             # Add to list
             self._requests.append(req)
             
-            self._print("Add new request. Number of open requests: " + str(len(self._requests)))
+            if self._debug == True:
+                self._print("Add new request. Number of open requests: " + str(len(self._requests)))
 
             # Send
             req.send()            
         else:
-            self._print("Add new listener to existing request. Number of open requests: " + str(len(self._requests)))
+            if self._debug == True:
+                self._print("Add new listener to existing request. Number of open requests: " + str(len(self._requests)))
 
             # Existing request: Add listener
             req.add_listener(listener)
@@ -95,7 +99,8 @@ class Kemper(KemperRequestListener):
             # Add to buffer
             self._mappings_buffer.append(mapping)
 
-            self._print("Added new mapping to buffer, num of buffer entries: " + str(len(self._mappings_buffer)))
+            if self._debug == True:
+                self._print("Added new mapping to buffer, num of buffer entries: " + str(len(self._mappings_buffer)))
         else:
             # Update value
             m.value = mapping.value
@@ -121,14 +126,12 @@ class Kemper(KemperRequestListener):
             if diff > self._max_request_lifetime:
                 request.terminate()
 
-                self._print("Terminated request, took " + str(diff) + "ms")
+                if self._debug == True:
+                    self._print("Terminated request, took " + str(diff) + "ms")
 
         # Remove finished requests
         self._requests = [i for i in self._requests if i.finished() == False]
             
     # Debug console output
     def _print(self, msg):
-        if Tools.get_option(Config, "debugKemper") != True:
-            return
-        
         Tools.print("Kemper: " + msg)

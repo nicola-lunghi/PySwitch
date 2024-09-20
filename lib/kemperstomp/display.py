@@ -44,7 +44,6 @@ DisplayAreaDefinitions = [
             "font": "/fonts/PTSans-NarrowBold-40.pcf",
             "lineSpacing": 0.8,
             "maxTextWidth": 220,
-            "textColor": (215, 255, 255),
             "text": KemperDefinitions.OFFLINE_RIG_NAME     # Initial text
         },
     },

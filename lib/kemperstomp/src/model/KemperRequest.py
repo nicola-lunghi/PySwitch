@@ -13,6 +13,9 @@ class KemperRequest(EventEmitter):
 
         self.mapping = mapping        
         self._midi = midi
+        
+        self._debug = Tools.get_option(Config, "debugKemper")
+        self._debug_raw_midi = Tools.get_option(Config, "debugKemperRawMidi")
 
         if self.mapping.request == None:
             raise Exception("No REQUEST message prepared for this MIDI mapping")
@@ -27,7 +30,9 @@ class KemperRequest(EventEmitter):
 
     # Sends the request
     def send(self):
-        self._print(" -> Send REQUEST message: " + Tools.stringify_midi_message(self.mapping.request))
+        if self._debug == True:
+            self._print(" -> Send REQUEST message: " + Tools.stringify_midi_message(self.mapping.request))
+
         self._midi.send(self.mapping.request)
 
     # Returns if the request is finished
@@ -62,7 +67,7 @@ class KemperRequest(EventEmitter):
         if not isinstance(self.mapping.response, SystemExclusive):
             return
         
-        if Tools.get_option(Config, "debugKemperRawMidi") == True:
+        if self._debug_raw_midi == True:
             self._print("RAW Receive : " + Tools.stringify_midi_message(midi_message))
             self._print("RAW Template: " + Tools.stringify_midi_message(self.mapping.response))
 
@@ -94,7 +99,8 @@ class KemperRequest(EventEmitter):
             # Decode 14-bit value to int
             self.mapping.value = response[-2] * 128 + response[-1]
         
-        self._print("   -> Received value " + repr(self.mapping.value) + ": " + Tools.stringify_midi_message(midi_message))
+        if self._debug == True:
+            self._print("   -> Received value " + repr(self.mapping.value) + ": " + Tools.stringify_midi_message(midi_message))
 
         # Call the listeners
         for listener in self.listeners:
@@ -105,9 +111,6 @@ class KemperRequest(EventEmitter):
 
     # Debug console output
     def _print(self, msg):
-        if Tools.get_option(Config, "debugKemper") != True:
-            return
-        
         Tools.print("KemperRequest: " + msg)
 
 

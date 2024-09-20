@@ -25,6 +25,8 @@ class DisplayLabel:
         self.ui = ui
         self.layout = layout
         
+        self._debug = Tools.get_option(Config, "debugDisplay")
+
         self._x = int(x)
         self._y = int(y)
         self._width = int(width)
@@ -57,28 +59,29 @@ class DisplayLabel:
         # Append text area
         self._label = label.Label(
             self._font,
-            color = self.text_color,
+            #color = self.text_color,
             anchor_point = (0.5, 0.5), 
             anchored_position = (
-                int(self.width / 2), 
-                int(self.height / 2)
+                int(self._width / 2), 
+                int(self._height / 2)
             ),
             line_spacing = self._line_spacing
         )
+        
         self.text = self._text
         self.back_color = self._back_color
         self.text_color = self._text_color
         
-        group = displayio.Group(
+        self._group = displayio.Group(
             scale = 1, 
-            x = self.x, 
-            y = self.y
+            x = self._x, 
+            y = self._y
         )
 
-        group.append(self._label) 
+        self._group.append(self._label) 
         
         self._label_splash_address = len(self.ui.splash)
-        self.ui.splash.append(group)    
+        self.ui.splash.append(self._group)    
 
     # Sets all dimensions at once
     def set_dimensions(self, x, y, w, h):
@@ -87,10 +90,12 @@ class DisplayLabel:
         self._width = w
         self._height = h
 
-        self._label.x = x
-        self._label.y = y
-        self._label.width = w
-        self._label.height = h
+        self._label.anchored_position = (
+            int(self._width / 2), 
+            int(self._height / 2)
+        )
+        self._group.x = x
+        self._group.y = y
 
         self._update_background()
 
@@ -105,7 +110,7 @@ class DisplayLabel:
         
         self._x = value        
 
-        self._label.x = value
+        self._group.x = value
         self._update_background()
 
     @property
@@ -119,7 +124,7 @@ class DisplayLabel:
         
         self._y = value        
 
-        self._label.y = value
+        self._group.y = value
         self._update_background()
 
     @property
@@ -133,7 +138,10 @@ class DisplayLabel:
         
         self._width = value        
 
-        self._label.width = value
+        self._label.anchored_position = (
+            int(self._width / 2), 
+            int(self._height / 2)
+        )
         self._update_background()
 
     @property
@@ -147,7 +155,10 @@ class DisplayLabel:
         
         self._height = value        
 
-        self._label.height = value
+        self._label.anchored_position = (
+            int(self._width / 2), 
+            int(self._height / 2)
+        )
         self._update_background()    
 
     @property
@@ -183,7 +194,7 @@ class DisplayLabel:
         if self._text_color == text_color:
             return
         
-        self._print("Set text color to " + repr(color))
+        self._print("Set text color to " + repr(text_color))
 
         self._text_color = text_color
         self._label.color = text_color
@@ -229,36 +240,29 @@ class DisplayLabel:
 
     # Updates the display to match the back color
     def _update_background(self):
+        if self._background_splash_address < 0:
+            return
+        
         self.ui.splash[self._background_splash_address] = self._create_background(self._back_color)
 
     # Create background Rect
     def _create_background(self, color):
-        print(self.x)
-        print(self.y)
-        print(self.width)
-        print(self.height)
-
-        print(self._x)
-        print(self._y)
-        print(self._width)
-        print(self._height)
-
         if self._corner_radius <= 0:
             return Rect(
-                self.x, 
-                self.y,
-                self.width, 
-                self.height, 
+                self._x, 
+                self._y,
+                self._width, 
+                self._height, 
                 fill = color,
                 outline = 0x0, 
                 stroke = 1
             )
         else:
             return RoundRect(
-                self.x, 
-                self.y,
-                self.width, 
-                self.height, 
+                self._x, 
+                self._y,
+                self._width, 
+                self._height, 
                 fill = color,
                 outline = 0x0, 
                 stroke = 1,
@@ -286,7 +290,7 @@ class DisplayLabel:
 
     # Debug console output
     def _print(self, msg):
-        if Tools.get_option(Config, "debugDisplay") != True:
+        if self._debug != True:
             return
         
         Tools.print("Label " + self.id + ": " + msg)

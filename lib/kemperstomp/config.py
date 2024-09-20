@@ -78,24 +78,6 @@ Config = {
     # Port at which the NeoPixel is addressed (example: board.GP7 for most PaintAudio MIDI Captain devices)
     "neoPixelPort": board.GP7,
 
-## User Interface Parameters ################################################################################################
-
-    # Parameters of the user interface
-    "userInterface": {
-        # Shows an area with statistics (for debugging)
-        "showFrameStats": False,
-
-        # Layout for the statistics area (only necessary when switched on)
-        "statsAreaLayout": {
-            "font": "/fonts/H20.pcf",
-            "backColor": (20, 20, 70),
-            "textColor": (255, 255, 0),
-        },
-
-        # Height of the statistics area (only necessary when switched on)
-        "statsAreaHeight": 40
-    },
-
     # Brightness settings for all switch LEDs. Range: [0..1]
     "ledBrightness": {
         "on": FootSwitchDefaults.DEFAULT_BRIGHTNESS_ON,
@@ -108,6 +90,10 @@ Config = {
 
 ## MIDI and other Options #################################################################################################
 
+    # Max. milliseconds until a request is being terminated and it is
+    # assumed that the Kemper device is offline. Optional.
+    "maxRequestLifetimeMillis": 2000,
+
     # Selects the MIDI channel to use [1..16]
     "midiChannel": 1,
 
@@ -119,9 +105,8 @@ Config = {
 
 ## Development Options #####################################################################################################+
 
-    # Max. milliseconds until a request is being terminated and it is
-    # assumed that the Kemper device is offline. Optional.
-    "maxRequestLifetimeMillis": 2000,
+    # Shows an area with statistics (for debugging)
+    #"showFrameStats": True,
 
     # Debug mode, optional. Shows verbose console output. You can listen to that on the serial port via USB on your computer,
     # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 

@@ -17,12 +17,18 @@ class DisplayArea:
         self.width = int(self._config["width"])
         self.height = int(self._config["height"])
 
+        # We need at least one label.
+        self.get(0)
+
     # Returns the label at position index
     def get(self, index):
+        changed = False
         while index >= len(self._content):
             self._content.append(self._create_label())
+            changed = True
 
-        self._update_dimensions()
+        if changed == True:
+            self._update_dimensions()
 
         return self._content[index]
 
