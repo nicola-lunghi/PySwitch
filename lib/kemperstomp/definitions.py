@@ -217,7 +217,7 @@ class KemperDefinitions:
     # Max. milliseconds until a request is being terminated and it is
     # assumed that the Kemper device is offline. This is the default value if
     # "maxRequestLifetimeMillis" is not set in the config.
-    DEFAULT_MAX_REQUEST_LIFETIME_MILLIS = 1000
+    DEFAULT_MAX_REQUEST_LIFETIME_MILLIS = 2000
 
     # Effect type color assignment
     EFFECT_COLOR_NONE = Colors.DEFAULT_LABEL_COLOR

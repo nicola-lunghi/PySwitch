@@ -1,35 +1,26 @@
 import displayio
 
-from .DisplayLabel import DisplayLabel
 from .DisplayArea import DisplayArea
 from ..hardware.FontLoader import FontLoader
 from ..Tools import Tools
-from ...display import DisplayAreaDefinitions
 
 
 # Implements the UI
 class UserInterface:
-
-    # config must be like:
-    # {    
-    #     "slotLabelHeight": Height of the four effect unit label areas (pixels, default: 40)
-    #     "initialInfoText": Text initially shown in the center area (where the rig name goes later on)
-    #     "slotLayout": Layout definition for effect slot labels (see DisplayLabel)
-    #     "infoAreaLayout": Layout definition for the info area (rig name) label (see DisplayLabel)
-    #     "statsAreaLayout": Layout definition for the statistics area label (see DisplayLabel)
-    #     "areas": Area definitions. See DisplayAreaDefinitions (which is the default)
-    # }
-    def __init__(self, display, config):
-        self.config = config                    # UI configuration
-        self.font_loader = FontLoader()         # Buffered font loader
+    def __init__(self, display):
         self.width = display.width
         self.height = display.height        
+        self.splash = None
 
         self._display = display
         self._areas = []
 
-        if Tools.get_option(self.config, "areas") == False:
-            self.config["areas"] = DisplayAreaDefinitions
+        self._area_definitions = []
+
+    # Must be called before usage, after setting the areas
+    def setup(self):
+        # Buffered font loader
+        self.font_loader = FontLoader()
 
         # Init screen stacking (order matters here!)
         self._init_splash()
@@ -37,6 +28,9 @@ class UserInterface:
 
     # Show the user interface
     def show(self):
+        if self.splash == None:
+            raise Exception("setup() has not been called")
+        
         self._display.tft.show(self.splash)
 
     # Initialize display splash container
@@ -46,7 +40,7 @@ class UserInterface:
 
     # Initialize the slots
     def _init_areas(self):
-        for area_def in self.config["areas"]:
+        for area_def in self._area_definitions:
             self._areas.append(
                 DisplayArea(
                     self,
@@ -54,11 +48,23 @@ class UserInterface:
                 )
             )
         
-    # Returns an area by ID, or None
+    # Adds a display area definition. Can only be called before setup().
+    # See DisplayArea.
+    def add_area_definition(self, area_def):
+        if self.splash != None:
+            raise Exception("Cannot add further areas after setup()")
+        
+        self._area_definitions.append(area_def)
+
+    # Returns an area by ID, or None. Can only be called after setup().
     def area(self, id):
+        if self.splash == None:
+            raise Exception("setup() has not been called")
+        
         for a in self._areas:
             if a.id == id:
                 return a
+            
         raise Exception("Display area " + repr(id) + " not found")
 
     # Returns a label according to the passed config:

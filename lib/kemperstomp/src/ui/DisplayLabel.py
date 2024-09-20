@@ -83,19 +83,24 @@ class DisplayLabel:
         self._label_splash_address = len(self.ui.splash)
         self.ui.splash.append(self._group)    
 
-    # Sets all dimensions at once
-    def set_dimensions(self, x, y, w, h):
-        self._x = x
-        self._y = y
-        self._width = w
-        self._height = h
+    # Sets all dimensions at once: (x, y, w, h)
+    @property
+    def dimensions(self):
+        return (self.x, self.y, self.width, self.height)
+    
+    @dimensions.setter
+    def dimensions(self, dimensions):
+        self._x = dimensions[0]
+        self._y = dimensions[1]
+        self._width = dimensions[2]
+        self._height = dimensions[3]
 
         self._label.anchored_position = (
             int(self._width / 2), 
             int(self._height / 2)
         )
-        self._group.x = x
-        self._group.y = y
+        self._group.x = self._x
+        self._group.y = self._y
 
         self._update_background()
 

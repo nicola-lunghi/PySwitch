@@ -4,6 +4,12 @@ from .DisplayLabel import DisplayLabel
 # Contains a list of DisplayLabel instances.
 class DisplayArea:
 
+    # config:
+    # {
+    #      "id":  ID for the area to address it later
+    #      "x", "y", "width", "height": Dimensions for the area
+    #      "layout": A layout definition used for all labels inside the area. See DisplayLabel.
+    # }
     def __init__(self, ui, config):
         self._ui = ui
         self._config = config
@@ -58,7 +64,7 @@ class DisplayArea:
 
         for i in range(len(self._content)):
             label = self._content[i]
-            label.set_dimensions(
+            label.dimensions = (
                 self.x + i * slot_width,
                 self.y,
                 slot_width,

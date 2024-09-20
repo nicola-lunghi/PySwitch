@@ -2,6 +2,8 @@ import usb_midi
 import adafruit_midi 
 
 from .FootSwitch import FootSwitch
+from .Statistics import Statistics
+from .PeriodCounter import PeriodCounter
 from ..hardware.LedDriver import LedDriver
 from ..model.Kemper import Kemper
 from ..model.KemperRequest import KemperRequestListener
@@ -9,7 +11,7 @@ from ..Tools import Tools
 from ...config import Config
 from ...mappings import KemperMappings
 from ...definitions import KemperDefinitions, FootSwitchDefaults
-from ...display import DisplayAreas
+from ...display import DisplayAreas, DisplayAreaDefinitions
 
 
 # Main application class (controls the processing)    
@@ -21,23 +23,40 @@ class KemperStompController(KemperRequestListener):
         # NeoPixel driver 
         self.led_driver = LedDriver(self.config["neoPixelPort"], len(self.config["switches"]) * FootSwitchDefaults.NUM_PIXELS)    
         
-        self._last_update = 0                                     # Used to store the last update timestamp
-        self._update_interval_millis = self.config["updateInterval"]     # Update interval (milliseconds)
-        self._midiChannel = self.config["midiChannel"]            # MIDI channel to use
-        self._midi_buffer_size = self.config["midiBufferSize"]    # MIDI buffer size (default: 60)
+        self._last_update = 0                                                     # Used to store the last update timestamp
+        self._midiChannel = self.config["midiChannel"]                            # MIDI channel to use
+        self._midi_buffer_size = self.config["midiBufferSize"]                    # MIDI buffer size (default: 60)
+        self._show_stats = Tools.get_option(self.config, "showFrameStats", False) # Show frame statistics
         self._current_rig_date = None
 
-        self._last_stat_reset = 0
+        # Set up the screen areas
+        self._setup_ui()
+
+        # Statistics instance (only used when switched on)
+        if self._show_stats == True:
+            self._stats = Statistics(self.ui.area(DisplayAreas.STATISTICS))
+
+        # Periodic update handler (the kemper is only asked when a certain time has passed)
+        self._period = PeriodCounter(self.config["updateInterval"])
 
         # MIDI communication handler        
         self._midi = self._get_midi()
 
-        # Kemper interface
+        # Kemper adapter to send and receive parameters
         self.kemper = Kemper(self._midi)
 
         # Set up switches
-        self.switches = []                                        # Array of registered switches        
+        self.switches = []
         self._init_switches()
+
+    # Creates the display areas
+    def _setup_ui(self):
+        for area_def in DisplayAreaDefinitions:
+            if area_def["id"] == DisplayAreas.STATISTICS and self._show_stats != True:
+                continue
+            self.ui.add_area_definition(area_def)
+
+        self.ui.setup()
 
     # Initialize switches
     def _init_switches(self):
@@ -71,66 +90,51 @@ class KemperStompController(KemperRequestListener):
         Tools.print("-> Done initializing, starting processing loop")
 
         # Start processing loop
-        while True:            
-            self._tick()
+        while True:
+            # If enabled, remember the tick starting time for statistics
+            if self._show_stats == True:
+                self._stats.start()
 
-    # Processing loop implementation
-    def _tick(self):
-        start_time = Tools.get_current_millis()
+            # Receive MIDI messages
+            midimsg = self._midi.receive()
 
-        # Receive MIDI messages
-        midimsg = self._midi.receive()
+            # Process the midi message
+            self.kemper.receive(midimsg)
 
-        # Process the midi message
-        self.kemper.receive(midimsg)
-
-        # Process all switches 
-        for switch in self.switches:
-            switch.process(midimsg)
-        
-        # Update actions and rig info in a certain interval, less frequently then every tick
-        if self._last_update + self._update_interval_millis < start_time:
-            self._last_update = start_time
+            # Process all switches 
+            for switch in self.switches:
+                switch.process(midimsg)
             
-            self._update()
+            # Update actions and rig info in a certain interval, less frequently then every tick
+            if self._period.exceeded == True:
+                self._update()
 
-        # Output statistical info
-        self.ui.area(DisplayAreas.STATISTICS).text = self._get_stats(start_time)
+            # Output statistical info if enabled
+            if self._show_stats == True:
+                self._stats.finish()
 
-    # Get stats string
-    def _get_stats(self, start_time):
-        current = Tools.get_current_millis()
-
-        if self._last_stat_reset + 2 * 1000 < current:
-            self._max_tick_time = 0
-            self._last_stat_reset = current
-
-        diff = current - start_time
-
-        if diff > self._max_tick_time:
-            self._max_tick_time = diff
-
-        return str(diff) + " (max: " + str(self._max_tick_time) + ") ms"
-
-    # Update (called every update interval)
+    # Update (called on every periodic update interval)
     def _update(self):
         Tools.print(" -> Requesting rig date...")
         self.kemper.request(KemperMappings.MAPPING_RIG_DATE, self)
 
-        # Update switch actions
+        # Update switch actions, so they can requests stuff themselves
         for switch in self.switches:
             switch.update()
 
-    # Listen to Kemper value returns
+    # Listen to Kemper value returns (rig name and date)
     def parameter_changed(self, mapping):
+        # Rig name
         if mapping == KemperMappings.MAPPING_RIG_NAME:
             Tools.print(" -> Receiving rig name: " + mapping.value)
             self.ui.area(DisplayAreas.INFO).text = mapping.value
 
+        # Rig date
         if mapping == KemperMappings.MAPPING_RIG_DATE:
             Tools.print(" -> Receiving rig date: " + mapping.value)
+
             if self._current_rig_date != mapping.value:
-                Tools.print("   -> Rig date was different from " + repr(self._current_rig_date) + ", requesting rig name, too...")
+                Tools.print("   -> Rig date was different from " + repr(self._current_rig_date) + ", requesting rig name, too...")                
                 self._current_rig_date = mapping.value
                 
                 Tools.print(" -> Requesting rig name...")
@@ -138,10 +142,12 @@ class KemperStompController(KemperRequestListener):
 
     # Called when the Kemper is offline (requests took too long)
     def request_terminated(self, mapping):
+        # Rig name
         if mapping == KemperMappings.MAPPING_RIG_NAME:
             Tools.print(" -> Request for rig name failed, is the device offline?")
             self.ui.area(DisplayAreas.INFO).text = KemperDefinitions.OFFLINE_RIG_NAME
 
+        # Rig date
         if mapping == KemperMappings.MAPPING_RIG_DATE:
             Tools.print(" -> Request for rig date failed, is the device offline?")
             self._current_rig_date = None

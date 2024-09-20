@@ -91,8 +91,8 @@ Config = {
 ## MIDI and other Options #################################################################################################
 
     # Max. milliseconds until a request is being terminated and it is
-    # assumed that the Kemper device is offline. Optional.
-    "maxRequestLifetimeMillis": 2000,
+    # assumed that the Kemper device is offline. Optional, default is KemperDefinitions.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS.
+    #"maxRequestLifetimeMillis": 5000,
 
     # Selects the MIDI channel to use [1..16]
     "midiChannel": 1,
