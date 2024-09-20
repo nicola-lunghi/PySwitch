@@ -4,7 +4,6 @@ import digitalio
 from .actions.base.Action import Action
 from ..Tools import Tools
 from ...definitions import Colors
-from ...config import Config
 
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
@@ -39,14 +38,16 @@ class FootSwitch:
         self._brightnesses = [0, 0, 0]
         self._pushed_state = False
         self.id = Tools.get_option(self.config["assignment"], "name", repr(self._port))
+        self._debug = Tools.get_option(self._appl.config, "debugSwitches")
 
         self._initial_switch_colors()
         self._init_switch()     
         self._init_actions()
 
     # Set up action instances
-    def _init_actions(self):        
-        self._print("Init actions")
+    def _init_actions(self):
+        if self._debug == True:
+            self._print("Init actions")
         
         for action_config in self.config["actions"]:
             action = Action.get_instance(
@@ -66,7 +67,8 @@ class FootSwitch:
             # No LEDs defined for the switch
             return
         
-        self._print("Set initial colors")
+        if self._debug == True:
+            self._print("Set initial colors")
 
         initial_brightness = Tools.get_option(self.config, "initialBrightness", 1)
 
@@ -88,7 +90,8 @@ class FootSwitch:
     
     # Initializes the switch
     def _init_switch(self):
-        self._print("Init GPIO")
+        if self._debug == True:
+            self._print("Init GPIO")
 
         self.switch = digitalio.DigitalInOut(self._port) 
         
@@ -114,7 +117,8 @@ class FootSwitch:
         if len(colors) != len(self._colors):
             raise Exception("Invalid amount of colors: " + len(colors))
         
-        self._print(" -> Set colors to " + repr(colors))
+        if self._debug == True:
+            self._print(" -> Set colors to " + repr(colors))
 
         self._colors = colors        
 
@@ -127,7 +131,8 @@ class FootSwitch:
     # set_brightness is called!
     @color.setter
     def color(self, color):
-        self._print(" -> Set color to " + repr(color))
+        if self._debug == True:
+            self._print(" -> Set color to " + repr(color))
 
         for i in range(len(self._colors)):
             self._colors[i] = color
@@ -153,7 +158,8 @@ class FootSwitch:
         if self.pixels == False:
             return
         
-        self._print(" -> Set brightnesses to " + repr(brightnesses))
+        if self._debug == True:
+            self._print(" -> Set brightnesses to " + repr(brightnesses))
 
         for i in range(len(self._colors)):
             pixel = self.pixels[i]
@@ -196,18 +202,22 @@ class FootSwitch:
     # Processes all push actions assigned to the switch 
     def _process_actions_push(self):
         for action in self._actions:
-            self._print("Push action " + action.id)
+            if self._debug == True:
+                self._print("Push action " + action.id)
+
             action.push()
 
     # Processes all release actions assigned to the switch 
     def _process_actions_release(self):
         for action in self._actions:
-            self._print("Release action " + action.id)
+            if self._debug == True:
+                self._print("Release action " + action.id)
+                
             action.release()
 
     # Debug console output
     def _print(self, msg):
-        if Tools.get_option(Config, "debugSwitches") != True:
+        if self._debug != True:
             return
         
         state_str = ""

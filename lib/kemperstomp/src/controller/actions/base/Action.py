@@ -1,5 +1,4 @@
 from ....Tools import Tools
-from .....config import Config
 from .....definitions import FootSwitchDefaults
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
@@ -23,7 +22,7 @@ class Action:
         self.config = config
         self.index = index
         self.id = self.switch.id + " | " + self.__class__.__name__
-        self._debug = Tools.get_option(Config, "debugActions")
+        self.debug = Tools.get_option(self.appl.config, "debugActions")
 
         self.label = self._get_action_display()   # DisplayLabel instance the action is connected to (or None).
 
@@ -130,7 +129,4 @@ class Action:
 
     # Print to the debug console
     def print(self, msg):
-        if self._debug != True:
-            return
-        
         Tools.print("Action " + self.id + ": " + msg)

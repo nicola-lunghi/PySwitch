@@ -3,19 +3,19 @@ from adafruit_midi.system_exclusive import SystemExclusive
 from ...definitions import KemperMidi
 from ..Tools import Tools
 from ..EventEmitter import EventEmitter
-from ...config import Config
 
 # Model for a request for a value
 class KemperRequest(EventEmitter):
 
-    def __init__(self, midi, mapping):
+    def __init__(self, midi, mapping, config):
         super().__init__(KemperRequestListener)
-
+        
         self.mapping = mapping        
+        self._config = config
         self._midi = midi
         
-        self._debug = Tools.get_option(Config, "debugKemper")
-        self._debug_raw_midi = Tools.get_option(Config, "debugKemperRawMidi")
+        self._debug = Tools.get_option(self._config, "debugKemper")
+        self._debug_raw_midi = Tools.get_option(self._config, "debugKemperRawMidi")
 
         if self.mapping.request == None:
             raise Exception("No REQUEST message prepared for this MIDI mapping")

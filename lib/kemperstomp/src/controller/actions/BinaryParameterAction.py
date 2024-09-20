@@ -1,8 +1,7 @@
 from .base.PushButtonAction import PushButtonAction
 from ...model.KemperRequest import KemperRequestListener
 from ...Tools import Tools
-from ....definitions import KemperMidi, Colors
-from ....config import Config
+from ....definitions import KemperMidi, Colors, FootSwitchDefaults
 
 
 # Implements bipolar parameters on base of the PushButtonAction class
@@ -17,9 +16,12 @@ class BinaryParameterAction(PushButtonAction, KemperRequestListener):
         self._value_on = Tools.get_option(self.config, "valueEnabled", KemperMidi.NRPN_PARAMETER_ON)
         self._value_off = Tools.get_option(self.config, "valueDisabled", KemperMidi.NRPN_PARAMETER_OFF)
         
-        self._brightness_not_assigned = Config["ledBrightness"]["notAssigned"]
-        self._brightness_on = Config["ledBrightness"]["on"]
-        self._brightness_off = Config["ledBrightness"]["off"]
+        if Tools.get_option(self.appl.config, "ledBrightness") != False:
+            self._brightness_on = Tools.get_option(self.appl.config["ledBrightness"], "on", FootSwitchDefaults.DEFAULT_BRIGHTNESS_ON)
+            self._brightness_off = Tools.get_option(self.appl.config["ledBrightness"], "off", FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF)
+        else:
+            self._brightness_on = FootSwitchDefaults.DEFAULT_BRIGHTNESS_ON
+            self._brightness_off = FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF
 
         self._current_display_status = -1
         self._current_color = -1
@@ -44,7 +46,9 @@ class BinaryParameterAction(PushButtonAction, KemperRequestListener):
 
     # Request parameter value
     def request_value(self):
-        self.print("Request value")
+        if self.debug == True:
+            self.print("Request value")
+
         if self._mapping.can_receive == False:
             return            
         
@@ -93,7 +97,8 @@ class BinaryParameterAction(PushButtonAction, KemperRequestListener):
         if mapping != self._mapping:
             return
         
-        self.print(" -> Receiving binary switch status " + repr(mapping.value))
+        if self.debug == True:
+            self.print(" -> Receiving binary switch status " + repr(mapping.value))
 
         self.feedback_state(mapping.value)
         
@@ -104,7 +109,9 @@ class BinaryParameterAction(PushButtonAction, KemperRequestListener):
         if mapping != self._mapping:
             return
         
-        self.print(" -> Terminated request for parameter value, is the device offline?")
+        if self.debug == True:
+            self.print(" -> Terminated request for parameter value, is the device offline?")
+        
         self.state = False
 
         self.update_displays()

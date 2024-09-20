@@ -2,7 +2,6 @@ from .BinaryParameterAction import BinaryParameterAction
 from ...model.KemperEffectCategories import KemperEffectCategories
 from ...model.KemperRequest import KemperRequestListener
 from ...Tools import Tools
-from ....config import Config
 from ....mappings import KemperMappings
 from ....definitions import Colors, ActionDefaults
 
@@ -31,7 +30,9 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
         if self._mapping_fxtype.can_receive == False:
             return            
         
-        self.print("Request type")
+        if self.debug == True:
+            self.print("Request type")
+
         self.appl.kemper.request(self._mapping_fxtype, self)
 
     # Update display and LEDs to the current state and effect category
@@ -81,7 +82,8 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
         # Convert to effect category
         category = KemperEffectCategories.get_effect_category(mapping.value)
 
-        self.print(" -> Receiving effect category " + repr(category))
+        if self.debug == True:
+            self.print(" -> Receiving effect category " + repr(category))
 
         if category == self._effect_category:
             # Request status also when category has not changed
@@ -106,7 +108,9 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
         if mapping != self._mapping_fxtype:
             return
         
-        self.print(" -> Terminated request for effect type, is the device offline?")
+        if self.debug == True:
+            self.print(" -> Terminated request for effect type, is the device offline?")
+        
         self._effect_category = KemperEffectCategories.CATEGORY_NONE
         
         self.update_displays()

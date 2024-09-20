@@ -2,8 +2,9 @@ from ..Tools import Tools
 
 # Main application class (controls the processing)    
 class Statistics:
-    def __init__(self, display_element = None):
+    def __init__(self, interval_millis, display_element = None):
         self._display_element = display_element        
+        self._interval_millis = interval_millis
         self._last_output = 0
 
         self.reset()
@@ -16,7 +17,7 @@ class Statistics:
     def finish(self):
         self._add()
 
-        if self._last_output + 2 * 1000 < self._end_time:
+        if self._last_output + self._interval_millis < self._end_time:
             self._last_output = self._end_time
 
             self._show()
@@ -47,7 +48,8 @@ class Statistics:
         self._time_aggr = self._time_aggr + diff
         self._time_num = self._time_num + 1
 
-    # Shows the stats (called in intervals)
+    # Shows the stats (called in intervals) either on the assigned diplay element
+    # or (if none has been passed on initialization) on the console
     def _show(self):
         if self._display_element == None:
             print(self._get_str())

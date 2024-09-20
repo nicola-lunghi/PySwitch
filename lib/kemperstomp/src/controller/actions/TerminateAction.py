@@ -13,5 +13,6 @@ class TerminateAction(Action):
         self.switch_brightness = 1
 
     def push(self):
+        print("Terminate on user request")
         sys.exit()
 

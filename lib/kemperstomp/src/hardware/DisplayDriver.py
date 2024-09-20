@@ -23,7 +23,7 @@ class DisplayDriver:
     def init(self):        
         displayio.release_displays()
 
-        tft_res = board.GP8
+        #tft_res = board.GP8
         tft_cs = board.GP13
         tft_dc = board.GP12
         spi_mosi = board.GP15

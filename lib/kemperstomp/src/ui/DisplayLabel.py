@@ -5,7 +5,6 @@ from adafruit_display_shapes.roundrect import RoundRect
 
 from ..Tools import Tools
 from ...definitions import Colors
-from ...config import Config
 
 
 # Controller for a generic rectangular label on the user interface.
@@ -22,17 +21,17 @@ class DisplayLabel:
     #     "text": Initial text (default is none)
     # }
     def __init__(self, ui, x, y, width, height, layout, id):
-        self.ui = ui
+        self._ui = ui
         self.layout = layout
         
-        self._debug = Tools.get_option(Config, "debugDisplay")
+        self._debug = Tools.get_option(self._ui.config, "debugDisplay")
 
         self._x = int(x)
         self._y = int(y)
         self._width = int(width)
         self._height = int(height)
 
-        self._font = self.ui.font_loader.get(self.layout["font"])
+        self._font = self._ui.font_loader.get(self.layout["font"])
 
         self._max_text_width = Tools.get_option(self.layout, "maxTextWidth")
         self._line_spacing = Tools.get_option(self.layout, "lineSpacing")
@@ -52,9 +51,9 @@ class DisplayLabel:
         # Append background, if any
         if self.back_color != None:
             # Remember the index of the background Rect
-            self._background_splash_address = len(self.ui.splash)
+            self._background_splash_address = len(self._ui.splash)
 
-            self.ui.splash.append(self._create_background(self.back_color))        
+            self._ui.splash.append(self._create_background(self.back_color))        
 
         # Append text area
         self._label = label.Label(
@@ -80,8 +79,8 @@ class DisplayLabel:
 
         self._group.append(self._label) 
         
-        self._label_splash_address = len(self.ui.splash)
-        self.ui.splash.append(self._group)    
+        self._label_splash_address = len(self._ui.splash)
+        self._ui.splash.append(self._group)    
 
     # Sets all dimensions at once: (x, y, w, h)
     @property
@@ -178,7 +177,8 @@ class DisplayLabel:
         if self._back_color == color:
             return
 
-        self._print("Set back color to " + repr(color))
+        if self._debug == True:
+            self._print("Set back color to " + repr(color))
 
         self._back_color = color
         self._update_background()
@@ -199,7 +199,8 @@ class DisplayLabel:
         if self._text_color == text_color:
             return
         
-        self._print("Set text color to " + repr(text_color))
+        if self._debug == True:
+            self._print("Set text color to " + repr(text_color))
 
         self._text_color = text_color
         self._label.color = text_color
@@ -238,7 +239,8 @@ class DisplayLabel:
         if self._text == text_out:
             return
         
-        self._print("Set text to " + text_out)
+        if self._debug == True:
+            self._print("Set text to " + text_out)
 
         self._text = text_out
         self._label.text = text_out
@@ -248,7 +250,7 @@ class DisplayLabel:
         if self._background_splash_address < 0:
             return
         
-        self.ui.splash[self._background_splash_address] = self._create_background(self._back_color)
+        self._ui.splash[self._background_splash_address] = self._create_background(self._back_color)
 
     # Create background Rect
     def _create_background(self, color):
@@ -282,7 +284,8 @@ class DisplayLabel:
         
         luminance = self._get_luminance(self.back_color)
 
-        self._print("Determine text color: luminance " + repr(luminance) + " for back color " + repr(self.back_color))
+        if self._debug == True:
+            self._print("Determine text color: luminance " + repr(luminance) + " for back color " + repr(self.back_color))
 
         if luminance < 140:
             return Colors.WHITE
@@ -295,7 +298,4 @@ class DisplayLabel:
 
     # Debug console output
     def _print(self, msg):
-        if self._debug != True:
-            return
-        
         Tools.print("Label " + self.id + ": " + msg)

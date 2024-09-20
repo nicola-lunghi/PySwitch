@@ -3,7 +3,6 @@ from adafruit_midi.system_exclusive import SystemExclusive
 
 from .KemperRequest import KemperRequest, KemperRequestListener
 from ..Tools import Tools
-from ...config import Config
 from ...definitions import KemperDefinitions
 
 # Implements all MIDI communication to and from the Kemper
@@ -11,15 +10,16 @@ class Kemper(KemperRequestListener):
 
     _requests = []   # List of KemperRequest objects
 
-    def __init__(self, midi):
+    def __init__(self, midi, config):
         self._midi = midi
-        self._debug = Tools.get_option(Config, "debugKemper")
+        self._config = config
+        self._debug = Tools.get_option(self._config, "debugKemper")
 
         # Buffer for mappings. Whenever possible, existing mappings are used
         # so values can be buffered.
         self._mappings_buffer = []     
 
-        self._max_request_lifetime = Tools.get_option(Config, "maxRequestLifetimeMillis", KemperDefinitions.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS)
+        self._max_request_lifetime = Tools.get_option(self._config, "maxRequestLifetimeMillis", KemperDefinitions.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS)
         
     # Receive MIDI messages
     def receive(self, midi_message):
@@ -58,7 +58,8 @@ class Kemper(KemperRequestListener):
 
             req = KemperRequest(                
                 self._midi,
-                m
+                m,
+                self._config
             )
             
             req.add_listener(self)          # Listen to fill the buffer

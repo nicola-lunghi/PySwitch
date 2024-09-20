@@ -100,7 +100,6 @@ class FootSwitchDefaults:
     # Brightness values matching the colors well (i prefer darker lights, use other values) range: [0..1]
     DEFAULT_BRIGHTNESS_ON = 0.25
     DEFAULT_BRIGHTNESS_OFF = 0.01
-    DEFAULT_BRIGHTNESS_NOT_ASSIGNED = 0
 
 
 #################################################################################################################################

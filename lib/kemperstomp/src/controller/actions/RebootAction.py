@@ -13,5 +13,6 @@ class RebootAction(Action):
         self.switch_brightness = 1
 
     def push(self):
+        print("Reboot on user request")
         supervisor.reload()
 

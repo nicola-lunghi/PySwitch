@@ -79,11 +79,10 @@ Config = {
     "neoPixelPort": board.GP7,
 
     # Brightness settings for all switch LEDs. Range: [0..1]
-    "ledBrightness": {
-        "on": FootSwitchDefaults.DEFAULT_BRIGHTNESS_ON,
-        "off": FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF,
-        "notAssigned": FootSwitchDefaults.DEFAULT_BRIGHTNESS_NOT_ASSIGNED
-    },
+    #"ledBrightness": {
+    #    "on": FootSwitchDefaults.DEFAULT_BRIGHTNESS_ON,
+    #    "off": FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF,
+    #},
 
     # Factor used to dim the colors in the display (not the switches!) Range [0..1]
     "displayDimFactor": 0.2,

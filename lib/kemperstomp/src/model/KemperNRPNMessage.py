@@ -1,6 +1,6 @@
 from adafruit_midi.system_exclusive import SystemExclusive
 
-from ...definitions import KemperDefinitions, KemperMidi
+from ...definitions import KemperMidi
 from ...kemper import KemperConfig
 
 # Kemper specific SysEx message

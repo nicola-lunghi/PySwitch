@@ -7,7 +7,8 @@ from ..Tools import Tools
 
 # Implements the UI
 class UserInterface:
-    def __init__(self, display):
+    def __init__(self, display, config):
+        self.config = config
         self.width = display.width
         self.height = display.height        
         self.splash = None
