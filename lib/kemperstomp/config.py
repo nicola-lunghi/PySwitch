@@ -57,8 +57,9 @@ Config = {
                     "display": {
                         "area": DisplayAreas.FOOTER,
                         "index": 0,
-                        "text": "RigBoost"
-                    }
+                        "text": "RigBoost"                        
+                    },
+                    "color": Colors.MAPPING_RIG_VOLUME_COLOR
                 }
 
                 #{
@@ -128,6 +129,8 @@ Config = {
     "debugSwitches": False,       # Show verbose output for switches (color, brightness) or a switches 
                                   # actions are triggered. Optional.
     "debugKemper": False,         # Show all requests and responses to/from the Kemper Profiler. Optional.
+    #"kemperDebugMapping": KemperMappings.RIG_VOLUME, # Optional, if set the kemper classes will only output messages related to
+                                  # the specified mapping.
     "debugKemperRawMidi": False,  # Debug raw kemper MIDI messages. Only regarded whe "debugKemper" is enabled, too.
     "debugMidi": False,           # Debug Adafruit MIDI controller. Normally it is sufficient and more readable 
                                   # to enable "debugKemperRawMidi" instead, which also shows the MIDI messages sent

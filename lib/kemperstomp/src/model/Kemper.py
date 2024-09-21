@@ -15,7 +15,9 @@ class Kemper(KemperRequestListener):
     def __init__(self, midi, config):
         self._midi = midi
         self._config = config
+
         self._debug = Tools.get_option(self._config, "debugKemper")
+        self._debug_mapping = Tools.get_option(self._config, "kemperDebugMapping", None)
 
         # Buffer for mappings. Whenever possible, existing mappings are used
         # so values can be buffered.
@@ -53,7 +55,7 @@ class Kemper(KemperRequestListener):
             raise Exception("Invalid mapping.set message")
                 
         if self._debug == True:
-            self._print("Send SET message: " + Tools.stringify_midi_message(mapping.set))
+            self._print("Send SET message: " + Tools.stringify_midi_message(mapping.set), mapping)
 
         self._midi.send(mapping.set)
 
@@ -80,13 +82,13 @@ class Kemper(KemperRequestListener):
             self._requests.append(req)
             
             if self._debug == True:
-                self._print("Add new request. Number of open requests: " + str(len(self._requests)))
+                self._print("Add new request. Number of open requests: " + str(len(self._requests)), mapping)
 
             # Send
             req.send()            
         else:
             if self._debug == True:
-                self._print("Add new listener to existing request. Number of open requests: " + str(len(self._requests)))
+                self._print("Add new listener to existing request. Number of open requests: " + str(len(self._requests)), mapping)
 
             # Existing request: Add listener
             req.add_listener(listener)
@@ -112,7 +114,7 @@ class Kemper(KemperRequestListener):
             self._mappings_buffer.append(mapping)
 
             if self._debug == True:
-                self._print("Added new mapping to buffer, num of buffer entries: " + str(len(self._mappings_buffer)))
+                self._print("Added new mapping to buffer, num of buffer entries: " + str(len(self._mappings_buffer)), mapping)
         else:
             # Update value
             m.value = mapping.value
@@ -145,5 +147,8 @@ class Kemper(KemperRequestListener):
         self._requests = [i for i in self._requests if i.finished() == False]
             
     # Debug console output
-    def _print(self, msg):
+    def _print(self, msg, mapping = None):
+        if self._debug_mapping != None and mapping != None and self._debug_mapping != mapping:
+            return
+        
         Tools.print("Kemper: " + msg)

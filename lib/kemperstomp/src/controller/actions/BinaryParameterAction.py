@@ -116,10 +116,14 @@ class BinaryParameterAction(PushButtonAction, KemperRequestListener):
         if mapping != self._mapping:
             return
         
-        if self.debug == True:
-            self.print(" -> Receiving binary switch status " + repr(mapping.value))
+        state = False
+        if mapping.value >= self._value_on:
+            state = True
 
-        self.feedback_state(mapping.value)
+        if self.debug == True:
+            self.print(" -> Receiving binary switch status " + repr(mapping.value) + ", counted as " + repr(state))
+
+        self.feedback_state(state)
         
         self.update_displays()
 

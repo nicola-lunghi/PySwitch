@@ -204,6 +204,9 @@ class Colors:
     # Default color for switches
     DEFAULT_SWITCH_COLOR = (255, 255, 255)
 
+    # Default colors for some mappings (only used in config)
+    MAPPING_RIG_VOLUME_COLOR = (255, 125, 70)
+
 
 #################################################################################################################################
 

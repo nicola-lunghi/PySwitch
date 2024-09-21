@@ -16,6 +16,7 @@ class KemperRequest(EventEmitter):
         
         self._debug = Tools.get_option(self._config, "debugKemper")
         self._debug_raw_midi = Tools.get_option(self._config, "debugKemperRawMidi")
+        self._debug_mapping = Tools.get_option(self._config, "kemperDebugMapping", None)
 
         if self.mapping.request == None:
             raise Exception("No REQUEST message prepared for this MIDI mapping")
@@ -111,6 +112,9 @@ class KemperRequest(EventEmitter):
 
     # Debug console output
     def _print(self, msg):
+        if self._debug_mapping != None and self._debug_mapping != self.mapping:
+            return
+
         Tools.print("KemperRequest: " + msg)
 
 
