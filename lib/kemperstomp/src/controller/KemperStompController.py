@@ -30,7 +30,7 @@ class KemperStompController(KemperRequestListener):
         self._debug = Tools.get_option(self.config, "debug", False)
 
         # Set up the screen areas
-        self._setup_ui()
+        self._prepare_ui()
 
         # Statistics instance (only used when switched on)
         if self._show_stats == True:
@@ -50,7 +50,7 @@ class KemperStompController(KemperRequestListener):
         self._init_switches()
 
     # Creates the display areas
-    def _setup_ui(self):
+    def _prepare_ui(self):
         for area_def in DisplayAreaDefinitions:
             if area_def["id"] == DisplayAreas.STATISTICS and self._show_stats != True:
                 continue
@@ -86,6 +86,9 @@ class KemperStompController(KemperRequestListener):
 
     # Runs the processing loop (which never ends)
     def process(self):
+        if self._debug == True:
+            Tools.print("-> Init UI")
+
         # Show user interface
         self.ui.show()
 
@@ -98,15 +101,21 @@ class KemperStompController(KemperRequestListener):
             if self._show_stats == True:
                 self._stats.start()
 
-            # Receive MIDI messages
-            midimsg = self._midi.receive()
+            # Receive all available MIDI messages            
+            cnt = 0
+            while True:
+                midimsg = self._midi.receive()
 
-            # Process the midi message
-            self.kemper.receive(midimsg)
+                # Process the midi message
+                self.kemper.receive(midimsg)
 
+                cnt = cnt + 1
+                if midimsg == None or cnt > KemperDefinitions.MAX_NUM_CONECTUTIVE_MIDI_MESSAGES:
+                    break            
+        
             # Process all switches 
             for switch in self.switches:
-                switch.process(midimsg)
+                switch.process()
             
             # Update actions and rig info in a certain interval, less frequently then every tick
             if self._period.exceeded == True:

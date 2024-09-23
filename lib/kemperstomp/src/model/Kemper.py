@@ -25,15 +25,6 @@ class Kemper(KemperRequestListener):
 
         self._max_request_lifetime = Tools.get_option(self._config, "maxRequestLifetimeMillis", KemperDefinitions.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS)
         
-    # Receive MIDI messages
-    def receive(self, midi_message):
-        # See if one of the waiting requests matches        
-        for request in self._requests:
-            request.parse(midi_message)            
-
-        # Check for finished requests
-        self._cleanup_requests()
-
     # Sends the SET message of a mapping
     def set(self, mapping, value):
         if mapping.set == None:
@@ -82,16 +73,25 @@ class Kemper(KemperRequestListener):
             self._requests.append(req)
             
             if self._debug == True:
-                self._print("Add new request. Number of open requests: " + str(len(self._requests)), mapping)
+                self._print("Added new request. Number of open requests: " + str(len(self._requests)), mapping)
 
             # Send
             req.send()            
         else:
-            if self._debug == True:
-                self._print("Add new listener to existing request. Number of open requests: " + str(len(self._requests)), mapping)
-
             # Existing request: Add listener
             req.add_listener(listener)
+
+            if self._debug == True:
+                self._print("Added new listener to existing request. Open requests: " + str(len(self._requests)) + ", Listeners: " + str(len(req.listeners)), mapping)
+
+    # Receive MIDI messages
+    def receive(self, midi_message):
+        # See if one of the waiting requests matches        
+        for request in self._requests:
+            request.parse(midi_message)            
+
+        # Check for finished requests
+        self._cleanup_requests()
 
     # Gets the buffered value (or None) for a formerly requested mapping.
     def get(self, mapping):
@@ -131,10 +131,10 @@ class Kemper(KemperRequestListener):
             
         return None
 
-    # Remove all finished requests
+    # Remove all finished requests, and terminate the ones which took too long already
     def _cleanup_requests(self):
         # Terminate requests if they waited too long
-        current_time = Tools.get_current_millis()        
+        current_time = Tools.get_current_millis()
         for request in self._requests:
             diff = current_time - request.start_time
             if diff > self._max_request_lifetime:

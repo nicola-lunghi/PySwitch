@@ -32,6 +32,12 @@ class UserInterface:
         if self.splash == None:
             raise Exception("setup() has not been called")
         
+        # Set up the display areas internally (late). This avoids unnecessary 
+        # re-creating of splash items (after this, every change to the dimensions
+        # of a display label will trigger a performance-costly re-creation of the (Round)Rects)
+        for area in self._areas:
+            area.init()
+
         self._display.tft.show(self.splash)
 
     # Initialize display splash container

@@ -59,8 +59,8 @@ class KemperRequest(EventEmitter):
         if self.finished() == True:
             return
         
-        if self.mapping.response == None:
-            raise Exception("No response template message prepared for this MIDI mapping")
+        #if self.mapping.response == None:
+        #    raise Exception("No response template message prepared for this MIDI mapping")
 
         if not isinstance(midi_message, SystemExclusive):
             return
@@ -75,7 +75,7 @@ class KemperRequest(EventEmitter):
         # Compare manufacturer IDs
         if midi_message.manufacturer_id != self.mapping.response.manufacturer_id:
             return 
-
+        
         # Get data as integer list from both the incoming message and the response
         # template in the mapping
         response = list(midi_message.data)                        

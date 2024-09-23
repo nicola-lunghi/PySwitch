@@ -118,7 +118,7 @@ class PushButtonModes:
                                     # on, it will momentarily be switched off and vice versa).
 
     # Hold time for HOLD_MOMENTARY mode (milliseconds)
-    DEFAULT_LATCH_MOMENTARY_HOLD_TIME = 300  
+    DEFAULT_LATCH_MOMENTARY_HOLD_TIME = 600  
 
 #################################################################################################################################
 
@@ -215,6 +215,12 @@ class Colors:
 class KemperDefinitions:
     # Rig name to show when offline
     OFFLINE_RIG_NAME = "Kemper Profiler (offline)"
+
+    # Max. number of MIDI messages being parsed before the next switch state evaluation
+    # is triggered. If set to 0, only one message is parsed per tick, which leads to 
+    # flickering states sometimes. If set too high, switch states will not be read for too long.
+    # A good value is the maximum amount of switches.
+    MAX_NUM_CONECTUTIVE_MIDI_MESSAGES = 10
 
     # Max. milliseconds until a request is being terminated and it is
     # assumed that the Kemper device is offline. This is the default value if

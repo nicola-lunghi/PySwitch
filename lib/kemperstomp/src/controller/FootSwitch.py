@@ -176,8 +176,7 @@ class FootSwitch:
         return len(self.config["actions"])
 
     # Process the switch: Check if it is currently pushed, set state accordingly
-    # and send the MIDI messages configured.
-    def process(self, midi_message):
+    def process(self):
         # Is the switch currently pushed? If not, return false.
         if self.pushed == False:
             if self._pushed_state == True:

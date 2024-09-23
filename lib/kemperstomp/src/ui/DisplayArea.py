@@ -26,6 +26,11 @@ class DisplayArea:
         # We need at least one label.
         self.get(0)
 
+    # Create the areas pre-defined until now.
+    def init(self):
+        for label in self._content:
+            label.add_to_splash()
+
     # Returns the label at position index
     def get(self, index):
         changed = False

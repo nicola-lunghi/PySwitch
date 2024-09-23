@@ -42,34 +42,40 @@ class DisplayLabel:
         self._initial_text_color = self._text_color
         self.id = id
 
-        self._background_splash_address = -1
+        self._background_splash_index = -1
+        self._background = None
+        self._label = None
 
-        self._add_to_splash()    
+    @property
+    def initialized(self):
+        return self._label != None
 
     # Adds the slot to the splash
-    def _add_to_splash(self):
+    def add_to_splash(self):
         # Append background, if any
         if self.back_color != None:
-            # Remember the index of the background Rect
-            self._background_splash_address = len(self._ui.splash)
+            self._background_splash_index = len(self._ui.splash)
+            self._background = self._create_background()
+            self._ui.splash.append(self._background)
 
-            self._ui.splash.append(self._create_background(self.back_color))        
+        # Trigger automatic text color determination
+        self.text_color = self._text_color
+
+        # Trigger text wrapping
+        self.text = self._text
 
         # Append text area
         self._label = label.Label(
             self._font,
-            #color = self.text_color,
             anchor_point = (0.5, 0.5), 
             anchored_position = (
                 int(self._width / 2), 
                 int(self._height / 2)
             ),
+            text = self._text,
+            color = self._text_color,
             line_spacing = self._line_spacing
         )
-        
-        self.text = self._text
-        self.back_color = self._back_color
-        self.text_color = self._text_color
         
         self._group = displayio.Group(
             scale = 1, 
@@ -77,15 +83,13 @@ class DisplayLabel:
             y = self._y
         )
 
-        self._group.append(self._label) 
-        
-        self._label_splash_address = len(self._ui.splash)
+        self._group.append(self._label)
         self._ui.splash.append(self._group)    
 
     # Sets all dimensions at once: (x, y, w, h)
     @property
     def dimensions(self):
-        return (self.x, self.y, self.width, self.height)
+        return (self._x, self._y, self._width, self._height)
     
     @dimensions.setter
     def dimensions(self, dimensions):
@@ -94,14 +98,19 @@ class DisplayLabel:
         self._width = dimensions[2]
         self._height = dimensions[3]
 
-        self._label.anchored_position = (
-            int(self._width / 2), 
-            int(self._height / 2)
-        )
-        self._group.x = self._x
-        self._group.y = self._y
+        # Label
+        if self._label != None:
+            self._label.anchored_position = (
+                int(self._width / 2), 
+                int(self._height / 2)
+            )
+            self._group.x = self._x
+            self._group.y = self._y
 
-        self._update_background()
+        # Background, if any
+        if self._background != None:
+            if self._background.x != self._x or self._background.y != self._y or self._background.width != self._width or self._background.height != self._height:
+                self._recreate_background()
 
     @property
     def x(self):
@@ -114,8 +123,14 @@ class DisplayLabel:
         
         self._x = value        
 
-        self._group.x = value
-        self._update_background()
+        # Label
+        if self._label != None:
+            self._group.x = value
+
+        # Background
+        if self._background != None:
+            if self._background.x != self._x:
+                self._recreate_background()
 
     @property
     def y(self):
@@ -128,8 +143,14 @@ class DisplayLabel:
         
         self._y = value        
 
-        self._group.y = value
-        self._update_background()
+        # Label
+        if self._label != None:
+            self._group.y = value
+
+        # Background
+        if self._background != None:
+            if self._background.y != self._y:
+                self._recreate_background()
 
     @property
     def width(self):
@@ -142,11 +163,17 @@ class DisplayLabel:
         
         self._width = value        
 
-        self._label.anchored_position = (
-            int(self._width / 2), 
-            int(self._height / 2)
-        )
-        self._update_background()
+        # Label
+        if self._label != None:
+            self._label.anchored_position = (
+                int(self._width / 2), 
+                int(self._height / 2)
+            )
+
+        # Background
+        if self._background != None:
+            if self._background.width != self._width:
+                self._recreate_background()
 
     @property
     def height(self):
@@ -159,11 +186,17 @@ class DisplayLabel:
         
         self._height = value        
 
-        self._label.anchored_position = (
-            int(self._width / 2), 
-            int(self._height / 2)
-        )
-        self._update_background()    
+        # Label
+        if self._label != None:
+            self._label.anchored_position = (
+                int(self._width / 2), 
+                int(self._height / 2)
+            )
+        
+        # Background
+        if self._background != None:
+            if self._background.height != self._height:
+                self._recreate_background()
 
     @property
     def back_color(self):
@@ -171,9 +204,6 @@ class DisplayLabel:
 
     @back_color.setter
     def back_color(self, color):
-        if self._background_splash_address < 0:
-            return
-        
         if self._back_color == color:
             return
 
@@ -181,7 +211,9 @@ class DisplayLabel:
             self._print("Set back color to " + repr(color))
 
         self._back_color = color
-        self._update_background()
+
+        if self._background != None:
+            self._background.fill = color
 
         # Update text color, too (might change when no initial color has been set)
         self.text_color = self._initial_text_color
@@ -203,7 +235,9 @@ class DisplayLabel:
             self._print("Set text color to " + repr(text_color))
 
         self._text_color = text_color
-        self._label.color = text_color
+
+        if self._label != None:
+            self._label.color = text_color
 
     @property
     def corner_radius(self):
@@ -216,7 +250,9 @@ class DisplayLabel:
         
         self._corner_radius = r
 
-        self._update_background()
+        if self._background != None:
+            if self._background.r != r:
+                self._recreate_background()
 
     @property
     def text(self):
@@ -243,24 +279,24 @@ class DisplayLabel:
             self._print("Set text to " + text_out)
 
         self._text = text_out
-        self._label.text = text_out
 
-    # Updates the display to match the back color
-    def _update_background(self):
-        if self._background_splash_address < 0:
-            return
-        
-        self._ui.splash[self._background_splash_address] = self._create_background(self._back_color)
+        if self._label != None:
+            self._label.text = text_out
+
+    # Refresh the background by replacing it (necessary when dimensions have changed only)
+    def _recreate_background(self):
+        self._background = self._create_background()
+        self._ui.splash[self._background_splash_index] = self._background
 
     # Create background Rect
-    def _create_background(self, color):
+    def _create_background(self):
         if self._corner_radius <= 0:
             return Rect(
                 self._x, 
                 self._y,
                 self._width, 
                 self._height, 
-                fill = color,
+                fill = self._back_color,
                 outline = 0x0, 
                 stroke = 1
             )
@@ -270,7 +306,7 @@ class DisplayLabel:
                 self._y,
                 self._width, 
                 self._height, 
-                fill = color,
+                fill = self._back_color,
                 outline = 0x0, 
                 stroke = 1,
                 r = self._corner_radius

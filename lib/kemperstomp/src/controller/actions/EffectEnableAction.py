@@ -75,7 +75,7 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
     # Called by the Kemper class when a parameter request has been answered
     def parameter_changed(self, mapping):
         super().parameter_changed(mapping)
-        
+
         if mapping != self._mapping_fxtype:
             return
         

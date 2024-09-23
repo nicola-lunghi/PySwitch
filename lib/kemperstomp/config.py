@@ -113,12 +113,12 @@ Config = {
     "midiBufferSize": 60,
 
     # Update interval, for updating rig info (milliseconds)
-    "updateInterval": 1000, #50,
+    "updateInterval": 2000, #200,
 
 ## Development Options #####################################################################################################+
 
     # Shows an area with statistics (for debugging)
-    #"showFrameStats": True,
+    "showFrameStats": False,
 
     # Debug mode, optional. Shows verbose console output. You can listen to that on the serial port via USB on your computer,
     # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 
@@ -129,7 +129,7 @@ Config = {
     "debugSwitches": False,       # Show verbose output for switches (color, brightness) or a switches 
                                   # actions are triggered. Optional.
     "debugKemper": False,         # Show all requests and responses to/from the Kemper Profiler. Optional.
-    #"kemperDebugMapping": KemperMappings.RIG_VOLUME, # Optional, if set the kemper classes will only output messages related to
+    #"kemperDebugMapping": KemperMappings.RIG_DATE, # Optional, if set the kemper classes will only output messages related to
                                   # the specified mapping.
     "debugKemperRawMidi": False,  # Debug raw kemper MIDI messages. Only regarded whe "debugKemper" is enabled, too.
     "debugMidi": False,           # Debug Adafruit MIDI controller. Normally it is sufficient and more readable 

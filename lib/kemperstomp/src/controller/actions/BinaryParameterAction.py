@@ -47,16 +47,18 @@ class BinaryParameterAction(PushButtonAction, KemperRequestListener):
         else:
             self.appl.kemper.set(self._mapping, self._value_off)
 
-        self.request_value()
+        # Request value
+        self._request_value()
 
         self.update_displays()
 
     # Request real state from controlled device
     def update(self):
-        self.request_value()
+        self._request_value()
 
+    # Cancel eventually pending requests (which might return outdated values)
     # Request parameter value
-    def request_value(self):
+    def _request_value(self):
         if self.debug == True:
             self.print("Request value")
 

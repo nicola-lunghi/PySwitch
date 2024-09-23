@@ -35,7 +35,7 @@ class KemperParameterMapping:
             return False
 
         if isinstance(a, SystemExclusive):            
-            return list(a.data) == list(b.data)
+            return a.data == b.data
 
         if isinstance(a, ControlChange):
             return a.control == b.control
