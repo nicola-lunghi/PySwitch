@@ -6,8 +6,9 @@ class DisplayArea:
 
     # config:
     # {
-    #      "id":  ID for the area to address it later
-    #      "x", "y", "width", "height": Dimensions for the area
+    #      "id":     ID for the area to address it later
+    #      "name":   Readable name for the area (used in debugging only but must be defined)
+    #      "bounds": Bounds object
     #      "layout": A layout definition used for all labels inside the area. See DisplayLabel.
     # }
     def __init__(self, ui, config):
@@ -16,12 +17,13 @@ class DisplayArea:
         self._content = []
 
         self.id = self._config["id"]
+        bounds = self._config["bounds"]
         
-        self.x = int(self._config["x"])
-        self.y = int(self._config["y"])
+        self.x = int(bounds.x)
+        self.y = int(bounds.y)
 
-        self.width = int(self._config["width"])
-        self.height = int(self._config["height"])
+        self.width = int(bounds.width)
+        self.height = int(bounds.height)
 
         # We need at least one label.
         self.get(0)

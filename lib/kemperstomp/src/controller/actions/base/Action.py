@@ -87,12 +87,7 @@ class Action:
         if Tools.get_option(self.config, "display") == False:
             return None
                 
-        # Set initial properties
-        label = self.appl.ui.get_label(self.config["display"])
-        label.text = Tools.get_option(self.config["display"], "text", "")
-        label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", label.corner_radius)
-
-        return label
+        return self.appl.ui.setup_label(self.config["display"])
 
     # Returns the switch LED segments to use
     def _get_led_segments(self):

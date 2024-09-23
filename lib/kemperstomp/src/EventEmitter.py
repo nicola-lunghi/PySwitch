@@ -8,7 +8,7 @@ class EventEmitter:
      # Adds a listener, and returns True if added, False if already existed.
     def add_listener(self, listener):
         if not isinstance(listener, self.listener_type):
-            raise Exception("Listeners must be of type " + self.listener_type.__name)
+            raise Exception("Listeners must be of type " + self.listener_type.__name__)
         
         if listener in self.listeners:
             return False

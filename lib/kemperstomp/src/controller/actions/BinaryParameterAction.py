@@ -1,7 +1,7 @@
 from .base.PushButtonAction import PushButtonAction
 from ...model.KemperRequest import KemperRequestListener
 from ...Tools import Tools
-from ....definitions import KemperMidi, Colors, FootSwitchDefaults
+from ....definitions import KemperMidi, KemperDefinitions, Colors, FootSwitchDefaults
 from ....display import DisplayAreas
 
 
@@ -25,7 +25,7 @@ class BinaryParameterAction(PushButtonAction, KemperRequestListener):
         self._value_off = Tools.get_option(self.config, "valueDisabled", KemperMidi.NRPN_PARAMETER_OFF)
 
         # Global config
-        self._dim_factor = Tools.get_option(self.appl.config, "displayDimFactor", DisplayAreas.DEFAULT_SLOT_DIM_FACTOR)
+        self._dim_factor = Tools.get_option(self.appl.config, "displayDimFactor", KemperDefinitions.DEFAULT_SLOT_DIM_FACTOR)
 
         if Tools.get_option(self.appl.config, "ledBrightness") != False:
             self._brightness_on = Tools.get_option(self.appl.config["ledBrightness"], "on", FootSwitchDefaults.DEFAULT_BRIGHTNESS_ON)

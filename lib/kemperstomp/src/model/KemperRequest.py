@@ -19,20 +19,20 @@ class KemperRequest(EventEmitter):
         self._debug_mapping = Tools.get_option(self._config, "kemperDebugMapping", None)
 
         if self.mapping.request == None:
-            raise Exception("No REQUEST message prepared for this MIDI mapping")
+            raise Exception("No REQUEST message prepared for this MIDI mapping (" + self.mapping.name + ")")
         
         if self.mapping.response == None:
-            raise Exception("No response template message prepared for this MIDI mapping")
+            raise Exception("No response template message prepared for this MIDI mapping (" + self.mapping.name + ")")
         
         if not isinstance(self.mapping.request, SystemExclusive):
-            raise Exception("Parameter requests do not work with ControlChange or other types. Use KemperNRPNMessage (or SystemExclusive directly) instead.")
+            raise Exception("Parameter requests do not work with ControlChange or other types. Use KemperNRPNMessage (or SystemExclusive directly) instead. (" + self.mapping.name + ")")
 
         self.start_time = Tools.get_current_millis()            
 
     # Sends the request
     def send(self):
         if self._debug == True:
-            self._print(" -> Send REQUEST message: " + Tools.stringify_midi_message(self.mapping.request))
+            self._print(" -> Send REQUEST message for " + self.mapping.name + ": " + Tools.stringify_midi_message(self.mapping.request))
 
         self._midi.send(self.mapping.request)
 
@@ -101,7 +101,7 @@ class KemperRequest(EventEmitter):
             self.mapping.value = response[-2] * 128 + response[-1]
         
         if self._debug == True:
-            self._print("   -> Received value " + repr(self.mapping.value) + ": " + Tools.stringify_midi_message(midi_message))
+            self._print("   -> Received value " + repr(self.mapping.value) + " for " + self.mapping.name + ": " + Tools.stringify_midi_message(midi_message))
 
         # Call the listeners
         for listener in self.listeners:

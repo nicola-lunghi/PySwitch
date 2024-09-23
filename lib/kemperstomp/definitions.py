@@ -17,7 +17,7 @@ import board
 #
 # {
 #      "type": Type of the action. This determines what the action does, and which configuration options it needs.
-#              Use the constants defined in Actions, for example Actions.EFFECT_ON_OFF.
+#              Use the constants defined in ActionTypes, for example ActionTypes.EFFECT_ON_OFF.
 # 
 #      "display": {
 #          "area":         ID of the display area. See display.py.
@@ -27,7 +27,7 @@ import board
 #          "cornerRadius": Optional corner radius. Default is the underlying layout.
 #      }
 # }
-class Actions:
+class ActionTypes:
 
     # Switches an effect on/off, if the slot is assigned.
     # Additional options:
@@ -39,7 +39,7 @@ class Actions:
     # }
     EFFECT_ON_OFF = "EffectEnableAction"
     
-    # Generic binary MIDI parameter (on/off)
+    # Generic MIDI parameter
     # Additional options:
     # {
     #     "mode":           Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
@@ -50,7 +50,7 @@ class Actions:
     #     "valueEnabled":   Value to be interpreted as "enabled". Optional: Default is 1
     #     "valueDisabled":  Value to be interpreted as "disabled". Optional: Default is 0
     # }
-    BINARY_PARAMETER = "BinaryParameterAction"
+    PARAMETER = "BinaryParameterAction"
     
     #### Internal and development actions #######################################################################################
 
@@ -98,8 +98,8 @@ class FootSwitchDefaults:
     NUM_PIXELS = 3
 
     # Brightness values matching the colors well (i prefer darker lights, use other values) range: [0..1]
-    DEFAULT_BRIGHTNESS_ON = 0.25
-    DEFAULT_BRIGHTNESS_OFF = 0.01
+    DEFAULT_BRIGHTNESS_ON = 0.3
+    DEFAULT_BRIGHTNESS_OFF = 0.02
 
 
 #################################################################################################################################
@@ -185,7 +185,9 @@ class Colors:
     YELLOW = (255, 255, 0)
     ORANGE = (255, 125, 0)
     RED = (255, 0, 0)
+    PINK = (255, 125, 70)
     PURPLE = (180, 0, 120)
+    LIGHT_GREEN = (100, 255, 100)
     GREEN = (0, 255, 0)
     DARK_GREEN = (0, 100, 0)
     TURQUOISE = (64, 242, 208)
@@ -204,9 +206,6 @@ class Colors:
     # Default color for switches
     DEFAULT_SWITCH_COLOR = (255, 255, 255)
 
-    # Default colors for some mappings (only used in config)
-    MAPPING_RIG_VOLUME_COLOR = (255, 125, 70)
-
 
 #################################################################################################################################
 
@@ -220,7 +219,10 @@ class KemperDefinitions:
     # is triggered. If set to 0, only one message is parsed per tick, which leads to 
     # flickering states sometimes. If set too high, switch states will not be read for too long.
     # A good value is the maximum amount of switches.
-    MAX_NUM_CONECTUTIVE_MIDI_MESSAGES = 10
+    MAX_NUM_CONSECUTIVE_MIDI_MESSAGES = 10
+
+    # Dim factor for disabled slots (display only)
+    DEFAULT_SLOT_DIM_FACTOR = 0.2
 
     # Max. milliseconds until a request is being terminated and it is
     # assumed that the Kemper device is offline. This is the default value if
@@ -295,6 +297,11 @@ class KemperMidi:
     )
 
     CC_TUNER_MODE = 31
+    CC_BANK_INCREASE = 48
+    CC_BANK_DECREASE = 49
+
+    # Values for CC commands
+    CC_VALUE_BANK_CHANGE = 0
 
     # Product types
     NRPN_PRODUCT_TYPE_PROFILER = 0x00         # Kemper Profiler
@@ -323,6 +330,7 @@ class KemperMidi:
     # Other adress pages
     NRPN_ADDRESS_PAGE_STRINGS = 0x00
     NRPN_ADDRESS_PAGE_RIG_PARAMETERS = 0x04
+    NRPN_ADDRESS_PAGE_FREEZE = 0x7d
 
     # Generally used NRPN values
     NRPN_MANUFACTURER_ID = [0x00, 0x20, 0x33]             # Kemper manufacturer ID
@@ -351,5 +359,25 @@ class KemperMidi:
     # NRPN String parameters
     NRPN_STRING_PARAMETER_ID_RIG_NAME = 0x01
     NRPN_STRING_PARAMETER_ID_RIG_DATE = 0x03
+    NRPN_STRING_PARAMETER_ID_AMP_NAME = 0x10
+    NRPN_STRING_PARAMETER_ID_CABINET_NAME = 0x20
 
+    # Freeze parameter addresses on page 0x7d (Looper and Delay Freeze) for all slots. 
+    # Order has to match the one defined above!
+    NRPN_FREEZE_SLOT_PARAMETER_ADDRESSES = [
+        0x6b,   # Slot A
+        0x6c,   # Slot B
+        0x6d,   # Slot C
+        0x6e,   # Slot D
+
+        0x6f,   # Slot X
+        0x71,   # Slot MOD
+        0x72,   # Slot DLY
+        0x73    # Slot REV
+    ]
+
+    # Helper to convert values in range [0..1] to the NRPN value range of [0..16383]
+    @staticmethod
+    def NRPN_VALUE(value):
+        return int(16383 * value)
 

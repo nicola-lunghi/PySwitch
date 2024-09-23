@@ -2,7 +2,7 @@ import board
 
 from .FootSwitch import FootSwitch
 from ..hardware.LedDriver import LedDriver
-from ...definitions import Actions, Colors, FootSwitchDefaults
+from ...definitions import ActionTypes, Colors, FootSwitchDefaults
 
 
 # Main application class for Explore Mode
@@ -72,15 +72,15 @@ class ExploreModeController:
                 },
                 "actions": [
                     {
-                        "type": Actions.PRINT,
+                        "type": ActionTypes.PRINT,
                         "text": "---------------------------------"
                     },
                     {
-                        "type": Actions.EXPLORE_IO,
+                        "type": ActionTypes.EXPLORE_IO,
                         "name": port_def["name"]
                     },
                     {
-                        "type": Actions.EXPLORE_PIXELS,
+                        "type": ActionTypes.EXPLORE_PIXELS,
                         "step": scan_step
                     }
                 ],
@@ -165,7 +165,7 @@ class ExploreModeController:
     # On a switch instance, set the color indicating whether it switches up or down
     def _indicate_action_color(self, switch):
         for action_config in switch.config["actions"]:
-            if action_config["type"] != Actions.EXPLORE_PIXELS:
+            if action_config["type"] != ActionTypes.EXPLORE_PIXELS:
                 continue
 
             if action_config["step"] > 0:
