@@ -128,7 +128,7 @@ Config = {
 
     # Update interval, for updating the rig date (which triggers all other data to update when changed) (milliseconds)
     # and other displays if assigned. 200 is a good value.
-    "updateInterval": 2000,
+    "updateInterval": 200,
 
     # Port at which the NeoPixel is addressed (example: board.GP7 for most (?) PaintAudio MIDI Captain devices)
     "neoPixelPort": board.GP7,
