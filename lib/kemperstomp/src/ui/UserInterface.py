@@ -76,18 +76,11 @@ class UserInterface:
 
     # Returns a label according to the passed config:
     # {
-    #     "area":         Area ID (mandatory)
+    #     "area":         Area ID (mandatory), as defined in DisplayAreas
     #     "index":        Index (optional), if not set, the first element will be returned
-    #     "text":         Optional initial text
-    #     "cornerRadius": Optional corner radius
     # }
     def setup_label(self, display_config):
         display_area = display_config["area"]
         index = Tools.get_option(display_config, "index", 0)
 
-        label = self.area(display_area).get(index)
-
-        label.text = Tools.get_option(display_config, "text", label.text)
-        label.corner_radius = Tools.get_option(display_config, "cornerRadius", label.corner_radius)
-
-        return label
+        return self.area(display_area).get(index)

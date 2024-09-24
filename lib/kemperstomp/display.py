@@ -85,8 +85,7 @@ DisplayAreaDefinitions = [
         "name": "Detail",
         "bounds": bounds.bottom(DETAIL_HEIGHT),
         "layout": {
-            "font": "/fonts/A12.pcf",
-            "text": "Foo bar"
+            "font": "/fonts/A12.pcf"
         }
     },
 
@@ -97,7 +96,7 @@ DisplayAreaDefinitions = [
         "bounds": bounds.top(DETAIL_HEIGHT),
         "layout": {
             "font": "/fonts/A12.pcf",
-            "backColor": Colors.DEFAULT_LABEL_COLOR
+            "backColor": Colors.DEFAULT_LABEL_COLOR   # TODO is this really working?
         }        
     },
 
@@ -109,8 +108,7 @@ DisplayAreaDefinitions = [
         "layout": {
             "font": "/fonts/PTSans-NarrowBold-40.pcf",
             "lineSpacing": 0.8,
-            "maxTextWidth": 220,
-            "text": KemperDefinitions.OFFLINE_RIG_NAME     # Initial text
+            "maxTextWidth": 220
         }
     }
 ]

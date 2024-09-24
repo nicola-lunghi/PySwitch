@@ -130,6 +130,21 @@ class KemperStompController(KemperRequestListener):
             if self._show_stats == True:
                 self._stats.finish()
 
+    # Resets all switches
+    def reset_switches(self, ignore_switches_list = []):
+        if self._debug == True:
+            Tools.print("-> Reset switches, ignoring " + repr(ignore_switches_list))
+
+        for switch in self.switches:
+            if not switch in ignore_switches_list:
+                switch.reset()
+
+    # Resets all display areas
+    def reset_display_areas(self):
+        if self._debug == True:
+            Tools.print("-> Reset display areas")
+
+        self._info_parameters.reset()
 
     # Update (called on every periodic update interval)
     def _update(self):

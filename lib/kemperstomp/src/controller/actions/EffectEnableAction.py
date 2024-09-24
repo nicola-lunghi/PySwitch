@@ -1,4 +1,4 @@
-from .BinaryParameterAction import BinaryParameterAction
+from .ParameterAction import ParameterAction
 from ...model.KemperEffectCategories import KemperEffectCategories
 from ...model.KemperRequest import KemperRequestListener
 from ...Tools import Tools
@@ -7,13 +7,16 @@ from ....definitions import Colors, ActionDefaults
 
 
 # Implements the effect enable/disable footswitch action
-class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
+class EffectEnableAction(ParameterAction, KemperRequestListener):
     
-    def __init__(self, appl, switch, config, index):        
-        # Mapping for status (used by BinaryParameterAction)
+    # config: see ActionDefinitions
+    def __init__(self, appl, switch, config):        
+        # Mapping for status (used by ParameterAction)
         config["mapping"] = KemperMappings.EFFECT_SLOT_ON_OFF(config["slot"])
         
-        super().__init__(appl, switch, config, index)
+        super().__init__(appl, switch, config)
+
+        self.uses_switch_leds = True
 
         self._effect_category = KemperEffectCategories.CATEGORY_NONE        
         self._current_category = -1
@@ -21,6 +24,9 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
         # Mapping for effect type
         self._mapping_fxtype = KemperMappings.EFFECT_SLOT_TYPE(self.config["slot"])
 
+    def init(self):
+        super().init()
+        
         if self.label != None:
             self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", ActionDefaults.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)
 
@@ -113,5 +119,12 @@ class EffectEnableAction(BinaryParameterAction, KemperRequestListener):
         
         self._effect_category = KemperEffectCategories.CATEGORY_NONE
         
+        self.update_displays()
+
+    # Reset the action
+    def reset(self):
+        super().reset()
+
+        self._effect_category = KemperEffectCategories.CATEGORY_NONE        
         self.update_displays()
 

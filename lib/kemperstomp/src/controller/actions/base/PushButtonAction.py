@@ -11,11 +11,12 @@ class PushButtonAction(Action):
     #      "mode": Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
     #      "holdTimeMillis": Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
     # }
-    def __init__(self, appl, switch, config, index):
-        super().__init__(appl, switch, config, index)
+    def __init__(self, appl, switch, config):
+        super().__init__(appl, switch, config)
 
         self._mode = Tools.get_option(self.config, "mode", PushButtonModes.HOLD_MOMENTARY)
         self._hold_time_ms = Tools.get_option(self.config, "holdTimeMillis", PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME)
+        
         self._state = False
         self._start_time = 0
 
@@ -34,6 +35,8 @@ class PushButtonAction(Action):
         self._state = state
         self.set(self._state)
 
+        self.update_displays()
+
     # Abstract: Set functionality on or off (bool).
     def set(self, state):
         raise Exception("Must be implemented by deriving classes")
@@ -44,17 +47,19 @@ class PushButtonAction(Action):
     def feedback_state(self, state):
         self._state = state
 
+        self.update_displays()
+
     # Button pushed
     def push(self):
         if self._mode == PushButtonModes.ENABLE:
             # Enable
             self.state = True
 
-        if self._mode == PushButtonModes.DISABLE:
+        elif self._mode == PushButtonModes.DISABLE:
             # Disable
             self.state = False
 
-        if self._mode == PushButtonModes.LATCH:
+        elif self._mode == PushButtonModes.LATCH:
             # Latch mode: Simply toggle states
             self.state = not self.state
 
@@ -71,12 +76,16 @@ class PushButtonAction(Action):
             self._start_time = Tools.get_current_millis()
             self.state = not self.state
 
+        elif self._mode == PushButtonModes.ONE_SHOT:
+            self._state = False    # Triggers that set() is called by the state property in the next line
+            self.state = True
+
     # Button released
     def release(self):
         if self._mode == PushButtonModes.MOMENTARY:
             self.state = False
         
-        if self._mode == PushButtonModes.MOMENTARY_INVERSE:
+        elif self._mode == PushButtonModes.MOMENTARY_INVERSE:
             self.state = True
         
         elif self._mode == PushButtonModes.HOLD_MOMENTARY:
@@ -85,4 +94,13 @@ class PushButtonAction(Action):
             if diff >= self._hold_time_ms:
                 self.state = not self.state
 
+        elif self._mode == PushButtonModes.ONE_SHOT:
+            # Do not use the child classes set() method: We do not want an "off" message to be sent here.
+            self.feedback_state(False)
 
+    # Reset the action: Set False state without sending anything
+    def reset(self):
+        if self.debug == True:
+            Tools.print(" -> Reset action")
+            
+        self.feedback_state(False)

@@ -9,7 +9,7 @@ import board
 from .definitions import Ports, ActionTypes, PushButtonModes, Colors, FootSwitchDefaults, KemperDefinitions, KemperMidi
 from .display import DisplayAreas
 from .mappings import KemperMappings
-from .actions import Actions
+from .actions import ActionDefinitions
 
 Config = {
 
@@ -25,7 +25,7 @@ Config = {
             # Defines the actions you want to happen on different events of the switch. You can 
             # define as many actions as you want, they will be executed in that order.
             "actions": [
-                Actions.EFFECT_ON_OFF(
+                ActionDefinitions.EFFECT_ON_OFF(
                     slot_id = KemperMidi.EFFECT_SLOT_ID_A,
                     display = {
                         "area": DisplayAreas.HEADER,
@@ -37,8 +37,8 @@ Config = {
         {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_2,
             "actions": [
-                Actions.EFFECT_ON_OFF(
-                    slot_id = KemperMidi.EFFECT_SLOT_ID_REV,
+                ActionDefinitions.EFFECT_ON_OFF(
+                    slot_id = KemperMidi.EFFECT_SLOT_ID_B,
                     display = {
                         "area": DisplayAreas.HEADER,
                         "index": 1
@@ -50,11 +50,10 @@ Config = {
         {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_A,
             "actions": [
-                Actions.BANK_UP(
-                    display =  {
+                ActionDefinitions.AMP_ON_OFF(
+                    display = {
                         "area": DisplayAreas.FOOTER,
-                        "index": 0,
-                        "text": "+Bank"
+                        "index": 0
                     }   
                 )
             ]
@@ -62,18 +61,27 @@ Config = {
         {
             "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_B,
             "actions": [
-                Actions.BANK_DOWN(
-                    display =  {
+                ActionDefinitions.RESET_RIG_INFO_DISPLAYS,
+                ActionDefinitions.RIG_SELECT(
+                    rig = 1,
+                    bank = 1,
+
+                    rig_off = 5,
+                    bank_off = 3,
+
+                    display = {
                         "area": DisplayAreas.FOOTER,
-                        "index": 1,
-                        "text": "-Bank"
+                        "index": 1
                     }   
                 )
             ]
         }
     ],
 
-    # Defines which data to show where on the TFT display (optional)
+    # Defines which data to show where on the TFT display (optional). The display layout is defined in
+    # display.py. Here, you create mappings between the display areas and parameter values of the Kemper,
+    # which will automatically be updated regularily. 
+    # Don't put too much in here, as the performance could suffer!
     "displays": [
         # Rig name
         { 
@@ -81,7 +89,9 @@ Config = {
             "depends": KemperMappings.RIG_DATE,  # Only update this when the rig date changed (optional)
             "display": {
                 "area": DisplayAreas.RIG_NAME
-            }
+            },
+            "textOffline": "Kemper Profiler (offline)",
+            "textReset": "Loading Rig..."
         },
 
         # Amp name
@@ -101,7 +111,8 @@ Config = {
     },
 
     # Optional: Factor used to dim the colors in the display (not the switches!) Range [0..1]
-    "displayDimFactor": KemperDefinitions.DEFAULT_SLOT_DIM_FACTOR,
+    #"displayDimFactorOn": KemperDefinitions.DEFAULT_SLOT_DIM_FACTOR_ON,
+    #"displayDimFactorOff": KemperDefinitions.DEFAULT_SLOT_DIM_FACTOR_OFF,
 
 ## MIDI and other Options ################################################################################################################
 
@@ -125,7 +136,7 @@ Config = {
 ## Development Options ###################################################################################################################
 
     # Shows an area with statistics (for debugging)
-    "showFrameStats": True,
+    "showFrameStats": False,
 
     # Debug mode, optional. Shows verbose console output. You can listen to that on the serial port via USB on your computer,
     # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 

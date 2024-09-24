@@ -55,6 +55,28 @@ class KemperMappings:
             )
         )
 
+   # Rotary speed (fast/slow)
+    @staticmethod
+    def ROTARY_SPEED(slot_id):
+        return KemperParameterMapping(
+            name = "Rotary Speed " + str(slot_id),
+            set = KemperNRPNMessage(
+                KemperMidi.NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                KemperMidi.NRPN_SLOT_ADDRESS_PAGE[slot_id],
+                KemperMidi.NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED
+            ),
+            request = KemperNRPNMessage(               
+                KemperMidi.NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
+                KemperMidi.NRPN_SLOT_ADDRESS_PAGE[slot_id],
+                KemperMidi.NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED
+            ),
+            response = KemperNRPNMessage(
+                KemperMidi.NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+                KemperMidi.NRPN_SLOT_ADDRESS_PAGE[slot_id],
+                KemperMidi.NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED
+            )
+        )
+
     # Freeze for slot
     @staticmethod
     def FREEZE(slot_id):
@@ -115,7 +137,16 @@ class KemperMappings:
         set = ControlChange(
             KemperMidi.CC_TUNER_MODE, 
             0    # Dummy value, will be overridden
-        ),
+        )
+    )
+
+    # Switch tuner mode on/off (no receive possible!)
+    TAP_TEMPO = KemperParameterMapping(
+        name = "Tap Tempo",
+        set = ControlChange(
+            KemperMidi.CC_TAP_TEMPO, 
+            0    # Dummy value, will be overridden
+        )
     )
 
     # Rig volume
@@ -135,7 +166,7 @@ class KemperMappings:
             KemperMidi.NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
             KemperMidi.NRPN_ADDRESS_PAGE_RIG_PARAMETERS,
             KemperMidi.NRPN_RIG_PARAMETER_VOLUME
-        ),
+        )
     )
 
     # Amp name (request only)
@@ -154,7 +185,27 @@ class KemperMappings:
         type = KemperMidi.NRPN_PARAMETER_TYPE_STRING
     )
 
-    # Amp name (request only)
+    # Amp on/off
+    AMP_ON_OFF = KemperParameterMapping(
+        name = "Amp Status",
+        set = KemperNRPNMessage(
+            KemperMidi.NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+            KemperMidi.NRPN_ADDRESS_PAGE_AMP,
+            KemperMidi.NRPN_AMP_PARAMETER_ON_OFF
+        ),
+        request = KemperNRPNMessage(
+            KemperMidi.NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
+            KemperMidi.NRPN_ADDRESS_PAGE_AMP,
+            KemperMidi.NRPN_AMP_PARAMETER_ON_OFF
+        ),
+        response = KemperNRPNMessage(
+            KemperMidi.NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+            KemperMidi.NRPN_ADDRESS_PAGE_AMP,
+            KemperMidi.NRPN_AMP_PARAMETER_ON_OFF
+        )
+    )
+
+    # Cab name (request only)
     CABINET_NAME = KemperParameterMapping(
         name = "Cab Name",
         request = KemperNRPNMessage(               
@@ -170,6 +221,26 @@ class KemperMappings:
         type = KemperMidi.NRPN_PARAMETER_TYPE_STRING
     )
     
+    # Cab on/off
+    CABINET_ON_OFF = KemperParameterMapping(
+        name = "Cab Status",
+        set = KemperNRPNMessage(
+            KemperMidi.NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+            KemperMidi.NRPN_ADDRESS_PAGE_CABINET,
+            KemperMidi.NRPN_CABINET_PARAMETER_ON_OFF
+        ),
+        request = KemperNRPNMessage(
+            KemperMidi.NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
+            KemperMidi.NRPN_ADDRESS_PAGE_CABINET,
+            KemperMidi.NRPN_CABINET_PARAMETER_ON_OFF
+        ),
+        response = KemperNRPNMessage(
+            KemperMidi.NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+            KemperMidi.NRPN_ADDRESS_PAGE_CABINET,
+            KemperMidi.NRPN_CABINET_PARAMETER_ON_OFF
+        )
+    )
+
     NEXT_BANK = KemperParameterMapping(
         name = "Next Bank",
         set = ControlChange(
@@ -185,3 +256,27 @@ class KemperMappings:
             0    # Dummy value, will be overridden
         )
     )
+
+    # Selects a rig inside the current bank. Rig index must be in range [0..4]
+    @staticmethod
+    def RIG_SELECT(rig):
+        return KemperParameterMapping(
+            name = "Rig Select",
+            set = ControlChange(
+                KemperMidi.CC_RIG_SELECT + rig,
+                0    # Dummy value, will be overridden
+            )
+        )
+    
+    # Pre-selects a bank. CHanges will take effect when the next RIG_SELECT message is sent.
+    # Bank index must be in range [0..124]
+    BANK_PRESELECT = KemperParameterMapping(
+        name = "Bank Preselect",
+        set = ControlChange(
+            KemperMidi.CC_BANK_PRESELECT,
+            0    # Dummy value, will be overridden
+        )
+    )
+    
+    
+

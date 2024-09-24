@@ -50,9 +50,18 @@ class ActionTypes:
     #     "valueEnabled":   Value to be interpreted as "enabled". Optional: Default is 1
     #     "valueDisabled":  Value to be interpreted as "disabled". Optional: Default is 0
     # }
-    PARAMETER = "BinaryParameterAction"
+    PARAMETER = "ParameterAction"
     
     #### Internal and development actions #######################################################################################
+
+    # Used to reset the screen areas which show rig info details directly after rig changes.
+    # Additional options:
+    # {
+    #     "resetSwitches":        Reset switches (including LEDs and display labels, if assigned) (optional)
+    #     "ignoreOwnSwitch":      Do not reset the switch this action is assigned to (optional)
+    #     "resetDisplayAreas":    Reset display areas (defined in Config["displays"]) (optional)
+    # }
+    RESET_DISPLAYS_FOR_MAPPINGS = "ResetDisplaysAction"
 
     # Soft-Reboot the device. Useful for development.
     REBOOT = "RebootAction"
@@ -106,7 +115,7 @@ class FootSwitchDefaults:
  
 
 # Modes for all PushButtonAction subclasses 
-class PushButtonModes:
+class PushButtonModes:    
     ENABLE = 0                      # Switch the functionality on
     DISABLE = 10                    # Switch the functionality off
     LATCH = 20                      # Toggle state on every button push
@@ -116,6 +125,7 @@ class PushButtonModes:
                                     # used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is 
                                     # used (inverse or not: This depends on the current state of the functionality. When it is
                                     # on, it will momentarily be switched off and vice versa).
+    ONE_SHOT = 100                  # Fire the SET command on every push (show as disabled)
 
     # Hold time for HOLD_MOMENTARY mode (milliseconds)
     DEFAULT_LATCH_MOMENTARY_HOLD_TIME = 600  
@@ -183,15 +193,18 @@ class Ports:
 class Colors:
     WHITE = (255, 255, 255)
     YELLOW = (255, 255, 0)
+    DARK_YELLOW = (130, 130, 0)
     ORANGE = (255, 125, 0)
     RED = (255, 0, 0)
     PINK = (255, 125, 70)
     PURPLE = (180, 0, 120)
+    DARK_PURPLE = (100, 0, 65)
     LIGHT_GREEN = (100, 255, 100)
     GREEN = (0, 255, 0)
     DARK_GREEN = (0, 100, 0)
     TURQUOISE = (64, 242, 208)
     BLUE = (0, 0, 255)
+    DARK_BLUE = (0, 0, 120)
     GRAY = (190, 190, 190)
     DARK_GRAY = (50, 50, 50)
     BLACK = (0, 0, 0)
@@ -212,9 +225,6 @@ class Colors:
 
 # Kemper ui specific definitions
 class KemperDefinitions:
-    # Rig name to show when offline
-    OFFLINE_RIG_NAME = "Kemper Profiler (offline)"
-
     # Max. number of MIDI messages being parsed before the next switch state evaluation
     # is triggered. If set to 0, only one message is parsed per tick, which leads to 
     # flickering states sometimes. If set too high, switch states will not be read for too long.
@@ -222,7 +232,8 @@ class KemperDefinitions:
     MAX_NUM_CONSECUTIVE_MIDI_MESSAGES = 10
 
     # Dim factor for disabled slots (display only)
-    DEFAULT_SLOT_DIM_FACTOR = 0.2
+    DEFAULT_SLOT_DIM_FACTOR_ON = 1
+    DEFAULT_SLOT_DIM_FACTOR_OFF = 0.2
 
     # Max. milliseconds until a request is being terminated and it is
     # assumed that the Kemper device is offline. This is the default value if
@@ -299,6 +310,10 @@ class KemperMidi:
     CC_TUNER_MODE = 31
     CC_BANK_INCREASE = 48
     CC_BANK_DECREASE = 49
+    CC_RIG_SELECT = 50       # This selects slot 1 of the current bank. The slots 2-5 can be addressed by adding (n-1) to the value.
+    CC_BANK_PRESELECT = 47
+    CC_TAP_TEMPO = 30
+    CC_ROTARY_SPEED = 33     # 1 = Fast, 0 = Slow
 
     # Values for CC commands
     CC_VALUE_BANK_CHANGE = 0
@@ -331,6 +346,8 @@ class KemperMidi:
     NRPN_ADDRESS_PAGE_STRINGS = 0x00
     NRPN_ADDRESS_PAGE_RIG_PARAMETERS = 0x04
     NRPN_ADDRESS_PAGE_FREEZE = 0x7d
+    NRPN_ADDRESS_PAGE_AMP = 0x0a
+    NRPN_ADDRESS_PAGE_CABINET = 0x0c
 
     # Generally used NRPN values
     NRPN_MANUFACTURER_ID = [0x00, 0x20, 0x33]             # Kemper manufacturer ID
@@ -350,11 +367,18 @@ class KemperMidi:
     # NRPN parameters for effect slots
     NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = 0x00   
     NRPN_EFFECT_PARAMETER_ADDRESS_ON_OFF = 0x03    
+    NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED = 0x1e
     # ... TODO add further parameters here
 
     # Rig parameters (page 0x04)
     NRPN_RIG_PARAMETER_VOLUME = 0x01
     # ... TODO add further parameters here
+
+    # Amp parameters (page 0x0a)
+    NRPN_AMP_PARAMETER_ON_OFF = 0x02
+    
+    # Cab parameters (page 0x0c)
+    NRPN_CABINET_PARAMETER_ON_OFF = 0x02
 
     # NRPN String parameters
     NRPN_STRING_PARAMETER_ID_RIG_NAME = 0x01

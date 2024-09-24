@@ -15,7 +15,7 @@ class KemperParameterMapping:
                                   # Default is KemperMidi.NRPN_PARAMETER_TYPE_NUMERIC.
         
         self.value = value        # Value of the parameter (buffer). After receiving an answer, the value 
-                                  # is buffered here.
+                                  # is buffered here.                                  
 
     def __eq__(self, other):
         if other == None:

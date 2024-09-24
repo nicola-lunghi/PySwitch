@@ -14,6 +14,8 @@ class InfoParameter(KemperRequestListener):
     #                      "area": ...
     #                      "index": ...
     #                }
+    #     "textOffline": Text to show initially and when the Kemper is offline
+    #     "textReset": Text to show when a reset happened (on rig changes etc.)
     # }
     def __init__(self, appl, config, debug):
         self._appl = appl
@@ -26,7 +28,11 @@ class InfoParameter(KemperRequestListener):
         self._last_value = None
         self._depends_last_value = None
 
+        self._text_offline = Tools.get_option(self._config, "textOffline", "")
+        self._text_reset = Tools.get_option(self._config, "textReset", "")
+
         self._label = self._appl.ui.setup_label(self._config["display"])
+        self._label.text = self._text_offline
 
     # Called on every update period
     def update(self):
@@ -34,6 +40,16 @@ class InfoParameter(KemperRequestListener):
             self._appl.kemper.request(self._mapping, self)
         else:
             self._appl.kemper.request(self._depends, self)
+
+    # Reset the parameter display
+    def reset(self):
+        self._last_value = None
+        self._depends_last_value = None
+        self._label.text = self._text_reset
+
+        if self._debug == True:
+            self._print(" -> Reset parameter " + self._mapping.name)
+
 
     # Listen to Kemper value returns (rig name and date)
     def parameter_changed(self, mapping):
@@ -58,7 +74,7 @@ class InfoParameter(KemperRequestListener):
 
     # Called when the Kemper is offline (requests took too long)
     def request_terminated(self, mapping):
-        self._label.text = Tools.get_option(self._config, "text", "")
+        self._label.text = self._text_offline
 
         self._last_value = None
         self._depends_last_value = None

@@ -33,7 +33,6 @@ class FootSwitch:
 
         self._port = self.config["assignment"]["port"]
         self._appl = appl
-        self._actions = []
         self._colors = [(0, 0, 0), (0, 0, 0), (0, 0, 0)]
         self._brightnesses = [0, 0, 0]
         self._pushed_state = False
@@ -49,17 +48,24 @@ class FootSwitch:
         if self._debug == True:
             self._print("Init actions")
         
+        self._actions = []
+        self.actions_using_leds = []
+        
         for action_config in self.config["actions"]:
             action = Action.get_instance(
                 self._appl,
                 self,
-                action_config,
-                index = len(self._actions)
+                action_config
             )
 
-            action.update_displays()            
-
             self._actions.append(action)
+
+            if action.uses_switch_leds == True:
+                self.actions_using_leds.append(action)
+
+        for action in self._actions:            
+            action.init()
+            action.update_displays()
 
     # Set some initial colors on the neopixels
     def _initial_switch_colors(self):
@@ -171,10 +177,6 @@ class FootSwitch:
 
         self._brightnesses = brightnesses
 
-    @property
-    def num_actions(self):
-        return len(self.config["actions"])
-
     # Process the switch: Check if it is currently pushed, set state accordingly
     def process(self):
         # Is the switch currently pushed? If not, return false.
@@ -197,6 +199,11 @@ class FootSwitch:
     def update(self):
         for action in self._actions:
             action.update()
+
+    # Reset all actions
+    def reset(self):
+        for action in self._actions:
+            action.reset()
 
     # Processes all push actions assigned to the switch 
     def _process_actions_push(self):
