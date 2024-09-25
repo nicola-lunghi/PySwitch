@@ -2,7 +2,7 @@ import random
 import digitalio
 
 from .actions.base.Action import Action
-from ..Tools import Tools
+from ..misc.Tools import Tools
 from ...definitions import Colors
 
 
@@ -16,7 +16,7 @@ class FootSwitch:
     #         "pixels": List of three indexes for the Neopixels that belong to this switch, for example (0, 1, 2)
     #     },
     #     "actions": {
-    #         "type":               Action type. Allowed values: See the Actions class in kemperstomp_def.py
+    #         "type":               Action type. Allowed values: See the Actions class
     #         ...                   (individual options depending on the specific action type)
     #     },
     #     "initialColors": [   Initial colors to set. Optional, if not set, the default initial color set is generated.

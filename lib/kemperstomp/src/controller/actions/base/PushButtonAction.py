@@ -1,5 +1,5 @@
 from .Action import Action
-from ....Tools import Tools
+from ....misc.Tools import Tools
 from .....definitions import PushButtonModes
 
 

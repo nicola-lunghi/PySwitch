@@ -6,9 +6,8 @@
  
 from adafruit_midi.control_change import ControlChange
 
-from .src.model.KemperNRPNMessage import KemperNRPNMessage
-from .src.model.KemperParameterMapping import KemperParameterMapping
-from .definitions import KemperMidi
+from .kemper import KemperNRPNMessage, KemperMidi
+from .src.client.ClientParameterMapping import ClientParameterMapping
 
 
 #################################################################################################################################
@@ -20,7 +19,7 @@ class KemperMappings:
     # Effect slot enable/disable
     @staticmethod
     def EFFECT_SLOT_ON_OFF(slot_id):
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = "Effect Status " + str(slot_id),
             set = ControlChange(
                 KemperMidi.CC_EFFECT_SLOT_ENABLE[slot_id], 
@@ -41,7 +40,7 @@ class KemperMappings:
     # Effect slot type (request only)
     @staticmethod
     def EFFECT_SLOT_TYPE(slot_id):
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = "Effect Type " + str(slot_id),
             request = KemperNRPNMessage(               
                 KemperMidi.NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
@@ -58,7 +57,7 @@ class KemperMappings:
    # Rotary speed (fast/slow)
     @staticmethod
     def ROTARY_SPEED(slot_id):
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = "Rotary Speed " + str(slot_id),
             set = KemperNRPNMessage(
                 KemperMidi.NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
@@ -80,7 +79,7 @@ class KemperMappings:
     # Freeze for slot
     @staticmethod
     def FREEZE(slot_id):
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = "Freeze " + str(slot_id),
             set = KemperNRPNMessage(
                 KemperMidi.NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
@@ -100,7 +99,7 @@ class KemperMappings:
         )
 
     # Rig name (request only)
-    RIG_NAME = KemperParameterMapping(
+    RIG_NAME = ClientParameterMapping(
         name = "Rig Name",
         request = KemperNRPNMessage(               
             KemperMidi.NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
@@ -116,7 +115,7 @@ class KemperMappings:
     )
 
     # Rig date (request only)
-    RIG_DATE = KemperParameterMapping(
+    RIG_DATE = ClientParameterMapping(
         name = "Rig Date",
         request = KemperNRPNMessage(               
             KemperMidi.NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
@@ -132,7 +131,7 @@ class KemperMappings:
     )
 
     # Switch tuner mode on/off (no receive possible!)
-    TUNER_MODE_ON_OFF = KemperParameterMapping(
+    TUNER_MODE_ON_OFF = ClientParameterMapping(
         name = "Tuner Mode",
         set = ControlChange(
             KemperMidi.CC_TUNER_MODE, 
@@ -141,7 +140,7 @@ class KemperMappings:
     )
 
     # Switch tuner mode on/off (no receive possible!)
-    TAP_TEMPO = KemperParameterMapping(
+    TAP_TEMPO = ClientParameterMapping(
         name = "Tap Tempo",
         set = ControlChange(
             KemperMidi.CC_TAP_TEMPO, 
@@ -150,7 +149,7 @@ class KemperMappings:
     )
 
     # Rig volume
-    RIG_VOLUME = KemperParameterMapping(
+    RIG_VOLUME = ClientParameterMapping(
         name = "Rig Volume",
         set = KemperNRPNMessage(
             KemperMidi.NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
@@ -170,7 +169,7 @@ class KemperMappings:
     )
 
     # Amp name (request only)
-    AMP_NAME = KemperParameterMapping(
+    AMP_NAME = ClientParameterMapping(
         name = "Amp Name",
         request = KemperNRPNMessage(               
             KemperMidi.NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
@@ -186,7 +185,7 @@ class KemperMappings:
     )
 
     # Amp on/off
-    AMP_ON_OFF = KemperParameterMapping(
+    AMP_ON_OFF = ClientParameterMapping(
         name = "Amp Status",
         set = KemperNRPNMessage(
             KemperMidi.NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
@@ -206,7 +205,7 @@ class KemperMappings:
     )
 
     # Cab name (request only)
-    CABINET_NAME = KemperParameterMapping(
+    CABINET_NAME = ClientParameterMapping(
         name = "Cab Name",
         request = KemperNRPNMessage(               
             KemperMidi.NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
@@ -222,7 +221,7 @@ class KemperMappings:
     )
     
     # Cab on/off
-    CABINET_ON_OFF = KemperParameterMapping(
+    CABINET_ON_OFF = ClientParameterMapping(
         name = "Cab Status",
         set = KemperNRPNMessage(
             KemperMidi.NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
@@ -241,7 +240,7 @@ class KemperMappings:
         )
     )
 
-    NEXT_BANK = KemperParameterMapping(
+    NEXT_BANK = ClientParameterMapping(
         name = "Next Bank",
         set = ControlChange(
             KemperMidi.CC_BANK_INCREASE,
@@ -249,7 +248,7 @@ class KemperMappings:
         )
     )
 
-    PREVIOUS_BANK = KemperParameterMapping(
+    PREVIOUS_BANK = ClientParameterMapping(
         name = "Prev Bank",
         set = ControlChange(
             KemperMidi.CC_BANK_DECREASE,
@@ -260,7 +259,7 @@ class KemperMappings:
     # Selects a rig inside the current bank. Rig index must be in range [0..4]
     @staticmethod
     def RIG_SELECT(rig):
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = "Rig Select",
             set = ControlChange(
                 KemperMidi.CC_RIG_SELECT + rig,
@@ -270,7 +269,7 @@ class KemperMappings:
     
     # Pre-selects a bank. CHanges will take effect when the next RIG_SELECT message is sent.
     # Bank index must be in range [0..124]
-    BANK_PRESELECT = KemperParameterMapping(
+    BANK_PRESELECT = ClientParameterMapping(
         name = "Bank Preselect",
         set = ControlChange(
             KemperMidi.CC_BANK_PRESELECT,

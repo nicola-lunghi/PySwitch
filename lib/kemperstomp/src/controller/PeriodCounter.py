@@ -1,4 +1,4 @@
-from ..Tools import Tools
+from ..misc.Tools import Tools
 
 # Periodic update helper    
 class PeriodCounter:

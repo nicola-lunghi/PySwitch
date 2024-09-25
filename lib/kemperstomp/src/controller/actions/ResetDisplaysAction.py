@@ -1,5 +1,5 @@
 from .base.Action import Action
-from ...Tools import Tools
+from ...misc.Tools import Tools
 
 
 # Simple action that prints a fixed text on the console

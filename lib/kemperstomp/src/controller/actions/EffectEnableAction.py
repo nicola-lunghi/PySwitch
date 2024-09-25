@@ -1,29 +1,28 @@
 from .ParameterAction import ParameterAction
-from ...model.KemperEffectCategories import KemperEffectCategories
-from ...model.KemperRequest import KemperRequestListener
-from ...Tools import Tools
-from ....mappings import KemperMappings
+from ...client.ClientRequest import ClientRequestListener
+from ...misc.Tools import Tools
 from ....definitions import Colors, ActionDefaults
 
 
 # Implements the effect enable/disable footswitch action
-class EffectEnableAction(ParameterAction, KemperRequestListener):
+class EffectEnableAction(ParameterAction, ClientRequestListener):
     
     # config: see ActionDefinitions
-    def __init__(self, appl, switch, config):        
-        # Mapping for status (used by ParameterAction)
-        config["mapping"] = KemperMappings.EFFECT_SLOT_ON_OFF(config["slot"])
-        
+    def __init__(self, appl, switch, config):
         super().__init__(appl, switch, config)
 
         self.uses_switch_leds = True
 
-        self._effect_category = KemperEffectCategories.CATEGORY_NONE        
+        # Mapping for effect type
+        self._mapping_fxtype = self.config["mappingType"] 
+
+        # Category provider of type EffectCategoryProvider
+        self._categories = self.config["categories"]
+        
+        self._effect_category = self._categories.get_category_not_assigned()  
         self._current_category = -1
 
-        # Mapping for effect type
-        self._mapping_fxtype = KemperMappings.EFFECT_SLOT_TYPE(self.config["slot"])
-
+    # Initialize the action
     def init(self):
         super().init()
         
@@ -39,7 +38,7 @@ class EffectEnableAction(ParameterAction, KemperRequestListener):
         if self.debug == True:
             self.print("Request type")
 
-        self.appl.kemper.request(self._mapping_fxtype, self)
+        self.appl.client.request(self._mapping_fxtype, self)
 
     # Update display and LEDs to the current state and effect category
     def update_displays(self):
@@ -51,17 +50,17 @@ class EffectEnableAction(ParameterAction, KemperRequestListener):
         self._current_category = self._effect_category
 
         # Effect category color
-        self.color = KemperEffectCategories.CATEGORY_COLORS[self._effect_category]
+        self.color = self._categories.get_effect_category_color(self._effect_category) 
 
         # Effect category text
         if self.label != None:
-            self.label.text = KemperEffectCategories.CATEGORY_NAMES[self._current_category]            
+            self.label.text = self._categories.get_effect_category_name(self._effect_category) 
     
         super().update_displays()
 
     # Update switch brightness
     def set_switch_color(self, color):
-        if self._effect_category == KemperEffectCategories.CATEGORY_NONE:
+        if self._effect_category == self._categories.get_category_not_assigned():
             # Set pixels to black (this effectively deactivates the LEDs) 
             color = Colors.BLACK
 
@@ -72,13 +71,13 @@ class EffectEnableAction(ParameterAction, KemperRequestListener):
         if self.label == None:
             return
         
-        if self._effect_category == KemperEffectCategories.CATEGORY_NONE:
+        if self._effect_category == self._categories.get_category_not_assigned():
             # Do not dim the color when not assigned (this makes it black effectively) 
             self.label.back_color = color
         else:
             super().set_label_color(color)
 
-    # Called by the Kemper class when a parameter request has been answered
+    # Called by the Client class when a parameter request has been answered
     def parameter_changed(self, mapping):
         super().parameter_changed(mapping)
 
@@ -86,7 +85,7 @@ class EffectEnableAction(ParameterAction, KemperRequestListener):
             return
         
         # Convert to effect category
-        category = KemperEffectCategories.get_effect_category(mapping.value)
+        category = self._categories.get_effect_category(mapping.value)
 
         if self.debug == True:
             self.print(" -> Receiving effect category " + repr(category))
@@ -99,7 +98,7 @@ class EffectEnableAction(ParameterAction, KemperRequestListener):
         # New effect category
         self._effect_category = category
 
-        if self._effect_category == KemperEffectCategories.CATEGORY_NONE:
+        if self._effect_category == self._categories.get_category_not_assigned():
             self.state = False
 
         self.update_displays()
@@ -107,7 +106,7 @@ class EffectEnableAction(ParameterAction, KemperRequestListener):
         # Request status, too
         super().update()
 
-    # Called when the Kemper is offline (requests took too long)
+    # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
         super().request_terminated(mapping)
 
@@ -117,7 +116,7 @@ class EffectEnableAction(ParameterAction, KemperRequestListener):
         if self.debug == True:
             self.print(" -> Terminated request for effect type, is the device offline?")
         
-        self._effect_category = KemperEffectCategories.CATEGORY_NONE
+        self._effect_category = self._categories.get_category_not_assigned() 
         
         self.update_displays()
 
@@ -125,6 +124,29 @@ class EffectEnableAction(ParameterAction, KemperRequestListener):
     def reset(self):
         super().reset()
 
-        self._effect_category = KemperEffectCategories.CATEGORY_NONE        
+        self._effect_category = self._categories.get_category_not_assigned() 
         self.update_displays()
 
+
+#######################################################################################################
+
+
+# Category provider base class. A category provider must translate the value of 
+# the effect type mapping set on the action's config to an effect category including
+# the corresponding color and name.
+class EffectCategoryProvider:
+    # Must return the effect category for a mapping value
+    def get_effect_category(self, value):
+        raise Exception("Implement in child classes")
+    
+    # Must return the effect color for a mapping value
+    def get_effect_category_color(self, value):
+        return Colors.BLACK
+    
+    # Must return the effect name for a mapping value
+    def get_effect_category_name(self, value):
+        return ""
+    
+    # Must return the value interpreted as "not assigned"
+    def get_category_not_assigned(self):
+        raise Exception("Implement in child classes")

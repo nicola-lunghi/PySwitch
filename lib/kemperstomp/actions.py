@@ -1,6 +1,9 @@
-from .definitions import ActionTypes, KemperMidi, KemperDefinitions, Colors, PushButtonModes, FootSwitchDefaults
+from .definitions import ActionTypes, Colors, PushButtonModes, FootSwitchDefaults, DisplayDefaults
 from .mappings import KemperMappings
-from .src.model.KemperParameterMapping import KemperParameterMapping
+from .kemper import KemperEffectCategories, KemperMidi
+
+from .src.client.ClientParameterMapping import ClientParameterMapping
+
 
 # Defines some important actions. All methods return an action definition for the switches in config.py.
 # You can use them for common tasks, but also define your action(s) by hand if you need more flexibility.
@@ -17,7 +20,9 @@ class ActionDefinitions:
     def EFFECT_ON_OFF(slot_id, display = None, mode = PushButtonModes.HOLD_MOMENTARY):
         return {
             "type": ActionTypes.EFFECT_ON_OFF,
-            "slot": slot_id,
+            "mapping": KemperMappings.EFFECT_SLOT_ON_OFF(slot_id),
+            "mappingType": KemperMappings.EFFECT_SLOT_TYPE(slot_id),
+            "categories": KemperEffectCategories(),
             "mode": mode,
             "display": display
         }
@@ -97,7 +102,7 @@ class ActionDefinitions:
             "mode": mode,
             "display": display,
             "text": "Amp",
-            "color": Colors.DARK_GRAY
+            "color": (Colors.WHITE, Colors.YELLOW, Colors.LIGHT_GREEN)
         }
 
     ## Cab ########################################################################################################################
@@ -153,11 +158,11 @@ class ActionDefinitions:
 
         # Mappings and values: Start with a configuration for rig_off == None and bank(_off) = None.
         mapping = [
-            KemperParameterMapping(),           # Dummy to be replaced by bank select if specified
+            ClientParameterMapping(),           # Dummy to be replaced by bank select if specified
             KemperMappings.RIG_SELECT(rig - 1)
         ]
         mapping_disable = [
-            KemperParameterMapping(),           # Dummy to be replaced by bank select if specified
+            ClientParameterMapping(),           # Dummy to be replaced by bank select if specified
             KemperMappings.RIG_SELECT(rig - 1)
         ]
         value_enabled = [
@@ -213,7 +218,7 @@ class ActionDefinitions:
                 "on": FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF,                  # Set equal brightness (we do not need status display here)
                 "off": FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF
             },
-            "displayDimFactorOn": KemperDefinitions.DEFAULT_SLOT_DIM_FACTOR_OFF,  # Set equal brightness (we do not need status display here)
+            "displayDimFactorOn": DisplayDefaults.DEFAULT_SLOT_DIM_FACTOR_OFF,  # Set equal brightness (we do not need status display here)
             "mode": PushButtonModes.LATCH
         }
     

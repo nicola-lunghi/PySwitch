@@ -1,17 +1,17 @@
 from .base.PushButtonAction import PushButtonAction
-from ...model.KemperRequest import KemperRequestListener
-from ...model.KemperParameterMapping import KemperParameterMapping
-from ...Tools import Tools
-from ....definitions import KemperMidi, KemperDefinitions, Colors, FootSwitchDefaults
+from ...client.ClientRequest import ClientRequestListener
+from ...client.ClientParameterMapping import ClientParameterMapping
+from ...misc.Tools import Tools
+from ....definitions import DisplayDefaults, Colors, FootSwitchDefaults
 
 # Implements bipolar parameters on base of the PushButtonAction class
-class ParameterAction(PushButtonAction, KemperRequestListener):
+class ParameterAction(PushButtonAction, ClientRequestListener):
 
     # config:
     # {
-    #     "mapping":        A KemperParameterMapping instance. Can also be an array of mappings (only the first 
+    #     "mapping":        A ClientParameterMapping instance. Can also be an array of mappings (only the first 
     #                       will be used to request values).
-    #     "mappingDisable": A KemperParameterMapping instance only used for setting the "off" 
+    #     "mappingDisable": A ClientParameterMapping instance only used for setting the "off" 
     #                       value. No requesting is used from that mapping. Optional. 
     #                       Can also be an array of mappings.
     #     "valueEnabled":   Value to set when enabled. Must be an array of values if mapping is an array.
@@ -27,8 +27,8 @@ class ParameterAction(PushButtonAction, KemperRequestListener):
         
         self._mapping = self.config["mapping"]                                                          # Can be an array
         self._mapping_off = Tools.get_option(self.config, "mappingDisable", None)                       # Can be an array
-        self._value_on = Tools.get_option(self.config, "valueEnabled", KemperMidi.NRPN_PARAMETER_ON)    # Can be an array
-        self._value_off = Tools.get_option(self.config, "valueDisabled", KemperMidi.NRPN_PARAMETER_OFF) # Can be an array
+        self._value_on = Tools.get_option(self.config, "valueEnabled", 1)                               # Can be an array
+        self._value_off = Tools.get_option(self.config, "valueDisabled", 0)                             # Can be an array
         
         self._text = Tools.get_option(self.config, "text", False)
         self._text_disabled = Tools.get_option(self.config, "textDisabled", False)
@@ -41,7 +41,7 @@ class ParameterAction(PushButtonAction, KemperRequestListener):
             Tools.get_option(
                 self.appl.config, 
                 "displayDimFactorOn", 
-                KemperDefinitions.DEFAULT_SLOT_DIM_FACTOR_ON
+                DisplayDefaults.DEFAULT_SLOT_DIM_FACTOR_ON
             )
         )
         self._dim_factor_off = Tools.get_option(
@@ -49,7 +49,7 @@ class ParameterAction(PushButtonAction, KemperRequestListener):
             Tools.get_option(
                 self.appl.config, 
                 "displayDimFactorOff", 
-                KemperDefinitions.DEFAULT_SLOT_DIM_FACTOR_OFF
+                DisplayDefaults.DEFAULT_SLOT_DIM_FACTOR_OFF
             )
         )
 
@@ -72,7 +72,7 @@ class ParameterAction(PushButtonAction, KemperRequestListener):
         mapping_definitions = self._get_set_mappings(enabled)
 
         for mapping_def in mapping_definitions:
-            self.appl.kemper.set(mapping_def["mapping"], mapping_def["value"])
+            self.appl.client.set(mapping_def["mapping"], mapping_def["value"])
 
         # Request value
         self._request_value()
@@ -90,7 +90,7 @@ class ParameterAction(PushButtonAction, KemperRequestListener):
         if self.debug == True:
             self.print("Request value")
 
-        self.appl.kemper.request(self._request_mapping, self)
+        self.appl.client.request(self._request_mapping, self)
 
     # Update display and LEDs to the current state
     def update_displays(self):
@@ -150,11 +150,23 @@ class ParameterAction(PushButtonAction, KemperRequestListener):
 
     # Dims a passed color for display of disabled state
     def _dim_color(self, color, factor):
-        return (
-            int(color[0] * factor),
-            int(color[1] * factor),
-            int(color[2] * factor)
-        )
+        if isinstance(color[0], tuple):
+            # Multi color
+            ret = []
+            for c in color:
+                ret.append((
+                    int(c[0] * factor),
+                    int(c[1] * factor),
+                    int(c[2] * factor)
+                ))
+            return ret
+        else:
+            # Single color
+            return (
+                int(color[0] * factor),
+                int(color[1] * factor),
+                int(color[2] * factor)
+            )
 
     # For a given state, returns the mappings array to call set() on.
     def _get_set_mappings(self, state):
@@ -168,7 +180,7 @@ class ParameterAction(PushButtonAction, KemperRequestListener):
                 candidates = self._mapping
 
         # Get array of mappings to execute
-        if isinstance(candidates, KemperParameterMapping):
+        if isinstance(candidates, ClientParameterMapping):
             all = [candidates]
 
             if state == True:
@@ -202,7 +214,7 @@ class ParameterAction(PushButtonAction, KemperRequestListener):
         self._request_mapping_value_on = None
         self._request_mapping = None
 
-        if isinstance(self._mapping, KemperParameterMapping):
+        if isinstance(self._mapping, ClientParameterMapping):
             # Mapping instance: Check if it can receive values
             if self._mapping.can_receive == True:
                 self._request_mapping_value_on = self._value_on
@@ -217,7 +229,7 @@ class ParameterAction(PushButtonAction, KemperRequestListener):
                     self._request_mapping_value_on = self._value_on[i]
                     break
 
-    # Called by the Kemper class when a parameter request has been answered
+    # Called by the Client class when a parameter request has been answered
     def parameter_changed(self, mapping):        
         if self._request_mapping == None:
             return            
@@ -234,7 +246,7 @@ class ParameterAction(PushButtonAction, KemperRequestListener):
 
         self.feedback_state(state)
 
-    # Called when the Kemper is offline (requests took too long)
+    # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
         if self._request_mapping == None:
             return        

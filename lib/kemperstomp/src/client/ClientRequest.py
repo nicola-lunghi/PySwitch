@@ -1,22 +1,24 @@
 from adafruit_midi.system_exclusive import SystemExclusive
 
-from ...definitions import KemperMidi
-from ..Tools import Tools
-from ..EventEmitter import EventEmitter
+from ...definitions import ProcessingConfig
+from ..misc.Tools import Tools
+from ..misc.EventEmitter import EventEmitter
 
 # Model for a request for a value
-class KemperRequest(EventEmitter):
+class ClientRequest(EventEmitter):
 
     def __init__(self, midi, mapping, config):
-        super().__init__(KemperRequestListener)
+        super().__init__(ClientRequestListener)
         
         self.mapping = mapping        
         self._config = config
         self._midi = midi
         
-        self._debug = Tools.get_option(self._config, "debugKemper")
-        self._debug_raw_midi = Tools.get_option(self._config, "debugKemperRawMidi")
-        self._debug_mapping = Tools.get_option(self._config, "kemperDebugMapping", None)
+        self._debug = Tools.get_option(self._config, "debugClient")
+        self._debug_raw_midi = Tools.get_option(self._config, "debugClientRawMidi")
+        self._debug_mapping = Tools.get_option(self._config, "clientDebugMapping", None)
+
+        self._value_provider = self._config["valueProvider"]
 
         if self.mapping.request == None:
             raise Exception("No REQUEST message prepared for this MIDI mapping (" + self.mapping.name + ")")
@@ -25,7 +27,7 @@ class KemperRequest(EventEmitter):
             raise Exception("No response template message prepared for this MIDI mapping (" + self.mapping.name + ")")
         
         if not isinstance(self.mapping.request, SystemExclusive):
-            raise Exception("Parameter requests do not work with ControlChange or other types. Use KemperNRPNMessage (or SystemExclusive directly) instead. (" + self.mapping.name + ")")
+            raise Exception("Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
 
         self.start_time = Tools.get_current_millis()            
 
@@ -59,8 +61,8 @@ class KemperRequest(EventEmitter):
         if self.finished() == True:
             return
         
-        #if self.mapping.response == None:
-        #    raise Exception("No response template message prepared for this MIDI mapping")
+        if self.mapping.response == None:
+            raise Exception("No response template message prepared for this MIDI mapping")
 
         if not isinstance(midi_message, SystemExclusive):
             return
@@ -72,33 +74,8 @@ class KemperRequest(EventEmitter):
             self._print("RAW Receive : " + Tools.stringify_midi_message(midi_message))
             self._print("RAW Template: " + Tools.stringify_midi_message(self.mapping.response))
 
-        # Compare manufacturer IDs
-        if midi_message.manufacturer_id != self.mapping.response.manufacturer_id:
-            return 
-        
-        # Get data as integer list from both the incoming message and the response
-        # template in the mapping
-        response = list(midi_message.data)                        
-        template = list(self.mapping.response.data)        
-
-        # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
-        # and device ID as for the request, however the device just sends two zeroes)
-
-        # Check if the message belongs to the mapping. The following have to match:
-        #   2: function code, 
-        #   3: instance ID, 
-        #   4: address page, 
-        #   5: address nunber
-        if response[2:6] != template[2:6]:
+        if self._value_provider.parse(self.mapping, midi_message) != True:
             return
-        
-        # The values starting from index 6 are the value of the response.
-        if self.mapping.type == KemperMidi.NRPN_PARAMETER_TYPE_STRING:
-            # Take as string
-            self.mapping.value = ''.join(chr(int(c)) for c in response[6:-1])
-        else:
-            # Decode 14-bit value to int
-            self.mapping.value = response[-2] * 128 + response[-1]
         
         if self._debug == True:
             self._print("   -> Received value " + repr(self.mapping.value) + " for " + self.mapping.name + ": " + Tools.stringify_midi_message(midi_message))
@@ -115,20 +92,22 @@ class KemperRequest(EventEmitter):
         if self._debug_mapping != None and self._debug_mapping != self.mapping:
             return
 
-        Tools.print("KemperRequest: " + msg)
+        Tools.print("ClientRequest: " + msg)
 
 
 ######################################################################################################################
 
 
-# Base class for listeners to kemper parameter changes
-class KemperRequestListener:
+# Base class for listeners to client parameter changes
+class ClientRequestListener:
 
-    # Called by the Kemper class when a parameter request has been answered.
+    # Called by the Client class when a parameter request has been answered.
     # The value received is already set on the mapping.
     def parameter_changed(self, mapping):
         pass
 
-    # Called when the Kemper is offline (requests took too long)
+    # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
         pass
+
+

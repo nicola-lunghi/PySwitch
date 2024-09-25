@@ -1,20 +1,21 @@
-from ..Tools import Tools
-from ..model.KemperRequest import KemperRequestListener
+from ...misc.Tools import Tools
+from ...client.ClientRequest import ClientRequestListener
+from .base.InfoDisplay import InfoDisplay
 
 
 # Manages the display areas of the program, updating their values.
-class InfoParameter(KemperRequestListener):
+class ParameterInfoDisplay(ClientRequestListener, InfoDisplay):
 
     # config: {
-    #     "mapping": A KemperParameterMapping instance whose values should be shown in the area
-    #     "depends": Optional. If a KemperParameterMapping instance is passed, the display is only updated
+    #     "mapping": A ClientParameterMapping instance whose values should be shown in the area
+    #     "depends": Optional. If a ClientParameterMapping instance is passed, the display is only updated
     #                when this mapping's value has changed.
     #     "display": Display area addressing (see UserInterface.setup_label())
     #                {
     #                      "area": ...
     #                      "index": ...
     #                }
-    #     "textOffline": Text to show initially and when the Kemper is offline
+    #     "textOffline": Text to show initially and when the client is offline
     #     "textReset": Text to show when a reset happened (on rig changes etc.)
     # }
     def __init__(self, appl, config, debug):
@@ -31,15 +32,15 @@ class InfoParameter(KemperRequestListener):
         self._text_offline = Tools.get_option(self._config, "textOffline", "")
         self._text_reset = Tools.get_option(self._config, "textReset", "")
 
-        self._label = self._appl.ui.setup_label(self._config["display"])
+        self._label = self._appl.ui.root.search(self._config["display"])
         self._label.text = self._text_offline
 
     # Called on every update period
     def update(self):
         if self._depends == None:
-            self._appl.kemper.request(self._mapping, self)
+            self._appl.client.request(self._mapping, self)
         else:
-            self._appl.kemper.request(self._depends, self)
+            self._appl.client.request(self._depends, self)
 
     # Reset the parameter display
     def reset(self):
@@ -50,8 +51,7 @@ class InfoParameter(KemperRequestListener):
         if self._debug == True:
             self._print(" -> Reset parameter " + self._mapping.name)
 
-
-    # Listen to Kemper value returns (rig name and date)
+    # Listen to client value returns (rig name and date)
     def parameter_changed(self, mapping):
         if mapping == self._mapping and mapping.value != self._last_value:
             # Main mapping changed
@@ -70,9 +70,9 @@ class InfoParameter(KemperRequestListener):
 
             self._depends_last_value = mapping.value        
             
-            self._appl.kemper.request(self._mapping, self)
+            self._appl.client.request(self._mapping, self)
 
-    # Called when the Kemper is offline (requests took too long)
+    # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
         self._label.text = self._text_offline
 

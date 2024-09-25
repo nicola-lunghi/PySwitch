@@ -2,19 +2,19 @@ import usb_midi
 import adafruit_midi 
 
 from .FootSwitch import FootSwitch
-from .Statistics import Statistics
+from .Statistics import Statistics, StatisticsListener
 from .PeriodCounter import PeriodCounter
-from .InfoParameterController import InfoParameterController
+from .InfoDisplays import InfoDisplays
 from ..hardware.LedDriver import LedDriver
-from ..model.Kemper import Kemper
-from ..model.KemperRequest import KemperRequestListener
-from ..Tools import Tools
-from ...definitions import KemperDefinitions, FootSwitchDefaults
+from ..client.Client import Client
+from ..client.ClientRequest import ClientRequestListener
+from ..misc.Tools import Tools
+from ...definitions import ProcessingConfig, FootSwitchDefaults
 from ...display import DisplayAreas, DisplayAreaDefinitions
 
 
 # Main application class (controls the processing)    
-class KemperStompController(KemperRequestListener):
+class StompController(ClientRequestListener, StatisticsListener):
     def __init__(self, ui, config):
         self.ui = ui
         self.config = config
@@ -26,29 +26,33 @@ class KemperStompController(KemperRequestListener):
         self._midi_buffer_size = self.config["midiBufferSize"]                    # MIDI buffer size (default: 60)
         self._show_stats = Tools.get_option(self.config, "showFrameStats", False) # Show frame statistics
         self._debug = Tools.get_option(self.config, "debug", False)
+        self._debug_ui_structure = Tools.get_option(self.config, "debugUserInterfaceStructure", False)        
 
-        # Periodic update handler (the kemper is only asked when a certain time has passed)
+        # Periodic update handler (the client is only asked when a certain time has passed)
         self._period = PeriodCounter(self.config["updateInterval"])
 
-        # MIDI communication
-        self._init_midi()
-
-        # Kemper adapter to send and receive parameters
-        self.kemper = Kemper(self._midi, self.config)
-
-        # Set up the screen areas
+        # Set up the screen elements
         self._prepare_ui()
 
-        # Statistics instance (only used when switched on)
-        if self._show_stats == True:
-            self._stats = Statistics(Tools.get_option(self.config, "statsIntervalMillis", 2000), self.ui.area(DisplayAreas.STATISTICS))
-
         # Controller for the display areas
-        self._info_parameters = InfoParameterController(
+        self._info_parameters = InfoDisplays(
             self,
             Tools.get_option(self.config, "displays", []),
             Tools.get_option(self.config, "debugParameters", False)
         )
+
+        # Statistics instance (only used when switched on or a Performance Indicator is defined)       
+        self.statistics = None
+        if self._show_stats == True or self.ui.root.search({ "id": DisplayAreas.PERFORMANCE_INDICATOR }) != None:
+            self.statistics = Statistics(Tools.get_option(self.config, "statsIntervalMillis", 200))
+            self.statistics.add_listener(self)
+            self.statistics_display = self.ui.root.search({ "id": DisplayAreas.STATISTICS })
+
+        # MIDI communication
+        self._init_midi()
+
+        # Client adapter to send and receive parameters
+        self.client = Client(self._midi, self.config)
 
         # Set up switches
         self.switches = []
@@ -56,12 +60,13 @@ class KemperStompController(KemperRequestListener):
 
     # Creates the display areas
     def _prepare_ui(self):
-        for area_def in DisplayAreaDefinitions:
-            if area_def["id"] == DisplayAreas.STATISTICS and self._show_stats != True:
+        for element in DisplayAreaDefinitions:
+            if element.id == DisplayAreas.STATISTICS and self._show_stats != True:
                 continue
-            self.ui.add_area_definition(area_def)
 
-        self.ui.setup()
+            element.debug = Tools.get_option(self.config, "debugDisplay")
+
+            self.ui.root.add(element)
 
     # Initialize switches
     def _init_switches(self):
@@ -92,10 +97,13 @@ class KemperStompController(KemperRequestListener):
     # Runs the processing loop (which never ends)
     def process(self):
         if self._debug == True:
-            Tools.print("-> Init UI")
+            Tools.print("-> Init UI:")            
 
-        # Show user interface
-        self.ui.show()
+        # Show user interface        
+        self.ui.show(self)
+
+        if self._debug_ui_structure == True:
+            self.ui.root.print_debug_info(3)
 
         if self._debug == True:
             Tools.print("-> Done initializing, starting processing loop")
@@ -103,8 +111,8 @@ class KemperStompController(KemperRequestListener):
         # Start processing loop
         while True:
             # If enabled, remember the tick starting time for statistics
-            if self._show_stats == True:
-                self._stats.start()
+            if self.statistics != None:
+                self.statistics.start()
 
             # Receive all available MIDI messages            
             cnt = 0
@@ -112,23 +120,23 @@ class KemperStompController(KemperRequestListener):
                 midimsg = self._midi.receive()
 
                 # Process the midi message
-                self.kemper.receive(midimsg)
+                self.client.receive(midimsg)
 
                 cnt = cnt + 1
-                if midimsg == None or cnt > KemperDefinitions.MAX_NUM_CONSECUTIVE_MIDI_MESSAGES:
+                if midimsg == None or cnt > ProcessingConfig.MAX_NUM_CONSECUTIVE_MIDI_MESSAGES:
                     break            
         
             # Process all switches 
             for switch in self.switches:
                 switch.process()
             
-            # Update kemper parameters in periodic intervals, less frequently then every tick
+            # Update client parameters in periodic intervals, less frequently then every tick
             if self._period.exceeded == True:
                 self._update()
 
             # Output statistical info if enabled
-            if self._show_stats == True:
-                self._stats.finish()
+            if self.statistics != None:
+                self.statistics.finish()
 
     # Resets all switches
     def reset_switches(self, ignore_switches_list = []):
@@ -157,3 +165,10 @@ class KemperStompController(KemperRequestListener):
         # Update switch actions
         for switch in self.switches:
             switch.update()
+
+    # Update stats label message
+    def update_statistics(self, statistics):        
+        if self.statistics_display != None:
+            self.statistics_display.text = statistics.get_message()
+
+        

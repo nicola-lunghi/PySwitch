@@ -1,4 +1,5 @@
 import time
+
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 

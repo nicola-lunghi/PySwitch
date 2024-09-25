@@ -1,49 +1,35 @@
-import math
-
-from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 
-from .KemperRequest import KemperRequest, KemperRequestListener
-from ..Tools import Tools
-from ...definitions import KemperDefinitions
+from .ClientRequest import ClientRequest, ClientRequestListener
+from ..misc.Tools import Tools
+from ...definitions import ProcessingConfig
 
-# Implements all MIDI communication to and from the Kemper
-class Kemper(KemperRequestListener):
+# Implements all MIDI communication to and from the client device
+class Client(ClientRequestListener):
 
-    _requests = []   # List of KemperRequest objects
+    _requests = []   # List of ClientRequest objects
 
     def __init__(self, midi, config):
         self._midi = midi
         self._config = config
 
-        self._debug = Tools.get_option(self._config, "debugKemper")
-        self._debug_mapping = Tools.get_option(self._config, "kemperDebugMapping", None)
+        self._debug = Tools.get_option(self._config, "debugClient")
+        self._debug_mapping = Tools.get_option(self._config, "clientDebugMapping", None)
+
+        self._value_provider = self._config["valueProvider"]
 
         # Buffer for mappings. Whenever possible, existing mappings are used
         # so values can be buffered.
         self._mappings_buffer = []     
 
-        self._max_request_lifetime = Tools.get_option(self._config, "maxRequestLifetimeMillis", KemperDefinitions.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS)
+        self._max_request_lifetime = Tools.get_option(self._config, "maxRequestLifetimeMillis", ProcessingConfig.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS)
         
     # Sends the SET message of a mapping
     def set(self, mapping, value):
         if mapping.set == None:
             raise Exception("No SET message prepared for this MIDI mapping")
         
-        if isinstance(mapping.set, ControlChange):
-            # Set value
-            mapping.set.value = value
-        elif isinstance(mapping.set, SystemExclusive):
-            data = list(mapping.set.data)
-            while len(data) < 8:
-                data.append(0)
-            
-            data[6] = int(math.floor(value / 128))
-            data[7] = int(value % 128)
-
-            mapping.set.data = bytes(data)
-        else:
-            raise Exception("Invalid mapping.set message")
+        self._value_provider.set_value(mapping, value)
                 
         if self._debug == True:
             self._print("Send SET message (" + mapping.name + "): " + Tools.stringify_midi_message(mapping.set), mapping)
@@ -60,7 +46,7 @@ class Kemper(KemperRequestListener):
             if m == None:
                 m = mapping
 
-            req = KemperRequest(                
+            req = ClientRequest(                
                 self._midi,
                 m,
                 self._config
@@ -152,4 +138,20 @@ class Kemper(KemperRequestListener):
         if self._debug_mapping != None and mapping != None and self._debug_mapping != mapping:
             return
         
-        Tools.print("Kemper: " + msg)
+        Tools.print("Client: " + msg)
+
+
+######################################################################################################################
+
+
+# Must implement preparation of MIDI messages for sending as well as parsing the received ones.
+class ClientValueProvider:
+    # Must parse the incoming MIDI message and return the value contained.
+    # If the response template does not match, must return None.
+    # Must return True to notify the listeners of a value change.
+    def parse(self, mapping, midi_message):
+        return False
+    
+    # Must set the passed value on the SET message of the mapping.
+    def set_value(self, mapping, value):
+        pass

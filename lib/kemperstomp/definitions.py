@@ -29,28 +29,38 @@ import board
 # }
 class ActionTypes:
 
-    # Switches an effect on/off, if the slot is assigned.
-    # Additional options:
-    # {
-    #     "mode":           Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
-    #     "holdTimeMillis": Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
-    #
-    #     "slot":           Slot ID, for example KemperMidi.EFFECT_SLOT_ID_A
-    # }
-    EFFECT_ON_OFF = "EffectEnableAction"
-    
     # Generic MIDI parameter
     # Additional options:
     # {
     #     "mode":           Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
     #     "holdTimeMillis": Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
     #
-    #     "mapping":        A KemperParameterMapping instance. See mappings.py for some predeifined ones.
-    #     "color":          Color for switch and display (optional, default: white).
-    #     "valueEnabled":   Value to be interpreted as "enabled". Optional: Default is 1
-    #     "valueDisabled":  Value to be interpreted as "disabled". Optional: Default is 0
+    #     "mapping":        A ClientParameterMapping instance. See mappings.py for some predeifined ones.
+    #                       This can also be an array: In this case the mappings are processed in the given order.
+    #     "mappingDisable": Mapping to be used on disabling the state. If mapping is an array, this has also to be an array.
+    #     "color":          Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
+    #                       with one color for each LED segment of the switch (if more actions share the LEDs, only the first
+    #                       color is used)
+    #     "valueEnabled":   Value to be interpreted as "enabled". Optional: Default is 1. If mapping is a list, this must
+    #                       also be a list of values for the mappings.
+    #     "valueDisabled":  Value to be interpreted as "disabled". Optional: Default is 0. If mappingDisable (if provided)
+    #                       or mapping is a list, this must also be a list of values for the mappings.
     # }
     PARAMETER = "ParameterAction"
+    
+    # Switches an effect on/off, if the slot is assigned. Based on the PARAMETER (ParameterAction) action, so all options there
+    # are available here, too.
+    # 
+    # Additional options:
+    # {
+    #     "mapping":        A ClientParameterMapping instance to determine the effect status (on/off). 
+    #                       Here, this cannot be an array!
+    #     "mappingType":    A ClientParameterMapping instance to determine the effect type. 
+    #     "categories":     A EffectCategoryProvider instance to determine the colors and names of the effect types.
+    #     "mode":           Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
+    #     "holdTimeMillis": Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
+    # }
+    EFFECT_ON_OFF = "EffectEnableAction"
     
     #### Internal and development actions #######################################################################################
 
@@ -221,187 +231,39 @@ class Colors:
 
 
 #################################################################################################################################
+ 
+
+class DisplayDefaults:
+    # Dim factor for disabled slots (display only)
+    DEFAULT_SLOT_DIM_FACTOR_ON = 1
+    DEFAULT_SLOT_DIM_FACTOR_OFF = 0.2
 
 
-# Kemper ui specific definitions
-class KemperDefinitions:
+################################################################################################################################
+
+
+class ModuleConfig:
+    # Base path of this module inside the lib folder. Used to dynamically load action implementations (see Action.py)
+    MODULE_BASE_PATH = "kemperstomp"
+
+    # Factor by which the performance display (dot) is diminished in every update run. Set to 0 to disable, 1 to only show the maximum.
+    # Range: [0..1]
+    PERFORMANCE_DOT_REDUCE_FACTOR = 0
+
+
+################################################################################################################################
+
+
+# Some processing configuration values
+class ProcessingConfig:
     # Max. number of MIDI messages being parsed before the next switch state evaluation
     # is triggered. If set to 0, only one message is parsed per tick, which leads to 
     # flickering states sometimes. If set too high, switch states will not be read for too long.
     # A good value is the maximum amount of switches.
     MAX_NUM_CONSECUTIVE_MIDI_MESSAGES = 10
 
-    # Dim factor for disabled slots (display only)
-    DEFAULT_SLOT_DIM_FACTOR_ON = 1
-    DEFAULT_SLOT_DIM_FACTOR_OFF = 0.2
-
     # Max. milliseconds until a request is being terminated and it is
     # assumed that the Kemper device is offline. This is the default value if
     # "maxRequestLifetimeMillis" is not set in the config.
     DEFAULT_MAX_REQUEST_LIFETIME_MILLIS = 2000
-
-    # Effect type color assignment
-    EFFECT_COLOR_NONE = Colors.DEFAULT_LABEL_COLOR
-    EFFECT_COLOR_WAH = Colors.ORANGE
-    EFFECT_COLOR_DISTORTION = Colors.RED
-    EFFECT_COLOR_COMPRESSOR = Colors.BLUE
-    EFFECT_COLOR_NOISE_GATE = Colors.BLUE
-    EFFECT_COLOR_SPACE = Colors.GREEN
-    EFFECT_COLOR_CHORUS = Colors.BLUE
-    EFFECT_COLOR_PHASER_FLANGER = Colors.PURPLE
-    EFFECT_COLOR_EQUALIZER = Colors.YELLOW
-    EFFECT_COLOR_BOOSTER = Colors.RED
-    EFFECT_COLOR_LOOPER = Colors.PURPLE
-    EFFECT_COLOR_PITCH = Colors.WHITE
-    EFFECT_COLOR_DUAL = Colors.GREEN
-    EFFECT_COLOR_DELAY = Colors.GREEN
-    EFFECT_COLOR_REVERB = Colors.GREEN
-
-    # Effect type display names
-    EFFECT_NAME_NONE = "-"
-    EFFECT_NAME_WAH = "Wah"
-    EFFECT_NAME_DISTORTION = "Dist"
-    EFFECT_NAME_COMPRESSOR = "Comp"
-    EFFECT_NAME_NOISE_GATE = "Gate"
-    EFFECT_NAME_SPACE = "Space"
-    EFFECT_NAME_CHORUS = "Chorus"
-    EFFECT_NAME_PHASER_FLANGER = "Phaser"
-    EFFECT_NAME_EQUALIZER = "EQ"
-    EFFECT_NAME_BOOSTER = "Boost"
-    EFFECT_NAME_LOOPER = "Looper"
-    EFFECT_NAME_PITCH = "Pitch"
-    EFFECT_NAME_DUAL = "Dual"
-    EFFECT_NAME_DELAY = "Delay"
-    EFFECT_NAME_REVERB = "Reverb"
-
-    # Colors for special modes
-    TUNER_MODE_COLOR = Colors.WHITE
-
-
-#################################################################################################################################
-
-
-# Kemper MIDI specification related definitions.
-class KemperMidi:
-    
-    # IDs for the available effect slots
-    EFFECT_SLOT_ID_A = 0
-    EFFECT_SLOT_ID_B = 1
-    EFFECT_SLOT_ID_C = 2
-    EFFECT_SLOT_ID_D = 3
-    EFFECT_SLOT_ID_X = 4
-    EFFECT_SLOT_ID_MOD = 5
-    EFFECT_SLOT_ID_DLY = 6
-    EFFECT_SLOT_ID_REV = 7
-
-    # Slot enable/disable. Order has to match the one defined above!
-    CC_EFFECT_SLOT_ENABLE = (
-        17,    # Slot A
-        18,    # Slot B
-        19,    # Slot C
-        20,    # Slot D
-
-        22,    # Slot X
-        24,    # Slot MOD        
-        27,    # Slot DLY (with Spillover)        
-        29     # Slot REV (with Spillover)
-    )
-
-    CC_TUNER_MODE = 31
-    CC_BANK_INCREASE = 48
-    CC_BANK_DECREASE = 49
-    CC_RIG_SELECT = 50       # This selects slot 1 of the current bank. The slots 2-5 can be addressed by adding (n-1) to the value.
-    CC_BANK_PRESELECT = 47
-    CC_TAP_TEMPO = 30
-    CC_ROTARY_SPEED = 33     # 1 = Fast, 0 = Slow
-
-    # Values for CC commands
-    CC_VALUE_BANK_CHANGE = 0
-
-    # Product types
-    NRPN_PRODUCT_TYPE_PROFILER = 0x00         # Kemper Profiler
-    NRPN_PRODUCT_TYPE_PROFILER_PLAYER = 0x02  # Kemper Profiler Player
-
-    # Device IDs
-    NRPN_DEVICE_ID_OMNI = 0x7f
-
-    # Parameter types
-    NRPN_PARAMETER_TYPE_NUMERIC = 0   # Default, also used for on/off
-    NRPN_PARAMETER_TYPE_STRING = 1
-
-    # Slot address pages. Order has to match the one defined above!
-    NRPN_SLOT_ADDRESS_PAGE = (
-        0x32,   # Slot A
-        0x33,   # Slot B
-        0x34,   # Slot C
-        0x35,   # Slot D
-
-        0x38,   # Slot X
-        0x3a,   # Slot MOD
-        0x3c,   # Slot DLY
-        0x3d    # Slot REV
-    )    
-
-    # Other adress pages
-    NRPN_ADDRESS_PAGE_STRINGS = 0x00
-    NRPN_ADDRESS_PAGE_RIG_PARAMETERS = 0x04
-    NRPN_ADDRESS_PAGE_FREEZE = 0x7d
-    NRPN_ADDRESS_PAGE_AMP = 0x0a
-    NRPN_ADDRESS_PAGE_CABINET = 0x0c
-
-    # Generally used NRPN values
-    NRPN_MANUFACTURER_ID = [0x00, 0x20, 0x33]             # Kemper manufacturer ID
-    NRPN_INSTANCE = 0x00                                  # Instance ID for NRPN. The profiler only supports instance 0.
-    NRPN_PARAMETER_OFF = 0
-    NRPN_PARAMETER_ON = 1
-
-    # NRPN Function codes
-    NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER = 0x41
-    NRPN_FUNCTION_REQUEST_STRING_PARAMETER = 0x43
-
-    NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER = 0x01
-    NRPN_FUNCTION_RESPONSE_STRING_PARAMETER = 0x03
-
-    NRPN_FUNCTION_SET_SINGLE_PARAMETER = 0x01
-
-    # NRPN parameters for effect slots
-    NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = 0x00   
-    NRPN_EFFECT_PARAMETER_ADDRESS_ON_OFF = 0x03    
-    NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED = 0x1e
-    # ... TODO add further parameters here
-
-    # Rig parameters (page 0x04)
-    NRPN_RIG_PARAMETER_VOLUME = 0x01
-    # ... TODO add further parameters here
-
-    # Amp parameters (page 0x0a)
-    NRPN_AMP_PARAMETER_ON_OFF = 0x02
-    
-    # Cab parameters (page 0x0c)
-    NRPN_CABINET_PARAMETER_ON_OFF = 0x02
-
-    # NRPN String parameters
-    NRPN_STRING_PARAMETER_ID_RIG_NAME = 0x01
-    NRPN_STRING_PARAMETER_ID_RIG_DATE = 0x03
-    NRPN_STRING_PARAMETER_ID_AMP_NAME = 0x10
-    NRPN_STRING_PARAMETER_ID_CABINET_NAME = 0x20
-
-    # Freeze parameter addresses on page 0x7d (Looper and Delay Freeze) for all slots. 
-    # Order has to match the one defined above!
-    NRPN_FREEZE_SLOT_PARAMETER_ADDRESSES = [
-        0x6b,   # Slot A
-        0x6c,   # Slot B
-        0x6d,   # Slot C
-        0x6e,   # Slot D
-
-        0x6f,   # Slot X
-        0x71,   # Slot MOD
-        0x72,   # Slot DLY
-        0x73    # Slot REV
-    ]
-
-    # Helper to convert values in range [0..1] to the NRPN value range of [0..16383]
-    @staticmethod
-    def NRPN_VALUE(value):
-        return int(16383 * value)
 

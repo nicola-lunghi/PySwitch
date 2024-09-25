@@ -1,5 +1,7 @@
-from ....Tools import Tools
-from .....definitions import FootSwitchDefaults
+from ....misc.Tools import Tools
+from ....ui.elements.DisplayLabel import DisplayLabel
+from .....definitions import FootSwitchDefaults, ModuleConfig, Colors
+from .....display import DisplayAreas
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
 # inheriting from Action.
@@ -11,13 +13,13 @@ class Action:
     def get_instance(appl, switch, config):
         class_name = config["type"]
 
-        module = __import__("kemperstomp.src.controller.actions." + class_name, globals(), locals(), [class_name])
+        module = __import__(ModuleConfig.MODULE_BASE_PATH + ".src.controller.actions." + class_name, globals(), locals(), [class_name])
         class_def = getattr(module, class_name)
         return class_def(appl, switch, config)
 
     ######################################################################################################################################
 
-    # config: See FootSwitch    
+    # config: See FootSwitch
     def __init__(self, appl, switch, config):
         self.appl = appl
         self.switch = switch
@@ -35,9 +37,11 @@ class Action:
         self._index_among_led_actions = self._get_index_among_led_actions()
         self._initialized = True
 
-    # Color of the switch segment(s) for the action
+    # Color of the switch segment(s) for the action (Difficult to do with multicolor, 
+    # but this property is just needed to have a setter so this is not callable)
     @property
     def switch_color(self):
+        raise Exception("Getter not implemented")
         segments = self._get_led_segments()
         if len(segments) > 0:
             return self.switch.colors[segments[0]]  # Return the first segment as they are all equal
@@ -48,10 +52,22 @@ class Action:
         segments = self._get_led_segments()
         if len(segments) == 0:
             return
+        
+        tmp = self.switch.colors
 
-        tmp = self.switch.colors    
-        for segment in segments:
-            tmp[segment] = color
+        if isinstance(color[0], tuple):
+            if len(segments) == len(color):
+                # Fills all LEDs: Just pass colors
+                for i in range(len(segments)):
+                    tmp[segments[i]] = color[i]
+            else:
+                # Only fills some LEDs: Use first color only
+                for segment in segments:
+                    tmp[segment] = color[0]                
+        else:
+            # Single color: Fill all segments
+            for segment in segments:
+                tmp[segment] = color
 
         self.switch.colors = tmp
 
@@ -97,10 +113,36 @@ class Action:
 
     # Get the assigned label reference from the UI (or None)
     def _get_action_display(self):
-        if Tools.get_option(self.config, "display", None) == None:
+        definition = Tools.get_option(self.config, "display", None)
+        if definition == None:
             return None
-                
-        return self.appl.ui.setup_label(self.config["display"])
+        
+        label = self.appl.ui.root.search(definition)
+        if label != None:
+            return label
+        
+        # Not yet existent: Get container
+        container = self.appl.ui.root.search({
+            "id": definition["id"]
+        })
+
+        if container == None:
+            raise Exception("Action: Display element with ID " + repr(definition["id"]) + " not found")
+        
+        index = Tools.get_option(definition, "index", None)
+        if index == None:
+            return container
+
+        layout = DisplayAreas.ACTION_LABEL_LAYOUT
+        layout["backColor"] = Tools.get_option(self.config, "color", Colors.DEFAULT_LABEL_COLOR)  # Set the color as the number of items cannot be changed later!
+
+        label = DisplayLabel(
+            layout = layout,
+            name = "Action " + self.id            
+        )
+
+        container.set(label, index)
+        return label
 
     # Returns the switch LED segments to use
     def _get_led_segments(self):
@@ -152,7 +194,6 @@ class Action:
                 return i
         
         raise Exception("Action not found in LED-using actions of switch " + self.switch.id)
-
 
     # Print to the debug console
     def print(self, msg):

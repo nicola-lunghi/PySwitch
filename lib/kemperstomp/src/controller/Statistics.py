@@ -1,9 +1,11 @@
-from ..Tools import Tools
+from ..misc.Tools import Tools
+from ..misc.EventEmitter import EventEmitter
 
 # Main application class (controls the processing)    
-class Statistics:
-    def __init__(self, interval_millis, display_element = None):
-        self._display_element = display_element        
+class Statistics(EventEmitter):
+    def __init__(self, interval_millis):
+        super().__init__(StatisticsListener)
+
         self._interval_millis = interval_millis
         self._last_output = 0
 
@@ -51,14 +53,22 @@ class Statistics:
     # Shows the stats (called in intervals) either on the assigned diplay element
     # or (if none has been passed on initialization) on the console
     def _show(self):
-        if self._display_element == None:
-            print(self._get_str())
-        else:
-            self._display_element.text = self._get_str()
+        # Call the listeners
+        for listener in self.listeners:
+            listener.update_statistics(self)
 
     # Render the output string
-    def _get_str(self):
+    def get_message(self):
         if self._time_num == 0:
             return "No data"
         
         return "Max " + str(self.max) + "ms, Avg " + str(self.average)
+
+
+###########################################################################################
+
+
+# Output for statistics
+class StatisticsListener:
+    def update_statistics(self, statistics):
+        pass
