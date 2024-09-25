@@ -254,6 +254,15 @@ class ModuleConfig:
 ################################################################################################################################
 
 
+# Comparison modes for condition
+class ConditionModes:
+    MODE_GREATER_EQUAL = 0
+    MODE_STRING_CONTAINS = 10
+
+
+################################################################################################################################
+
+
 # Some processing configuration values
 class ProcessingConfig:
     # Max. number of MIDI messages being parsed before the next switch state evaluation
