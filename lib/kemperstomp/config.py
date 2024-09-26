@@ -11,6 +11,7 @@ from .display import DisplayAreas
 from .mappings import KemperMappings
 from .actions import ActionDefinitions
 from .kemper import KemperMidi, KemperMidiValueProvider
+from .src.controller.Condition import Condition
 
 Config = {
 
@@ -25,13 +26,27 @@ Config = {
 
             # Defines the actions you want to happen on different events of the switch. You can 
             # define as many actions as you want, they will be executed in that order.
+            # You can also use the Condition class to have different actions active depending
+            # on another parameter.
             "actions": [
-                ActionDefinitions.EFFECT_ON_OFF(
-                    slot_id = KemperMidi.EFFECT_SLOT_ID_A,
-                    display = {
-                        "id": DisplayAreas.HEADER,
-                        "index": 0
-                    }
+                Condition(
+                    mapping = KemperMappings.RIG_VOLUME,
+                    ref_value = KemperMidi.NRPN_VALUE(0.5),
+
+                    yes = ActionDefinitions.EFFECT_ON_OFF(
+                        slot_id = KemperMidi.EFFECT_SLOT_ID_A,
+                        display = {
+                            "id": DisplayAreas.HEADER,
+                            "index": 0
+                        }
+                    ),
+                    no = ActionDefinitions.EFFECT_ON_OFF(
+                        slot_id = KemperMidi.EFFECT_SLOT_ID_DLY,
+                        display = {
+                            "id": DisplayAreas.HEADER,
+                            "index": 0
+                        }
+                    )
                 )                
             ]
         },
@@ -152,6 +167,8 @@ Config = {
     "debugUserInterfaceStructure": False,    # Show UI structure after init 
     "debugDisplay": False,                   # Show verbose messages from the display elements. Optional.
     "debugActions": False,                   # Show verbose messages from actions. Optional.
+    #"actionsDebugSwitchName": "1",           # Optional, can be set to a switch assignment name (see Ports in definition.py)
+                                             # to only show action messages for the switch mentioned
     "debugSwitches": False,                  # Show verbose output for switches (color, brightness) or a switches 
                                              # actions are triggered. Optional.
     "debugParameters": False,                # Show messages from the global parameter controller
@@ -162,6 +179,7 @@ Config = {
     "debugMidi": False,                      # Debug Adafruit MIDI controller. Normally it is sufficient and more readable 
                                              # to enable "debugKemperRawMidi" instead, which also shows the MIDI messages sent
                                              # and received. Optional.
+    "debugConditions": False,                # Debug condition evaluation
 
     # Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 

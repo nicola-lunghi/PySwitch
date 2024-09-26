@@ -7,6 +7,8 @@ from .....display import DisplayAreas
 # inheriting from Action.
 class Action:
     
+    next_id = 0
+
     # Factory for creating actions by type (= class name of derivative of Action).
     # All created classes must have the same constructor parameters as this method.
     @staticmethod
@@ -25,17 +27,38 @@ class Action:
         self.switch = switch
         self.config = config
         self.debug = Tools.get_option(self.appl.config, "debugActions")
-        self.id = self.switch.id + " | " + self.__class__.__name__
+        self._debug_switch_port_name = Tools.get_option(self.appl.config, "actionsDebugSwitchName", None)
+        
+        self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action.next_id) + ")"
+        Action.next_id = Action.next_id + 1
         
         self.uses_switch_leds = False             # Must be set True explicitly by child classes in __init__() if they use the switch LEDs
+        self._enabled = Tools.get_option(self.config, "enabled", True)
         self._initialized = False
 
     # Must be called before usage
     def init(self):
         self.label = self._get_action_display()   # DisplayLabel instance the action is connected to (or None).
 
-        self._index_among_led_actions = self._get_index_among_led_actions()
         self._initialized = True
+
+    @property
+    def enabled(self):
+        return self._enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        if self._enabled == value:
+            return 
+        
+        self._enabled = value
+
+        if self.debug == True:
+            self.print("Set enabled to " + repr(value))
+
+        self.force_update()
+
+        self.update_displays()
 
     # Color of the switch segment(s) for the action (Difficult to do with multicolor, 
     # but this property is just needed to have a setter so this is not callable)
@@ -111,6 +134,10 @@ class Action:
     def reset(self):
         pass
 
+    # Must reset all action states so the instance is being updated
+    def force_update(self):
+        pass
+
     # Get the assigned label reference from the UI (or None)
     def _get_action_display(self):
         definition = Tools.get_option(self.config, "display", None)
@@ -152,31 +179,38 @@ class Action:
         if self.uses_switch_leds != True:
             raise Exception("You have to set uses_switch_leds to True to use LEDs of switches in actions.")
 
-        if len(self.switch.actions_using_leds) == 0:
+        if not self.enabled:
+            return []
+
+        actions_using_leds = self._get_actions_using_leds()
+
+        if len(actions_using_leds) == 0:
             return []
                 
         ret = []
 
-        if len(self.switch.actions_using_leds) == 1:
+        index = self._get_index_among_led_actions()
+
+        if len(actions_using_leds) == 1:
             for i in range(FootSwitchDefaults.NUM_PIXELS):
                 ret.append(i)                
         
-        elif len(self.switch.actions_using_leds) < FootSwitchDefaults.NUM_PIXELS:
-            pixels_for_first = FootSwitchDefaults.NUM_PIXELS - len(self.switch.actions_using_leds) + 1            
+        elif len(actions_using_leds) < FootSwitchDefaults.NUM_PIXELS:
+            pixels_for_first = FootSwitchDefaults.NUM_PIXELS - len(actions_using_leds) + 1
 
-            if self._index_among_led_actions == 0:
+            if index == 0:
                 ret = [i for i in range(0, pixels_for_first)]
 
                 if len(ret) != pixels_for_first:
                     raise Exception("Internal error: Must return " + str(pixels_for_first) + " segments")
             else:
-                ret = [pixels_for_first + self._index_among_led_actions - 1]
+                ret = [pixels_for_first + index - 1]
 
                 if ret[0] >= FootSwitchDefaults.NUM_PIXELS:
                     raise Exception("Internal error: Segment out of range")
 
-        elif self._index_among_led_actions < FootSwitchDefaults.NUM_PIXELS:
-            ret = [self._index_among_led_actions]
+        elif index < FootSwitchDefaults.NUM_PIXELS:
+            ret = [index]
         
         # Check results
         if len(ret) > FootSwitchDefaults.NUM_PIXELS:
@@ -189,12 +223,23 @@ class Action:
         if self.uses_switch_leds != True:
             return -1
         
-        for i in range(len(self.switch.actions_using_leds)):
-            if self.switch.actions_using_leds[i] == self:
+        actions_using_leds = self._get_actions_using_leds()
+
+        for i in range(len(actions_using_leds)):
+            if actions_using_leds[i] == self:
                 return i
         
         raise Exception("Action not found in LED-using actions of switch " + self.switch.id)
 
+    # Returns a list of the actions of the switch which are bothe enabled and use LEDs.
+    def _get_actions_using_leds(self):
+        return [a for a in self.switch.actions if a.uses_switch_leds and a.enabled]
+
     # Print to the debug console
     def print(self, msg):
-        Tools.print("Switch " + self.id + ": " + msg)
+        if self._debug_switch_port_name != None and self._debug_switch_port_name != self.switch.id:
+            return
+        
+        enabled_text = "enabled" if self.enabled else "disabled"
+
+        Tools.print("Switch " + self.id + " (" + enabled_text + "): " + msg)

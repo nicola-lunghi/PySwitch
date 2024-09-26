@@ -21,11 +21,15 @@ import board
 # 
 #      "display": {
 #          "area":         ID of the display area. See display.py.
-#          "index":        Position inside the display area. If omitted, always the first place is used which takes up the whole area space.
-#                          Keep all indices of one area sequentially starting from 0 (not 1!), or you will get empty areas!
+#          "index":        Position inside the display area. If omitted, always the first place is used which takes up the whole 
+#                          area space. Keep all indices of one area sequentially starting from 0 (not 1!), or you will get 
+#                          empty areas!
 #          "text":         Text to show on the display label initially.
 #          "cornerRadius": Optional corner radius. Default is the underlying layout.
 #      }
+#
+#      "enabled": True     Optional bool parameter to disable/enable the action. Mostly used internally only. Defaults to True 
+#                          when not specified.
 # }
 class ActionTypes:
 
@@ -249,6 +253,7 @@ class ModuleConfig:
     # Factor by which the performance display (dot) is diminished in every update run. Set to 0 to disable, 1 to only show the maximum.
     # Range: [0..1]
     PERFORMANCE_DOT_REDUCE_FACTOR = 0
+
 
 
 ################################################################################################################################

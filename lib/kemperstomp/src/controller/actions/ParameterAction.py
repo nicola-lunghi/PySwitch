@@ -94,6 +94,9 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
 
     # Update display and LEDs to the current state
     def update_displays(self):
+        if not self.enabled:
+            return
+
         # Set color, if new
         if self.color != self._current_color:
             self._current_color = self.color
@@ -229,8 +232,16 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
                     self._request_mapping_value_on = self._value_on[i]
                     break
 
+    # Must reset all action states so the instance is being updated
+    def force_update(self):
+        self._current_display_status = -1
+        self._current_color = -1
+
     # Called by the Client class when a parameter request has been answered
-    def parameter_changed(self, mapping):        
+    def parameter_changed(self, mapping):
+        if not self.enabled:
+            return
+         
         if self._request_mapping == None:
             return            
         

@@ -1,13 +1,14 @@
 import random
 import digitalio
 
+from .Condition import Condition, ConditionListener
 from .actions.base.Action import Action
 from ..misc.Tools import Tools
 from ...definitions import Colors
 
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
-class FootSwitch:
+class FootSwitch(ConditionListener):
 
     # config must be a dictionary holding the following attributes:
     # { 
@@ -15,10 +16,14 @@ class FootSwitch:
     #         "port": The board GPIO pin definition to be used for this switch (for example board.GP1)
     #         "pixels": List of three indexes for the Neopixels that belong to this switch, for example (0, 1, 2)
     #     },
-    #     "actions": {
-    #         "type":               Action type. Allowed values: See the Actions class
-    #         ...                   (individual options depending on the specific action type)
-    #     },
+    #     "actions": [    Array of actions. Entries must be either action specifications or Conditions with action
+    #                     specifications.
+    #         {
+    #             "type":               Action type. Allowed values: See the Actions class
+    #             ...                   (individual options depending on the specific action type)
+    #         },
+    #         ...
+    #     ],
     #     "initialColors": [   Initial colors to set. Optional, if not set, the default initial color set is generated.
     #         Colors.RED,
     #         Colors.YELLOW,
@@ -48,24 +53,52 @@ class FootSwitch:
         if self._debug == True:
             self._print("Init actions")
         
-        self._actions = []
-        self.actions_using_leds = []
+        self.actions = []
         
         for action_config in self.config["actions"]:
-            action = Action.get_instance(
-                self._appl,
-                self,
-                action_config
-            )
+            if isinstance(action_config, Condition):
+                # Condition based: Create actions for both outcomes
+                action_yes = self._add_action(action_config.yes, True)
+                action_no = self._add_action(action_config.no, False)
 
-            self._actions.append(action)
+                # Set the actions on the condition for later access
+                action_config.set_instances(
+                    self._appl,
+                    inst_yes = action_yes,
+                    inst_no = action_no
+                )
 
-            if action.uses_switch_leds == True:
-                self.actions_using_leds.append(action)
+                # Add this instance as listener on condition changes
+                action_config.add_listener(self)
 
-        for action in self._actions:            
+                # Add the condition to the global list of conditions, so it will
+                # be updated periodically
+                self._appl.conditions.add(action_config)
+            else:
+                # Simple action definition
+                self._add_action(action_config, True)
+
+        for action in self.actions:            
             action.init()
             action.update_displays()
+
+    # Creates and adds an action and returns it
+    def _add_action(self, action_config, enabled):
+        if action_config == None:
+            return None
+        
+        if Tools.get_option(action_config, "enabled", None) == None:
+            action_config["enabled"] = enabled
+
+        action = Action.get_instance(
+            self._appl,
+            self,
+            action_config
+        )
+
+        self.actions.append(action)
+
+        return action
 
     # Set some initial colors on the neopixels
     def _initial_switch_colors(self):
@@ -104,6 +137,69 @@ class FootSwitch:
         self.switch.direction = digitalio.Direction.INPUT
         self.switch.pull = digitalio.Pull.UP
         
+    # Process the switch: Check if it is currently pushed, set state accordingly
+    def process(self):
+        # Is the switch currently pushed? If not, return false.
+        if self.pushed == False:
+            if self._pushed_state == True:
+                self._pushed_state = False
+                self._process_actions_release()
+
+            return
+
+        # Switch is pushed: Has it been pushed before already? 
+        if self._pushed_state == True:
+            return 
+        
+        # Mark as pushed (prevents redundant messages in the following ticks, when the switch can still be down)
+        self._pushed_state = True
+        self._process_actions_push()
+
+    # Called every update interval
+    def update(self):
+        for action in self.actions:
+            if not action.enabled:
+                continue
+
+            action.update()
+
+    # Reset all actions
+    def reset(self):
+        for action in self.actions:
+            action.reset()
+
+    # Processes all push actions assigned to the switch 
+    def _process_actions_push(self):
+        for action in self.actions:
+            if not action.enabled:
+                continue
+
+            if self._debug == True:
+                self._print("Push action " + action.id)
+
+            action.push()
+
+    # Processes all release actions assigned to the switch 
+    def _process_actions_release(self):
+        for action in self.actions:
+            if not action.enabled:
+                continue
+
+            if self._debug == True:
+                self._print("Release action " + action.id)
+                
+            action.release()
+
+    # Called on condition changes. The yes value will be True or False
+    def condition_changed(self, condition, boolValue):
+        # Order matters here: Switch off before switching on
+        if boolValue == True:
+            condition.model.no.enabled = False
+            condition.model.yes.enabled = True
+        else:
+            condition.model.yes.enabled = False
+            condition.model.no.enabled = True        
+
     # Return if the switch is currently pushed
     @property
     def pushed(self):
@@ -176,50 +272,6 @@ class FootSwitch:
             )
 
         self._brightnesses = brightnesses
-
-    # Process the switch: Check if it is currently pushed, set state accordingly
-    def process(self):
-        # Is the switch currently pushed? If not, return false.
-        if self.pushed == False:
-            if self._pushed_state == True:
-                self._pushed_state = False
-                self._process_actions_release()
-
-            return
-
-        # Switch is pushed: Has it been pushed before already? 
-        if self._pushed_state == True:
-            return 
-        
-        # Mark as pushed (prevents redundant messages in the following ticks, when the switch can still be down)
-        self._pushed_state = True
-        self._process_actions_push()
-
-    # Called every update interval
-    def update(self):
-        for action in self._actions:
-            action.update()
-
-    # Reset all actions
-    def reset(self):
-        for action in self._actions:
-            action.reset()
-
-    # Processes all push actions assigned to the switch 
-    def _process_actions_push(self):
-        for action in self._actions:
-            if self._debug == True:
-                self._print("Push action " + action.id)
-
-            action.push()
-
-    # Processes all release actions assigned to the switch 
-    def _process_actions_release(self):
-        for action in self._actions:
-            if self._debug == True:
-                self._print("Release action " + action.id)
-                
-            action.release()
 
     # Debug console output
     def _print(self, msg):

@@ -4,6 +4,7 @@ import adafruit_midi
 from .FootSwitch import FootSwitch
 from .Statistics import Statistics, StatisticsListener
 from .PeriodCounter import PeriodCounter
+from .Conditions import Conditions
 from .InfoDisplays import InfoDisplays
 from ..hardware.LedDriver import LedDriver
 from ..client.Client import Client
@@ -30,6 +31,9 @@ class StompController(ClientRequestListener, StatisticsListener):
 
         # Periodic update handler (the client is only asked when a certain time has passed)
         self._period = PeriodCounter(self.config["updateInterval"])
+
+        # Conditions handler
+        self.conditions = Conditions()
 
         # Set up the screen elements
         self._prepare_ui()
@@ -138,6 +142,18 @@ class StompController(ClientRequestListener, StatisticsListener):
             if self.statistics != None:
                 self.statistics.finish()
 
+    # Update (called on every periodic update interval)
+    def _update(self):
+        # Update conditions
+        self.conditions.update()
+
+        # Update displayed parameters
+        self._info_parameters.update()
+
+        # Update switch actions
+        for switch in self.switches:
+            switch.update()
+
     # Resets all switches
     def reset_switches(self, ignore_switches_list = []):
         if self._debug == True:
@@ -154,21 +170,7 @@ class StompController(ClientRequestListener, StatisticsListener):
 
         self._info_parameters.reset()
 
-    # Update (called on every periodic update interval)
-    def _update(self):
-        if self._debug == True:
-            Tools.print(" -> Requesting rig date...")
-        
-        # Update displayed parameters
-        self._info_parameters.update()
-
-        # Update switch actions
-        for switch in self.switches:
-            switch.update()
-
     # Update stats label message
     def update_statistics(self, statistics):        
         if self.statistics_display != None:
             self.statistics_display.text = statistics.get_message()
-
-        

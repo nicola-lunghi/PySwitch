@@ -42,6 +42,10 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
 
     # Update display and LEDs to the current state and effect category
     def update_displays(self):
+        if not self.enabled:
+            super().update_displays()
+            return
+        
         # Only update when category of state have been changed
         if self._current_category == self._effect_category:
             super().update_displays()
@@ -81,6 +85,9 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
     def parameter_changed(self, mapping):
         super().parameter_changed(mapping)
 
+        if not self.enabled:
+            return
+         
         if mapping != self._mapping_fxtype:
             return
         
@@ -110,6 +117,9 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
     def request_terminated(self, mapping):
         super().request_terminated(mapping)
 
+        if not self.enabled:
+            return
+         
         if mapping != self._mapping_fxtype:
             return
         
@@ -126,6 +136,12 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
 
         self._effect_category = self._categories.get_category_not_assigned() 
         self.update_displays()
+
+    # Must reset all action states so the instance is being updated
+    def force_update(self):
+        super().force_update()
+        
+        self._current_category = -1
 
 
 #######################################################################################################

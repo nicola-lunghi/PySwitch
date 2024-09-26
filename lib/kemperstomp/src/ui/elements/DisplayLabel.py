@@ -77,7 +77,7 @@ class DisplayLabel(HierarchicalDisplayElement):
                 int(self.width / 2), 
                 int(self.height / 2)
             ),
-            text = self._text,
+            text = self._wrap_text(self._text),
             color = self._text_color,
             line_spacing = self._line_spacing
         )
