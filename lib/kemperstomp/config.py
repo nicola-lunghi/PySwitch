@@ -55,7 +55,8 @@ Config = {
                     display = {
                         "id": DisplayAreas.FOOTER,
                         "index": 0
-                    }   
+                    },
+                    color = (Colors.WHITE, Colors.YELLOW, Colors.LIGHT_GREEN)  
                 )
             ]
         },

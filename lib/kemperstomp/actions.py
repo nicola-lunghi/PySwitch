@@ -29,37 +29,38 @@ class ActionDefinitions:
 
     # Rotary speed (fast/slow)
     @staticmethod
-    def ROTARY_SPEED(slot_id, display = None):
+    def ROTARY_SPEED(slot_id, display = None, color = Colors.DARK_BLUE):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.ROTARY_SPEED(slot_id),
             "display": display,
             "text": "Fast",
-            "color": Colors.DARK_BLUE
+            "color": color
         }
 
     ## Special functions ####################################################################################################
 
     # Switch tuner mode on / off
     @staticmethod
-    def TUNER_MODE(display = None):
+    def TUNER_MODE(display = None, color = Colors.DEFAULT_SWITCH_COLOR):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.TUNER_MODE_ON_OFF,
             "display": display,
             "text": "Tuner",
-            "color": Colors.WHITE
+            "color": Colors.WHITE,
+            "color": color
         }
 
     # Tap tempo
     @staticmethod
-    def TAP_TEMPO(display = None):
+    def TAP_TEMPO(display = None, color = Colors.DARK_GREEN):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.TAP_TEMPO,
             "display": display,
             "text": "Tap",
-            "color": Colors.DARK_GREEN,
+            "color": color,
             "mode": PushButtonModes.MOMENTARY
         }
 
@@ -70,7 +71,7 @@ class ActionDefinitions:
     # boost rig volume by passing a value in range [0..1] (corresponding to the range of the
     # rig volume paramneter: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB)
     @staticmethod
-    def RIG_VOLUME_BOOST(boost_volume, display = None, mode = PushButtonModes.HOLD_MOMENTARY):
+    def RIG_VOLUME_BOOST(boost_volume, display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.PINK):
         return {
             "type": ActionTypes.PARAMETER,
             "mode": mode,
@@ -79,7 +80,7 @@ class ActionDefinitions:
             "valueDisabled": KemperMidi.NRPN_VALUE(0.5),           # 0dB
             "display": display,
             "text": "RigBoost",
-            "color": Colors.PINK
+            "color": color
         }
 
     # Used to reset the screen areas which show rig info details directly after rig changes (if you dont use this, 
@@ -95,35 +96,35 @@ class ActionDefinitions:
 
     # Amp on/off
     @staticmethod
-    def AMP_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY):
+    def AMP_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.DEFAULT_SWITCH_COLOR):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.AMP_ON_OFF,
             "mode": mode,
             "display": display,
             "text": "Amp",
-            "color": (Colors.WHITE, Colors.YELLOW, Colors.LIGHT_GREEN)
+            "color": color
         }
 
     ## Cab ########################################################################################################################
 
     # Amp on/off
     @staticmethod
-    def CABINET_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY):
+    def CABINET_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.DEFAULT_SWITCH_COLOR):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.CABINET_ON_OFF,
             "mode": mode,
             "display": display,
             "text": "Cab",
-            "color": Colors.DARK_GRAY
+            "color": color
         }
 
     ## Change Rig/Bank ############################################################################################################
 
     # Next bank (keeps rig index)
     @staticmethod
-    def BANK_UP(display = None):
+    def BANK_UP(display = None, color = Colors.WHITE):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.NEXT_BANK,
@@ -131,12 +132,12 @@ class ActionDefinitions:
             "valueEnabled": KemperMidi.CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank up",
-            "color": Colors.WHITE
+            "color": color
         }
     
     # Previous bank (keeps rig index)
     @staticmethod
-    def BANK_DOWN(display = None):
+    def BANK_DOWN(display = None, color = Colors.WHITE):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.PREVIOUS_BANK,
@@ -144,14 +145,14 @@ class ActionDefinitions:
             "valueEnabled": KemperMidi.CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank dn",
-            "color": Colors.WHITE
+            "color": color
         }
     
     # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
     # the current bank. Rigs are indexed starting from one, range: [1..5].
     # Optionally, banks can be switched too in the same logic using bank and bank_off.
     @staticmethod
-    def RIG_SELECT(rig, rig_off = None, bank = None, bank_off = None, display = None):
+    def RIG_SELECT(rig, rig_off = None, bank = None, bank_off = None, display = None, color = Colors.YELLOW):
         # Texts always show the rig to be selected when the switch is pushed the next time
         text_rig_off = str(rig)
         text_rig_on = text_rig_off
@@ -213,7 +214,7 @@ class ActionDefinitions:
             "display": display,
             "text": "Rig " + text_rig_on,
             "textDisabled": "Rig " + text_rig_off,
-            "color": Colors.YELLOW,
+            "color": color,
             "ledBrightness": {
                 "on": FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF,                  # Set equal brightness (we do not need status display here)
                 "off": FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF
