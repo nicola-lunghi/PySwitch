@@ -6,12 +6,11 @@
  
 import board
 
-from .definitions import Ports, ActionTypes, PushButtonModes, Colors, FootSwitchDefaults, DisplayDefaults, ProcessingConfig, ConditionModes
+from .definitions import Ports, ActionTypes, PushButtonModes, Colors, FootSwitchDefaults, DisplayDefaults, ProcessingConfig
 from .display import DisplayAreas
 from .mappings import KemperMappings
 from .actions import ActionDefinitions
 from .kemper import KemperMidi, KemperMidiValueProvider
-from .src.controller.Condition import Condition
 
 Config = {
 
@@ -27,24 +26,12 @@ Config = {
             # Defines the actions you want to happen on different events of the switch. You can 
             # define as many actions as you want, they will be executed in that order.
             "actions": [
-                Condition(
-                    mapping = KemperMappings.RIG_NAME,
-                    mode = ConditionModes.MODE_STRING_CONTAINS,
-                    value = 'TEST',
-                    action = ActionDefinitions.EFFECT_ON_OFF(
-                        slot_id = KemperMidi.EFFECT_SLOT_ID_A,
-                        display = {
-                            "id": DisplayAreas.HEADER,
-                            "index": 0
-                        }
-                    ),
-                    action_not = ActionDefinitions.EFFECT_ON_OFF(
-                        slot_id = KemperMidi.EFFECT_SLOT_ID_REV,
-                        display = {
-                            "id": DisplayAreas.HEADER,
-                            "index": 0
-                        }
-                    )
+                ActionDefinitions.EFFECT_ON_OFF(
+                    slot_id = KemperMidi.EFFECT_SLOT_ID_A,
+                    display = {
+                        "id": DisplayAreas.HEADER,
+                        "index": 0
+                    }
                 )                
             ]
         },

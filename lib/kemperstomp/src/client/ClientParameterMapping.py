@@ -49,4 +49,14 @@ class ClientParameterMapping:
     @property
     def can_receive(self):
         return self.request != None
+    
+    # Returns a copy of the mapping with no request/response and value. Use this
+    # if you have performance issues with too much requests.
+    @property
+    def set_only(self):
+        return ClientParameterMapping(
+            name = self.name,
+            set = self.set,
+            type = self.type
+        )
 
