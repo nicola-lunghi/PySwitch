@@ -58,14 +58,14 @@ class FootSwitch(ConditionListener):
         for action_config in self.config["actions"]:
             if isinstance(action_config, Condition):
                 # Condition based: Create actions for both outcomes
-                action_yes = self._add_action(action_config.yes, True)
-                action_no = self._add_action(action_config.no, False)
+                actions_yes = self._add_actions(action_config.yes, True)
+                actions_no = self._add_actions(action_config.no, False)
 
                 # Set the actions on the condition for later access
                 action_config.set_instances(
                     self._appl,
-                    inst_yes = action_yes,
-                    inst_no = action_no
+                    inst_yes = actions_yes,
+                    inst_no = actions_no
                 )
 
                 # Add this instance as listener on condition changes
@@ -82,11 +82,23 @@ class FootSwitch(ConditionListener):
             action.init()
             action.update_displays()
 
-    # Creates and adds an action and returns it
-    def _add_action(self, action_config, enabled):
+    # Creates and adds one or more actions and returns an array
+    def _add_actions(self, action_config, enabled):
         if action_config == None:
             return None
         
+        ret = []
+        if isinstance(action_config, list): #hasattr(action_config, '__iter__'):
+            for ac in action_config:
+                ret.append(self._add_action(ac, enabled))
+        
+        else:
+            ret.append(self._add_action(action_config, enabled))
+        
+        return ret
+        
+    # Creates and adds one action and returns it
+    def _add_action(self, action_config, enabled):
         if Tools.get_option(action_config, "enabled", None) == None:
             action_config["enabled"] = enabled
 
@@ -190,15 +202,38 @@ class FootSwitch(ConditionListener):
                 
             action.release()
 
-    # Called on condition changes. The yes value will be True or False
-    def condition_changed(self, condition, boolValue):
-        # Order matters here: Switch off before switching on
-        if boolValue == True:
-            condition.model.no.enabled = False
-            condition.model.yes.enabled = True
-        else:
-            condition.model.yes.enabled = False
-            condition.model.no.enabled = True        
+    # Called on condition changes. The yes value will be True or False.
+    def condition_changed(self, condition, bool_value):
+        # Order plays a role here: Disable before enable
+        collection = {
+            "enable": [],
+            "disable": []
+        }
+
+        # Get lists of which actions to disable and enable
+        self._get_update_condition_actions(collection, condition.model.yes, True, bool_value)
+        self._get_update_condition_actions(collection, condition.model.no, False, bool_value)
+        
+        # Execute the two lists in the correct order
+        for action in collection["disable"]:
+            action.reset_display()
+            action.enabled = False
+
+        for action in collection["enable"]:
+            action.enabled = True
+
+    # Updates all yes/no actions of a condition
+    def _get_update_condition_actions(self, collection, actions, ref_bool_value, bool_value):
+        if actions == None:
+            return
+        
+        for action in actions:
+            enable = ref_bool_value == bool_value
+
+            if enable:
+                collection["enable"].append(action)
+            else:
+                collection["disable"].append(action)
 
     # Return if the switch is currently pushed
     @property

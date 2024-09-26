@@ -6,7 +6,7 @@
  
 import board
 
-from .definitions import Ports, ActionTypes, PushButtonModes, Colors, FootSwitchDefaults, DisplayDefaults, ProcessingConfig
+from .definitions import Ports, ActionTypes, PushButtonModes, Colors, FootSwitchDefaults, DisplayDefaults, ProcessingConfig, ConditionModes
 from .display import DisplayAreas
 from .mappings import KemperMappings
 from .actions import ActionDefinitions
@@ -31,15 +31,31 @@ Config = {
             "actions": [
                 Condition(
                     mapping = KemperMappings.RIG_VOLUME,
+                    mode = ConditionModes.MODE_GREATER_EQUAL,
                     ref_value = KemperMidi.NRPN_VALUE(0.5),
 
-                    yes = ActionDefinitions.EFFECT_ON_OFF(
-                        slot_id = KemperMidi.EFFECT_SLOT_ID_A,
-                        display = {
-                            "id": DisplayAreas.HEADER,
-                            "index": 0
-                        }
-                    ),
+                    yes = [
+                        ActionDefinitions.EFFECT_ON_OFF(
+                            slot_id = KemperMidi.EFFECT_SLOT_ID_A,
+                            display = {
+                                "id": DisplayAreas.HEADER,
+                                "index": 0
+                            }
+                        ),
+                        ActionDefinitions.EFFECT_ON_OFF(
+                            slot_id = KemperMidi.EFFECT_SLOT_ID_REV,
+                            display = {
+                                "id": DisplayAreas.HEADER,
+                                "index": 0
+                            }
+                        ),
+                        ActionDefinitions.AMP_ON_OFF(
+                            display = {
+                                "id": DisplayAreas.HEADER,
+                                "index": 0
+                            }
+                        )
+                    ],
                     no = ActionDefinitions.EFFECT_ON_OFF(
                         slot_id = KemperMidi.EFFECT_SLOT_ID_DLY,
                         display = {
@@ -159,6 +175,9 @@ Config = {
 
     # Shows an area with statistics (for debugging)
     "showFrameStats": False,
+
+    # Optional, shows the effect slot names for EffectEnableAction
+    "showEffectSlotNames": False,
 
     # Debug mode, optional. Shows verbose console output. You can listen to that on the serial port via USB on your computer,
     # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 

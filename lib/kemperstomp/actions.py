@@ -1,6 +1,6 @@
 from .definitions import ActionTypes, Colors, PushButtonModes, FootSwitchDefaults, DisplayDefaults
 from .mappings import KemperMappings
-from .kemper import KemperEffectCategories, KemperMidi
+from .kemper import KemperEffectCategories, KemperMidi, KemperSlotInfo
 
 from .src.client.ClientParameterMapping import ClientParameterMapping
 
@@ -23,6 +23,7 @@ class ActionDefinitions:
             "mapping": KemperMappings.EFFECT_SLOT_ON_OFF(slot_id),
             "mappingType": KemperMappings.EFFECT_SLOT_TYPE(slot_id),
             "categories": KemperEffectCategories(),
+            "slotInfo": KemperSlotInfo(slot_id),
             "mode": mode,
             "display": display
         }

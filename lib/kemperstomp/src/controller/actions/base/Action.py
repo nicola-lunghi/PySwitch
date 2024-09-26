@@ -38,7 +38,7 @@ class Action:
 
     # Must be called before usage
     def init(self):
-        self.label = self._get_action_display()   # DisplayLabel instance the action is connected to (or None).
+        self.label = self._get_display_label()   # DisplayLabel instance the action is connected to (or None).
 
         self._initialized = True
 
@@ -138,8 +138,12 @@ class Action:
     def force_update(self):
         pass
 
+    # Must reset the displays
+    def reset_display(self):
+        pass
+
     # Get the assigned label reference from the UI (or None)
-    def _get_action_display(self):
+    def _get_display_label(self):
         definition = Tools.get_option(self.config, "display", None)
         if definition == None:
             return None

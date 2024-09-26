@@ -12,7 +12,7 @@ from adafruit_midi.system_exclusive import SystemExclusive
 
 from .definitions import Colors
 from .src.client.Client import ClientValueProvider
-from .src.controller.actions.EffectEnableAction import EffectCategoryProvider
+from .src.controller.actions.EffectEnableAction import EffectCategoryProvider, SlotInfoProvider
 
 #################################################################################################################################
 
@@ -183,6 +183,33 @@ class KemperMidi:
     @staticmethod
     def NRPN_VALUE(value):
         return int(16383 * value)
+
+
+################################################################################################################################
+
+
+# Provides slot names for display
+class KemperSlotInfo(SlotInfoProvider):
+
+    # Slot names for display. Order has to match the one defined above in KemperMidi!
+    EFFECT_SLOT_NAMES = [
+        "A",
+        "B",
+        "C",
+        "D",
+
+        "X",
+        "MOD",
+        "DLY",
+        "REV"
+    ]
+
+    def __init__(self, slot_id):
+        self._slot_id = slot_id
+
+    # Must return the lot name
+    def get_name(self):
+        return KemperSlotInfo.EFFECT_SLOT_NAMES[self._slot_id]
 
 
 ################################################################################################################################

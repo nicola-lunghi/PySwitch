@@ -13,11 +13,16 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
 
         self.uses_switch_leds = True
 
+        self._debug_slot_names = Tools.get_option(self.appl.config, "showEffectSlotNames", False)
+
         # Mapping for effect type
         self._mapping_fxtype = self.config["mappingType"] 
 
         # Category provider of type EffectCategoryProvider
         self._categories = self.config["categories"]
+        
+        # Slot info provider of type SlotInfoProvider
+        self._slot_info = self.config["slotInfo"]
         
         self._effect_category = self._categories.get_category_not_assigned()  
         self._current_category = -1
@@ -58,7 +63,10 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
 
         # Effect category text
         if self.label != None:
-            self.label.text = self._categories.get_effect_category_name(self._effect_category) 
+            if self._debug_slot_names:
+                self.label.text = self._slot_info.get_name() + ": " + self._categories.get_effect_category_name(self._effect_category) 
+            else:
+                self.label.text = self._categories.get_effect_category_name(self._effect_category) 
     
         super().update_displays()
 
@@ -165,4 +173,14 @@ class EffectCategoryProvider:
     
     # Must return the value interpreted as "not assigned"
     def get_category_not_assigned(self):
+        raise Exception("Implement in child classes")
+    
+
+#######################################################################################################
+ 
+ 
+# Provider class for slot information
+class SlotInfoProvider:
+    # Must return the lot name
+    def get_name(self):
         raise Exception("Implement in child classes")

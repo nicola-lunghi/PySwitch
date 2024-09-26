@@ -71,16 +71,19 @@ class Condition(ClientRequestListener, EventEmitter):
     def parameter_changed(self, mapping):
         if mapping != self._mapping:
             return
-        
-        boolValue = self._evaluate_value(mapping.value)
-            
-        if self._debug == True:
-            self._print(" -> Received value " + repr(mapping.value) + ", evaluated to " + repr(boolValue))
 
-        self._last_value = boolValue
+        bool_value = self._evaluate_value(mapping.value)
+            
+        if self._last_value == bool_value:
+            return
+
+        self._last_value = bool_value
+
+        if self._debug == True:
+            self._print(" -> Received value " + repr(mapping.value) + ", evaluated to " + repr(bool_value))
 
         for listener in self.listeners:
-            listener.condition_changed(self, boolValue)        
+            listener.condition_changed(self, bool_value)        
 
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):

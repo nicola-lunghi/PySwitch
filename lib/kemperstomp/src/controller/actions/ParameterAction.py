@@ -237,6 +237,15 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
         self._current_display_status = -1
         self._current_color = -1
 
+    # Must reset the displays
+    def reset_display(self):
+        if self.label != None:
+            self.label.text = ""
+            self.label.back_color = Colors.DEFAULT_LABEL_COLOR
+
+        self.switch_color = Colors.BLACK
+        self.switch_brightness = 0
+
     # Called by the Client class when a parameter request has been answered
     def parameter_changed(self, mapping):
         if not self.enabled:
