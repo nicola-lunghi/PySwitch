@@ -1,47 +1,38 @@
-
-from ...definitions import ConditionModes
-from ..client.ClientRequest import ClientRequestListener
-from ..misc.EventEmitter import EventEmitter
-from ..misc.Tools import Tools
-from .Updateable import Updateable
+from .Condition import Condition
+from ...misc.Tools import Tools
 
 
-# Holds two model instances
-class ConditionModel:
-    def __init__(self, yes, no):
-        self.yes = yes
-        self.no = no
+# Comparison modes for ParameterCondition
+class ParameterConditionModes:    
+    MODE_EQUAL = 0                # Reference value must be a numeric value
+    MODE_GREATER_EQUAL = 10       # Reference value must be a numeric value
+    MODE_LESS_EQUAL = 20          # Reference value must be a numeric value
+    MODE_IN_RANGE = 30            # Reference value must be a tuple with lower / higher borders (inclusive). For example: (0, 1.2)
+    MODE_STRING_CONTAINS = 100    # Reference value must be a string
 
 
-############################################################################################################################
+########################################################################################################################################
 
 
 # Condition to be filled with action specifications.
 # Compares the value of the mapping to the passed one, and enables the action or action_not.
-class Condition(ClientRequestListener, EventEmitter, Updateable):
-    def __init__(self, mapping, ref_value, mode = ConditionModes.MODE_GREATER_EQUAL, yes = None, no = None):
-        super().__init__(ConditionListener)
+class ParameterCondition(Condition):
+    def __init__(self, mapping, ref_value, mode = ParameterConditionModes.MODE_GREATER_EQUAL, yes = None, no = None):
+        super().__init__(yes = yes, no = no)
 
-        self.yes = yes
-        self.no = no
-        
         self._mapping = mapping
         self._ref_value = ref_value
         self._mode = mode
 
-        self.model = None
-        self._app = None
+        self._appl = None
         self._last_value = None
 
     # Used internally: Set the model instances for the two values.
     def set_instances(self, appl, inst_yes, inst_no):
+        super().set_instances(appl, inst_yes, inst_no)
+        
         self._appl = appl
         self._debug = Tools.get_option(self._appl.config, "debugConditions")
-
-        self.model = ConditionModel(
-            yes = inst_yes,
-            no = inst_no
-        )
 
     # Used internally: Updates the condition on every update tick
     def update(self):
@@ -55,13 +46,19 @@ class Condition(ClientRequestListener, EventEmitter, Updateable):
 
     # Evaluate a received value and return True or False (heart of the condition)
     def _evaluate_value(self, value):
-        if self._mode == ConditionModes.MODE_GREATER_EQUAL:
-            if value >= self._ref_value:
-                return True
-            else:
-                return False
+        if self._mode == ParameterConditionModes.MODE_GREATER_EQUAL:
+            return value >= self._ref_value            
             
-        elif self._mode == ConditionModes.MODE_STRING_CONTAINS:
+        if self._mode == ParameterConditionModes.MODE_LESS_EQUAL:
+            return value <= self._ref_value            
+            
+        if self._mode == ParameterConditionModes.MODE_EQUAL:
+            return value == self._ref_value            
+            
+        if self._mode == ParameterConditionModes.MODE_IN_RANGE:
+            return value >= self._ref_value[0] and value <= self._ref_value[1]
+            
+        elif self._mode == ParameterConditionModes.MODE_STRING_CONTAINS:
             return self._ref_value in value
         
         else:
@@ -98,12 +95,3 @@ class Condition(ClientRequestListener, EventEmitter, Updateable):
         Tools.print("Condition for " + self._mapping.name + ": " + msg)
         
         
-############################################################################################################################
-
-
-# Base class for evaluating condition changes
-class ConditionListener:
-    # Called on condition changes. The yes value will be True or False
-    def condition_changed(self, condition, boolValue):
-        pass
-

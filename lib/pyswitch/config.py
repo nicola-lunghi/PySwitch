@@ -4,10 +4,13 @@
 #
 ##############################################################################################################################################
  
-from .definitions import PushButtonModes, Colors, ConditionModes, DisplayAreas, ActionTypes
+from .definitions import Colors, DisplayAreas, ActionTypes
 from .defaults import FootSwitchDefaults
 from .switches import Switches
-from .core.controller.Condition import Condition
+
+from .core.controller.conditions.ParameterCondition import ParameterCondition, ParameterConditionModes
+from .core.controller.conditions.PushButtonCondition import PushButtonCondition
+from .core.controller.actions.base.PushButtonAction import PushButtonModes
 
 from pyswitch_kemper.KemperMappings import KemperMappings
 from pyswitch_kemper.KemperActionDefinitions import KemperActionDefinitions
@@ -40,13 +43,14 @@ Config = {
             # You can also use the Condition class to have different actions active depending
             # on another parameter.
             "actions": [
-                Condition(
+                ParameterCondition(
                     mapping = KemperMappings.RIG_VOLUME,
-                    mode = ConditionModes.MODE_GREATER_EQUAL,
+                    mode = ParameterConditionModes.MODE_GREATER_EQUAL,
                     ref_value = KemperMidi.NRPN_VALUE(0.5),
 
                     yes = [
                         KemperActionDefinitions.EFFECT_ON_OFF(
+                            id = "sw1",
                             slot_id = KemperMidi.EFFECT_SLOT_ID_A,
                         ),
                         KemperActionDefinitions.EFFECT_ON_OFF(
@@ -78,7 +82,7 @@ Config = {
                         "index": 1
                     },
                     mode = PushButtonModes.MOMENTARY
-                )    
+                )
             ]
         },
         {
@@ -96,7 +100,7 @@ Config = {
         {
             "assignment": Switches.PA_MIDICAPTAIN_NANO_SWITCH_B,
             "actions": [
-                KemperActionDefinitions.RESET_RIG_INFO_DISPLAYS,
+                KemperActionDefinitions.RESET_RIG_INFO_DISPLAYS(),
                 KemperActionDefinitions.RIG_SELECT(
                     rig = 1,
                     bank = 1,
@@ -257,11 +261,34 @@ Config["displays"] = [
     ParameterDisplayLabel(
         name = "Rig Name",
         bounds = bounds,   # Takes what is left over
+
+        #layout = ParameterCondition(
+        #    mapping = KemperMappings.RIG_NAME,
+        #    mode = ParameterConditionModes.MODE_STRING_CONTAINS,
+        #    ref_value = "Q",
+
+        #    yes = {
+        #        "font": "/fonts/PTSans-NarrowBold-40.pcf",
+        #        "lineSpacing": 0.8,
+        #        "maxTextWidth": 220
+        #    },
+
+        #    no = {
+        #        "font": "/fonts/PTSans-NarrowBold-40.pcf",
+         #       "lineSpacing": 0.8,
+         #       "maxTextWidth": 220,
+        #        "backColor": Colors.ORANGE
+        #    }
+        #),
+
         layout = {
             "font": "/fonts/PTSans-NarrowBold-40.pcf",
             "lineSpacing": 0.8,
-            "maxTextWidth": 220
+            "maxTextWidth": 220,
+            "backColor": Colors.ORANGE,
+            #"cornerRadius": 15
         },
+
         parameter = {
             "mapping": KemperMappings.RIG_NAME,
             "depends": KemperMappings.RIG_DATE,  # Only update this when the rig date changed (optional)

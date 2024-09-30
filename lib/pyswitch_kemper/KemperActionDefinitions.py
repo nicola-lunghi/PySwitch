@@ -5,8 +5,9 @@
 #
 #################################################################################################################################
 
-from pyswitch.definitions import ActionTypes, Colors, PushButtonModes
+from pyswitch.definitions import ActionTypes, Colors
 from pyswitch.defaults import FootSwitchDefaults, DisplayDefaults
+from pyswitch.core.controller.actions.base.PushButtonAction import PushButtonModes
 
 from pyswitch.core.client.ClientParameterMapping import ClientParameterMapping
 
@@ -25,7 +26,7 @@ class KemperActionDefinitions:
 
     # Switch an effect slot on / off
     @staticmethod
-    def EFFECT_ON_OFF(slot_id, display = None, mode = PushButtonModes.HOLD_MOMENTARY):
+    def EFFECT_ON_OFF(slot_id, display = None, mode = PushButtonModes.HOLD_MOMENTARY, id = False):
         return {
             "type": ActionTypes.EFFECT_ON_OFF,
             "mapping": KemperMappings.EFFECT_SLOT_ON_OFF(slot_id),
@@ -33,44 +34,48 @@ class KemperActionDefinitions:
             "categories": KemperEffectCategories(),
             "slotInfo": KemperSlotInfo(slot_id),
             "mode": mode,
-            "display": display
+            "display": display,
+            "id": id
         }
 
     # Rotary speed (fast/slow)
     @staticmethod
-    def ROTARY_SPEED(slot_id, display = None, color = Colors.DARK_BLUE):
+    def ROTARY_SPEED(slot_id, display = None, color = Colors.DARK_BLUE, id = False):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.ROTARY_SPEED(slot_id),
             "display": display,
             "text": "Fast",
-            "color": color
+            "color": color,
+            "id": id
         }
 
     ## Special functions ####################################################################################################
 
     # Switch tuner mode on / off
     @staticmethod
-    def TUNER_MODE(display = None, color = Colors.DEFAULT_SWITCH_COLOR):
+    def TUNER_MODE(display = None, color = Colors.DEFAULT_SWITCH_COLOR, id = False):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.TUNER_MODE_ON_OFF,
             "display": display,
             "text": "Tuner",
             "color": Colors.WHITE,
-            "color": color
+            "color": color,
+            "id": id
         }
 
     # Tap tempo
     @staticmethod
-    def TAP_TEMPO(display = None, color = Colors.DARK_GREEN):
+    def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.TAP_TEMPO,
             "display": display,
             "text": "Tap",
             "color": color,
-            "mode": PushButtonModes.MOMENTARY
+            "mode": PushButtonModes.MOMENTARY,
+            "id": id
         }
 
     ## Rig specific ##########################################################################################################
@@ -80,7 +85,7 @@ class KemperActionDefinitions:
     # boost rig volume by passing a value in range [0..1] (corresponding to the range of the
     # rig volume paramneter: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB)
     @staticmethod
-    def RIG_VOLUME_BOOST(boost_volume, display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.PINK):
+    def RIG_VOLUME_BOOST(boost_volume, display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.PINK, id = False):
         return {
             "type": ActionTypes.PARAMETER,
             "mode": mode,
@@ -89,51 +94,57 @@ class KemperActionDefinitions:
             "valueDisabled": KemperMidi.NRPN_VALUE(0.5),           # 0dB
             "display": display,
             "text": "RigBoost",
-            "color": color
+            "color": color,
+            "id": id
         }
 
     # Used to reset the screen areas which show rig info details directly after rig changes (if you dont use this, 
     # you get no visual feedback on the device that a new rig is coming up)
-    RESET_RIG_INFO_DISPLAYS = {
-        "type": ActionTypes.RESET_DISPLAYS_FOR_MAPPINGS,
-        "resetSwitches": True,
-        "ignoreOwnSwitch": True,
-        "resetDisplayAreas": True
-    }
+    @staticmethod
+    def RESET_RIG_INFO_DISPLAYS(id = False):
+        return {
+            "type": ActionTypes.RESET_DISPLAYS_FOR_MAPPINGS,
+            "resetSwitches": True,
+            "ignoreOwnSwitch": True,
+            "resetDisplayAreas": True,
+            "id": id
+        }
 
     ## Amp ########################################################################################################################
 
     # Amp on/off
     @staticmethod
-    def AMP_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.DEFAULT_SWITCH_COLOR):
+    def AMP_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.DEFAULT_SWITCH_COLOR, id = False):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.AMP_ON_OFF,
             "mode": mode,
             "display": display,
             "text": "Amp",
-            "color": color
+            "color": color,
+            "id": id
         }
 
     ## Cab ########################################################################################################################
 
     # Amp on/off
     @staticmethod
-    def CABINET_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.DEFAULT_SWITCH_COLOR):
+    def CABINET_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.DEFAULT_SWITCH_COLOR, id = False):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.CABINET_ON_OFF,
             "mode": mode,
             "display": display,
             "text": "Cab",
-            "color": color
+            "color": color,
+            "id": id
         }
 
     ## Change Rig/Bank ############################################################################################################
 
     # Next bank (keeps rig index)
     @staticmethod
-    def BANK_UP(display = None, color = Colors.WHITE):
+    def BANK_UP(display = None, color = Colors.WHITE, id = False):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.NEXT_BANK,
@@ -141,12 +152,13 @@ class KemperActionDefinitions:
             "valueEnabled": KemperMidi.CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank up",
-            "color": color
+            "color": color,
+            "id": id
         }
     
     # Previous bank (keeps rig index)
     @staticmethod
-    def BANK_DOWN(display = None, color = Colors.WHITE):
+    def BANK_DOWN(display = None, color = Colors.WHITE, id = False):
         return {
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.PREVIOUS_BANK,
@@ -154,14 +166,15 @@ class KemperActionDefinitions:
             "valueEnabled": KemperMidi.CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank dn",
-            "color": color
+            "color": color,
+            "id": id
         }
     
     # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
     # the current bank. Rigs are indexed starting from one, range: [1..5].
     # Optionally, banks can be switched too in the same logic using bank and bank_off.
     @staticmethod
-    def RIG_SELECT(rig, rig_off = None, bank = None, bank_off = None, display = None, color = Colors.YELLOW):
+    def RIG_SELECT(rig, rig_off = None, bank = None, bank_off = None, display = None, color = Colors.YELLOW, id = False):
         # Texts always show the rig to be selected when the switch is pushed the next time
         text_rig_off = str(rig)
         text_rig_on = text_rig_off
@@ -229,6 +242,7 @@ class KemperActionDefinitions:
                 "off": FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF
             },
             "displayDimFactorOn": DisplayDefaults.DEFAULT_SLOT_DIM_FACTOR_OFF,  # Set equal brightness (we do not need status display here)
-            "mode": PushButtonModes.LATCH
+            "mode": PushButtonModes.LATCH,
+            "id": id
         }
     

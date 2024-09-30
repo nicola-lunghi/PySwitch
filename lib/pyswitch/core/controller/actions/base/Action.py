@@ -7,7 +7,7 @@ from .....defaults import FootSwitchDefaults
 # inheriting from Action.
 class Action:
     
-    next_id = 0
+    next_id = 0   # Global counted action ids (internal, just used for debugging!)
 
     # Factory for creating actions by type (= class name of derivative of Action).
     # All created classes must have the same constructor parameters as this method.
@@ -28,8 +28,11 @@ class Action:
         self.config = config
         self.debug = Tools.get_option(self.appl.config, "debugActions")
         self._debug_switch_port_name = Tools.get_option(self.appl.config, "actionsDebugSwitchName", None)
-        
-        self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action.next_id) + ")"
+                
+        self.id = Tools.get_option(self.config, "id", False)
+        if self.id == False:
+            self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action.next_id) + ")"
+            
         Action.next_id = Action.next_id + 1
         
         self.uses_switch_leds = False             # Must be set True explicitly by child classes in __init__() if they use the switch LEDs

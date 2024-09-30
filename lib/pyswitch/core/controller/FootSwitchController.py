@@ -1,6 +1,6 @@
 import random
 
-from .Condition import Condition, ConditionListener
+from .conditions.Condition import Condition, ConditionListener
 from .actions.base.Action import Action
 from ..misc.Tools import Tools
 from ...definitions import Colors
@@ -21,6 +21,7 @@ class FootSwitchController(ConditionListener, Updateable):
     #                          specifications.
     #         {
     #             "type":               Action type. Allowed values: See the Actions class
+    #             "id":                 Action id. Optional.
     #             ...                   (individual options depending on the specific action type)
     #         },
     #         ...
@@ -59,31 +60,35 @@ class FootSwitchController(ConditionListener, Updateable):
         self.actions = []
         
         for action_config in self.config["actions"]:
-            if isinstance(action_config, Condition):
-                # Condition based: Create actions for both outcomes
-                actions_yes = self._add_actions(action_config.yes, True)
-                actions_no = self._add_actions(action_config.no, False)
-
-                # Set the actions on the condition for later access
-                action_config.set_instances(
-                    self._appl,
-                    inst_yes = actions_yes,
-                    inst_no = actions_no
-                )
-
-                # Add this instance as listener on condition changes
-                action_config.add_listener(self)
-
-                # Add the condition to the global list of conditions, so it will
-                # be updated periodically
-                self._appl.updateables.append(action_config)
-            else:
-                # Simple action definition
-                self._add_action(action_config, True)
+            self._evaluate_action_definition(action_config)
 
         for action in self.actions:            
             action.init()
             action.update_displays()
+
+    def _evaluate_action_definition(self, action_config):
+        if isinstance(action_config, Condition):
+            # Condition based: Create actions for both outcomes
+            actions_yes = self._add_actions(action_config.yes, True)
+            actions_no = self._add_actions(action_config.no, False)
+
+            # Set the actions on the condition for later access
+            action_config.set_instances(
+                self._appl,
+                inst_yes = actions_yes,
+                inst_no = actions_no
+            )
+
+            # Add this instance as listener on condition changes
+            action_config.add_listener(self)
+
+            # Add the condition to the global list of conditions, so it will
+            # be updated periodically
+            self._appl.updateables.append(action_config)
+        else:
+            # Simple action definition
+            self._add_action(action_config, True)
+
 
     # Creates and adds one or more actions and returns an array
     def _add_actions(self, action_config, enabled):

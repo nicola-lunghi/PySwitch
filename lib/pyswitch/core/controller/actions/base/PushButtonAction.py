@@ -1,6 +1,24 @@
 from .Action import Action
 from ....misc.Tools import Tools
-from .....definitions import PushButtonModes
+
+# Modes for PushButtonAction
+class PushButtonModes:    
+    ENABLE = 0                      # Switch the functionality on
+    DISABLE = 10                    # Switch the functionality off
+    LATCH = 20                      # Toggle state on every button push
+    MOMENTARY = 30                  # Enable on push, disable on release
+    MOMENTARY_INVERSE = 40          # Disable on push, Enable on release
+    HOLD_MOMENTARY = 50             # Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is 
+                                    # used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is 
+                                    # used (inverse or not: This depends on the current state of the functionality. When it is
+                                    # on, it will momentarily be switched off and vice versa).
+    ONE_SHOT = 100                  # Fire the SET command on every push (show as disabled)
+
+    # Hold time for HOLD_MOMENTARY mode (milliseconds)
+    DEFAULT_LATCH_MOMENTARY_HOLD_TIME = 600  
+
+
+################################################################################################################################
 
 
 # Implements an abstraction layer for on/off parameters. Covers latch/momentary modes etc.
