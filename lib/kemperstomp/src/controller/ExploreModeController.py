@@ -1,7 +1,7 @@
 import board
 
-from .FootSwitch import FootSwitch
-from ..hardware.LedDriver import LedDriver
+from .FootSwitchController import FootSwitchController
+from ..hardware.NeoPixelDriver import LedDriver
 from ...definitions import ActionTypes, Colors, FootSwitchDefaults
 
 
@@ -63,7 +63,7 @@ class ExploreModeController:
         else:
             scan_step = -1
 
-        switch = FootSwitch(
+        switch = FootSwitchController(
             self,
             {
                 "assignment": {

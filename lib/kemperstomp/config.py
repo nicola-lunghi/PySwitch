@@ -6,7 +6,8 @@
  
 import board
 
-from .definitions import Ports, ActionTypes, PushButtonModes, Colors, FootSwitchDefaults, DisplayDefaults, ProcessingConfig, ConditionModes
+from .definitions import ActionTypes, PushButtonModes, Colors, FootSwitchDefaults, DisplayDefaults, ProcessingConfig, ConditionModes
+from .switches import Switches
 from .display import DisplayAreas
 from .mappings import KemperMappings
 from .actions import ActionDefinitions
@@ -22,7 +23,7 @@ Config = {
     "switches": [
         {
             # Selects which switch of your device you want to assign
-            "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_1,
+            "assignment": Switches.PA_MIDICAPTAIN_NANO_SWITCH_1,
 
             # Defines the actions you want to happen on different events of the switch. You can 
             # define as many actions as you want, they will be executed in that order.
@@ -37,10 +38,6 @@ Config = {
                     yes = [
                         ActionDefinitions.EFFECT_ON_OFF(
                             slot_id = KemperMidi.EFFECT_SLOT_ID_A,
-                            display = {
-                                "id": DisplayAreas.HEADER,
-                                "index": 0
-                            }
                         ),
                         ActionDefinitions.EFFECT_ON_OFF(
                             slot_id = KemperMidi.EFFECT_SLOT_ID_REV,
@@ -49,12 +46,7 @@ Config = {
                                 "index": 0
                             }
                         ),
-                        ActionDefinitions.AMP_ON_OFF(
-                            display = {
-                                "id": DisplayAreas.HEADER,
-                                "index": 0
-                            }
-                        )
+                        ActionDefinitions.AMP_ON_OFF()
                     ],
                     no = ActionDefinitions.EFFECT_ON_OFF(
                         slot_id = KemperMidi.EFFECT_SLOT_ID_DLY,
@@ -67,7 +59,7 @@ Config = {
             ]
         },
         {
-            "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_2,
+            "assignment": Switches.PA_MIDICAPTAIN_NANO_SWITCH_2,
             "actions": [
                 ActionDefinitions.EFFECT_ON_OFF(
                     slot_id = KemperMidi.EFFECT_SLOT_ID_B,
@@ -80,7 +72,7 @@ Config = {
             ]
         },
         {
-            "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_A,
+            "assignment": Switches.PA_MIDICAPTAIN_NANO_SWITCH_A,
             "actions": [
                 ActionDefinitions.AMP_ON_OFF(
                     display = {
@@ -92,7 +84,7 @@ Config = {
             ]
         },
         {
-            "assignment": Ports.PA_MIDICAPTAIN_NANO_SWITCH_B,
+            "assignment": Switches.PA_MIDICAPTAIN_NANO_SWITCH_B,
             "actions": [
                 ActionDefinitions.RESET_RIG_INFO_DISPLAYS,
                 ActionDefinitions.RIG_SELECT(
@@ -163,9 +155,6 @@ Config = {
     # Update interval, for updating the rig date (which triggers all other data to update when changed) (milliseconds)
     # and other displays if assigned. 200 is a good value.
     "updateInterval": 200,
-
-    # Port at which the NeoPixel is addressed (example: board.GP7 for most (?) PaintAudio MIDI Captain devices)
-    "neoPixelPort": board.GP7,
 
     # Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
     # when an answer to a value request is received.

@@ -21,7 +21,7 @@ class Action:
 
     ######################################################################################################################################
 
-    # config: See FootSwitch
+    # config: See FootSwitchController
     def __init__(self, appl, switch, config):
         self.appl = appl
         self.switch = switch

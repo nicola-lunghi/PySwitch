@@ -1,12 +1,11 @@
 import usb_midi
 import adafruit_midi 
 
-from .FootSwitch import FootSwitch
+from .FootSwitchController import FootSwitchController
 from .Statistics import Statistics, StatisticsListener
 from .PeriodCounter import PeriodCounter
 from .Conditions import Conditions
 from .InfoDisplays import InfoDisplays
-from ..hardware.LedDriver import LedDriver
 from ..client.Client import Client
 from ..client.ClientRequest import ClientRequestListener
 from ..misc.Tools import Tools
@@ -16,12 +15,13 @@ from ...display import DisplayAreas, DisplayAreaDefinitions
 
 # Main application class (controls the processing)    
 class StompController(ClientRequestListener, StatisticsListener):
-    def __init__(self, ui, config):
+    def __init__(self, ui, led_driver, config):
         self.ui = ui
         self.config = config
 
         # NeoPixel driver 
-        self.led_driver = LedDriver(self.config["neoPixelPort"], len(self.config["switches"]) * FootSwitchDefaults.NUM_PIXELS)    
+        self.led_driver = led_driver
+        self.led_driver.init(len(self.config["switches"]) * FootSwitchDefaults.NUM_PIXELS)
         
         self._midiChannel = self.config["midiChannel"]                            # MIDI channel to use
         self._midi_buffer_size = self.config["midiBufferSize"]                    # MIDI buffer size (default: 60)
@@ -79,8 +79,8 @@ class StompController(ClientRequestListener, StatisticsListener):
                     
         for swDef in self.config["switches"]:
             self.switches.append(
-                FootSwitch(
-                    self, 
+                FootSwitchController(
+                    self,
                     swDef
                 )
             )

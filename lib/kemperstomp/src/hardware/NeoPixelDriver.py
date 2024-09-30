@@ -1,16 +1,20 @@
 import neopixel
+import board
 
 
 # Implements communication with an array of NeoPixels
-class LedDriver:
-    def __init__(self, port, num_leds):
-        self.port = port
-        self.num_leds = num_leds        
+class NeoPixelDriver:
 
-        self._init_neopixel()
-
+    def __init__(self, port = board.GP7):
+        self._port = port
+        self.leds = None
+        
     # Initialize NeoPixel array. Neopixel documentation:
     # https://docs.circuitpython.org/projects/neopixel/en/latest/
     # https://learn.adafruit.com/adafruit-neopixel-uberguide/python-circuitpython
-    def _init_neopixel(self):        
-        self.leds = neopixel.NeoPixel(self.port, self.num_leds)
+    def init(self, num_leds):
+        self.leds = neopixel.NeoPixel(self._port, num_leds)
+
+
+
+        

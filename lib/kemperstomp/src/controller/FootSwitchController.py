@@ -1,5 +1,4 @@
 import random
-import digitalio
 
 from .Condition import Condition, ConditionListener
 from .actions.base.Action import Action
@@ -8,46 +7,49 @@ from ...definitions import Colors
 
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
-class FootSwitch(ConditionListener):
+class FootSwitchController(ConditionListener):
 
     # config must be a dictionary holding the following attributes:
     # { 
     #     "assignment": {
-    #         "port": The board GPIO pin definition to be used for this switch (for example board.GP1)
-    #         "pixels": List of three indexes for the Neopixels that belong to this switch, for example (0, 1, 2)
+    #         "model":         Model instance for the switch hardware. Must implement an init() method and a .pushed property.
+    #         "pixels":        List of indexes for the Neopixels that belong to this switch, for example (0, 1, 2)
     #     },
-    #     "actions": [    Array of actions. Entries must be either action specifications or Conditions with action
-    #                     specifications.
+    #
+    #     "actions": [         Array of actions. Entries must be either action specifications or Conditions with action
+    #                          specifications.
     #         {
     #             "type":               Action type. Allowed values: See the Actions class
     #             ...                   (individual options depending on the specific action type)
     #         },
     #         ...
     #     ],
-    #     "initialColors": [   Initial colors to set. Optional, if not set, the default initial color set is generated.
+    #
+    #     "initialColors": [    Initial colors to set. Optional, if not set, the default initial color set is generated.
     #         Colors.RED,
     #         Colors.YELLOW,
     #         Colors.ORANGE
     #     ],
-    #     "initialBrightness": Initial brightness. If not set, 1 is used. [0..1]
+    #     "initialBrightness":  Initial brightness. If not set, 1 is used. [0..1]
     # }
     def __init__(self, appl, config):
         self.config = config        
         self.pixels = Tools.get_option(self.config["assignment"], "pixels")
-        self.switch = None
+        
+        self._switch = self.config["assignment"]["model"]
+        self._switch.init()
 
-        self._port = self.config["assignment"]["port"]
+        self.id = Tools.get_option(self.config["assignment"], "name", repr(self._switch))
+
         self._appl = appl
-        self._colors = [(0, 0, 0), (0, 0, 0), (0, 0, 0)]
-        self._brightnesses = [0, 0, 0]
+        self._colors = [(0, 0, 0) for i in range(len(self.pixels))]
+        self._brightnesses = [0 for i in range(len(self.pixels))]
         self._pushed_state = False
-        self.id = Tools.get_option(self.config["assignment"], "name", repr(self._port))
         self._debug = Tools.get_option(self._appl.config, "debugSwitches")
 
         self._initial_switch_colors()
-        self._init_switch()     
         self._init_actions()
-
+    
     # Set up action instances
     def _init_actions(self):
         if self._debug == True:
@@ -131,23 +133,10 @@ class FootSwitch(ConditionListener):
 
         # Default color scheme: Random from a list of colors
         available_colors = (Colors.GREEN, Colors.YELLOW, Colors.RED)  # Colors to be used (in that order)
-        start_index = random.randint(0, len(available_colors)-1)      # Random start index  
-        self.colors = [
-            available_colors[start_index],
-            available_colors[(start_index + 1 ) % len(available_colors)],
-            available_colors[(start_index + 2 ) % len(available_colors)]
-        ]
-        self.brightness = initial_brightness
-    
-    # Initializes the switch
-    def _init_switch(self):
-        if self._debug == True:
-            self._print("Init GPIO")
+        index = random.randint(0, len(available_colors)-1)            # Random start index  
 
-        self.switch = digitalio.DigitalInOut(self._port) 
-        
-        self.switch.direction = digitalio.Direction.INPUT
-        self.switch.pull = digitalio.Pull.UP
+        self.colors = [available_colors[(index + i) % len(available_colors)] for i in range(len(self.pixels))]
+        self.brightness = initial_brightness
         
     # Process the switch: Check if it is currently pushed, set state accordingly
     def process(self):
@@ -180,6 +169,11 @@ class FootSwitch(ConditionListener):
         for action in self.actions:
             action.reset()
 
+    # Return if the switch is currently pushed
+    @property
+    def pushed(self):
+        return self._switch.pushed
+                
     # Processes all push actions assigned to the switch 
     def _process_actions_push(self):
         for action in self.actions:
@@ -235,13 +229,6 @@ class FootSwitch(ConditionListener):
             else:
                 collection["disable"].append(action)
 
-    # Return if the switch is currently pushed
-    @property
-    def pushed(self):
-        if self.switch == None:
-            return False
-        return self.switch.value == False  # Inverse logic!
-
     # Colors of the switch (array)
     @property
     def colors(self):
@@ -252,7 +239,7 @@ class FootSwitch(ConditionListener):
     @colors.setter
     def colors(self, colors):
         if len(colors) != len(self._colors):
-            raise Exception("Invalid amount of colors: " + len(colors))
+            raise Exception("Invalid amount of colors: " + repr(len(colors)))
         
         if self._debug == True:
             self._print(" -> Set colors to " + repr(colors))
@@ -277,12 +264,16 @@ class FootSwitch(ConditionListener):
     # Returns current brightness (this just uses the first one)
     @property
     def brightness(self):
-        return self.brightnesses[0]
+        return self._brightnesses[0]
 
     # Set brightness equally of all LEDs
     @brightness.setter
     def brightness(self, brightness):
-        self.brightnesses = [brightness, brightness, brightness]
+        if self._debug == True:
+            self._print(" -> Set brightness to " + repr(brightness))
+
+        for i in range(len(self._brightnesses)):
+            self._brightnesses[i] = brightness
     
     # Returns current brightnesses of all LEDs
     @property
@@ -298,7 +289,7 @@ class FootSwitch(ConditionListener):
         if self._debug == True:
             self._print(" -> Set brightnesses to " + repr(brightnesses))
 
-        for i in range(len(self._colors)):
+        for i in range(len(self._brightnesses)):
             pixel = self.pixels[i]
             self._appl.led_driver.leds[pixel] = (
                 int(self._colors[i][0] * brightnesses[i]),   # R

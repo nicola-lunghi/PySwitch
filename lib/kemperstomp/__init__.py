@@ -25,11 +25,12 @@
 #
 #################################################################################################################################
 
-from .src.hardware.DisplayDriver import DisplayDriver
+from .src.hardware.AdafruitST7789DisplayDriver import AdafruitST7789DisplayDriver
+from .src.hardware.NeoPixelDriver import NeoPixelDriver
 from .src.misc.Tools import Tools
 
-# Initialize Display first to get console output on config errors
-display_driver = DisplayDriver(240, 240)
+# Initialize Display first to get console output on config errors (for users who cannot connect to the serial console)
+display_driver = AdafruitST7789DisplayDriver()
 display_driver.init()
 
 # Load configuration
@@ -50,6 +51,9 @@ else:
     # Create User interface
     ui = UserInterface(display_driver)
 
+    # NeoPixel driver 
+    led_driver = NeoPixelDriver()
+        
     # Controller instance (runs the processing loop and keeps everything together)
-    appl = StompController(ui, Config)
+    appl = StompController(ui, led_driver, Config)
     appl.process()
