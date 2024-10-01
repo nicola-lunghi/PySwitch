@@ -1,6 +1,6 @@
 import random
 
-from .conditions.Condition import Condition, ConditionListener
+from .conditions.Condition import Condition, ConditionListener, ConditionModelFactory
 from .actions.base.Action import Action
 from ..misc.Tools import Tools
 from ...definitions import Colors
@@ -8,7 +8,7 @@ from .Updateable import Updateable
 
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
-class FootSwitchController(ConditionListener, Updateable):
+class FootSwitchController(ConditionListener, Updateable, ConditionModelFactory):
 
     # config must be a dictionary holding the following attributes:
     # { 
@@ -57,68 +57,30 @@ class FootSwitchController(ConditionListener, Updateable):
         if self._debug == True:
             self._print("Init actions")
         
-        self.actions = []
-        
-        for action_config in self.config["actions"]:
-            self._evaluate_action_definition(action_config)
+        self.actions = Condition.parse(
+            appl = self._appl, 
+            subject = self.config["actions"],
+            listener = self,
+            factory = self
+        )
 
         for action in self.actions:            
             action.init()
             action.update_displays()
-
-    def _evaluate_action_definition(self, action_config):
-        if isinstance(action_config, Condition):
-            # Condition based: Create actions for both outcomes
-            actions_yes = self._add_actions(action_config.yes, True)
-            actions_no = self._add_actions(action_config.no, False)
-
-            # Set the actions on the condition for later access
-            action_config.set_instances(
-                self._appl,
-                inst_yes = actions_yes,
-                inst_no = actions_no
-            )
-
-            # Add this instance as listener on condition changes
-            action_config.add_listener(self)
-
-            # Add the condition to the global list of conditions, so it will
-            # be updated periodically
-            self._appl.updateables.append(action_config)
-        else:
-            # Simple action definition
-            self._add_action(action_config, True)
-
-
-    # Creates and adds one or more actions and returns an array
-    def _add_actions(self, action_config, enabled):
-        if action_config == None:
-            return None
         
-        ret = []
-        if isinstance(action_config, list): #hasattr(action_config, '__iter__'):
-            for ac in action_config:
-                ret.append(self._add_action(ac, enabled))
-        
-        else:
-            ret.append(self._add_action(action_config, enabled))
-        
-        return ret
-        
-    # Creates and adds one action and returns it
-    def _add_action(self, action_config, enabled):
-        if Tools.get_option(action_config, "enabled", None) == None:
-            action_config["enabled"] = enabled
+    # Factory for actions, used by Condition.parse(): data is the customer data in the condition configs, 
+    # enabled signals if the condition branch is active by default (assuming that all conditions are true 
+    # by default). Can return a model instance or something else which will be collected in the Condition 
+    # models, so the listeners can access them later (optional).
+    def get_condition_instance(self, data, enabled):
+        if Tools.get_option(data, "enabled", None) == None:
+            data["enabled"] = enabled
 
-        action = Action.get_instance(
+        return Action.get_instance(
             self._appl,
             self,
-            action_config
+            data
         )
-
-        self.actions.append(action)
-
-        return action
 
     # Set some initial colors on the neopixels
     def _initial_switch_colors(self):

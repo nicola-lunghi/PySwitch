@@ -1,5 +1,7 @@
 from ..misc.Tools import Tools
 from ..misc.EventEmitter import EventEmitter
+import gc
+
 
 # Main application class (controls the processing)    
 class Statistics(EventEmitter):
@@ -57,12 +59,17 @@ class Statistics(EventEmitter):
         for listener in self.listeners:
             listener.update_statistics(self)
 
+    # Returns the available memory
+    def _get_free_memory_bytes(self):
+        gc.collect()
+        return gc.mem_free()
+
     # Render the output string
     def get_message(self):
         if self._time_num == 0:
             return "No data"
         
-        return "Max " + str(self.max) + "ms, Avg " + str(self.average)
+        return "Max " + str(self.max) + "ms, Avg " + str(self.average) + " Free " + Tools.format_size(self._get_free_memory_bytes())
 
 
 ###########################################################################################

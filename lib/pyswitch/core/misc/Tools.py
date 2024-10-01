@@ -59,3 +59,12 @@ class Tools:
             hexlist = hexlist + hex(intlist[i])[2:] + end
 
         return "[" + hexlist + "]"
+
+    # Size (bytes) output formatting 
+    # Taken from https://stackoverflow.com/questions/1094841/get-a-human-readable-version-of-a-file-size 
+    def format_size(num, suffix = "B"):
+        for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
+            if abs(num) < 1024.0:
+                return f"{num:3.1f} {unit}{suffix}"
+            num /= 1024.0
+        return f"{num:.1f}Yi{suffix}"

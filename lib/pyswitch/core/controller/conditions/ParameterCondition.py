@@ -24,25 +24,23 @@ class ParameterCondition(Condition):
         self._ref_value = ref_value
         self._mode = mode
 
-        self._appl = None
         self._last_value = None
 
     # Used internally: Set the model instances for the two values.
-    def set_instances(self, appl, inst_yes, inst_no):
-        super().set_instances(appl, inst_yes, inst_no)
+    def init(self, appl, model):
+        super().init(appl, model)
         
-        self._appl = appl
-        self._debug = Tools.get_option(self._appl.config, "debugConditions")
+        self._debug = Tools.get_option(self.appl.config, "debugConditions")
 
     # Used internally: Updates the condition on every update tick
     def update(self):
-        if self._appl == None:
+        if self.appl == None:
             raise Exception("Condition not initialized")
 
         if self._debug == True:
             self._print("Requesting value")
 
-        self._appl.client.request(self._mapping, self)
+        self.appl.client.request(self._mapping, self)
 
     # Evaluate a received value and return True or False (heart of the condition)
     def _evaluate_value(self, value):

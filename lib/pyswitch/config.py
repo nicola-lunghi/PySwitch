@@ -149,8 +149,8 @@ Config = {
 
 ## Development Options ###################################################################################################################
 
-    # Shows an area with statistics (for debugging)
-    #"showFrameStats": True,
+    # Shows an area with statistics about frame processing time and available RAM (for debugging)
+    "showFrameStats": True,
 
     # Optional, shows the effect slot names for EffectEnableAction
     #"showEffectSlotNames": True,
@@ -184,11 +184,11 @@ Config = {
 
 ## User Interface ############################################################################################################################
 
-# DisplayLabel layout used for the action displays
+# DisplayLabel default layout used for the action displays in header and footer
 Config["actionLabelLayout"] = {
     "font": "/fonts/H20.pcf",
     "backColor": Colors.DEFAULT_LABEL_COLOR,
-    "cornerRadius": 5,
+    #"cornerRadius": 5,
     "stroke": 1
 }
 
@@ -232,31 +232,6 @@ Config["displays"] = [
         }        
     ),
 
-    # Statistics area (used internally, ID is fixed)
-    DisplayLabel(
-        id = DisplayAreas.STATISTICS,
-        name = "Statistics",
-        bounds = bounds.top(DETAIL_HEIGHT),
-        layout = {
-            "font": "/fonts/A12.pcf",
-            "backColor": Colors.DEFAULT_LABEL_COLOR
-        }        
-    ),
-
-    # Performance indicator (dot)
-    PerformanceIndicator(
-        id = DisplayAreas.PERFORMANCE_INDICATOR,
-        name = "Dot",
-        bounds = bounds.top(
-                DisplayAreas.PERFORMANCE_INDICATOR_SIZE
-            ).right(
-                DisplayAreas.PERFORMANCE_INDICATOR_SIZE
-            ).translated(
-                - DisplayAreas.PERFORMANCE_INDICATOR_MARGIN, 
-                DisplayAreas.PERFORMANCE_INDICATOR_MARGIN
-            )
-    ),
-
     # Rig name
     ParameterDisplayLabel(
         name = "Rig Name",
@@ -285,8 +260,7 @@ Config["displays"] = [
             "font": "/fonts/PTSans-NarrowBold-40.pcf",
             "lineSpacing": 0.8,
             "maxTextWidth": 220,
-            "backColor": Colors.ORANGE,
-            #"cornerRadius": 15
+            "backColor": Colors.ORANGE
         },
 
         parameter = {
@@ -295,5 +269,30 @@ Config["displays"] = [
             "textOffline": "Kemper Profiler (offline)",
             "textReset": "Loading Rig..."
         }
+    ),
+
+    # Statistics area (used internally, ID is fixed)
+    DisplayLabel(
+        id = DisplayAreas.STATISTICS,
+        name = "Statistics",
+        bounds = bounds.top(DETAIL_HEIGHT),
+        layout = {
+            "font": "/fonts/A12.pcf",
+            "backColor": Colors.DEFAULT_LABEL_COLOR
+        }        
+    ),
+
+    # Performance indicator (dot)
+    PerformanceIndicator(
+        id = DisplayAreas.PERFORMANCE_INDICATOR,
+        name = "Dot",
+        bounds = bounds.top(
+                DisplayAreas.PERFORMANCE_INDICATOR_SIZE
+            ).right(
+                DisplayAreas.PERFORMANCE_INDICATOR_SIZE
+            ).translated(
+                - DisplayAreas.PERFORMANCE_INDICATOR_MARGIN, 
+                DisplayAreas.PERFORMANCE_INDICATOR_MARGIN
+            )
     )
 ]
