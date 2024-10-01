@@ -243,16 +243,19 @@ Config["displays"] = [
         #    ref_value = "Q",
 
         #    yes = {
-        #        "font": "/fonts/PTSans-NarrowBold-40.pcf",
-        #        "lineSpacing": 0.8,
-        #        "maxTextWidth": 220
+        #        "font": "/fonts/A12.pcf",
+        #        "lineSpacing": 1.2,
+        #        "maxTextWidth": 100,
+        #        "textColor": Colors.BLUE,
+        #        "backColor": Colors.ORANGE,
+        #        "cornerRadius": 40,
+        #        "stroke": 4,
         #    },
 
         #    no = {
         #        "font": "/fonts/PTSans-NarrowBold-40.pcf",
          #       "lineSpacing": 0.8,
-         #       "maxTextWidth": 220,
-        #        "backColor": Colors.ORANGE
+         #       "maxTextWidth": 220
         #    }
         #),
 

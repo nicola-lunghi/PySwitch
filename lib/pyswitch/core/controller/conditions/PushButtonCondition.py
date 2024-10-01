@@ -12,8 +12,8 @@ class PushButtonCondition(Condition):
         self._last_value = None
 
     # Used internally: Set the model instances for the two values.
-    def init(self, appl, model):
-        super().init(appl, model)
+    def init(self, appl):
+        super().init(appl)
         
         self._action = self._determine_action(self._id)
 

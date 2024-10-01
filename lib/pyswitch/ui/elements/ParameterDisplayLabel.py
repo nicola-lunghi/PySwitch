@@ -3,7 +3,6 @@ from ..DisplayBounds import DisplayBounds
 from ...core.controller.Updateable import Updateable
 from ...core.misc.Tools import Tools
 from ...core.client.ClientRequest import ClientRequestListener
-from ...core.controller.conditions.Condition import Condition
 
 
 # DisplayLabel which is connected to a client parameter
@@ -17,7 +16,7 @@ class ParameterDisplayLabel(DisplayLabel, Updateable, ClientRequestListener):
     #     "textReset":   Text to show when a reset happened (on rig changes etc.)
     # }
     def __init__(self, parameter, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
-        super().__init__(bounds=bounds, layout=self._evaluate_layout(layout), name=name, id=id)
+        super().__init__(bounds=bounds, layout=layout, name=name, id=id)
 
         self._mapping = parameter["mapping"]
         self._depends = Tools.get_option(parameter, "depends", None)
@@ -26,20 +25,13 @@ class ParameterDisplayLabel(DisplayLabel, Updateable, ClientRequestListener):
         self._depends_last_value = None
 
         self._text_offline = Tools.get_option(parameter, "textOffline", "")
-        self._text_reset = Tools.get_option(parameter, "textReset", "")
-
-        self.text = self._text_offline
+        self._text_reset = Tools.get_option(parameter, "textReset", "")        
     
-    def _evaluate_layout(self, layout):
-        if isinstance(layout, Condition):
-            pass # TODO
-        else:
-            return layout
-
-
     # We need access to the client, so we store appl here
     def init(self, ui, appl):
         super().init(ui, appl)
+
+        self.text = self._text_offline
         
         self._appl = appl
         self._debug = Tools.get_option(appl.config, "debugParameters", False)

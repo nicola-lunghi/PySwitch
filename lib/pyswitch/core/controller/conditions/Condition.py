@@ -14,6 +14,16 @@ class ConditionModel:
 ############################################################################################################################
 
 
+# Return structure for Condition.parse()
+class ConditionParseResult:
+    def __init__(self, objects = [], conditions = []):
+        self.objects = objects
+        self.conditions = conditions
+
+
+############################################################################################################################
+
+
 # Condition to be filled with action specifications.
 # Compares the value of the mapping to the passed one, and enables the action or action_not.
 class Condition(ClientRequestListener, EventEmitter, Updateable):
@@ -26,43 +36,46 @@ class Condition(ClientRequestListener, EventEmitter, Updateable):
         self.model = None
         self.appl = None
 
-    # Set the model instances for the two values.
-    def init(self, appl, model):
+    # Called when the UI is ready
+    def init(self, appl):
         self.appl = appl
-        self.model = model
 
     # Parses the passed subject, eitehr a list of containing homogenous structure of lists, 
     # customer objects and conditions holding the same, or a single object. Returns the list of instances created by 
-    # factory, if it did return something.
+    # factory, if it did return something, along with a list of conditions to be updated periodically.
     @staticmethod    
-    def parse(appl, subject, listener = None, factory = None, enable = True):
+    def parse(subject, listener = None, factory = None, enable = True, allow_lists = True):
         if subject == None:
-            return []
+            return ConditionParseResult()
         
         elif isinstance(subject, list):
-            objects = []
+            if allow_lists != True:
+                raise Exception("No lists allowed for conditional parameter")
+            
+            ret = ConditionParseResult()
             for a in subject:
-                objects = objects + Condition.parse(
-                    appl,
+                res = Condition.parse(
                     a, 
                     enable = enable,
                     listener = listener,
                     factory = factory
                 )
-            return objects
+
+            ret.objects = ret.objects + res.objects
+            ret.conditions = ret.conditions + res.conditions
+
+            return ret
 
         elif isinstance(subject, Condition):
             # Condition based: Create actions for both outcomes
-            objects_yes = Condition.parse(
-                appl,
+            result_yes = Condition.parse(
                 subject.yes, 
                 enable = enable,
                 listener = listener,
                 factory = factory
             )
 
-            objects_no = Condition.parse(
-                appl,
+            result_no = Condition.parse(
                 subject.no,
                 enable = False,
                 listener = listener,
@@ -70,23 +83,19 @@ class Condition(ClientRequestListener, EventEmitter, Updateable):
             )
             
             # Set the actions on the condition for later access
-            subject.init(
-                appl,
-                ConditionModel(
-                    yes = objects_yes,
-                    no = objects_no
-                )
+            subject.model = ConditionModel(
+                yes = result_yes.objects,
+                no = result_no.objects
             )
 
             # Add this instance as listener on condition changes
             if listener != None:
                 subject.add_listener(listener)
 
-            # Add the condition to the global list of conditions, so it will
-            # be updated periodically
-            appl.updateables.append(subject)
-
-            return objects_yes + objects_no
+            return ConditionParseResult(
+                objects = result_yes.objects + result_no.objects + [subject],
+                conditions = result_yes.conditions + result_no.conditions + [subject]
+            )
         
         else:
             # Simple action definition
@@ -95,11 +104,15 @@ class Condition(ClientRequestListener, EventEmitter, Updateable):
                 # the subjects themselves are collected in the condition models.
                 object = factory.get_condition_instance(subject, enable)
                 if object == None:
-                    return []
+                    return ConditionParseResult()
             
-                return [object]
+                return ConditionParseResult(
+                    objects = [object]
+                )
             else:
-                return [subject]
+                return ConditionParseResult(
+                    objects = [subject]
+                )
 
         
 ############################################################################################################################

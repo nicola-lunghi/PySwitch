@@ -57,12 +57,16 @@ class FootSwitchController(ConditionListener, Updateable, ConditionModelFactory)
         if self._debug == True:
             self._print("Init actions")
         
-        self.actions = Condition.parse(
-            appl = self._appl, 
+        result = Condition.parse(
             subject = self.config["actions"],
             listener = self,
             factory = self
         )
+
+        self.actions = result.objects
+
+        for c in result.conditions:
+            self._appl.register_condition(c)
 
         for action in self.actions:            
             action.init()
