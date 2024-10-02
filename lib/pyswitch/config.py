@@ -32,7 +32,7 @@ from .hardware.AdafruitSwitch import AdafruitSwitch
 
 # Custom (local) display IDs. Just used locally here to reference header and footer display areas in the action definitions.
 DISPLAY_HEADER = 10
-DISPLAY_FOOTER = 20   
+DISPLAY_FOOTER = 20  
 
 Config = {
 
@@ -123,14 +123,38 @@ Config = {
             ]
         },
 
-        #{ "assignment": { "model": AdafruitSwitch(board.GP2) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
-        #{ "assignment": { "model": AdafruitSwitch(board.GP3) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
+        ##################################################
+
+        #{
+        #    "assignment": { "model": AdafruitSwitch(board.GP2) },
+        #    "actions": [
+        #        KemperActionDefinitions.EFFECT_ON_OFF(
+        #            slot_id = KemperMidi.EFFECT_SLOT_ID_B,
+        #            display = {
+        #                "id": DISPLAY_FOOTER2,
+        #                "index": 0
+        #            }
+        #        )          
+        #    ]
+        #},
+
+        #{
+        #    "assignment": { "model": AdafruitSwitch(board.GP3) },
+        #    "actions": [
+        #        KemperActionDefinitions.AMP_ON_OFF(
+        #            display = {
+        #                "id": DISPLAY_FOOTER2,
+         #               "index": 1
+         #           }   
+        #        )                
+        #    ]
+        #},
+
+
         #{ "assignment": { "model": AdafruitSwitch(board.GP4) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
         #{ "assignment": { "model": AdafruitSwitch(board.GP22) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
         #{ "assignment": { "model": AdafruitSwitch(board.GP23) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
         #{ "assignment": { "model": AdafruitSwitch(board.GP24) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
-
-        ## Additional ########################
 
     ],
 
@@ -202,7 +226,6 @@ Config = {
 Config["actionLabelLayout"] = {
     "font": "/fonts/H20.pcf",
     "backColor": Colors.DEFAULT_LABEL_COLOR,
-    #"cornerRadius": 5,
     "stroke": 1
 }
 
@@ -234,6 +257,13 @@ Config["displays"] = [
         name = "Footer",
         bounds = bounds.remove_from_bottom(SLOT_HEIGHT)
     ),
+
+    # Footer area (referenced by ID in the action configurations)
+    #DisplaySplitContainer(
+    #    id = DISPLAY_FOOTER2,
+    #    name = "Footer2",
+    #    bounds = bounds.remove_from_bottom(SLOT_HEIGHT)
+    #),
 
     # Rig name
     ParameterDisplayLabel(
