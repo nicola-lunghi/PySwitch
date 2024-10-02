@@ -29,7 +29,7 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
 
         for i in range(len(self.children)):
             element = self.children[i]
-            if element == None:
+            if not element:
                 continue
 
             element.bounds = DisplayBounds(

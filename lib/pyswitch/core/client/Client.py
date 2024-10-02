@@ -27,12 +27,12 @@ class Client(ClientRequestListener):
         
     # Sends the SET message of a mapping
     def set(self, mapping, value):
-        if mapping.set == None:
+        if not mapping.set:
             raise Exception("No SET message prepared for this MIDI mapping")
         
         self._value_provider.set_value(mapping, value)
                 
-        if self._debug == True:
+        if self._debug:
             self._print("Send SET message (" + mapping.name + "): " + Tools.stringify_midi_message(mapping.set), mapping)
 
         self._midi.send(mapping.set)
@@ -41,10 +41,10 @@ class Client(ClientRequestListener):
     def request(self, mapping, listener):
         # Add request to the list and send it
         req = self._get_matching_request(mapping)
-        if req == None:
+        if not req:
             # New request
             m = self._get_buffered_mapping(mapping)
-            if m == None:
+            if not m:
                 m = mapping
 
             req = ClientRequest(                
@@ -59,7 +59,7 @@ class Client(ClientRequestListener):
             # Add to list
             self._requests.append(req)
             
-            if self._debug == True:
+            if self._debug:
                 self._print("Added new request for " + mapping.name + ". Open requests: " + str(len(self._requests)), mapping)
 
             # Send
@@ -68,7 +68,7 @@ class Client(ClientRequestListener):
             # Existing request: Add listener
             req.add_listener(listener)
 
-            if self._debug == True:
+            if self._debug:
                 self._print("Added new listener to existing request for " + mapping.name + ". Open requests: " + str(len(self._requests)) + ", Listeners: " + str(len(req.listeners)), mapping)
 
     # Receive MIDI messages
@@ -101,7 +101,7 @@ class Client(ClientRequestListener):
             # Add to buffer
             self._mappings_buffer.append(mapping)
 
-            if self._debug == True:
+            if self._debug:
                 self._print("Added new mapping for " + mapping.name + " to buffer, num of buffer entries: " + str(len(self._mappings_buffer)), mapping)
         else:
             # Update value
@@ -128,11 +128,11 @@ class Client(ClientRequestListener):
             if diff > self._max_request_lifetime:
                 request.terminate()
 
-                if self._debug == True:
+                if self._debug:
                     self._print("Terminated request for " + request.mapping.name + ", took " + str(diff) + "ms")
 
         # Remove finished requests
-        self._requests = [i for i in self._requests if i.finished() == False]
+        self._requests = [i for i in self._requests if not i.finished]
             
     # Debug console output
     def _print(self, msg, mapping = None):

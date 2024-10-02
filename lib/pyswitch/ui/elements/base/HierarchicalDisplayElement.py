@@ -54,22 +54,41 @@ class HierarchicalDisplayElement(DisplayElement):
             if index == None:
                 # No index: Return this element
                 return result
+            
             elif index >= 0 and index < len(self._children):
                 # Index: Return the n-th child of this element
                 return self.child(index)
 
         # Also search in children
         for child in self._children:
-            if child == None:
+            if not child:
                 continue
             
             result = child.search(position)
-            if result != None:
+            if result:
                 # Child has found something
                 return result
             
         return None
 
+    # Returns the first deep child which matches the passed criteria.
+    #def first(self, type_name):
+    #    result = super().first(type_name)
+    #    if result != None:
+    #        return result
+        
+    #    # Also search in children
+    #    for child in self._children:
+    #        if not child:
+    #            continue
+            
+    #        result = child.first(type_name)
+    #        if result:
+    #            # Child has found something
+    #            return result
+
+    #    return None
+    
     # Prints some debug info
     def print_debug_info(self, indentation = 0):
         super().print_debug_info(indentation)

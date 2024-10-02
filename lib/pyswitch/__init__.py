@@ -40,7 +40,7 @@ from .config import Config
 # NeoPixel driver 
 led_driver = AdafruitNeoPixelDriver()
 
-if Tools.get_option(Config, "exploreMode") == True:
+if Tools.get_option(Config, "exploreMode"):
     # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
     # on unknown devices, to create layouts for the configuration.
     from .core.controller.ExploreModeController import ExploreModeController

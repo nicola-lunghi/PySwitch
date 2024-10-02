@@ -27,7 +27,7 @@ class DisplayLabelLayout:
     def __init__(self, layout = {}):
         self.font_path = Tools.get_option(layout, "font", None)
         self.max_text_width = Tools.get_option(layout, "maxTextWidth")
-        self.line_spacing = Tools.get_option(layout, "lineSpacing")
+        self.line_spacing = Tools.get_option(layout, "lineSpacing", 1)
         self.text = Tools.get_option(layout, "text", "")
         self.text_color = Tools.get_option(layout, "textColor", None)
         self.back_color = Tools.get_option(layout, "backColor", None)
@@ -40,6 +40,9 @@ class DisplayLabelLayout:
 
 # Controller for a generic rectangular label on the user interface.
 class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModelFactory):
+
+    # Line feed used for display
+    LINE_FEED = "\n"
 
     # layout can also be a Condition!
     def __init__(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
@@ -69,7 +72,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
         self._update_font()
 
         # Append background, if any
-        if self.back_color != None:
+        if self.back_color:
             self._backgrounds = self._create_backgrounds()
             self._frame = self._create_frame()    
 
@@ -148,7 +151,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
         self._layout = layout
                 
         # Changes to the label
-        if self._label != None:
+        if self._label:
             # Font changed?
             if old.font_path != self._layout.font_path:
                 self._update_font()
@@ -169,8 +172,8 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
                 self._initial_text_color = self._layout.text_color
 
         # Changes to the backgrounds
-        if self._layout.back_color != None:
-            if old.back_color == None:
+        if self._layout.back_color:
+            if not old.back_color:
                 raise Exception("You can only change the color if an initial color has been passed (not implemented yet)")
         
             # Back color changed?
@@ -198,12 +201,12 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
         # Stroke changed?
         if old.stroke != self._layout.stroke:
             if self._layout.stroke > 0:
-                if self._frame == None:
+                if not self._frame:
                     raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
                 
                 self._frame.stroke = self._layout.stroke
             else:
-                if self._frame != None:
+                if self._frame:
                     raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
 
     @property
@@ -212,7 +215,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
 
     @back_color.setter
     def back_color(self, color):
-        if self.layout.back_color == None:
+        if not self.layout.back_color:
             raise Exception("You can only change the background color if an initial background color has been passed (not implemented yet)")
         
         if isinstance(color[0], tuple):
@@ -225,7 +228,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
         if self.layout.back_color == color:
             return
 
-        if self.debug == True:
+        if self.debug:
             self.print("Set back color to " + repr(color))
 
         self.layout.back_color = color
@@ -248,18 +251,18 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
     @text_color.setter
     def text_color(self, color):
         text_color = color        
-        if text_color == None:
+        if not text_color:
             text_color = self._determine_text_color()
 
         if self.layout.text_color == text_color:
             return
         
-        if self.debug == True:
+        if self.debug:
             self.print("Set text color to " + repr(text_color))
 
         self.layout.text_color = text_color
 
-        if self._label != None:
+        if self._label:
             self._label.color = text_color
 
     @property
@@ -273,7 +276,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
         
         self.layout.corner_radius = r
 
-        if self.layout.back_color != None:
+        if self.layout.back_color:
             if isinstance(self.layout.back_color[0], tuple):
                 self._backgrounds[0].corner_radius = r
                 self._backgrounds[len(self.layout.back_color) - 1].corner_radius = r
@@ -281,7 +284,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
                 for background in self._backgrounds:
                     background.corner_radius = r
 
-        if self._frame != None:
+        if self._frame:
             self._frame.corner_radius = r
 
     @property
@@ -293,18 +296,18 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
         if self.layout.text == text:
             return
         
-        if self.debug == True:
+        if self.debug:
             self.print("Set text to " + text)
 
         self.layout.text = text
 
-        if self._label != None:
+        if self._label:
             self._label.text = self._wrap_text(text)
 
     def _wrap_text(self, text):
         if self.layout.max_text_width != False:
             # Wrap text if requested
-            return "\n".join(
+            return DisplayLabel.LINE_FEED.join(
                 wrap_text_to_pixels(
                     text, 
                     self.layout.max_text_width,
@@ -317,7 +320,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
     # Update label dimensions
     def _update_label_bounds(self):
         # Label
-        if self._label == None:
+        if not self._label:
             return
         
         self._label.anchored_position = (
@@ -329,11 +332,11 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
 
     # Update background dimensions if needed
     def _update_background_bounds(self):
-        if self.layout == None or self.layout.back_color == None:
+        if not self.layout or not self.layout.back_color:
             return
         
         # Frame
-        if self._frame != None:
+        if self._frame:
             self._frame.bounds = self.bounds
 
         # Backgrounds
@@ -346,7 +349,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
 
     # For multicolor, this generates the dimensions for each background
     def _get_background_bounds(self, index):
-        if self.layout.back_color == None:
+        if not self.layout.back_color:
             raise Exception("No background exists to get bounds for")
         
         if not isinstance(self.layout.back_color[0], tuple):
@@ -355,6 +358,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
         bg_height = int(self.height / len(self.layout.back_color))
         overlap_top = 0
         overlap_bottom = 0
+
         if index == 0:
             overlap_bottom = self.layout.corner_radius
         if index == len(self.layout.back_color) - 1:
@@ -416,7 +420,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
     # Determines a matching text color to the current background color.
     # Algorithm adapted from https://nemecek.be/blog/172/how-to-calculate-contrast-color-in-python
     def _determine_text_color(self):
-        if self.back_color == None:
+        if not self.back_color:
             return Colors.WHITE
         
         if isinstance(self.layout.back_color[0], tuple):
@@ -428,7 +432,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModel
         else:
             luminance = self._get_luminance(self.back_color)
 
-        if self.debug == True:
+        if self.debug:
             self.print("Determine text color: luminance " + repr(luminance) + " for back color(s) " + repr(self.back_color))
 
         if luminance < 140:

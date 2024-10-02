@@ -30,7 +30,7 @@ class PushButtonCondition(Condition):
 
     # Determine the action by ID
     def _determine_action(self, id):
-        if self.appl == None:
+        if not self.appl:
             raise Exception("Condition not initialized")
         
         for switch in self.appl.switches:

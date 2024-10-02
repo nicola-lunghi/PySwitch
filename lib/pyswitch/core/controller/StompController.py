@@ -2,32 +2,39 @@ import usb_midi
 import adafruit_midi 
 
 from .FootSwitchController import FootSwitchController
-from .Statistics import Statistics, StatisticsListener
+from .measurements import RuntimeMeasurement
 from .PeriodCounter import PeriodCounter
 from ..client.Client import Client
 from ..client.ClientRequest import ClientRequestListener
 from ..misc.Tools import Tools
-from ...definitions import ProcessingConfig, DisplayAreas
+from ...definitions import ProcessingConfig, StatisticMeasurementTypes
 from ...defaults import FootSwitchDefaults
 from .Updateable import Updateable, Updater
 from .actions.base.Action import Action
 
-
 # Main application class (controls the processing)    
-class StompController(ClientRequestListener, StatisticsListener, Updater):
+class StompController(ClientRequestListener, Updater):
     def __init__(self, ui, led_driver, config):
         Updater.__init__(self)
 
+        # User interface
         self.ui = ui
+
+        # Global config
         self.config = config
+
+        # Statistical measurements (added by the displays etc.)
+        self._measurements_tick_time = []
+        self._measurements_switch_update = []
 
         # NeoPixel driver 
         self.led_driver = led_driver
         self.led_driver.init(len(self.config["switches"]) * FootSwitchDefaults.NUM_PIXELS)
         
+        # Parse some options
         self._midiChannel = Tools.get_option(self.config, "midiChannel", 1)            # MIDI channel to use (default: 1)
         self._midi_buffer_size = Tools.get_option(self.config, "midiBufferSize", 60)   # MIDI buffer size (default: 60)
-        self._show_stats = Tools.get_option(self.config, "showFrameStats", False)      # Show frame statistics
+
         self._debug = Tools.get_option(self.config, "debug", False)
         self._debug_ui_structure = Tools.get_option(self.config, "debugUserInterfaceStructure", False)        
 
@@ -37,14 +44,7 @@ class StompController(ClientRequestListener, StatisticsListener, Updater):
         # Set up the screen elements
         self._prepare_ui()
 
-        # Statistics instance (only used when switched on or a Performance Indicator is defined)       
-        self.statistics = None
-        if self._show_stats == True or self.ui.root.search({ "id": DisplayAreas.PERFORMANCE_INDICATOR }) != None:
-            self.statistics = Statistics(Tools.get_option(self.config, "statsIntervalMillis", 200))
-            self.statistics.add_listener(self)
-            self.statistics_display = self.ui.root.search({ "id": DisplayAreas.STATISTICS })
-
-        # MIDI communication
+        # Start MIDI communication
         self._init_midi()
 
         # Client adapter to send and receive parameters
@@ -54,7 +54,7 @@ class StompController(ClientRequestListener, StatisticsListener, Updater):
         self.switches = []
         self._init_switches()
 
-        if self._debug == True:
+        if self._debug:
             Tools.print("Updateable queue length: " + repr(len(self.updateables)))
 
     # Creates the display areas
@@ -62,9 +62,6 @@ class StompController(ClientRequestListener, StatisticsListener, Updater):
         display_definitions = Tools.get_option(self.config, "displays", [])
 
         for element in display_definitions:
-            if element.id == DisplayAreas.STATISTICS and self._show_stats != True:
-                continue
-
             element.debug = Tools.get_option(self.config, "debugDisplay")
 
             self.ui.root.add(element)
@@ -74,7 +71,7 @@ class StompController(ClientRequestListener, StatisticsListener, Updater):
 
     # Initialize switches
     def _init_switches(self):
-        if self._debug == True:
+        if self._debug:
             Tools.print("-> Init switches")
                     
         for swDef in self.config["switches"]:
@@ -89,7 +86,7 @@ class StompController(ClientRequestListener, StatisticsListener, Updater):
 
     # Start MIDI communication and return the handler
     def _init_midi(self):
-        if self._debug == True:
+        if self._debug:
             Tools.print("-> Init MIDI")
 
         self._midi = adafruit_midi.MIDI(
@@ -100,53 +97,85 @@ class StompController(ClientRequestListener, StatisticsListener, Updater):
             debug       = Tools.get_option(self.config, "debugMidi")
         )
 
+    # Adds a runtime measurement. 
+    def add_runtime_measurement(self, measurement):
+        if not isinstance(measurement, RuntimeMeasurement):
+            return
+
+        if measurement.type == StatisticMeasurementTypes.TICK_TIME:        
+            self._measurements_tick_time.append(measurement)
+            
+        elif measurement.type == StatisticMeasurementTypes.SWITCH_UPDATE_TIME:
+            self._measurements_switch_update.append(measurement)
+        
+        else:
+            raise Exception("Runtime measurement type " + repr(measurement.type) + " not supported")
+
     # Runs the processing loop (which never ends)
     def process(self):
-        if self._debug == True:
+        if self._debug:
             Tools.print("-> Init UI:")            
 
         # Show user interface        
         self.ui.show(self)
 
-        if self._debug_ui_structure == True:
+        if self._debug_ui_structure:
             self.ui.root.print_debug_info(3)
 
-        if self._debug == True:
+        if self._debug:
             Tools.print("-> Done initializing, starting processing loop")
 
         # Start processing loop
         while True:
             # If enabled, remember the tick starting time for statistics
-            if self.statistics != None:
-                self.statistics.start()
+            for m in self._measurements_tick_time:
+                m.start()       
+
+            # Update all Updateables in periodic intervals, less frequently then every tick
+            if self.period.exceeded:
+                self.update()
 
             # Receive all available MIDI messages            
             cnt = 0
             while True:
+                # Detect switch state changes
+                self._process_switches()
+
                 midimsg = self._midi.receive()
 
                 # Process the midi message
                 self.client.receive(midimsg)
 
                 cnt = cnt + 1
-                if midimsg == None or cnt > ProcessingConfig.MAX_NUM_CONSECUTIVE_MIDI_MESSAGES:
-                    break            
-        
-            # Process all switches 
-            for switch in self.switches:
-                switch.process()
-            
-            # Update all Updateables in periodic intervals, less frequently then every tick
-            if self.period.exceeded == True:
-                self.update()
+                if not midimsg or cnt > ProcessingConfig.MAX_NUM_CONSECUTIVE_MIDI_MESSAGES:
+                    break  
 
             # Output statistical info if enabled
-            if self.statistics != None:
-                self.statistics.finish()
+            for m in self._measurements_tick_time:
+                m.finish()
+
+    # Process switches between the actions to really catch all events despite a long update run time, 
+    # for example when the config has very many switches
+    def process_pre_update(self, updateable):
+        self._process_switches()
+
+    # Detects switch changes
+    def _process_switches(self):
+        # This calls the start/finish methods on the statistics in reverse order to measure the time 
+        # between switch updates        
+        for m in self._measurements_switch_update:
+            m.finish()
+
+        # Update switch states
+        for switch in self.switches:
+            switch.process()
+
+        for m in self._measurements_switch_update:
+            m.start()
 
     # Resets all switches
     def reset_switches(self, ignore_switches_list = []):
-        if self._debug == True:
+        if self._debug:
             Tools.print("-> Reset switches, ignoring " + repr(ignore_switches_list))
 
         for action in self.updateables:
@@ -160,12 +189,8 @@ class StompController(ClientRequestListener, StatisticsListener, Updater):
 
     # Resets all display areas
     def reset_display_areas(self):
-        if self._debug == True:
-            Tools.print("-> Reset display areas")
+        pass
+        #if self._debug:
+        #    Tools.print("-> Reset display areas")
 
         #self._info_parameters.reset()
-
-    # Update stats label message
-    def update_statistics(self, statistics):        
-        if self.statistics_display != None:
-            self.statistics_display.text = statistics.get_message()

@@ -27,6 +27,12 @@ class DisplayElement:
             return self
         return None
 
+    # Returns the first deep child which matches the passed criteria.
+    #def first(self, type_name):
+    #    if self.__class__.__name__ == type_name:
+    #        return self
+    #    return None
+
     @property
     def initialized(self):
         return self._initialized

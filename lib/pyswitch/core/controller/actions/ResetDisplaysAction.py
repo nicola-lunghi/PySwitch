@@ -15,7 +15,7 @@ class ResetDisplaysAction(Action):
 
     def push(self):
         if self._reset_switches:
-            if self._ignore_own_switch == True:
+            if self._ignore_own_switch:
                 self.appl.reset_switches([self.switch])
             else:
                 self.appl.reset_switches()

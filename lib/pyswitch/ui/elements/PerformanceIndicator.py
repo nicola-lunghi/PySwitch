@@ -2,18 +2,25 @@
 from .base.HierarchicalDisplayElement import HierarchicalDisplayElement
 from .DisplayCircle import DisplayCircle
 from ..DisplayBounds import DisplayBounds
-from ...core.controller.Statistics import StatisticsListener
-from ...definitions import ModuleConfig
+from ...definitions import DisplayConstants
+from ...core.misc.Tools import Tools
+from ...core.controller.measurements import RuntimeMeasurement
+from ...core.controller.measurements import RuntimeMeasurementListener
 
 
 # Shows a small dot indicating loop processing time (not visible when max. tick time is way below the updateInterval, warning
 # the user when tick time gets higher and shows an alert when tick time is higher than the update interval, which means that
 # the device is running on full capacity. If tick time is more than double the update interval, an even more severe alert is shown)
-class PerformanceIndicator(HierarchicalDisplayElement, StatisticsListener):
-    def __init__(self, bounds = DisplayBounds(), name = "", id = 0):
+class PerformanceIndicator(HierarchicalDisplayElement, RuntimeMeasurementListener):
+
+    def __init__(self, measurement, bounds = DisplayBounds(), name = "", id = 0, delay_factor = DisplayConstants.PERFORMANCE_DOT_REDUCE_FACTOR):
         super().__init__(bounds, name, id)
 
-        self._update_interval = None
+        if not isinstance(measurement, RuntimeMeasurement):
+            raise Exception("This can only be used with RuntimeMeasurements")
+
+        self._measurement = measurement
+        self._measurement.add_listener(self)
 
         self._dot = DisplayCircle(
             bounds = self.bounds,
@@ -21,30 +28,29 @@ class PerformanceIndicator(HierarchicalDisplayElement, StatisticsListener):
             name = "Dot"
         )
 
+        # Display delay
         self._max = 0
-        self._reduce_factor = ModuleConfig.PERFORMANCE_DOT_REDUCE_FACTOR
+        self._reduce_factor = delay_factor
 
         self.add(self._dot)
 
-    # Adds the element to the splash
+    # Add measurements to controller
     def init(self, ui, appl):
         super().init(ui, appl)
 
-        self._update_interval = appl.period.interval
+        appl.add_runtime_measurement(self._measurement)
 
-        appl.statistics.add_listener(self)
+    def measurement_updated(self, measurement):
+        self._update_dot()
 
     # Called after the bounds have been changed
     def bounds_changed(self):
         self._dot.bounds = self.bounds
 
     # Called to show statistics
-    def update_statistics(self, statistics):
-        if self._update_interval == None:
-            raise Exception("Not initialized")
+    def _update_dot(self):
+        tick_percentage = self._delay(self._measurement.value() / self._measurement.interval_millis)
         
-        tick_percentage = self._delay(statistics.max / self._update_interval)
-
         if tick_percentage <= 1.0:
             self._dot.color = (0, 0, 0)
 

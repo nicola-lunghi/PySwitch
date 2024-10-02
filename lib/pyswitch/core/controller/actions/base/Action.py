@@ -34,7 +34,7 @@ class Action(Updateable):
         self._debug_switch_port_name = Tools.get_option(self.appl.config, "actionsDebugSwitchName", None)
                 
         self.id = Tools.get_option(self.config, "id", False)
-        if self.id == False:
+        if not self.id:
             self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action.next_id) + ")"
             
         Action.next_id = Action.next_id + 1
@@ -60,7 +60,7 @@ class Action(Updateable):
         
         self._enabled = value
 
-        if self.debug == True:
+        if self.debug:
             self.print("Set enabled to " + repr(value))
 
         self.force_update()
@@ -155,11 +155,11 @@ class Action(Updateable):
     # Get the assigned label reference from the UI (or None)
     def _get_display_label(self):
         definition = Tools.get_option(self.config, "display", None)
-        if definition == None:
+        if not definition:
             return None
         
         label = self.appl.ui.root.search(definition)
-        if label != None:
+        if label:
             return label
         
         # Not yet existent: Get container
@@ -167,7 +167,7 @@ class Action(Updateable):
             "id": definition["id"]
         })
 
-        if container == None:
+        if not container:
             raise Exception("Action: Display element with ID " + repr(definition["id"]) + " not found")
         
         index = Tools.get_option(definition, "index", None)
@@ -190,10 +190,10 @@ class Action(Updateable):
         if not self.switch.pixels:
             return []
         
-        if self._initialized != True:
+        if not self._initialized:
             raise Exception("Action not initialized")
         
-        if self.uses_switch_leds != True:
+        if not self.uses_switch_leds:
             raise Exception("You have to set uses_switch_leds to True to use LEDs of switches in actions.")
 
         if not self.enabled:
@@ -237,7 +237,7 @@ class Action(Updateable):
 
     # Returns the index of this action inside the LED-using actions of the switch.
     def _get_index_among_led_actions(self):
-        if self.uses_switch_leds != True:
+        if not self.uses_switch_leds:
             return -1
         
         actions_using_leds = self._get_actions_using_leds()

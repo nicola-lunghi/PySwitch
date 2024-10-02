@@ -27,15 +27,15 @@ class Tools:
     # Stringifies a MIDI message.
     @staticmethod
     def stringify_midi_message(midi_message):
-        if midi_message == None:
-            return repr(None)
+        if not midi_message:
+            return repr(midi_message)
         
         ret = ""
-        if isinstance(midi_message, SystemExclusive) == True:
+        if isinstance(midi_message, SystemExclusive):
             # SysEx
             ret = Tools._stringify_midi_message_part(midi_message.manufacturer_id) + Tools._stringify_midi_message_part(midi_message.data)
 
-        elif isinstance(midi_message, ControlChange) == True:
+        elif isinstance(midi_message, ControlChange):
             # CC
             ret = repr(midi_message.control) + ", " + repr(midi_message.value)
 

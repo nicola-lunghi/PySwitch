@@ -32,16 +32,16 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
     def init(self):
         super().init()
         
-        if self.label != None:
+        if self.label:
             self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", ActionDefaults.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)
 
     # Request effect type periodically (which itself will trigger a status request).
     # Does not call super.do_update because the status is requested here later anyway.
     def do_update(self):
-        if self._mapping_fxtype.can_receive == False:
+        if not self._mapping_fxtype.can_receive:
             return            
         
-        if self.debug == True:
+        if self.debug:
             self.print("Request type")
 
         self.appl.client.request(self._mapping_fxtype, self)
@@ -63,7 +63,7 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
         self.color = self._categories.get_effect_category_color(self._effect_category) 
 
         # Effect category text
-        if self.label != None:
+        if self.label:
             if self._debug_slot_names:
                 self.label.text = self._slot_info.get_name() + ": " + self._categories.get_effect_category_name(self._effect_category) 
             else:
@@ -81,7 +81,7 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
     
     # Update label color, if any
     def set_label_color(self, color):
-        if self.label == None:
+        if not self.label:
             return
         
         if self._effect_category == self._categories.get_category_not_assigned():
@@ -103,7 +103,7 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
         # Convert to effect category
         category = self._categories.get_effect_category(mapping.value)
 
-        if self.debug == True:
+        if self.debug:
             self.print(" -> Receiving effect category " + repr(category))
 
         if category == self._effect_category:
@@ -132,7 +132,7 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
         if mapping != self._mapping_fxtype:
             return
         
-        if self.debug == True:
+        if self.debug:
             self.print(" -> Terminated request for effect type, is the device offline?")
         
         self._effect_category = self._categories.get_category_not_assigned() 

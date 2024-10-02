@@ -19,10 +19,10 @@ class ClientRequest(EventEmitter):
 
         self._value_provider = self._config["valueProvider"]
 
-        if self.mapping.request == None:
+        if not self.mapping.request:
             raise Exception("No REQUEST message prepared for this MIDI mapping (" + self.mapping.name + ")")
         
-        if self.mapping.response == None:
+        if not self.mapping.response:
             raise Exception("No response template message prepared for this MIDI mapping (" + self.mapping.name + ")")
         
         if not isinstance(self.mapping.request, SystemExclusive):
@@ -32,19 +32,20 @@ class ClientRequest(EventEmitter):
 
     # Sends the request
     def send(self):
-        if self._debug == True:
+        if self._debug:
             self._print(" -> Send REQUEST message for " + self.mapping.name + ": " + Tools.stringify_midi_message(self.mapping.request))
 
         self._midi.send(self.mapping.request)
 
     # Returns if the request is finished
+    @property
     def finished(self):
         return self.listeners == None
 
     # Send the terminate signal to all listeners and finished it, so it will be
     # cleared up next time.
     def terminate(self):
-        if self.finished() == True:
+        if self.finished:
             return
         
         # Call the listeners
@@ -57,10 +58,10 @@ class ClientRequest(EventEmitter):
     # Parses an incoming MIDI message. If the message belongs to the mapping's request,
     # calls the listener with the received value.
     def parse(self, midi_message):
-        if self.finished() == True:
+        if self.finished:
             return
         
-        if self.mapping.response == None:
+        if not self.mapping.response:
             raise Exception("No response template message prepared for this MIDI mapping")
 
         if not isinstance(midi_message, SystemExclusive):
@@ -69,14 +70,14 @@ class ClientRequest(EventEmitter):
         if not isinstance(self.mapping.response, SystemExclusive):
             return
         
-        if self._debug_raw_midi == True:
+        if self._debug_raw_midi:
             self._print("RAW Receive : " + Tools.stringify_midi_message(midi_message))
             self._print("RAW Template: " + Tools.stringify_midi_message(self.mapping.response))
 
-        if self._value_provider.parse(self.mapping, midi_message) != True:
+        if not self._value_provider.parse(self.mapping, midi_message):
             return
         
-        if self._debug == True:
+        if self._debug:
             self._print("   -> Received value " + repr(self.mapping.value) + " for " + self.mapping.name + ": " + Tools.stringify_midi_message(midi_message))
 
         # Call the listeners

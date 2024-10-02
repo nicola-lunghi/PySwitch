@@ -33,7 +33,7 @@ class DisplayCircle(DisplayElement):
 
     # Update if changed
     def bounds_changed(self):        
-        if self._element == None:
+        if not self._element:
             return
         
         if self._element.x != self.x or self._element.y != self.y or self._element.width != self.width or self._element.height != self.height:
@@ -50,7 +50,7 @@ class DisplayCircle(DisplayElement):
 
         self._color = color
 
-        if self._element != None and self._element.fill != color:
+        if self._element and self._element.fill != color:
             self._element.fill = color
 
     @property
@@ -97,7 +97,7 @@ class DisplayCircle(DisplayElement):
 
     # Refresh the background by replacing it (necessary when dimensions have changed only)
     def _recreate(self):
-        if self._ui == None:
+        if not self._ui:
             return
         
         self._element = self._create()

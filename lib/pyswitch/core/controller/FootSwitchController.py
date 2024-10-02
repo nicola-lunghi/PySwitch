@@ -55,7 +55,7 @@ class FootSwitchController(ConditionListener, ConditionModelFactory):
     
     # Set up action instances
     def _init_actions(self):
-        if self._debug == True:
+        if self._debug:
             self._print("Init actions")
         
         self._action_tree = ConditionTree(
@@ -111,7 +111,7 @@ class FootSwitchController(ConditionListener, ConditionModelFactory):
             # No LEDs defined for the switch
             return
         
-        if self._debug == True:
+        if self._debug:
             self._print("Set initial colors")
 
         initial_brightness = Tools.get_option(self.config, "initialBrightness", 1)
@@ -132,15 +132,15 @@ class FootSwitchController(ConditionListener, ConditionModelFactory):
     # Process the switch: Check if it is currently pushed, set state accordingly
     def process(self):
         # Is the switch currently pushed? If not, return false.
-        if self.pushed == False:
-            if self._pushed_state == True:
+        if not self.pushed:
+            if self._pushed_state:
                 self._pushed_state = False
                 self._process_actions_release()
 
             return
 
         # Switch is pushed: Has it been pushed before already? 
-        if self._pushed_state == True:
+        if self._pushed_state:
             return 
         
         # Mark as pushed (prevents redundant messages in the following ticks, when the switch can still be down)
@@ -158,7 +158,7 @@ class FootSwitchController(ConditionListener, ConditionModelFactory):
             if not action.enabled:
                 continue
 
-            if self._debug == True:
+            if self._debug:
                 self._print("Push action " + action.id)
 
             action.push()
@@ -169,7 +169,7 @@ class FootSwitchController(ConditionListener, ConditionModelFactory):
             if not action.enabled:
                 continue
 
-            if self._debug == True:
+            if self._debug:
                 self._print("Release action " + action.id)
                 
             action.release()
@@ -186,7 +186,7 @@ class FootSwitchController(ConditionListener, ConditionModelFactory):
         if len(colors) != len(self._colors):
             raise Exception("Invalid amount of colors: " + repr(len(colors)))
         
-        if self._debug == True:
+        if self._debug:
             self._print(" -> Set colors to " + repr(colors))
 
         self._colors = colors        
@@ -200,7 +200,7 @@ class FootSwitchController(ConditionListener, ConditionModelFactory):
     # set_brightness is called!
     @color.setter
     def color(self, color):
-        if self._debug == True:
+        if self._debug:
             self._print(" -> Set color to " + repr(color))
 
         for i in range(len(self._colors)):
@@ -214,7 +214,7 @@ class FootSwitchController(ConditionListener, ConditionModelFactory):
     # Set brightness equally of all LEDs
     @brightness.setter
     def brightness(self, brightness):
-        if self._debug == True:
+        if self._debug:
             self._print(" -> Set brightness to " + repr(brightness))
 
         b = []
@@ -231,10 +231,10 @@ class FootSwitchController(ConditionListener, ConditionModelFactory):
     # Set brightnesses of all LEDs
     @brightnesses.setter
     def brightnesses(self, brightnesses):
-        if self.pixels == False:
+        if not self.pixels:
             return
         
-        if self._debug == True:
+        if self._debug:
             self._print(" -> Set brightnesses to " + repr(brightnesses))
 
         for i in range(len(self._brightnesses)):
@@ -249,15 +249,7 @@ class FootSwitchController(ConditionListener, ConditionModelFactory):
 
     # Debug console output
     def _print(self, msg):
-        if self._debug != True:
-            return
-        
-        state_str = ""
-        if self.pushed == True:
-            state_str = "pushed"
-        else:
-            state_str = "off"
-            
+        state_str = "pushed" if self.pushed else "off"            
         Tools.print("Switch " + self.id + " (" + state_str + "): " + msg)
 
 

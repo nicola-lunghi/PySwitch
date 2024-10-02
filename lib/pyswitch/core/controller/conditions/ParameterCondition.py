@@ -37,6 +37,8 @@ class ParameterCondition(Condition, ClientRequestListener):
         self._ref_value = ref_value
         self._mode = mode
 
+        self._current_raw_value = None
+
     # Used internally: Set the model instances for the two values.
     def init(self, appl):
         super().init(appl)
@@ -45,10 +47,10 @@ class ParameterCondition(Condition, ClientRequestListener):
 
     # Used internally: Updates the condition on every update tick
     def update(self):
-        if self.appl == None:
+        if not self.appl:
             raise Exception("Condition not initialized")
 
-        if self._debug == True:
+        if self._debug:
             self._print("Requesting value")
 
         self.appl.client.request(self._mapping, self)
@@ -93,6 +95,11 @@ class ParameterCondition(Condition, ClientRequestListener):
     def parameter_changed(self, mapping):
         if mapping != self._mapping:
             return
+        
+        if mapping.value == self._current_raw_value:
+            return
+
+        self._current_raw_value = mapping.value
 
         bool_value = self._evaluate_value(mapping.value)
             
@@ -101,7 +108,7 @@ class ParameterCondition(Condition, ClientRequestListener):
 
         self.true = bool_value
 
-        if self._debug == True:
+        if self._debug:
             self._print(" -> Received value " + repr(mapping.value) + ", evaluated to " + repr(self.true))
 
         for listener in self.listeners:
@@ -116,7 +123,7 @@ class ParameterCondition(Condition, ClientRequestListener):
 
     # Debug console output
     def _print(self, msg):
-        if self._debug != True:
+        if not self._debug:
             return
         
         Tools.print("Condition for " + self._mapping.name + ": " + msg)

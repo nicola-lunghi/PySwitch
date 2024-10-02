@@ -100,20 +100,16 @@ class ActionTypes:
 #################################################################################################################################
  
 
-# Display area IDs for some default areas.
-class DisplayAreas:
-    # Statistics area (only shown if enabled in config). Must exist (called by the program directly),
-    # however the actual value does not matter.
-    STATISTICS = 999
-
-    # Shows a small dot indicating loop processing time (not visible when max. tick time is way below the updateInterval, warning
-    # the user when tick time gets higher and shows an alert when tick time is higher than the update interval, which means that
-    # the device is running on full capacity. If tick time is more than double the update interval, an even more severe alert is shown)
-    PERFORMANCE_INDICATOR = 1000
+# Display global constants
+class DisplayConstants:
 
     # Properties for the performance indicator (dot)
     PERFORMANCE_INDICATOR_SIZE = 5
     PERFORMANCE_INDICATOR_MARGIN = 2
+
+    # Factor by which the performance display (dot) is diminished in every update run. Set to 0 to disable, 1 to only show the maximum.
+    # Range: [0..1]
+    PERFORMANCE_DOT_REDUCE_FACTOR = 0
 
 
 #################################################################################################################################
@@ -157,10 +153,6 @@ class ModuleConfig:
     # Base path of this module inside the lib folder. Used to dynamically load action implementations (see Action.py)
     MODULE_BASE_PATH = "pyswitch"
 
-    # Factor by which the performance display (dot) is diminished in every update run. Set to 0 to disable, 1 to only show the maximum.
-    # Range: [0..1]
-    PERFORMANCE_DOT_REDUCE_FACTOR = 0
-
 
 ################################################################################################################################
 
@@ -180,3 +172,12 @@ class ProcessingConfig:
 
     # Default interval for updating requested values (milliseconds).
     DEFAULT_UPDATE_INTERVAL_MS = 200
+
+
+################################################################################################################################
+
+
+# IDs for all available measurements (for statistics)
+class StatisticMeasurementTypes:
+    TICK_TIME = "Tick"             # Time one processing loop takes overall
+    SWITCH_UPDATE_TIME = "SwUp"    # Time between switch state updates

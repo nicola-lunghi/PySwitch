@@ -85,10 +85,10 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
     # Cancel eventually pending requests (which might return outdated values)
     # Request parameter value
     def _request_value(self):
-        if self._request_mapping == None:
+        if not self._request_mapping:
             return            
         
-        if self.debug == True:
+        if self.debug:
             self.print("Request value")
 
         self.appl.client.request(self._request_mapping, self)
@@ -128,7 +128,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
 
     # Update label color, if any
     def set_label_color(self, color):
-        if self.label == None:
+        if not self.label:
             return
             
         if self.state == True:
@@ -138,7 +138,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
 
     # Update text if set
     def _update_label_text(self):
-        if self.label == None:
+        if not self.label:
             return
             
         if self._text == False:
@@ -220,7 +220,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
 
         if isinstance(self._mapping, ClientParameterMapping):
             # Mapping instance: Check if it can receive values
-            if self._mapping.can_receive == True:
+            if self._mapping.can_receive:
                 self._request_mapping_value_on = self._value_on
                 self._request_mapping = self._mapping
         else:
@@ -228,7 +228,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
             for i in range(len(self._mapping)):
                 mapping = self._mapping[i]
 
-                if mapping.can_receive == True:
+                if mapping.can_receive:
                     self._request_mapping = mapping
                     self._request_mapping_value_on = self._value_on[i]
                     break
@@ -240,7 +240,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
 
     # Must reset the displays
     def reset_display(self):
-        if self.label != None:
+        if self.label:
             self.label.text = ""
             self.label.back_color = Colors.DEFAULT_LABEL_COLOR
 
@@ -252,7 +252,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
         if not self.enabled:
             return
          
-        if self._request_mapping == None:
+        if not self._request_mapping:
             return            
         
         if mapping != self._request_mapping:
@@ -262,20 +262,20 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
         if mapping.value >= self._request_mapping_value_on:
             state = True
 
-        if self.debug == True:
+        if self.debug:
             self.print(" -> Receiving binary switch status " + repr(mapping.value) + ", counted as " + repr(state))
 
         self.feedback_state(state)
 
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
-        if self._request_mapping == None:
+        if not self._request_mapping:
             return        
         
         if mapping != self._request_mapping:
             return
         
-        if self.debug == True:
+        if self.debug:
             self.print(" -> Terminated request for parameter value, is the device offline?")
         
         self.state = False

@@ -38,7 +38,7 @@ class ParameterDisplayLabel(DisplayLabel, Updateable, ClientRequestListener):
 
     # Called on every update tick
     def update(self):
-        if self._depends == None:
+        if not self._depends:
             self._appl.client.request(self._mapping, self)
         else:
             self._appl.client.request(self._depends, self)
@@ -49,14 +49,14 @@ class ParameterDisplayLabel(DisplayLabel, Updateable, ClientRequestListener):
         self._depends_last_value = None
         self.text = self._text_reset
 
-        if self._debug == True:
+        if self._debug:
             self._print(" -> Reset parameter " + self._mapping.name)
 
     # Listen to client value returns (rig name and date)
     def parameter_changed(self, mapping):
         if mapping == self._mapping and mapping.value != self._last_value:
             # Main mapping changed
-            if self._debug == True:
+            if self._debug:
                 self._print(" -> " + mapping.name + " has changed: " + repr(mapping.value))
 
             self._last_value = mapping.value
@@ -66,7 +66,7 @@ class ParameterDisplayLabel(DisplayLabel, Updateable, ClientRequestListener):
 
         if mapping == self._depends and mapping.value != self._depends_last_value:
             # Dependency has changed: Request update of main mapping
-            if self._debug == True:
+            if self._debug:
                 self._print("   -> Dependency (" + mapping.name + ") has changed to " + repr(mapping.value) + ", requesting " + self._mapping.name + "...")
 
             self._depends_last_value = mapping.value        
@@ -80,9 +80,9 @@ class ParameterDisplayLabel(DisplayLabel, Updateable, ClientRequestListener):
         self._last_value = None
         self._depends_last_value = None
 
-        if self._debug == True:
+        if self._debug:
             self._print(" -> Request for " + mapping.name + " failed, is the device offline?")
 
     # Debug console output
     def _print(self, msg):
-        Tools.print("InfoParameter: " + msg)
+        Tools.print(self.__class__.__name__ + ": " + msg)

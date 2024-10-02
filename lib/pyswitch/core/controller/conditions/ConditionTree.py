@@ -35,7 +35,7 @@ class ConditionTree:
             return None
         
         elif isinstance(subject, list):
-            if allow_lists != True:
+            if not allow_lists:
                 raise Exception("No lists allowed for conditional parameter")
             
             ret = []
@@ -72,7 +72,7 @@ class ConditionTree:
             subject.no = result_no
             
             # Add this instance as listener on condition changes
-            if listener != None:
+            if listener:
                 subject.add_listener(listener)
 
             self._conditions.append(subject)
@@ -81,7 +81,7 @@ class ConditionTree:
         
         else:
             # Simple dict definition
-            if factory != None:
+            if factory:
                 # Optional: Factory to create model objects. If not passed, 
                 # the subjects themselves are collected in the condition models.
                 object = factory.get_condition_instance(subject, enable)

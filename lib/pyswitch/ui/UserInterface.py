@@ -7,6 +7,7 @@ from .elements.DisplayLabel import DisplayLabel
 
 # Implements the UI
 class UserInterface:
+
     def __init__(self, display, font_loader):
         self.splash = None
 

@@ -14,7 +14,7 @@ class ClientParameterMapping:
                                   # is buffered here.                                  
 
     def __eq__(self, other):
-        if other == None:
+        if not other:
             return False
         
         if self.request != None:

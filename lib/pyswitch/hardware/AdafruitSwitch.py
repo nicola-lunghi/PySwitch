@@ -24,7 +24,7 @@ class AdafruitSwitch(SwitchDriver):
     # Return if the switch is currently pushed
     @property
     def pushed(self):
-        if self._switch == None:
+        if not self._switch:
             return False
         
         return self._switch.value == False  # Inverse logic!

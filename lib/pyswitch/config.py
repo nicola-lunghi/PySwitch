@@ -4,13 +4,17 @@
 #
 ##############################################################################################################################################
  
-from .definitions import Colors, DisplayAreas, ActionTypes
+import board
+
+from .definitions import Colors, ActionTypes, StatisticMeasurementTypes, DisplayConstants
 from .defaults import FootSwitchDefaults
 from .switches import Switches
 
 from .core.controller.conditions.ParameterCondition import ParameterCondition, ParameterConditionModes
 from .core.controller.conditions.PushButtonCondition import PushButtonCondition
 from .core.controller.actions.base.PushButtonAction import PushButtonModes
+
+from .core.controller.measurements import RuntimeMeasurement, FreeMemoryMeasurement
 
 from pyswitch_kemper.KemperMappings import KemperMappings
 from pyswitch_kemper.KemperActionDefinitions import KemperActionDefinitions
@@ -20,11 +24,11 @@ from pyswitch_kemper.KemperMidiValueProvider import KemperMidiValueProvider
 from .ui.DisplayBounds import DisplayBounds
 from .ui.elements.DisplayLabel import DisplayLabel
 from .ui.elements.ParameterDisplayLabel import ParameterDisplayLabel
+from .ui.elements.StatisticsDisplayLabel import StatisticsDisplayLabel
 from .ui.elements.DisplaySplitContainer import DisplaySplitContainer
 from .ui.elements.PerformanceIndicator import PerformanceIndicator
 
 from .hardware.AdafruitSwitch import AdafruitSwitch
-import board
 
 # Custom (local) display IDs. Just used locally here to reference header and footer display areas in the action definitions.
 DISPLAY_HEADER = 10
@@ -119,6 +123,13 @@ Config = {
             ]
         },
 
+        #{ "assignment": { "model": AdafruitSwitch(board.GP2) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
+        #{ "assignment": { "model": AdafruitSwitch(board.GP3) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
+        #{ "assignment": { "model": AdafruitSwitch(board.GP4) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
+        #{ "assignment": { "model": AdafruitSwitch(board.GP22) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
+        #{ "assignment": { "model": AdafruitSwitch(board.GP23) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
+        #{ "assignment": { "model": AdafruitSwitch(board.GP24) }, "actions": [ KemperActionDefinitions.TUNER_MODE() ] },
+
         ## Additional ########################
 
     ],
@@ -154,9 +165,6 @@ Config = {
     #"updateInterval": 2000,
 
 ## Development Options ###################################################################################################################
-
-    # Shows an area with statistics about frame processing time and available RAM (for debugging)
-    "showFrameStats": True,
 
     # Optional, shows the effect slot names for EffectEnableAction
     #"showEffectSlotNames": True,
@@ -205,6 +213,8 @@ DISPLAY_WIDTH = 240
 DISPLAY_HEIGHT = 240
 SLOT_HEIGHT = 40                 # Slot height on the display
 DETAIL_HEIGHT = 20               # Height of the detail (amp/cab) display
+
+STAT_LINES = 3                   # Statistics number of lines
 
 # The Bounds class is used to easily layout the display. Initialize it with all available space:
 bounds = DisplayBounds(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
@@ -271,28 +281,30 @@ Config["displays"] = [
         }        
     ),
 
-    # Statistics area (used internally, ID is fixed)
-    DisplayLabel(
-        id = DisplayAreas.STATISTICS,
-        name = "Statistics",
-        bounds = bounds.top(DETAIL_HEIGHT),
-        layout = {
-            "font": "/fonts/A12.pcf",
-            "backColor": Colors.DEFAULT_LABEL_COLOR
-        }        
-    ),
-
     # Performance indicator (dot)
-    PerformanceIndicator(
-        id = DisplayAreas.PERFORMANCE_INDICATOR,
+    PerformanceIndicator(        
+        measurement = RuntimeMeasurement(StatisticMeasurementTypes.TICK_TIME, interval_millis = 200),
         name = "Dot",
         bounds = bounds.top(
-                DisplayAreas.PERFORMANCE_INDICATOR_SIZE
+                DisplayConstants.PERFORMANCE_INDICATOR_SIZE
             ).right(
-                DisplayAreas.PERFORMANCE_INDICATOR_SIZE
+                DisplayConstants.PERFORMANCE_INDICATOR_SIZE
             ).translated(
-                - DisplayAreas.PERFORMANCE_INDICATOR_MARGIN, 
-                DisplayAreas.PERFORMANCE_INDICATOR_MARGIN
+                - DisplayConstants.PERFORMANCE_INDICATOR_MARGIN, 
+                DisplayConstants.PERFORMANCE_INDICATOR_MARGIN
             )
-    )
+    ),
+
+    # Statistics area (used internally, ID is fixed)
+    #StatisticsDisplayLabel(
+    #    bounds = bounds.top(DETAIL_HEIGHT * STAT_LINES),
+    #    layout = {
+    #        "font": "/fonts/A12.pcf"
+    #    },
+    #    measurements = [
+    #        #RuntimeMeasurement(StatisticMeasurementTypes.TICK_TIME, interval_millis = 1000),
+    #        RuntimeMeasurement(StatisticMeasurementTypes.SWITCH_UPDATE_TIME, interval_millis = 1000),
+    #        FreeMemoryMeasurement()
+    #    ]
+    #)
 ]
