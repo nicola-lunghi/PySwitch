@@ -16,9 +16,10 @@ from .core.controller.actions.base.PushButtonAction import PushButtonModes
 
 from .core.controller.measurements import RuntimeMeasurement, FreeMemoryMeasurement
 
+from pyswitch_kemper.Kemper import Kemper
 from pyswitch_kemper.KemperMappings import KemperMappings
 from pyswitch_kemper.KemperActionDefinitions import KemperActionDefinitions
-from pyswitch_kemper.KemperMidi import KemperMidi
+from pyswitch_kemper.KemperSlot import KemperSlot
 from pyswitch_kemper.KemperMidiValueProvider import KemperMidiValueProvider
 
 from .ui.DisplayBounds import DisplayBounds
@@ -53,15 +54,15 @@ Config = {
                 ParameterCondition(
                     mapping = KemperMappings.RIG_VOLUME,
                     mode = ParameterConditionModes.MODE_GREATER_EQUAL,
-                    ref_value = KemperMidi.NRPN_VALUE(0.5),
+                    ref_value = Kemper.NRPN_VALUE(0.5),
 
                     yes = [
                         KemperActionDefinitions.EFFECT_ON_OFF(
                             id = "sw1",
-                            slot_id = KemperMidi.EFFECT_SLOT_ID_A,
+                            slot_id = KemperSlot.EFFECT_SLOT_ID_A,
                         ),
                         KemperActionDefinitions.EFFECT_ON_OFF(
-                            slot_id = KemperMidi.EFFECT_SLOT_ID_REV,
+                            slot_id = KemperSlot.EFFECT_SLOT_ID_REV,
                             display = {
                                 "id": DISPLAY_HEADER,
                                 "index": 0
@@ -70,7 +71,7 @@ Config = {
                         KemperActionDefinitions.AMP_ON_OFF()
                     ],
                     no = KemperActionDefinitions.EFFECT_ON_OFF(
-                        slot_id = KemperMidi.EFFECT_SLOT_ID_DLY,
+                        slot_id = KemperSlot.EFFECT_SLOT_ID_DLY,
                         display = {
                             "id": DISPLAY_HEADER,
                             "index": 0
@@ -83,7 +84,7 @@ Config = {
             "assignment": Switches.PA_MIDICAPTAIN_NANO_SWITCH_2,
             "actions": [
                 KemperActionDefinitions.EFFECT_ON_OFF(
-                    slot_id = KemperMidi.EFFECT_SLOT_ID_B,
+                    slot_id = KemperSlot.EFFECT_SLOT_ID_B,
                     display = {
                         "id": DISPLAY_HEADER,
                         "index": 1
@@ -129,7 +130,7 @@ Config = {
         #    "assignment": { "model": AdafruitSwitch(board.GP2) },
         #    "actions": [
         #        KemperActionDefinitions.EFFECT_ON_OFF(
-        #            slot_id = KemperMidi.EFFECT_SLOT_ID_B,
+        #            slot_id = KemperSlots.EFFECT_SLOT_ID_B,
         #            display = {
         #                "id": DISPLAY_FOOTER2,
         #                "index": 0
@@ -175,7 +176,7 @@ Config = {
     "valueProvider": KemperMidiValueProvider(),
 
     # Max. milliseconds until a request is being terminated and it is
-    # assumed that the Kemper device is offline. Optional, default is KemperDefinitions.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS.
+    # assumed that the Kemper device is offline. Optional, default is ProcessingConfig.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS.
     #"maxRequestLifetimeMillis": ProcessingConfig.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS,
 
     # Selects the MIDI channel to use [1..16] default is 1

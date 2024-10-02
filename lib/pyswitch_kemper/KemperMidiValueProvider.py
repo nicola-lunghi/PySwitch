@@ -10,8 +10,7 @@ import math
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 
-from .KemperMidi import KemperMidi
-
+from .Kemper import Kemper
 from pyswitch.core.client.Client import ClientValueProvider
 
 #################################################################################################################################
@@ -45,7 +44,7 @@ class KemperMidiValueProvider(ClientValueProvider):
             return False
         
         # The values starting from index 6 are the value of the response.
-        if mapping.type == KemperMidi.NRPN_PARAMETER_TYPE_STRING:
+        if mapping.type == Kemper.NRPN_PARAMETER_TYPE_STRING:
             # Take as string
             mapping.value = ''.join(chr(int(c)) for c in response[6:-1])
         else:

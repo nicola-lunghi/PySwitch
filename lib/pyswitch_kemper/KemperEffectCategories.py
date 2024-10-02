@@ -7,7 +7,7 @@
 
 from pyswitch.core.controller.actions.EffectEnableAction import EffectCategoryProvider
 
-from .KemperDefinitions import KemperDefinitions
+from pyswitch.definitions import Colors
 
 ################################################################################################################################
 
@@ -34,40 +34,40 @@ class KemperEffectCategories(EffectCategoryProvider):
 
     # Effect colors. The order must match the enums for the effect types defined above!
     CATEGORY_COLORS = [
-        KemperDefinitions.EFFECT_COLOR_NONE,
-        KemperDefinitions.EFFECT_COLOR_WAH,
-        KemperDefinitions.EFFECT_COLOR_DISTORTION,
-        KemperDefinitions.EFFECT_COLOR_COMPRESSOR,
-        KemperDefinitions.EFFECT_COLOR_NOISE_GATE,
-        KemperDefinitions.EFFECT_COLOR_SPACE,
-        KemperDefinitions.EFFECT_COLOR_CHORUS,
-        KemperDefinitions.EFFECT_COLOR_PHASER_FLANGER,
-        KemperDefinitions.EFFECT_COLOR_EQUALIZER,
-        KemperDefinitions.EFFECT_COLOR_BOOSTER,
-        KemperDefinitions.EFFECT_COLOR_LOOPER,
-        KemperDefinitions.EFFECT_COLOR_PITCH,
-        KemperDefinitions.EFFECT_COLOR_DUAL,
-        KemperDefinitions.EFFECT_COLOR_DELAY,
-        KemperDefinitions.EFFECT_COLOR_REVERB
+        Colors.DEFAULT_LABEL_COLOR,                     # None
+        Colors.ORANGE,                                  # Wah
+        Colors.RED,                                     # Distortion
+        Colors.BLUE,                                    # Comp
+        Colors.BLUE,                                    # Gate
+        Colors.GREEN,                                   # Space
+        Colors.BLUE,                                    # Chorus
+        Colors.PURPLE,                                  # Phaser/Flanger
+        Colors.YELLOW,                                  # EQ
+        Colors.RED,                                     # Booster
+        Colors.PURPLE,                                  # Looper
+        Colors.WHITE,                                   # Pitch
+        Colors.GREEN,                                   # Dual
+        Colors.GREEN,                                   # Delay
+        Colors.GREEN,                                   # Reverb
     ]
 
     # Effect type display names. The order must match the enums for the effect types defined above!
     CATEGORY_NAMES = [
-        KemperDefinitions.EFFECT_NAME_NONE,
-        KemperDefinitions.EFFECT_NAME_WAH,
-        KemperDefinitions.EFFECT_NAME_DISTORTION,
-        KemperDefinitions.EFFECT_NAME_COMPRESSOR,
-        KemperDefinitions.EFFECT_NAME_NOISE_GATE,
-        KemperDefinitions.EFFECT_NAME_SPACE,
-        KemperDefinitions.EFFECT_NAME_CHORUS,
-        KemperDefinitions.EFFECT_NAME_PHASER_FLANGER,
-        KemperDefinitions.EFFECT_NAME_EQUALIZER,
-        KemperDefinitions.EFFECT_NAME_BOOSTER,
-        KemperDefinitions.EFFECT_NAME_LOOPER,
-        KemperDefinitions.EFFECT_NAME_PITCH,
-        KemperDefinitions.EFFECT_NAME_DUAL,
-        KemperDefinitions.EFFECT_NAME_DELAY,
-        KemperDefinitions.EFFECT_NAME_REVERB
+        "-",
+        "Wah",
+        "Dist",
+        "Comp",
+        "Gate",
+        "Space",
+        "Chorus",
+        "Phaser",
+        "EQ",
+        "Boost",
+        "Looper",
+        "Pitch",
+        "Dual",
+        "Delay",
+        "Reverb"
     ]
 
     # Must return the effect category for a mapping value

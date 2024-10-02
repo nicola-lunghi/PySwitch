@@ -6,11 +6,9 @@
 #################################################################################################################################
 
 from adafruit_midi.system_exclusive import SystemExclusive
-
-from .KemperMidi import KemperMidi
+from .Kemper import Kemper
 
 #################################################################################################################################
-
 
 # Kemper specific SysEx message with defaults which are valid most of the time
 class KemperNRPNMessage(SystemExclusive):
@@ -20,9 +18,9 @@ class KemperNRPNMessage(SystemExclusive):
             function_code,
             address_page,
             address_number,
-            manufacturer_id = KemperMidi.NRPN_MANUFACTURER_ID, 
-            product_type = KemperMidi.NRPN_PRODUCT_TYPE_PROFILER_PLAYER,
-            device_id = KemperMidi.NRPN_DEVICE_ID_OMNI
+            manufacturer_id = Kemper.NRPN_MANUFACTURER_ID, 
+            product_type = Kemper.NRPN_PRODUCT_TYPE_PROFILER_PLAYER,
+            device_id = Kemper.NRPN_DEVICE_ID_OMNI
         ):
 
         # Adafruit SystemExclusive
@@ -32,7 +30,7 @@ class KemperNRPNMessage(SystemExclusive):
                 product_type,                # 0x02 (Player), 0x00 (Profiler)
                 device_id,                   # 0x7f (omni) or manually set via parameter
                 function_code,               # Selects the function, for example 0x41 for requesting a single parameter
-                KemperMidi.NRPN_INSTANCE,    # 0x00
+                Kemper.NRPN_INSTANCE,   # 0x00
                 address_page,                # Controller MSB (address page)
                 address_number               # Controller LSB (address number of parameter)
             ]

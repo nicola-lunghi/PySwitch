@@ -13,9 +13,15 @@ from pyswitch.core.client.ClientParameterMapping import ClientParameterMapping
 
 from .KemperMappings import KemperMappings
 from .KemperEffectCategories import KemperEffectCategories
-from .KemperMidi import KemperMidi
-from .KemperSlotInfo import KemperSlotInfo
+from .KemperSlot import KemperSlot
 
+from .Kemper import Kemper
+
+#################################################################################################################################
+
+CC_VALUE_BANK_CHANGE = 0
+
+#################################################################################################################################
 
 # All defined actions here have one parameter in common: A display definition (see definitions.py)
 # which assigns a display label to the action (optional: If omitted, no visual feedback is given 
@@ -32,7 +38,7 @@ class KemperActionDefinitions:
             "mapping": KemperMappings.EFFECT_SLOT_ON_OFF(slot_id),
             "mappingType": KemperMappings.EFFECT_SLOT_TYPE(slot_id),
             "categories": KemperEffectCategories(),
-            "slotInfo": KemperSlotInfo(slot_id),
+            "slotInfo": KemperSlot(slot_id),
             "mode": mode,
             "display": display,
             "id": id
@@ -90,8 +96,8 @@ class KemperActionDefinitions:
             "type": ActionTypes.PARAMETER,
             "mode": mode,
             "mapping": KemperMappings.RIG_VOLUME,
-            "valueEnabled": KemperMidi.NRPN_VALUE(boost_volume),
-            "valueDisabled": KemperMidi.NRPN_VALUE(0.5),           # 0dB
+            "valueEnabled": Kemper.NRPN_VALUE(boost_volume),
+            "valueDisabled": Kemper.NRPN_VALUE(0.5),           # 0dB
             "display": display,
             "text": "RigBoost",
             "color": color,
@@ -149,7 +155,7 @@ class KemperActionDefinitions:
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.NEXT_BANK,
             "mode": PushButtonModes.ONE_SHOT,
-            "valueEnabled": KemperMidi.CC_VALUE_BANK_CHANGE,
+            "valueEnabled": CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank up",
             "color": color,
@@ -163,7 +169,7 @@ class KemperActionDefinitions:
             "type": ActionTypes.PARAMETER,
             "mapping": KemperMappings.PREVIOUS_BANK,
             "mode": PushButtonModes.ONE_SHOT,
-            "valueEnabled": KemperMidi.CC_VALUE_BANK_CHANGE,
+            "valueEnabled": CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank dn",
             "color": color,
@@ -190,11 +196,11 @@ class KemperActionDefinitions:
         ]
         value_enabled = [
             0,                                  # Dummy to be replaced by bank select if specified
-            KemperMidi.NRPN_PARAMETER_ON
+            Kemper.NRPN_PARAMETER_ON
         ]
         value_disabled = [
             0,                                  # Dummy to be replaced by bank select if specified
-            KemperMidi.NRPN_PARAMETER_ON
+            Kemper.NRPN_PARAMETER_ON
         ]
 
         # Bank for main rig
