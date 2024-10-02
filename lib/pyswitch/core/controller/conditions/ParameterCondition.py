@@ -1,14 +1,27 @@
+from ...client.ClientRequest import ClientRequestListener
+
 from .Condition import Condition
 from ...misc.Tools import Tools
 
 
 # Comparison modes for ParameterCondition
 class ParameterConditionModes:    
-    MODE_EQUAL = 0                # Reference value must be a numeric value
-    MODE_GREATER_EQUAL = 10       # Reference value must be a numeric value
-    MODE_LESS_EQUAL = 20          # Reference value must be a numeric value
-    MODE_IN_RANGE = 30            # Reference value must be a tuple with lower / higher borders (inclusive). For example: (0, 1.2)
-    MODE_STRING_CONTAINS = 100    # Reference value must be a string
+    # Numeric
+    MODE_EQUAL = 0                   # Reference value must be a numeric value
+    
+    MODE_GREATER = 10                # Reference value must be a numeric value
+    MODE_GREATER_EQUAL = 21          # Reference value must be a numeric value
+    
+    MODE_LESS = 20                   # Reference value must be a numeric value
+    MODE_LESS_EQUAL = 21             # Reference value must be a numeric value
+    
+    MODE_IN_RANGE = 90               # Reference value must be a tuple with lower / higher borders (inclusive). For example: (0, 1.2)
+
+    # Strings
+    MODE_STRING_CONTAINS = 500       # Reference value must be a string
+    MODE_STRING_NOT_CONTAINS = 501   # Reference value must be a string
+    MODE_STRING_STARTS_WITH = 510    # Reference value must be a string
+    MODE_STRING_ENDS_WITH = 520      # Reference value must be a string
 
 
 ########################################################################################################################################
@@ -16,15 +29,13 @@ class ParameterConditionModes:
 
 # Condition to be filled with action specifications.
 # Compares the value of the mapping to the passed one, and enables the action or action_not.
-class ParameterCondition(Condition):
+class ParameterCondition(Condition, ClientRequestListener):
     def __init__(self, mapping, ref_value, mode = ParameterConditionModes.MODE_GREATER_EQUAL, yes = None, no = None):
         super().__init__(yes = yes, no = no)
 
         self._mapping = mapping
         self._ref_value = ref_value
         self._mode = mode
-
-        self._last_value = None
 
     # Used internally: Set the model instances for the two values.
     def init(self, appl):
@@ -44,20 +55,35 @@ class ParameterCondition(Condition):
 
     # Evaluate a received value and return True or False (heart of the condition)
     def _evaluate_value(self, value):
-        if self._mode == ParameterConditionModes.MODE_GREATER_EQUAL:
+        if self._mode == ParameterConditionModes.MODE_GREATER:
+            return value > self._ref_value            
+            
+        elif self._mode == ParameterConditionModes.MODE_GREATER_EQUAL:
             return value >= self._ref_value            
             
-        if self._mode == ParameterConditionModes.MODE_LESS_EQUAL:
+        elif self._mode == ParameterConditionModes.MODE_LESS:
+            return value < self._ref_value            
+            
+        elif self._mode == ParameterConditionModes.MODE_LESS_EQUAL:
             return value <= self._ref_value            
             
-        if self._mode == ParameterConditionModes.MODE_EQUAL:
+        elif self._mode == ParameterConditionModes.MODE_EQUAL:
             return value == self._ref_value            
             
-        if self._mode == ParameterConditionModes.MODE_IN_RANGE:
+        elif self._mode == ParameterConditionModes.MODE_IN_RANGE:
             return value >= self._ref_value[0] and value <= self._ref_value[1]
             
         elif self._mode == ParameterConditionModes.MODE_STRING_CONTAINS:
             return self._ref_value in value
+        
+        elif self._mode == ParameterConditionModes.MODE_STRING_NOT_CONTAINS:
+            return self._ref_value not in value
+        
+        elif self._mode == ParameterConditionModes.MODE_STRING_STARTS_WITH:
+            return value.startswith(self._ref_value)
+        
+        elif self._mode == ParameterConditionModes.MODE_STRING_ENDS_WITH:
+            return value.endswith(self._ref_value)
         
         else:
             raise Exception("Invalid condition mode: " + repr(self._mode))
@@ -70,20 +96,23 @@ class ParameterCondition(Condition):
 
         bool_value = self._evaluate_value(mapping.value)
             
-        if self._last_value == bool_value:
+        if self.true == bool_value:
             return
 
-        self._last_value = bool_value
+        self.true = bool_value
 
         if self._debug == True:
-            self._print(" -> Received value " + repr(mapping.value) + ", evaluated to " + repr(bool_value))
+            self._print(" -> Received value " + repr(mapping.value) + ", evaluated to " + repr(self.true))
 
         for listener in self.listeners:
-            listener.condition_changed(self, bool_value)        
+            listener.condition_changed(self)        
 
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
-        self._last_value = None
+        if mapping != self._mapping:
+            return
+        
+        self.true = True
 
     # Debug console output
     def _print(self, msg):

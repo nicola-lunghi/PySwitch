@@ -1,14 +1,14 @@
 import random
 
-from .conditions.Condition import Condition, ConditionListener, ConditionModelFactory
+from .conditions.ConditionTree import ConditionTree, ConditionModelFactory
+from .conditions.Condition import ConditionListener
 from .actions.base.Action import Action
 from ..misc.Tools import Tools
 from ...definitions import Colors
-from .Updateable import Updateable
 
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
-class FootSwitchController(ConditionListener, Updateable, ConditionModelFactory):
+class FootSwitchController(ConditionListener, ConditionModelFactory):
 
     # config must be a dictionary holding the following attributes:
     # { 
@@ -36,7 +36,7 @@ class FootSwitchController(ConditionListener, Updateable, ConditionModelFactory)
     # }
     def __init__(self, appl, config):
         self.config = config        
-        self.pixels = Tools.get_option(self.config["assignment"], "pixels")
+        self.pixels = Tools.get_option(self.config["assignment"], "pixels", [])
         
         self._switch = self.config["assignment"]["model"]
         self._switch.init()
@@ -44,10 +44,11 @@ class FootSwitchController(ConditionListener, Updateable, ConditionModelFactory)
         self.id = Tools.get_option(self.config["assignment"], "name", repr(self._switch))
 
         self._appl = appl
-        self._colors = [(0, 0, 0) for i in range(len(self.pixels))]
-        self._brightnesses = [0 for i in range(len(self.pixels))]
         self._pushed_state = False
         self._debug = Tools.get_option(self._appl.config, "debugSwitches")
+
+        self._colors = [(0, 0, 0) for i in range(len(self.pixels))]
+        self._brightnesses = [0 for i in range(len(self.pixels))]        
 
         self._initial_switch_colors()
         self._init_actions()
@@ -57,16 +58,15 @@ class FootSwitchController(ConditionListener, Updateable, ConditionModelFactory)
         if self._debug == True:
             self._print("Init actions")
         
-        result = Condition.parse(
+        self._action_tree = ConditionTree(
             subject = self.config["actions"],
             listener = self,
             factory = self
         )
 
-        self.actions = result.objects
+        self._action_tree.init(self._appl)
 
-        for c in result.conditions:
-            self._appl.register_condition(c)
+        self.actions = self._action_tree.objects
 
         for action in self.actions:            
             action.init()
@@ -80,15 +80,34 @@ class FootSwitchController(ConditionListener, Updateable, ConditionModelFactory)
         if Tools.get_option(data, "enabled", None) == None:
             data["enabled"] = enabled
 
-        return Action.get_instance(
+        action = Action.get_instance(
             self._appl,
             self,
             data
         )
 
+        self._appl.add_updateable(action)
+
+        return action
+
+    # Called on condition changes. The yes value will be True or False.
+    def condition_changed(self, condition):
+        active_actions = self._action_tree.values
+
+        to_disable = [a for a in self.actions if a.enabled and not a in active_actions]
+        to_enable = [a for a in self.actions if not a.enabled and a in active_actions]
+
+        # Execute the two lists in the correct order
+        for action in to_disable:
+            action.reset_display()
+            action.enabled = False
+
+        for action in to_enable:
+            action.enabled = True
+
     # Set some initial colors on the neopixels
     def _initial_switch_colors(self):
-        if self.pixels == False:
+        if not self.pixels:
             # No LEDs defined for the switch
             return
         
@@ -128,19 +147,6 @@ class FootSwitchController(ConditionListener, Updateable, ConditionModelFactory)
         self._pushed_state = True
         self._process_actions_push()
 
-    # Called every update interval
-    def update(self):
-        for action in self.actions:
-            if not action.enabled:
-                continue
-
-            action.update()
-
-    # Reset all actions
-    def reset(self):
-        for action in self.actions:
-            action.reset()
-
     # Return if the switch is currently pushed
     @property
     def pushed(self):
@@ -167,39 +173,6 @@ class FootSwitchController(ConditionListener, Updateable, ConditionModelFactory)
                 self._print("Release action " + action.id)
                 
             action.release()
-
-    # Called on condition changes. The yes value will be True or False.
-    def condition_changed(self, condition, bool_value):
-        # Order plays a role here: Disable before enable
-        collection = {
-            "enable": [],
-            "disable": []
-        }
-
-        # Get lists of which actions to disable and enable
-        self._get_update_condition_actions(collection, condition.model.yes, True, bool_value)
-        self._get_update_condition_actions(collection, condition.model.no, False, bool_value)
-        
-        # Execute the two lists in the correct order
-        for action in collection["disable"]:
-            action.reset_display()
-            action.enabled = False
-
-        for action in collection["enable"]:
-            action.enabled = True
-
-    # Updates all yes/no actions of a condition
-    def _get_update_condition_actions(self, collection, actions, ref_bool_value, bool_value):
-        if actions == None:
-            return
-        
-        for action in actions:
-            enable = ref_bool_value == bool_value
-
-            if enable:
-                collection["enable"].append(action)
-            else:
-                collection["disable"].append(action)
 
     # Colors of the switch (array)
     @property

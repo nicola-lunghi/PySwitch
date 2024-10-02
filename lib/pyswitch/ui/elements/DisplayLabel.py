@@ -5,8 +5,9 @@ from .base.HierarchicalDisplayElement import HierarchicalDisplayElement
 from .DisplayRectangle import DisplayRectangle
 from ..DisplayBounds import DisplayBounds
 from ...core.misc.Tools import Tools
-from ...definitions import Colors,
-from ...core.controller.conditions.Condition import Condition, ConditionListener
+from ...definitions import Colors
+from ...core.controller.conditions.ConditionTree import ConditionTree, ConditionModelFactory
+from ...core.controller.conditions.Condition import ConditionListener
 
 
 # Data class for layouts
@@ -38,18 +39,21 @@ class DisplayLabelLayout:
 
 
 # Controller for a generic rectangular label on the user interface.
-class DisplayLabel(HierarchicalDisplayElement, ConditionListener):
+class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionModelFactory):
 
     # layout can also be a Condition!
     def __init__(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
         super().__init__(bounds, name, id)
 
-        self._layout_def = layout
-        self._layout = self._parse_layout()
+        self._layout_tree = ConditionTree(
+            subject = layout,
+            listener = self,
+            factory = self
+        )
+
+        self._layout = self._layout_tree.value
 
         self._initial_text_color = self._layout.text_color        
-
-        self._conditions = []
 
         self._backgrounds = []    # Array of backgrounds, one for each color. If no back color is passed, 
                                   # it is currently not possible to add backgrounds afterwards.
@@ -60,9 +64,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener):
     # Adds the slot to the splash
     def init(self, ui, appl):
         self._ui = ui
-
-        for c in self._conditions:
-            appl.register_condition(c)
+        self._layout_tree.init(appl)
 
         self._update_font()
 
@@ -116,40 +118,16 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener):
         # Add label (group) to splash        
         ui.splash.append(self._group)    
 
-    # Parse layout (may contain conditions), and returns the default active layout
-    def _parse_layout(self):
-        result = Condition.parse(
-            subject = self._layout_def,
-            listener = self,
-            factory = self,
-            allow_lists = False
-        )
-
-        if len(result.objects) == 0:
-            return None
-
-        if len(result.objects) > 1:
-            raise Exception("INTERNAL ERROR: Non-list condition returned multiple items")
-
-        self._conditions = result.conditions
-
-        return result.objects[0]
-    
-    # Factory for actions, used by Condition.parse(): data is the customer data in the condition configs, 
-    # enabled signals if the condition branch is active by default (assuming that all conditions are true 
-    # by default). Can return a model instance or something else which will be collected in the Condition 
-    # models, so the listeners can access them later (optional).
+    # data is the customer data in the condition configs, enabled signals if the
+    # condition branch is active by default (assuming that all conditions are true by default).
+    # Can return a model instance or something else which will be collected in the Condition models,
+    # so the listeners can access them later (optional).
     def get_condition_instance(self, data, enabled):
-        if enabled != True:
-            return None
-        return data
+        return DisplayLabelLayout(data)
     
     # Called on condition changes. The yes value will be True or False.
-    def condition_changed(self, condition, bool_value):
-        if bool_value == True:
-            self.layout = DisplayLabelLayout(condition.model.yes)
-        else:
-            self.layout = DisplayLabelLayout(condition.model.no)
+    def condition_changed(self, condition):
+        self.layout = self._layout_tree.value
 
     # Update font according to layout
     def _update_font(self):
@@ -178,6 +156,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener):
 
             # Text or wrapping changed?
             if old.text != self._layout.text or old.max_text_width != self._layout.max_text_width:
+                self._layout.text = old.text                              # Keep text!
                 self._label.text = self._wrap_text(self._layout.text)
 
             # Line spacing changed?
@@ -220,12 +199,12 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener):
         if old.stroke != self._layout.stroke:
             if self._layout.stroke > 0:
                 if self._frame == None:
-                    raise Exception("Cannot switch frame <> noframe (yet)")
+                    raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
                 
                 self._frame.stroke = self._layout.stroke
             else:
                 if self._frame != None:
-                    raise Exception("Cannot switch frame <> noframe (yet)")
+                    raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
 
     @property
     def back_color(self):
@@ -234,7 +213,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener):
     @back_color.setter
     def back_color(self, color):
         if self.layout.back_color == None:
-            raise Exception("You can only change the color if an initial color has been passed (not implemented yet)")
+            raise Exception("You can only change the background color if an initial background color has been passed (not implemented yet)")
         
         if isinstance(color[0], tuple):
             if not isinstance(self.layout.back_color[0], tuple):

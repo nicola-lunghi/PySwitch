@@ -1,11 +1,12 @@
 from ....misc.Tools import Tools
 from .....definitions import ModuleConfig, Colors
 from .....defaults import FootSwitchDefaults
+from ...Updateable import Updateable
 
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
 # inheriting from Action.
-class Action:
+class Action(Updateable):
     
     next_id = 0   # Global counted action ids (internal, just used for debugging!)
 
@@ -18,6 +19,9 @@ class Action:
         module = __import__(ModuleConfig.MODULE_BASE_PATH + ".core.controller.actions." + class_name, globals(), locals(), [class_name])
         class_def = getattr(module, class_name)
         return class_def(appl, switch, config)
+
+    def __repr__(self):
+        return self.__class__.__name__ + " " + self.id
 
     ######################################################################################################################################
 
@@ -113,16 +117,23 @@ class Action:
 
         self.switch.brightnesses = tmp
 
+    # Called regularly every update interval to update status of effects etc.
+    def update(self):
+        if not self.enabled:
+            return
+                
+        self.do_update()
+
+    # Perform updates (to be redefined)
+    def do_update(self):
+        pass
+
     # Called when the switch is pushed down
     def push(self):
         pass
 
     # Called when the switch is released
     def release(self):
-        pass
-
-    # Called regularly every update interval to update status of effects etc.
-    def update(self):
         pass
 
     # Called to update the displays (LEDs and label)
@@ -176,6 +187,9 @@ class Action:
 
     # Returns the switch LED segments to use
     def _get_led_segments(self):
+        if not self.switch.pixels:
+            return []
+        
         if self._initialized != True:
             raise Exception("Action not initialized")
         

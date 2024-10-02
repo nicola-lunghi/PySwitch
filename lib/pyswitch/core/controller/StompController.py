@@ -9,12 +9,15 @@ from ..client.ClientRequest import ClientRequestListener
 from ..misc.Tools import Tools
 from ...definitions import ProcessingConfig, DisplayAreas
 from ...defaults import FootSwitchDefaults
-from .Updateable import Updateable
-from .conditions.Condition import Condition
+from .Updateable import Updateable, Updater
+from .actions.base.Action import Action
+
 
 # Main application class (controls the processing)    
-class StompController(ClientRequestListener, StatisticsListener):
+class StompController(ClientRequestListener, StatisticsListener, Updater):
     def __init__(self, ui, led_driver, config):
+        Updater.__init__(self)
+
         self.ui = ui
         self.config = config
 
@@ -30,8 +33,6 @@ class StompController(ClientRequestListener, StatisticsListener):
 
         # Periodic update handler (the client is only asked when a certain time has passed)
         self.period = PeriodCounter(Tools.get_option(self.config, "updateInterval", ProcessingConfig.DEFAULT_UPDATE_INTERVAL_MS))
-
-        self._updateables = []  # List of Updateable objects
 
         # Set up the screen elements
         self._prepare_ui()
@@ -54,7 +55,7 @@ class StompController(ClientRequestListener, StatisticsListener):
         self._init_switches()
 
         if self._debug == True:
-            Tools.print("Updateable queue (" + repr(len(self._updateables)) + "): " + repr(self._updateables))
+            Tools.print("Updateable queue length: " + repr(len(self.updateables)))
 
     # Creates the display areas
     def _prepare_ui(self):
@@ -69,7 +70,7 @@ class StompController(ClientRequestListener, StatisticsListener):
             self.ui.root.add(element)
 
             if isinstance(element, Updateable):
-                self.register_updateable(element)
+                self.add_updateable(element)
 
     # Initialize switches
     def _init_switches(self):
@@ -86,8 +87,6 @@ class StompController(ClientRequestListener, StatisticsListener):
                 switch
             )
 
-            self.register_updateable(switch)
-
     # Start MIDI communication and return the handler
     def _init_midi(self):
         if self._debug == True:
@@ -100,21 +99,6 @@ class StompController(ClientRequestListener, StatisticsListener):
             in_buf_size = self._midi_buffer_size, 
             debug       = Tools.get_option(self.config, "debugMidi")
         )
-
-    # Registers a new updateable condition
-    def register_condition(self, cond):
-        if not isinstance(cond, Condition):
-            raise Exception("Use register_updateable for everything than Conditions")
-
-        self._updateables.append(cond)
-        cond.init(self)
-
-    # Registers a new updateable
-    def register_updateable(self, u):
-        if isinstance(u, Condition):
-            raise Exception("Use register_condition for Conditions")
-        
-        self._updateables.append(u)
 
     # Runs the processing loop (which never ends)
     def process(self):
@@ -152,27 +136,27 @@ class StompController(ClientRequestListener, StatisticsListener):
             for switch in self.switches:
                 switch.process()
             
-            # Update client parameters in periodic intervals, less frequently then every tick
+            # Update all Updateables in periodic intervals, less frequently then every tick
             if self.period.exceeded == True:
-                self._update()
+                self.update()
 
             # Output statistical info if enabled
             if self.statistics != None:
                 self.statistics.finish()
-
-    # Update (called on every periodic update interval)
-    def _update(self):
-        for up in self._updateables:
-            up.update()
 
     # Resets all switches
     def reset_switches(self, ignore_switches_list = []):
         if self._debug == True:
             Tools.print("-> Reset switches, ignoring " + repr(ignore_switches_list))
 
-        for switch in self.switches:
-            if not switch in ignore_switches_list:
-                switch.reset()
+        for action in self.updateables:
+            if not isinstance(action, Action):
+                continue
+
+            if action.switch in ignore_switches_list:
+                continue
+
+            action.reset()
 
     # Resets all display areas
     def reset_display_areas(self):

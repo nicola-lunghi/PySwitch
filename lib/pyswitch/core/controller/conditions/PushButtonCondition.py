@@ -9,7 +9,6 @@ class PushButtonCondition(Condition):
         super().__init__(yes = enabled, no = disabled)
         
         self._id = id
-        self._last_value = None
 
     # Used internally: Set the model instances for the two values.
     def init(self, appl):
@@ -21,16 +20,19 @@ class PushButtonCondition(Condition):
     def update(self):
         bool_value = self._action.state
 
-        if self._last_value == bool_value:
+        if self.true == bool_value:
             return
 
-        self._last_value = bool_value
+        self.true = bool_value
 
         for listener in self.listeners:
-            listener.condition_changed(self, bool_value)   
+            listener.condition_changed(self)   
 
     # Determine the action by ID
     def _determine_action(self, id):
+        if self.appl == None:
+            raise Exception("Condition not initialized")
+        
         for switch in self.appl.switches:
             for action in switch.actions:
                 if action.id == id:

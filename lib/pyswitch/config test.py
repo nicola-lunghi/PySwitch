@@ -23,9 +23,6 @@ from .ui.elements.ParameterDisplayLabel import ParameterDisplayLabel
 from .ui.elements.DisplaySplitContainer import DisplaySplitContainer
 from .ui.elements.PerformanceIndicator import PerformanceIndicator
 
-from .hardware.AdafruitSwitch import AdafruitSwitch
-import board
-
 # Custom (local) display IDs. Just used locally here to reference header and footer display areas in the action definitions.
 DISPLAY_HEADER = 10
 DISPLAY_FOOTER = 20   
@@ -117,10 +114,7 @@ Config = {
                     }   
                 )
             ]
-        },
-
-        ## Additional ########################
-
+        }
     ],
 
     # Optional: Override brightness settings for all switch LEDs. Range: [0..1]

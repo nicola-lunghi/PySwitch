@@ -1,3 +1,4 @@
+import gc
 from adafruit_display_shapes.rect import Rect
 from adafruit_display_shapes.roundrect import RoundRect
 
@@ -77,6 +78,8 @@ class DisplayRectangle(DisplayElement):
     def _create(self):
         if self.bounds.empty:
             raise Exception("No bounds set for rectangle " + self.name + "(" + repr(self.id) + "): " + repr(self.bounds))
+
+        gc.collect()
 
         if self._corner_radius <= 0:
             return Rect(

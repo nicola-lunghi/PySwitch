@@ -36,8 +36,8 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
             self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", ActionDefaults.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)
 
     # Request effect type periodically (which itself will trigger a status request).
-    # Does not call super.update because the status is requested here later anyway.
-    def update(self):
+    # Does not call super.do_update because the status is requested here later anyway.
+    def do_update(self):
         if self._mapping_fxtype.can_receive == False:
             return            
         
@@ -108,7 +108,7 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
 
         if category == self._effect_category:
             # Request status also when category has not changed
-            super().update()
+            super().do_update()
             return
 
         # New effect category
@@ -120,7 +120,7 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
         self.update_displays()
 
         # Request status, too
-        super().update()
+        super().do_update()
 
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):

@@ -7,8 +7,6 @@ from ...definitions import ProcessingConfig
 # Implements all MIDI communication to and from the client device
 class Client(ClientRequestListener):
 
-    _requests = []   # List of ClientRequest objects
-
     def __init__(self, midi, config):
         self._midi = midi
         self._config = config
@@ -21,6 +19,9 @@ class Client(ClientRequestListener):
         # Buffer for mappings. Whenever possible, existing mappings are used
         # so values can be buffered.
         self._mappings_buffer = []     
+
+        # List of ClientRequest objects    
+        self._requests = []
 
         self._max_request_lifetime = Tools.get_option(self._config, "maxRequestLifetimeMillis", ProcessingConfig.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS)
         

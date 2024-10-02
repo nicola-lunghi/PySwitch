@@ -79,7 +79,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
         self._request_value()
 
     # Request real state from controlled device
-    def update(self):
+    def do_update(self):
         self._request_value()
 
     # Cancel eventually pending requests (which might return outdated values)
