@@ -180,4 +180,4 @@ class ProcessingConfig:
 # IDs for all available measurements (for statistics)
 class StatisticMeasurementTypes:
     TICK_TIME = "Tick"             # Time one processing loop takes overall
-    SWITCH_UPDATE_TIME = "SwUp"    # Time between switch state updates
+    SWITCH_UPDATE_TIME = "SwUp"    # Time between switch state updates. This measurement costs a lot of overhead!

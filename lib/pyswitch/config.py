@@ -140,7 +140,7 @@ Config = {
     #    "off": FootSwitchDefaults.DEFAULT_BRIGHTNESS_OFF,
     #},
 
-    # Optional: Factor used to dim the colors in the display (not the switches!) Range [0..1]
+    # Optional: Factor used to dim the colors in the display for disabled state (not the switches!) Range [0..1]
     #"displayDimFactorOn": DisplayDefaults.DEFAULT_SLOT_DIM_FACTOR_ON,
     #"displayDimFactorOff": DisplayDefaults.DEFAULT_SLOT_DIM_FACTOR_OFF,
 
@@ -154,14 +154,14 @@ Config = {
     # assumed that the Kemper device is offline. Optional, default is KemperDefinitions.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS.
     #"maxRequestLifetimeMillis": ProcessingConfig.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS,
 
-    # Selects the MIDI channel to use [1..16]
+    # Selects the MIDI channel to use [1..16] default is 1
     #"midiChannel": 1,
 
-    # MIDI buffer size (60 is a good value)
+    # MIDI buffer size (60 is default)
     #"midiBufferSize": 60,
 
     # Update interval, for updating the rig date (which triggers all other data to update when changed) (milliseconds)
-    # and other displays if assigned. 200 is a good value.
+    # and other displays if assigned. 200 is the default.
     #"updateInterval": 2000,
 
 ## Development Options ###################################################################################################################
@@ -296,15 +296,15 @@ Config["displays"] = [
     ),
 
     # Statistics area (used internally, ID is fixed)
-    #StatisticsDisplayLabel(
-    #    bounds = bounds.top(DETAIL_HEIGHT * STAT_LINES),
-    #    layout = {
-    #        "font": "/fonts/A12.pcf"
-    #    },
-    #    measurements = [
-    #        #RuntimeMeasurement(StatisticMeasurementTypes.TICK_TIME, interval_millis = 1000),
-    #        RuntimeMeasurement(StatisticMeasurementTypes.SWITCH_UPDATE_TIME, interval_millis = 1000),
-    #        FreeMemoryMeasurement()
-    #    ]
-    #)
+    StatisticsDisplayLabel(
+         bounds = bounds.top(DETAIL_HEIGHT * STAT_LINES),
+        layout = {
+            "font": "/fonts/A12.pcf"
+        },
+        measurements = [
+            RuntimeMeasurement(StatisticMeasurementTypes.TICK_TIME, interval_millis = 1000),
+            #RuntimeMeasurement(StatisticMeasurementTypes.SWITCH_UPDATE_TIME, interval_millis = 1000),   # This measurement costs a lot of overhead!
+            FreeMemoryMeasurement()
+        ]
+    )
 ]

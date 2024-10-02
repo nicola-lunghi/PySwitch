@@ -1,6 +1,8 @@
+import gc
+
 from ..misc.Tools import Tools
 from ..misc.EventEmitter import EventEmitter
-import gc
+from ..controller.Updateable import Updateable
 
 
 # Base class for measurements
@@ -27,7 +29,7 @@ class StatisticsMeasurement:
 
 
 # Measurement of runtimes 
-class RuntimeMeasurement(StatisticsMeasurement, EventEmitter):
+class RuntimeMeasurement(StatisticsMeasurement, EventEmitter, Updateable):
     
     # Types: See StatisticMeasurementTypes (definitions.py)
     def __init__(self, type, interval_millis):
@@ -44,7 +46,7 @@ class RuntimeMeasurement(StatisticsMeasurement, EventEmitter):
     def average(self):
         return int(self._time_aggr / self._time_num)
     
-    def _update(self):
+    def update(self):
         current = Tools.get_current_millis()
         if self._last_output + self.interval_millis < current:
             self._last_output = current
@@ -76,8 +78,6 @@ class RuntimeMeasurement(StatisticsMeasurement, EventEmitter):
             return
         
         self._add()  
-
-        self._update()  
 
     # Adds the current diff to the haystack
     def _add(self):

@@ -104,9 +104,11 @@ class StompController(ClientRequestListener, Updater):
 
         if measurement.type == StatisticMeasurementTypes.TICK_TIME:        
             self._measurements_tick_time.append(measurement)
+            self.add_updateable(measurement)
             
         elif measurement.type == StatisticMeasurementTypes.SWITCH_UPDATE_TIME:
             self._measurements_switch_update.append(measurement)
+            self.add_updateable(measurement)
         
         else:
             raise Exception("Runtime measurement type " + repr(measurement.type) + " not supported")
