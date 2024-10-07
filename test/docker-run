@@ -1,0 +1,7 @@
+#!/bin/bash
+
+docker compose up -d
+
+docker exec -it python3 bash
+
+docker compose down

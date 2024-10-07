@@ -1,0 +1,10 @@
+services:
+  python:
+    build: .
+    container_name: python3
+    command: sleep infinity
+    #ports:
+      #- "80:80"
+    volumes:
+      - ../lib:/circuitpy/lib
+      - .:/circuitpy/test
