@@ -13,42 +13,47 @@ from ...controller.Client import ClientRequestListener
 from ...controller.measurements import RuntimeMeasurementListener, RuntimeMeasurement
 
 
-# Circle element.
-class DisplayCircle(DisplayElement):
-
-    def __init__(self, bounds = DisplayBounds(), radius = None, name = "", color = None, outline = None, stroke = 0, id = 0):
+# Base for display shapes
+class DisplayShape(DisplayElement):
+    def __init__(self, bounds = DisplayBounds(), corner_radius = 0, radius = None, name = "", color = None, outline = None, stroke = 0, id = 0):
         super().__init__(bounds, name, id)
         
         self._color = color
         self._outline = outline
         self._stroke = stroke
+        self._corner_radius = corner_radius        
 
         if radius != None:
             self.bounds.width = radius * 2
             self.bounds.height = radius * 2
 
-        self._element = None
+        self.element = None
         self._element_splash_index = -1  
         
-        self._ui = None      
+        self._ui = None
 
     # Adds the background to the splash
     def init(self, ui, appl):
         self._element_splash_index = len(ui.splash)
-        self._element = self._create()
+        self.element = self.create()
                 
-        ui.splash.append(self._element)
+        ui.splash.append(self.element)
 
         self._ui = ui
 
+    # Create the element
+    def create(self):
+        pass
+
     # Update if changed
     def bounds_changed(self):        
-        if not self._element:
+        if not self.element:
             return
         
-        if self._element.x != self.x or self._element.y != self.y or self._element.width != self.width or self._element.height != self.height:
-            self._recreate()
-
+        if self.element.x != self.x or self.element.y != self.y or self.element.width != self.width or self.element.height != self.height:
+            self.element = self.create()
+            self._ui.splash[self._element_splash_index] = self.element
+        
     @property
     def color(self):
         return self._color
@@ -60,8 +65,8 @@ class DisplayCircle(DisplayElement):
 
         self._color = color
 
-        if self._element and self._element.fill != color:
-            self._element.fill = color
+        if self.element and self.element.fill != color:
+            self.element.fill = color
 
     @property
     def radius(self):
@@ -90,7 +95,7 @@ class DisplayCircle(DisplayElement):
         
         self._stroke = value
 
-        self._element.stroke = value
+        self.element.stroke = value
 
     @property
     def outline(self):
@@ -103,86 +108,7 @@ class DisplayCircle(DisplayElement):
         
         self._outline = value
 
-        self._element.outline = value
-
-    # Refresh the background by replacing it (necessary when dimensions have changed only)
-    def _recreate(self):
-        if not self._ui:
-            return
-        
-        self._element = self._create()
-        self._ui.splash[self._element_splash_index] = self._element
-
-    # Create background Rect
-    def _create(self):
-        if self.bounds.empty:
-            raise Exception("No bounds set for circle " + self.name + "(" + repr(self.id) + "): " + repr(self.bounds))
-
-        r = 0
-        if self.width > self.height:
-            r = int(self.width / 2)
-        else:
-            r = int(self.height / 2)
-
-        return Circle(
-            x0 = self.x + r, 
-            y0 = self.y + r,
-            r = r, 
-            fill = self._color,
-            outline = self._outline, 
-            stroke = self._stroke
-        )
-
-
-###########################################################################################################################
-
-
-# Rectangle element.
-class DisplayRectangle(DisplayElement):
-
-    def __init__(self, bounds = DisplayBounds(), name = "", color = None, corner_radius = 0, outline = None, stroke = 0, id = 0):
-        super().__init__(bounds, name, id)
-        
-        self._color = color
-        self._corner_radius = corner_radius        
-        self._outline = outline
-        self._stroke = stroke
-
-        self._element = None
-        self._element_splash_index = -1  
-        
-        self._ui = None      
-
-    # Adds the background to the splash
-    def init(self, ui, appl):
-        self._element_splash_index = len(ui.splash)
-        self._element = self._create()
-                
-        ui.splash.append(self._element)
-
-        self._ui = ui
-
-    # Update if changed
-    def bounds_changed(self):        
-        if not self._element:
-            return
-        
-        if self._element.x != self.x or self._element.y != self.y or self._element.width != self.width or self._element.height != self.height:
-            self._recreate()
-
-    @property
-    def color(self):
-        return self._color
-
-    @color.setter
-    def color(self, color):
-        if self._color == color:
-            return
-
-        self._color = color
-
-        if self._element and self._element.fill != color:
-            self._element.fill = color
+        self.element.outline = value
 
     @property
     def corner_radius(self):
@@ -198,19 +124,40 @@ class DisplayRectangle(DisplayElement):
         if self._element and self._element.r != r:
             self._recreate()
 
-    # Refresh the background by replacing it (necessary when dimensions have changed only)
-    def _recreate(self):
-        if not self._ui:
-            return
+
+###########################################################################################################################
+
+
+# Circle element.
+class DisplayCircle(DisplayShape):
+
+    def __init__(self, bounds = DisplayBounds(), radius = None, name = "", color = None, outline = None, stroke = 0, id = 0):
+        super().__init__(bounds, 0, radius, name, color, outline, stroke, id)
         
-        self._element = self._create()
-        self._ui.splash[self._element_splash_index] = self._element
-
     # Create background Rect
-    def _create(self):
-        if self.bounds.empty:
-            raise Exception("No bounds set for rectangle " + self.name + "(" + repr(self.id) + "): " + repr(self.bounds))
+    def create(self):
+        r = int(self.width / 2) if self.width > self.height else int(self.height / 2)
+        return Circle(
+            x0 = self.x + r, 
+            y0 = self.y + r,
+            r = r, 
+            fill = self._color,
+            outline = self._outline, 
+            stroke = self._stroke
+        )
 
+
+###########################################################################################################################
+
+
+# Rectangle element.
+class DisplayRectangle(DisplayShape):
+
+    def __init__(self, bounds = DisplayBounds(), name = "", color = None, corner_radius = 0, outline = None, stroke = 0, id = 0):
+        super().__init__(bounds, corner_radius, None, name, color, outline, stroke, id)
+        
+    # Create background Rect
+    def create(self):
         if self._corner_radius <= 0:
             return Rect(
                 self.x, 
