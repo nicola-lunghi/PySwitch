@@ -433,7 +433,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
 # Implements the effect enable/disable footswitch action
 class EffectEnableAction(ParameterAction, ClientRequestListener):
     
-    DEFAULT_EFFECT_SLOT_CORNER_RADIUS = 15
+    DEFAULT_EFFECT_SLOT_CORNER_RADIUS = 0   # This takes about 3kB per label if > 0! Nicer would be 15, but....
 
     # Switches an effect on/off, if the slot is assigned. Based on ParameterAction, so all options there
     # are available here, too.
