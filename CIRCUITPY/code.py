@@ -27,10 +27,9 @@
 #
 #################################################################################################################################
 
-from pyswitch.misc import Memory 
-Memory.init("Loaded code.py", zoom=10)
+from pyswitch.misc import Tools, Memory
+#Memory.init(zoom=10)
 
-from pyswitch.misc import Tools 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader
 
 Memory.watch("Import adafruit drivers")
@@ -43,12 +42,8 @@ Memory.watch("Import UserInterface")
 display_driver = AdafruitST7789DisplayDriver()
 display_driver.init()
 
-Memory.watch("Display")
-
 # Load global config
 from config import Config
-
-Memory.watch("Global Config")
 
 # NeoPixel driver 
 led_driver = AdafruitNeoPixelDriver()
@@ -56,23 +51,21 @@ led_driver = AdafruitNeoPixelDriver()
 # Buffered font loader
 font_loader = AdafruitFontLoader()
 
-Memory.watch("LED/Font")
-
 # Create User interface
 gui = UserInterface(display_driver, font_loader)
 
-Memory.watch("GUI")
+Memory.watch("Setup GUI and drivers")
 
 if Tools.get_option(Config, "exploreMode"):
     # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
     # on unknown devices, to create layouts for the configuration.
     from pyswitch.controller.ExploreModeController import ExploreModeController
 
-    Memory.watch("Controller Import")
+    Memory.watch("Import ExploreModeController")
 
     appl = ExploreModeController(led_driver, gui)
 
-    Memory.watch("Controller")
+    Memory.watch("Controller set up")
 
     appl.process()
     
@@ -80,7 +73,7 @@ else:
     # Normal mode
     from pyswitch.controller.Controller import Controller
 
-    Memory.watch("Controller Import")
+    Memory.watch("Import Controller")
 
     # Load configuration files
     from displays import Displays
@@ -94,6 +87,6 @@ else:
     # Controller instance (runs the processing loop and keeps everything together)
     appl = Controller(led_driver, Config, ValueProvider, Switches, Displays, gui)
 
-    Memory.watch("Controller")
+    Memory.watch("Controller set up")
 
     appl.process()

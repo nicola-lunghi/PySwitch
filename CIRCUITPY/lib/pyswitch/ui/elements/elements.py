@@ -1,13 +1,13 @@
+from ...misc import Tools, Updateable, Colors
+
 from adafruit_display_shapes.circle import Circle
 from adafruit_display_shapes.rect import Rect
 from adafruit_display_shapes.roundrect import RoundRect
 from adafruit_display_text import label, wrap_text_to_pixels
-
 from displayio import Group
 
 from .DisplayElement import DisplayElement, HierarchicalDisplayElement, DisplayBounds
 
-from ...misc import Tools, Updateable, Colors
 from ...controller.ConditionTree import ConditionTree, ConditionTreeEntryReplacer, ConditionListener
 from ...controller.Client import ClientRequestListener
 from ...controller.measurements import RuntimeMeasurementListener, RuntimeMeasurement
