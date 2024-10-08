@@ -22,7 +22,7 @@ ACTION_LABEL_LAYOUT = {
 
 # Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
 # when an answer to a value request is received.
-ValueProvider = KemperMidiValueProvider(),
+ValueProvider = KemperMidiValueProvider()
 
 # Defines the switch assignments
 Switches = [
