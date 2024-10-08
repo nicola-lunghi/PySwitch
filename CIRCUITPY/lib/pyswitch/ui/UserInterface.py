@@ -1,8 +1,8 @@
-import displayio
+from displayio import Group
 
 from .DisplayBounds import DisplayBounds
 from .elements.base.HierarchicalDisplayElement import HierarchicalDisplayElement
-from .elements.DisplayLabel import DisplayLabel, DisplayLabelLayout
+from .elements.DisplayLabel import DisplayLabel
 
 
 # Implements the UI
@@ -22,7 +22,7 @@ class UserInterface:
         self.font_loader = font_loader
 
         # Splash
-        self.splash = displayio.Group()
+        self.splash = Group()
         self._display.tft.rootgroup = self.splash
 
     # Root element (contains all other elements)
@@ -46,7 +46,7 @@ class UserInterface:
     def create_label(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
         return DisplayLabel(
             bounds = bounds,
-            layout = DisplayLabelLayout(layout),
+            layout = layout,
             name = name,
-            id = id
+            id = id if id else name
         )

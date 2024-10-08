@@ -1,7 +1,7 @@
-import supervisor
+from supervisor import reload
 
 from .base.Action import Action
-from ....definitions import Colors
+from ...misc.Colors import Colors
 
 
 # Action to reboot the device (used for development)
@@ -19,5 +19,5 @@ class RebootAction(Action):
 
     def push(self):
         print("Reboot on user request")
-        supervisor.reload()
+        reload()
 

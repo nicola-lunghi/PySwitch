@@ -1,6 +1,7 @@
 import board
-import busio
-import displayio
+
+from busio import SPI
+from displayio import release_displays
 from adafruit_misc.adafruit_st7789 import ST7789
 
 try:
@@ -37,9 +38,9 @@ class AdafruitST7789DisplayDriver:
 
     # Initialize the display
     def init(self):        
-        displayio.release_displays()
+        release_displays()
         
-        spi = busio.SPI(
+        spi = SPI(
             self._spi_clk, 
             MOSI = self._spi_mosi
         )

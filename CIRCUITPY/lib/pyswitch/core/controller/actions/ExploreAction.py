@@ -1,5 +1,5 @@
 from .base.Action import Action
-from ....definitions import Colors
+from ...misc.Colors import Colors
 
 # Action to explore switch GPIO assignments (used internally only in explore mode!)
 # Also used to examine neopixel addressing.

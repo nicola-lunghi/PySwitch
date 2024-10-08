@@ -1,6 +1,5 @@
 from .DisplayLabel import DisplayLabel
 from ..DisplayBounds import DisplayBounds
-from ...core.misc.Tools import Tools
 from ...core.controller.measurements import RuntimeMeasurementListener, RuntimeMeasurement
 from ...core.controller.Updateable import Updateable
 

@@ -2,6 +2,15 @@
 from .Condition import Condition, ConditionListener
 from ..Updateable import Updater
 
+
+# Factory for replacing entries
+class ConditionTreeEntryReplacer:
+    # Returns the data to replace entry with.
+    def replace(self, entry):
+        return None
+
+
+# Tree of conditions. Supports generic entries.
 class ConditionTree:
 
     # Parses the data in subject, which can be a single data object of any type, or a list of objects. Every object 
@@ -14,13 +23,16 @@ class ConditionTree:
     # allow_lists   can be set to False if only singular entries shall be allowed (no lists, just entries
     #               or Conditions).
     #
-    def __init__(self, subject, listener = None, allow_lists = True):
+    # replacer      Optional instance of ConditionTreeEntryReplacer, used to replace the input entries.
+    #
+    def __init__(self, subject, listener = None, replacer = None, allow_lists = True):
         if not isinstance(listener, ConditionListener):
             raise Exception("Invalid condition listener")
 
         self._entries = []                # Flat list of all data objects (no conditions)
         self._conditions = []             # List of conditions found
         self._allow_lists = allow_lists   # Allow lists of entries
+        self._replacer = replacer         # Optional replacer for entries
 
         self._tree = self._setup_tree(subject, listener)
     
@@ -74,19 +86,24 @@ class ConditionTree:
         
         else:
             # Simple entry
+            if self._replacer:
+                new_entry = self._replacer.replace(subject)
+                self._entries.append(new_entry)
+                return new_entry
+
             self._entries.append(subject)
             return subject
 
     # Must be called before usage to get the conditions updated periodically. 
     # Updater must be an Updater instance to which the conditions are added.
-    def init(self, appl):
-        if not isinstance(appl, Updater):
+    def init(self, updater):
+        if not isinstance(updater, Updater):
             raise Exception("Invalid appl for ConditionTree, must be an Updater")
 
         # Initialize conditions and add them to the updateable list
         for c in self._conditions:
-            c.init(appl)            
-            appl.add_updateable(c)
+            c.init(updater)            
+            updater.add_updateable(c)
 
     # Returns a flat list of all contained data entries
     @property

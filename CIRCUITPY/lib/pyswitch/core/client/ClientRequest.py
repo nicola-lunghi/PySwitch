@@ -6,19 +6,18 @@ from ..misc.EventEmitter import EventEmitter
 # Model for a request for a value
 class ClientRequest(EventEmitter):
 
-    def __init__(self, midi, mapping, setup, config):
+    def __init__(self, midi, mapping, config):
         super().__init__(ClientRequestListener)
         
         self.mapping = mapping        
         self._config = config
-        self._setup = setup
         self._midi = midi
         
         self._debug = Tools.get_option(self._config, "debugClient")
         self._debug_raw_midi = Tools.get_option(self._config, "debugClientRawMidi")
         self._debug_mapping = Tools.get_option(self._config, "clientDebugMapping", None)
 
-        self._value_provider = self._setup["valueProvider"]
+        self._value_provider = self._config["valueProvider"]
 
         if not self.mapping.request:
             raise Exception("No REQUEST message prepared for this MIDI mapping (" + self.mapping.name + ")")

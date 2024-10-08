@@ -1,5 +1,5 @@
 from ....misc.Tools import Tools
-from .....definitions import Colors
+from ....misc.Defaults import Defaults
 from ...Updateable import Updateable
 
 
@@ -9,27 +9,16 @@ class Action(Updateable):
     
     next_id = 0   # Global counted action ids (internal, just used for debugging!)
 
-    # Factory for creating actions by type (= class name of derivative of Action).
-    # All created classes must have the same constructor parameters as this method.
-    #@staticmethod
-    #def get_instance(appl, switch, config):
-    #    class_name = config["type"]
-
-    #    module = __import__(ModuleConfig.MODULE_BASE_PATH + ".core.controller.actions." + class_name, globals(), locals(), [class_name])
-    #    class_def = getattr(module, class_name)
-    #    return class_def(appl, switch, config)
-
-    ######################################################################################################################################
-
     # config: {
     #      "display": {
-    #          "area":         ID of the display area. See displays defintion in config.
-    #          "index":        Position inside the display area (optional for split container display areas). If omitted, always the first 
-    #                          place is used which takes up the whole area space. 
+    #          "area":             ID of the display area. See displays defintion in config.
+    #          "index":            Position inside the display area (optional for split container display areas). If omitted, always the first 
+    #                              place is used which takes up the whole area space. 
+    #          "layout":           Layout definition for the action label (mandatory)
     #      },
-    #      "enabled": True,    Optional bool parameter to disable/enable the action. Mostly used internally only. Defaults to True 
-    #                          when not specified.
-    #      "id":               Optional ID for debugging. If not set, an automatic ID is generated.
+    #      "enabled": True,        Optional bool parameter to disable/enable the action. Mostly used internally only. Defaults to True 
+    #                              when not specified.
+    #      "id":                   Optional ID for debugging. If not set, an automatic ID is generated.
     # }
     def __init__(self, config = {}):
         self.config = config
@@ -62,7 +51,6 @@ class Action(Updateable):
             self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action.next_id) + ")"
             
         Action.next_id = Action.next_id + 1
-
 
     @property
     def enabled(self):
@@ -189,8 +177,18 @@ class Action(Updateable):
         if index == None:
             return container
 
-        layout = Tools.get_option(self.appl.config, "actionLabelLayout", {})
-        layout["backColor"] = Tools.get_option(self.config, "color", Colors.DEFAULT_LABEL_COLOR)  # Set the color as the number of items cannot be changed later!
+        layout = definition["layout"]
+        
+        # Set the color as the number of items cannot be changed later!
+        layout["backColor"] = Tools.get_option(
+            self.config, 
+            "color", 
+            Tools.get_option(
+                layout, 
+                "backColor",
+                Defaults.DEFAULT_LABEL_COLOR
+            )
+        )
 
         label = self.appl.ui.create_label(
             layout = layout,

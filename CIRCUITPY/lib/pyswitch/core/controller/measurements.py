@@ -1,4 +1,4 @@
-import gc
+from gc import collect, mem_free
 
 from ..misc.Tools import Tools
 from ..misc.EventEmitter import EventEmitter
@@ -31,8 +31,8 @@ class StatisticsMeasurement:
 # Measurement of runtimes 
 class RuntimeMeasurement(StatisticsMeasurement, EventEmitter, Updateable):
     
-    # Types: See StatisticMeasurementTypes (definitions.py)
-    def __init__(self, type, interval_millis):
+    # type is arbitrary and only used externally
+    def __init__(self, interval_millis, type = ""):
         StatisticsMeasurement.__init__(self)
         EventEmitter.__init__(self, RuntimeMeasurementListener)
 
@@ -122,6 +122,6 @@ class FreeMemoryMeasurement(StatisticsMeasurement):
 
     # Returns the available memory
     def _get_free_memory_bytes(self):
-        gc.collect()
-        return gc.mem_free()
+        collect()
+        return mem_free()
 

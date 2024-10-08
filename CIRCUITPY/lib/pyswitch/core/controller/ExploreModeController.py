@@ -1,20 +1,16 @@
 import board
-import math
-
-from ...hardware.AdafruitSwitch import AdafruitSwitch
 
 from .Updateable import Updater
 from .FootSwitchController import FootSwitchController
-from ...definitions import Colors
-
-from ..misc.Tools import Tools
 from .actions.ExploreAction import ExploreAction
-
-from ...ui.elements.DisplayLabel import DisplayLabel, DisplayLabelLayout
+from ..misc.Colors import Colors
+from ...hardware.AdafruitSwitch import AdafruitSwitch
+from ...ui.elements.DisplayLabel import DisplayLabel
 from ...ui.elements.DisplaySplitContainer import DisplaySplitContainer
 
 
-NUM_PORT_COLUMNS = 5   # Number of columns for port display
+# Number of columns for port display
+NUM_PORT_COLUMNS = 5   
 
 
 # Main application class for Explore Mode
@@ -59,10 +55,10 @@ class ExploreModeController(Updater):
         # Display for currently enlightened pixels
         self.pixel_display = DisplayLabel(
             bounds = bounds.remove_from_bottom(40),
-            layout = DisplayLabelLayout({
+            layout = {
                 "font": "/fonts/A12.pcf",
                 "backColor": Colors.DARK_GREEN
-            })
+            }
         )
         self.ui.root.add(self.pixel_display)
 
@@ -188,11 +184,11 @@ class ExploreModeController(Updater):
             self._ports_display_rows.add(row)
 
         label = DisplayLabel(
-            layout = DisplayLabelLayout({
+            layout = {
                 "font": "/fonts/A12.pcf",
                 "backColor": Colors.BLACK,
                 "stroke": 1
-            })
+            }
         )
 
         row.add(label)

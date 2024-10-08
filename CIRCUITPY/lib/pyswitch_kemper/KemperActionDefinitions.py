@@ -5,7 +5,9 @@
 #
 #################################################################################################################################
 
-from pyswitch.definitions import Colors, Defaults
+from lib.pyswitch.core.misc.Colors import Colors
+from lib.pyswitch.core.misc.Defaults import Defaults
+from lib.pyswitch.core.controller.actions.ParameterAction import ParameterAction
 from pyswitch.core.controller.actions.base.PushButtonAction import PushButtonModes
 
 from pyswitch.core.client.ClientParameterMapping import ClientParameterMapping
@@ -62,7 +64,7 @@ class KemperActionDefinitions:
 
     # Switch tuner mode on / off
     @staticmethod
-    def TUNER_MODE(display = None, color = Colors.DEFAULT_SWITCH_COLOR, id = False):
+    def TUNER_MODE(display = None, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
         return ParameterAction({
             "mapping": KemperMappings.TUNER_MODE_ON_OFF,
             "display": display,
@@ -118,7 +120,7 @@ class KemperActionDefinitions:
 
     # Amp on/off
     @staticmethod
-    def AMP_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.DEFAULT_SWITCH_COLOR, id = False):
+    def AMP_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
         return ParameterAction({
             "mapping": KemperMappings.AMP_ON_OFF,
             "mode": mode,
@@ -132,7 +134,7 @@ class KemperActionDefinitions:
 
     # Amp on/off
     @staticmethod
-    def CABINET_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.DEFAULT_SWITCH_COLOR, id = False):
+    def CABINET_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
         return ParameterAction({
             "mapping": KemperMappings.CABINET_ON_OFF,
             "mode": mode,
@@ -237,10 +239,10 @@ class KemperActionDefinitions:
             "textDisabled": "Rig " + text_rig_off,
             "color": color,
             "ledBrightness": {
-                "on": Defaults.DEFAULT_LED_BRIGHTNESS_OFF,                  # Set equal brightness (we do not need status display here)
-                "off": Defaults.DEFAULT_LED_BRIGHTNESS_OFF
+                "on": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF,               # Set equal brightness (we do not need status display here)
+                "off": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
             },
-            "displayDimFactorOn": Defaults.DEFAULT_SLOT_DIM_FACTOR_OFF,  # Set equal brightness (we do not need status display here)
+            "displayDimFactorOn": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,  # Set equal dim factor (we do not need status display here)
             "mode": PushButtonModes.LATCH,
             "id": id
         })

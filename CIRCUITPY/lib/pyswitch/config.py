@@ -4,18 +4,33 @@
 #
 ##############################################################################################################################################
 
+from pyswitch_kemper.KemperMidiValueProvider import KemperMidiValueProvider
+
 Config = {
     
+    # Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
+    # when an answer to a value request is received.
+    "valueProvider": KemperMidiValueProvider(),
+
+    # Max. number of MIDI messages being parsed before the next switch state evaluation
+    # is triggered. If set to 0, only one message is parsed per tick, which leads to 
+    # flickering states sometimes. If set too high, switch states will not be read for too long.
+    # A good value is the maximum amount of switches. Default is 10.
+    #"maxConsecutiveMidiMessages": 10,
+
+    # Selects the MIDI channel to use [1..16] default is 1
+    #"midiChannel": 1,
+
     # Max. milliseconds until a request is being terminated and it is
-    # assumed that the Kemper device is offline. Optional, default is ProcessingConfig.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS.
-    #"maxRequestLifetimeMillis": ProcessingConfig.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS,
+    # assumed that the Kemper device is offline. Optional, default is 2 seconds.
+    #"maxRequestLifetimeMillis": 2000,
 
     # MIDI buffer size (60 is default)
     #"midiBufferSize": 60,
 
     # Update interval, for updating the rig date (which triggers all other data to update when changed) (milliseconds)
     # and other displays if assigned. 200 is the default.
-    #"updateInterval": 2000,
+    #"updateInterval": 200,
 
     ## Development Options ###################################################################################################################
 

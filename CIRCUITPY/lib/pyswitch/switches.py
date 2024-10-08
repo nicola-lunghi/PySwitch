@@ -1,65 +1,127 @@
-#################################################################################################################################
+##############################################################################################################################################
 # 
-# Ports configuration for kemperstomp. This helps addressing the different devices. Only change this when either
-# one of the supported devices has been updated or new devices are added.
+# Definition of actions for switches
 #
-#################################################################################################################################
+##############################################################################################################################################
  
-import board
-from .hardware.AdafruitSwitch import AdafruitSwitch
+from .core.misc.Colors import Colors
+from .core.misc.Defaults import Defaults
+from .hardware.hardware import SwitchDefinitions
+from .displays import DisplayIds
 
-#################################################################################################################################
+from .core.controller.conditions.ParameterCondition import ParameterCondition, ParameterConditionModes
+from .core.controller.actions.base.PushButtonAction import PushButtonModes
 
-# This provides known device definitions, ready to use in the config file.
-class Switches:
-    # PaintAudio MIDI Captain Nano (4 Switches)
-    # Board Infos
-    # Raspberry Pi Pico (RP2040)
-    #
-    # GP1  - FootSwitch 1
-    # GP4  bat_chg_led
-    # GP6  charging
-    # GP7  NeoPixel
-    # GP8  asyncio PWMOut frequency
-    # GP9  - FootSwitch A
-    # GP10 - FootSwitch B
-    # GP12 tft_dc   (SPI1 RX)
-    # GP13 tft_cs   (Chip Select)
-    # GP14 spi_clk  (SPI1SCK)
-    # GP15 spi_mosi (SPI1 TX)
-    # GP16 Midi GP16GP17 baudrate
-    # GP17 Midi GP16GP17 baudrate
-    # GP25 - FootSwitch 2
-    PA_MIDICAPTAIN_NANO_SWITCH_1 = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1" }
-    PA_MIDICAPTAIN_NANO_SWITCH_2 = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2"  }
-    PA_MIDICAPTAIN_NANO_SWITCH_A = { "model": AdafruitSwitch(board.GP9),  "pixels": (6, 7, 8), "name": "A"  }
-    PA_MIDICAPTAIN_NANO_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (9, 10, 11), "name": "B"  }
+from pyswitch_kemper.Kemper import Kemper
+from pyswitch_kemper.KemperMappings import KemperMappings
+from pyswitch_kemper.KemperActionDefinitions import KemperActionDefinitions
+from lib.pyswitch_kemper.KemperEffectSlot import KemperEffectSlot
 
-    # PaintAudio MIDI Captain Mini (6 Switches)
-    # Board Infos
-    # Raspberry Pi Pico (RP2040)
-    #
-    # GP1  - FootSwitch 1
-    # GP4  bat_chg_led
-    # GP6  charging
-    # GP7  NeoPixel
-    # GP8  asyncio PWMOut frequency
-    # GP9  - FootSwitch A
-    # GP10 - FootSwitch B
-    # GP11 - FootSwitch C
-    # GP12 tft_dc   (SPI1 RX)
-    # GP13 tft_cs   (Chip Select)
-    # GP14 spi_clk  (SPI1SCK)
-    # GP15 spi_mosi (SPI1 TX)
-    # GP16 Midi GP16GP17 baudrate
-    # GP17 Midi GP16GP17 baudrate
-    # GP24 - FootSwitch 3
-    # GP25 - FootSwitch 2
-    PA_MIDICAPTAIN_MINI_SWITCH_1 = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_2 = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_3 = { "model": AdafruitSwitch(board.GP24), "pixels": (6, 7, 8), "name": "3"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_A = { "model": AdafruitSwitch(board.GP9),  "pixels": (9, 10, 11), "name": "A"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (12, 13, 14), "name": "B"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_C = { "model": AdafruitSwitch(board.GP11), "pixels": (15, 16, 17), "name": "C"  }
 
+# Layout used for the action labels (only used here locally)
+ACTION_LABEL_LAYOUT = {
+    "font": "/fonts/H20.pcf",
+    "backColor": Defaults.DEFAULT_LABEL_COLOR,
+    "stroke": 1
+}
+
+# Defines the switch assignments
+Switches = [
+
+    # Switch 1
+    {
+        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            KemperActionDefinitions.EFFECT_ON_OFF(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+                display = {
+                    "id": DisplayIds.DISPLAY_HEADER,
+                    "index": 0,
+                    "layout": ACTION_LABEL_LAYOUT
+                }
+            )
+            #ParameterCondition(
+            #    mapping = KemperMappings.RIG_VOLUME,
+            #    mode = ParameterConditionModes.MODE_GREATER_EQUAL,
+            #    ref_value = Kemper.NRPN_VALUE(0.5),
+
+            #    yes = [
+            #        KemperActionDefinitions.EFFECT_ON_OFF(
+            #            id = "sw1",
+            #            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+            #        ),
+            #        KemperActionDefinitions.EFFECT_ON_OFF(
+            #            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
+            #            display = {
+            #                "id": DisplayIds.DISPLAY_HEADER,
+            #                "index": 0,
+            #                "layout": ACTION_LABEL_LAYOUT
+            #            }
+            #        ),
+            #        KemperActionDefinitions.AMP_ON_OFF()
+            #    ],
+            #    no = KemperActionDefinitions.EFFECT_ON_OFF(
+            #        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
+            #        display = {
+            #            "id": DisplayIds.DISPLAY_HEADER,
+            #            "index": 0,
+            #            "layout": ACTION_LABEL_LAYOUT
+            #        }
+            #    )
+            #)                
+        ]
+    },
+
+    # Switch 2
+    {
+        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_2,
+        "actions": [
+            KemperActionDefinitions.EFFECT_ON_OFF(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
+                display = {
+                    "id": DisplayIds.DISPLAY_HEADER,
+                    "index": 1,
+                    "layout": ACTION_LABEL_LAYOUT
+                },
+                mode = PushButtonModes.MOMENTARY
+            )
+        ]
+    },
+
+    # Switch A
+    {
+        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_A,
+        "actions": [
+            KemperActionDefinitions.AMP_ON_OFF(
+                display = {
+                    "id": DisplayIds.DISPLAY_FOOTER,
+                    "index": 0,
+                    "layout": ACTION_LABEL_LAYOUT
+                },
+                color = (Colors.WHITE, Colors.YELLOW, Colors.LIGHT_GREEN)  
+            )
+        ]
+    },
+    
+    # Switch B
+    {
+        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_B,
+        "actions": [
+            KemperActionDefinitions.RESET_RIG_INFO_DISPLAYS(),
+            KemperActionDefinitions.RIG_SELECT(
+                rig = 1,
+                bank = 1,
+
+                rig_off = 5,
+                bank_off = 3,
+
+                display = {
+                    "id": DisplayIds.DISPLAY_FOOTER,
+                    "index": 1,
+                    "layout": ACTION_LABEL_LAYOUT
+                }   
+            )
+        ]
+    }
+]
 

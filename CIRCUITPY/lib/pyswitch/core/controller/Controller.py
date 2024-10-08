@@ -1,19 +1,44 @@
-import usb_midi
-import adafruit_midi 
+from usb_midi import ports
+from adafruit_midi import MIDI
 
 from .FootSwitchController import FootSwitchController
 from .measurements import RuntimeMeasurement
 from .PeriodCounter import PeriodCounter
+from .Updateable import Updateable, Updater
+from .actions.base.Action import Action
 from ..client.Client import Client
 from ..client.ClientRequest import ClientRequestListener
 from ..misc.Tools import Tools
-from ...definitions import ProcessingConfig, StatisticMeasurementTypes
-from .Updateable import Updateable, Updater
-from .actions.base.Action import Action
+from ..misc.Memory import Memory
 
 # Main application class (controls the processing)    
-class StompController(ClientRequestListener, Updater):
-    def __init__(self, led_driver, setup, config, ui = None):
+class Controller(ClientRequestListener, Updater):
+
+    # IDs for all available measurements (for statistics)
+    STAT_ID_TICK_TIME = "Tick"             # Time one processing loop takes overall
+    STAT_ID_SWITCH_UPDATE_TIME = "SwUp"    # Time between switch state updates. This measurement costs a lot of overhead!
+
+    # config:   Configuration dictionary. Must at least contain a "valueProvider" (instance of ClientValueProvider)
+    # switches: [           list of switch definitions
+    #                {
+    #                     "assignment": {   Selects which switch of your device you want to assign. 
+    #                          "model":    Instance of AdafruitSwitch
+    #                          "pixels":   Optional, tiple of LED indices to assign to the switch, for example (0, 1, 2) 
+    #                          "name":     Optional, name of the switch for output
+    #                     },
+    #
+    #                     # Defines the actions you want to happen on different events of the switch. You can 
+    #                     # define as many actions as you want, they will be executed in that order.
+    #                     # You can also use the Condition class to have different actions active depending
+    #                     # on another parameter.
+    #                     "actions": [
+    #                           ...See Actions.py and its children
+    #                     ]
+    #                },
+    #                ...
+    #           ]
+    # displays: list of DisplayElements to show on the TFT
+    def __init__(self, led_driver, config, switches = [], displays = [], ui = None):
         Updater.__init__(self)
 
         # User interface
@@ -21,7 +46,9 @@ class StompController(ClientRequestListener, Updater):
 
         # Global config
         self.config = config
-        self.setup = setup
+
+        # Switch config
+        self._switch_definitions = switches
 
         # Statistical measurements (added by the displays etc.)
         self._measurements_tick_time = []
@@ -32,23 +59,24 @@ class StompController(ClientRequestListener, Updater):
         self.led_driver.init(self._get_num_pixels())
         
         # Parse some options
-        self._midiChannel = Tools.get_option(self.setup, "midiChannel", 1)            # MIDI channel to use (default: 1)
-        self._midi_buffer_size = Tools.get_option(self.config, "midiBufferSize", 60)   # MIDI buffer size (default: 60)
+        self._midiChannel = Tools.get_option(self.config, "midiChannel", 1)                                  # MIDI channel to use
+        self._midi_buffer_size = Tools.get_option(self.config, "midiBufferSize", 60)                        # MIDI buffer size
+        self._max_consecutive_midi_msgs = Tools.get_option(self.config, "maxConsecutiveMidiMessages", 10)   # Max. number of MIDI messages being parsed before the next switch state evaluation
 
         self._debug = Tools.get_option(self.config, "debug", False)
         self._debug_ui_structure = Tools.get_option(self.config, "debugUserInterfaceStructure", False)        
 
         # Periodic update handler (the client is only asked when a certain time has passed)
-        self.period = PeriodCounter(Tools.get_option(self.config, "updateInterval", ProcessingConfig.DEFAULT_UPDATE_INTERVAL_MS))
+        self.period = PeriodCounter(Tools.get_option(self.config, "updateInterval", 200))        
 
         # Set up the screen elements
-        self._prepare_ui()
+        self._prepare_ui(displays)
 
         # Start MIDI communication
         self._init_midi()
 
         # Client adapter to send and receive parameters
-        self.client = Client(self._midi, self.setup, self.config)
+        self.client = Client(self._midi, self.config)
 
         # Set up switches
         self.switches = []
@@ -58,10 +86,8 @@ class StompController(ClientRequestListener, Updater):
             Tools.print("Updateable queue length: " + repr(len(self.updateables)))
 
     # Creates the display areas
-    def _prepare_ui(self):
-        display_definitions = Tools.get_option(self.setup, "displays", [])
-
-        for element in display_definitions:
+    def _prepare_ui(self, displays):
+        for element in displays:
             element.debug = Tools.get_option(self.config, "debugDisplay")
 
             self.ui.root.add(element)
@@ -74,7 +100,7 @@ class StompController(ClientRequestListener, Updater):
         if self._debug:
             Tools.print("-> Init switches")
                     
-        for sw_def in self.setup["switches"]:
+        for sw_def in self._switch_definitions:
             switch = FootSwitchController(
                 self,
                 sw_def
@@ -89,10 +115,10 @@ class StompController(ClientRequestListener, Updater):
         if self._debug:
             Tools.print("-> Init MIDI")
 
-        self._midi = adafruit_midi.MIDI(
-            midi_out    = usb_midi.ports[1],
+        self._midi = MIDI(
+            midi_out    = ports[1],
             out_channel = self._midiChannel - 1,
-            midi_in     = usb_midi.ports[0],
+            midi_in     = ports[0],
             in_buf_size = self._midi_buffer_size, 
             debug       = Tools.get_option(self.config, "debugMidi")
         )
@@ -100,7 +126,7 @@ class StompController(ClientRequestListener, Updater):
     # Returns how many NeoPixels are needed overall
     def _get_num_pixels(self):
         ret = 0
-        for sw_def in self.setup["switches"]:
+        for sw_def in self._switch_definitions:
             pixels = Tools.get_option(sw_def["assignment"], "pixels", [])
             for p in pixels:
                 pp1 = p + 1
@@ -113,11 +139,11 @@ class StompController(ClientRequestListener, Updater):
         if not isinstance(measurement, RuntimeMeasurement):
             return
 
-        if measurement.type == StatisticMeasurementTypes.TICK_TIME:        
+        if measurement.type == self.STAT_ID_TICK_TIME:        
             self._measurements_tick_time.append(measurement)
             self.add_updateable(measurement)
             
-        elif measurement.type == StatisticMeasurementTypes.SWITCH_UPDATE_TIME:
+        elif measurement.type == self.STAT_ID_SWITCH_UPDATE_TIME:
             self._measurements_switch_update.append(measurement)
             self.add_updateable(measurement)
         
@@ -134,6 +160,8 @@ class StompController(ClientRequestListener, Updater):
 
         # Show user interface        
         self.ui.show(self)
+
+        Memory.watch("Controller: Show UI")
 
         if self._debug:
             Tools.print("-> Done initializing, starting processing loop")
@@ -160,7 +188,7 @@ class StompController(ClientRequestListener, Updater):
                 self.client.receive(midimsg)
 
                 cnt = cnt + 1
-                if not midimsg or cnt > ProcessingConfig.MAX_NUM_CONSECUTIVE_MIDI_MESSAGES:
+                if not midimsg or cnt > self._max_consecutive_midi_msgs:
                     break  
 
             # Output statistical info if enabled

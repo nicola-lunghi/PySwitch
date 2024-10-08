@@ -7,7 +7,8 @@
 
 from pyswitch.core.controller.actions.EffectEnableAction import EffectCategoryProvider
 
-from pyswitch.definitions import Colors
+from lib.pyswitch.core.misc.Colors import Colors
+from lib.pyswitch.core.misc.Defaults import Defaults
 
 ################################################################################################################################
 
@@ -34,7 +35,7 @@ class KemperEffectCategories(EffectCategoryProvider):
 
     # Effect colors. The order must match the enums for the effect types defined above!
     CATEGORY_COLORS = [
-        Colors.DEFAULT_LABEL_COLOR,                     # None
+        Defaults.DEFAULT_LABEL_COLOR,                   # None
         Colors.ORANGE,                                  # Wah
         Colors.RED,                                     # Distortion
         Colors.BLUE,                                    # Comp

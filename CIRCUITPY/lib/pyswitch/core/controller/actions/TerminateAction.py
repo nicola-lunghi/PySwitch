@@ -1,7 +1,7 @@
-import sys
+from sys import exit
 
 from .base.Action import Action
-from ....definitions import Colors
+from ...misc.Colors import Colors
 
 
 # Action to reboot the device (used for development)
@@ -19,5 +19,5 @@ class TerminateAction(Action):
 
     def push(self):
         print("Terminate on user request")
-        sys.exit()
+        exit()
 

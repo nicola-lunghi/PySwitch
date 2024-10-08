@@ -1,10 +1,9 @@
-import random
+from random import randint
 
 from .conditions.ConditionTree import ConditionTree
 from .conditions.Condition import ConditionListener
-from .actions.base.Action import Action
 from ..misc.Tools import Tools
-from ...definitions import Colors
+from ..misc.Colors import Colors
 
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
@@ -50,8 +49,9 @@ class FootSwitchController(ConditionListener):
         self._brightnesses = [0 for i in range(len(self.pixels))]        
 
         self._initial_switch_colors()
+
         self._init_actions()
-    
+        
     # Set up action instances
     def _init_actions(self):
         if self._debug:
@@ -66,7 +66,7 @@ class FootSwitchController(ConditionListener):
 
         self.actions = self._action_tree.entries
 
-        for action in self.actions:            
+        for action in self.actions:
             action.init(self._appl, self)
             
             self._appl.add_updateable(action)
@@ -110,7 +110,7 @@ class FootSwitchController(ConditionListener):
 
         # Default color scheme: Random from a list of colors
         available_colors = (Colors.GREEN, Colors.YELLOW, Colors.RED)  # Colors to be used (in that order)
-        index = random.randint(0, len(available_colors)-1)            # Random start index  
+        index = randint(0, len(available_colors)-1)                   # Random start index  
 
         self.colors = [available_colors[(index + i) % len(available_colors)] for i in range(len(self.pixels))]
         self.brightness = initial_brightness

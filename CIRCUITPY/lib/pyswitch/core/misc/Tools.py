@@ -62,9 +62,20 @@ class Tools:
 
     # Size (bytes) output formatting 
     # Taken from https://stackoverflow.com/questions/1094841/get-a-human-readable-version-of-a-file-size 
-    def format_size(num, suffix = "B"):
+    @staticmethod
+    def format_size(num, fill_up_to = 0, suffix = "B"):
         for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
             if abs(num) < 1024.0:
-                return f"{num:3.1f} {unit}{suffix}"
+                return Tools.fill_up_to(f"{num:3.1f} {unit}{suffix}", num_spaces_at_right = fill_up_to)
             num /= 1024.0
-        return f"{num:.1f}Yi{suffix}"
+        return Tools.fill_up_to(f"{num:.1f}Yi{suffix}", num_spaces_at_right = fill_up_to)
+
+    # Fill up string with spaces. Needed here because CircuitPython does not seem to support the ljust() function of strings.
+    @staticmethod
+    def fill_up_to(str, num_spaces_at_right, fill_char = " "):
+        if num_spaces_at_right <= 0:
+            return str
+        ret = str
+        while len(ret) < num_spaces_at_right:
+            ret += fill_char
+        return ret

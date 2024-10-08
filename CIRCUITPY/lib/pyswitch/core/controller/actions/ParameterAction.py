@@ -2,11 +2,20 @@ from .base.PushButtonAction import PushButtonAction
 from ...client.ClientRequest import ClientRequestListener
 from ...client.ClientParameterMapping import ClientParameterMapping
 from ...misc.Tools import Tools
-from ....definitions import Colors, Defaults
+from ...misc.Defaults import Defaults
+from ...misc.Colors import Colors
 
 
 # Implements bipolar parameters on base of the PushButtonAction class
 class ParameterAction(PushButtonAction, ClientRequestListener):
+
+    # Brightness values 
+    DEFAULT_LED_BRIGHTNESS_ON = 0.3
+    DEFAULT_LED_BRIGHTNESS_OFF = 0.02
+
+    # Dim factor for disabled effect slots (TFT display only)
+    DEFAULT_SLOT_DIM_FACTOR_ON = 1
+    DEFAULT_SLOT_DIM_FACTOR_OFF = 0.2
 
     # Generic MIDI parameter
     # Additional options:
@@ -31,7 +40,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
         self.uses_switch_leds = True
 
         # Action config
-        self.color = Tools.get_option(self.config, "color", Colors.DEFAULT_SWITCH_COLOR)
+        self.color = Tools.get_option(self.config, "color", Defaults.DEFAULT_SWITCH_COLOR)
         
         self._mapping = self.config["mapping"]                                                          # Can be an array
         self._mapping_off = Tools.get_option(self.config, "mappingDisable", None)                       # Can be an array
@@ -55,7 +64,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
             Tools.get_option(
                 self.appl.config, 
                 "displayDimFactorOn", 
-                Defaults.DEFAULT_SLOT_DIM_FACTOR_ON
+                self.DEFAULT_SLOT_DIM_FACTOR_ON
             )
         )
         self._dim_factor_off = Tools.get_option(
@@ -63,19 +72,19 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
             Tools.get_option(
                 self.appl.config, 
                 "displayDimFactorOff", 
-                Defaults.DEFAULT_SLOT_DIM_FACTOR_OFF
+                self.DEFAULT_SLOT_DIM_FACTOR_OFF
             )
         )
 
         if Tools.get_option(self.config, "ledBrightness") != False:
-            self._brightness_on = Tools.get_option(self.config["ledBrightness"], "on", Defaults.DEFAULT_LED_BRIGHTNESS_ON)
-            self._brightness_off = Tools.get_option(self.config["ledBrightness"], "off", Defaults.DEFAULT_LED_BRIGHTNESS_OFF)
+            self._brightness_on = Tools.get_option(self.config["ledBrightness"], "on", self.DEFAULT_LED_BRIGHTNESS_ON)
+            self._brightness_off = Tools.get_option(self.config["ledBrightness"], "off", self.DEFAULT_LED_BRIGHTNESS_OFF)
         elif Tools.get_option(self.appl.config, "ledBrightness") != False:
-            self._brightness_on = Tools.get_option(self.appl.config["ledBrightness"], "on", Defaults.DEFAULT_LED_BRIGHTNESS_ON)
-            self._brightness_off = Tools.get_option(self.appl.config["ledBrightness"], "off", Defaults.DEFAULT_LED_BRIGHTNESS_OFF)
+            self._brightness_on = Tools.get_option(self.appl.config["ledBrightness"], "on", self.DEFAULT_LED_BRIGHTNESS_ON)
+            self._brightness_off = Tools.get_option(self.appl.config["ledBrightness"], "off", self.DEFAULT_LED_BRIGHTNESS_OFF)
         else:
-            self._brightness_on = Defaults.DEFAULT_LED_BRIGHTNESS_ON
-            self._brightness_off = Defaults.DEFAULT_LED_BRIGHTNESS_OFF
+            self._brightness_on = self.DEFAULT_LED_BRIGHTNESS_ON
+            self._brightness_off = self.DEFAULT_LED_BRIGHTNESS_OFF
 
     # Set state (called by base class)
     def set(self, enabled):        
@@ -252,7 +261,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
     def reset_display(self):
         if self.label:
             self.label.text = ""
-            self.label.back_color = Colors.DEFAULT_LABEL_COLOR
+            self.label.back_color = Defaults.DEFAULT_LABEL_COLOR
 
         self.switch_color = Colors.BLACK
         self.switch_brightness = 0

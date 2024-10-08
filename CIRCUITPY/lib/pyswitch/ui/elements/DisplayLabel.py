@@ -1,12 +1,12 @@
-import displayio
+from displayio import Group
 from adafruit_display_text import label, wrap_text_to_pixels
 
 from .base.HierarchicalDisplayElement import HierarchicalDisplayElement
 from .DisplayRectangle import DisplayRectangle
 from ..DisplayBounds import DisplayBounds
 from ...core.misc.Tools import Tools
-from ...definitions import Colors
-from ...core.controller.conditions.ConditionTree import ConditionTree
+from ...core.misc.Colors import Colors
+from ...core.controller.conditions.ConditionTree import ConditionTree, ConditionTreeEntryReplacer
 from ...core.controller.conditions.Condition import ConditionListener
 
 
@@ -34,12 +34,17 @@ class DisplayLabelLayout:
         self.corner_radius = Tools.get_option(layout, "cornerRadius", 0)
         self.stroke = Tools.get_option(layout, "stroke", 0)        
 
+    # Check mandatory fields
+    def check(self, label_id):
+        if not self.font_path:
+            raise Exception("No font specified for DisplayLabel " + repr(label_id))
+
 
 ######################################################################################################################################
 
 
 # Controller for a generic rectangular label on the user interface.
-class DisplayLabel(HierarchicalDisplayElement, ConditionListener):
+class DisplayLabel(HierarchicalDisplayElement, ConditionListener, ConditionTreeEntryReplacer):
 
     # Line feed used for display
     LINE_FEED = "\n"
@@ -51,6 +56,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener):
         self._layout_tree = ConditionTree(
             subject = layout,
             listener = self,
+            replacer = self,
             allow_lists = False
         )
 
@@ -108,7 +114,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener):
             line_spacing = self.layout.line_spacing
         )
         
-        self._group = displayio.Group(
+        self._group = Group(
             scale = 1, 
             x = self.x, 
             y = self.y
@@ -125,6 +131,12 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener):
     def condition_changed(self, condition):
         self.layout = self._layout_tree.value
 
+    # Replace layout entries in the layout tree
+    def replace(self, entry):
+        l = DisplayLabelLayout(entry)
+        l.check(self.id)
+        return l
+        
     # Update font according to layout
     def _update_font(self):
         self._font = self._ui.font_loader.get(self.layout.font_path)
@@ -213,7 +225,7 @@ class DisplayLabel(HierarchicalDisplayElement, ConditionListener):
         
         if isinstance(color[0], tuple):
             if not isinstance(self.layout.back_color[0], tuple):
-                raise Exception("Color type (tuple or single color) cannot be changed")
+                raise Exception(repr(self.id) + ": Color type (tuple or single color) cannot be changed: " + repr(color))
             
             if len(color) != len(self.layout.back_color):
                 raise Exception("Invalid amount of colors: " + repr(color) + " has to have " + repr(len(self.layout.back_color)) + " entries (" + self.name + ")")

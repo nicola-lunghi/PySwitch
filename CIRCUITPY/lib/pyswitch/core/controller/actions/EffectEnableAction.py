@@ -1,12 +1,14 @@
 from .ParameterAction import ParameterAction
 from ...client.ClientRequest import ClientRequestListener
 from ...misc.Tools import Tools
-from ....definitions import Colors, Defaults
+from ...misc.Colors import Colors
 
 
 # Implements the effect enable/disable footswitch action
 class EffectEnableAction(ParameterAction, ClientRequestListener):
     
+    DEFAULT_EFFECT_SLOT_CORNER_RADIUS = 15
+
     # Switches an effect on/off, if the slot is assigned. Based on ParameterAction, so all options there
     # are available here, too.
     # 
@@ -43,7 +45,7 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
         self._debug_slot_names = Tools.get_option(self.appl.config, "showEffectSlotNames", False)
 
         if self.label:
-            self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", Defaults.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)
+            self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", self.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)
 
     # Request effect type periodically (which itself will trigger a status request).
     # Does not call super.do_update because the status is requested here later anyway.

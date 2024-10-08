@@ -1,17 +1,18 @@
-import storage
 import board
-import digitalio
-import time
-import supervisor
+
+from storage import disable_usb_drive
+from digitalio import DigitalInOut, Direction, Pull
+from time import sleep
+from supervisor import disable_autoreload
 
 ############################################################################################
 
 # Initializes a switch. Returns the switch instance.
 def init_switch(pin):
-	switch = digitalio.DigitalInOut(pin) 
-	switch.direction = digitalio.Direction.INPUT
-	switch.pull = digitalio.Pull.UP
-	time.sleep(0.05)
+	switch = DigitalInOut(pin) 
+	switch.direction = Direction.INPUT
+	switch.pull = Pull.UP
+	sleep(0.05)
 	return switch
 
 # Is a switch pressed? 
@@ -28,11 +29,11 @@ switch_autoreload = init_switch(board.GP25)
 
 # No USB drive in normal operation
 if is_switch_pressed(switch_mount_usb) == False:
-    storage.disable_usb_drive()
+    disable_usb_drive()
 
 # No autoreload in normal operation
 if is_switch_pressed(switch_autoreload) == False:
-	supervisor.disable_autoreload()
+	disable_autoreload()
 
 ############################################################################################
 

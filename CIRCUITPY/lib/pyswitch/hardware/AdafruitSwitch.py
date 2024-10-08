@@ -1,4 +1,4 @@
-import digitalio
+from digitalio import DigitalInOut, Direction, Pull
 
 from ..core.controller.FootSwitchController import SwitchDriver
 
@@ -12,10 +12,10 @@ class AdafruitSwitch(SwitchDriver):
 
     # Initializes the switch to the GPIO port
     def init(self):
-        self._switch = digitalio.DigitalInOut(self._port)
+        self._switch = DigitalInOut(self._port)
         
-        self._switch.direction = digitalio.Direction.INPUT
-        self._switch.pull = digitalio.Pull.UP
+        self._switch.direction = Direction.INPUT
+        self._switch.pull = Pull.UP
 
     # Representational string for debug output (optional)
     def __repr__(self):

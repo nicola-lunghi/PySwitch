@@ -1,6 +1,7 @@
 from ....core.misc.Tools import Tools
 from ...DisplayBounds import DisplayBounds
 
+
 # Base class for all display elements
 class DisplayElement:
 
@@ -11,7 +12,7 @@ class DisplayElement:
         self._initialized = False
         
         self.debug = False
-
+        
     # Adds the element to the splash
     def init(self, ui, appl):
         self._initialized = True

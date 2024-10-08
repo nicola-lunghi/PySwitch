@@ -10,7 +10,7 @@ class ResetDisplaysAction(Action):
     # {
     #     "resetSwitches":        Reset switches (including LEDs and display labels, if assigned) (optional)
     #     "ignoreOwnSwitch":      Do not reset the switch this action is assigned to (optional)
-    #     "resetDisplayAreas":    Reset display areas (defined in Config["displays"]) (optional)
+    #     "resetDisplayAreas":    Reset display areas (optional)
     # }
     def __init__(self, config = {}):
         super().__init__(config)

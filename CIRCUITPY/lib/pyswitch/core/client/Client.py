@@ -2,20 +2,18 @@ from adafruit_midi.system_exclusive import SystemExclusive
 
 from .ClientRequest import ClientRequest, ClientRequestListener
 from ..misc.Tools import Tools
-from ...definitions import ProcessingConfig
 
 # Implements all MIDI communication to and from the client device
 class Client(ClientRequestListener):
 
-    def __init__(self, midi, setup, config):
+    def __init__(self, midi, config):
         self._midi = midi
         self._config = config
-        self._setup = setup
 
         self._debug = Tools.get_option(self._config, "debugClient")
         self._debug_mapping = Tools.get_option(self._config, "clientDebugMapping", None)
 
-        self._value_provider = self._setup["valueProvider"]
+        self._value_provider = self._config["valueProvider"]
 
         # Buffer for mappings. Whenever possible, existing mappings are used
         # so values can be buffered.
@@ -24,7 +22,7 @@ class Client(ClientRequestListener):
         # List of ClientRequest objects    
         self._requests = []
 
-        self._max_request_lifetime = Tools.get_option(self._config, "maxRequestLifetimeMillis", ProcessingConfig.DEFAULT_MAX_REQUEST_LIFETIME_MILLIS)
+        self._max_request_lifetime = Tools.get_option(self._config, "maxRequestLifetimeMillis", 2000)
         
     # Sends the SET message of a mapping
     def set(self, mapping, value):
@@ -51,7 +49,6 @@ class Client(ClientRequestListener):
             req = ClientRequest(                
                 self._midi,
                 m,
-                self._setup,
                 self._config
             )
             
