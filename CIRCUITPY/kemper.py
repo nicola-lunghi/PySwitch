@@ -3,10 +3,10 @@ from math import floor
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 
-from pyswitch.core.misc import Colors, Defaults
-from pyswitch.core.controller.actions.actions import ParameterAction, PushButtonModes, EffectCategoryProvider
-from pyswitch.core.controller.Client import ClientParameterMapping, ClientValueProvider
-from pyswitch.core.controller.actions.actions import EffectEnableAction, ParameterAction, ResetDisplaysAction
+from pyswitch.misc import Colors, Defaults
+from pyswitch.controller.actions.actions import ParameterAction, PushButtonModes, EffectCategoryProvider
+from pyswitch.controller.Client import ClientParameterMapping, ClientValueProvider
+from pyswitch.controller.actions.actions import EffectEnableAction, ParameterAction, ResetDisplaysAction
 
 
 # Some basic Kemper MIDI addresses and values
@@ -845,7 +845,3 @@ class KemperMidiValueProvider(ClientValueProvider):
 
             mapping.set.data = bytes(data)
         
-
-####################################################################################################################
-####################################################################################################################
-

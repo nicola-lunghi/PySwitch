@@ -1,4 +1,4 @@
-from ...core.misc import Tools
+from ...misc import Tools
 
 
 # Represents a screen area with dimensions.

@@ -18,7 +18,7 @@ from adafruit_misc.neopixel import NeoPixel
 
 # Switch driver
 from digitalio import DigitalInOut, Direction, Pull
-from ..core.controller.FootSwitchController import SwitchDriver
+from ..controller.FootSwitchController import SwitchDriver
 
 
 ##################################################################################################

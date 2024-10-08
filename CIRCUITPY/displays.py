@@ -4,8 +4,8 @@
 #
 ##############################################################################################################################################
  
-from pyswitch.core.misc import Colors
-from pyswitch.core.controller.ConditionTree import ParameterCondition, ParameterConditionModes
+from pyswitch.misc import Colors
+from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
 
 from pyswitch.ui.elements.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds
 from pyswitch.ui.StatisticalDisplays import StatisticalDisplays
@@ -98,5 +98,5 @@ Displays = [
     StatisticalDisplays.PERFORMANCE_DOT(bounds),
 
     # Statistics area
-    StatisticalDisplays.STATS_DISPLAY(bounds)
+    #StatisticalDisplays.STATS_DISPLAY(bounds)
 ]

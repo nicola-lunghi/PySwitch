@@ -27,10 +27,10 @@
 #
 #################################################################################################################################
 
-from pyswitch.core.misc import Memory 
+from pyswitch.misc import Memory 
 Memory.init("Loaded code.py", zoom=10)
 
-from pyswitch.core.misc import Tools 
+from pyswitch.misc import Tools 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader
 
 Memory.watch("Import adafruit drivers")
@@ -78,7 +78,7 @@ if Tools.get_option(Config, "exploreMode"):
     
 else:
     # Normal mode
-    from pyswitch.core.controller.Controller import Controller
+    from pyswitch.controller.Controller import Controller
 
     Memory.watch("Controller Import")
 
@@ -87,12 +87,12 @@ else:
 
     Memory.watch("Display Config")
 
-    from switches import Switches
+    from switches import Switches, ValueProvider
 
-    Memory.watch("Switches Config")
+    Memory.watch("Switches/ValueProvider Config")
 
     # Controller instance (runs the processing loop and keeps everything together)
-    appl = Controller(led_driver, Config, Switches, Displays, gui)
+    appl = Controller(led_driver, Config, ValueProvider, Switches, Displays, gui)
 
     Memory.watch("Controller")
 

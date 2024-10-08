@@ -15,7 +15,7 @@ class Controller(ClientRequestListener, Updater):
     STAT_ID_TICK_TIME = "Tick"             # Time one processing loop takes overall
     STAT_ID_SWITCH_UPDATE_TIME = "SwUp"    # Time between switch state updates. This measurement costs a lot of overhead!
 
-    # config:   Configuration dictionary. Must at least contain a "valueProvider" (instance of ClientValueProvider)
+    # config:   Configuration dictionary. 
     # switches: [           list of switch definitions
     #                {
     #                     "assignment": {   Selects which switch of your device you want to assign. 
@@ -34,8 +34,9 @@ class Controller(ClientRequestListener, Updater):
     #                },
     #                ...
     #           ]
+    # value_provider: Value provider for the client
     # displays: list of DisplayElements to show on the TFT
-    def __init__(self, led_driver, config, switches = [], displays = [], ui = None):
+    def __init__(self, led_driver, config, value_provider, switches = [], displays = [], ui = None):
         Updater.__init__(self)
 
         # User interface
@@ -73,7 +74,7 @@ class Controller(ClientRequestListener, Updater):
         self._init_midi()
 
         # Client adapter to send and receive parameters
-        self.client = Client(self._midi, self.config)
+        self.client = Client(self._midi, self.config, value_provider)
 
         # Set up switches
         self.switches = []
@@ -172,6 +173,8 @@ class Controller(ClientRequestListener, Updater):
             # Update all Updateables in periodic intervals, less frequently then every tick
             if self.period.exceeded:
                 self.update()
+
+                #Memory.watch("Update run finished")
 
             # Receive all available MIDI messages            
             cnt = 0

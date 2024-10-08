@@ -4,14 +4,8 @@
 #
 ##############################################################################################################################################
 
-from kemper import KemperMidiValueProvider
-
 Config = {
     
-    # Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
-    # when an answer to a value request is received.
-    "valueProvider": KemperMidiValueProvider(),
-
     # Max. number of MIDI messages being parsed before the next switch state evaluation
     # is triggered. If set to 0, only one message is parsed per tick, which leads to 
     # flickering states sometimes. If set too high, switch states will not be read for too long.

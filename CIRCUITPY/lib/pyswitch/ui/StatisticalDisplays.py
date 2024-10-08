@@ -1,6 +1,6 @@
 from .elements.elements import StatisticsDisplayLabel, PerformanceIndicator
-from ..core.controller.measurements import RuntimeMeasurement, FreeMemoryMeasurement
-from ..core.controller.Controller import Controller
+from ..controller.measurements import RuntimeMeasurement, FreeMemoryMeasurement
+from ..controller.Controller import Controller
 
 
 # Properties for the performance indicator (dot)

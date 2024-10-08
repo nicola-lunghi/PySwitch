@@ -39,14 +39,14 @@ class ClientValueProvider:
 # Implements all MIDI communication to and from the client device
 class Client(ClientRequestListener):
 
-    def __init__(self, midi, config):
+    def __init__(self, midi, config, value_provider):
         self._midi = midi
         self._config = config
 
         self._debug = Tools.get_option(self._config, "debugClient")
         self._debug_mapping = Tools.get_option(self._config, "clientDebugMapping", None)
 
-        self._value_provider = self._config["valueProvider"]
+        self._value_provider = value_provider
 
         # Buffer for mappings. Whenever possible, existing mappings are used
         # so values can be buffered.
@@ -82,7 +82,8 @@ class Client(ClientRequestListener):
             req = ClientRequest(                
                 self._midi,
                 m,
-                self._config
+                self._config,
+                self._value_provider
             )
             
             req.add_listener(self)          # Listen to fill the buffer
@@ -243,7 +244,7 @@ class ClientParameterMapping:
 # Model for a request for a value
 class ClientRequest(EventEmitter):
 
-    def __init__(self, midi, mapping, config):
+    def __init__(self, midi, mapping, config, value_provider):
         super().__init__(ClientRequestListener)
         
         self.mapping = mapping        
@@ -254,7 +255,7 @@ class ClientRequest(EventEmitter):
         self._debug_raw_midi = Tools.get_option(self._config, "debugClientRawMidi")
         self._debug_mapping = Tools.get_option(self._config, "clientDebugMapping", None)
 
-        self._value_provider = self._config["valueProvider"]
+        self._value_provider = value_provider
 
         if not self.mapping.request:
             raise Exception("No REQUEST message prepared for this MIDI mapping (" + self.mapping.name + ")")
