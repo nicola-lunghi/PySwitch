@@ -4,12 +4,13 @@
 #
 ##############################################################################################################################################
  
-from .core.misc.Colors import Colors
-from .core.controller.ConditionTree import ParameterCondition, ParameterConditionModes
-from kemper import KemperMappings
+from pyswitch.core.misc import Colors
+from pyswitch.core.controller.ConditionTree import ParameterCondition, ParameterConditionModes
 
-from .ui.elements.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds
-from .ui.StatisticalDisplays import StatisticalDisplays
+from pyswitch.ui.elements.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds
+from pyswitch.ui.StatisticalDisplays import StatisticalDisplays
+
+from kemper import KemperMappings
 
 #############################################################################################################################################
 

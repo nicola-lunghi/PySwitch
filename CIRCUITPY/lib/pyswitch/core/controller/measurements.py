@@ -1,8 +1,6 @@
 from gc import collect, mem_free
 
-from ..misc.Tools import Tools
-from ..misc.EventEmitter import EventEmitter
-from ..controller.Updateable import Updateable
+from ..misc import Tools, EventEmitter, Updateable
 
 
 # Base class for measurements

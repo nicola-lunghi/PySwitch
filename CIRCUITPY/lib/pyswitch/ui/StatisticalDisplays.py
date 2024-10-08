@@ -1,5 +1,4 @@
-from .elements.StatisticsDisplayLabel import StatisticsDisplayLabel
-from .elements.PerformanceIndicator import PerformanceIndicator
+from .elements.elements import StatisticsDisplayLabel, PerformanceIndicator
 from ..core.controller.measurements import RuntimeMeasurement, FreeMemoryMeasurement
 from ..core.controller.Controller import Controller
 

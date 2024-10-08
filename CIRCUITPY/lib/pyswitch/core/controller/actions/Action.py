@@ -1,6 +1,4 @@
-from ....misc.Tools import Tools
-from ....misc.Defaults import Defaults
-from ...Updateable import Updateable
+from ...misc import Tools, Updateable, Defaults
 
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
@@ -274,3 +272,4 @@ class Action(Updateable):
         enabled_text = "enabled" if self.enabled else "disabled"
 
         Tools.print("Switch " + self.id + " (" + enabled_text + "): " + msg)
+

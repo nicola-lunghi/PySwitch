@@ -4,16 +4,15 @@
 #
 ##############################################################################################################################################
  
-from .core.misc.Colors import Colors
-from .core.misc.Defaults import Defaults
-from .hardware.hardware import SwitchDefinitions
-from .displays import DisplayIds
+from pyswitch.core.misc import Colors, Defaults
+from pyswitch.hardware.hardware import SwitchDefinitions
 
-from .core.controller.ConditionTree import ParameterCondition, ParameterConditionModes
-from .core.controller.actions.actions import PushButtonModes
+from pyswitch.core.controller.ConditionTree import ParameterCondition, ParameterConditionModes
+from pyswitch.core.controller.actions.actions import PushButtonModes
 
-from kemper import Kemper, KemperMappings, KemperActionDefinitions, KemperEffectSlot
+from kemper import Kemper, KemperActionDefinitions, KemperEffectSlot, KemperMappings
 
+from displays import DisplayIds
 
 # Layout used for the action labels (only used here locally)
 ACTION_LABEL_LAYOUT = {
@@ -29,43 +28,43 @@ Switches = [
     {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.EFFECT_ON_OFF(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                display = {
-                    "id": DisplayIds.DISPLAY_HEADER,
-                    "index": 0,
-                    "layout": ACTION_LABEL_LAYOUT
-                }
-            )
-            #ParameterCondition(
-            #    mapping = KemperMappings.RIG_VOLUME,
-            #    mode = ParameterConditionModes.MODE_GREATER_EQUAL,
-            #    ref_value = Kemper.NRPN_VALUE(0.5),
+            #KemperActionDefinitions.EFFECT_ON_OFF(
+            #    slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+            #    display = {
+            #        "id": DisplayIds.DISPLAY_HEADER,
+            #        "index": 0,
+            #        "layout": ACTION_LABEL_LAYOUT
+            #    }
+            #)
+            ParameterCondition(
+                mapping = KemperMappings.RIG_VOLUME,
+                mode = ParameterConditionModes.MODE_GREATER_EQUAL,
+                ref_value = Kemper.NRPN_VALUE(0.5),
 
-            #    yes = [
-            #        KemperActionDefinitions.EFFECT_ON_OFF(
-            #            id = "sw1",
-            #            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-            #        ),
-            #        KemperActionDefinitions.EFFECT_ON_OFF(
-            #            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
-            #            display = {
-            #                "id": DisplayIds.DISPLAY_HEADER,
-            #                "index": 0,
-            #                "layout": ACTION_LABEL_LAYOUT
-            #            }
-            #        ),
-            #        KemperActionDefinitions.AMP_ON_OFF()
-            #    ],
-            #    no = KemperActionDefinitions.EFFECT_ON_OFF(
-            #        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
-            #        display = {
-            #            "id": DisplayIds.DISPLAY_HEADER,
-            #            "index": 0,
-            #            "layout": ACTION_LABEL_LAYOUT
-            #        }
-            #    )
-            #)                
+                yes = [
+                    KemperActionDefinitions.EFFECT_ON_OFF(
+                        id = "sw1",
+                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+                    ),
+                    KemperActionDefinitions.EFFECT_ON_OFF(
+                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
+                        display = {
+                            "id": DisplayIds.DISPLAY_HEADER,
+                            "index": 0,
+                            "layout": ACTION_LABEL_LAYOUT
+                        }
+                    ),
+                    KemperActionDefinitions.AMP_ON_OFF()
+                ],
+                no = KemperActionDefinitions.EFFECT_ON_OFF(
+                    slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
+                    display = {
+                        "id": DisplayIds.DISPLAY_HEADER,
+                        "index": 0,
+                        "layout": ACTION_LABEL_LAYOUT
+                    }
+                )
+            )                
         ]
     },
 

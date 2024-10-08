@@ -1,8 +1,7 @@
 from displayio import Group
 
-from .DisplayBounds import DisplayBounds
-from .elements.base.HierarchicalDisplayElement import HierarchicalDisplayElement
-from .elements.DisplayLabel import DisplayLabel
+from .elements.DisplayElement import HierarchicalDisplayElement, DisplayBounds
+from .elements.elements import DisplayLabel
 
 
 # Implements the UI
@@ -50,3 +49,4 @@ class UserInterface:
             name = name,
             id = id if id else name
         )
+    

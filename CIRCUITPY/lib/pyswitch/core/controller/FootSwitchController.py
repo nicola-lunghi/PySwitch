@@ -1,9 +1,7 @@
 from random import randint
 
-from .conditions.ConditionTree import ConditionTree
-from .conditions.Condition import ConditionListener
-from ..misc.Tools import Tools
-from ..misc.Colors import Colors
+from .ConditionTree import ConditionTree, ConditionListener
+from ..misc import Tools, Colors
 
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
