@@ -1,5 +1,5 @@
 from .Action import Action
-from ..Client import ClientRequestListener, ClientParameterMapping
+from ..Client import ClientParameterMapping
 from ...misc import Tools, Defaults, Colors
 
 
@@ -130,7 +130,7 @@ class PushButtonAction(Action):
 
 
 # Implements bipolar parameters on base of the PushButtonAction class
-class ParameterAction(PushButtonAction, ClientRequestListener):
+class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
     # Brightness values 
     DEFAULT_LED_BRIGHTNESS_ON = 0.3
@@ -429,7 +429,7 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
 
 
 # Implements the effect enable/disable footswitch action
-class EffectEnableAction(ParameterAction, ClientRequestListener):
+class EffectEnableAction(ParameterAction): #, ClientRequestListener):
     
     # Switches an effect on/off, if the slot is assigned. Based on ParameterAction, so all options there
     # are available here, too.
@@ -590,32 +590,32 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
 # Category provider base class. A category provider must translate the value of 
 # the effect type mapping set on the action's config to an effect category including
 # the corresponding color and name.
-class EffectCategoryProvider:
-    # Must return the effect category for a mapping value
-    def get_effect_category(self, value):
-        raise Exception("Implement in child classes")
-    
-    # Must return the effect color for a mapping value
-    def get_effect_category_color(self, value):
-        return Colors.BLACK
-    
-    # Must return the effect name for a mapping value
-    def get_effect_category_name(self, value):
-        return ""
-    
-    # Must return the value interpreted as "not assigned"
-    def get_category_not_assigned(self):
-        raise Exception("Implement in child classes")
+#class EffectCategoryProvider:
+#    # Must return the effect category for a mapping value
+#    def get_effect_category(self, value):
+#        raise Exception("Implement in child classes")
+#    
+#    # Must return the effect color for a mapping value
+#    def get_effect_category_color(self, value):
+#        return Colors.BLACK
+#    
+#    # Must return the effect name for a mapping value
+#    def get_effect_category_name(self, value):
+#        return ""
+#    
+#    # Must return the value interpreted as "not assigned"
+#    def get_category_not_assigned(self):
+#        raise Exception("Implement in child classes")
     
 
 #######################################################################################################
  
  
-# Provider class for slot information
-class SlotInfoProvider:
-    # Must return the lot name
-    def get_name(self):
-        raise Exception("Implement in child classes")
+## Provider class for slot information
+#class SlotInfoProvider:
+#    # Must return the lot name
+#    def get_name(self):
+#        raise Exception("Implement in child classes")
 
 ################################################################################################################################
 

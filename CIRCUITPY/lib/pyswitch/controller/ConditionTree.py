@@ -1,11 +1,11 @@
-from .Client import ClientRequestListener
+#from .Client import ClientRequestListener
 from ..misc import Tools, Updateable, Updater, EventEmitter
 
 # Base condition to be filled with custom objects or lists (which can be or contain Conditions themselves).
 # Compares the value of the mapping to the passed one, and notifies listeners when the value has changed.
 class Condition(EventEmitter, Updateable):
     def __init__(self, yes = None, no = None):
-        super().__init__(ConditionListener)
+        super().__init__() #ConditionListener)
 
         self.yes = yes    # Positive value
         self.no = no      # Negative value
@@ -23,21 +23,21 @@ class Condition(EventEmitter, Updateable):
 
 
 # Base class for evaluating condition changes
-class ConditionListener:
-    # Called on condition changes. The changed condition is passed, however you may more
-    # likely use the ConditionTree value(s) instead.
-    def condition_changed(self, condition):
-        pass
+#class ConditionListener:
+#    # Called on condition changes. The changed condition is passed, however you may more
+#    # likely use the ConditionTree value(s) instead.
+#    def condition_changed(self, condition):
+#        pass
 
     
 ############################################################################################################################
 
 
 # Factory for replacing entries
-class ConditionTreeEntryReplacer:
-    # Returns the data to replace entry with.
-    def replace(self, entry):
-        return None
+#class ConditionTreeEntryReplacer:
+#    # Returns the data to replace entry with.
+#    def replace(self, entry):
+#        return None
 
 
 ############################################################################################################################
@@ -59,8 +59,8 @@ class ConditionTree:
     # replacer      Optional instance of ConditionTreeEntryReplacer, used to replace the input entries.
     #
     def __init__(self, subject, listener = None, replacer = None, allow_lists = True):
-        if not isinstance(listener, ConditionListener):
-            raise Exception("Invalid condition listener")
+        #if not isinstance(listener, ConditionListener):
+        #    raise Exception("Invalid condition listener")
 
         self._entries = []                # Flat list of all data objects (no conditions)
         self._conditions = []             # List of conditions found
@@ -248,7 +248,7 @@ class ParameterConditionModes:
 
 # Condition to be filled with action specifications.
 # Compares the value of the mapping to the passed one, and enables the action or action_not.
-class ParameterCondition(Condition, ClientRequestListener):
+class ParameterCondition(Condition): #, ClientRequestListener):
     def __init__(self, mapping, ref_value, mode = ParameterConditionModes.MODE_GREATER_EQUAL, yes = None, no = None):
         super().__init__(yes = yes, no = no)
 

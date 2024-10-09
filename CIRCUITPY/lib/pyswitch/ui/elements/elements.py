@@ -3,9 +3,8 @@ from adafruit_display_text import label, wrap_text_to_pixels
 
 from .DisplayElement import HierarchicalDisplayElement, DisplayBounds, DisplayElement
 
-from ...controller.ConditionTree import ConditionTree, ConditionTreeEntryReplacer, ConditionListener, Condition
-from ...controller.Client import ClientRequestListener
-from ...controller.measurements import RuntimeMeasurementListener, RuntimeMeasurement
+from ...controller.ConditionTree import ConditionTree, Condition
+from ...controller.measurements import RuntimeMeasurement
 from ...misc import Tools, Updateable, Colors
 
 
@@ -43,7 +42,7 @@ class DisplayLabelLayout:
 
 
 # Controller for a generic rectangular label on the user interface.
-class DisplayLabel(DisplayElement, ConditionListener, ConditionTreeEntryReplacer):
+class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryReplacer):
 
     # Line feed used for display
     LINE_FEED = "\n"
@@ -483,7 +482,7 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
 
 
 # DisplayLabel which is connected to a client parameter
-class ParameterDisplayLabel(DisplayLabel, Updateable, ClientRequestListener):
+class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener):
     
     # parameter: {
     #     "mapping":     A ClientParameterMapping instance whose values should be shown in the area
@@ -553,7 +552,7 @@ class ParameterDisplayLabel(DisplayLabel, Updateable, ClientRequestListener):
 # Shows a small dot indicating loop processing time (not visible when max. tick time is way below the updateInterval, warning
 # the user when tick time gets higher and shows an alert when tick time is higher than the update interval, which means that
 # the device is running on full capacity. If tick time is more than double the update interval, an even more severe alert is shown)
-class PerformanceIndicator(DisplayElement, RuntimeMeasurementListener):
+class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
 
     def __init__(self, measurement, bounds = DisplayBounds(), name = "", id = 0):
         super().__init__(bounds, name, id)
@@ -610,12 +609,12 @@ class PerformanceIndicator(DisplayElement, RuntimeMeasurementListener):
             int(color1[2] * factor1 + color2[2] * factor2)
         )            
         
-        
+
 ###########################################################################################################################
 
 
 # Label showing statistical info
-class StatisticsDisplayLabel(DisplayLabel, RuntimeMeasurementListener, Updateable):
+class StatisticsDisplayLabel(DisplayLabel, Updateable):  #RuntimeMeasurementListener
     
     def __init__(self, measurements, bounds = DisplayBounds(), layout = {}, id = 0):
         super().__init__(bounds=bounds, layout=layout, name="Statistics", id=id)        

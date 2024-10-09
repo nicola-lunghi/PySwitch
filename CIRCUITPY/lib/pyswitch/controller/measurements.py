@@ -32,7 +32,7 @@ class RuntimeMeasurement(StatisticsMeasurement, EventEmitter, Updateable):
     # type is arbitrary and only used externally
     def __init__(self, interval_millis, type = ""):
         StatisticsMeasurement.__init__(self)
-        EventEmitter.__init__(self, RuntimeMeasurementListener)
+        EventEmitter.__init__(self) #, RuntimeMeasurementListener)
 
         self.type = type
 
@@ -100,9 +100,9 @@ class RuntimeMeasurement(StatisticsMeasurement, EventEmitter, Updateable):
 
 
 # Listener for runtime measurement changes
-class RuntimeMeasurementListener:
-    def measurement_updated(self, measurement):
-        pass
+#class RuntimeMeasurementListener:
+#    def measurement_updated(self, measurement):
+#        pass
 
 
 ################################################################################

@@ -4,8 +4,8 @@ from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 
 from pyswitch.misc import Colors, Defaults
-from pyswitch.controller.actions.actions import ParameterAction, PushButtonModes, EffectCategoryProvider
-from pyswitch.controller.Client import ClientParameterMapping, ClientValueProvider
+from pyswitch.controller.actions.actions import ParameterAction, PushButtonModes
+from pyswitch.controller.Client import ClientParameterMapping
 from pyswitch.controller.actions.actions import EffectEnableAction, ParameterAction, ResetDisplaysAction
 
 
@@ -336,7 +336,7 @@ class KemperActionDefinitions:
 
 
 # Provides mapping of the kemper internal effect types to effect categories
-class KemperEffectCategories(EffectCategoryProvider):
+class KemperEffectCategories: #(EffectCategoryProvider):
 
     # Effect types enum (used internally, also for indexing colors, so be sure these are always a row from 0 to n)
     CATEGORY_NONE = 0
@@ -791,7 +791,7 @@ class KemperMappings:
 
 
 # Implements setting values and parsing request responses
-class KemperMidiValueProvider(ClientValueProvider):
+class KemperMidiValueProvider: #(ClientValueProvider):
 
     # Must parse the incoming MIDI message and return the value contained.
     # If the response template does not match, must return None.

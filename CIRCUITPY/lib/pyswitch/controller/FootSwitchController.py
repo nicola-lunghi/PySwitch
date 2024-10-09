@@ -1,11 +1,11 @@
 from random import randint
 
-from .ConditionTree import ConditionTree, ConditionListener
+from .ConditionTree import ConditionTree
 from ..misc import Tools, Colors
 
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
-class FootSwitchController(ConditionListener):
+class FootSwitchController: #ConditionListener
 
     # config must be a dictionary holding the following attributes:
     # { 
@@ -249,15 +249,15 @@ class FootSwitchController(ConditionListener):
 ################################################################################################
 
 
-# Base class for implementing switch driver classes
-class SwitchDriver:
-    
-    # Initializes the switch. Called once before usage.
-    def init(self):
-        pass
-
-    # Return if the switch is currently pushed (bool).
-    @property
-    def pushed(self):
-        return False
+## Base class for implementing switch driver classes
+#class SwitchDriver:
+#    
+#    # Initializes the switch. Called once before usage.
+#    def init(self):
+#        pass
+#
+#    # Return if the switch is currently pushed (bool).
+#    @property
+#    def pushed(self):
+#        return False
     

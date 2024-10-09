@@ -5,39 +5,39 @@ from ..misc import Tools, EventEmitter, PeriodCounter
 
 
 # Base class for listeners to client parameter changes
-class ClientRequestListener:
-
-    # Called by the Client class when a parameter request has been answered.
-    # The value received is already set on the mapping.
-    def parameter_changed(self, mapping):
-        pass
-
-    # Called when the client is offline (requests took too long)
-    def request_terminated(self, mapping):
-        pass
+#class ClientRequestListener:
+#
+#    # Called by the Client class when a parameter request has been answered.
+#    # The value received is already set on the mapping.
+#    def parameter_changed(self, mapping):
+#        pass
+#
+#    # Called when the client is offline (requests took too long)
+#    def request_terminated(self, mapping):
+#        pass
 
 
 ######################################################################################################################
 
 
 # Must implement preparation of MIDI messages for sending as well as parsing the received ones.
-class ClientValueProvider:
-    # Must parse the incoming MIDI message and return the value contained.
-    # If the response template does not match, must return None.
-    # Must return True to notify the listeners of a value change.
-    def parse(self, mapping, midi_message):
-        return False
+#class ClientValueProvider:
+#    # Must parse the incoming MIDI message and return the value contained.
+#    # If the response template does not match, must return None.
+#    # Must return True to notify the listeners of a value change.
+#    def parse(self, mapping, midi_message):
+#        return False
     
-    # Must set the passed value on the SET message of the mapping.
-    def set_value(self, mapping, value):
-        pass
+#    # Must set the passed value on the SET message of the mapping.
+#    def set_value(self, mapping, value):
+#        pass
 
 
 ######################################################################################################################
 
 
 # Implements all MIDI communication to and from the client device
-class Client(ClientRequestListener):
+class Client: #(ClientRequestListener):
 
     def __init__(self, midi, config, value_provider):
         self.midi = midi
@@ -80,7 +80,6 @@ class Client(ClientRequestListener):
                 mapping
             )
             
-            req.add_listener(self)          # Listen to fill the buffer
             req.add_listener(listener)
 
             # Add to list
@@ -227,7 +226,7 @@ class ClientParameterMapping:
 class ClientRequest(EventEmitter):
 
     def __init__(self, client, mapping):
-        super().__init__(ClientRequestListener)
+        super().__init__() #ClientRequestListener)
         
         self.client = client
         self.mapping = mapping

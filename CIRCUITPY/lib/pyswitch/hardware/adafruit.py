@@ -18,7 +18,6 @@ from adafruit_misc.neopixel import NeoPixel
 
 # Switch driver
 from digitalio import DigitalInOut, Direction, Pull
-from ..controller.FootSwitchController import SwitchDriver
 
 
 # TFT driver class
@@ -118,7 +117,7 @@ class AdafruitNeoPixelDriver:
 
 
 # Simple GPIO switch
-class AdafruitSwitch(SwitchDriver):
+class AdafruitSwitch: #(SwitchDriver):
     
     # port: The board GPIO pin definition to be used for this switch (for example board.GP1)
     def __init__(self, port):

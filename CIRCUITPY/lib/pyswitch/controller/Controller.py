@@ -4,12 +4,12 @@ from adafruit_midi import MIDI
 from .FootSwitchController import FootSwitchController
 from .measurements import RuntimeMeasurement
 from .actions.Action import Action
-from .Client import Client, ClientRequestListener
+from .Client import Client
 from ..misc import Tools, Updateable, Updater, Memory, PeriodCounter
 
 
 # Main application class (controls the processing)    
-class Controller(ClientRequestListener, Updater):
+class Controller(Updater): #ClientRequestListener
 
     # IDs for all available measurements (for statistics)
     STAT_ID_TICK_TIME = "Tick"             # Time one processing loop takes overall
