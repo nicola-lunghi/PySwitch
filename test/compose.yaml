@@ -6,5 +6,5 @@ services:
     #ports:
       #- "80:80"
     volumes:
-      - ../lib:/circuitpy/lib
+      - ../CIRCUITPY/lib:/circuitpy/lib
       - .:/circuitpy/test
