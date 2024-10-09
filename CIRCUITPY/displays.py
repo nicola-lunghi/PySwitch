@@ -98,5 +98,5 @@ Displays = [
     StatisticalDisplays.PERFORMANCE_DOT(bounds),
 
     # Statistics area
-    StatisticalDisplays.STATS_DISPLAY(bounds)
+    #StatisticalDisplays.STATS_DISPLAY(bounds)
 ]

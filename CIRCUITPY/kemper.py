@@ -9,19 +9,13 @@ from pyswitch.controller.Client import ClientParameterMapping
 from pyswitch.controller.actions.actions import EffectEnableAction, ParameterAction, ResetDisplaysAction
 
 
-# Some basic Kemper MIDI addresses and values
+# Some basic Kemper constants and helpers
 class Kemper:
-    NRPN_PRODUCT_TYPE_PROFILER = 0x00         # Kemper Profiler
-    NRPN_PRODUCT_TYPE_PROFILER_PLAYER = 0x02  # Kemper Profiler Player
-    NRPN_DEVICE_ID_OMNI = 0x7f                # Omni (all devices, only supported mode)
-    NRPN_INSTANCE = 0x00                      # Instance ID for NRPN. The profiler only supports instance 0.
-    NRPN_MANUFACTURER_ID = [0x00, 0x20, 0x33]             # Kemper manufacturer ID
-
-    # Parameter types
+    # Parameter types (used internally in mappings)
     NRPN_PARAMETER_TYPE_NUMERIC = 0   # Default, also used for on/off
     NRPN_PARAMETER_TYPE_STRING = 1
 
-    # Generally used NRPN values
+    # Generally used NRPN values (used internally)
     NRPN_PARAMETER_OFF = 0
     NRPN_PARAMETER_ON = 1
 
@@ -444,36 +438,6 @@ class KemperEffectCategories: #(EffectCategoryProvider):
 ####################################################################################################################
 
 
-# Kemper specific SysEx message with defaults which are valid most of the time
-class KemperNRPNMessage(SystemExclusive):
-    # Takes MIDI messages as argument (CC or SysEx)
-    def __init__(
-            self, 
-            function_code,
-            address_page,
-            address_number,
-            manufacturer_id = Kemper.NRPN_MANUFACTURER_ID, 
-            product_type = Kemper.NRPN_PRODUCT_TYPE_PROFILER_PLAYER,
-            device_id = Kemper.NRPN_DEVICE_ID_OMNI
-        ):
-
-        # Adafruit SystemExclusive
-        super().__init__(
-            manufacturer_id,                 # [0x00, 0x20, 0x33]
-            [
-                product_type,                # 0x02 (Player), 0x00 (Profiler)
-                device_id,                   # 0x7f (omni) or manually set via parameter
-                function_code,               # Selects the function, for example 0x41 for requesting a single parameter
-                Kemper.NRPN_INSTANCE,   # 0x00
-                address_page,                # Controller MSB (address page)
-                address_number               # Controller LSB (address number of parameter)
-            ]
-        )
-        
-
-####################################################################################################################
-
-
 # CC Addresses
 CC_TUNER_MODE = 31
 CC_BANK_INCREASE = 48
@@ -482,6 +446,13 @@ CC_RIG_SELECT = 50       # This selects slot 1 of the current bank. The slots 2-
 CC_BANK_PRESELECT = 47
 CC_TAP_TEMPO = 30
 CC_ROTARY_SPEED = 33     # 1 = Fast, 0 = Slow
+
+# Basic values for the kemnper devices
+NRPN_PRODUCT_TYPE_PROFILER = 0x00                     # Kemper Profiler
+NRPN_PRODUCT_TYPE_PROFILER_PLAYER = 0x02              # Kemper Profiler Player
+NRPN_DEVICE_ID_OMNI = 0x7f                            # Omni (all devices, only supported mode)
+NRPN_INSTANCE = 0x00                                  # Instance ID for NRPN. The profiler only supports instance 0.
+NRPN_MANUFACTURER_ID = [0x00, 0x20, 0x33]             # Kemper manufacturer ID
 
 # Adress pages
 NRPN_ADDRESS_PAGE_STRINGS = 0x00
@@ -493,6 +464,7 @@ NRPN_ADDRESS_PAGE_CABINET = 0x0c
 # NRPN Function codes
 NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER = 0x41
 NRPN_FUNCTION_REQUEST_STRING_PARAMETER = 0x43
+NRPN_FUNCTION_REQUEST_EXT_STRING_PARAMETER = 0x47
 
 NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER = 0x01
 NRPN_FUNCTION_RESPONSE_STRING_PARAMETER = 0x03
@@ -520,6 +492,58 @@ NRPN_STRING_PARAMETER_ID_RIG_NAME = 0x01
 NRPN_STRING_PARAMETER_ID_RIG_DATE = 0x03
 NRPN_STRING_PARAMETER_ID_AMP_NAME = 0x10
 NRPN_STRING_PARAMETER_ID_CABINET_NAME = 0x20
+
+
+# Kemper specific SysEx message with defaults which are valid most of the time
+class KemperNRPNMessage(SystemExclusive):
+    # Takes MIDI messages as argument (CC or SysEx)
+    def __init__(
+            self, 
+            function_code,
+            address_page,
+            address_number,
+            manufacturer_id = NRPN_MANUFACTURER_ID, 
+            product_type = NRPN_PRODUCT_TYPE_PROFILER_PLAYER,
+            device_id = NRPN_DEVICE_ID_OMNI
+        ):
+
+        # Adafruit SystemExclusive
+        super().__init__(
+            manufacturer_id,                 # [0x00, 0x20, 0x33]
+            [
+                product_type,                # 0x02 (Player), 0x00 (Profiler)
+                device_id,                   # 0x7f (omni) or manually set via parameter
+                function_code,               # Selects the function, for example 0x41 for requesting a single parameter
+                NRPN_INSTANCE,               # 0x00
+                address_page,                # Controller MSB (address page)
+                address_number               # Controller LSB (address number of parameter)
+            ]
+        )
+        
+# Kemper specific SysEx message for extended parameters
+#class KemperNRPNExtendedMessage(SystemExclusive):
+#    # Takes MIDI messages as argument (CC or SysEx)
+#    def __init__(
+#            self, 
+#            function_code,
+#            controller,     # Must be a list
+#            manufacturer_id = NRPN_MANUFACTURER_ID, 
+#            product_type = NRPN_PRODUCT_TYPE_PROFILER_PLAYER,
+#            device_id = NRPN_DEVICE_ID_OMNI
+#        ):
+
+#        # Adafruit SystemExclusive
+#        super().__init__(
+#            manufacturer_id,                 # [0x00, 0x20, 0x33]
+#            [
+#                product_type,                # 0x02 (Player), 0x00 (Profiler)
+#                device_id,                   # 0x7f (omni) or manually set via parameter
+#                function_code,               # Selects the function, for example 0x41 for requesting a single parameter
+#                NRPN_INSTANCE                # 0x00                
+#            ] + controller
+#        )
+
+####################################################################################################################
 
 
 # Defines some useful MIDI mappings
@@ -611,7 +635,7 @@ class KemperMappings:
     RIG_NAME = ClientParameterMapping(
         name = "Rig Name",
         request = KemperNRPNMessage(               
-            NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
+            NRPN_FUNCTION_REQUEST_STRING_PARAMETER,             
             NRPN_ADDRESS_PAGE_STRINGS,
             NRPN_STRING_PARAMETER_ID_RIG_NAME
         ),

@@ -28,7 +28,7 @@
 #################################################################################################################################
 
 from pyswitch.misc import Tools, Memory # type: ignore
-Memory.start(zoom = 10)
+#Memory.start(zoom = 10)
 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader
 from pyswitch.ui.UserInterface import UserInterface

@@ -4,6 +4,8 @@
 #
 ##############################################################################################################################################
 
+from kemper import KemperMappings
+
 Config = {
     
     # Max. number of MIDI messages being parsed before the next switch state evaluation
@@ -44,7 +46,7 @@ Config = {
                                                       # actions are triggered. Optional.
     #"debugParameters": True,                         # Show messages from the global parameter controller
     #"debugClient": True,                             # Show all requests and responses to/from the Kemper Profiler. Optional.
-    #"clientDebugMapping": KemperMappings.NEXT_BANK,  # Optional, if set the kemper classes will only output messages related to
+    #"clientDebugMapping": KemperMappings.RIG_NAME,  # Optional, if set the kemper classes will only output messages related to
                                                       # the specified mapping.
     #"debugClientRawMidi": True,                      # Debug raw kemper MIDI messages. Only regarded whe "debugKemper" is enabled, too.
     #"debugMidi": True,                               # Debug Adafruit MIDI controller. Normally it is sufficient and more readable 
