@@ -1,8 +1,6 @@
 from .Action import Action
-from ...misc import Tools
-from ...misc import Defaults
-from ...misc import Colors
 from ..Client import ClientRequestListener, ClientParameterMapping
+from ...misc import Tools, Defaults, Colors
 
 
 # Modes for PushButtonAction
@@ -433,8 +431,6 @@ class ParameterAction(PushButtonAction, ClientRequestListener):
 # Implements the effect enable/disable footswitch action
 class EffectEnableAction(ParameterAction, ClientRequestListener):
     
-    DEFAULT_EFFECT_SLOT_CORNER_RADIUS = 0   # This takes about 3kB per label if > 0! Nicer would be 15, but....
-
     # Switches an effect on/off, if the slot is assigned. Based on ParameterAction, so all options there
     # are available here, too.
     # 
@@ -469,9 +465,6 @@ class EffectEnableAction(ParameterAction, ClientRequestListener):
         super().init(appl, switch)
         
         self._debug_slot_names = Tools.get_option(self.appl.config, "showEffectSlotNames", False)
-
-        if self.label:
-            self.label.corner_radius = Tools.get_option(self.config["display"], "cornerRadius", self.DEFAULT_EFFECT_SLOT_CORNER_RADIUS)
 
     # Request effect type periodically (which itself will trigger a status request).
     # Does not call super.do_update because the status is requested here later anyway.

@@ -1,10 +1,10 @@
 import board
 
-from ..misc import Updater, Colors
 from .FootSwitchController import FootSwitchController
 from .actions.Action import Action
 from ..hardware.adafruit import AdafruitSwitch
 from ..ui.elements.elements import DisplayLabel, DisplaySplitContainer
+from ..misc import Updater, Colors
 
 
 # Number of columns for port display

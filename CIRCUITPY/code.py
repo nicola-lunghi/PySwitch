@@ -27,16 +27,11 @@
 #
 #################################################################################################################################
 
-from pyswitch.misc import Tools, Memory
-Memory.init(zoom=10)
+from pyswitch.misc import Tools, Memory # type: ignore
+Memory.start(zoom = 10)
 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader
-
-Memory.watch("Import adafruit drivers")
-
 from pyswitch.ui.UserInterface import UserInterface
-
-Memory.watch("Import UserInterface")
 
 # Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)
 display_driver = AdafruitST7789DisplayDriver()
@@ -54,39 +49,22 @@ font_loader = AdafruitFontLoader()
 # Create User interface
 gui = UserInterface(display_driver, font_loader)
 
-Memory.watch("Setup GUI and drivers")
-
 if Tools.get_option(Config, "exploreMode"):
     # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
     # on unknown devices, to create layouts for the configuration.
     from pyswitch.controller.ExploreModeController import ExploreModeController
 
-    Memory.watch("Import ExploreModeController")
-
     appl = ExploreModeController(led_driver, gui)
-
-    Memory.watch("Controller set up")
-
     appl.process()
     
 else:
     # Normal mode
     from pyswitch.controller.Controller import Controller
 
-    Memory.watch("Import Controller")
-
     # Load configuration files
     from displays import Displays
-
-    Memory.watch("Display Config")
-
     from switches import Switches, ValueProvider
-
-    Memory.watch("Switches/ValueProvider Config")
 
     # Controller instance (runs the processing loop and keeps everything together)
     appl = Controller(led_driver, Config, ValueProvider, Switches, Displays, gui)
-
-    Memory.watch("Controller set up")
-
     appl.process()

@@ -261,4 +261,3 @@ class SwitchDriver:
     def pushed(self):
         return False
     
-

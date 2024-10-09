@@ -137,6 +137,7 @@ class Updateable:
 class Updater:
     def __init__(self):
         self._updateables = []
+        self._next = 0
 
     @property
     def updateables(self):
@@ -149,15 +150,25 @@ class Updater:
         
         self._updateables.append(u)
 
-    # Update all updateables
-    def update(self):
-        for u in self._updateables:            
-            self.process_pre_update(u)
-            u.update()
+    # Update all updateables. If round robin is enabled, this will update
+    # only one item at every call in round robin.
+    def update(self, round_robin = False):
+        if not round_robin:
+            for u in self._updateables:            
+                #self.process_pre_update(u)
+                u.update()
+        else:
+            if not self._updateables:
+                return
+            self._updateables[self._next].update()
+            
+            self._next += 1
+            if self._next >= len(self._updateables):
+                self._next = 0
 
     # Called before each updateable has been updated. Can be redefined.
-    def process_pre_update(self, updateable):
-        pass
+    #def process_pre_update(self, updateable):
+    #    pass
 
     # Reset all updateables
     def reset(self):
@@ -208,7 +219,7 @@ class Memory:
 
     # Initialize memory watching. Must be called for any measurements to take place.
     @staticmethod
-    def init(prefix = None, zoom = 3):
+    def start(prefix = None, zoom = 3):
         free_bytes = Memory._get_free_bytes()
         allocated_bytes = mem_alloc()
         total_bytes = allocated_bytes + free_bytes
@@ -278,3 +289,28 @@ class Memory:
 
         return "".join([ret[i] if i != zero_char else "|" for i in range(size)])
 
+
+###############################################################################################################
+
+
+# Periodic update helper    
+class PeriodCounter:
+    def __init__(self, interval_millis):
+        self._interval_millis = int(interval_millis)
+
+        self._last_reset = 0
+
+    @property
+    def interval(self):
+        return self._interval_millis
+
+    # Returns if the period has been exceeded. If yes, it lso resets
+    # the period to the current time.
+    @property
+    def exceeded(self):
+        current_time = Tools.get_current_millis()
+        if self._last_reset + self._interval_millis < current_time:
+            self._last_reset = current_time
+            return True
+        return False
+            

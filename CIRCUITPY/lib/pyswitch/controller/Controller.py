@@ -5,7 +5,7 @@ from .FootSwitchController import FootSwitchController
 from .measurements import RuntimeMeasurement
 from .actions.Action import Action
 from .Client import Client, ClientRequestListener
-from ..misc import Tools, Updateable, Updater, Memory
+from ..misc import Tools, Updateable, Updater, Memory, PeriodCounter
 
 
 # Main application class (controls the processing)    
@@ -50,7 +50,7 @@ class Controller(ClientRequestListener, Updater):
 
         # Statistical measurements (added by the displays etc.)
         self._measurements_tick_time = []
-        self._measurements_switch_update = []
+        #self._measurements_switch_update = []
 
         # NeoPixel driver 
         self.led_driver = led_driver
@@ -141,9 +141,9 @@ class Controller(ClientRequestListener, Updater):
             self._measurements_tick_time.append(measurement)
             self.add_updateable(measurement)
             
-        elif measurement.type == self.STAT_ID_SWITCH_UPDATE_TIME:
-            self._measurements_switch_update.append(measurement)
-            self.add_updateable(measurement)
+        #elif measurement.type == self.STAT_ID_SWITCH_UPDATE_TIME:
+        #    self._measurements_switch_update.append(measurement)
+        #    self.add_updateable(measurement)
         
         else:
             raise Exception("Runtime measurement type " + repr(measurement.type) + " not supported")
@@ -156,10 +156,12 @@ class Controller(ClientRequestListener, Updater):
         if self._debug_ui_structure:
             self.ui.root.print_debug_info(3)
 
+        Memory.watch("Controller: Showing UI")
+
         # Show user interface        
         self.ui.show(self)
 
-        Memory.watch("Controller: Show UI")
+        Memory.watch("Controller: Starting loop")
 
         if self._debug:
             Tools.print("-> Done initializing, starting processing loop")
@@ -172,9 +174,7 @@ class Controller(ClientRequestListener, Updater):
 
             # Update all Updateables in periodic intervals, less frequently then every tick
             if self.period.exceeded:
-                self.update()
-
-                #Memory.watch("Update run finished")
+                self.update(round_robin = False)
 
             # Receive all available MIDI messages            
             cnt = 0
@@ -195,24 +195,19 @@ class Controller(ClientRequestListener, Updater):
             for m in self._measurements_tick_time:
                 m.finish()
 
-    # Process switches between the actions to really catch all events despite a long update run time, 
-    # for example when the config has very many switches
-    def process_pre_update(self, updateable):
-        self._process_switches()
-
     # Detects switch changes
     def _process_switches(self):
         # This calls the start/finish methods on the statistics in reverse order to measure the time 
         # between switch updates        
-        for m in self._measurements_switch_update:
-            m.finish()
+        #for m in self._measurements_switch_update:
+        #    m.finish()
 
         # Update switch states
         for switch in self.switches:
             switch.process()
 
-        for m in self._measurements_switch_update:
-            m.start()
+        #for m in self._measurements_switch_update:
+        #    m.start()
 
     # Resets all switches
     def reset_switches(self, ignore_switches_list = []):
@@ -237,27 +232,3 @@ class Controller(ClientRequestListener, Updater):
         #self._info_parameters.reset()
 
 
-###############################################################################################################
-
-
-# Periodic update helper    
-class PeriodCounter:
-    def __init__(self, interval_millis):
-        self._interval_millis = int(interval_millis)
-
-        self._last_reset = 0
-
-    @property
-    def interval(self):
-        return self._interval_millis
-
-    # Returns if the period has been exceeded. If yes, it lso resets
-    # the period to the current time.
-    @property
-    def exceeded(self):
-        current_time = Tools.get_current_millis()
-        if self._last_reset + self._interval_millis < current_time:
-            self._last_reset = current_time
-            return True
-        return False
-            

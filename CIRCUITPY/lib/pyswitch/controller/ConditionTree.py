@@ -1,7 +1,6 @@
 from .Client import ClientRequestListener
 from ..misc import Tools, Updateable, Updater, EventEmitter
 
-
 # Base condition to be filled with custom objects or lists (which can be or contain Conditions themselves).
 # Compares the value of the mapping to the passed one, and notifies listeners when the value has changed.
 class Condition(EventEmitter, Updateable):
@@ -389,3 +388,4 @@ class PushButtonCondition(Condition):
                     return action
                 
         raise Exception("Action with ID " + repr(id) + " not defined")
+

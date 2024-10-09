@@ -1,7 +1,7 @@
 from adafruit_midi.system_exclusive import SystemExclusive
 from adafruit_midi.control_change import ControlChange
 
-from ..misc import Tools, EventEmitter
+from ..misc import Tools, EventEmitter, PeriodCounter
 
 
 # Base class for listeners to client parameter changes
@@ -40,34 +40,34 @@ class ClientValueProvider:
 class Client(ClientRequestListener):
 
     def __init__(self, midi, config, value_provider):
-        self._midi = midi
+        self.midi = midi
         self._config = config
 
-        self._debug = Tools.get_option(self._config, "debugClient")
-        self._debug_mapping = Tools.get_option(self._config, "clientDebugMapping", None)
-
-        self._value_provider = value_provider
-
-        # Buffer for mappings. Whenever possible, existing mappings are used
-        # so values can be buffered.
-        self._mappings_buffer = []     
+        self.debug = Tools.get_option(self._config, "debugClient")
+        self.debug_mapping = Tools.get_option(self._config, "clientDebugMapping", None)
+        self.debug_raw_midi = Tools.get_option(self._config, "debugClientRawMidi")
+        
+        self.value_provider = value_provider
 
         # List of ClientRequest objects    
         self._requests = []
 
         self._max_request_lifetime = Tools.get_option(self._config, "maxRequestLifetimeMillis", 2000)
+
+        # Helper to only clean up hanging requests from time to time as this is not urgent at all
+        self._cleanup_terminated_period = PeriodCounter(self._max_request_lifetime / 2)
         
     # Sends the SET message of a mapping
     def set(self, mapping, value):
         if not mapping.set:
             raise Exception("No SET message prepared for this MIDI mapping")
         
-        self._value_provider.set_value(mapping, value)
+        self.value_provider.set_value(mapping, value)
                 
-        if self._debug:
+        if self.debug:
             self._print("Send SET message (" + mapping.name + "): " + Tools.stringify_midi_message(mapping.set), mapping)
 
-        self._midi.send(mapping.set)
+        self.midi.send(mapping.set)
 
     # Send the request message of a mapping. Calls the passed listener when the answer has arrived.
     def request(self, mapping, listener):
@@ -75,15 +75,9 @@ class Client(ClientRequestListener):
         req = self._get_matching_request(mapping)
         if not req:
             # New request
-            m = self._get_buffered_mapping(mapping)
-            if not m:
-                m = mapping
-
-            req = ClientRequest(                
-                self._midi,
-                m,
-                self._config,
-                self._value_provider
+            req = ClientRequest(              
+                self,
+                mapping
             )
             
             req.add_listener(self)          # Listen to fill the buffer
@@ -92,7 +86,7 @@ class Client(ClientRequestListener):
             # Add to list
             self._requests.append(req)
             
-            if self._debug:
+            if self.debug:
                 self._print("Added new request for " + mapping.name + ". Open requests: " + str(len(self._requests)), mapping)
 
             # Send
@@ -101,44 +95,29 @@ class Client(ClientRequestListener):
             # Existing request: Add listener
             req.add_listener(listener)
 
-            if self._debug:
+            if self.debug:
                 self._print("Added new listener to existing request for " + mapping.name + ". Open requests: " + str(len(self._requests)) + ", Listeners: " + str(len(req.listeners)), mapping)
 
     # Receive MIDI messages
     def receive(self, midi_message):
-        # See if one of the waiting requests matches        
+        if self._cleanup_terminated_period.exceeded:
+            self._cleanup_hanging_requests()
+
+        if not midi_message:
+            return
+        
+        # See if one of the waiting requests matches
+        do_cleanup = False
+
         for request in self._requests:
-            request.parse(midi_message)            
+            request.parse(midi_message)
+            
+            if request.finished:
+                do_cleanup = True
 
         # Check for finished requests
-        self._cleanup_requests()
-
-    # Gets the buffered value (or None) for a formerly requested mapping.
-    def get(self, mapping):
-        m = self._get_buffered_mapping(mapping)
-
-        return m.value
-
-    # Returns a buffered mapping that equals the given one, or None
-    def _get_buffered_mapping(self, mapping):
-        for m in self._mappings_buffer:
-            if m == mapping:
-                return m
-            
-        return None
-
-    # This always listens to the requests, too, to fill the buffer
-    def parameter_changed(self, mapping):
-        m = self._get_buffered_mapping(mapping)
-        if m == None:
-            # Add to buffer
-            self._mappings_buffer.append(mapping)
-
-            if self._debug:
-                self._print("Added new mapping for " + mapping.name + " to buffer, num of buffer entries: " + str(len(self._mappings_buffer)), mapping)
-        else:
-            # Update value
-            m.value = mapping.value
+        if do_cleanup:
+            self._cleanup_requests()
 
     # Returns a matching request from the list if any, or None if no matching
     # request has been found.
@@ -154,6 +133,10 @@ class Client(ClientRequestListener):
 
     # Remove all finished requests, and terminate the ones which took too long already
     def _cleanup_requests(self):
+        self._requests = [i for i in self._requests if not i.finished]
+            
+    # Terminate any requests which took too long from time to time
+    def _cleanup_hanging_requests(self):    
         # Terminate requests if they waited too long
         current_time = Tools.get_current_millis()
         for request in self._requests:
@@ -161,15 +144,14 @@ class Client(ClientRequestListener):
             if diff > self._max_request_lifetime:
                 request.terminate()
 
-                if self._debug:
+                if self.debug:
                     self._print("Terminated request for " + request.mapping.name + ", took " + str(diff) + "ms")
+        
+        self._cleanup_requests()
 
-        # Remove finished requests
-        self._requests = [i for i in self._requests if not i.finished]
-            
     # Debug console output
     def _print(self, msg, mapping = None):
-        if self._debug_mapping != None and mapping != None and self._debug_mapping != mapping:
+        if self.debug_mapping != None and mapping != None and self.debug_mapping != mapping:
             return
         
         Tools.print("Client: " + msg)
@@ -244,19 +226,13 @@ class ClientParameterMapping:
 # Model for a request for a value
 class ClientRequest(EventEmitter):
 
-    def __init__(self, midi, mapping, config, value_provider):
+    def __init__(self, client, mapping):
         super().__init__(ClientRequestListener)
         
-        self.mapping = mapping        
-        self._config = config
-        self._midi = midi
+        self.client = client
+        self.mapping = mapping
+        self.debug = self.client.debug     
         
-        self._debug = Tools.get_option(self._config, "debugClient")
-        self._debug_raw_midi = Tools.get_option(self._config, "debugClientRawMidi")
-        self._debug_mapping = Tools.get_option(self._config, "clientDebugMapping", None)
-
-        self._value_provider = value_provider
-
         if not self.mapping.request:
             raise Exception("No REQUEST message prepared for this MIDI mapping (" + self.mapping.name + ")")
         
@@ -270,10 +246,10 @@ class ClientRequest(EventEmitter):
 
     # Sends the request
     def send(self):
-        if self._debug:
+        if self.debug:
             self._print(" -> Send REQUEST message for " + self.mapping.name + ": " + Tools.stringify_midi_message(self.mapping.request))
 
-        self._midi.send(self.mapping.request)
+        self.client.midi.send(self.mapping.request)
 
     # Returns if the request is finished
     @property
@@ -308,14 +284,14 @@ class ClientRequest(EventEmitter):
         if not isinstance(self.mapping.response, SystemExclusive):
             return
         
-        if self._debug_raw_midi:
+        if self.client.debug_raw_midi:
             self._print("RAW Receive : " + Tools.stringify_midi_message(midi_message))
             self._print("RAW Template: " + Tools.stringify_midi_message(self.mapping.response))
 
-        if not self._value_provider.parse(self.mapping, midi_message):
+        if not self.client.value_provider.parse(self.mapping, midi_message):
             return
         
-        if self._debug:
+        if self.debug:
             self._print("   -> Received value " + repr(self.mapping.value) + " for " + self.mapping.name + ": " + Tools.stringify_midi_message(midi_message))
 
         # Call the listeners
@@ -327,9 +303,8 @@ class ClientRequest(EventEmitter):
 
     # Debug console output
     def _print(self, msg):
-        if self._debug_mapping != None and self._debug_mapping != self.mapping:
+        if self.client.debug_mapping != None and self.client.debug_mapping != self.mapping:
             return
 
         Tools.print("ClientRequest: " + msg)
-
 

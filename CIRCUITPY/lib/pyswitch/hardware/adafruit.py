@@ -21,9 +21,6 @@ from digitalio import DigitalInOut, Direction, Pull
 from ..controller.FootSwitchController import SwitchDriver
 
 
-##################################################################################################
-
-
 # TFT driver class
 class AdafruitST7789DisplayDriver:
 

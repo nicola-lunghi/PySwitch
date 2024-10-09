@@ -13,6 +13,7 @@ from pyswitch.controller.actions.actions import PushButtonModes
 from kemper import Kemper, KemperActionDefinitions, KemperEffectSlot, KemperMappings, KemperMidiValueProvider
 from displays import DisplayIds
 
+
 # Layout used for the action labels (only used here locally)
 ACTION_LABEL_LAYOUT = {
     "font": "/fonts/H20.pcf",
@@ -123,4 +124,3 @@ Switches = [
         ]
     }
 ]
-

@@ -801,29 +801,24 @@ class KemperMidiValueProvider(ClientValueProvider):
         if midi_message.manufacturer_id != mapping.response.manufacturer_id:
             return False
         
-        # Get data as integer list from both the incoming message and the response
-        # template in the mapping (both messages are SysEx anytime)
-        response = list(midi_message.data)                        
-        template = list(mapping.response.data)        
-
-        # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
-        # and device ID as for the request, however the device just sends two zeroes)
-
         # Check if the message belongs to the mapping. The following have to match:
         #   2: function code, 
         #   3: instance ID, 
         #   4: address page, 
         #   5: address nunber
-        if response[2:6] != template[2:6]:
+        #
+        # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
+        # and device ID as for the request, however the device just sends two zeroes)
+        if midi_message.data[2:6] != mapping.response.data[2:6]:
             return False
         
         # The values starting from index 6 are the value of the response.
         if mapping.type == Kemper.NRPN_PARAMETER_TYPE_STRING:
             # Take as string
-            mapping.value = ''.join(chr(int(c)) for c in response[6:-1])
+            mapping.value = ''.join(chr(int(c)) for c in list(midi_message.data[6:-1]))
         else:
             # Decode 14-bit value to int
-            mapping.value = response[-2] * 128 + response[-1]
+            mapping.value = midi_message.data[-2] * 128 + midi_message.data[-1]
 
         return True
     

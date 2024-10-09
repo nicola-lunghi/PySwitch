@@ -1,6 +1,5 @@
 from ...misc import Tools
 
-
 # Represents a screen area with dimensions.
 class DisplayBounds:
     def __init__(self, x = 0, y = 0, w = 0, h = 0):
@@ -150,16 +149,9 @@ class DisplayElement:
         self.id = id
         self._initialized = False
         
-        self.debug = False
-        
     # Adds the element to the splash
     def init(self, ui, appl):
         self._initialized = True
-        self.bounds_changed()
-
-    # Called after the bounds have been changed
-    def bounds_changed(self):
-        pass    
 
     # Search for a display element matching the condition.
     def search(self, position):
@@ -167,91 +159,17 @@ class DisplayElement:
             return self
         return None
 
-    # Returns the first deep child which matches the passed criteria.
-    #def first(self, type_name):
-    #    if self.__class__.__name__ == type_name:
-    #        return self
-    #    return None
-
-    @property
-    def initialized(self):
-        return self._initialized
-
     # Returns a clone (changes on the returned object shall not reflect to this instance)
     @property
     def bounds(self):
-        return DisplayBounds(
-            self._bounds.x,
-            self._bounds.y,
-            self._bounds.width,
-            self._bounds.height,
-        )
+        return self._bounds.clone()
     
-    # Sets all dimensions at once: (x, y, w, h)
     @bounds.setter
     def bounds(self, bounds):
-        if self._bounds == bounds:
-            return
+        if self._initialized:
+            raise Exception(repr(self.id) + ": Bounds of Display Elements cannot be changed after init()")
         
         self._bounds = bounds
-        
-        self.bounds_changed()
-
-    @property
-    def x(self):
-        return self._bounds.x
-    
-    @x.setter
-    def x(self, value):
-        if self._bounds.x == value:
-            return
-        
-        self._bounds.x = value        
-
-        self.bounds_changed()
-
-    @property
-    def y(self):
-        return self._bounds.y
-    
-    @y.setter
-    def y(self, value):
-        if self._bounds.y == value:
-            return
-        
-        self._bounds.y = value        
-
-        self.bounds_changed()
-
-    @property
-    def width(self):
-        return self._bounds.width
-    
-    @width.setter
-    def width(self, value):
-        if self._bounds.width == value:
-            return
-        
-        self._bounds.width = value        
-
-        self.bounds_changed()
-
-    @property
-    def height(self):
-        return self._bounds.height
-    
-    @height.setter
-    def height(self, value):
-        if self._bounds.height == value:
-            return
-        
-        self._bounds.height = value        
-
-        self.bounds_changed()
-
-    # Debug console output
-    def print(self, msg):
-        Tools.print(self.__class__.__name__ + " " + self.name + ": " + msg)
 
     # Prints some debug info
     def print_debug_info(self, indentation = 0):
@@ -277,6 +195,18 @@ class HierarchicalDisplayElement(DisplayElement):
     def children(self):        
         return self._children
 
+    @property
+    def first_child(self):
+        if not self._children:
+            return None
+        return self._children[0]
+
+    @property
+    def last_child(self):
+        if not self._children:
+            return None
+        return self._children[len(self._children) - 1]
+
     # Initialize the elemenmt and all children
     def init(self, ui, appl):
         super().init(ui, appl)
@@ -292,18 +222,6 @@ class HierarchicalDisplayElement(DisplayElement):
         if index < 0 or index >= len(self._children): 
             raise Exception("Index out of range: " + repr(index))
         return self._children[index]
-
-    @property
-    def first_child(self):
-        if not self._children:
-            return None
-        return self._children[0]
-
-    @property
-    def last_child(self):
-        if not self._children:
-            return None
-        return self._children[len(self._children) - 1]
 
     # Adds a child to the element. Returns the index of the new element.
     def add(self, child):
@@ -345,29 +263,10 @@ class HierarchicalDisplayElement(DisplayElement):
             
         return None
 
-    # Returns the first deep child which matches the passed criteria.
-    #def first(self, type_name):
-    #    result = super().first(type_name)
-    #    if result != None:
-    #        return result
-        
-    #    # Also search in children
-    #    for child in self._children:
-    #        if not child:
-    #            continue
-            
-    #        result = child.first(type_name)
-    #        if result:
-    #            # Child has found something
-    #            return result
-
-    #    return None
-    
     # Prints some debug info
     def print_debug_info(self, indentation = 0):
         super().print_debug_info(indentation)
 
         for child in self._children:
             child.print_debug_info(indentation + 1)
-
 

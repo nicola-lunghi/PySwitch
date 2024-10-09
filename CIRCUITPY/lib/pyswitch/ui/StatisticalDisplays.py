@@ -9,7 +9,6 @@ PERFORMANCE_INDICATOR_MARGIN = 2
 
 # Properties of the statistics display label
 STAT_HEIGHT = 40                 # Height
-STAT_LINES = 3                   # Statistics number of lines
 
 
 # Pre-defines some usefule statistics display elements to be used in Setup["displays"]
@@ -37,9 +36,10 @@ class StatisticalDisplays:
     @staticmethod
     def STATS_DISPLAY(parent_bounds):
         return StatisticsDisplayLabel(
-            bounds = parent_bounds.top(STAT_HEIGHT * STAT_LINES),
+            bounds = parent_bounds.top(STAT_HEIGHT),
             layout = {
-                "font": "/fonts/A12.pcf"
+                "font": "/fonts/A12.pcf",
+                "backColor": (50, 50, 50)
             },
             measurements = [
                 RuntimeMeasurement(
@@ -55,3 +55,4 @@ class StatisticalDisplays:
                 FreeMemoryMeasurement()
             ]
         )
+    
