@@ -40,7 +40,7 @@ Switches = [
     {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            #KemperActionDefinitions.EFFECT_SLOT_STATE(
+            #KemperActionDefinitions.EFFECT_STATE(
             #    slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
             #    display = {
             #        "id": DisplayIds.DISPLAY_HEADER,
@@ -55,11 +55,11 @@ Switches = [
             #    ref_value = KemperMidiValueProvider.NRPN_VALUE(0.5),
 
             #    yes = [
-            #        KemperActionDefinitions.EFFECT_SLOT_STATE(
+            #        KemperActionDefinitions.EFFECT_STATE(
             #            id = "sw1",
             #            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
             #        ),
-            #        KemperActionDefinitions.EFFECT_SLOT_STATE(
+            #        KemperActionDefinitions.EFFECT_STATE(
             #            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
             #            display = {
             #                "id": DisplayIds.DISPLAY_HEADER,
@@ -67,9 +67,9 @@ Switches = [
             #                "layout": ACTION_LABEL_LAYOUT
             #            }
             #        ),
-            #        KemperActionDefinitions.AMP_ON_OFF()
+            #        KemperActionDefinitions.AMP_STATE()
             #    ],
-            #    no = KemperActionDefinitions.EFFECT_SLOT_STATE(
+            #    no = KemperActionDefinitions.EFFECT_STATE(
             #        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
             #        display = {
             #            "id": DisplayIds.DISPLAY_HEADER,
@@ -86,7 +86,7 @@ Switches = [
 
                 yes = [
 					ParameterCondition(
-						mapping = KemperMappings.EFFECT_SLOT_ON_OFF(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+						mapping = KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
 						mode = ParameterConditionModes.MODE_EQUAL,
 						ref_value = 1,
 						
@@ -97,7 +97,7 @@ Switches = [
 						],
 
 						no = [
-							KemperActionDefinitions.EFFECT_SLOT_STATE(
+							KemperActionDefinitions.EFFECT_STATE(
 								slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                                 display = SW1_DISPLAY
 							)
@@ -106,7 +106,7 @@ Switches = [
 				],
 
 				no = [
-					KemperActionDefinitions.EFFECT_SLOT_STATE(
+					KemperActionDefinitions.EFFECT_STATE(
 						slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                         display = SW1_DISPLAY
 					)
@@ -119,7 +119,7 @@ Switches = [
     {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            KemperActionDefinitions.EFFECT_SLOT_STATE(
+            KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
                 display = {
                     "id": DisplayIds.DISPLAY_HEADER,
@@ -135,7 +135,7 @@ Switches = [
     {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            KemperActionDefinitions.AMP_ON_OFF(
+            KemperActionDefinitions.AMP_STATE(
                 display = {
                     "id": DisplayIds.DISPLAY_FOOTER,
                     "index": 0,

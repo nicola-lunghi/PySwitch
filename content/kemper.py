@@ -54,7 +54,7 @@ NRPN_FUNCTION_SET_SINGLE_PARAMETER = 0x01
 
 # NRPN parameters for effect slots
 NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = 0x00   
-NRPN_EFFECT_PARAMETER_ADDRESS_ON_OFF = 0x03    
+NRPN_EFFECT_PARAMETER_ADDRESS_STATE = 0x03    
 NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED = 0x1e
 # ... add further parameters here
 
@@ -63,10 +63,10 @@ NRPN_RIG_PARAMETER_VOLUME = 0x01
 # ... add further parameters here
 
 # Amp parameters (page 0x0a)
-NRPN_AMP_PARAMETER_ON_OFF = 0x02
+NRPN_AMP_PARAMETER_STATE = 0x02
 
 # Cab parameters (page 0x0c)
-NRPN_CABINET_PARAMETER_ON_OFF = 0x02
+NRPN_CABINET_PARAMETER_STATE = 0x02
 
 # NRPN String parameters
 NRPN_STRING_PARAMETER_ID_RIG_NAME = 0x01
@@ -170,8 +170,8 @@ class KemperActionDefinitions:
     @staticmethod
     def EFFECT_STATE(slot_id, display = None, mode = PushButtonModes.HOLD_MOMENTARY, id = False):
         return EffectEnableAction({
-            "mapping": KemperMappings.EFFECT_SLOT_ON_OFF(slot_id),
-            "mappingType": KemperMappings.EFFECT_SLOT_TYPE(slot_id),
+            "mapping": KemperMappings.EFFECT_STATE(slot_id),
+            "mappingType": KemperMappings.EFFECT_TYPE(slot_id),
             "categories": KemperEffectCategories(),
             "slotInfo": KemperEffectSlot(slot_id),
             "mode": mode,
@@ -196,7 +196,7 @@ class KemperActionDefinitions:
     @staticmethod
     def TUNER_MODE(display = None, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
         return ParameterAction({
-            "mapping": KemperMappings.TUNER_MODE_ON_OFF,
+            "mapping": KemperMappings.TUNER_MODE_STATE,
             "display": display,
             "text": "Tuner",
             "color": Colors.WHITE,
@@ -250,9 +250,9 @@ class KemperActionDefinitions:
 
     # Amp on/off
     @staticmethod
-    def AMP_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
+    def AMP_STATE(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
         return ParameterAction({
-            "mapping": KemperMappings.AMP_ON_OFF,
+            "mapping": KemperMappings.AMP_STATE,
             "mode": mode,
             "display": display,
             "text": "Amp",
@@ -264,9 +264,9 @@ class KemperActionDefinitions:
 
     # Amp on/off
     @staticmethod
-    def CABINET_ON_OFF(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
+    def CABINET_STATE(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
         return ParameterAction({
-            "mapping": KemperMappings.CABINET_ON_OFF,
+            "mapping": KemperMappings.CABINET_STATE,
             "mode": mode,
             "display": display,
             "text": "Cab",
@@ -610,7 +610,7 @@ class KemperMappings:
 
     # Effect slot enable/disable
     @staticmethod
-    def EFFECT_SLOT_STATE(slot_id):
+    def EFFECT_STATE(slot_id):
         return ClientParameterMapping(
             name = "Effect Status " + str(slot_id),
             set = ControlChange(
@@ -620,18 +620,18 @@ class KemperMappings:
             request = KemperNRPNMessage(               
                 NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                NRPN_EFFECT_PARAMETER_ADDRESS_ON_OFF
+                NRPN_EFFECT_PARAMETER_ADDRESS_STATE
             ),
             response = KemperNRPNMessage(
                 NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                NRPN_EFFECT_PARAMETER_ADDRESS_ON_OFF
+                NRPN_EFFECT_PARAMETER_ADDRESS_STATE
             )
         )
     
     # Effect slot type (request only)
     @staticmethod
-    def EFFECT_SLOT_TYPE(slot_id):
+    def EFFECT_TYPE(slot_id):
         return ClientParameterMapping(
             name = "Effect Type " + str(slot_id),
             request = KemperNRPNMessage(               
@@ -723,7 +723,7 @@ class KemperMappings:
     )
 
     # Switch tuner mode on/off (no receive possible!)
-    TUNER_MODE_ON_OFF = ClientParameterMapping(
+    TUNER_MODE_STATE = ClientParameterMapping(
         name = "Tuner Mode",
         set = ControlChange(
             CC_TUNER_MODE, 
@@ -777,22 +777,22 @@ class KemperMappings:
     )
 
     # Amp on/off
-    AMP_ON_OFF = ClientParameterMapping(
+    AMP_STATE = ClientParameterMapping(
         name = "Amp Status",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
             NRPN_ADDRESS_PAGE_AMP,
-            NRPN_AMP_PARAMETER_ON_OFF
+            NRPN_AMP_PARAMETER_STATE
         ),
         request = KemperNRPNMessage(
             NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
             NRPN_ADDRESS_PAGE_AMP,
-            NRPN_AMP_PARAMETER_ON_OFF
+            NRPN_AMP_PARAMETER_STATE
         ),
         response = KemperNRPNMessage(
             NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
             NRPN_ADDRESS_PAGE_AMP,
-            NRPN_AMP_PARAMETER_ON_OFF
+            NRPN_AMP_PARAMETER_STATE
         )
     )
 
@@ -813,22 +813,22 @@ class KemperMappings:
     )
     
     # Cab on/off
-    CABINET_ON_OFF = ClientParameterMapping(
+    CABINET_STATE = ClientParameterMapping(
         name = "Cab Status",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
             NRPN_ADDRESS_PAGE_CABINET,
-            NRPN_CABINET_PARAMETER_ON_OFF
+            NRPN_CABINET_PARAMETER_STATE
         ),
         request = KemperNRPNMessage(
             NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
             NRPN_ADDRESS_PAGE_CABINET,
-            NRPN_CABINET_PARAMETER_ON_OFF
+            NRPN_CABINET_PARAMETER_STATE
         ),
         response = KemperNRPNMessage(
             NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
             NRPN_ADDRESS_PAGE_CABINET,
-            NRPN_CABINET_PARAMETER_ON_OFF
+            NRPN_CABINET_PARAMETER_STATE
         )
     )
 
