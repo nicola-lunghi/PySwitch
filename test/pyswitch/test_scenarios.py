@@ -1,7 +1,31 @@
+import sys
 import unittest
 
-from lib.pyswitch.controller.Controller import Controller
+#################################################################################################
 
+class MockUsbMidi:
+    ports = [None, None]
+
+class MockAdafruitMIDI:
+    class MIDI:
+        def __init__(self, midi_out, out_channel, midi_in, in_buf_size, debug):
+            pass
+
+        def receive(self):
+            return None
+        
+        def send(self, midi_message):
+            pass
+
+#################################################################################################
+
+with unittest.mock.patch.dict(sys.modules, {
+    "usb_midi": MockUsbMidi(),
+    "adafruit_midi": MockAdafruitMIDI()
+}):
+    from lib.pyswitch.controller.Controller import Controller
+
+#################################################################################################
 
 class TestSimpleConfig(unittest.TestCase):
     def test_simple(self):

@@ -13,54 +13,303 @@ generic configuration script. Features are:
 The firmware has been developed to interface the PaintAudio MIDI Captain series of MIDI controller pedals to the Kemper Profiler Player, which can be controlled
 very deeply via MIDI. It is based on the great work of gstrotmann who did the hardware reverse engineering and provided the initial script this project is based on (https://github.com/gstrotmann/MidiCaptain4Kemper).
 
-The manufacturer PaintAudio also provides a Kemper Player related firmware ([PaintAudio firmware 3.5](https://cdn.shopify.com/s/files/1/0656/8312/8548/files/FW_MINI6_KPP_V3.51.zip?v=1711205983)) but this is hard wired all along, so it can only control few functions of the Player like enabling/disabling effect slots. This project is developed generically, so it can basically be run on any board which runs CircuitPy, using the Adafruit libraries to run a TFT display and LEDs, to control basically any device which is controlled in a similar way as the Kemper devices (it can also be used to control all other Kemper Profiler products, however his has not been tested and might need slight changes in the pyswitch_kemper module) and address
+The manufacturer PaintAudio also provides a Kemper Player related firmware (<a href="https://cdn.shopify.com/s/files/1/0656/8312/8548/files/FW_MINI6_KPP_V3.51.zip?v=1711205983" target="_blank">PaintAudio firmware 3.5</a>) but this is hard wired all along, so it can only control few functions of the Player like enabling/disabling effect slots. 
+
+This project is developed generically, so it can basically be run on any board which runs CircuitPy, using the Adafruit libraries to run a TFT display and LEDs, to control basically any device which is controlled in a similar way as the Kemper devices (it can also be used to control all other Kemper Profiler products, however his has not been tested and might need slight changes in the pyswitch_kemper module) and address
 any parameter or other information the controlled device provides.
 
 ## Installation
 
-- Connect you device to your computer via USB and power it up. For PaintAudio MIDICaptain controllers, press and hold switch 1 while powering up to tell the controller to mount the USB drive.
-- On your computer, you should now see the USB drive of the device (named MIDICAPTAIN for Paintaudio controllers, CIRCUITPY for generic boards)
-- Delete the whole content of the USB drive. For PaintAudio devices, dont forget to save the contents on your hard drive (especially the license folder) if you perhaps want to restore the original manufacturer firmware later.
-- Put the contents of the CIRCUITPY folder of the project on your device drive (named MIDICAPTAIN or CIRCUITPY).
+1. Connect you device to your computer via USB and power it up. For PaintAudio MIDICaptain controllers, press and hold switch 1 while powering up to tell the controller to mount the USB drive.
+2. On your computer, you should now see the USB drive of the device (named MIDICAPTAIN for Paintaudio controllers, CIRCUITPY for generic boards)
+3. Delete the whole content of the USB drive. For PaintAudio devices, dont forget to save the contents on your hard drive (especially the license folder) if you perhaps want to restore the original manufacturer firmware later.
+4. Copy everything in the "content" folder of the project to the root folder on your device drive (named MIDICAPTAIN or CIRCUITPY).
 
 ## Startup Options
 
 When the controller device is powered up with the pyswitch firmware installed, you have the following options:
 - Press and hold switch 1 to mount the USB drive. Per default, this is disabled to save resources during normal operation.
 - Press and hold switch 2 to enable auto-reload (obly valid when the USB drive is enabled). This enables re-booting the device whenever the USB drive 
-contents have been changed (which is the default behaviour for CircuitPy boards). You could use this when configuring the firmware, so you can test your changes immediately, however if you connect the serial console in a terminal, you can control the reloading there with CTRL-D (see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux)
+contents have been changed (which is the default behaviour for CircuitPy boards). You could use this when configuring the firmware, so you can test your changes immediately, however if you connect the serial console in a terminal, you can control the reloading there with CTRL-D (see <a href="https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux" target="_blank">this tutorial</a>)
 
 ## Configuration
 
-The whole configuration is done in the file lib/pyswitch/config.py which must define a python dictionary called Config. Here an example for the basic structure:
+The whole configuration is done in some files in the root directory (of the device drive). These are all python scripts and follow the corresponding syntax rules. 
+
+*Technical note: The pyswitch module does not import any of the files in the root folder directly. The code.py script (which is the CircuitPy entry point) loads all configuration.*
+
+- **config.py**: Global configuration (MIDI channel, processing control, debug switches)
+- **switches.py**: Defines which action(s) are triggered when a switch is pushed
+- **displays.py**: Defines the layout of the TFT display and which data to show
+
+These files can make use of the objects contained in **kemper.py** which provide all necessary mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change).
+
+### Global configuration
+
+The file **config.py** only defines one dict named Config, which by default is empty. Please refer to the comments in the file for details on the possible options, which are all optional.
+
+### Switch Assignment
+
+The file **switches.py** must provide two objects:
+
+- **ValueProvider**: Must be an instance of a class which is capable of parsing MIDI messages for the client used. Use KemperMidiValueProvider (from kemper.py) to use the controller with Kemper devices:
 
 ```python
-Config = {
-    "switches": [
-		# Define switch assignments
-	],
-	"displays": [
-		# Define TFT display areas
-	]
-}
+ValueProvider = KemperMidiValueProvider()
 ```
 
-- **"switches"** defines the actions to be triggered when a switch is pressed or held. It has to be an array of action definitions.
+- **Switches**: Must be a list of switch definitions. A switch definitions consists of a dict with the following entries:
+	- **"assignment"**: Assignment to the hardware switch and corresponding LED pixels. Must be a dict. You can specify this manually, however it is recommended to use the predefined assignments in lib/pyswitch/hardware/hardware.py. Must contain the following entries:
+
+		- **"model"**: Instance capable of reporting a switch state (reading a board GPIO). Use AdafruitSwitch from lib/pyswitch/hardware/adafruit.py
+		
+		- **"pixels"**: Tuple of pixel indices assigned to the switch, for example (0, 1, 2) for the first three LEDs. NeoPixels are controlled by index, and for example the PaintAudio MIDICaptain devices feature three LEDs per switch which can be addressed separately.
+		
+		- **"name"**: Optional name for debugging output
+
+	- **"actions"**: List of actions to be triggered by the switch, see below.
+
+	- **"initialColors"**: Optional: Color initially set before any actions are being processed. If not set, random colors are set.
+
+	- **"initialBrightness"**: Optional: Brightness initially being set before any actions are being processed. If not set, the default (1) is used.
+
+#### Switch Actions
+
+Example for assigning switch 1 of a MIDICaptain Nano 4 to switching the Kemper effect slot A on or off:
+
+```python
+Switches = [
+	{
+        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
+            ),
+
+			# ... Define further actions for switch 1 here
+        ]
+    },
+
+	# ... Define further switches here
+]
+```
+
+Each switch can be assigned to any number of actions, which are implementing the functionality for the switch. Actions are instances based on the lib/pyswitch/controller/actions/Action base class. Normally you would use predefined actions as provided by kemper.py (class KemperActionDefinitions as used in the example above), however you could also directly use the classes defined in lib/pyswitch/controller/actions/actions.py and provide all the MIDI mapping manually.
+
+Actions can also be defined depending on a parameter for example: Instead of a list of Action instances, "actions" can also be a Condition, for example the switch could be assigned to tapping tempo if the rig name contains the token "TAP", and control effect slot A if not:
+
+```python
+Switches = [
+	{
+        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+			ParameterCondition(
+                mapping = KemperMappings.RIG_NAME,
+                mode = ParameterConditionModes.MODE_STRING_CONTAINS,
+                ref_value = "TAP",
+
+                yes = [
+					KemperActionDefinitions.TAP_TEMPO()
+				],
+
+				no = [
+					KemperActionDefinitions.EFFECT_STATE(
+						slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
+					)
+				]
+
+			# ... Define further actions for switch 1 here
+        ]
+    },
+
+	# ... Define further switches here
+]
+```
+
+Note that conditions can be deeply nested: Any action in the yes or no branches can be a Condition itself! This example only assigns the tap tempo action if both the TAP token is contained in the rig name and slot DLY has a delay effect loaded:
+
+```python
+Switches = [
+	{
+        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+			ParameterCondition(
+                mapping = KemperMappings.RIG_NAME,
+                mode = ParameterConditionModes.MODE_STRING_CONTAINS,
+                ref_value = "TAP",
+
+                yes = [
+					ParameterCondition(
+						mapping = KemperMappings.EFFECT_SLOT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+						mode = ParameterConditionModes.MODE_EQUAL,
+						ref_value = 1,
+						
+						yes = [
+							KemperActionDefinitions.TAP_TEMPO(
+                                display = {
+									"id": 123, 
+									"index": 0,
+									"layout": ACTION_LABEL_LAYOUT
+								}
+                            )
+						],
+
+						no = [
+							KemperActionDefinitions.EFFECT_SLOT_STATE(
+								slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+                                display = {
+									"id": 123, 
+									"index": 0,
+									"layout": ACTION_LABEL_LAYOUT
+								}
+							)
+						]
+                    )
+				],
+
+				no = [
+					KemperActionDefinitions.EFFECT_SLOT_STATE(
+						slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+                        display = {
+							"id": 123, 
+							"index": 0,
+							"layout": ACTION_LABEL_LAYOUT
+						}
+					)
+				]
+			),
+
+			# ... Define further actions for switch 1 here
+        ]
+    },
+
+	# ... Define further switches here
+]
+```
+
+Available condition types (see lib/pyswitch/controller/COnditionTree.py):
+- **ParameterCondition**: Depends on a parameter. See implementation for available comparison modes.
+- **PushButtonCondition**: Depends on the state of another switch
+
+#### Display Labels for Actions
+
+The last example only uses the switch LEDs to indicate the effect status (brightness) and type (color). You can also connect a display area (defined in **displays.py**) to the action, so the effect type (color and name) and state (brightness) are also visualized on screen:
+
+```python
+Switches = [
+	{
+        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+				display = {
+                    "id": 123,                         # Some arbitrary ID defined in displays.py
+					"index": 0,                        # Only used when the display element is a split container, to address the 
+					                                   # part of the display used  for this switch
+                    "layout": ACTION_LABEL_LAYOUT      # Mandatory: DisplayLabel Layout definition (see below)
+                },
+            )
+        ]
+    },
+
+	#... Define further switches here
+]
+```
+
+### TFT Display Layout Definition
+
+The file **displays.py** must only provide a list of DisplayElement instances in a list named Displays:
+
+```python
+Displays = [        
+    # Header area
+    DisplaySplitContainer(
+        id = 123,
+        name = "Header",
+        bounds = DisplayBounds(0, 0, 240, 40)  # x, y, width, height
+    ),
+
+	# Footer area
+    DisplaySplitContainer(
+        id = 456,
+        name = "Footer",
+        bounds = DisplayBounds(0, 200, 240, 40)  # x, y, width, height
+    ),
+
+	# Rig name
+    ParameterDisplayLabel(
+        name = "Rig Name",
+        bounds = DisplayBounds(0, 40, 160, 40)  # x, y, width, height
+        layout = {
+            "font": "/fonts/PTSans-NarrowBold-40.pcf",
+			"lineSpacing": 0.8,
+			"maxTextWidth": 220,
+        },
+        parameter = {
+            "mapping": KemperMappings.AMP_NAME,
+            "depends": KemperMappings.RIG_DATE   # Only update this when the rig date changed (optional)
+        }        
+    ),
+
+	# ... Define further elements here
+]
+```
+
+This example defines three display areas:
+
+- A header and a footer, which are split elements: This means they can hold any amound of sub-elements to be used by actions by specifying the "index" parameter in their "display" configuration. Note that the layout definition in this case also comes from the "display" definition.
+
+- A rig name display, which is a ParameterDisplay instance: This is a display label which shows a MIDI parameter, in this case the rig name. In this special case the "depends" entry specifies that the rig name shall be updated anytime the rig date changes.
+
+All available area types are defined in lib/pyswitch/ui/elements/elements.py, see there for more details on parameters for the available types:
+
+- **DisplayLabel**: Just a label showing text over a background. 
+- **ParameterDisplayLabel**: DisplayLabel tied to a device parameter, which is shown and constantly updated (used for string parameter display)
+- **DisplaySplitContainer**: Container element which can hold any amount of labels. The amount of labels is automatically determined by their usages in the switches.py file for example. 
+- **PerformanceIndicator**: A small black dot getting red when the processing starts to lag (which can occur when too much stuff is configured)
+- **StatisticsDisplayLabel**: A DisplayLabel showing processing statistics
+
+#### Conditional layouts
+
+The layout parameter for some types can also be a Condition (depending on a rig parameter for example) holding several layouts (also deeply, analog to the action conditions described above), for example to show some rig names with a different background or text color, like in this example:
 
 
+```python
+TODO
+```
 
-### Switch assignment
+The rig name display will have an orange background when the rig name contains the word "ORANGE".
 
-switches.py
+**NOTE**: Not all parameters can be changed freely. It is not possible to:
+- Background color must be set either not at all for all possible condition branches, or set for all of them (use Colors.BLACK or (0, 0, 0) instead of no background).
+- Corner radius cannot be changed.
+- If one branch uses a stroke greater than zero, all of them must have a stroke greater than zero. Set the outline color to the same as the back color to workaround this.
 
-#### Hardware assignment
-#### Actions
-#### Conditions
+### Mappings
 
-### TFT Display assignment
+#### General
 
-#### Display areas
+The MIDI messages to set/request parameters from the device are bundled in Mappings. A mapping (see class ClientParameterMapping) can contain the following:
+- SET message: MIDI message to be used to set the parameter (value will be overridden with the real value before sending)
+- REQUEST message: MIDI message to request the parameter from the device
+- RESPONSE message: MIDI message template to be used to compare incoming MIDI messages to. Defines how the device returns the value requested.
+
+See the ClientParameterMapping class for deeper details.
+
+#### Kemper Mappings
+
+The file **kemper.py** contains predefined mappings to be used in the switches and displays configurations. These include the most usual parameters already, if you need more than that you can either define them manually or add new mappings to kemper.py (recommended).
+
+#### DisplayLabel Layout Definition
+
+Layouts for DisplayLabel and related types are defined as dict. Here is an example showing all possible options:
+
+TODO Include memory hints for corner radius etc.
+
 #### Statistics options
+
+
+
 
 ## Development
 

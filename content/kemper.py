@@ -8,20 +8,75 @@ from pyswitch.controller.actions.actions import ParameterAction, PushButtonModes
 from pyswitch.controller.Client import ClientParameterMapping
 from pyswitch.controller.actions.actions import EffectEnableAction, ParameterAction, ResetDisplaysAction
 
+####################################################################################################################
 
-# Some basic Kemper constants and helpers
-class Kemper:
-    # Parameter types (used internally in mappings)
-    NRPN_PARAMETER_TYPE_NUMERIC = 0   # Default, also used for on/off
-    NRPN_PARAMETER_TYPE_STRING = 1
+# Definitions of devices
+NRPN_PRODUCT_TYPE_PROFILER = 0x00                     # Kemper Profiler
+NRPN_PRODUCT_TYPE_PROFILER_PLAYER = 0x02              # Kemper Profiler Player
 
-    # Generally used NRPN values (used internally)
-    NRPN_PARAMETER_OFF = 0
-    NRPN_PARAMETER_ON = 1
+# This defines which type of device to control
+NRPN_PRODUCT_TYPE = NRPN_PRODUCT_TYPE_PROFILER_PLAYER
 
-    # Helper to convert values in range [0..1] to the NRPN value range of [0..16383]
-    def NRPN_VALUE(value):
-        return int(16383 * value)
+####################################################################################################################
+
+# CC Addresses
+CC_TUNER_MODE = 31
+CC_BANK_INCREASE = 48
+CC_BANK_DECREASE = 49
+CC_RIG_SELECT = 50       # This selects slot 1 of the current bank. The slots 2-5 can be addressed by adding (n-1) to the value.
+CC_BANK_PRESELECT = 47
+CC_TAP_TEMPO = 30
+CC_ROTARY_SPEED = 33     # 1 = Fast, 0 = Slow
+
+CC_VALUE_BANK_CHANGE = 0
+
+# Basic values for all NRPN messages
+NRPN_MANUFACTURER_ID = [0x00, 0x20, 0x33]             # Kemper manufacturer ID
+NRPN_DEVICE_ID_OMNI = 0x7f                            # Omni (all devices, only supported mode)
+NRPN_INSTANCE = 0x00                                  # Instance ID for NRPN. The profiler only supports instance 0.
+
+# NRPN Adress pages
+NRPN_ADDRESS_PAGE_STRINGS = 0x00
+NRPN_ADDRESS_PAGE_RIG_PARAMETERS = 0x04
+NRPN_ADDRESS_PAGE_FREEZE = 0x7d
+NRPN_ADDRESS_PAGE_AMP = 0x0a
+NRPN_ADDRESS_PAGE_CABINET = 0x0c
+
+# NRPN Function codes
+NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER = 0x41
+NRPN_FUNCTION_REQUEST_STRING_PARAMETER = 0x43
+NRPN_FUNCTION_REQUEST_EXT_STRING_PARAMETER = 0x47
+
+NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER = 0x01
+NRPN_FUNCTION_RESPONSE_STRING_PARAMETER = 0x03
+
+NRPN_FUNCTION_SET_SINGLE_PARAMETER = 0x01
+
+# NRPN parameters for effect slots
+NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = 0x00   
+NRPN_EFFECT_PARAMETER_ADDRESS_ON_OFF = 0x03    
+NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED = 0x1e
+# ... add further parameters here
+
+# Rig parameters (page 0x04)
+NRPN_RIG_PARAMETER_VOLUME = 0x01
+# ... add further parameters here
+
+# Amp parameters (page 0x0a)
+NRPN_AMP_PARAMETER_ON_OFF = 0x02
+
+# Cab parameters (page 0x0c)
+NRPN_CABINET_PARAMETER_ON_OFF = 0x02
+
+# NRPN String parameters
+NRPN_STRING_PARAMETER_ID_RIG_NAME = 0x01
+NRPN_STRING_PARAMETER_ID_RIG_DATE = 0x03
+NRPN_STRING_PARAMETER_ID_AMP_NAME = 0x10
+NRPN_STRING_PARAMETER_ID_CABINET_NAME = 0x20
+
+# Generally used NRPN values
+NRPN_PARAMETER_OFF = 0
+NRPN_PARAMETER_ON = 1
 
 
 ####################################################################################################################
@@ -104,9 +159,6 @@ class KemperEffectSlot:
 
 ####################################################################################################################
 
-# Definitions only used locally here
-CC_VALUE_BANK_CHANGE = 0
-
 # All defined actions here have one parameter in common: A display definition (see definitions.py)
 # which assigns a display label to the action (optional: If omitted, no visual feedback is given 
 # on the display).
@@ -116,7 +168,7 @@ class KemperActionDefinitions:
 
     # Switch an effect slot on / off
     @staticmethod
-    def EFFECT_ON_OFF(slot_id, display = None, mode = PushButtonModes.HOLD_MOMENTARY, id = False):
+    def EFFECT_STATE(slot_id, display = None, mode = PushButtonModes.HOLD_MOMENTARY, id = False):
         return EffectEnableAction({
             "mapping": KemperMappings.EFFECT_SLOT_ON_OFF(slot_id),
             "mappingType": KemperMappings.EFFECT_SLOT_TYPE(slot_id),
@@ -175,8 +227,8 @@ class KemperActionDefinitions:
         return ParameterAction({
             "mode": mode,
             "mapping": KemperMappings.RIG_VOLUME,
-            "valueEnabled": Kemper.NRPN_VALUE(boost_volume),
-            "valueDisabled": Kemper.NRPN_VALUE(0.5),           # 0dB
+            "valueEnabled": KemperMidiValueProvider.NRPN_VALUE(boost_volume),
+            "valueDisabled": KemperMidiValueProvider.NRPN_VALUE(0.5),           # 0dB
             "display": display,
             "text": "RigBoost",
             "color": color,
@@ -270,11 +322,11 @@ class KemperActionDefinitions:
         ]
         value_enabled = [
             0,                                  # Dummy to be replaced by bank select if specified
-            Kemper.NRPN_PARAMETER_ON
+            NRPN_PARAMETER_ON
         ]
         value_disabled = [
             0,                                  # Dummy to be replaced by bank select if specified
-            Kemper.NRPN_PARAMETER_ON
+            NRPN_PARAMETER_ON
         ]
 
         # Bank for main rig
@@ -438,62 +490,6 @@ class KemperEffectCategories: #(EffectCategoryProvider):
 ####################################################################################################################
 
 
-# CC Addresses
-CC_TUNER_MODE = 31
-CC_BANK_INCREASE = 48
-CC_BANK_DECREASE = 49
-CC_RIG_SELECT = 50       # This selects slot 1 of the current bank. The slots 2-5 can be addressed by adding (n-1) to the value.
-CC_BANK_PRESELECT = 47
-CC_TAP_TEMPO = 30
-CC_ROTARY_SPEED = 33     # 1 = Fast, 0 = Slow
-
-# Basic values for the kemnper devices
-NRPN_PRODUCT_TYPE_PROFILER = 0x00                     # Kemper Profiler
-NRPN_PRODUCT_TYPE_PROFILER_PLAYER = 0x02              # Kemper Profiler Player
-NRPN_DEVICE_ID_OMNI = 0x7f                            # Omni (all devices, only supported mode)
-NRPN_INSTANCE = 0x00                                  # Instance ID for NRPN. The profiler only supports instance 0.
-NRPN_MANUFACTURER_ID = [0x00, 0x20, 0x33]             # Kemper manufacturer ID
-
-# Adress pages
-NRPN_ADDRESS_PAGE_STRINGS = 0x00
-NRPN_ADDRESS_PAGE_RIG_PARAMETERS = 0x04
-NRPN_ADDRESS_PAGE_FREEZE = 0x7d
-NRPN_ADDRESS_PAGE_AMP = 0x0a
-NRPN_ADDRESS_PAGE_CABINET = 0x0c
-
-# NRPN Function codes
-NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER = 0x41
-NRPN_FUNCTION_REQUEST_STRING_PARAMETER = 0x43
-NRPN_FUNCTION_REQUEST_EXT_STRING_PARAMETER = 0x47
-
-NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER = 0x01
-NRPN_FUNCTION_RESPONSE_STRING_PARAMETER = 0x03
-
-NRPN_FUNCTION_SET_SINGLE_PARAMETER = 0x01
-
-# NRPN parameters for effect slots
-NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = 0x00   
-NRPN_EFFECT_PARAMETER_ADDRESS_ON_OFF = 0x03    
-NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED = 0x1e
-# ... TODO add further parameters here
-
-# Rig parameters (page 0x04)
-NRPN_RIG_PARAMETER_VOLUME = 0x01
-# ... TODO add further parameters here
-
-# Amp parameters (page 0x0a)
-NRPN_AMP_PARAMETER_ON_OFF = 0x02
-
-# Cab parameters (page 0x0c)
-NRPN_CABINET_PARAMETER_ON_OFF = 0x02
-
-# NRPN String parameters
-NRPN_STRING_PARAMETER_ID_RIG_NAME = 0x01
-NRPN_STRING_PARAMETER_ID_RIG_DATE = 0x03
-NRPN_STRING_PARAMETER_ID_AMP_NAME = 0x10
-NRPN_STRING_PARAMETER_ID_CABINET_NAME = 0x20
-
-
 # Kemper specific SysEx message with defaults which are valid most of the time
 class KemperNRPNMessage(SystemExclusive):
     # Takes MIDI messages as argument (CC or SysEx)
@@ -503,7 +499,7 @@ class KemperNRPNMessage(SystemExclusive):
             address_page,
             address_number,
             manufacturer_id = NRPN_MANUFACTURER_ID, 
-            product_type = NRPN_PRODUCT_TYPE_PROFILER_PLAYER,
+            product_type = NRPN_PRODUCT_TYPE,
             device_id = NRPN_DEVICE_ID_OMNI
         ):
 
@@ -520,7 +516,7 @@ class KemperNRPNMessage(SystemExclusive):
             ]
         )
         
-# Kemper specific SysEx message for extended parameters
+# Kemper specific SysEx message for extended parameters (not working as stated in the MIDI specification of Kemper!)
 #class KemperNRPNExtendedMessage(SystemExclusive):
 #    # Takes MIDI messages as argument (CC or SysEx)
 #    def __init__(
@@ -528,7 +524,7 @@ class KemperNRPNMessage(SystemExclusive):
 #            function_code,
 #            controller,     # Must be a list
 #            manufacturer_id = NRPN_MANUFACTURER_ID, 
-#            product_type = NRPN_PRODUCT_TYPE_PROFILER_PLAYER,
+#            product_type = NRPN_PRODUCT_TYPE,
 #            device_id = NRPN_DEVICE_ID_OMNI
 #        ):
 
@@ -546,12 +542,75 @@ class KemperNRPNMessage(SystemExclusive):
 ####################################################################################################################
 
 
+# Implements setting values and parsing request responses
+class KemperMidiValueProvider: #(ClientValueProvider):
+
+    # Parameter types (used internally in mappings)
+    PARAMETER_TYPE_NUMERIC = 0   # Default, also used for on/off
+    PARAMETER_TYPE_STRING = 1
+
+    # Helper to convert values in range [0..1] to the NRPN value range of [0..16383]
+    @staticmethod
+    def NRPN_VALUE(value):
+        return int(16383 * value)
+
+    # Must parse the incoming MIDI message and return the value contained.
+    # If the response template does not match, must return None.
+    # Must return True to notify the listeners of a value change.
+    def parse(self, mapping, midi_message):
+        # Compare manufacturer IDs
+        if midi_message.manufacturer_id != mapping.response.manufacturer_id:
+            return False
+        
+        # Check if the message belongs to the mapping. The following have to match:
+        #   2: function code, 
+        #   3: instance ID, 
+        #   4: address page, 
+        #   5: address nunber
+        #
+        # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
+        # and device ID as for the request, however the device just sends two zeroes)
+        if midi_message.data[2:6] != mapping.response.data[2:6]:
+            return False
+        
+        # The values starting from index 6 are the value of the response.
+        if mapping.type == self.PARAMETER_TYPE_STRING:
+            # Take as string
+            mapping.value = ''.join(chr(int(c)) for c in list(midi_message.data[6:-1]))
+        else:
+            # Decode 14-bit value to int
+            mapping.value = midi_message.data[-2] * 128 + midi_message.data[-1]
+
+        return True
+    
+    # Must set the passed value on the SET message of the mapping.
+    def set_value(self, mapping, value):
+        if isinstance(mapping.set, ControlChange):
+            # Set value directly (CC takes int values)
+            mapping.set.value = value
+
+        elif isinstance(mapping.set, SystemExclusive):            
+            # Fill up message to appropriate length for the specification
+            data = list(mapping.set.data)
+            while len(data) < 8:
+                data.append(0)
+            
+            # Set value as 14 bit
+            data[6] = int(floor(value / 128))
+            data[7] = int(value % 128)
+
+            mapping.set.data = bytes(data)
+        
+
+####################################################################################################################
+
+
 # Defines some useful MIDI mappings
 class KemperMappings:
 
     # Effect slot enable/disable
     @staticmethod
-    def EFFECT_SLOT_ON_OFF(slot_id):
+    def EFFECT_SLOT_STATE(slot_id):
         return ClientParameterMapping(
             name = "Effect Status " + str(slot_id),
             set = ControlChange(
@@ -644,7 +703,7 @@ class KemperMappings:
             NRPN_ADDRESS_PAGE_STRINGS,
             NRPN_STRING_PARAMETER_ID_RIG_NAME
         ),
-        type = Kemper.NRPN_PARAMETER_TYPE_STRING
+        type = KemperMidiValueProvider.PARAMETER_TYPE_STRING
     )
 
     # Rig date (request only)
@@ -660,7 +719,7 @@ class KemperMappings:
             NRPN_ADDRESS_PAGE_STRINGS,
             NRPN_STRING_PARAMETER_ID_RIG_DATE
         ),
-        type = Kemper.NRPN_PARAMETER_TYPE_STRING
+        type = KemperMidiValueProvider.PARAMETER_TYPE_STRING
     )
 
     # Switch tuner mode on/off (no receive possible!)
@@ -714,7 +773,7 @@ class KemperMappings:
             NRPN_ADDRESS_PAGE_STRINGS,
             NRPN_STRING_PARAMETER_ID_AMP_NAME
         ),
-        type = Kemper.NRPN_PARAMETER_TYPE_STRING
+        type = KemperMidiValueProvider.PARAMETER_TYPE_STRING
     )
 
     # Amp on/off
@@ -750,7 +809,7 @@ class KemperMappings:
             NRPN_ADDRESS_PAGE_STRINGS,
             NRPN_STRING_PARAMETER_ID_CABINET_NAME
         ),
-        type = Kemper.NRPN_PARAMETER_TYPE_STRING
+        type = KemperMidiValueProvider.PARAMETER_TYPE_STRING
     )
     
     # Cab on/off
@@ -810,57 +869,3 @@ class KemperMappings:
         )
     )
     
-
-####################################################################################################################
-
-
-# Implements setting values and parsing request responses
-class KemperMidiValueProvider: #(ClientValueProvider):
-
-    # Must parse the incoming MIDI message and return the value contained.
-    # If the response template does not match, must return None.
-    # Must return True to notify the listeners of a value change.
-    def parse(self, mapping, midi_message):
-        # Compare manufacturer IDs
-        if midi_message.manufacturer_id != mapping.response.manufacturer_id:
-            return False
-        
-        # Check if the message belongs to the mapping. The following have to match:
-        #   2: function code, 
-        #   3: instance ID, 
-        #   4: address page, 
-        #   5: address nunber
-        #
-        # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
-        # and device ID as for the request, however the device just sends two zeroes)
-        if midi_message.data[2:6] != mapping.response.data[2:6]:
-            return False
-        
-        # The values starting from index 6 are the value of the response.
-        if mapping.type == Kemper.NRPN_PARAMETER_TYPE_STRING:
-            # Take as string
-            mapping.value = ''.join(chr(int(c)) for c in list(midi_message.data[6:-1]))
-        else:
-            # Decode 14-bit value to int
-            mapping.value = midi_message.data[-2] * 128 + midi_message.data[-1]
-
-        return True
-    
-    # Must set the passed value on the SET message of the mapping.
-    def set_value(self, mapping, value):
-        if isinstance(mapping.set, ControlChange):
-            # Set value directly (CC takes int values)
-            mapping.set.value = value
-
-        elif isinstance(mapping.set, SystemExclusive):            
-            # Fill up message to appropriate length for the specification
-            data = list(mapping.set.data)
-            while len(data) < 8:
-                data.append(0)
-            
-            # Set value as 14 bit
-            data[6] = int(floor(value / 128))
-            data[7] = int(value % 128)
-
-            mapping.set.data = bytes(data)
-        

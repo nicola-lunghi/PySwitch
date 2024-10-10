@@ -4,18 +4,18 @@
 #
 ##############################################################################################################################################
 
-from kemper import KemperMappings
+#from kemper import KemperMappings
 
 Config = {
     
+    # Selects the MIDI channel to use [1..16] default is 1
+    #"midiChannel": 1,
+
     # Max. number of MIDI messages being parsed before the next switch state evaluation
     # is triggered. If set to 0, only one message is parsed per tick, which leads to 
     # flickering states sometimes. If set too high, switch states will not be read for too long.
     # A good value is the maximum amount of switches. Default is 10.
     #"maxConsecutiveMidiMessages": 10,
-
-    # Selects the MIDI channel to use [1..16] default is 1
-    #"midiChannel": 1,
 
     # Max. milliseconds until a request is being terminated and it is
     # assumed that the Kemper device is offline. Optional, default is 2 seconds.
