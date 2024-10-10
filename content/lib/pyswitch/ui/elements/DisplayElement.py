@@ -170,6 +170,11 @@ class DisplayElement:
             raise Exception(repr(self.id) + ": Bounds of Display Elements cannot be changed after init()")
         
         self._bounds = bounds
+        self.bounds_changed()
+
+    # Called when the bounds have been changed.
+    def bounds_changed(self):
+        pass
 
     # Prints some debug info
     def print_debug_info(self, indentation = 0):
@@ -216,6 +221,16 @@ class HierarchicalDisplayElement(DisplayElement):
                 continue
             
             child.init(ui, appl)
+
+    # Also notify all children that the bounds have been changed
+    def bounds_changed(self):
+        super().bounds_changed()
+
+        for child in self._children:
+            if not child:
+                continue
+
+            child.bounds_changed()
 
     # Returns the child element at position index
     def child(self, index):

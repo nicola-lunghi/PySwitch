@@ -6,10 +6,8 @@ from ..hardware.adafruit import AdafruitSwitch
 from ..ui.elements.elements import DisplayLabel, DisplaySplitContainer
 from ..misc import Updater, Colors
 
-
 # Number of columns for port display
 NUM_PORT_COLUMNS = 5   
-
 
 # Action to explore switch GPIO assignments (used internally only in explore mode!)
 # Also used to examine neopixel addressing.
@@ -78,7 +76,9 @@ class ExploreModeController(Updater):
             self._setup_ui()
 
             # Try to initialize all available ports. This gets us the list of ports successfully assigned.
-            self._init_switches(available_ports)
+            ports_assigned = self._init_switches(available_ports)
+
+            print("Explore mode: Assigned " + repr(len(ports_assigned)) + " ports")
         else:
             # Try to initialize all available ports. This gets us the list of ports successfully assigned.
             ports_assigned = self._init_switches(available_ports)

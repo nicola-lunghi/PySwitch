@@ -425,18 +425,20 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
 
         self.direction = direction
     
-    # Updates the bounds of the children after adding or setting new ones
+    # Add a child element
     def add(self, child):
         super().add(child)
-        self.children_changed()
+        self.bounds_changed()
 
-    # Updates the bounds of the children after adding or setting new ones
+    # Sets a child element at the given index
     def set(self, element, index):
         super().set(element, index)
-        self.children_changed()
+        self.bounds_changed()
 
     # Update dimensions of all contained elements
-    def children_changed(self):
+    def bounds_changed(self):
+        super().bounds_changed()
+        
         active_children = [x for x in self.children if x != None]
 
         if len(active_children) == 0:
@@ -447,7 +449,6 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
         if self.direction == DisplaySplitContainer.HORIZONTAL:
             # Horizontal
             slot_width = int(self.bounds.width / len(active_children))
-            slot_height = self.bounds.height
 
             for i in range(len(self.children)):
                 element = self.children[i]
@@ -458,11 +459,10 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
                     self.bounds.x + i * slot_width,
                     self.bounds.y,
                     slot_width,
-                    slot_height
+                    self.bounds.height
                 )
         else:
             # Vertical
-            slot_width = self.bounds.width
             slot_height = int(self.bounds.height / len(active_children))
 
             for i in range(len(self.children)):
@@ -473,7 +473,7 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
                 element.bounds = DisplayBounds(
                     self.bounds.x,
                     self.bounds.y + i * slot_height,
-                    slot_width,
+                    self.bounds.width,
                     slot_height
                 )
 
