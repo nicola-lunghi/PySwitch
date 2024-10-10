@@ -140,7 +140,9 @@ Switches = [
 
                 yes = [
                     ParameterCondition(
-                        mapping = KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+                        mapping = KemperMappings.EFFECT_STATE(
+                            KemperEffectSlot.EFFECT_SLOT_ID_DLY
+                        ),
                         mode = ParameterConditionModes.MODE_EQUAL,
                         ref_value = 1,
 						
@@ -203,10 +205,15 @@ Switches = [
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                 display = {
-                    "id": 123,                         # Some arbitrary ID defined in displays.py
-                    "index": 0,                        # Only used when the display element is a split container, to address the 
-                                                       # part of the display used  for this switch
-                    "layout": ACTION_LABEL_LAYOUT      # Mandatory: DisplayLabel Layout definition (see below)
+                    # Some arbitrary ID defined in displays.py
+                    "id": 123,
+
+                    # Only used when the display element is a split container, to 
+                    # address the part of the display used  for this switch
+					"index": 0,
+
+                    # Mandatory: DisplayLabel Layout definition (see below)      
+                    "layout": ACTION_LABEL_LAYOUT
                 },
             )
         ]
@@ -247,7 +254,8 @@ Displays = [
         },
         parameter = {
             "mapping": KemperMappings.AMP_NAME,
-            "depends": KemperMappings.RIG_DATE   # Only update this when the rig date changed (optional)
+            "depends": KemperMappings.RIG_DATE   # Only update this when the 
+                                                 # rig date changed (optional)
         }        
     ),
 
@@ -288,7 +296,8 @@ Displays = [
     # Rig name (remaining space)
     DisplayLabel(bounds = DisplayBounds(0, 40, 240, 160))
 
-    # Some other display (above footer, but overlapping the rig name area)
+    # Some other display (above footer, but overlapping 
+    # the rig name area)
     DisplayLabel(bounds = DisplayBounds(0, 180, 240, 20))
 ]
 ```
@@ -298,17 +307,21 @@ Displays = [
 bounds = DisplayBounds(0, 0, 240, 240)
 
 Displays = [ 
-    # Header (remove top 40 pixels from bounds and use that area)
+    # Header (remove top 40 pixels from bounds and 
+    # use that area)
     DisplayLabel(bounds = bounds.remove_from_top(40)),
 
-    # Footer (remove bottom 40 pixels from bounds and use that area)
+    # Footer (remove bottom 40 pixels from bounds and 
+    # use that area)
     DisplayLabel(bounds = bounds.remove_from_bottom(40)),
 
-    # Rig name (take remaining space (header and bottom have been cut off))
+    # Rig name (take remaining space (header and bottom 
+    # have been cut off))
     DisplayLabel(bounds = bounds),
 
-    # Some other display (above footer, but overlapping the rig name area,
-    # so we use bottom() which does not change the bounds)
+    # Some other display (above footer, but overlapping 
+    # the rig name area, so we use bottom() which does 
+    # not change the bounds)
     DisplayLabel(bounds = bounds.bottom(20)),
 ]
 ```
@@ -348,7 +361,7 @@ Displays = [
 
         parameter = {
             "mapping": KemperMappings.RIG_NAME,
-            "depends": KemperMappings.RIG_DATE,  # Only update this when the rig date changed (optional)
+            "depends": KemperMappings.RIG_DATE,
             "textOffline": "Kemper Profiler (offline)",
             "textReset": "Loading Rig..."
         }
@@ -386,27 +399,35 @@ Layouts for DisplayLabel and related types are defined as dict. Here is an examp
 
 ```python
 layout = {
-    "font": "/fonts/H20.pcf",   # Path to the font in PCF format (mandatory). A lot of fonts are
-                                # available at https://github.com/adafruit/circuitpython-fonts
+    # Path to the font in PCF format (mandatory). A lot of fonts are
+    # available at https://github.com/adafruit/circuitpython-fonts
+    "font": "/fonts/H20.pcf",   
+                                
+    # Maximum text width in pixels (optional) for wrapping text
+    "maxTextWidth": 220,        
 
-    "maxTextWidth": 220,        # Maximum text width in pixels (optional) for wrapping text
+    # Line spacing (optional, default is 1)
+    "lineSpacing": 1,           
 
-    "lineSpacing": 1,           # Line spacing (optional, default is 1)
+    # Text color (default is None, which will derive a contrasting
+    # color automatically)
+    "textColor": (255, 120, 0),                               
 
-    "textColor": (255, 120, 0), # Text color (default is None, which will derive a contrasting
-                                # color automatically)
+    # Background color (default is None) Can be a tuple also to 
+    # show a rainbow background with multiple colors, 
+    # for example (Colors.GREEN, Colors.YELLOW, Colors.RED)
+    "backColor": (30, 30, 30), 
+                                
+    # Corner radius for the background (optional: default is 0). 
+    # Should be used sparingly because it takes a lot of memory!
+    "cornerRadius": 0,          
 
-    "backColor": (30, 30, 30),  # Background color (default is None) Can be a tuple also to 
-                                # show a rainbow background with multiple colors, 
-                                # for example (Colors.GREEN, Colors.YELLOW, Colors.RED)
-
-    "cornerRadius": 0,          # Corner radius for the background (optional: default is 0). 
-                                # Should be used sparingly because it takes a lot of memory!
-
-    "stroke":                   # Ouline stroke (optional, default is 0). Width of the 
-                                # optional outline
-
-    "text": "Initial Text"      # Initial text (default is None).
+    # Ouline stroke (optional, default is 0). Width of the 
+    # optional outline
+    "stroke":                   
+                                
+    # Initial text (default is None).
+    "text": "Initial Text"      
 }
 ```
 
