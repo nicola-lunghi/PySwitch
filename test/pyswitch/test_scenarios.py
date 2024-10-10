@@ -1,47 +1,10 @@
 import sys
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch   # Necessary workaround! Needs to be separated.
 
-#################################################################################################
+from .mocks import *
 
-class MockUsbMidi:
-    ports = [None, None]
-
-class MockAdafruitMIDI:
-    class MIDI:
-        def __init__(self, midi_out, out_channel, midi_in, in_buf_size, debug):
-            pass
-
-        def receive(self):
-            return None
-        
-        def send(self, midi_message):
-            pass
-            
-class MockAdafruitMIDIControlChange:    
-    class ControlChange:
-        def __init__(self, control, value):
-            self.control = control
-            self.value = value
-
-class MockAdafruitMIDISystemExclusive:    
-    class SystemExclusive:
-        def __init__(self, manufacturer_id = [0x00, 0x00, 0x00], data = []):
-            self.manufacturer_id = manufacturer_id
-            self.data = data
-
-class MockGC:
-    def collect():
-        pass
-
-    def mem_free():
-        return 0
-
-    def mem_alloc():
-        return 0
-
-#################################################################################################
-
+# Import subject under test
 with patch.dict(sys.modules, {
     "usb_midi": MockUsbMidi(),
     "adafruit_midi": MockAdafruitMIDI(),
@@ -51,18 +14,22 @@ with patch.dict(sys.modules, {
 }):
     from lib.pyswitch.controller.Controller import Controller
 
-#################################################################################################
 
-class TestSimpleConfig(unittest.TestCase):
-    def test_simple(self):
+class TestScenarios(unittest.TestCase):
+
+    #################################################################################################
+
+    # Minimal call: Must not throw anything
+    def test_minimal(self):
         appl = Controller(
-            led_driver = None,
-            config = {
-
-            },
-            value_provider = None,
+            led_driver = MockNeoPixelDriver(),
+            config = {},
+            value_provider = MockValueProvider(),
             switches = [],
             displays = [],
             ui = None            
         )
         
+    #################################################################################################
+
+    
