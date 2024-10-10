@@ -140,7 +140,7 @@ Switches = [
 
                 yes = [
 					ParameterCondition(
-						mapping = KemperMappings.EFFECT_SLOT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+						mapping = KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
 						mode = ParameterConditionModes.MODE_EQUAL,
 						ref_value = 1,
 						
@@ -155,7 +155,7 @@ Switches = [
 						],
 
 						no = [
-							KemperActionDefinitions.EFFECT_SLOT_STATE(
+							KemperActionDefinitions.EFFECT_STATE(
 								slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                                 display = {
 									"id": 123, 
@@ -168,7 +168,7 @@ Switches = [
 				],
 
 				no = [
-					KemperActionDefinitions.EFFECT_SLOT_STATE(
+					KemperActionDefinitions.EFFECT_STATE(
 						slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                         display = {
 							"id": 123, 
@@ -255,6 +255,8 @@ Displays = [
 ]
 ```
 
+The areas are stacked in the defined order, elements defined down the list will overlap the upper ones. 
+
 This example defines three display areas:
 
 - A header and a footer, which are split elements: This means they can hold any amound of sub-elements to be used by actions by specifying the "index" parameter in their "display" configuration. Note that the layout definition in this case also comes from the "display" definition.
@@ -269,18 +271,96 @@ All available area types are defined in lib/pyswitch/ui/elements/elements.py, se
 - **PerformanceIndicator**: A small black dot getting red when the processing starts to lag (which can occur when too much stuff is configured)
 - **StatisticsDisplayLabel**: A DisplayLabel showing processing statistics
 
+#### Subtractive Layouting
+
+You can specify the dimensions and positions of all display elements manually like in the example snippets above, but the DIsplayBounds class offers a far more elegant way to split up the available area. Just create an instance of it with all available space and then, in the Displays list, use it to "cut off" parts of it one after each other. 
+
+The following snippets demonstrate this: The next two examples do exactly the same thing on a 240x240 screen (other parameters omitted for clarity):
+
+```python
+Displays = [ 
+	# Header (top 40 pixels)
+	DisplayLabel(bounds = DisplayBounds(0, 0, 240, 40)),
+
+	# Footer (bottom 40 pixels)
+	DisplayLabel(bounds = DisplayBounds(0, 200, 240, 40)),
+
+	# Rig name (remaining space)
+	DisplayLabel(bounds = DisplayBounds(0, 40, 240, 160))
+
+	# Some other display (above footer, but overlapping the rig name area)
+	DisplayLabel(bounds = DisplayBounds(0, 180, 240, 20))
+]
+```
+
+```python
+# Create instance with all available space
+bounds = DisplayBounds(0, 0, 240, 240)
+
+Displays = [ 
+	# Header (remove top 40 pixels from bounds and use that area)
+	DisplayLabel(bounds = bounds.remove_from_top(40)),
+
+	# Footer (remove bottom 40 pixels from bounds and use that area)
+	DisplayLabel(bounds = bounds.remove_from_bottom(40)),
+
+	# Rig name (take remaining space (header and bottom have been cut off))
+	DisplayLabel(bounds = bounds),
+
+	# Some other display (above footer, but overlapping the rig name area,
+	# so we use bottom() which does not change the bounds)
+	DisplayLabel(bounds = bounds.bottom(20)),
+]
+```
+
+See the DisplayBounds class in /lib/pyswitch/ui/elements/DisplayElement.py for more available methods.
+
 #### Conditional layouts
 
 The layout parameter for some types can also be a Condition (depending on a rig parameter for example) holding several layouts (also deeply, analog to the action conditions described above), for example to show some rig names with a different background or text color, like in this example:
 
-
 ```python
-TODO
+Displays = [ 
+# Rig name
+    ParameterDisplayLabel(
+        name = "Rig Name",
+        bounds = DisplayBounds(0, 0, 240, 240),   
+
+        layout = ParameterCondition(
+            mapping = KemperMappings.RIG_NAME,
+            mode = ParameterConditionModes.MODE_STRING_CONTAINS,
+            ref_value = "ORANGE",
+
+            yes = {
+                "font": "/fonts/PTSans-NarrowBold-40.pcf",
+                "lineSpacing": 0.8,
+                "maxTextWidth": 220,
+                "backColor": Colors.BLACK
+            },
+
+            no =  {
+                "font": "/fonts/PTSans-NarrowBold-40.pcf",
+                "lineSpacing": 0.8,
+                "maxTextWidth": 220,
+                "backColor": Colors.ORANGE
+            }
+        ),
+
+        parameter = {
+            "mapping": KemperMappings.RIG_NAME,
+            "depends": KemperMappings.RIG_DATE,  # Only update this when the rig date changed (optional)
+            "textOffline": "Kemper Profiler (offline)",
+            "textReset": "Loading Rig..."
+        }
+    ),
+
+	# ...
+]
 ```
 
 The rig name display will have an orange background when the rig name contains the word "ORANGE".
 
-**NOTE**: Not all parameters can be changed freely. It is not possible to:
+**NOTE**: Not all layout parameters can be changed freely. It is not possible to:
 - Background color must be set either not at all for all possible condition branches, or set for all of them (use Colors.BLACK or (0, 0, 0) instead of no background).
 - Corner radius cannot be changed.
 - If one branch uses a stroke greater than zero, all of them must have a stroke greater than zero. Set the outline color to the same as the back color to workaround this.
@@ -304,12 +384,31 @@ The file **kemper.py** contains predefined mappings to be used in the switches a
 
 Layouts for DisplayLabel and related types are defined as dict. Here is an example showing all possible options:
 
-TODO Include memory hints for corner radius etc.
+```python
+layout = {
+	"font": "/fonts/H20.pcf",   # Path to the font in PCF format (mandatory). A lot of fonts are
+	                            # available at https://github.com/adafruit/circuitpython-fonts
 
-#### Statistics options
+	"maxTextWidth": 220,        # Maximum text width in pixels (optional) for wrapping text
 
+	"lineSpacing": 1,           # Line spacing (optional, default is 1)
 
+	"textColor": (255, 120, 0), # Text color (default is None, which will derive a contrasting
+	                            # color automatically)
 
+	"backColor": (30, 30, 30),  # Background color (default is None) Can be a tuple also to 
+	                            # show a rainbow background with multiple colors, 
+								# for example (Colors.GREEN, Colors.YELLOW, Colors.RED)
+
+	"cornerRadius": 0,          # Corner radius for the background (optional: default is 0). 
+	                            # Should be used sparingly because it takes a lot of memory!
+
+	"stroke":                   # Ouline stroke (optional, default is 0). Width of the 
+	                            # optional outline
+
+	"text": "Initial Text"      # Initial text (default is None).
+}
+```
 
 ## Development
 
