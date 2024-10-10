@@ -199,7 +199,6 @@ class EventEmitter:
 # Size for visualizations (num of characters. Best is an odd number)
 VISUALIZATION_SIZE = 15
 
-
 # Memory monitoring tools
 class Memory:
 
