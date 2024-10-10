@@ -1,5 +1,6 @@
 import sys
 import unittest
+from unittest.mock import patch
 
 #################################################################################################
 
@@ -19,7 +20,7 @@ class MockAdafruitMIDI:
 
 #################################################################################################
 
-with unittest.mock.patch.dict(sys.modules, {
+with patch.dict(sys.modules, {
     "usb_midi": MockUsbMidi(),
     "adafruit_midi": MockAdafruitMIDI()
 }):
