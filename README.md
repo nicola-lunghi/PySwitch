@@ -398,7 +398,7 @@ The file **kemper.py** contains predefined mappings to be used in the switches a
 Layouts for DisplayLabel and related types are defined as dict. Here is an example showing all possible options:
 
 ```python
-layout = {
+example_layout = {
     # Path to the font in PCF format (mandatory). A lot of fonts are
     # available at https://github.com/adafruit/circuitpython-fonts
     "font": "/fonts/H20.pcf",   
