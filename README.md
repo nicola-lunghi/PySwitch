@@ -1,6 +1,6 @@
 # PySwitch MIDI Controller Firmware
 
-This project provides a custom firmware for CircuitPy Microcontroller based MIDI controllers. It can control devices via MIDI based on a 
+This project provides an open source firmware for CircuitPy Microcontroller based MIDI controllers. It can control devices via MIDI based on a 
 generic configuration script. Features are:
 
 - Program (Foot)switches to send MIDI messages. Each switch can do multiple actions.
@@ -638,7 +638,7 @@ def set_value(self, mapping, value):
     pass
 ```
 
-## Explore Mode: Discover unknown IO ports
+## Explore Mode: Discover unknown IO Ports
 
 The firmware is capable of running on several controllers, even if it has been developed on the PaintAudio MIDICaptain Nano 4. The definitions in hardware.py provide the hardware mappings for known devices (the MC Mini mapping comes from the original script from @gstrotmann):
 
@@ -673,11 +673,11 @@ Config = {
 
 This can be used to detect which switch is wired to which IO port, and also determine the LED indexing. 
 
-### Detect IO port wiring
+### Detect IO Port Wiring
 
 All available IO ports (as defined in the board module) the display shows a separate label. When any port is used (switch is pushed) the corresponding label will be highlighted, so the display always shows the IO assignment of the last pressed switch.
 
-### Detect LED indexing
+### Detect LED Indexing
 
 This works the following way: The program highlights one triplet of LEDs at a time. The triplet highlighted can be increased/decreased with the switches:
 	- Every odd switch (green) will decrease the highlighted indices
@@ -686,6 +686,58 @@ This works the following way: The program highlights one triplet of LEDs at a ti
 The currently highlighted LEDs (white) will be shown in the display below the GPIO labels, so you can read them out to create your own switch definitions. Please, if you do so, share your results! Just send me a message or create an issue, i will add all definitions to the hardware.py file.
 
 NOTE: This mode is currently hard wired for three LEDs per footswitch. However, it also can deliver the needed information for other constellations with some interpretation.
+
+### Debug RAM Issues
+
+The MIDICaptain Nano 4 only has about 200kB of available RAM. This is not much, especially because the display elements take much space. When creating more advanced display layouts, you might run into an error telling that no more memory can be allocated. 
+
+The program provides some rudimentary memory monitoring. Enable this by uncommenting a line in code.py:
+
+```python
+...
+
+from pyswitch.misc import Tools, Memory
+Memory.start(zoom = 10)                  # <-- Uncomment this line
+
+...
+```
+
+The program will report the allocations of memory on console like this:
+
+```
+code.py output:
+............................................................ Starting with 187.1 KiB of 203.1 KiB                           XXXXXXXXXXXXXX.
+Controller: Showing UI ..................................... Allocated 95.6 KiB     <<<<<<<|....... -> 91.6 KiB        45%  XXXXXXX........
+Controller: Starting loop .................................. Allocated 37.9 KiB     <<<<<<<|....... -> 53.7 KiB        26%  XXXX...........
+```
+
+The Memory.watch() function can be placed wherever you need a measurement. It reports how much memory has been allocated since the last call, as well as how much is left.
+
+### Debug Performance Issues
+
+If you notify the device does not react sometimes when a switch is pressed, it might be that some action is taking much CPU. YOu can monitor the processing loop tick time by adding the following to your Displays list:
+
+```python
+Displays = [
+	# ...
+	
+	StatisticalDisplays.STATS_DISPLAY(bounds)
+]
+```
+
+This shows a display label with the max. and average tick times, as well as free memory, updated every second.
+
+For less invasive measurement, there is also an element showing a small black dot which gets red when tick time gets over the update interval:
+
+```python
+Displays = [
+	# ...
+	
+	StatisticalDisplays.STATS_DISPLAY(parent_bounds)
+]
+```
+
+(This will not fill the entire bounds passed but be placed at the top right corner)
 
 ## License
 
