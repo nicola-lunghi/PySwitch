@@ -86,11 +86,11 @@ Switches = [
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
             ),
 
-			# ... Define further actions for switch 1 here
+            # ... Define further actions for switch 1 here
         ]
     },
 
-	# ... Define further switches here
+    # ... Define further switches here
 ]
 ```
 
@@ -103,26 +103,26 @@ Switches = [
 	{
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-			ParameterCondition(
+            ParameterCondition(
                 mapping = KemperMappings.RIG_NAME,
                 mode = ParameterConditionModes.MODE_STRING_CONTAINS,
                 ref_value = "TAP",
 
                 yes = [
-					KemperActionDefinitions.TAP_TEMPO()
-				],
+                    KemperActionDefinitions.TAP_TEMPO()
+                ],
 
-				no = [
-					KemperActionDefinitions.EFFECT_STATE(
-						slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
-					)
-				]
+                no = [
+                    KemperActionDefinitions.EFFECT_STATE(
+                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
+                    )
+                ]
 
-			# ... Define further actions for switch 1 here
+            # ... Define further actions for switch 1 here
         ]
     },
 
-	# ... Define further switches here
+    # ... Define further switches here
 ]
 ```
 
@@ -130,60 +130,60 @@ Note that conditions can be deeply nested: Any action in the yes or no branches 
 
 ```python
 Switches = [
-	{
+    {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-			ParameterCondition(
+            ParameterCondition(
                 mapping = KemperMappings.RIG_NAME,
                 mode = ParameterConditionModes.MODE_STRING_CONTAINS,
                 ref_value = "TAP",
 
                 yes = [
-					ParameterCondition(
-						mapping = KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
-						mode = ParameterConditionModes.MODE_EQUAL,
-						ref_value = 1,
+                    ParameterCondition(
+                        mapping = KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+                        mode = ParameterConditionModes.MODE_EQUAL,
+                        ref_value = 1,
 						
-						yes = [
-							KemperActionDefinitions.TAP_TEMPO(
+                        yes = [
+                            KemperActionDefinitions.TAP_TEMPO(
                                 display = {
-									"id": 123, 
-									"index": 0,
-									"layout": ACTION_LABEL_LAYOUT
-								}
+                                    "id": 123, 
+                                    "index": 0,
+                                    "layout": ACTION_LABEL_LAYOUT
+                                }
                             )
-						],
+                        ],
 
-						no = [
-							KemperActionDefinitions.EFFECT_STATE(
-								slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+                        no = [
+                            KemperActionDefinitions.EFFECT_STATE(
+                                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                                 display = {
-									"id": 123, 
-									"index": 0,
-									"layout": ACTION_LABEL_LAYOUT
-								}
-							)
-						]
+                                    "id": 123, 
+                                    "index": 0,
+                                    "layout": ACTION_LABEL_LAYOUT
+                                }
+                            )
+                        ]
                     )
-				],
+                ],
 
-				no = [
-					KemperActionDefinitions.EFFECT_STATE(
-						slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+                no = [
+                    KemperActionDefinitions.EFFECT_STATE(
+                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                         display = {
-							"id": 123, 
-							"index": 0,
-							"layout": ACTION_LABEL_LAYOUT
-						}
-					)
-				]
-			),
+                            "id": 123, 
+                            "index": 0,
+                            "layout": ACTION_LABEL_LAYOUT
+                        }
+                    )
+                ]
+            ),
 
-			# ... Define further actions for switch 1 here
+            # ... Define further actions for switch 1 here
         ]
     },
 
-	# ... Define further switches here
+    # ... Define further switches here
 ]
 ```
 
@@ -197,22 +197,22 @@ The last example only uses the switch LEDs to indicate the effect status (bright
 
 ```python
 Switches = [
-	{
+    {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-				display = {
+                display = {
                     "id": 123,                         # Some arbitrary ID defined in displays.py
-					"index": 0,                        # Only used when the display element is a split container, to address the 
-					                                   # part of the display used  for this switch
+                    "index": 0,                        # Only used when the display element is a split container, to address the 
+                                                       # part of the display used  for this switch
                     "layout": ACTION_LABEL_LAYOUT      # Mandatory: DisplayLabel Layout definition (see below)
                 },
             )
         ]
     },
 
-	#... Define further switches here
+    #... Define further switches here
 ]
 ```
 
@@ -229,21 +229,21 @@ Displays = [
         bounds = DisplayBounds(0, 0, 240, 40)  # x, y, width, height
     ),
 
-	# Footer area
+    # Footer area
     DisplaySplitContainer(
         id = 456,
         name = "Footer",
         bounds = DisplayBounds(0, 200, 240, 40)  # x, y, width, height
     ),
 
-	# Rig name
+    # Rig name
     ParameterDisplayLabel(
         name = "Rig Name",
         bounds = DisplayBounds(0, 40, 160, 40)  # x, y, width, height
         layout = {
             "font": "/fonts/PTSans-NarrowBold-40.pcf",
-			"lineSpacing": 0.8,
-			"maxTextWidth": 220,
+            "lineSpacing": 0.8,
+            "maxTextWidth": 220,
         },
         parameter = {
             "mapping": KemperMappings.AMP_NAME,
@@ -251,7 +251,7 @@ Displays = [
         }        
     ),
 
-	# ... Define further elements here
+    # ... Define further elements here
 ]
 ```
 
@@ -279,17 +279,17 @@ The following snippets demonstrate this: The next two examples do exactly the sa
 
 ```python
 Displays = [ 
-	# Header (top 40 pixels)
-	DisplayLabel(bounds = DisplayBounds(0, 0, 240, 40)),
+    # Header (top 40 pixels)
+    DisplayLabel(bounds = DisplayBounds(0, 0, 240, 40)),
 
-	# Footer (bottom 40 pixels)
-	DisplayLabel(bounds = DisplayBounds(0, 200, 240, 40)),
+    # Footer (bottom 40 pixels)
+    DisplayLabel(bounds = DisplayBounds(0, 200, 240, 40)),
 
-	# Rig name (remaining space)
-	DisplayLabel(bounds = DisplayBounds(0, 40, 240, 160))
+    # Rig name (remaining space)
+    DisplayLabel(bounds = DisplayBounds(0, 40, 240, 160))
 
-	# Some other display (above footer, but overlapping the rig name area)
-	DisplayLabel(bounds = DisplayBounds(0, 180, 240, 20))
+    # Some other display (above footer, but overlapping the rig name area)
+    DisplayLabel(bounds = DisplayBounds(0, 180, 240, 20))
 ]
 ```
 
@@ -298,18 +298,18 @@ Displays = [
 bounds = DisplayBounds(0, 0, 240, 240)
 
 Displays = [ 
-	# Header (remove top 40 pixels from bounds and use that area)
-	DisplayLabel(bounds = bounds.remove_from_top(40)),
+    # Header (remove top 40 pixels from bounds and use that area)
+    DisplayLabel(bounds = bounds.remove_from_top(40)),
 
-	# Footer (remove bottom 40 pixels from bounds and use that area)
-	DisplayLabel(bounds = bounds.remove_from_bottom(40)),
+    # Footer (remove bottom 40 pixels from bounds and use that area)
+    DisplayLabel(bounds = bounds.remove_from_bottom(40)),
 
-	# Rig name (take remaining space (header and bottom have been cut off))
-	DisplayLabel(bounds = bounds),
+    # Rig name (take remaining space (header and bottom have been cut off))
+    DisplayLabel(bounds = bounds),
 
-	# Some other display (above footer, but overlapping the rig name area,
-	# so we use bottom() which does not change the bounds)
-	DisplayLabel(bounds = bounds.bottom(20)),
+    # Some other display (above footer, but overlapping the rig name area,
+    # so we use bottom() which does not change the bounds)
+    DisplayLabel(bounds = bounds.bottom(20)),
 ]
 ```
 
@@ -354,7 +354,7 @@ Displays = [
         }
     ),
 
-	# ...
+    # ...
 ]
 ```
 
@@ -386,27 +386,27 @@ Layouts for DisplayLabel and related types are defined as dict. Here is an examp
 
 ```python
 layout = {
-	"font": "/fonts/H20.pcf",   # Path to the font in PCF format (mandatory). A lot of fonts are
-	                            # available at https://github.com/adafruit/circuitpython-fonts
+    "font": "/fonts/H20.pcf",   # Path to the font in PCF format (mandatory). A lot of fonts are
+                                # available at https://github.com/adafruit/circuitpython-fonts
 
-	"maxTextWidth": 220,        # Maximum text width in pixels (optional) for wrapping text
+    "maxTextWidth": 220,        # Maximum text width in pixels (optional) for wrapping text
 
-	"lineSpacing": 1,           # Line spacing (optional, default is 1)
+    "lineSpacing": 1,           # Line spacing (optional, default is 1)
 
-	"textColor": (255, 120, 0), # Text color (default is None, which will derive a contrasting
-	                            # color automatically)
+    "textColor": (255, 120, 0), # Text color (default is None, which will derive a contrasting
+                                # color automatically)
 
-	"backColor": (30, 30, 30),  # Background color (default is None) Can be a tuple also to 
-	                            # show a rainbow background with multiple colors, 
-								# for example (Colors.GREEN, Colors.YELLOW, Colors.RED)
+    "backColor": (30, 30, 30),  # Background color (default is None) Can be a tuple also to 
+                                # show a rainbow background with multiple colors, 
+                                # for example (Colors.GREEN, Colors.YELLOW, Colors.RED)
 
-	"cornerRadius": 0,          # Corner radius for the background (optional: default is 0). 
-	                            # Should be used sparingly because it takes a lot of memory!
+    "cornerRadius": 0,          # Corner radius for the background (optional: default is 0). 
+                                # Should be used sparingly because it takes a lot of memory!
 
-	"stroke":                   # Ouline stroke (optional, default is 0). Width of the 
-	                            # optional outline
+    "stroke":                   # Ouline stroke (optional, default is 0). Width of the 
+                                # optional outline
 
-	"text": "Initial Text"      # Initial text (default is None).
+    "text": "Initial Text"      # Initial text (default is None).
 }
 ```
 
