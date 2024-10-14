@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python -m unittest discover -t /project -s /project/test/pyswitch 
+coverage run --rcfile=/project/test/.coveragerc -m unittest discover -t /project -s /project/test/pyswitch
+coverage html --rcfile=/project/test/.coveragerc

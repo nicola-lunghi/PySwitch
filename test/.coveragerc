@@ -1,0 +1,11 @@
+[run]
+branch = True
+source = /project
+
+[report]
+show_missing = True
+include_namespace_packages = True
+
+[html]
+directory = /project/test/report 
+skip_empty = True
