@@ -1,3 +1,4 @@
+
 class MockUsbMidi:
     ports = [None, None]
 

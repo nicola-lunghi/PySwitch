@@ -66,5 +66,5 @@ else:
     from switches import Switches, ValueProvider
 
     # Controller instance (runs the processing loop and keeps everything together)
-    appl = Controller(led_driver, Config, ValueProvider, Switches, Displays, gui)
+    appl = Controller(led_driver, ValueProvider, Config, Switches, Displays, gui)
     appl.process()

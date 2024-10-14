@@ -56,7 +56,7 @@ class FootSwitchController: #ConditionListener
             self._print("Init actions")
         
         self._action_tree = ConditionTree(
-            subject = self.config["actions"],
+            subject = Tools.get_option(self.config, "actions", []),
             listener = self
         )
 

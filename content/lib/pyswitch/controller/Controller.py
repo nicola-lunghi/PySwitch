@@ -36,7 +36,7 @@ class Controller(Updater): #ClientRequestListener
     #           ]
     # value_provider: Value provider for the client
     # displays: list of DisplayElements to show on the TFT
-    def __init__(self, led_driver, config, value_provider, switches = [], displays = [], ui = None):
+    def __init__(self, led_driver, value_provider, config = {}, switches = [], displays = [], ui = None, period_counter = None):
         Updater.__init__(self)
 
         # User interface
@@ -57,7 +57,7 @@ class Controller(Updater): #ClientRequestListener
         self.led_driver.init(self._get_num_pixels())
         
         # Parse some options
-        self._midiChannel = Tools.get_option(self.config, "midiChannel", 1)                                  # MIDI channel to use
+        self._midiChannel = Tools.get_option(self.config, "midiChannel", 1)                                 # MIDI channel to use
         self._midi_buffer_size = Tools.get_option(self.config, "midiBufferSize", 60)                        # MIDI buffer size
         self._max_consecutive_midi_msgs = Tools.get_option(self.config, "maxConsecutiveMidiMessages", 10)   # Max. number of MIDI messages being parsed before the next switch state evaluation
 
@@ -65,7 +65,9 @@ class Controller(Updater): #ClientRequestListener
         self._debug_ui_structure = Tools.get_option(self.config, "debugUserInterfaceStructure", False)        
 
         # Periodic update handler (the client is only asked when a certain time has passed)
-        self.period = PeriodCounter(Tools.get_option(self.config, "updateInterval", 200))        
+        self.period = period_counter
+        if not self.period:
+            self.period = PeriodCounter(Tools.get_option(self.config, "updateInterval", 200))        
 
         # Set up the screen elements
         self._prepare_ui(displays)
@@ -158,8 +160,9 @@ class Controller(Updater): #ClientRequestListener
 
         Memory.watch("Controller: Showing UI")
 
-        # Show user interface        
-        self.ui.show(self)
+        # Show user interface
+        if self.ui:  
+            self.ui.show(self)
 
         Memory.watch("Controller: Starting loop")
 
@@ -167,33 +170,39 @@ class Controller(Updater): #ClientRequestListener
             Tools.print("-> Done initializing, starting processing loop")
 
         # Start processing loop
+        while self.tick():
+            pass
+
+    # Single tick in the processing loop
+    def tick(self):
+        # If enabled, remember the tick starting time for statistics
+        for m in self._measurements_tick_time:
+            m.start()       
+
+        # Update all Updateables in periodic intervals, less frequently then every tick
+        if self.period.exceeded:
+            self.update(round_robin = False)
+
+        # Receive all available MIDI messages            
+        cnt = 0
         while True:
-            # If enabled, remember the tick starting time for statistics
-            for m in self._measurements_tick_time:
-                m.start()       
+            # Detect switch state changes
+            self._process_switches()
 
-            # Update all Updateables in periodic intervals, less frequently then every tick
-            if self.period.exceeded:
-                self.update(round_robin = False)
+            midimsg = self._midi.receive()
 
-            # Receive all available MIDI messages            
-            cnt = 0
-            while True:
-                # Detect switch state changes
-                self._process_switches()
+            # Process the midi message
+            self.client.receive(midimsg)
 
-                midimsg = self._midi.receive()
+            cnt = cnt + 1
+            if not midimsg or cnt > self._max_consecutive_midi_msgs:
+                break  
 
-                # Process the midi message
-                self.client.receive(midimsg)
+        # Output statistical info if enabled
+        for m in self._measurements_tick_time:
+            m.finish()
 
-                cnt = cnt + 1
-                if not midimsg or cnt > self._max_consecutive_midi_msgs:
-                    break  
-
-            # Output statistical info if enabled
-            for m in self._measurements_tick_time:
-                m.finish()
+        return True
 
     # Detects switch changes
     def _process_switches(self):
