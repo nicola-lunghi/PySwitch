@@ -120,9 +120,6 @@ class PushButtonAction(Action):
 
     # Reset the action: Set False state without sending anything
     def reset(self):
-        if self.debug:
-            Tools.print(" -> Reset action")
-            
         self.feedback_state(False)
 
 

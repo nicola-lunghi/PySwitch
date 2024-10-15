@@ -12,11 +12,51 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.controller.actions.actions import PushButtonModes
-    from .mocks_appl import *
+    from.mocks_misc import *
 
+    with patch.dict(sys.modules, {
+        "misc": MockMisc()
+    }):
+
+        from lib.pyswitch.controller.actions.actions import PushButtonModes
+        from .mocks_appl import *
 
 class TestActionPushButton(unittest.TestCase):
+
+    def test_set_reset(self):
+        action_1 = MockPushButtonAction({
+            "mode": PushButtonModes.LATCH
+        })
+
+        self.assertEqual(action_1.num_set_calls, 0)
+        self.assertEqual(action_1.state, False)
+
+        action_1.state = True
+        self.assertEqual(action_1.num_set_calls, 1)
+        self.assertEqual(action_1.state, True)
+
+        action_1.feedback_state(False)
+        self.assertEqual(action_1.num_set_calls, 1)
+        self.assertEqual(action_1.state, False)
+
+        action_1.feedback_state(True)
+        self.assertEqual(action_1.num_set_calls, 1)
+        self.assertEqual(action_1.state, True)
+
+        action_1.state = False
+        self.assertEqual(action_1.num_set_calls, 2)
+        self.assertEqual(action_1.state, False)
+
+        action_1.state = True
+        self.assertEqual(action_1.num_set_calls, 3)
+        self.assertEqual(action_1.state, True)
+
+        action_1.reset()
+        self.assertEqual(action_1.num_set_calls, 3)
+        self.assertEqual(action_1.state, False)
+        
+###################################################################################
+
 
     def test_latch(self):
         switch_1 = MockSwitch()
@@ -572,11 +612,14 @@ class TestActionPushButton(unittest.TestCase):
 ###################################################################################
 
 
-    def test_hold_momentary(self):
+    def test_hold_momentary_short_press(self):
         switch_1 = MockSwitch()
         action_1 = MockPushButtonAction({
-            "mode": PushButtonModes.HOLD_MOMENTARY
+            "mode": PushButtonModes.HOLD_MOMENTARY,
+            "holdTimeMillis": 500
         })
+
+        MockMisc.ret_current_millis = 0
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
@@ -599,37 +642,37 @@ class TestActionPushButton(unittest.TestCase):
         # Step 1: Button pushed
         def prep1():
             switch_1.shall_be_pushed = True
-            that.assertEqual(action_1.num_set_calls, 0)
+            that.assertEqual(action_1.state, False)
 
         def eval1():
-            that.assertEqual(action_1.num_set_calls, 1)
+            that.assertEqual(action_1.state, True)
             return True
 
         # Step 2: Button released
         def prep2():
             switch_1.shall_be_pushed = False
-            that.assertEqual(action_1.num_set_calls, 1)
+            that.assertEqual(action_1.state, True)
 
         def eval2():
-            that.assertEqual(action_1.num_set_calls, 1)
+            that.assertEqual(action_1.state, True)
             return True
         
         # Step 3: Button pushed
         def prep3():
             switch_1.shall_be_pushed = True
-            that.assertEqual(action_1.num_set_calls, 1)
+            that.assertEqual(action_1.state, True)
 
         def eval3():
-            that.assertEqual(action_1.num_set_calls, 2)
+            that.assertEqual(action_1.state, False)
             return True
         
         # Step 4: Button released
         def prep4():
             switch_1.shall_be_pushed = False
-            that.assertEqual(action_1.num_set_calls, 2)
+            that.assertEqual(action_1.state, False)
 
         def eval4():
-            that.assertEqual(action_1.num_set_calls, 2)
+            that.assertEqual(action_1.state, False)
             return False
 
         # Build scenes hierarchy
@@ -660,4 +703,198 @@ class TestActionPushButton(unittest.TestCase):
         # Run process
         appl.process()
 
+
+###################################################################################
+
+
+    def test_hold_momentary_medium_press(self):
+        switch_1 = MockSwitch()
+        action_1 = MockPushButtonAction({
+            "mode": PushButtonModes.HOLD_MOMENTARY,
+            "holdTimeMillis": 500
+        })
+
+        MockMisc.ret_current_millis = 0
+
+        appl = MockController(
+            led_driver = MockNeoPixelDriver(),
+            value_provider = MockValueProvider(),
+            switches = [
+                {
+                    "assignment": {
+                        "model": switch_1
+                    },
+                    "actions": [
+                        action_1
+                    ]
+                }
+            ]
+        )
+
+        that = self
+
+        # Build scene:
+        # Step 1: Button pushed
+        def prep1():
+            switch_1.shall_be_pushed = True
+            that.assertEqual(action_1.state, False)
+
+        def eval1():
+            that.assertEqual(action_1.state, True)
+            return True
+
+        # Step 2: Button released
+        def prep2():
+            MockMisc.ret_current_millis = 100
+            switch_1.shall_be_pushed = False
+            that.assertEqual(action_1.state, True)
+
+        def eval2():
+            that.assertEqual(action_1.state, True)
+            return True
         
+        # Step 3: Button pushed
+        def prep3():
+            MockMisc.ret_current_millis = 200
+            switch_1.shall_be_pushed = True
+            that.assertEqual(action_1.state, True)
+
+        def eval3():
+            that.assertEqual(action_1.state, False)
+            return True
+        
+        # Step 4: Button released
+        def prep4():
+            MockMisc.ret_current_millis = 400
+            switch_1.shall_be_pushed = False
+            that.assertEqual(action_1.state, False)
+
+        def eval4():
+            that.assertEqual(action_1.state, False)
+            return False
+
+        # Build scenes hierarchy
+        appl.next_step = SceneStep(
+            num_pass_ticks = 5,
+            prepare = prep1,
+            evaluate = eval1,
+
+            next = SceneStep(
+                num_pass_ticks = 5,
+                prepare = prep2,
+                evaluate = eval2,
+            
+                next = SceneStep(
+                    num_pass_ticks = 5,
+                    prepare = prep3,
+                    evaluate = eval3,
+            
+                    next = SceneStep(
+                        num_pass_ticks = 5,
+                        prepare = prep4,
+                        evaluate = eval4
+                    )
+                )
+            )
+        )
+
+        # Run process
+        appl.process()
+
+
+###################################################################################
+
+
+    def test_hold_momentary_long_press(self):
+        switch_1 = MockSwitch()
+        action_1 = MockPushButtonAction({
+            "mode": PushButtonModes.HOLD_MOMENTARY,
+            "holdTimeMillis": 500
+        })
+
+        MockMisc.ret_current_millis = 0
+
+        appl = MockController(
+            led_driver = MockNeoPixelDriver(),
+            value_provider = MockValueProvider(),
+            switches = [
+                {
+                    "assignment": {
+                        "model": switch_1
+                    },
+                    "actions": [
+                        action_1
+                    ]
+                }
+            ]
+        )
+
+        that = self
+
+        # Build scene:
+        # Step 1: Button pushed
+        def prep1():
+            switch_1.shall_be_pushed = True
+            that.assertEqual(action_1.state, False)
+
+        def eval1():
+            that.assertEqual(action_1.state, True)
+            return True
+
+        # Step 2: Button released
+        def prep2():
+            MockMisc.ret_current_millis = 501
+            switch_1.shall_be_pushed = False
+            that.assertEqual(action_1.state, True)
+
+        def eval2():
+            that.assertEqual(action_1.state, False)
+            return True
+        
+        # Step 3: Button pushed
+        def prep3():
+            MockMisc.ret_current_millis = 1200
+            switch_1.shall_be_pushed = True
+            that.assertEqual(action_1.state, False)
+
+        def eval3():
+            that.assertEqual(action_1.state, True)
+            return True
+        
+        # Step 4: Button released
+        def prep4():
+            MockMisc.ret_current_millis = 1699
+            switch_1.shall_be_pushed = False
+            that.assertEqual(action_1.state, True)
+
+        def eval4():
+            that.assertEqual(action_1.state, True)
+            return False
+
+        # Build scenes hierarchy
+        appl.next_step = SceneStep(
+            num_pass_ticks = 5,
+            prepare = prep1,
+            evaluate = eval1,
+
+            next = SceneStep(
+                num_pass_ticks = 5,
+                prepare = prep2,
+                evaluate = eval2,
+            
+                next = SceneStep(
+                    num_pass_ticks = 5,
+                    prepare = prep3,
+                    evaluate = eval3,
+            
+                    next = SceneStep(
+                        num_pass_ticks = 5,
+                        prepare = prep4,
+                        evaluate = eval4
+                    )
+                )
+            )
+        )
+
+        # Run process
+        appl.process()
