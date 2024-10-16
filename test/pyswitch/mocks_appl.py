@@ -1,8 +1,12 @@
-import unittest
+from time import sleep
 
 from lib.pyswitch.controller.actions.Action import Action
 from lib.pyswitch.controller.actions.actions import PushButtonAction
 from lib.pyswitch.controller.Controller import Controller
+from lib.pyswitch.controller.ConditionTree import Condition
+from lib.pyswitch.misc import Updater
+
+from .mocks_lib import *
 
 
 # Used to build szenarios
@@ -75,6 +79,10 @@ class MockController(Controller):
 class MockPeriodCounter():
     def __init__(self):
         self.exceed_next_time = False
+        self.num_reset_calls = 0
+
+    def reset(self):
+        self.num_reset_calls += 1
 
     @property
     def exceeded(self):
@@ -97,7 +105,7 @@ class MockNeoPixelDriver:
         self.leds = None
         
     def init(self, num_leds):
-        self.leds = [self.Led() for i in range(num_leds)]
+        self.leds = [None for i in range(num_leds)]
 
 
 ##################################################################################################################################
@@ -130,8 +138,9 @@ class MockValueProvider:
 
 
 class MockPushButtonAction(PushButtonAction):
-    def __init__(self, config = {}):
-        super().__init__(config)
+    def __init__(self, config = {}, period_counter = None):
+        super().__init__(config, period_counter)
+
         self.num_set_calls = 0
 
     def set(self, state):
@@ -142,6 +151,68 @@ class MockPushButtonAction(PushButtonAction):
 
 
 class MockAction(Action):
-    pass
+
+    def __init__(self, config = {}, update_delay_millis = 0):
+        super().__init__(config)
+
+        self.num_update_calls_overall = 0
+        self.num_update_calls_enabled = 0
+        self.update_delay_millis = update_delay_millis
+
+    def update(self):
+        self.num_update_calls_overall += 1
+        
+        if self.enabled:
+            self.num_update_calls_enabled += 1
+
+        if self.update_delay_millis > 0:
+            sleep(self.update_delay_millis / 1000)
 
 
+##################################################################################################################################
+
+
+class MockCondition(Condition):
+    def __init__(self, yes = None, no = None):
+        super().__init__(yes = yes, no = no)
+
+        self.bool_value = True
+        self.num_update_calls = 0
+
+    def update(self):
+        self.num_update_calls += 1
+
+        if self.true == self.bool_value:
+            return
+
+        self.true = self.bool_value
+
+        for listener in self.listeners:
+            listener.condition_changed(self)   
+
+
+##################################################################################################################################
+
+
+class MockMeasurement:
+    def __init__(self):
+        self.output_value = 0
+        self.output_message = ""
+        self.num_update_calls = 0
+
+    def get_message(self):
+        return self.output_message
+    
+    def value(self):
+        return self.output_value
+
+    def update(self):
+        self.num_update_calls += 1
+
+
+##################################################################################################################################
+
+
+class MockConditionReplacer:
+    def replace(self, entry):
+        return entry + " (replaced)"

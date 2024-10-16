@@ -1,19 +1,18 @@
-from lib.pyswitch.misc import *
+import lib.pyswitch.misc as misc
+
 
 class MockMisc:
-    Tools = Tools
-    Colors = Colors
-    Defaults = Defaults
-    Updater = Updater
-    Updateable = Updateable
-    EventEmitter = EventEmitter
-    Memory = Memory
-    PeriodCounter = PeriodCounter
+    class Tools(misc.Tools):
+        msgs = []
 
-    ret_current_millis = 0
+        @staticmethod
+        def print(msg):
+            MockMisc.Tools.msgs.append(msg)
 
-    @staticmethod
-    def mock_get_current_millis():
-        return MockMisc.ret_current_millis
-
-MockMisc.Tools.get_current_millis = MockMisc.mock_get_current_millis
+    Colors = misc.Colors
+    Defaults = misc.Defaults    
+    Updater = misc.Updater
+    Updateable = misc.Updateable
+    EventEmitter = misc.EventEmitter
+    Memory = misc.Memory
+    PeriodCounter = misc.PeriodCounter

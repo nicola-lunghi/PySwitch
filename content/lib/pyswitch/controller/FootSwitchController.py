@@ -170,6 +170,9 @@ class FootSwitchController: #ConditionListener
         if len(colors) != len(self.pixels):
             raise Exception("Invalid amount of colors: " + repr(len(colors)))
         
+        if not isinstance(colors, list):
+            raise Exception("Invalid type for colors, must be a list: " + repr(colors))
+        
         if self._debug:
             self._print(" -> Set colors to " + repr(colors))
 
@@ -204,9 +207,6 @@ class FootSwitchController: #ConditionListener
     # Set brightness equally of all LEDs
     @brightness.setter
     def brightness(self, brightness):
-        if self._debug:
-            self._print(" -> Set brightness to " + repr(brightness))
-
         b = []
         for i in range(len(self.pixels)):
             b.append(brightness)
@@ -223,6 +223,9 @@ class FootSwitchController: #ConditionListener
     def brightnesses(self, brightnesses):
         if not self.pixels:
             return
+        
+        if not isinstance(brightnesses, list):
+            raise Exception("Invalid type for brightnesses, must be a list: " + repr(brightnesses))
         
         if len(brightnesses) != len(self.pixels):
             raise Exception("Invalid amount of colors: " + repr(len(brightnesses)))

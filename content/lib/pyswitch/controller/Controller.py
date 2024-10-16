@@ -152,22 +152,22 @@ class Controller(Updater): #ClientRequestListener
 
     # Runs the processing loop (which never ends)
     def process(self):
-        if self._debug:
-            Tools.print("-> Init UI:")            
-
-        if self._debug_ui_structure:
-            self.ui.root.print_debug_info(3)
-
-        Memory.watch("Controller: Showing UI")
-
         # Show user interface
         if self.ui:  
-            self.ui.show(self)
+            if self._debug:
+                Tools.print("-> Init UI:")            
 
-        Memory.watch("Controller: Starting loop")
+            if self._debug_ui_structure:
+                self.ui.root.print_debug_info(3)
+
+            Memory.watch("Controller: Showing UI")
+
+            self.ui.show(self)        
 
         if self._debug:
             Tools.print("-> Done initializing, starting processing loop")
+
+        Memory.watch("Controller: Starting loop")
 
         # Start processing loop
         while self.tick():

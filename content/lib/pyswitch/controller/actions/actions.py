@@ -1,6 +1,6 @@
 from .Action import Action
 from ..Client import ClientParameterMapping
-from ...misc import Tools, Defaults, Colors
+from ...misc import Tools, Defaults, Colors, PeriodCounter
 
 
 # Modes for PushButtonAction
@@ -31,14 +31,17 @@ class PushButtonAction(Action):
     #      "mode": Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
     #      "holdTimeMillis": Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
     # }
-    def __init__(self, config = {}):
+    def __init__(self, config = {}, period_counter = None):
         super().__init__(config)
 
         self._mode = Tools.get_option(self.config, "mode", PushButtonModes.HOLD_MOMENTARY)
-        self._hold_time_ms = Tools.get_option(self.config, "holdTimeMillis", PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME)
+        
+        self._period = period_counter
+        if not self._period:
+            hold_time_ms = Tools.get_option(self.config, "holdTimeMillis", PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME)
+            self._period = PeriodCounter(hold_time_ms)
         
         self._state = False
-        self._start_time = 0
 
     @property
     def state(self):
@@ -93,7 +96,7 @@ class PushButtonAction(Action):
 
         elif self._mode == PushButtonModes.HOLD_MOMENTARY:
             # Hold Momentary: Toggle like latch, and remember the current timestamp
-            self._start_time = Tools.get_current_millis()
+            self._period.reset()
             self.state = not self.state
 
         elif self._mode == PushButtonModes.ONE_SHOT:
@@ -109,9 +112,8 @@ class PushButtonAction(Action):
             self.state = True
         
         elif self._mode == PushButtonModes.HOLD_MOMENTARY:
-            diff = Tools.get_current_millis() - self._start_time
-
-            if diff >= self._hold_time_ms:
+            if self._period.exceeded:
+                # Momentary if the period exceeded
                 self.state = not self.state
 
         elif self._mode == PushButtonModes.ONE_SHOT:

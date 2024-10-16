@@ -36,3 +36,24 @@ class MockGC:
         return 0
 
 
+class MockDisplayIO:
+    class Group:
+        def __init__(self, scale = 1, x = 0, y = 0):
+            self.scale = scale
+            self.x = x
+            self.y = y
+
+        
+class MockAdafruitDisplayText:
+    class label:
+        class Label:
+            def __init__(self, font = None, anchor_point = None, anchored_position = None, text = None, color = None, line_spacing = None):
+                self.font = font
+                self.anchor_point = anchor_point
+                self.anchored_position = anchored_position
+                self.text = text
+                self.color = color
+                self.line_spacing = line_spacing
+
+    def wrap_text_to_pixels(text, text_width, font):
+        return text + " (wrapped to " + repr(text_width) + ")"
