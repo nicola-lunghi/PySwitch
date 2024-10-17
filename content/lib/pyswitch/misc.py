@@ -97,6 +97,20 @@ class Tools:
 
         return "[" + hexlist + "]"
 
+    # Compare two MIDI messages
+    @staticmethod
+    def compare_midi_messages(a, b):
+        if a.__class__.__name__ != b.__class__.__name__:
+            return False
+
+        if isinstance(a, SystemExclusive):            
+            return a.data == b.data
+
+        if isinstance(a, ControlChange):
+            return a.control == b.control
+        
+        return a == b
+    
     # Size (bytes) output formatting 
     # Taken from https://stackoverflow.com/questions/1094841/get-a-human-readable-version-of-a-file-size 
     @staticmethod

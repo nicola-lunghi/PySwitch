@@ -435,6 +435,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
     # 
     # Additional options:
     # {
+    #     "slotInfo":       SlotInfoProvider
     #     "mapping":        A ClientParameterMapping instance to determine the effect status (on/off). 
     #                       Here, this cannot be an array!
     #     "mappingType":    A ClientParameterMapping instance to determine the effect type. 
@@ -612,7 +613,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
  
 ## Provider class for slot information
 #class SlotInfoProvider:
-#    # Must return the lot name
+#    # Must return the slot name
 #    def get_name(self):
 #        raise Exception("Implement in child classes")
 

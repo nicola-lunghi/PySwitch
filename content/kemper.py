@@ -554,8 +554,8 @@ class KemperMidiValueProvider: #(ClientValueProvider):
     def NRPN_VALUE(value):
         return int(16383 * value)
 
-    # Must parse the incoming MIDI message and return the value contained.
-    # If the response template does not match, must return None.
+    # Must parse the incoming MIDI message and set it on the passed mapping.
+    # If the response template does not match, must return False.
     # Must return True to notify the listeners of a value change.
     def parse(self, mapping, midi_message):
         # Compare manufacturer IDs

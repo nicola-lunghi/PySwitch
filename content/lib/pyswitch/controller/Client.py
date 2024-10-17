@@ -22,12 +22,12 @@ from ..misc import Tools, EventEmitter, PeriodCounter
 
 # Must implement preparation of MIDI messages for sending as well as parsing the received ones.
 #class ClientValueProvider:
-#    # Must parse the incoming MIDI message and return the value contained.
-#    # If the response template does not match, must return None.
+#    # Must parse the incoming MIDI message and set it on the passed mapping.
+#    # If the response template does not match, must return False.
 #    # Must return True to notify the listeners of a value change.
 #    def parse(self, mapping, midi_message):
 #        return False
-    
+#
 #    # Must set the passed value on the SET message of the mapping.
 #    def set_value(self, mapping, value):
 #        pass
@@ -177,28 +177,15 @@ class ClientParameterMapping:
         
         if self.request != None:
             if other.request != None:
-                return self._compare_messages(self.request, other.request)
+                return Tools.compare_midi_messages(self.request, other.request)
             else:
                 return False
         elif self.set != None:
             if other.set != None:
-                return self._compare_messages(self.set, other.set)
+                return Tools.compare_midi_messages(self.set, other.set)
             else:
                 return False
         return False
-
-    # Compare two MIDI messages
-    def _compare_messages(self, a, b):
-        if a.__class__.__name__ != b.__class__.__name__:
-            return False
-
-        if isinstance(a, SystemExclusive):            
-            return a.data == b.data
-
-        if isinstance(a, ControlChange):
-            return a.control == b.control
-        
-        return a == b
 
     @property
     def can_set(self):

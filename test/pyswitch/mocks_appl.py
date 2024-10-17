@@ -127,11 +127,35 @@ class MockSwitch:
 
 
 class MockValueProvider:
+    def __init__(self):
+        self.outputs_parse = []
+        self.parse_calls = []
+
+        self.set_value_calls = []
+
     def parse(self, mapping, midi_message):
-        return False
+        ret = False
+        if self.outputs_parse:
+            first = self.outputs_parse.pop(0)
+
+            if "value" in first:
+                mapping.value = first["value"]
+
+            ret = first["result"] if "result" in first else False
+        
+        self.parse_calls.append({
+            "mapping": mapping,
+            "message": midi_message,
+            "return": ret
+        })
+
+        return ret
     
     def set_value(self, mapping, value):
-        pass
+        self.set_value_calls.append({
+            "mapping": mapping,
+            "value": value
+        })
 
 
 ##################################################################################################################################
@@ -216,3 +240,5 @@ class MockMeasurement:
 class MockConditionReplacer:
     def replace(self, entry):
         return entry + " (replaced)"
+    
+

@@ -5,13 +5,17 @@ class MockUsbMidi:
 class MockAdafruitMIDI:
     class MIDI:
         def __init__(self, midi_out, out_channel, midi_in, in_buf_size, debug):
-            pass
+            self.messages_sent = []
+            self.next_receive_messages = []
 
         def receive(self):
+            if self.next_receive_messages:
+                return self.next_receive_messages.pop(0)
+            
             return None
         
         def send(self, midi_message):
-            pass
+            self.messages_sent.append(midi_message)
             
 class MockAdafruitMIDIControlChange:    
     class ControlChange:
