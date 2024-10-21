@@ -26,7 +26,6 @@ with patch.dict(sys.modules, {
 
 class TestControllerDebug(unittest.TestCase):
 
-
     def test_debug(self):
         MockMisc.Tools.msgs = []
 

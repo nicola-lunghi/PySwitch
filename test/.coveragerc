@@ -1,7 +1,8 @@
 [run]
 branch = True
 source = /project
-
+omit = /project/lib/pyswitch/hardware/*
+    
 [report]
 show_missing = True
 include_namespace_packages = True

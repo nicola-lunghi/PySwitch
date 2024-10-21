@@ -39,18 +39,25 @@ class TestActionParameter(unittest.TestCase):
             "mode": PushButtonModes.MOMENTARY,
             "mapping": mapping_1,
             "valueEnabled": 10,
-            "valueDisabled": 3
+            "valueDisabled": 3,
+            "color": (200, 100, 0),
+            "ledBrightness": {
+                "on": 0.5,
+                "off": 0.1
+            }
         })
         
         vp = MockValueProvider()
+        led_driver = MockNeoPixelDriver()
 
         appl = MockController(
-            led_driver = MockNeoPixelDriver(),
+            led_driver = led_driver,
             value_provider = vp,
             switches = [
                 {
                     "assignment": {
-                        "model": switch_1
+                        "model": switch_1,
+                        "pixels": [0]
                     },
                     "actions": [
                         action_1                        
@@ -73,6 +80,11 @@ class TestActionParameter(unittest.TestCase):
 
             self.assertEqual(len(appl._midi.messages_sent), 1)
             self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+
+            self.assertEqual(appl.switches[0].color, (200, 100, 0))
+            self.assertEqual(appl.switches[0].brightness, 0.5)
+            self.assertEqual(led_driver.leds[0], (100, 50, 0))
+            
             return True        
         
         # Step 2: Disable
@@ -88,6 +100,11 @@ class TestActionParameter(unittest.TestCase):
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
             self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+
+            self.assertEqual(appl.switches[0].color, (200, 100, 0))
+            self.assertEqual(appl.switches[0].brightness, 0.1)
+            self.assertEqual(led_driver.leds[0], (20, 10, 0))
+                        
             return False        
 
         # Build scenes hierarchy
@@ -183,6 +200,7 @@ class TestActionParameter(unittest.TestCase):
             ]
             vp.outputs_parse = [
                 {
+                    "mapping": mapping_1,
                     "result": True,
                     "value": 1
                 },
@@ -209,6 +227,7 @@ class TestActionParameter(unittest.TestCase):
             ]
             vp.outputs_parse = [
                 {
+                    "mapping": mapping_1,
                     "result": True,
                     "value": 0
                 }

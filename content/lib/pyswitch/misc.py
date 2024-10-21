@@ -53,7 +53,7 @@ class Tools:
 
     # Print (for debugging only!)
     @staticmethod
-    def print(msg):
+    def print(msg):  # pragma: no cover
         print(msg)
 
     # Returns a current timestmap in integer milliseconds
@@ -138,10 +138,10 @@ class Tools:
 # Base class for everything that needs to be updated regularily
 class Updateable:
     def update(self):
-        pass
+        pass   # pragma: no cover
 
     def reset(self):
-        pass
+        pass   # pragma: no cover
 
 
 #####################################################################################################################################
@@ -169,20 +169,16 @@ class Updater:
     def update(self, round_robin = False):
         if not round_robin:
             for u in self._updateables:            
-                #self.process_pre_update(u)
                 u.update()
         else:
             if not self._updateables:
                 return
+            
             self._updateables[self._next].update()
             
             self._next += 1
             if self._next >= len(self._updateables):
                 self._next = 0
-
-    # Called before each updateable has been updated. Can be redefined.
-    #def process_pre_update(self, updateable):
-    #    pass
 
     # Reset all updateables
     def reset(self):

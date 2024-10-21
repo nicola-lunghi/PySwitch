@@ -86,20 +86,23 @@ class TestActionEffectEnable(unittest.TestCase):
             "mapping": mapping_1,
             "mappingType": mapping_type_1,
             "categories": cp,
-            "slotInfo": MockSlotInfoProvider()
+            "slotInfo": MockSlotInfoProvider(),
+            "color": (10, 50, 100)
         })
         
         period = MockPeriodCounter()
 
         vp = MockValueProvider()
+        led_driver = MockNeoPixelDriver()
 
         appl = MockController(
-            led_driver = MockNeoPixelDriver(),
+            led_driver = led_driver,
             value_provider = vp,
             switches = [
                 {
                     "assignment": {
-                        "model": switch_1
+                        "model": switch_1,
+                        "pixels": [0]
                     },
                     "actions": [
                         action_1                        
@@ -130,46 +133,68 @@ class TestActionEffectEnable(unittest.TestCase):
             
             return True
 
-        # In between step
+        # Receive type
+        def prep2():
+            appl._midi.next_receive_messages = [
+                answer_msg_type
+            ]
+            vp.outputs_parse = [
+                {
+                    "mapping": mapping_type_1,
+                    "result": True,
+                    "value": 0
+                }
+            ]
+
         def eval2():
-            self.assertEqual(len(appl._midi.messages_sent), 1)
+            self.assertEqual(len(appl._midi.next_receive_messages), 0)
+
+            self.assertEqual(len(appl._midi.messages_sent), 2)
+
+            self.assertEqual(len(vp.parse_calls), 1)
+
+            self.assertEqual(vp.parse_calls[0]["mapping"], mapping_type_1)
+            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
+            self.assertEqual(mapping_type_1.value, 0)
+            self.assertEqual(action_1._effect_category, 0)
+
+            self.assertEqual(appl.switches[0].color, (0, 0, 0))
+            self.assertEqual(appl.switches[0].brightness, 0.02)
+            self.assertEqual(led_driver.leds[0], (0, 0, 0))
+
             return True
 
-        # Receive value 
+        # Receive status
         def prep3():
             appl._midi.next_receive_messages = [
-                answer_msg_type,
                 answer_msg_param
             ]
             vp.outputs_parse = [
                 {
-                    "result": True,
-                    "value": 0
-                },
-                {
+                    "mapping": mapping_1,
                     "result": True,
                     "value": 1
                 }
             ]
 
         def eval3():
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertEqual(appl._midi.messages_sent[1], mapping_1.request)
+            self.assertEqual(len(appl._midi.next_receive_messages), 0)
 
+            self.assertEqual(len(appl._midi.messages_sent), 2)
+            
             self.assertEqual(len(vp.parse_calls), 2)
 
-            self.assertEqual(vp.parse_calls[0]["mapping"], mapping_type_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
-            self.assertEqual(mapping_type_1.value, 0)
-            self.assertEqual(action_1._effect_category, 0)
-            
             self.assertEqual(vp.parse_calls[1]["mapping"], mapping_1)
             self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
             self.assertEqual(mapping_1.value, 1)
 
+            self.assertEqual(appl.switches[0].color, (0, 2, 0))
+            self.assertEqual(appl.switches[0].brightness, 1)
+            self.assertEqual(led_driver.leds[0], (0, 2, 0))
+
             return True
         
-        # Receive value 
+        # Receive other value 
         def prep4():
             period.exceed_next_time = True
             appl._midi.next_receive_messages = [
@@ -177,6 +202,7 @@ class TestActionEffectEnable(unittest.TestCase):
             ]
             vp.outputs_parse = [
                 {
+                    "mapping": mapping_type_1,
                     "result": True,
                     "value": 1
                 }
@@ -185,10 +211,14 @@ class TestActionEffectEnable(unittest.TestCase):
         def eval4():
             self.assertEqual(len(vp.parse_calls), 3)
 
-            self.assertEqual(vp.parse_calls[1]["mapping"], mapping_type_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_type))
+            self.assertEqual(vp.parse_calls[2]["mapping"], mapping_type_1)
+            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[2]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 1)
             self.assertEqual(action_1._effect_category, 10)
+
+            self.assertEqual(appl.switches[0].color, (1, 3, 4))
+            self.assertEqual(appl.switches[0].brightness, 1)
+            self.assertEqual(led_driver.leds[0], (1, 3, 4))
 
             return False
 
@@ -200,6 +230,7 @@ class TestActionEffectEnable(unittest.TestCase):
 
             next = SceneStep(
                 num_pass_ticks = 5,
+                prepare = prep2,
                 evaluate = eval2,
 
                 next = SceneStep(

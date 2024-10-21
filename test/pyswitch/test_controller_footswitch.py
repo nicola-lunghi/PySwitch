@@ -19,7 +19,7 @@ with patch.dict(sys.modules, {
     }):
         
         from lib.pyswitch.controller.FootSwitchController import FootSwitchController
-        from lib.pyswitch.misc import Colors
+        from lib.pyswitch.misc import Colors, Updater
         from .mocks_appl import *
 
 

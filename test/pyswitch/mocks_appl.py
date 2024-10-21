@@ -4,7 +4,7 @@ from lib.pyswitch.controller.actions.Action import Action
 from lib.pyswitch.controller.actions.actions import PushButtonAction
 from lib.pyswitch.controller.Controller import Controller
 from lib.pyswitch.controller.ConditionTree import Condition
-from lib.pyswitch.misc import Updater
+from lib.pyswitch.misc import Tools
 
 from .mocks_lib import *
 
@@ -133,23 +133,25 @@ class MockValueProvider:
 
         self.set_value_calls = []
 
-    def parse(self, mapping, midi_message):
-        ret = False
-        if self.outputs_parse:
-            first = self.outputs_parse.pop(0)
+    def parse(self, mapping, midi_message):        
+        for o in self.outputs_parse:
+            if not "mapping" in o or o["mapping"] != mapping:
+                continue
 
-            if "value" in first:
-                mapping.value = first["value"]
+            if "value" in o:
+                mapping.value = o["value"]
 
-            ret = first["result"] if "result" in first else False
+            ret = o["result"] if "result" in o else False
+
+            self.parse_calls.append({
+                "mapping": mapping,
+                "message": midi_message,
+                "return": ret
+            })
+
+            return ret
         
-        self.parse_calls.append({
-            "mapping": mapping,
-            "message": midi_message,
-            "return": ret
-        })
-
-        return ret
+        return False
     
     def set_value(self, mapping, value):
         self.set_value_calls.append({

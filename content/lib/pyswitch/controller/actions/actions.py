@@ -62,7 +62,7 @@ class PushButtonAction(Action):
 
     # Abstract: Set functionality on or off (bool).
     def set(self, state):
-        raise Exception("Must be implemented by deriving classes")
+        raise Exception("Must be implemented by deriving classes")  # pragma: no cover
 
     # Update the state without functional changes. This is used to react to
     # parameters that have to be requested first. When the answer comes in, the state 
