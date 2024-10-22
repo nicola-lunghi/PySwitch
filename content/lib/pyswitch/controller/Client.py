@@ -64,7 +64,7 @@ class Client: #(ClientRequestListener):
         
         self.value_provider.set_value(mapping, value)
                 
-        if self.debug:
+        if self.debug:  # pragma: no cover
             self._print("Send SET message (" + mapping.name + "): " + Tools.stringify_midi_message(mapping.set), mapping)
 
         self.midi.send(mapping.set)
@@ -77,7 +77,8 @@ class Client: #(ClientRequestListener):
             # New request
             req = ClientRequest(              
                 self,
-                mapping
+                mapping,
+                self._max_request_lifetime
             )
             
             req.add_listener(listener)
@@ -85,7 +86,7 @@ class Client: #(ClientRequestListener):
             # Add to list
             self._requests.append(req)
             
-            if self.debug:
+            if self.debug:  # pragma: no cover
                 self._print("Added new request for " + mapping.name + ". Open requests: " + str(len(self._requests)), mapping)
 
             # Send
@@ -94,7 +95,7 @@ class Client: #(ClientRequestListener):
             # Existing request: Add listener
             req.add_listener(listener)
 
-            if self.debug:
+            if self.debug:  # pragma: no cover
                 self._print("Added new listener to existing request for " + mapping.name + ". Open requests: " + str(len(self._requests)) + ", Listeners: " + str(len(req.listeners)), mapping)
 
     # Receive MIDI messages
@@ -135,21 +136,19 @@ class Client: #(ClientRequestListener):
         self._requests = [i for i in self._requests if not i.finished]
             
     # Terminate any requests which took too long from time to time
-    def _cleanup_hanging_requests(self):    
+    def _cleanup_hanging_requests(self):
         # Terminate requests if they waited too long
-        current_time = Tools.get_current_millis()
         for request in self._requests:
-            diff = current_time - request.start_time
-            if diff > self._max_request_lifetime:
+            if request.lifetime.exceeded:
                 request.terminate()
 
-                if self.debug:
-                    self._print("Terminated request for " + request.mapping.name + ", took " + str(diff) + "ms")
-        
+                if self.debug:  # pragma: no cover
+                    self._print("Terminated request for " + request.mapping.name + ", took too long")
+
         self._cleanup_requests()
 
     # Debug console output
-    def _print(self, msg, mapping = None):
+    def _print(self, msg, mapping = None): # pragma: no cover
         if self.debug_mapping != None and mapping != None and self.debug_mapping != mapping:
             return
         
@@ -195,7 +194,7 @@ class ClientParameterMapping:
     def can_receive(self):
         return self.request != None
     
-    # Returns a copy of the mapping with no request/response and value. Use this
+    # Returns a (shallow) copy of the mapping with no request/response and value. Use this
     # if you have performance issues with too much requests.
     @property
     def set_only(self):
@@ -212,7 +211,7 @@ class ClientParameterMapping:
 # Model for a request for a value
 class ClientRequest(EventEmitter):
 
-    def __init__(self, client, mapping):
+    def __init__(self, client, mapping, max_request_lifetime):
         super().__init__() #ClientRequestListener)
         
         self.client = client
@@ -228,11 +227,15 @@ class ClientRequest(EventEmitter):
         if not isinstance(self.mapping.request, SystemExclusive):
             raise Exception("Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
 
-        self.start_time = Tools.get_current_millis()            
+        if not isinstance(self.mapping.response, SystemExclusive):
+            raise Exception("Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
+        
+        self.lifetime = PeriodCounter(max_request_lifetime)
+        self.lifetime.reset()
 
     # Sends the request
     def send(self):
-        if self.debug:
+        if self.debug:   # pragma: no cover
             self._print(" -> Send REQUEST message for " + self.mapping.name + ": " + Tools.stringify_midi_message(self.mapping.request))
 
         self.client.midi.send(self.mapping.request)
@@ -261,23 +264,17 @@ class ClientRequest(EventEmitter):
         if self.finished:
             return
         
-        if not self.mapping.response:
-            raise Exception("No response template message prepared for this MIDI mapping")
-
         if not isinstance(midi_message, SystemExclusive):
             return
 
-        if not isinstance(self.mapping.response, SystemExclusive):
-            return
-        
-        if self.client.debug_raw_midi:
+        if self.client.debug_raw_midi:  # pragma: no cover
             self._print("RAW Receive : " + Tools.stringify_midi_message(midi_message))
             self._print("RAW Template: " + Tools.stringify_midi_message(self.mapping.response))
 
         if not self.client.value_provider.parse(self.mapping, midi_message):
             return
         
-        if self.debug:
+        if self.debug:   # pragma: no cover
             self._print("   -> Received value " + repr(self.mapping.value) + " for " + self.mapping.name + ": " + Tools.stringify_midi_message(midi_message))
 
         # Call the listeners
@@ -288,7 +285,7 @@ class ClientRequest(EventEmitter):
         self.listeners = None
 
     # Debug console output
-    def _print(self, msg):
+    def _print(self, msg):  # pragma: no cover
         if self.client.debug_mapping != None and self.client.debug_mapping != self.mapping:
             return
 

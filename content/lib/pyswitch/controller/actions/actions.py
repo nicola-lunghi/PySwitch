@@ -148,6 +148,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     #     "mapping":        A ClientParameterMapping instance. See mappings.py for some predeifined ones.
     #                       This can also be an array: In this case the mappings are processed in the given order.
     #     "mappingDisable": Mapping to be used on disabling the state. If mapping is an array, this has also to be an array.
+    #     "text":           Text (optional)
     #     "color":          Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
     #                       with one color for each LED segment of the switch (if more actions share the LEDs, only the first
     #                       color is used)
@@ -229,9 +230,6 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         if not self._request_mapping:
             return            
         
-        if self.debug:
-            self.print("Request value")
-
         self.appl.client.request(self._request_mapping, self)
 
     # Update display and LEDs to the current state
@@ -403,7 +401,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         if mapping.value >= self._request_mapping_value_on:
             state = True
 
-        if self.debug:
+        if self.debug:  # pragma: no cover
             self.print(" -> Receiving binary switch status " + repr(mapping.value) + ", counted as " + repr(state))
 
         self.feedback_state(state)
@@ -416,7 +414,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         if mapping != self._request_mapping:
             return
         
-        if self.debug:
+        if self.debug:  # pragma: no cover
             self.print(" -> Terminated request for parameter value, is the device offline?")
         
         self.state = False
@@ -470,9 +468,9 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
     # Does not call super.do_update because the status is requested here later anyway.
     def do_update(self):
         if not self._mapping_fxtype.can_receive:
-            return            
+            raise Exception("Mapping for effect type must be able to receive (provide request and response)")       
         
-        if self.debug:
+        if self.debug:   # pragma: no cover
             self.print("Request type")
 
         self.appl.client.request(self._mapping_fxtype, self)
@@ -534,7 +532,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
         # Convert to effect category
         category = self._categories.get_effect_category(mapping.value)
 
-        if self.debug:
+        if self.debug:  # pragma: no cover
             self.print(" -> Receiving effect category " + repr(category))
 
         if category == self._effect_category:
@@ -563,7 +561,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
         if mapping != self._mapping_fxtype:
             return
         
-        if self.debug:
+        if self.debug:  # pragma: no cover
             self.print(" -> Terminated request for effect type, is the device offline?")
         
         self._effect_category = self._categories.get_category_not_assigned() 

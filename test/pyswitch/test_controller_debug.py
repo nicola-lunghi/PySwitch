@@ -179,3 +179,23 @@ class TestControllerDebug(unittest.TestCase):
         appl.process()
 
         self.assertEqual(ui.root.num_print_calls, 1)
+
+
+##################################################################################
+
+
+    def test_debug_reset_switches(self):
+        MockMisc.Tools.msgs = []
+        appl = MockController(
+            led_driver = MockNeoPixelDriver(),
+            value_provider = MockValueProvider(),
+            config = {
+                "debug": True
+            }
+        )
+
+        self.assertEqual(len(MockMisc.Tools.msgs), 3)
+
+        appl.reset_switches()
+
+        self.assertEqual(len(MockMisc.Tools.msgs), 4)

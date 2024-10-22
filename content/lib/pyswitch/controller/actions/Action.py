@@ -24,9 +24,10 @@ class Action(Updateable):
         self.uses_switch_leds = False             # Must be set True explicitly by child classes in __init__() if they use the switch LEDs
         self._enabled = Tools.get_option(self.config, "enabled", True)
         self._initialized = False
+        self.id = None
 
     def __repr__(self):
-        return self.__class__.__name__ + " " + self.id
+        return self.__class__.__name__ + " " + repr(self.id)
 
     # Must be called before usage
     def init(self, appl, switch):
@@ -44,7 +45,7 @@ class Action(Updateable):
 
     # Sets up the debugging ID (either from config or a generated one)
     def _init_id(self):
-        self.id = Tools.get_option(self.config, "id", False)
+        self.id = Tools.get_option(self.config, "id", None)
         if not self.id:
             self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action.next_id) + ")"
             
@@ -61,7 +62,7 @@ class Action(Updateable):
         
         self._enabled = value
 
-        if self.debug:
+        if self.debug:   # pragma: no cover
             self.print("Set enabled to " + repr(value))
 
         self.force_update()
@@ -71,9 +72,10 @@ class Action(Updateable):
     # Color of the switch segment(s) for the action (Difficult to do with multicolor, 
     # but this property is just needed to have a setter so this is not callable)
     @property
-    def switch_color(self):
+    def switch_color(self):  # pragma: no cover
         raise Exception("Getter not implemented (yet)")
 
+    # color can also be a tuple!
     @switch_color.setter
     def switch_color(self, color):
         segments = self._get_led_segments()
@@ -127,31 +129,31 @@ class Action(Updateable):
 
     # Perform updates (to be redefined)
     def do_update(self):
-        pass
+        pass                                      # pragma: no cover
 
     # Called when the switch is pushed down
     def push(self):
-        pass
+        pass                                      # pragma: no cover
 
     # Called when the switch is released
     def release(self):
-        pass
+        pass                                      # pragma: no cover
 
     # Called to update the displays (LEDs and label)
     def update_displays(self):
-        pass
+        pass                                      # pragma: no cover
 
     # Reset the action
     def reset(self):
-        pass
+        pass                                      # pragma: no cover
 
     # Must reset all action states so the instance is being updated
     def force_update(self):
-        pass
+        pass                                      # pragma: no cover
 
     # Must reset the displays
     def reset_display(self):
-        pass
+        pass                                      # pragma: no cover
 
     # Get the assigned label reference from the UI (or None)
     def _get_display_label(self):
@@ -198,11 +200,11 @@ class Action(Updateable):
 
     # Returns the switch LED segments to use
     def _get_led_segments(self):
-        if not self.switch.pixels:
-            return []
-        
         if not self._initialized:
             raise Exception("Action not initialized")
+        
+        if not self.switch.pixels:
+            return []
         
         if not self.uses_switch_leds:
             raise Exception("You have to set uses_switch_leds to True to use LEDs of switches in actions.")
@@ -212,7 +214,7 @@ class Action(Updateable):
 
         actions_using_leds = self._get_actions_using_leds()
 
-        if len(actions_using_leds) == 0:
+        if len(actions_using_leds) == 0:  # pragma: no cover    (cannot happen)
             return []
                 
         ret = []
@@ -230,28 +232,25 @@ class Action(Updateable):
             if index == 0:
                 ret = [i for i in range(0, pixels_for_first)]
 
-                if len(ret) != pixels_for_first:
+                if len(ret) != pixels_for_first:  # pragma: no cover
                     raise Exception("Internal error: Must return " + str(pixels_for_first) + " segments")
             else:
                 ret = [pixels_for_first + index - 1]
 
-                if ret[0] >= num_pixels:
+                if ret[0] >= num_pixels:  # pragma: no cover
                     raise Exception("Internal error: Segment out of range")
 
         elif index < num_pixels:
             ret = [index]
         
         # Check results
-        if len(ret) > num_pixels:
+        if len(ret) > num_pixels:  # pragma: no cover
             raise Exception("Invalid segments: " + repr(ret))
 
         return ret
 
     # Returns the index of this action inside the LED-using actions of the switch.
     def _get_index_among_led_actions(self):
-        if not self.uses_switch_leds:
-            return -1
-        
         actions_using_leds = self._get_actions_using_leds()
 
         for i in range(len(actions_using_leds)):
@@ -265,7 +264,7 @@ class Action(Updateable):
         return [a for a in self.switch.actions if a.uses_switch_leds and a.enabled]
 
     # Print to the debug console
-    def print(self, msg):
+    def print(self, msg):    # pragma: no cover
         if self._debug_switch_port_name != None and self._debug_switch_port_name != self.switch.id:
             return
         

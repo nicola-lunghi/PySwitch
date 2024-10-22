@@ -37,7 +37,7 @@ class MockController(Controller):
         self._cnt = 0
 
     def tick(self):
-        if not self._next_step:
+        if not self._next_step:  # pragma: no cover
             return super().tick()
         
         if self._cnt < self._next_step.num_pass_ticks:
@@ -49,7 +49,7 @@ class MockController(Controller):
             self._next_step.prepare()
 
         res = super().tick()
-        if not res:
+        if not res:  # pragma: no cover
             raise Exception("tick() does not return True")
         
         if not callable(self._next_step.evaluate):
@@ -62,12 +62,12 @@ class MockController(Controller):
         return ret        
     
     @property
-    def next_step(self):
+    def next_step(self):  # pragma: no cover
         return self._next_step
     
     @next_step.setter
     def next_step(self, step):
-        if not isinstance(step, SceneStep):
+        if not isinstance(step, SceneStep):  # pragma: no cover
             raise Exception("Invalid test step")
         
         self._next_step = step
@@ -96,10 +96,10 @@ class MockPeriodCounter():
 
 
 class MockNeoPixelDriver:
-    class Led:
-        def __init__(self):
-            self.color = None
-            self.brightness = None
+    #class Led:
+    #    def __init__(self):
+    #        self.color = None
+    #        self.brightness = None
 
     def __init__(self):
         self.leds = None
@@ -138,7 +138,7 @@ class MockValueProvider:
             if not "mapping" in o or o["mapping"] != mapping:
                 continue
 
-            if "value" in o:
+            if "value" in o:   # pragma: no cover
                 mapping.value = o["value"]
 
             ret = o["result"] if "result" in o else False
@@ -178,12 +178,12 @@ class MockPushButtonAction(PushButtonAction):
 
 class MockAction(Action):
 
-    def __init__(self, config = {}, update_delay_millis = 0):
+    def __init__(self, config = {}):
         super().__init__(config)
 
         self.num_update_calls_overall = 0
         self.num_update_calls_enabled = 0
-        self.update_delay_millis = update_delay_millis
+        self.num_reset_calls = 0
 
     def update(self):
         self.num_update_calls_overall += 1
@@ -191,8 +191,8 @@ class MockAction(Action):
         if self.enabled:
             self.num_update_calls_enabled += 1
 
-        if self.update_delay_millis > 0:
-            sleep(self.update_delay_millis / 1000)
+    def reset(self):
+        self.num_reset_calls += 1
 
 
 ##################################################################################################################################

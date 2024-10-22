@@ -4,7 +4,7 @@ class MockUsbMidi:
 
 class MockAdafruitMIDI:
     class MIDI:
-        def __init__(self, midi_out, out_channel, midi_in, in_buf_size, debug):
+        def __init__(self, midi_out = None, out_channel = None, midi_in = None, in_buf_size = None, debug = None):
             self.messages_sent = []
             self.next_receive_messages = []
 
@@ -17,9 +17,9 @@ class MockAdafruitMIDI:
         def send(self, midi_message):
             self.messages_sent.append(midi_message)
             
-class MockAdafruitMIDIControlChange:    
+class MockAdafruitMIDIControlChange:
     class ControlChange:
-        def __init__(self, control, value):
+        def __init__(self, control = 0, value = 0):
             self.control = control
             self.value = value
 

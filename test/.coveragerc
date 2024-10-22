@@ -1,7 +1,9 @@
 [run]
 branch = True
 source = /project
-omit = /project/lib/pyswitch/hardware/*
+omit = 
+    /project/lib/pyswitch/hardware/*
+    /project/test/*
     
 [report]
 show_missing = True

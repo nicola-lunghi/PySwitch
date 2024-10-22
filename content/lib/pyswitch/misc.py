@@ -104,7 +104,7 @@ class Tools:
             return False
 
         if isinstance(a, SystemExclusive):            
-            return a.data == b.data
+            return a.data == b.data and a.manufacturer_id == b.manufacturer_id
 
         if isinstance(a, ControlChange):
             return a.control == b.control
@@ -114,7 +114,7 @@ class Tools:
     # Size (bytes) output formatting 
     # Taken from https://stackoverflow.com/questions/1094841/get-a-human-readable-version-of-a-file-size 
     @staticmethod
-    def format_size(num, fill_up_to = 0, suffix = "B"):
+    def format_size(num, fill_up_to = 0, suffix = "B"):                             # pragma: no cover
         for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
             if abs(num) < 1024.0:
                 return Tools.fill_up_to(f"{num:3.1f} {unit}{suffix}", num_spaces_at_right = fill_up_to)
@@ -123,7 +123,7 @@ class Tools:
 
     # Fill up string with spaces. Needed here because CircuitPython does not seem to support the ljust() function of strings.
     @staticmethod
-    def fill_up_to(str, num_spaces_at_right, fill_char = " "):
+    def fill_up_to(str, num_spaces_at_right, fill_char = " "):                      # pragma: no cover
         if num_spaces_at_right <= 0:
             return str
         ret = str
@@ -164,21 +164,10 @@ class Updater:
         
         self._updateables.append(u)
 
-    # Update all updateables. If round robin is enabled, this will update
-    # only one item at every call in round robin.
-    def update(self, round_robin = False):
-        if not round_robin:
-            for u in self._updateables:            
-                u.update()
-        else:
-            if not self._updateables:
-                return
-            
-            self._updateables[self._next].update()
-            
-            self._next += 1
-            if self._next >= len(self._updateables):
-                self._next = 0
+    # Update all updateables. 
+    def update(self):
+        for u in self._updateables:            
+            u.update()
 
     # Reset all updateables
     def reset(self):

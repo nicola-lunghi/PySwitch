@@ -157,7 +157,7 @@ class Controller(Updater): #ClientRequestListener
             if self._debug:
                 Tools.print("-> Init UI:")            
 
-            if self._debug_ui_structure:
+            if self._debug_ui_structure: 
                 self.ui.root.print_debug_info(3)
 
             Memory.watch("Controller: Showing UI")
@@ -181,7 +181,7 @@ class Controller(Updater): #ClientRequestListener
 
         # Update all Updateables in periodic intervals, less frequently then every tick
         if self.period.exceeded:
-            self.update(round_robin = False)
+            self.update()
 
         # Receive all available MIDI messages            
         cnt = 0
@@ -220,7 +220,7 @@ class Controller(Updater): #ClientRequestListener
 
     # Resets all switches
     def reset_switches(self, ignore_switches_list = []):
-        if self._debug:
+        if self._debug:  
             Tools.print("-> Reset switches, ignoring " + repr(ignore_switches_list))
 
         for action in self.updateables:
@@ -233,7 +233,7 @@ class Controller(Updater): #ClientRequestListener
             action.reset()
 
     # Resets all display areas
-    def reset_display_areas(self):
+    def reset_display_areas(self):   # pragma: no cover
         pass
         #if self._debug:
         #    Tools.print("-> Reset display areas")

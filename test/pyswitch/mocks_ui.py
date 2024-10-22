@@ -36,5 +36,33 @@ class MockUserInterface:
 
     def show(self, appl):
         self.num_show_calls += 1
+
+    def create_label(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
+        return MockDisplayLabel(bounds=bounds, layout=layout, name=name, id=id)
         
 
+class MockDisplayLabel(DisplayElement):
+
+    def __init__(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
+        super().__init__(bounds=bounds, name=name, id=id)
+
+        self.output_back_color = (0, 0, 0)
+        self.output_text = ""
+
+        self.layout = layout
+
+    @property
+    def back_color(self):
+        return self.output_back_color
+
+    @back_color.setter
+    def back_color(self, color):
+        self.output_back_color = color
+
+    @property
+    def text(self):
+        return self.output_text
+
+    @text.setter
+    def text(self, text):
+        self.output_text = text
