@@ -174,10 +174,10 @@ class DisplayElement:
 
     # Called when the bounds have been changed.
     def bounds_changed(self):
-        pass
+        pass                                       # pragma: no cover
 
     # Prints some debug info
-    def print_debug_info(self, indentation = 0):
+    def print_debug_info(self, indentation = 0):   # pragma: no cover
         prefix = ""
         for i in range(indentation):
             prefix = prefix + "  "
@@ -204,13 +204,23 @@ class HierarchicalDisplayElement(DisplayElement):
     def first_child(self):
         if not self._children:
             return None
-        return self._children[0]
+        
+        index = 0
+        while not self._children[index] and index < len(self._children):
+            index += 1
+
+        return self._children[index]
 
     @property
     def last_child(self):
         if not self._children:
             return None
-        return self._children[len(self._children) - 1]
+        
+        index = len(self._children) - 1
+        while not self._children[index] and index > 0:
+            index -= 1
+
+        return self._children[index]
 
     # Initialize the elemenmt and all children
     def init(self, ui, appl):
@@ -245,6 +255,9 @@ class HierarchicalDisplayElement(DisplayElement):
 
     # Sets an element at the specified index.
     def set(self, element, index):
+        if index < 0:
+            raise Exception("Invalid set index: " + repr(index))
+        
         while len(self._children) <= index:
             self.add(None)
 
@@ -279,7 +292,7 @@ class HierarchicalDisplayElement(DisplayElement):
         return None
 
     # Prints some debug info
-    def print_debug_info(self, indentation = 0):
+    def print_debug_info(self, indentation = 0):   # pragma: no cover
         super().print_debug_info(indentation)
 
         for child in self._children:
