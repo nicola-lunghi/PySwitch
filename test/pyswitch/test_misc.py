@@ -6,27 +6,72 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
-    #"usb_midi": MockUsbMidi(),
-    #"adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
-    "gc": MockGC()
+    "gc": MockGC(),
+    "time": MockTime
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     from adafruit_midi.control_change import ControlChange
-    #from.mocks_appl import *
     from lib.pyswitch.misc import *
 
+
+class MockUpdater(Updater):
+    pass
+
+
+class MockUpdateable(Updateable):
+    def __init__(self):
+        self.num_update_calls = 0
+        self.num_reset_calls = 0
+
+    def update(self):
+        self.num_update_calls += 1
+
+    def reset(self):
+        self.num_reset_calls += 1
+
+
+##############################################################################
 
 
 class TestMiscTools(unittest.TestCase):
 
+    def test_get_option(self):
+        self.assertEqual(Tools.get_option("", "foo"), False)
+        self.assertEqual(Tools.get_option(False, "foo"), False)
+        self.assertEqual(Tools.get_option(None, "foo"), False)
+        self.assertEqual(Tools.get_option({}, "foo"), False)
+
+        some = {
+            "foo": 2,
+            "bar": "foo"
+        }
+        self.assertEqual(Tools.get_option(some, "foo"), 2)
+        self.assertEqual(Tools.get_option(some, "bar"), "foo")
+        self.assertEqual(Tools.get_option(some, "bar", 555), "foo")
+        self.assertEqual(Tools.get_option(some, "bat", 555), 555)
+        self.assertEqual(Tools.get_option(some, "for"), False)
+        self.assertEqual(Tools.get_option(some, "for", -4), -4)        
+
+
+    def test_get_current_millis(self):
+        MockTime.mock["monotonicReturn"] = 1021
+        self.assertEqual(Tools.get_current_millis(), 1021000)
+        
+        MockTime.mock["monotonicReturn"] = 1045
+        self.assertEqual(Tools.get_current_millis(), 1045000)
+
+        MockTime.mock["monotonicReturn"] = 1045.56
+        self.assertEqual(Tools.get_current_millis(), 1045560)
+
+        MockTime.mock["monotonicReturn"] = 1045.567
+        self.assertEqual(Tools.get_current_millis(), 1045567)
+
+
     def test_stringify_midi_message_falsy(self):
         self.assertEqual(Tools.stringify_midi_message(None), repr(None))
         self.assertEqual(Tools.stringify_midi_message(0), repr(0))
-
-
-##############################################################################
 
 
     def test_stringify_midi_message_sysex(self):
@@ -42,9 +87,6 @@ class TestMiscTools(unittest.TestCase):
         self.assertIn("[34, 45, 67]", str)
         
 
-##############################################################################
-
-
     def test_stringify_midi_message_cc(self):
         message = ControlChange(2, 66)
 
@@ -53,9 +95,6 @@ class TestMiscTools(unittest.TestCase):
         self.assertIn("ControlChange", str)
         self.assertIn("2", str)
         self.assertIn("66", str)
-        
-
-##############################################################################
 
 
     def test_stringify_midi_message_others(self):
@@ -64,9 +103,6 @@ class TestMiscTools(unittest.TestCase):
         str = Tools.stringify_midi_message(message)
 
         self.assertIn("nomessage", str)
-        
-
-##############################################################################
 
 
     def test_compare_midi_messagess_sysex(self):
@@ -93,9 +129,6 @@ class TestMiscTools(unittest.TestCase):
         self.assertEqual(Tools.compare_midi_messages(message_1, message_2), False)
 
 
-##############################################################################
-
-
     def test_compare_midi_messagess_cc(self):
         message_1 = ControlChange(2, 66)
         message_2 = ControlChange(2, 66)
@@ -107,9 +140,6 @@ class TestMiscTools(unittest.TestCase):
         message_1.control = 67
 
         self.assertEqual(Tools.compare_midi_messages(message_1, message_2), False)
-
-
-##############################################################################
 
 
     def test_compare_midi_messagess_others(self):
@@ -126,4 +156,140 @@ class TestMiscTools(unittest.TestCase):
 class TestMiscUpdater(unittest.TestCase):
 
     def test_update(self):
-        self.fail()
+        u1 = MockUpdateable()
+        u2 = MockUpdateable()
+        u3 = MockUpdateable()
+
+        updater = MockUpdater()
+        self.assertEqual(updater.updateables, [])
+
+        updater.add_updateable(u1)
+        self.assertEqual(updater.updateables, [u1])
+
+        updater.update()
+        self.assertEqual(u1.num_update_calls, 1)
+        self.assertEqual(u2.num_update_calls, 0)
+        self.assertEqual(u3.num_update_calls, 0)
+
+        updater.add_updateable(u2)
+        updater.add_updateable(u3)
+        self.assertEqual(updater.updateables, [u1, u2, u3])
+
+        updater.update()
+        self.assertEqual(u1.num_update_calls, 2)
+        self.assertEqual(u2.num_update_calls, 1)
+        self.assertEqual(u3.num_update_calls, 1)
+
+
+    def test_reset(self):
+        u1 = MockUpdateable()
+        u2 = MockUpdateable()
+        u3 = MockUpdateable()
+
+        updater = MockUpdater()
+
+        updater.add_updateable(u1)
+
+        updater.reset()
+        self.assertEqual(u1.num_reset_calls, 1)
+        self.assertEqual(u2.num_reset_calls, 0)
+        self.assertEqual(u3.num_reset_calls, 0)
+
+        updater.add_updateable(u2)
+        updater.add_updateable(u3)
+        self.assertEqual(updater.updateables, [u1, u2, u3])
+
+        updater.reset()
+        self.assertEqual(u1.num_reset_calls, 2)
+        self.assertEqual(u2.num_reset_calls, 1)
+        self.assertEqual(u3.num_reset_calls, 1)
+
+
+    def test_add_invalid(self):
+        updater = MockUpdater()
+
+        updater.add_updateable({})
+        self.assertEqual(updater.updateables, [])
+
+
+##############################################################################
+
+
+class TestMiscEventEmitter(unittest.TestCase):
+
+    def test_add_listener(self):
+        e = EventEmitter()
+        self.assertEqual(e.listeners, [])
+
+        class Object(object):
+            pass
+
+        listener_1 = Object()
+        listener_2 = Object()
+
+        self.assertEqual(e.add_listener(listener_1), True)
+        self.assertEqual(e.listeners, [listener_1])
+
+        self.assertEqual(e.add_listener(listener_1), False)
+        self.assertEqual(e.listeners, [listener_1])
+
+        self.assertEqual(e.add_listener(listener_2), True)
+        self.assertEqual(e.listeners, [listener_1, listener_2])
+
+        self.assertEqual(e.add_listener(listener_2), False)
+        self.assertEqual(e.listeners, [listener_1, listener_2])
+
+
+##############################################################################
+
+
+class TestMiscPeriodCounter(unittest.TestCase):
+
+    def test_counter(self):
+        p = PeriodCounter(500)
+        self.assertEqual(p.interval, 500)
+
+        MockTime.mock["monotonicReturn"] = 1
+        p.reset()
+        self.assertEqual(p.exceeded, False)
+
+        MockTime.mock["monotonicReturn"] = 1.2
+        self.assertEqual(p.exceeded, False)
+
+        MockTime.mock["monotonicReturn"] = 1.5
+        self.assertEqual(p.exceeded, False)
+
+        MockTime.mock["monotonicReturn"] = 1.501
+        self.assertEqual(p.exceeded, True)
+
+        MockTime.mock["monotonicReturn"] = 1.7
+        self.assertEqual(p.exceeded, False)
+
+        MockTime.mock["monotonicReturn"] = 1.9
+        self.assertEqual(p.exceeded, False)
+
+        MockTime.mock["monotonicReturn"] = 2
+        self.assertEqual(p.exceeded, False)
+
+        MockTime.mock["monotonicReturn"] = 2.003
+        self.assertEqual(p.exceeded, True)
+
+        MockTime.mock["monotonicReturn"] = 2.004
+        self.assertEqual(p.exceeded, False)
+
+        MockTime.mock["monotonicReturn"] = 2.2
+        self.assertEqual(p.exceeded, False)
+
+        p.reset()
+
+        MockTime.mock["monotonicReturn"] = 2.4
+        self.assertEqual(p.exceeded, False)
+
+        MockTime.mock["monotonicReturn"] = 2.7
+        self.assertEqual(p.exceeded, False)
+
+        MockTime.mock["monotonicReturn"] = 2.701
+        self.assertEqual(p.exceeded, True)
+
+        MockTime.mock["monotonicReturn"] = 2.702
+        self.assertEqual(p.exceeded, False)

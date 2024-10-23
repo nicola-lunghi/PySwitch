@@ -1,10 +1,7 @@
-from time import sleep
-
 from lib.pyswitch.controller.actions.Action import Action
 from lib.pyswitch.controller.actions.actions import PushButtonAction
 from lib.pyswitch.controller.Controller import Controller
 from lib.pyswitch.controller.ConditionTree import Condition
-from lib.pyswitch.misc import Tools
 
 from .mocks_lib import *
 
@@ -96,11 +93,6 @@ class MockPeriodCounter():
 
 
 class MockNeoPixelDriver:
-    #class Led:
-    #    def __init__(self):
-    #        self.color = None
-    #        self.brightness = None
-
     def __init__(self):
         self.leds = None
         
@@ -112,11 +104,14 @@ class MockNeoPixelDriver:
 
 
 class MockSwitch:
-    def __init__(self):
+    def __init__(self, port = None):
+        self.port = port
         self.shall_be_pushed = False
+        self.raise_on_init = None
 
     def init(self):
-        pass
+        if self.raise_on_init:
+            raise self.raise_on_init
 
     @property
     def pushed(self):
@@ -184,6 +179,8 @@ class MockAction(Action):
         self.num_update_calls_overall = 0
         self.num_update_calls_enabled = 0
         self.num_reset_calls = 0
+        
+        self.state = False
 
     def update(self):
         self.num_update_calls_overall += 1
@@ -227,13 +224,13 @@ class MockMeasurement:
         self.num_update_calls = 0
 
     def get_message(self):
-        return self.output_message
+        return self.output_message     # pragma: no cover
     
     def value(self):
-        return self.output_value
+        return self.output_value       # pragma: no cover
 
     def update(self):
-        self.num_update_calls += 1
+        self.num_update_calls += 1     # pragma: no cover
 
 
 ##################################################################################################################################

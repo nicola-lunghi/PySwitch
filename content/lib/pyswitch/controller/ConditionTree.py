@@ -229,12 +229,13 @@ class ParameterConditionModes:
     MODE_EQUAL = 0                   # Reference value must be a numeric value
     
     MODE_GREATER = 10                # Reference value must be a numeric value
-    MODE_GREATER_EQUAL = 21          # Reference value must be a numeric value
+    MODE_GREATER_EQUAL = 11          # Reference value must be a numeric value
     
     MODE_LESS = 20                   # Reference value must be a numeric value
     MODE_LESS_EQUAL = 21             # Reference value must be a numeric value
     
     MODE_IN_RANGE = 90               # Reference value must be a tuple with lower / higher borders (inclusive). For example: (0, 1.2)
+    MODE_NOT_IN_RANGE = 91           # Reference value must be a tuple with lower / higher borders (inclusive). For example: (0, 1.2)
 
     # Strings
     MODE_STRING_CONTAINS = 500       # Reference value must be a string
@@ -269,7 +270,7 @@ class ParameterCondition(Condition): #, ClientRequestListener):
         if not self.appl:
             raise Exception("Condition not initialized")
 
-        if self._debug:
+        if self._debug:   # pragma: no cover
             self._print("Requesting value")
 
         self.appl.client.request(self._mapping, self)
@@ -294,6 +295,9 @@ class ParameterCondition(Condition): #, ClientRequestListener):
         elif self._mode == ParameterConditionModes.MODE_IN_RANGE:
             return value >= self._ref_value[0] and value <= self._ref_value[1]
             
+        elif self._mode == ParameterConditionModes.MODE_NOT_IN_RANGE:
+            return value < self._ref_value[0] or value > self._ref_value[1]
+
         elif self._mode == ParameterConditionModes.MODE_STRING_CONTAINS:
             return self._ref_value in value
         
@@ -327,7 +331,7 @@ class ParameterCondition(Condition): #, ClientRequestListener):
 
         self.true = bool_value
 
-        if self._debug:
+        if self._debug:   # pragma: no cover
             self._print(" -> Received value " + repr(mapping.value) + ", evaluated to " + repr(self.true))
 
         for listener in self.listeners:
@@ -341,7 +345,7 @@ class ParameterCondition(Condition): #, ClientRequestListener):
         self.true = True
 
     # Debug console output
-    def _print(self, msg):
+    def _print(self, msg):   # pragma: no cover
         if not self._debug:
             return
         
@@ -358,15 +362,17 @@ class PushButtonCondition(Condition):
         super().__init__(yes = enabled, no = disabled)
         
         self._id = id
+        self._action = None
 
     # Used internally: Set the model instances for the two values.
     def init(self, appl):
         super().init(appl)
         
-        self._action = self._determine_action(self._id)
-
     # Used internally: Updates the condition on every update tick
     def update(self):
+        if not self._action:
+            self._action = self._determine_action(self._id)
+
         bool_value = self._action.state
 
         if self.true == bool_value:

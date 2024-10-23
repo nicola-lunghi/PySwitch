@@ -1,6 +1,15 @@
+class MockTime:
+    mock = {
+        "monotonicReturn": 0
+    }
+
+    def monotonic():
+        return MockTime.mock["monotonicReturn"]
+
 
 class MockUsbMidi:
     ports = [None, None]
+
 
 class MockAdafruitMIDI:
     class MIDI:
@@ -17,11 +26,13 @@ class MockAdafruitMIDI:
         def send(self, midi_message):
             self.messages_sent.append(midi_message)
             
+
 class MockAdafruitMIDIControlChange:
     class ControlChange:
         def __init__(self, control = 0, value = 0):
             self.control = control
             self.value = value
+
 
 class MockAdafruitMIDISystemExclusive:    
     class SystemExclusive:
@@ -29,15 +40,25 @@ class MockAdafruitMIDISystemExclusive:
             self.manufacturer_id = manufacturer_id
             self.data = data
 
+
 class MockGC:
+    mock = {
+        "collectCalls": 0,
+        "memFreeReturn": 0,
+        "memAllocReturn": 0
+    }
+
+    @staticmethod
     def collect():
-        pass
+        MockGC.mock["collectCalls"] += 1
 
+    @staticmethod
     def mem_free():
-        return 0
+        return MockGC.mock["memFreeReturn"]
 
+    @staticmethod
     def mem_alloc():
-        return 0
+        return MockGC.mock["memAllocReturn"]
 
 
 class MockDisplayIO:
@@ -46,6 +67,13 @@ class MockDisplayIO:
             self.scale = scale
             self.x = x
             self.y = y
+
+    #class FourWire:
+    #    def __init__(self, spi, command, chip_select, reset):
+    #        self.spi = spi
+    #        self.command = command
+    #        self.chip_select = chip_select
+    #        self.reset = reset
 
         
 class MockAdafruitDisplayText:
@@ -61,3 +89,39 @@ class MockAdafruitDisplayText:
 
     def wrap_text_to_pixels(text, text_width, font):
         return text + " (wrapped to " + repr(text_width) + ")"
+    
+
+#class MockBitmapFont:
+#    class MockFont:
+#        def __init__(self, path):
+#            self.path = path
+
+#    class bitmap_font:
+#        def load_font(self, path):
+#            return self.MockFont(path)
+        
+
+class MockBoard:
+    some_other = "nothing_of_interest"
+
+    GP4 = "MockPort_4"
+    GP6 = "MockPort_6"
+    GP11 = "MockPort_11"
+    GP23 = "MockPort_23"
+
+
+#class MockBusIO:
+#    class SPI:
+#        def __init__(self, spi_clk, MOSI):
+#            self.spi_clk = spi_clk
+#            self.MOSI = MOSI
+
+
+#class MockST7789:
+#   class ST7789:
+#        def __init__(self, display_bus, width, height, rowstart, rotation):
+#            self.display_bus = display_bus
+#            self.width = width
+#            self.height = height
+#            self.rowstart = rowstart
+#            self.rotation = rotation

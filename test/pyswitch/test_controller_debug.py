@@ -27,7 +27,7 @@ with patch.dict(sys.modules, {
 class TestControllerDebug(unittest.TestCase):
 
     def test_debug(self):
-        MockMisc.Tools.msgs = []
+        MockMisc.Tools.reset()
 
         switch_1 = MockSwitch()
         switch_2 = MockSwitch()
@@ -85,7 +85,7 @@ class TestControllerDebug(unittest.TestCase):
 
 
     def test_debug_with_ui(self):
-        MockMisc.Tools.msgs = []
+        MockMisc.Tools.reset()
 
         switch_1 = MockSwitch()
         switch_2 = MockSwitch()
@@ -185,7 +185,7 @@ class TestControllerDebug(unittest.TestCase):
 
 
     def test_debug_reset_switches(self):
-        MockMisc.Tools.msgs = []
+        MockMisc.Tools.reset()
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
             value_provider = MockValueProvider(),

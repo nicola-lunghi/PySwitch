@@ -49,7 +49,7 @@ class Action(Updateable):
         if not self.id:
             self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action.next_id) + ")"
             
-        Action.next_id = Action.next_id + 1
+            Action.next_id = Action.next_id + 1
 
     @property
     def enabled(self):

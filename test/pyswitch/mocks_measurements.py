@@ -23,13 +23,13 @@ class MockMeasurements:
 
         # Average runtime
         @property
-        def average(self):
+        def average(self):                # pragma: no cover
             return self.output_average
         
         def update(self):
             self.num_update_calls += 1
 
-        def value(self):
+        def value(self):                  # pragma: no cover
             return self.output_value
 
         # Initialize the instance
@@ -45,6 +45,6 @@ class MockMeasurements:
             self.num_finish_calls += 1
 
         # Generate output message
-        def get_message(self):
+        def get_message(self):            # pragma: no cover
             return self.output_message
 

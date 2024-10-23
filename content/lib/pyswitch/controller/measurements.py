@@ -9,18 +9,18 @@ class StatisticsMeasurement:
         self.reset()
 
     def value(self):
-        return 0
+        return 0      # pragma: no cover
 
     def update(self):
-        pass
+        pass          # pragma: no cover
 
     # Reset measurement
     def reset(self):
-        pass
+        pass          # pragma: no cover
 
     # Generate output message
     def get_message(self):
-        return ""
+        return ""     # pragma: no cover
 
 
 #########################################################################
@@ -39,9 +39,13 @@ class RuntimeMeasurement(StatisticsMeasurement, EventEmitter, Updateable):
         self.interval_millis = interval_millis
         self._last_output = 0
 
+        self.reset()
+
     # Average runtime
     @property
     def average(self):
+        if self._time_num == 0:
+            return 0
         return int(self._time_aggr / self._time_num)
     
     def update(self):
@@ -93,7 +97,7 @@ class RuntimeMeasurement(StatisticsMeasurement, EventEmitter, Updateable):
         if self._time_num == 0:
             return "No data"
         
-        return repr(self.type) + ": Max " + str(self.max) + "ms, Avg " + str(self.average)
+        return repr(self.type) + ": Max " + str(self.max) + "ms, Avg " + str(self.average) + "ms"
 
 
 ################################################################################

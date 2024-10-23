@@ -27,11 +27,12 @@
 #
 #################################################################################################################################
 
-from pyswitch.misc import Tools, Memory # type: ignore
+#from pyswitch.Memory import Memory # type: ignore
 #Memory.start(zoom = 10)
 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader
 from pyswitch.ui.UserInterface import UserInterface
+from pyswitch.misc import Tools
 
 # Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)
 display_driver = AdafruitST7789DisplayDriver()
@@ -49,16 +50,8 @@ font_loader = AdafruitFontLoader()
 # Create User interface
 gui = UserInterface(display_driver, font_loader)
 
-if Tools.get_option(Config, "exploreMode"):
-    # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
-    # on unknown devices, to create layouts for the configuration.
-    from pyswitch.controller.ExploreModeController import ExploreModeController
-
-    appl = ExploreModeController(led_driver, gui)
-    appl.process()
-    
-else:
-    # Normal mode
+if not Tools.get_option(Config, "exploreMode"):
+    # Normal operation
     from pyswitch.controller.Controller import Controller
 
     # Load configuration files
@@ -68,3 +61,17 @@ else:
     # Controller instance (runs the processing loop and keeps everything together)
     appl = Controller(led_driver, ValueProvider, Config, Switches, Displays, gui)
     appl.process()
+
+else:
+    # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
+    # on unknown devices, to create layouts for the configuration.
+    from pyswitch.controller.ExploreModeController import ExploreModeController
+
+    # Switch factory
+    class SwitchFactory:
+        def create_switch(self, port):
+            return AdafruitSwitch(port)
+
+    appl = ExploreModeController(SwitchFactory(), led_driver, gui)
+    appl.process()
+    

@@ -5,7 +5,8 @@ from .FootSwitchController import FootSwitchController
 from .measurements import RuntimeMeasurement
 from .actions.Action import Action
 from .Client import Client
-from ..misc import Tools, Updateable, Updater, Memory, PeriodCounter
+from ..misc import Tools, Updateable, Updater, PeriodCounter
+from ..Memory import Memory
 
 
 # Main application class (controls the processing)    
@@ -173,7 +174,7 @@ class Controller(Updater): #ClientRequestListener
         while self.tick():
             pass
 
-    # Single tick in the processing loop
+    # Single tick in the processing loop. Must return True to keep the loop alive.
     def tick(self):
         # If enabled, remember the tick starting time for statistics
         for m in self._measurements_tick_time:

@@ -21,13 +21,10 @@ with patch.dict(sys.modules, {
 
 class TestControllerUiSetup(unittest.TestCase):
 
-    def test_debug(self):
-        switch_1 = MockSwitch()
-        
+    def test_setup(self):
+        switch_1 = MockSwitch()        
         action_1 = MockAction()
-
         period = MockPeriodCounter()
-
         ui = MockUserInterface()
 
         element_1 = MockDisplayElement(id = 1)
@@ -80,5 +77,3 @@ class TestControllerUiSetup(unittest.TestCase):
 
         self.assertEqual(ui.num_show_calls, 1)
 
-
-##################################################################################

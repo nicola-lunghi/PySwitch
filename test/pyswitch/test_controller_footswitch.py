@@ -187,7 +187,7 @@ class TestControllerFootswitch(unittest.TestCase):
 ##############################################################################
 
     def test_debug(self):
-        MockMisc.Tools.msgs = []
+        MockMisc.Tools.reset()
 
         appl = MockControllerReplacement(num_leds=1)
         switch_1 = MockSwitch()

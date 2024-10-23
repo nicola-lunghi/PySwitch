@@ -2,12 +2,8 @@ import board
 
 from .FootSwitchController import FootSwitchController
 from .actions.Action import Action
-from ..hardware.adafruit import AdafruitSwitch
 from ..ui.elements.elements import DisplayLabel, DisplaySplitContainer
-from ..misc import Updater, Colors
-
-# Number of columns for port display
-NUM_PORT_COLUMNS = 5   
+from ..misc import Updater, Colors, Tools
 
 # Action to explore switch GPIO assignments (used internally only in explore mode!)
 # Also used to examine neopixel addressing.
@@ -31,7 +27,7 @@ class ExploreAction(Action):
 
     def push(self):
         pixel_out = self._trigger_pixel_search()
-        print("board." + self._name + " " + pixel_out)
+        Tools.print("board." + self._name + " " + pixel_out)
 
         if self.appl.ui:
             self.appl.pixel_display.text = pixel_out
@@ -43,12 +39,22 @@ class ExploreAction(Action):
     # Enlighten the next available switch LEDs and returns a report string.
     def _trigger_pixel_search(self):
         current = self.appl.show_next_switch(self._step)
-        if current == None:
+        if not current:
             return
         
         # Get output for pixel exploration
         num_switch_leds = len(self.appl.switches) * len(self.switch.pixels)
-        return "Pixels: (" + repr(current[0]) + ", " + repr(current[1]) + ", " + repr(current[2]) + ") of " + repr(num_switch_leds)        
+        pxstr = ", ".join([repr(current[i]) for i in range(self.appl.num_pixels_per_switch)])
+        return "Pixels: (" + pxstr + ") of " + repr(num_switch_leds)        
+
+
+###########################################################################################################################
+
+
+# Must be implemented by switch_factory
+#class ExploreModeSwitchFactory:
+#    def create_switch(self, port):
+#        raise Exception("Must be implemented in child classes")
 
 
 ###########################################################################################################################
@@ -57,20 +63,23 @@ class ExploreAction(Action):
 # Main application class for Explore Mode
 class ExploreModeController(Updater):
 
-    def __init__(self, led_driver, ui = None, num_pixels_per_switch = 3):
+    def __init__(self, switch_factory, led_driver = None, ui = None, num_pixels_per_switch = 3, num_port_columns = 5):
         Updater.__init__(self)
 
         self.ui = ui
         self.config = {}
-        self._num_pixels_per_switch = num_pixels_per_switch
+        self.num_pixels_per_switch = num_pixels_per_switch
         self._currently_shown_switch_index = -1
+        self._switch_factory = switch_factory
+        self._num_port_columns = num_port_columns
 
         # Get list of available ports
         available_ports = self._get_available_ports()
 
         # NeoPixel driver, initialized to the maximum possible amount of LEDs
         self.led_driver = led_driver
-        self.led_driver.init(len(available_ports) * self._num_pixels_per_switch)
+        if self.led_driver:
+            self.led_driver.init(len(available_ports) * self.num_pixels_per_switch)
 
         if self.ui:
             self._setup_ui()
@@ -78,18 +87,18 @@ class ExploreModeController(Updater):
             # Try to initialize all available ports. This gets us the list of ports successfully assigned.
             ports_assigned = self._init_switches(available_ports)
 
-            print("Explore mode: Assigned " + repr(len(ports_assigned)) + " ports")
+            Tools.print("Explore mode: Assigned " + repr(len(ports_assigned)) + " ports")
         else:
             # Try to initialize all available ports. This gets us the list of ports successfully assigned.
             ports_assigned = self._init_switches(available_ports)
 
-            print("+------------------+")
-            print("|   EXPLORE MODE   |")
-            print("+------------------+")
-            print("")
-            print("Listening to: ")
-            print(self._get_ports_string(ports_assigned))            
-            print("")
+            Tools.print("+------------------+")
+            Tools.print("|   EXPLORE MODE   |")
+            Tools.print("+------------------+")
+            Tools.print("")
+            Tools.print("Listening to: ")
+            Tools.print(self._get_ports_string(ports_assigned))            
+            Tools.print("")
 
     # Set up user interface
     def _setup_ui(self):
@@ -114,17 +123,24 @@ class ExploreModeController(Updater):
 
     # Runs the processing loop (which never ends)
     def process(self):
-        # Show user interface        
-        self.ui.show(self)
+        # Show user interface    
+        if self.ui:    
+            self.ui.show(self)
 
         # Start processing loop
-        while True:
-            # Update switch states
-            for switch in self.switches:
-                switch.process()
+        while self.tick():
+            pass
 
-            # Update actions
-            self.update()
+    # Single tick in the processing loop. Must return True to keep the loop alive.
+    def tick(self):
+        # Update switch states
+        for switch in self.switches:
+            switch.process()
+
+        # Update actions
+        self.update()
+
+        return True
 
     # Called by ExplorePixelAction: Enlightens the next switch according to the passed step value. 
     # Returns the pixels tuple of the switch currently enlightened.
@@ -176,7 +192,7 @@ class ExploreModeController(Updater):
                 pass
 
             except Exception as ex:
-                print("Error assigning port " + port_def["name"] + ":")
+                Tools.print("Error assigning port " + port_def["name"] + ":")
                 raise ex 
 
         return ret
@@ -187,12 +203,12 @@ class ExploreModeController(Updater):
             scan_step = 1
         else:
             scan_step = -1
-
+        
         switch = FootSwitchController(
             self,
             {
                 "assignment": {
-                    "model": AdafruitSwitch(port_def["port"]),
+                    "model": self._switch_factory.create_switch(port_def["port"]),
                     "pixels": self._calculate_pixels(index)
                 },
                 "actions": [
@@ -201,11 +217,7 @@ class ExploreModeController(Updater):
                         "step": scan_step
                     })
                 ],
-                "initialColors": [
-                    Colors.WHITE,
-                    Colors.WHITE,
-                    Colors.WHITE
-                ],
+                "initialColors": [Colors.WHITE for i in range(self.num_pixels_per_switch)],
                 "initialBrightness": 0,
                 "index": index              # This is a custom attribute not parsed by FootSwitch, but used internally in this class only
             }
@@ -220,7 +232,7 @@ class ExploreModeController(Updater):
             return None
         
         row = self._ports_display_rows.last_child
-        if not row or len(row.children) >= NUM_PORT_COLUMNS:
+        if not row or len(row.children) >= self._num_port_columns:
             row = DisplaySplitContainer(
                 direction = DisplaySplitContainer.HORIZONTAL
             )
@@ -246,13 +258,12 @@ class ExploreModeController(Updater):
 
     # Determine pixel addressing for a switch index, assuming they are linear
     def _calculate_pixels(self, index):
-        i = index * self._num_pixels_per_switch
+        if not self.led_driver:
+            return []
+        
+        i = index * self.num_pixels_per_switch
 
-        return (
-            i, 
-            i + 1, 
-            i + 2
-        )
+        return [i + j for j in range(self.num_pixels_per_switch)]
 
     # Determines all available GP* ports
     def _get_available_ports(self):
