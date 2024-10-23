@@ -6,7 +6,6 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
-    "board": MockBoard(),
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
     "usb_midi": MockUsbMidi(),
@@ -48,8 +47,8 @@ class MockSwitchFactory:
     
 
 class MockExploreModeController(ExploreModeController):
-    def __init__(self, switch_factory, led_driver = None, ui = None, num_pixels_per_switch = 3, num_port_columns = 5):
-        super().__init__(switch_factory, led_driver, ui, num_pixels_per_switch, num_port_columns)
+    def __init__(self, board, switch_factory, led_driver = None, ui = None, num_pixels_per_switch = 3, num_port_columns = 5):
+        super().__init__(board, switch_factory, led_driver, ui, num_pixels_per_switch, num_port_columns)
 
         self._next_step = None
 
@@ -91,7 +90,7 @@ class MockExploreModeController(ExploreModeController):
 class TestExploreMode(unittest.TestCase):
 
     def test_minimal(self):
-        appl = MockExploreModeController(MockSwitchFactory())    # Must not throw
+        appl = MockExploreModeController(MockBoard(), MockSwitchFactory())    # Must not throw
     
         def eval1():
             return False
@@ -114,6 +113,7 @@ class TestExploreMode(unittest.TestCase):
         switch_factory = MockSwitchFactory()
 
         appl = MockExploreModeController(
+            board = MockBoard(), 
             switch_factory = switch_factory,
             led_driver = led_driver,
             num_pixels_per_switch = 2
@@ -174,6 +174,7 @@ class TestExploreMode(unittest.TestCase):
         ui = MockUserInterface(width = 999, height = 600)
 
         appl = MockExploreModeController(
+            board = MockBoard(), 
             switch_factory = switch_factory,
             led_driver = led_driver,
             num_pixels_per_switch = 2,
@@ -256,6 +257,7 @@ class TestExploreMode(unittest.TestCase):
         ui = MockUserInterface(width = 1000, height = 600)
 
         appl = MockExploreModeController(
+            board = MockBoard(), 
             switch_factory = MockSwitchFactory(),
             led_driver = MockNeoPixelDriver(),
             num_pixels_per_switch = 2,
@@ -296,6 +298,7 @@ class TestExploreMode(unittest.TestCase):
         switch_factory = MockSwitchFactory()
 
         appl = MockExploreModeController(
+            board = MockBoard(), 
             switch_factory = switch_factory,
             led_driver = led_driver,
             num_pixels_per_switch = 4
@@ -429,6 +432,7 @@ class TestExploreMode(unittest.TestCase):
         ui = MockUserInterface()
 
         appl = MockExploreModeController(
+            board = MockBoard(), 
             switch_factory = switch_factory,
             led_driver = led_driver,
             num_pixels_per_switch = 3,

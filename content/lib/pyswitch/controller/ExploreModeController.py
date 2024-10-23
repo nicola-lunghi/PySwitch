@@ -1,5 +1,3 @@
-import board
-
 from .FootSwitchController import FootSwitchController
 from .actions.Action import Action
 from ..ui.elements.elements import DisplayLabel, DisplaySplitContainer
@@ -63,7 +61,7 @@ class ExploreAction(Action):
 # Main application class for Explore Mode
 class ExploreModeController(Updater):
 
-    def __init__(self, switch_factory, led_driver = None, ui = None, num_pixels_per_switch = 3, num_port_columns = 5):
+    def __init__(self, board, switch_factory, led_driver = None, ui = None, num_pixels_per_switch = 3, num_port_columns = 5):
         Updater.__init__(self)
 
         self.ui = ui
@@ -72,6 +70,7 @@ class ExploreModeController(Updater):
         self._currently_shown_switch_index = -1
         self._switch_factory = switch_factory
         self._num_port_columns = num_port_columns
+        self._board = board
 
         # Get list of available ports
         available_ports = self._get_available_ports()
@@ -267,7 +266,7 @@ class ExploreModeController(Updater):
 
     # Determines all available GP* ports
     def _get_available_ports(self):
-        names = dir(board)
+        names = dir(self._board)
         ret = []
         for name in names:
             if not name.startswith("GP"):
@@ -275,7 +274,7 @@ class ExploreModeController(Updater):
 
             ret.append({
                 "name": name,
-                "port": getattr(board, name)
+                "port": getattr(self._board, name)
             })
 
         return ret

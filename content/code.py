@@ -66,12 +66,13 @@ else:
     # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
     # on unknown devices, to create layouts for the configuration.
     from pyswitch.controller.ExploreModeController import ExploreModeController
+    import board
 
     # Switch factory
     class SwitchFactory:
         def create_switch(self, port):
             return AdafruitSwitch(port)
 
-    appl = ExploreModeController(SwitchFactory(), led_driver, gui)
+    appl = ExploreModeController(board, SwitchFactory(), led_driver, gui)
     appl.process()
     
