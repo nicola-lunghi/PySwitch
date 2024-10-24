@@ -364,10 +364,6 @@ class PushButtonCondition(Condition):
         self._id = id
         self._action = None
 
-    # Used internally: Set the model instances for the two values.
-    def init(self, appl):
-        super().init(appl)
-        
     # Used internally: Updates the condition on every update tick
     def update(self):
         if not self._action:

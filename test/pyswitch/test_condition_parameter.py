@@ -428,7 +428,7 @@ class TestConditionParameter(unittest.TestCase):
 ############################################################################################
 
 
-    def test_terminated_request(self):
+    def test_request_timeout(self):
         switch_1 = MockSwitch()
         action_1 = MockAction()
         action_2 = MockAction()

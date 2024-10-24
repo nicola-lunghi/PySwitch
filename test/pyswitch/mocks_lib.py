@@ -1,3 +1,4 @@
+
 class MockTime:
     mock = {
         "monotonicReturn": 0
@@ -14,6 +15,12 @@ class MockUsbMidi:
 class MockAdafruitMIDI:
     class MIDI:
         def __init__(self, midi_out = None, out_channel = None, midi_in = None, in_buf_size = None, debug = None):
+            self.midi_out = midi_out
+            self.midi_in = midi_in
+            self.out_channel = out_channel
+            self.in_buf_size = in_buf_size
+            self.debug = debug
+
             self.messages_sent = []
             self.next_receive_messages = []
 
@@ -68,6 +75,11 @@ class MockDisplayIO:
             self.x = x
             self.y = y
 
+            self.mock_content = []
+
+        def append(self, el):
+            self.mock_content.append(el)
+
     #class FourWire:
     #    def __init__(self, spi, command, chip_select, reset):
     #        self.spi = spi
@@ -87,8 +99,11 @@ class MockAdafruitDisplayText:
                 self.color = color
                 self.line_spacing = line_spacing
 
-    def wrap_text_to_pixels(text, text_width, font):
-        return text + " (wrapped to " + repr(text_width) + ")"
+    def wrap_text_to_pixels(self, text, text_width, font):
+        return [
+            text,
+            "(wrapped to " + repr(text_width) + " and font " + repr(font) + ")"
+        ]
     
 
 #class MockBitmapFont:
@@ -125,3 +140,29 @@ class MockBoard:
 #            self.height = height
 #            self.rowstart = rowstart
 #            self.rotation = rotation
+
+
+class MockDisplayShapes:
+    class rect:
+        class Rect:
+            def __init__(self, x = 0, y = 0, w = 0, h = 0, fill = None, outline = None, stroke = 0):
+                self.x = x 
+                self.y = y
+                self.width = w
+                self.height = h
+                self.fill = fill 
+                self.outline = outline
+                self.stroke = stroke
+
+    class roundrect:
+        class RoundRect:
+            def __init__(self, x = 0, y = 0, w = 0, h = 0, fill = None, outline = None, stroke = 0, r = 0):
+                self.x = x 
+                self.y = y
+                self.width = w
+                self.height = h
+                self.fill = fill 
+                self.outline = outline
+                self.stroke = stroke
+                self.r = r
+

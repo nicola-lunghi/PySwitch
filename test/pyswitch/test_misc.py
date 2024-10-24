@@ -16,10 +16,6 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.misc import *
 
 
-class MockUpdater(Updater):
-    pass
-
-
 class MockUpdateable(Updateable):
     def __init__(self):
         self.num_update_calls = 0
@@ -160,7 +156,7 @@ class TestMiscUpdater(unittest.TestCase):
         u2 = MockUpdateable()
         u3 = MockUpdateable()
 
-        updater = MockUpdater()
+        updater = Updater()
         self.assertEqual(updater.updateables, [])
 
         updater.add_updateable(u1)
@@ -186,7 +182,7 @@ class TestMiscUpdater(unittest.TestCase):
         u2 = MockUpdateable()
         u3 = MockUpdateable()
 
-        updater = MockUpdater()
+        updater = Updater()
 
         updater.add_updateable(u1)
 
@@ -206,7 +202,7 @@ class TestMiscUpdater(unittest.TestCase):
 
 
     def test_add_invalid(self):
-        updater = MockUpdater()
+        updater = Updater()
 
         updater.add_updateable({})
         self.assertEqual(updater.updateables, [])

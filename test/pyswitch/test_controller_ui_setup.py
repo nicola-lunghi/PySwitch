@@ -27,8 +27,8 @@ class TestControllerUiSetup(unittest.TestCase):
         period = MockPeriodCounter()
         ui = MockUserInterface()
 
-        element_1 = MockDisplayElement(id = 1)
-        element_2 = MockDisplayElement(id = 2)
+        element_1 = DisplayElement(id = 1)
+        element_2 = DisplayElement(id = 2)
         element_3 = MockUpdateableDisplayElement(id = 3)
 
         appl = MockController(

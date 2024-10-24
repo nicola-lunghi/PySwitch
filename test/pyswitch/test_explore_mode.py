@@ -245,8 +245,12 @@ class TestExploreMode(unittest.TestCase):
             )
         )
 
-        # Run process
-        appl.process()
+        with patch.dict(sys.modules, {
+            "adafruit_display_shapes.roundrect": MockDisplayShapes().roundrect(),
+            "adafruit_display_shapes.rect": MockDisplayShapes().rect()
+        }):
+            # Run process
+            appl.process()
 
 
 ##################################################################################################
@@ -526,8 +530,12 @@ class TestExploreMode(unittest.TestCase):
             )
         )
 
-        # Run process
-        appl.process()
+        with patch.dict(sys.modules, {
+            "adafruit_display_shapes.roundrect": MockDisplayShapes().roundrect(),
+            "adafruit_display_shapes.rect": MockDisplayShapes().rect()
+        }):
+            # Run process
+            appl.process()
 
 
 ##################################################################################################

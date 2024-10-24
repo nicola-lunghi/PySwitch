@@ -246,7 +246,7 @@ class TestAction(unittest.TestCase):
             }
         })
 
-        label = MockDisplayElement(id = "foo")
+        label = DisplayElement(id = "foo")
 
         ui.root.add(
             label
@@ -271,8 +271,8 @@ class TestAction(unittest.TestCase):
             }
         })
 
-        label_1 = MockDisplayElement(id = "child1")
-        label_2 = MockDisplayElement(id = "child2")
+        label_1 = DisplayElement(id = "child1")
+        label_2 = DisplayElement(id = "child2")
 
         container = MockHierarchicalDisplayElement(id = "foo")
         container.add(label_1)

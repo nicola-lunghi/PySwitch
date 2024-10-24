@@ -2,9 +2,6 @@ from lib.pyswitch.ui.elements.elements import HierarchicalDisplayElement
 from lib.pyswitch.ui.elements.DisplayElement import DisplayBounds, DisplayElement
 from lib.pyswitch.misc import Updateable
 
-class MockDisplayElement(DisplayElement):
-    pass
-
 
 class MockUpdateableDisplayElement(DisplayElement, Updateable):
     def __init__(self, id = 0):
@@ -34,8 +31,13 @@ class MockUserInterface:
             bounds = DisplayBounds(0, 0, width, height)
         )
 
+        self.font_loader = MockFontLoader()
+        self.splash = []
+
     def show(self, appl):
         self.num_show_calls += 1
+
+        self.root.init(self, appl)
 
     def create_label(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
         return MockDisplayLabel(bounds=bounds, layout=layout, name=name, id=id)
@@ -66,3 +68,16 @@ class MockDisplayLabel(DisplayElement):
     @text.setter
     def text(self, text):
         self.output_text = text
+
+
+class MockFont:
+    def __init__(self, path):
+        self.path = path
+
+    def __repr__(self):
+        return repr(self.path)
+
+
+class MockFontLoader:
+    def get(self, path):
+        return MockFont(path)

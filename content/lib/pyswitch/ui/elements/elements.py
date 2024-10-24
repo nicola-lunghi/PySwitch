@@ -30,7 +30,7 @@ class DisplayLabelLayout:
         self.text_color = Tools.get_option(layout, "textColor", None)
         self.back_color = Tools.get_option(layout, "backColor", None)
         self.corner_radius = Tools.get_option(layout, "cornerRadius", 0)
-        self.stroke = Tools.get_option(layout, "stroke", 0)        
+        self.stroke = Tools.get_option(layout, "stroke", 0)            
 
     # Check mandatory fields
     def check(self, label_id):
@@ -174,6 +174,9 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
 
             # Text color changed?
             if old.text_color != self._layout.text_color:
+                if not self._layout.text_color:
+                    self._layout.text_color = self._determine_text_color()
+
                 self._label.color = self._layout.text_color
                 self._initial_text_color = self._layout.text_color
 
@@ -184,6 +187,16 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
         
             # Back color changed?
             if old.back_color != self._layout.back_color:
+                if isinstance(self._layout.back_color[0], tuple):
+                    if not isinstance(old.back_color[0], tuple):
+                        raise Exception("Invalid amount of colors: " + repr(self._layout.back_color) + ", this label can only take one")
+                    
+                    if len(self._layout.back_color) != len(old.back_color):
+                        raise Exception("Invalid amount of colors: " + repr(self._layout.back_color) + ", must be " + repr(len(old.back_color)))
+                else:
+                    if isinstance(old.back_color[0], tuple):
+                        raise Exception("This label must be fed with " + repr(len(old.back_color)) + " colors")
+
                 for i in range(len(self._backgrounds)):
                     background = self._backgrounds[i]
 
@@ -198,16 +211,21 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
             # Corner radius changed?
             if old.corner_radius != self._layout.corner_radius:
                 raise Exception("Changing corner radius is not supported")
+            
+        else:
+            if old.back_color:
+                raise Exception("You can only change the color if an initial color has been passed (not implemented yet)")
 
         # Stroke changed?
         if old.stroke != self._layout.stroke:
             if self._layout.stroke > 0:
-                if not self._frame:
+                if not old.stroke:
                     raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
                 
-                self._frame.stroke = self._layout.stroke
-            else:
                 if self._frame:
+                    self._frame.stroke = self._layout.stroke
+            else:
+                if old.stroke:
                     raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
 
     @property
@@ -216,15 +234,22 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
 
     @back_color.setter
     def back_color(self, color):
-        if not self.layout.back_color:
+        if self.layout.back_color and not color:
+            raise Exception("You can only change the background color if an initial background color has been passed (not implemented yet)")
+
+        if not self.layout.back_color and color:
             raise Exception("You can only change the background color if an initial background color has been passed (not implemented yet)")
         
-        if isinstance(color[0], tuple):
-            if not isinstance(self.layout.back_color[0], tuple):
-                raise Exception(repr(self.id) + ": Color type (tuple or single color) cannot be changed: " + repr(color))
-            
-            if len(color) != len(self.layout.back_color):
-                raise Exception("Invalid amount of colors: " + repr(color) + " has to have " + repr(len(self.layout.back_color)) + " entries (" + self.name + ")")
+        if color:
+            if isinstance(color[0], tuple):
+                if not isinstance(self.layout.back_color[0], tuple):
+                    raise Exception(repr(self.id) + ": Color type (tuple or single color) cannot be changed: " + repr(color))
+                
+                if len(color) != len(self.layout.back_color):
+                    raise Exception("Invalid amount of colors: " + repr(color) + " has to have " + repr(len(self.layout.back_color)) + " entries (" + self.name + ")")
+            else:
+                if isinstance(self.layout.back_color[0], tuple):
+                    raise Exception(repr(self.id) + ": Color type (tuple or single color) cannot be changed: " + repr(color))
 
         if self.layout.back_color == color:
             return
@@ -265,6 +290,27 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
         return self.layout.corner_radius
     
     @property
+    def stroke(self):
+        return self._layout.stroke
+    
+    @stroke.setter
+    def stroke(self, stroke):
+        if self._layout.stroke == stroke:
+            return
+        
+        if self._layout.stroke > 0:
+            if stroke <= 0:
+                raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
+            
+            self._layout.stroke = stroke
+
+            if self._frame:
+                self._frame.stroke = self._layout.stroke
+        else:
+            if stroke > 0:
+                raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
+
+    @property
     def text(self):
         return self.layout.text
 
@@ -278,9 +324,9 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
         if self._label:
             self._label.text = self._wrap_text(text)
 
+    # Wrap text if requested
     def _wrap_text(self, text):
-        if self.layout.max_text_width != False:
-            # Wrap text if requested
+        if self.layout.max_text_width:
             return DisplayLabel.LINE_FEED.join(
                 wrap_text_to_pixels(
                     text, 
@@ -320,11 +366,11 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
         if isinstance(self.layout.back_color[0], tuple):
             ret = []            
     
-            # Create the middle backgrounds without corner radius
             for i in range(len(self.layout.back_color)):
                 if i == 0 or i == len(self.layout.back_color) - 1:
                     r = self.layout.corner_radius
                 else:
+                    # Create the middle backgrounds without corner radius
                     r = 0
 
                 ret.append(
@@ -450,12 +496,8 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
             # Horizontal
             slot_width = int(self.bounds.width / len(active_children))
 
-            for i in range(len(self.children)):
-                element = self.children[i]
-                if not element:
-                    continue
-
-                element.bounds = DisplayBounds(
+            for i in range(len(active_children)):
+                active_children[i].bounds = DisplayBounds(
                     self.bounds.x + i * slot_width,
                     self.bounds.y,
                     slot_width,
@@ -465,12 +507,8 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
             # Vertical
             slot_height = int(self.bounds.height / len(active_children))
 
-            for i in range(len(self.children)):
-                element = self.children[i]
-                if not element:
-                    continue
-
-                element.bounds = DisplayBounds(
+            for i in range(len(active_children)):
+                active_children[i].bounds = DisplayBounds(
                     self.bounds.x,
                     self.bounds.y + i * slot_height,
                     self.bounds.width,
@@ -488,8 +526,8 @@ class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener)
     #     "mapping":     A ClientParameterMapping instance whose values should be shown in the area
     #     "depends":     Optional. If a ClientParameterMapping instance is passed, the display is only updated
     #                    when this mapping's value has changed.
-    #     "textOffline": Text to show initially and when the client is offline
-    #     "textReset":   Text to show when a reset happened (on rig changes etc.)
+    #     "textOffline": Text to show initially and when the client is offline (optional)
+    #     "textReset":   Text to show when a reset happened (on rig changes etc.). Optional.
     # }
     def __init__(self, parameter, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
         super().__init__(bounds=bounds, layout=layout, name=name, id=id)

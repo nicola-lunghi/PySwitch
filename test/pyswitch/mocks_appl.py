@@ -217,6 +217,14 @@ class MockCondition(Condition):
 ##################################################################################################################################
 
 
+class MockConditionReplacer:
+    def replace(self, entry):
+        return entry + " (replaced)"
+    
+
+##################################################################################################################################
+
+
 class MockMeasurement:
     def __init__(self):
         self.output_value = 0
@@ -232,12 +240,4 @@ class MockMeasurement:
     def update(self):
         self.num_update_calls += 1     # pragma: no cover
 
-
-##################################################################################################################################
-
-
-class MockConditionReplacer:
-    def replace(self, entry):
-        return entry + " (replaced)"
-    
 
