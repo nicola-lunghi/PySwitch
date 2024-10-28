@@ -40,78 +40,14 @@ Switches = [
     {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            #KemperActionDefinitions.EFFECT_STATE(
-            #    slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-            #    display = {
-            #        "id": DisplayIds.DISPLAY_HEADER,
-            #        "index": 0,
-            #        "layout": ACTION_LABEL_LAYOUT
-            #    }
-            #)
-            
-            #ParameterCondition(
-            #    mapping = KemperMappings.RIG_VOLUME,
-            #    mode = ParameterConditionModes.MODE_GREATER_EQUAL,
-            #    ref_value = KemperMidiValueProvider.NRPN_VALUE(0.5),
-
-            #    yes = [
-            #        KemperActionDefinitions.EFFECT_STATE(
-            #            id = "sw1",
-            #            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-            #        ),
-            #        KemperActionDefinitions.EFFECT_STATE(
-            #            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
-            #            display = {
-            #                "id": DisplayIds.DISPLAY_HEADER,
-            #                "index": 0,
-            #                "layout": ACTION_LABEL_LAYOUT
-            #            }
-            #        ),
-            #        KemperActionDefinitions.AMP_STATE()
-            #    ],
-            #    no = KemperActionDefinitions.EFFECT_STATE(
-            #        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
-            #        display = {
-            #            "id": DisplayIds.DISPLAY_HEADER,
-            #            "index": 0,
-             #           "layout": ACTION_LABEL_LAYOUT
-            #        }
-            #    )
-            #)
-
-            ParameterCondition(
-                mapping = KemperMappings.RIG_NAME,
-                mode = ParameterConditionModes.MODE_STRING_CONTAINS,
-                ref_value = "TAP",
-
-                yes = [
-					ParameterCondition(
-						mapping = KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
-						mode = ParameterConditionModes.MODE_EQUAL,
-						ref_value = 1,
-						
-						yes = [
-							KemperActionDefinitions.TAP_TEMPO(
-                                display = SW1_DISPLAY
-                            )
-						],
-
-						no = [
-							KemperActionDefinitions.EFFECT_STATE(
-								slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                                display = SW1_DISPLAY
-							)
-						]
-                    )
-				],
-
-				no = [
-					KemperActionDefinitions.EFFECT_STATE(
-						slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                        display = SW1_DISPLAY
-					)
-				]
-			),                
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+                display = {
+                    "id": DisplayIds.DISPLAY_HEADER,
+                    "index": 0,
+                    "layout": ACTION_LABEL_LAYOUT
+                }
+            )                         
         ]
     },
 
@@ -125,8 +61,7 @@ Switches = [
                     "id": DisplayIds.DISPLAY_HEADER,
                     "index": 1,
                     "layout": ACTION_LABEL_LAYOUT
-                },
-                mode = PushButtonModes.MOMENTARY
+                }
             )
         ]
     },
@@ -135,13 +70,13 @@ Switches = [
     {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            KemperActionDefinitions.AMP_STATE(
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
                 display = {
                     "id": DisplayIds.DISPLAY_FOOTER,
                     "index": 0,
                     "layout": ACTION_LABEL_LAYOUT
-                },
-                color = (Colors.WHITE, Colors.YELLOW, Colors.LIGHT_GREEN)  
+                }
             )
         ]
     },
@@ -150,19 +85,13 @@ Switches = [
     {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.RESET_RIG_INFO_DISPLAYS(),
-            KemperActionDefinitions.RIG_SELECT(
-                rig = 1,
-                bank = 1,
-
-                rig_off = 5,
-                bank_off = 3,
-
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
                 display = {
                     "id": DisplayIds.DISPLAY_FOOTER,
                     "index": 1,
                     "layout": ACTION_LABEL_LAYOUT
-                }   
+                }
             )
         ]
     }
