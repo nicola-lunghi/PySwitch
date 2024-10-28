@@ -8,9 +8,7 @@ generic configuration script. Features are:
 - Use conditions in the configuration to make functions depending on MIDI parameters of the device
 - Define the device to be controlled via a custom python library, implementing base classes from the firmware
 
-<p align="center>
-	![Overview Image](https://github.com/user-attachments/assets/c48903b2-a5f7-4d78-b7eb-9fca98dbfbe0)
-</p>
+![Overview Image](https://github.com/user-attachments/assets/c48903b2-a5f7-4d78-b7eb-9fca98dbfbe0)
 
 ## Motivation
 
