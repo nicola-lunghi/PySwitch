@@ -469,7 +469,7 @@ class TestAction(unittest.TestCase):
         action_2.switch_color = [(2, 3, 4), (3, 4, 5)]
         action_2.switch_brightness = 0.2
         
-        self.assertEqual(switch.colors, [(2, 3, 4)])
+        self.assertEqual(switch.colors, [(3, 4, 5)])
         self.assertEqual(switch.brightnesses, [0.2])
 
         # Two pixels
@@ -478,13 +478,13 @@ class TestAction(unittest.TestCase):
         switch.brightnesses = [0, 0]
 
         action_2.switch_color = [(2, 3, 4), (3, 4, 5)]
-        action_4.switch_color = [(2, 30, 40), (3, 4, 5)]
+        action_4.switch_color = [(2, 30, 40), (3, 40, 5)]
         action_5.switch_color = [(2, 3, 400), (3, 4, 5)]
         action_2.switch_brightness = 0.2
         action_4.switch_brightness = 0.4
         action_5.switch_brightness = 0.6
 
-        self.assertEqual(switch.colors, [(2, 3, 4), (2, 30, 40)])
+        self.assertEqual(switch.colors, [(3, 4, 5), (3, 40, 5)])
         self.assertEqual(switch.brightnesses, [0.2, 0.4])
 
         # Three pixels
@@ -493,14 +493,14 @@ class TestAction(unittest.TestCase):
         switch.brightnesses = [0, 0, 0]
 
         action_2.switch_color = [(2, 3, 4), (3, 4, 5)]
-        action_4.switch_color = [(2, 30, 40), (3, 4, 5)]
-        action_5.switch_color = [(2, 30, 400), (3, 4, 5)]
+        action_4.switch_color = [(2, 30, 40), (30, 4, 5)]
+        action_5.switch_color = [(2, 30, 400), (31, 4, 5)]
 
         action_2.switch_brightness = 0.2
         action_4.switch_brightness = 0.4
         action_5.switch_brightness = 0.6
 
-        self.assertEqual(switch.colors, [(2, 3, 4), (2, 30, 40), (2, 30, 400)])
+        self.assertEqual(switch.colors, [(3, 4, 5), (30, 4, 5), (31, 4, 5)])
         self.assertEqual(switch.brightnesses, [0.2, 0.4, 0.6])
 
         ### Only action 2 is enabled ##############################################
@@ -515,7 +515,7 @@ class TestAction(unittest.TestCase):
         action_2.switch_color = [(2, 3, 4), (3, 4, 5)]
         action_2.switch_brightness = 0.2
 
-        self.assertEqual(switch.colors, [(2, 3, 4)])
+        self.assertEqual(switch.colors, [(3, 4, 5)])
         self.assertEqual(switch.brightnesses, [0.2])
 
         # Two pixels

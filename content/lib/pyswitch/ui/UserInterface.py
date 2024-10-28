@@ -15,7 +15,6 @@ class UserInterface:
             bounds = DisplayBounds(0, 0, display.width, display.height),
             name = "Root"
         )
-        self._initialized = False
 
         # Buffered font loader
         self.font_loader = font_loader
@@ -38,8 +37,6 @@ class UserInterface:
 
         # Show the splash on the screen
         self._display.tft.show(self.splash)
-
-        self._initialized = True
 
     # Creates a label
     def create_label(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):

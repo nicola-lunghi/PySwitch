@@ -7,7 +7,7 @@
 from pyswitch.misc import Colors
 from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
 
-from pyswitch.ui.elements.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds
+from pyswitch.ui.elements.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds, DisplayLabel
 from pyswitch.ui.StatisticalDisplays import StatisticalDisplays
 
 from kemper import KemperMappings
@@ -18,6 +18,8 @@ from kemper import KemperMappings
 class DisplayIds:
     DISPLAY_HEADER = 10
     DISPLAY_FOOTER = 20  
+    DISPLAY_TUNER = 30
+    DISPLAY_BOOST = 40
 
 #############################################################################################################################################
 
@@ -53,25 +55,11 @@ Displays = [
         name = "Rig Name",
         bounds = bounds,   # Takes what is left over
 
-        layout = ParameterCondition(
-            mapping = KemperMappings.RIG_NAME,
-            mode = ParameterConditionModes.MODE_STRING_NOT_CONTAINS,
-            ref_value = "Q",
-
-            yes = {
-                "font": "/fonts/PTSans-NarrowBold-40.pcf",
-                "lineSpacing": 0.8,
-                "maxTextWidth": 220,
-                "backColor": Colors.BLACK
-            },
-
-            no =  {
-                "font": "/fonts/PTSans-NarrowBold-40.pcf",
-                "lineSpacing": 0.8,
-                "maxTextWidth": 220,
-                "backColor": Colors.ORANGE
-            }
-        ),
+        layout = {
+            "font": "/fonts/PTSans-NarrowBold-40.pcf",
+            "lineSpacing": 0.8,
+            "maxTextWidth": 220
+        },
 
         parameter = {
             "mapping": KemperMappings.RIG_NAME,
@@ -81,22 +69,27 @@ Displays = [
         }
     ),
 
-    # Detail area (amp/cab etc.)
-    ParameterDisplayLabel(
-        name = "Rig Detail",
-        bounds = bounds.bottom(DETAIL_HEIGHT),
+    DisplayLabel(
+        id = DisplayIds.DISPLAY_TUNER,
+        bounds = bounds.top(20).right(60),
         layout = {
-            "font": "/fonts/A12.pcf"
+            "font": "/fonts/A12.pcf",
+            "backColor": Colors.BLACK   # Must be set because the action will set a back color later
         },
-        parameter = {
-            "mapping": KemperMappings.AMP_NAME,
-            "depends": KemperMappings.RIG_DATE   # Only update this when the rig date changed (optional)
-        }        
+    ),
+
+    DisplayLabel(
+        id = DisplayIds.DISPLAY_BOOST,
+        bounds = bounds.bottom(20).right(60),
+        layout = {
+            "font": "/fonts/A12.pcf",
+            "backColor": Colors.BLACK   # Must be set because the action will set a back color later
+        },
     ),
 
     # Performance indicator (dot)
     StatisticalDisplays.PERFORMANCE_DOT(bounds),
 
     # Statistics area
-    StatisticalDisplays.STATS_DISPLAY(bounds)
+    #StatisticalDisplays.STATS_DISPLAY(bounds)
 ]

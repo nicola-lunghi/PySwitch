@@ -34,7 +34,7 @@ class MockController(Controller):
         self._cnt = 0
 
     def tick(self):
-        if not self._next_step:  # pragma: no cover
+        if not self._next_step: 
             return super().tick()
         
         if self._cnt < self._next_step.num_pass_ticks:
@@ -46,7 +46,7 @@ class MockController(Controller):
             self._next_step.prepare()
 
         res = super().tick()
-        if not res:  # pragma: no cover
+        if not res:  
             raise Exception("tick() does not return True")
         
         if not callable(self._next_step.evaluate):
@@ -59,12 +59,12 @@ class MockController(Controller):
         return ret        
     
     @property
-    def next_step(self):  # pragma: no cover
+    def next_step(self):  
         return self._next_step
     
     @next_step.setter
     def next_step(self, step):
-        if not isinstance(step, SceneStep):  # pragma: no cover
+        if not isinstance(step, SceneStep): 
             raise Exception("Invalid test step")
         
         self._next_step = step
@@ -133,7 +133,7 @@ class MockValueProvider:
             if not "mapping" in o or o["mapping"] != mapping:
                 continue
 
-            if "value" in o:   # pragma: no cover
+            if "value" in o:   
                 mapping.value = o["value"]
 
             ret = o["result"] if "result" in o else False
@@ -232,12 +232,12 @@ class MockMeasurement:
         self.num_update_calls = 0
 
     def get_message(self):
-        return self.output_message     # pragma: no cover
+        return self.output_message   
     
     def value(self):
-        return self.output_value       # pragma: no cover
+        return self.output_value     
 
     def update(self):
-        self.num_update_calls += 1     # pragma: no cover
+        self.num_update_calls += 1   
 
 

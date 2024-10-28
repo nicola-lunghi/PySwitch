@@ -38,7 +38,7 @@ class MockSwitchFactory:
             self.switches.append(switch)
         return switch
     
-    def find_by_port(self, port):    # pragma: no cover
+    def find_by_port(self, port):   
         for switch in self.switches:
             if switch.port != port:
                 continue
@@ -53,17 +53,17 @@ class MockExploreModeController(ExploreModeController):
         self._next_step = None
 
     def tick(self):
-        if not self._next_step:  # pragma: no cover
+        if not self._next_step:  
             return super().tick()
         
         if callable(self._next_step.prepare):
             self._next_step.prepare()
 
         res = super().tick()
-        if not res:  # pragma: no cover
+        if not res:
             raise Exception("tick() does not return True")
         
-        if not callable(self._next_step.evaluate):  # pragma: no cover
+        if not callable(self._next_step.evaluate):
             return False
         
         ret = self._next_step.evaluate()
@@ -73,12 +73,12 @@ class MockExploreModeController(ExploreModeController):
         return ret        
     
     @property
-    def next_step(self):  # pragma: no cover
+    def next_step(self): 
         return self._next_step
     
     @next_step.setter
     def next_step(self, step):
-        if not isinstance(step, SceneStep):  # pragma: no cover
+        if not isinstance(step, SceneStep): 
             raise Exception("Invalid test step")
         
         self._next_step = step

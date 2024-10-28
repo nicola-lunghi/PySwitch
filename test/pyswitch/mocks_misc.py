@@ -17,7 +17,7 @@ class MockMisc:
             MockMisc.Tools.msgs_str += msg
 
         @staticmethod
-        def latest_msg():   # pragma: no cover
+        def latest_msg():  
             if not MockMisc.Tools.msgs:
                 return None
             return MockMisc.Tools.msgs[len(MockMisc.Tools.msgs)-1]

@@ -7,8 +7,9 @@ class MockMeasurements:
 
     class RuntimeMeasurement(StatisticsMeasurement, Updateable):
         # type is arbitrary and only used externally
-        def __init__(self, type = 0):
+        def __init__(self, type = 0, interval_millis = 0):
             self.type = type
+            self.interval_millis = interval_millis
 
             self.num_update_calls = 0
             self.num_start_calls = 0
@@ -21,15 +22,17 @@ class MockMeasurements:
             self.output_value = 0
             self.output_message = ""
 
+            self.listeners = []
+
         # Average runtime
         @property
-        def average(self):                # pragma: no cover
+        def average(self):      
             return self.output_average
         
         def update(self):
             self.num_update_calls += 1
 
-        def value(self):                  # pragma: no cover
+        def value(self):        
             return self.output_value
 
         # Initialize the instance
@@ -45,6 +48,17 @@ class MockMeasurements:
             self.num_finish_calls += 1
 
         # Generate output message
-        def get_message(self):            # pragma: no cover
+        def get_message(self):   
             return self.output_message
+        
+        def add_listener(self, listener):
+            self.listeners.append(listener)
 
+
+    class FreeMemoryMeasurement:
+        def __init__(self):
+            self.output_message = ""
+
+        def get_message(self):   
+            return self.output_message
+        

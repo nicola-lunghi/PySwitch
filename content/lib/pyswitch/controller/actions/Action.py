@@ -1,3 +1,4 @@
+import math
 from ...misc import Tools, Updateable, Defaults
 
 
@@ -90,9 +91,9 @@ class Action(Updateable):
                 for i in range(len(segments)):
                     tmp[segments[i]] = color[i]
             else:
-                # Only fills some LEDs: Use first color only
+                # Only fills some LEDs: Use a middle color
                 for segment in segments:
-                    tmp[segment] = color[0]                
+                    tmp[segment] = color[math.floor(len(color) / 2)]
         else:
             # Single color: Fill all segments
             for segment in segments:

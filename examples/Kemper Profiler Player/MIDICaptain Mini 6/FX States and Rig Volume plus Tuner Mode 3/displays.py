@@ -7,7 +7,7 @@
 from pyswitch.misc import Colors
 from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
 
-from pyswitch.ui.elements.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds
+from pyswitch.ui.elements.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds, DisplayLabel
 from pyswitch.ui.StatisticalDisplays import StatisticalDisplays
 
 from kemper import KemperMappings
@@ -53,25 +53,11 @@ Displays = [
         name = "Rig Name",
         bounds = bounds,   # Takes what is left over
 
-        layout = ParameterCondition(
-            mapping = KemperMappings.RIG_NAME,
-            mode = ParameterConditionModes.MODE_STRING_NOT_CONTAINS,
-            ref_value = "Q",
-
-            yes = {
-                "font": "/fonts/PTSans-NarrowBold-40.pcf",
-                "lineSpacing": 0.8,
-                "maxTextWidth": 220,
-                "backColor": Colors.BLACK
-            },
-
-            no =  {
-                "font": "/fonts/PTSans-NarrowBold-40.pcf",
-                "lineSpacing": 0.8,
-                "maxTextWidth": 220,
-                "backColor": Colors.ORANGE
-            }
-        ),
+        layout = {
+            "font": "/fonts/PTSans-NarrowBold-40.pcf",
+            "lineSpacing": 0.8,
+            "maxTextWidth": 220
+        },
 
         parameter = {
             "mapping": KemperMappings.RIG_NAME,
@@ -81,22 +67,9 @@ Displays = [
         }
     ),
 
-    # Detail area (amp/cab etc.)
-    ParameterDisplayLabel(
-        name = "Rig Detail",
-        bounds = bounds.bottom(DETAIL_HEIGHT),
-        layout = {
-            "font": "/fonts/A12.pcf"
-        },
-        parameter = {
-            "mapping": KemperMappings.AMP_NAME,
-            "depends": KemperMappings.RIG_DATE   # Only update this when the rig date changed (optional)
-        }        
-    ),
-
     # Performance indicator (dot)
     StatisticalDisplays.PERFORMANCE_DOT(bounds),
 
     # Statistics area
-    StatisticalDisplays.STATS_DISPLAY(bounds)
+    #StatisticalDisplays.STATS_DISPLAY(bounds)
 ]
