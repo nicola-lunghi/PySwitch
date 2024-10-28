@@ -8,7 +8,7 @@ generic configuration script. Features are:
 - Use conditions in the configuration to make functions depending on MIDI parameters of the device
 - Define the device to be controlled via a custom python library, implementing base classes from the firmware
 
-IMG1
+![image](https://github.com/user-attachments/assets/c48903b2-a5f7-4d78-b7eb-9fca98dbfbe0)
 
 ## Motivation
 
@@ -709,9 +709,7 @@ Config = {
 
 This can be used to detect which switch is wired to which IO port, and also determine the LED indexing. 
 
-
-IMG2
-
+![image](https://github.com/user-attachments/assets/fb213844-b7e8-41fc-8e4d-5dcb97717822)
 
 ### Detect IO Port Wiring
 
@@ -820,7 +818,7 @@ Wrote HTML report to /project/test/report/index.html
 
 You should find a coverage report in the test/report folder like this:
 
-IMG3
+![image](https://github.com/user-attachments/assets/4e5887ac-24df-49e1-9115-89486d1d87f4)
 
 ## License
 
