@@ -25,14 +25,6 @@ ACTION_LABEL_LAYOUT = {
 # when an answer to a value request is received.
 ValueProvider = KemperMidiValueProvider()
 
-# Predefine display addressing (will be the same for all condition branches). 
-# See below for explanation on action displays.
-SW1_DISPLAY = {
-	"id": DisplayIds.DISPLAY_HEADER, 
-	"index": 0,
-	"layout": ACTION_LABEL_LAYOUT
-}
-
 # Defines the switch assignments
 Switches = [
 
