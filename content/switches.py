@@ -10,7 +10,7 @@ from pyswitch.misc import Colors, Defaults
 from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
 from pyswitch.controller.actions.actions import PushButtonModes
 
-from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, KemperMidiValueProvider
+from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
 from displays import DisplayIds
 
 
@@ -21,10 +21,6 @@ ACTION_LABEL_LAYOUT = {
     "stroke": 1
 }
 
-# Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
-# when an answer to a value request is received.
-ValueProvider = KemperMidiValueProvider()
-
 # Defines the switch assignments
 Switches = [
 
@@ -33,7 +29,7 @@ Switches = [
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
                 display = {
                     "id": DisplayIds.DISPLAY_HEADER,
                     "index": 0,
@@ -48,7 +44,7 @@ Switches = [
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
                 display = {
                     "id": DisplayIds.DISPLAY_HEADER,
                     "index": 1,
@@ -63,7 +59,7 @@ Switches = [
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD,
                 display = {
                     "id": DisplayIds.DISPLAY_FOOTER,
                     "index": 0,
@@ -78,7 +74,7 @@ Switches = [
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
                 display = {
                     "id": DisplayIds.DISPLAY_FOOTER,
                     "index": 1,

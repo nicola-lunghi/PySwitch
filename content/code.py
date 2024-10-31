@@ -56,10 +56,11 @@ if not Tools.get_option(Config, "exploreMode"):
 
     # Load configuration files
     from displays import Displays
-    from switches import Switches, ValueProvider
+    from switches import Switches
+    from communication import Communication
 
     # Controller instance (runs the processing loop and keeps everything together)
-    appl = Controller(led_driver, ValueProvider, Config, Switches, Displays, gui)
+    appl = Controller(led_driver, Communication, Config, Switches, Displays, gui)
     appl.process()
 
 else:

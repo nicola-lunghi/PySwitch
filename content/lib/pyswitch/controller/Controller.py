@@ -5,6 +5,7 @@ from .FootSwitchController import FootSwitchController
 from .measurements import RuntimeMeasurement
 from .actions.Action import Action
 from .Client import Client
+from .BidirectionalClient import BidirectionalClient
 from ..misc import Tools, Updateable, Updater, PeriodCounter
 from ..Memory import Memory
 
@@ -37,7 +38,7 @@ class Controller(Updater): #ClientRequestListener
     #           ]
     # value_provider: Value provider for the client
     # displays: list of DisplayElements to show on the TFT
-    def __init__(self, led_driver, value_provider, config = {}, switches = [], displays = [], ui = None, period_counter = None):
+    def __init__(self, led_driver, communication, config = {}, switches = [], displays = [], ui = None, period_counter = None):
         Updater.__init__(self)
 
         # User interface
@@ -77,7 +78,12 @@ class Controller(Updater): #ClientRequestListener
         self._init_midi()
 
         # Client adapter to send and receive parameters
-        self.client = Client(self._midi, self.config, value_provider)
+        value_provider = communication["valueProvider"]
+        protocol = Tools.get_option(communication, "protocol", None)
+        if protocol:
+            self.client = BidirectionalClient(self._midi, self.config, value_provider, protocol)
+        else:
+            self.client = Client(self._midi, self.config, value_provider)
 
         # Set up switches
         self.switches = []
@@ -150,6 +156,13 @@ class Controller(Updater): #ClientRequestListener
         
         else:
             raise Exception("Runtime measurement type " + repr(measurement.type) + " not supported")
+
+    # Update the client manually at last so all requests have been registered already
+    def update(self):
+        super().update()
+
+        if isinstance(self.client, Updateable):
+            self.client.update()
 
     # Runs the processing loop (which never ends)
     def process(self):

@@ -1,5 +1,5 @@
 from adafruit_midi.system_exclusive import SystemExclusive
-from adafruit_midi.control_change import ControlChange
+#from adafruit_midi.control_change import ControlChange
 
 from ..misc import Tools, EventEmitter, PeriodCounter
 
@@ -56,7 +56,7 @@ class Client: #(ClientRequestListener):
 
         # Helper to only clean up hanging requests from time to time as this is not urgent at all
         self._cleanup_terminated_period = PeriodCounter(self._max_request_lifetime / 2)
-        
+
     # Sends the SET message of a mapping
     def set(self, mapping, value):
         if not mapping.set:
@@ -75,11 +75,7 @@ class Client: #(ClientRequestListener):
         req = self._get_matching_request(mapping)
         if not req:
             # New request
-            req = ClientRequest(              
-                self,
-                mapping,
-                self._max_request_lifetime
-            )
+            req = self.create_request(mapping)
             
             req.add_listener(listener)
 
@@ -89,14 +85,23 @@ class Client: #(ClientRequestListener):
             if self.debug:  # pragma: no cover
                 self._print("Added new request for " + mapping.name + ". Open requests: " + str(len(self._requests)), mapping)
 
-            # Send
+            # Send            
             req.send()            
+
         else:
             # Existing request: Add listener
             req.add_listener(listener)
 
             if self.debug:  # pragma: no cover
                 self._print("Added new listener to existing request for " + mapping.name + ". Open requests: " + str(len(self._requests)) + ", Listeners: " + str(len(req.listeners)), mapping)
+
+    # Create a new request
+    def create_request(self, mapping):
+        return ClientRequest(              
+            self,
+            mapping,
+            self._max_request_lifetime
+        )
 
     # Receive MIDI messages
     def receive(self, midi_message):
@@ -122,7 +127,7 @@ class Client: #(ClientRequestListener):
     # Returns a matching request from the list if any, or None if no matching
     # request has been found.
     def _get_matching_request(self, mapping):
-        if not isinstance(mapping.request, SystemExclusive):
+        if not isinstance(mapping.response, SystemExclusive):
             return None
         
         for request in self._requests:
@@ -139,7 +144,7 @@ class Client: #(ClientRequestListener):
     def _cleanup_hanging_requests(self):
         # Terminate requests if they waited too long
         for request in self._requests:
-            if request.lifetime.exceeded:
+            if request.lifetime and request.lifetime.exceeded:
                 request.terminate()
 
                 if self.debug:  # pragma: no cover
@@ -174,16 +179,24 @@ class ClientParameterMapping:
         if not other:
             return False
         
-        if self.request != None:
-            if other.request != None:
-                return Tools.compare_midi_messages(self.request, other.request)
+        if self.response != None:
+            if other.response != None:
+                return Tools.compare_midi_messages(self.response, other.response)
             else:
                 return False
+            
         elif self.set != None:
             if other.set != None:
                 return Tools.compare_midi_messages(self.set, other.set)
             else:
                 return False
+            
+        elif self.request != None:
+            if other.request != None:
+                return Tools.compare_midi_messages(self.request, other.request)
+            else:
+                return False
+            
         return False
 
     @property
@@ -191,9 +204,13 @@ class ClientParameterMapping:
         return self.set != None
 
     @property
-    def can_receive(self):
+    def can_request(self):
         return self.request != None
     
+    @property
+    def can_receive(self):
+        return self.response != None
+
     # Returns a (shallow) copy of the mapping with no request/response and value. Use this
     # if you have performance issues with too much requests.
     @property
@@ -201,6 +218,17 @@ class ClientParameterMapping:
         return ClientParameterMapping(
             name = self.name,
             set = self.set,
+            type = self.type
+        )
+    
+    # Returns a (shallow) copy of the mapping with no request/response and value. Use this
+    # if you have performance issues with too much requests.
+    @property
+    def set_and_receive_only(self):
+        return ClientParameterMapping(
+            name = self.name,
+            set = self.set,
+            response = self.response,
             type = self.type
         )
 
@@ -211,30 +239,41 @@ class ClientParameterMapping:
 # Model for a request for a value
 class ClientRequest(EventEmitter):
 
-    def __init__(self, client, mapping, max_request_lifetime):
+    def __init__(self, client, mapping, max_request_lifetime = 0):
         super().__init__() #ClientRequestListener)
         
         self.client = client
         self.mapping = mapping
         self.debug = self.client.debug     
         
-        if not self.mapping.request:
-            raise Exception("No REQUEST message prepared for this MIDI mapping (" + self.mapping.name + ")")
+        #if not self.mapping.request:
+        #    raise Exception("No REQUEST message prepared for this MIDI mapping (" + self.mapping.name + ")")
         
+        if self.mapping.request and not isinstance(self.mapping.request, SystemExclusive):
+            raise Exception("Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
+
         if not self.mapping.response:
             raise Exception("No response template message prepared for this MIDI mapping (" + self.mapping.name + ")")
         
-        if not isinstance(self.mapping.request, SystemExclusive):
-            raise Exception("Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
-
         if not isinstance(self.mapping.response, SystemExclusive):
             raise Exception("Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
         
-        self.lifetime = PeriodCounter(max_request_lifetime)
-        self.lifetime.reset()
+        self.lifetime = self._init_lifetime(max_request_lifetime)
+
+    # Sets up the lifetime for mappings not belonging to a bidirectional protocol
+    def _init_lifetime(self, max_request_lifetime):
+        if not max_request_lifetime > 0:            
+            return None
+            
+        lifetime = PeriodCounter(max_request_lifetime)
+        lifetime.reset()
+        return lifetime
 
     # Sends the request
     def send(self):
+        if not self.mapping.can_request:
+            return
+
         if self.debug:   # pragma: no cover
             self._print(" -> Send REQUEST message for " + self.mapping.name + ": " + Tools.stringify_midi_message(self.mapping.request))
 
@@ -261,6 +300,9 @@ class ClientRequest(EventEmitter):
     # Parses an incoming MIDI message. If the message belongs to the mapping's request,
     # calls the listener with the received value.
     def parse(self, midi_message):
+        if not self.mapping.can_receive:
+            return 
+        
         if self.finished:
             return
         
@@ -281,8 +323,9 @@ class ClientRequest(EventEmitter):
         for listener in self.listeners:
             listener.parameter_changed(self.mapping)  # The mapping has the values set already
 
-        # Clear listeners
-        self.listeners = None
+        # Clear listeners (only if the request has a restricted life time)
+        if self.lifetime:
+            self.listeners = None
 
     # Debug console output
     def _print(self, msg):  # pragma: no cover

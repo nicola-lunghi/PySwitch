@@ -6,6 +6,8 @@ from adafruit_midi.system_exclusive import SystemExclusive
 from pyswitch.misc import Colors, Defaults
 from pyswitch.controller.actions.actions import ParameterAction, PushButtonModes
 from pyswitch.controller.Client import ClientParameterMapping
+from pyswitch.controller.BidirectionalClient import BidirectionalProtocol
+
 from pyswitch.controller.actions.actions import EffectEnableAction, ParameterAction, ResetDisplaysAction
 
 ####################################################################################################################
@@ -869,3 +871,51 @@ class KemperMappings:
         )
     )
     
+
+####################################################################################################################
+
+
+PARAMETER_SET_2 = [
+    KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_A),
+    KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_A),
+    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_A),
+
+    KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_B),
+    KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_B),
+    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_B),
+
+    KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_C),
+    KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_C),
+    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_C),
+
+    KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_D),
+    KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_D),
+    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_D),
+
+    KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_X),
+    KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_X),
+    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_X),
+
+    KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_MOD),
+    KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_MOD),
+    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_MOD),
+
+    KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+    KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+
+    KemperMappings.RIG_NAME                
+]
+
+# Implements the internal Kemper bidirectional communication protocol
+class KemperBidirectionalProtocol(BidirectionalProtocol):
+    
+    PARAMETER_SET = PARAMETER_SET_2
+
+    def __init__(self, time_lease_seconds):
+        self.time_lease_seconds = time_lease_seconds
+
+    # Must return if the passed mapping is handled in the bidirectional protocol
+    def is_bidirectional(self, mapping):
+        return mapping in self.PARAMETER_SET
+

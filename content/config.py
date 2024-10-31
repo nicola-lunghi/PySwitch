@@ -26,7 +26,7 @@ Config = {
 
     # Update interval, for updating the rig date (which triggers all other data to update when changed) (milliseconds)
     # and other displays if assigned. 200 is the default.
-    #"updateInterval": 200,
+    "updateInterval": 3000,
 
     ## Development Options ###################################################################################################################
 
@@ -45,7 +45,7 @@ Config = {
     #"debugSwitches": True,                           # Show verbose output for switches (color, brightness) or a switches 
                                                       # actions are triggered. Optional.
     #"debugParameters": True,                         # Show messages from the global parameter controller
-    #"debugClient": True,                             # Show all requests and responses to/from the Kemper Profiler. Optional.
+    "debugClient": True,                             # Show all requests and responses to/from the Kemper Profiler. Optional.
     #"clientDebugMapping": KemperMappings.RIG_NAME,  # Optional, if set the kemper classes will only output messages related to
                                                       # the specified mapping.
     #"debugClientRawMidi": True,                      # Debug raw kemper MIDI messages. Only regarded whe "debugKemper" is enabled, too.
