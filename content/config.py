@@ -45,11 +45,12 @@ Config = {
     #"debugSwitches": True,                           # Show verbose output for switches (color, brightness) or a switches 
                                                       # actions are triggered. Optional.
     #"debugParameters": True,                         # Show messages from the global parameter controller
-    "debugClient": True,                             # Show all requests and responses to/from the Kemper Profiler. Optional.
+    #"debugClient": True,                             # Show all requests and responses to/from the Kemper Profiler. Optional.
     #"clientDebugMapping": KemperMappings.RIG_NAME,  # Optional, if set the kemper classes will only output messages related to
                                                       # the specified mapping.
     #"debugClientRawMidi": True,                      # Debug raw kemper MIDI messages. Only regarded whe "debugKemper" is enabled, too.
-    #"debugMidi": True,                               # Debug Adafruit MIDI controller. Normally it is sufficient and more readable 
+    "debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
+    "debugMidi": True,                               # Debug Adafruit MIDI controller. Normally it is sufficient and more readable 
                                                       # to enable "debugKemperRawMidi" instead, which also shows the MIDI messages sent
                                                       # and received. Optional.
     #"debugConditions": True,                         # Debug condition evaluation

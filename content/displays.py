@@ -61,24 +61,24 @@ Displays = [
 
         parameter = {
             "mapping": KemperMappings.RIG_NAME,
-            "depends": KemperMappings.RIG_DATE,  # Only update this when the rig date changed (optional)
+            #"depends": KemperMappings.RIG_DATE,  # Only update this when the rig date changed (optional)
             "textOffline": "Kemper Profiler (offline)",
             "textReset": "Loading Rig..."
         }
     ),
 
     # Detail area (amp/cab etc.)
-    ParameterDisplayLabel(
-        name = "Rig Detail",
-        bounds = bounds.bottom(DETAIL_HEIGHT),
-        layout = {
-            "font": "/fonts/A12.pcf"
-        },
-        parameter = {
-            "mapping": KemperMappings.AMP_NAME,
-            "depends": KemperMappings.RIG_DATE   # Only update this when the rig date changed (optional)
-        }        
-    ),
+    #ParameterDisplayLabel(
+    #    name = "Rig Detail",
+    #    bounds = bounds.bottom(DETAIL_HEIGHT),
+    #    layout = {
+    #        "font": "/fonts/A12.pcf"
+    #    },
+    #    parameter = {
+    #        "mapping": KemperMappings.AMP_NAME,
+    #        "depends": KemperMappings.RIG_DATE   # Only update this when the rig date changed (optional)
+    #    }        
+    #),
 
     # Performance indicator (dot)
     StatisticalDisplays.PERFORMANCE_DOT(bounds),

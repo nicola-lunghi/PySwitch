@@ -265,6 +265,8 @@ class ParameterCondition(Condition): #, ClientRequestListener):
 
         self._debug = Tools.get_option(self.appl.config, "debugConditions")
 
+        self.appl.client.register(self._mapping, self)
+
     # Used internally: Updates the condition on every update tick
     def update(self):
         if not self.appl:

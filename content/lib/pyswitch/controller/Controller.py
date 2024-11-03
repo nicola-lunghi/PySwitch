@@ -82,6 +82,7 @@ class Controller(Updater): #ClientRequestListener
         protocol = Tools.get_option(communication, "protocol", None)
         if protocol:
             self.client = BidirectionalClient(self._midi, self.config, value_provider, protocol)
+            self.add_updateable(self.client)
         else:
             self.client = Client(self._midi, self.config, value_provider)
 
@@ -158,11 +159,11 @@ class Controller(Updater): #ClientRequestListener
             raise Exception("Runtime measurement type " + repr(measurement.type) + " not supported")
 
     # Update the client manually at last so all requests have been registered already
-    def update(self):
-        super().update()
+    #def update(self):
+    #    super().update()
 
-        if isinstance(self.client, Updateable):
-            self.client.update()
+    #    if isinstance(self.client, Updateable):
+    #        self.client.update()
 
     # Runs the processing loop (which never ends)
     def process(self):

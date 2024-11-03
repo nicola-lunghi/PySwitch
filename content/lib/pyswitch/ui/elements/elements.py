@@ -547,6 +547,11 @@ class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener)
 
         self.text = self._text_offline
         self._appl = appl
+
+        self._appl.client.register(self._mapping, self)
+        
+        if self._depends:
+            self._appl.client.register(self._depends, self)
         
     # Called on every update tick
     def update(self):

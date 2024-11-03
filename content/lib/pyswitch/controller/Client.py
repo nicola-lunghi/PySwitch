@@ -55,7 +55,12 @@ class Client: #(ClientRequestListener):
         self._max_request_lifetime = Tools.get_option(self._config, "maxRequestLifetimeMillis", 2000)
 
         # Helper to only clean up hanging requests from time to time as this is not urgent at all
-        self._cleanup_terminated_period = PeriodCounter(self._max_request_lifetime / 2)
+        self._cleanup_terminated_period = PeriodCounter(self._max_request_lifetime / 2)    
+
+    # Register the mapping and listener in advance (only plays a role for bidirectional parameters,
+    # here this is redundant)
+    def register(self, mapping, listener):
+        pass
 
     # Sends the SET message of a mapping
     def set(self, mapping, value):
@@ -71,8 +76,13 @@ class Client: #(ClientRequestListener):
 
     # Send the request message of a mapping. Calls the passed listener when the answer has arrived.
     def request(self, mapping, listener):
-        # Add request to the list and send it
-        req = self._get_matching_request(mapping)
+        self.register_mapping(mapping, listener, True)
+        
+    # Registers a mapping request or adds the listener to an existing one. Optionally sends the
+    # request message. Internal use only.
+    def register_mapping(self, mapping, listener, send):
+        # Add request to the list
+        req = self.get_matching_request(mapping)
         if not req:
             # New request
             req = self.create_request(mapping)
@@ -85,8 +95,9 @@ class Client: #(ClientRequestListener):
             if self.debug:  # pragma: no cover
                 self._print("Added new request for " + mapping.name + ". Open requests: " + str(len(self._requests)), mapping)
 
-            # Send            
-            req.send()            
+            # Send 
+            if send:           
+                req.send()            
 
         else:
             # Existing request: Add listener
@@ -126,7 +137,7 @@ class Client: #(ClientRequestListener):
 
     # Returns a matching request from the list if any, or None if no matching
     # request has been found.
-    def _get_matching_request(self, mapping):
+    def get_matching_request(self, mapping):
         if not isinstance(mapping.response, SystemExclusive):
             return None
         
@@ -319,13 +330,16 @@ class ClientRequest(EventEmitter):
         if self.debug:   # pragma: no cover
             self._print("   -> Received value " + repr(self.mapping.value) + " for " + self.mapping.name + ": " + Tools.stringify_midi_message(midi_message))
 
-        # Call the listeners
-        for listener in self.listeners:
-            listener.parameter_changed(self.mapping)  # The mapping has the values set already
+        # Call the listeners (the mapping has the values set already)
+        self.notify_listeners()
 
         # Clear listeners (only if the request has a restricted life time)
         if self.lifetime:
             self.listeners = None
+
+    def notify_listeners(self):
+        for listener in self.listeners:
+            listener.parameter_changed(self.mapping)
 
     # Debug console output
     def _print(self, msg):  # pragma: no cover

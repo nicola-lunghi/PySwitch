@@ -209,6 +209,11 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
             self._brightness_on = self.DEFAULT_LED_BRIGHTNESS_ON
             self._brightness_off = self.DEFAULT_LED_BRIGHTNESS_OFF
 
+        self.appl.client.register(self._mapping, self)
+        
+        if self._mapping_off:
+            self.appl.client.register(self._mapping_off, self)
+
     # Set state (called by base class)
     def set(self, enabled):        
         # Get mappings to execute
@@ -463,6 +468,8 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
         super().init(appl, switch)
         
         self._debug_slot_names = Tools.get_option(self.appl.config, "showEffectSlotNames", False)
+
+        self.appl.client.register(self._mapping_fxtype, self)
 
     # Request effect type periodically (which itself will trigger a status request).
     # Does not call super.do_update because the status is requested here later anyway.

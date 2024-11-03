@@ -3,10 +3,10 @@ from math import floor
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 
-from pyswitch.misc import Colors, Defaults
+from pyswitch.misc import Colors, Defaults, PeriodCounter, Tools
 from pyswitch.controller.actions.actions import ParameterAction, PushButtonModes
 from pyswitch.controller.Client import ClientParameterMapping
-from pyswitch.controller.BidirectionalClient import BidirectionalProtocol
+#from pyswitch.controller.BidirectionalClient import BidirectionalProtocol
 
 from pyswitch.controller.actions.actions import EffectEnableAction, ParameterAction, ResetDisplaysAction
 
@@ -494,7 +494,7 @@ class KemperEffectCategories: #(EffectCategoryProvider):
 
 # Kemper specific SysEx message with defaults which are valid most of the time
 class KemperNRPNMessage(SystemExclusive):
-    # Takes MIDI messages as argument (CC or SysEx)
+
     def __init__(
             self, 
             function_code,
@@ -518,28 +518,28 @@ class KemperNRPNMessage(SystemExclusive):
             ]
         )
         
-# Kemper specific SysEx message for extended parameters (not working as stated in the MIDI specification of Kemper!)
-#class KemperNRPNExtendedMessage(SystemExclusive):
-#    # Takes MIDI messages as argument (CC or SysEx)
-#    def __init__(
-#            self, 
-#            function_code,
-#            controller,     # Must be a list
-#            manufacturer_id = NRPN_MANUFACTURER_ID, 
-#            product_type = NRPN_PRODUCT_TYPE,
-#            device_id = NRPN_DEVICE_ID_OMNI
-#        ):
+# Kemper specific SysEx message for extended parameters 
+class KemperNRPNExtendedMessage(SystemExclusive):
+    
+    def __init__(
+            self, 
+            function_code,
+            controller,     # Must be a list
+            manufacturer_id = NRPN_MANUFACTURER_ID, 
+            product_type = NRPN_PRODUCT_TYPE,
+            device_id = NRPN_DEVICE_ID_OMNI
+        ):
 
-#        # Adafruit SystemExclusive
-#        super().__init__(
-#            manufacturer_id,                 # [0x00, 0x20, 0x33]
-#            [
-#                product_type,                # 0x02 (Player), 0x00 (Profiler)
-#                device_id,                   # 0x7f (omni) or manually set via parameter
-#                function_code,               # Selects the function, for example 0x41 for requesting a single parameter
-#                NRPN_INSTANCE                # 0x00                
-#            ] + controller
-#        )
+        # Adafruit SystemExclusive
+        super().__init__(
+            manufacturer_id,                 # [0x00, 0x20, 0x33]
+            [
+                product_type,                # 0x02 (Player), 0x00 (Profiler)
+                device_id,                   # 0x7f (omni) or manually set via parameter
+                function_code,               # Selects the function, for example 0x41 for requesting a single parameter
+                NRPN_INSTANCE                # 0x00                
+            ] + controller
+        )
 
 ####################################################################################################################
 
@@ -870,12 +870,23 @@ class KemperMappings:
             0    # Dummy value, will be overridden
         )
     )
+
+    # Used for state sensing in bidirection communication
+    BIDIRECTIONAL_SENSING = ClientParameterMapping(
+        response = KemperNRPNExtendedMessage(
+            0x7e,
+            [
+                0x00,
+                0x7f
+            ]
+        )
+    ) 
     
 
 ####################################################################################################################
 
 
-PARAMETER_SET_2 = [
+PARAMETER_SET_4 = [
     KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_A),
     KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_A),
     KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_A),
@@ -907,15 +918,117 @@ PARAMETER_SET_2 = [
     KemperMappings.RIG_NAME                
 ]
 
+SELECTED_PARAMETER_SET_ID = 0x04
+SELECTED_PARAMETER_SET = PARAMETER_SET_4
+
+
 # Implements the internal Kemper bidirectional communication protocol
-class KemperBidirectionalProtocol(BidirectionalProtocol):
+class KemperBidirectionalProtocol: #(BidirectionalProtocol):
     
-    PARAMETER_SET = PARAMETER_SET_2
+    STATE_OFFLINE = 10   # No commmunication initiated
+    STATE_RUNNING = 20   # Bidirectional communication established
 
     def __init__(self, time_lease_seconds):
-        self.time_lease_seconds = time_lease_seconds
+        self.state = self.STATE_OFFLINE
+        self._time_lease_encoded = self._encode_time_lease(time_lease_seconds)
 
-    # Must return if the passed mapping is handled in the bidirectional protocol
+        # This is the reponse template for the status sensing message the Profiler sends every
+        # about 500ms.
+        self._mapping_sense = KemperMappings.BIDIRECTIONAL_SENSING
+
+        # Re-send the beacon after 80% of the lease time have passed
+        self.resend_period = PeriodCounter(time_lease_seconds * 1000 * 0.8)
+
+        # Period after which communication will be regarded as broken when no sensing message comes in
+        # (the device sends this roughly every 500ms so we wait 1.5 seconds which should be sufficient)
+        self.sensing_period = PeriodCounter(1500)
+        self.sensing_period.reset()
+
+        self.debug = False   # This is set by the BidirectionalClient constructor
+        
+    # Called before usage, with a midi handler.
+    def init(self, midi):
+        self._midi = midi
+
+    # Must return (boolean) if the passed mapping is handled in the bidirectional protocol
     def is_bidirectional(self, mapping):
-        return mapping in self.PARAMETER_SET
+        return mapping in SELECTED_PARAMETER_SET
 
+    # Must return (boolean) if the passed mapping should feed back the set value immediately
+    # without waiting for a midi message.
+    def feedback_value(self, mapping):
+        return self.is_bidirectional(mapping)
+
+    # Initialize the communication and keeps it alive when time lease exceeds
+    def update(self):
+        if self.state == self.STATE_OFFLINE:
+            self._send_beacon(
+                init = True
+            )
+            self.resend_period.reset()
+
+        elif self.state == self.STATE_RUNNING:
+            if self.sensing_period.exceeded:
+                self.state = self.STATE_OFFLINE
+                self.resend_period.reset()
+
+            if self.resend_period.exceeded:
+                self._send_beacon()
+
+    # Receive sensing messages and re-init (with init = 1 again) when they stop appearing for longer then 1 second
+    def receive(self, midi_message):
+        # Compare manufacturer IDs
+        if midi_message.manufacturer_id != self._mapping_sense.response.manufacturer_id:
+            return False
+        
+        # Check if the message belongs to the status sense mapping. The following have to match:
+        #   2: function code, (0x7e)
+        #   3: instance ID,   (0x00)
+        #   4: address page   (0x7f)
+        #
+        # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
+        # and device ID as for the request, however the device just sends two zeroes)
+        if midi_message.data[2:5] != self._mapping_sense.response.data[2:5]:
+            return False
+        
+        if self.debug:
+            self._print("Reset time lease, no sensing message for too long")
+
+        self.sensing_period.reset()
+
+    # Send beacon for bidirection communication
+    def _send_beacon(self, init = False):
+        if self.debug:
+            self._print("Send beacon (init: " + repr(init) + ")")
+
+        self._midi.send(
+            KemperNRPNExtendedMessage(
+                0x7e,
+                [
+                    0x40,
+                    SELECTED_PARAMETER_SET_ID,
+                    self._get_flags(
+                        init = init
+                    ),
+                    self._time_lease_encoded
+                ]
+            )
+        )
+
+    # Encode time lease (this is done in 2 second steps for the Kemper)
+    def _encode_time_lease(self, time_lease_seconds):
+        return int(time_lease_seconds / 2)
+
+    # Generates the flags byte.
+    def _get_flags(self, init = False, sysex = True, echo = False, nofe = False, noctr = False, tunemode = False):
+        i = 1 if init else 0
+        s = 1 if sysex else 0
+        e = 1 if echo else 0
+        n = 1 if nofe else 0
+        c = 1 if noctr else 0
+        t = 1 if tunemode else 0
+
+        return 0x00 | (i << 0) | (s << 1) | (e << 2) | (n << 3) | (c << 4) | (t << 5)
+
+    def _print(self, msg):
+        Tools.print("Bidirectional: " + msg)
