@@ -928,6 +928,9 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         # Re-send the beacon after 80% of the lease time have passed
         self.resend_period = PeriodCounter(time_lease_seconds * 1000 * 0.8)
 
+        # Period for initial beacons (those shall not be sent too often)
+        self.init_period = PeriodCounter(2000)
+
         # Period after which communication will be regarded as broken when no sensing message comes in
         # (the device sends this roughly every 500ms so we wait 1.5 seconds which should be sufficient)
         self.sensing_period = PeriodCounter(1500)
@@ -955,19 +958,32 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
     # Initialize the communication and keeps it alive when time lease exceeds
     def update(self):
         if self.state == self.STATE_OFFLINE:
-            self._send_beacon(
-                init = True
-            )
-            self.resend_period.reset()
+            if self.init_period.exceeded:
+                if self.debug:
+                    self._print("Send init beacon")
+
+                self._send_beacon(
+                    init = True
+                )                        
 
         elif self.state == self.STATE_RUNNING:
             if self.sensing_period.exceeded:
                 self.state = self.STATE_OFFLINE
 
+                if self.debug:
+                    self._print("Lost connection")
+
                 self.resend_period.reset()
 
             if self.resend_period.exceeded:
+                if self.debug:
+                    self._print("Send keep-alive beacon")
+
                 self._send_beacon()
+
+    #TODO_PERIOD = PeriodCounter(1000)
+    #TODO_VALUE_F = 0
+    #TODO_VALUE_51 = 0
 
     # Receive sensing messages and re-init (with init = 1 again) when they stop appearing for longer then 1 second
     def receive(self, midi_message):
@@ -975,6 +991,17 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         if midi_message.manufacturer_id != self._mapping_sense.response.manufacturer_id:
             return False
         
+        # TODO remove (debug)
+        #resp = list(midi_message.data)
+        #if resp[:-2] == [0x00, 0x00, 0x01, 0x00, 0x7c, 0xf]:
+        #    KemperBidirectionalProtocol.TODO_VALUE_F = resp[-2] * 128 + resp[-1]            
+
+        #if resp[:-2] == [0x00, 0x00, 0x01, 0x00, 0x7c, 0x51]:
+        #    KemperBidirectionalProtocol.TODO_VALUE_51 = resp[-2] * 128 + resp[-1]
+
+        #if KemperBidirectionalProtocol.TODO_PERIOD.exceeded:
+        #    Tools.print("F: " + self._visualize_value(KemperBidirectionalProtocol.TODO_VALUE_F, 16384) + " (" + repr(KemperBidirectionalProtocol.TODO_VALUE_F) + ")  51: " + self._visualize_value(KemperBidirectionalProtocol.TODO_VALUE_F, 16384) + "(" + repr(KemperBidirectionalProtocol.TODO_VALUE_51) + ")")
+
         # Check if the message belongs to the status sense mapping. The following have to match:
         #   2: function code, (0x7e)
         #   3: instance ID,   (0x00)
@@ -985,8 +1012,14 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         if midi_message.data[2:5] != self._mapping_sense.response.data[2:5]:
             return False
         
-        if self.debug:
-            self._print("Received sensing message, communication is alive")
+        #if self.debug:
+        #    self._print("Received sensing message, communication is alive")
+        
+        if self.state != self.STATE_RUNNING:
+            self.resend_period.reset()
+            
+            if self.debug:
+               self._print("Connection got alive")
 
         self.state = self.STATE_RUNNING
 
@@ -994,9 +1027,6 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
 
     # Send beacon for bidirection communication
     def _send_beacon(self, init = False):
-        if self.debug:
-            self._print("Send beacon (init: " + repr(init) + ")")
-
         self._midi.send(
             KemperNRPNExtendedMessage(
                 0x7e,
@@ -1028,3 +1058,8 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
 
     def _print(self, msg):
         Tools.print("Bidirectional: " + msg)
+
+    # Returns a console visualization of free bytes for debugging
+    #def _visualize_value(self, value, max, size = 15):
+    #    num_chars = int((value / max) * size)
+    #    return "".join([("X" if i <= num_chars else ".") for i in range(size)])
