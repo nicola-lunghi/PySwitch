@@ -8,16 +8,14 @@ from .elements.elements import DisplayLabel
 class UserInterface:
 
     def __init__(self, display, font_loader):
-        self.splash = None
-
         self._display = display
+        self.font_loader = font_loader
+
         self._root = HierarchicalDisplayElement(
             bounds = DisplayBounds(0, 0, display.width, display.height),
             name = "Root"
         )
-
-        # Buffered font loader
-        self.font_loader = font_loader
+        self._root_initialized = False
 
         # Splash
         self.splash = Group()
@@ -33,7 +31,9 @@ class UserInterface:
         # Set up the display areas internally (late). This avoids unnecessary 
         # re-creating of splash items (after this, every change to the dimensions
         # of a display label will trigger a performance-costly re-creation of the (Round)Rects)
-        self._root.init(self, appl)
+        if not self._root_initialized:
+            self._root.init(self, appl)
+            self._root_initialized = True
 
         # Show the splash on the screen
         self._display.tft.show(self.splash)
