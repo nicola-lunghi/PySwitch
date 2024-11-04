@@ -1,4 +1,5 @@
 from adafruit_midi.system_exclusive import SystemExclusive
+from adafruit_midi.midi_message import MIDIMessage
 
 from .Client import Client, ClientRequest
 from ..misc import Updateable, Tools
@@ -27,6 +28,10 @@ from ..misc import Updateable, Tools
 #    # Receive midi messages (for example for state sensing)
 #    def receive(self, midi_message):
 #        pass
+#
+#    # Must return a color representation for the current state
+#    def get_color(self):
+#        return (0, 0, 0)
 
 
 ####################################################################################################################
@@ -82,7 +87,7 @@ class BidirectionalClient(Client, Updateable):
             if not req:
                 raise Exception("No request for mapping: " + repr(mapping))
             
-            mapping.value = value
+            req.mapping.value = value
             req.notify_listeners()
 
     # Update the protocol state

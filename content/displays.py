@@ -61,7 +61,6 @@ Displays = [
 
         parameter = {
             "mapping": KemperMappings.RIG_NAME,
-            #"depends": KemperMappings.RIG_DATE,  # Only update this when the rig date changed (optional)
             "textOffline": "Kemper Profiler (offline)",
             "textReset": "Loading Rig..."
         }
@@ -80,9 +79,12 @@ Displays = [
     #    }        
     #),
 
-    # Performance indicator (dot)
-    StatisticalDisplays.PERFORMANCE_DOT(bounds),
-
     # Statistics area
-    #StatisticalDisplays.STATS_DISPLAY(bounds)
+    #StatisticalDisplays.STATS_DISPLAY(bounds),
+        
+    # Bidirectional protocol state indicator (dot)
+    StatisticalDisplays.BIDIRECTIONAL_PROTOCOL_STATE_DOT(bounds),
+
+    # Performance indicator (dot)
+    StatisticalDisplays.PERFORMANCE_DOT(bounds.translated(0, 7)),
 ]

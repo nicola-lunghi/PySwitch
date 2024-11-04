@@ -5,6 +5,7 @@ from .DisplayElement import HierarchicalDisplayElement, DisplayBounds, DisplayEl
 
 from ...controller.ConditionTree import ConditionTree, Condition
 from ...controller.measurements import RuntimeMeasurement
+from ...controller.BidirectionalClient import BidirectionalClient
 from ...misc import Tools, Updateable, Colors
 
 
@@ -707,3 +708,47 @@ class StatisticsDisplayLabel(DisplayLabel, Updateable):  #RuntimeMeasurementList
                 
                 self._texts[i] = m.get_message()
         
+
+###########################################################################################################################
+
+
+# Shows a small dot indicating the bidirectional protocol state (does not show anything when bidirectional 
+# communication is disabled)
+class BidirectionalProtocolState(DisplayElement, Updateable):
+
+    def __init__(self, bounds = DisplayBounds(), name = "", id = 0):
+        DisplayElement.__init__(self, bounds, name, id)
+
+        self._current_color = None
+
+    def init(self, ui, appl):
+        DisplayElement.init(self, ui, appl)
+        self._appl = appl
+
+        if not isinstance(self._appl.client, BidirectionalClient):
+            return
+
+        from adafruit_display_shapes.circle import Circle
+
+        r = int(self.bounds.width / 2) if self.bounds.width > self.bounds.height else int(self.bounds.height / 2)
+        
+        self._dot = Circle(
+            x0 = self.bounds.x + r, 
+            y0 = self.bounds.y + r,
+            r = r, 
+            fill = (0, 0, 0)
+        )
+        ui.splash.append(self._dot)
+
+    def update(self):
+        if not isinstance(self._appl.client, BidirectionalClient):
+            return
+
+        new_color = self._appl.client.protocol.get_color()
+
+        if self._current_color == new_color:
+            return
+
+        self._current_color = new_color
+        self._dot.fill = self._current_color
+            

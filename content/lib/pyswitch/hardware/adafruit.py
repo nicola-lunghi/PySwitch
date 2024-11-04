@@ -1,9 +1,20 @@
 import board
+import busio
 
 # Display driver
 from busio import SPI
 from displayio import release_displays
 from adafruit_misc.adafruit_st7789 import ST7789
+from adafruit_midi import MIDI
+
+from adafruit_midi.midi_message import MIDIUnknownEvent
+from adafruit_midi.channel_pressure import ChannelPressure
+from adafruit_midi.control_change import ControlChange
+from adafruit_midi.note_off import NoteOff
+from adafruit_midi.note_on import NoteOn
+from adafruit_midi.pitch_bend import PitchBend
+from adafruit_midi.program_change import ProgramChange
+from adafruit_midi.system_exclusive import SystemExclusive
 
 try:
     from fourwire import FourWire
@@ -143,3 +154,79 @@ class AdafruitSwitch: #(SwitchDriver):
         
         return self._switch.value == False  # Inverse logic!
 
+
+##################################################################################################
+
+
+# USB MIDI Device
+class AdfruitUsbMidiDevice:
+    def __init__(self, 
+                 port_in,
+                 port_out,
+                 in_buf_size,
+                 in_channel = None,  # All
+                 out_channel = 0,                 
+        ):
+
+        self._midi = MIDI(
+            midi_out = port_out,
+            out_channel = out_channel,
+            midi_in = port_in,
+            in_channel = in_channel,
+            in_buf_size = in_buf_size
+        )
+
+    def __repr__(self):
+        return "USB"
+
+    def send(self, midi_message):
+        if isinstance(midi_message, MIDIUnknownEvent):
+            return
+        
+        self._midi.send(midi_message)
+
+    def receive(self):
+        return self._midi.receive()
+
+    
+##################################################################################################
+
+
+# DIN MIDI Device
+class AdfruitDinMidiDevice:
+    def __init__(self, 
+                 gpio_in, 
+                 gpio_out,
+                 in_buf_size, 
+                 baudrate, 
+                 timeout,
+                 in_channel = None,   # All
+                 out_channel = 0, 
+        ):
+
+        midi_uart = busio.UART(
+            gpio_in, 
+            gpio_out, 
+            baudrate = baudrate, 
+            timeout = timeout
+        ) 
+
+        self._midi = MIDI(
+            midi_out = midi_uart, 
+            out_channel = out_channel,
+            midi_in = midi_uart, 
+            in_channel = in_channel,
+            in_buf_size = in_buf_size
+        )
+
+    def __repr__(self):
+        return "DIN"
+
+    def send(self, midi_message):
+        if isinstance(midi_message, MIDIUnknownEvent):
+            return
+        
+        self._midi.send(midi_message)
+
+    def receive(self):
+        return self._midi.receive()

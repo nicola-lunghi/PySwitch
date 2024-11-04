@@ -1,0 +1,2611 @@
+soft reboot
+
+Auto-reload is off.
+code.py output:
+Bidirectional: Send beacon (init: True)
+MIDI Send [0, 20, 33][2, 7f, 7e, 0, 40, 2, 3, f] (KemperNRPNExtendedMessage)
+MIDI Received 47, 127 (ControlChange)
+MIDI Received 0, 0 (ControlChange)
+MIDI Received 32, 0 (ControlChange)
+MIDI Received <MIDIUnknownEvent object at 0x20018c60> (MIDIUnknownEvent)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 4, 2, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 32, 0, 0, 41] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 32, 0, 0, 41, 43, 48, 4f, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 32, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 32, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 33, 0, 0, 1, 57, 57, 41, 48, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 34, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 34, 0, 0, 0, 2d, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 34, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 34, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 35, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 35, 0, 0, 0, 2d, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 35, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 35, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 38, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 38, 0, 0, 0, 2d, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 38, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 38, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 3a, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 3a, 0, 0, 0, 2d, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 3a, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 3a, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 3c, 0, 1, 14] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 3c, 0, 1, 14, 44, 4c, 59, 32, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 4a, 2, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 3c, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 3d, 0, 1, 41] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 4b, 2, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 3d, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 4a, 2, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 4b, 2, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 51, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7f, 7d, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7f, 7e, 0, 3] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 0, 6, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 0, 6, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 0, 6, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 0, 6, 0, 0, 0, 1, 0, 3, 0, 0, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 0, 6, 0, 0, 0, 1, 0, 4, 0, 0, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 3, 0, 0, 1, 54, 57, 20, 50, 72, 69, 6e, 63, 65, 74, 6f, 6e, 20, 76, 34, 20, 51, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 7, 0, 0, 0, 1, 0, 0, 42, 61, 6e, 6b, 20, 31, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 7, 0, 0, 0, 1, 0, 1, 54, 57, 20, 50, 72, 69, 6e, 63, 65, 74, 6f, 6e, 20, 76, 34, 20, 51, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 7, 0, 0, 0, 1, 0, 2, 43, 72, 75, 6e, 63, 68, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 7, 0, 0, 0, 1, 0, 3, 43, 72, 75, 6e, 63, 68, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 7, 0, 0, 0, 1, 0, 4, 43, 72, 75, 6e, 63, 68, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 7, 0, 0, 0, 1, 0, 5, 43, 72, 75, 6e, 63, 68, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 3b] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 3c] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 3d] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 3e] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 3f] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 40] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 41] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 42] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 43] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 44] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 45] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 46] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 47] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 48] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 49] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 4a] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 4b] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 4c] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 4d] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 4e] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 4f] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 50] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 51] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 52] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 53] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 54] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 55] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 56] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 57] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 58] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 59] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 5a] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 5b] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 5c] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 5d] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 5e] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 5f] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 60] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 61] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 62] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 63] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 64] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 65] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 66] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 67] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 68] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 69] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 6a] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 6b] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+Bidirectional: Send beacon (init: False)
+MIDI Send [0, 20, 33][2, 7f, 7e, 0, 40, 2, 2, f] (KemperNRPNExtendedMessage)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 6c] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 6d] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 6e] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 6f] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 70] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 71] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 72] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 73] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 74] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 75] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 76] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 77] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 78] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 79] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 7a] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 7b] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 7c] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 7d] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 7e] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 7f] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 0] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 1] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 2] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 3] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 4] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 5] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 6] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 7] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 8] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 9] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, a] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, b] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, c] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, d] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, e] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, f] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 10] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 11] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 12] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 13] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 14] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 15] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 16] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 17] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 18] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 19] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 1a] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 1b] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+Bidirectional: Send beacon (init: False)
+MIDI Send [0, 20, 33][2, 7f, 7e, 0, 40, 2, 2, f] (KemperNRPNExtendedMessage)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 1c] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 1d] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 1e] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 1f] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 20] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 3, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 21] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 22] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 23] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 24] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 3, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 25] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 26] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 27] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 28] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 29] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Send 18, 1 (ControlChange)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 2a] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 3, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 2b] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 2c] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Send 18, 0 (ControlChange)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 2d] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Send 18, 1 (ControlChange)
+MIDI Received [0, 20, 33][2, 7f, 7e, 0, 7f, 2e] (SystemExclusive)
+Bidirectional: Received sensing message, communication is alive
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 3, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7c, f, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 7d, 54, 4c, 66] (SystemExclusive)
+MIDI Send 27, 1 (ControlChange)
+Traceback (most recent call last):
+  File "code.py", line 64, in <module>
+  File "/lib/pyswitch/controller/Controller.py", line 182, in process
+  File "/lib/pyswitch/controller/Controller.py", line 198, in tick
+  File "/lib/pyswitch/controller/Controller.py", line 224, in _process_switches
+  File "/lib/pyswitch/controller/FootSwitchController.py", line 132, in process
+  File "/lib/pyswitch/controller/FootSwitchController.py", line 148, in _process_actions_push
+  File "/lib/pyswitch/controller/actions/actions.py", line 100, in push
+  File "/lib/pyswitch/controller/actions/actions.py", line 59, in state
+  File "/lib/pyswitch/controller/actions/actions.py", line 223, in set
+  File "/lib/pyswitch/controller/BidirectionalClient.py", line 86, in set
+  File "/lib/pyswitch/controller/Client.py", line 342, in notify_listeners
+  File "/lib/pyswitch/controller/actions/actions.py", line 531, in parameter_changed
+  File "/lib/pyswitch/controller/actions/actions.py", line 406, in parameter_changed
+TypeError: unsupported types for __ge__: 'NoneType', 'int'
+
+Code done running.
+
+Press any key to enter the REPL. Use CTRL-D to reload.
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f380>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f760>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001fb70>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001fe60>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x20020520>
+<MIDIUnknownEvent object at 0x200205f0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200208a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020be0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020f80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021360>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021700>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021b40>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021f20>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022260>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x20022790>
+<MIDIUnknownEvent object at 0x20022830>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022ba0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022f40>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2000e250>
+<MIDIUnknownEvent object at 0x20010380>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20011850>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20012440>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20012ce0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200146a0>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x200168a0>
+<MIDIUnknownEvent object at 0x20016ef0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20018130>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019290>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019820>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019c20>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019fc0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001a420>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001abd0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b190>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2001b710>
+<MIDIUnknownEvent object at 0x2001b7b0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001bac0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001be40>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c220>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c620>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c9c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001cda0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d140>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d4c0>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2001da50>
+<MIDIUnknownEvent object at 0x2001daf0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001de00>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e240>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e620>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e960>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001ed00>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f120>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f4c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f8a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001fd70>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001fec0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020180>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200205e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020980>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020d60>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021100>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200214e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021880>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021c60>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022170>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200222c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022580>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022900>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022ce0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20023100>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2000de80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20010df0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20011fb0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20012980>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x20014690>
+<MIDIUnknownEvent object at 0x20014900>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20015f40>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20016e60>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20018ff0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200193c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019950>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019d60>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001a160>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001a660>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001af20>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b0a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b3a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b7a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001bb40>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001bf20>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c2c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c640>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001ca80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001ce60>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2001d390>
+<MIDIUnknownEvent object at 0x2001d430>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d740>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001db20>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001dec0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e340>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e720>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001eac0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001eed0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f280>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2001f850>
+<MIDIUnknownEvent object at 0x2001f8f0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001fba0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001ff40>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200203a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020740>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020b20>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020ec0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200212a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021640>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021ab0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021c00>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021ec0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200222a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022640>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022a80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022e60>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200231b0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2000d5b0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20010f80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200123f0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20012620>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20012cc0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200146e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20016410>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20016f30>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200190b0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200196c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019aa0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019e80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001a2f0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001a4d0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001aaf0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b0a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b4c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b8a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001bc40>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c020>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c3c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c7a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001cc30>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001cd80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d040>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d420>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d800>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001dbe0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001df80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e360>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e700>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001eb40>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2001f220>
+<MIDIUnknownEvent object at 0x2001f300>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f500>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f880>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001fc60>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020000>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200204c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200208a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020ca0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020fe0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021470>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200215c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200218e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021c80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022060>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022400>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200227e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022b80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022f60>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2000e740>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x20012130>
+<MIDIUnknownEvent object at 0x200122f0>
+<MIDIUnknownEvent object at 0x20012480>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200129a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20013360>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200156f0>
+Receiving:  ['0x90', '0x38', '0x46']
+<MIDIUnknownEvent object at 0x200163a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200167f0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20018060>
+Receiving:  ['0x90', '0x3b', '0x4a']
+<MIDIUnknownEvent object at 0x20019050>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019200>
+Receiving:  ['0xf8', '0x90', '0x39', '0x34']
+<MIDIUnknownEvent object at 0x20019820>
+Receiving:  ['0x80', '0x38', '0x0']
+<MIDIUnknownEvent object at 0x200199b0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019b00>
+<MIDIUnknownEvent object at 0x20019c60>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2001a0d0>
+<MIDIUnknownEvent object at 0x2001a170>
+Receiving:  ['0x80', '0x3b', '0x0', '0xf8']
+<MIDIUnknownEvent object at 0x2001a4c0>
+<MIDIUnknownEvent object at 0x2001a680>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001abe0>
+Receiving:  ['0x90', '0x3c', '0x45']
+<MIDIUnknownEvent object at 0x2001b160>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b2b0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b540>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b920>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001bcc0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c040>
+Receiving:  ['0x80', '0x3c', '0x0']
+<MIDIUnknownEvent object at 0x2001c1f0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c400>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c870>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001ca00>
+Receiving:  ['0x90', '0x3c', '0x47']
+<MIDIUnknownEvent object at 0x2001cbb0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001cd20>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d000>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d3e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d7b0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001db60>
+Receiving:  ['0x90', '0x3e', '0x5c']
+<MIDIUnknownEvent object at 0x2001dd00>
+Receiving:  ['0x80', '0x39', '0x0', '0xf8']
+<MIDIUnknownEvent object at 0x2001ded0>
+<MIDIUnknownEvent object at 0x2001df70>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e280>
+Receiving:  ['0x80', '0x3c', '0x0']
+<MIDIUnknownEvent object at 0x2001e430>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e640>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2001ead0>
+<MIDIUnknownEvent object at 0x2001eb70>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001eef0>
+Receiving:  ['0x90', '0x3b', '0x59']
+<MIDIUnknownEvent object at 0x2001f100>
+Receiving:  ['0x80', '0x3e', '0x0', '0xf8']
+<MIDIUnknownEvent object at 0x2001f2d0>
+<MIDIUnknownEvent object at 0x2001f370>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f680>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001fa60>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001fe00>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200201e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020580>
+Receiving:  ['0x90', '0x3e', '0x5b']
+<MIDIUnknownEvent object at 0x20020820>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020970>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x20020e10>
+<MIDIUnknownEvent object at 0x20020eb0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200211c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200215a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021940>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021d20>
+Receiving:  ['0x80', '0x3e', '0x0', '0xf8']
+<MIDIUnknownEvent object at 0x20022120>
+<MIDIUnknownEvent object at 0x20022200>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022460>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022800>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022be0>
+Receiving:  ['0xf8', '0x90', '0x3e', '0x4e']
+<MIDIUnknownEvent object at 0x200230e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20023230>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2000e970>
+<MIDIUnknownEvent object at 0x20010740>
+<MIDIUnknownEvent object at 0x20011220>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20011980>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20012580>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20013040>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20014720>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20016470>
+Receiving:  ['0x80', '0x3e', '0x0', '0xf8']
+<MIDIUnknownEvent object at 0x20018050>
+Receiving:  ['0xf8', '0x90', '0x3c', '0x48', '0xf8']
+<MIDIUnknownEvent object at 0x200192a0>
+<MIDIUnknownEvent object at 0x20019460>
+<MIDIUnknownEvent object at 0x20019740>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200198b0>
+<MIDIUnknownEvent object at 0x200199b0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019c40>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001a020>
+Receiving:  ['0x90', '0x3e', '0x5a']
+<MIDIUnknownEvent object at 0x2001a1c0>
+Receiving:  ['0x80', '0x3b', '0x0']
+<MIDIUnknownEvent object at 0x2001a360>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001a5a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001ab10>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b110>
+Receiving:  ['0x80', '0x3c', '0x0']
+<MIDIUnknownEvent object at 0x2001b2c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b4f0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b8a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001bd30>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001bec0>
+Receiving:  ['0x90', '0x3b', '0x56', '0x80', '0x3b', '0x0', '0x90']
+<MIDIUnknownEvent object at 0x2001c1f0>
+Receiving:  ['0x3b', '0x7f', '0xf8']
+<MIDIUnknownEvent object at 0x2001c3a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c4f0>
+<MIDIUnknownEvent object at 0x2001c5f0>
+<MIDIUnknownEvent object at 0x2001c6f0>
+Receiving:  ['0xf8', '0x80', '0x3e', '0x0']
+<MIDIUnknownEvent object at 0x2001c8a0>
+Receiving:  ['0x90', '0x3c', '0x4f']
+<MIDIUnknownEvent object at 0x2001ca70>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001cbe0>
+<MIDIUnknownEvent object at 0x2001ccc0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001cf80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d360>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d700>
+Receiving:  ['0x90', '0x3e', '0x56']
+<MIDIUnknownEvent object at 0x2001d9a0>
+Receiving:  ['0x80', '0x3b', '0x0', '0xf8']
+<MIDIUnknownEvent object at 0x2001db50>
+Receiving:  ['0xf8', '0x80', '0x3c', '0x0', '0xf8']
+<MIDIUnknownEvent object at 0x2001df90>
+<MIDIUnknownEvent object at 0x2001e170>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e2e0>
+<MIDIUnknownEvent object at 0x2001e3c0>
+<MIDIUnknownEvent object at 0x2001e4a0>
+Receiving:  ['0x90', '0x3b', '0x59']
+<MIDIUnknownEvent object at 0x2001e670>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e7e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e9a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001ed40>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f200>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f5e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f980>
+Receiving:  ['0x80', '0x3e', '0x0']
+<MIDIUnknownEvent object at 0x2001fb30>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001fd40>
+Receiving:  ['0xf8', '0x80', '0x3b', '0x0', '0xf8']
+<MIDIUnknownEvent object at 0x20020480>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200205f0>
+<MIDIUnknownEvent object at 0x200206f0>
+<MIDIUnknownEvent object at 0x200207f0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200209c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020da0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021140>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021520>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200218c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021ca0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022040>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x20022650>
+<MIDIUnknownEvent object at 0x200226f0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022940>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20022d20>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200230c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2000de80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20010df0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20011fb0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200127d0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20013160>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x20016410>
+<MIDIUnknownEvent object at 0x20016530>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20016e50>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20018ff0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019420>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200199e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20019de0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001a180>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001a8e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001af80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b4f0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b680>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001b8e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001bc80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c080>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c460>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001c7a0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001cb40>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001cf80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001d360>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2001da60>
+<MIDIUnknownEvent object at 0x2001db40>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001dcb0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e060>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e400>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001e7e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001eb80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001efa0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f320>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x2001f720>
+Receiving:  ['0xf8', '0xf8']
+<MIDIUnknownEvent object at 0x2001fcd0>
+<MIDIUnknownEvent object at 0x2001fd70>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020020>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200203c0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020740>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020b80>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20020f60>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021300>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x200216e0>
+Receiving:  ['0xf8']
+<MIDIUnknownEvent object at 0x20021a80>

@@ -1,0 +1,71 @@
+soft reboot
+
+Auto-reload is off.
+code.py output:
+Bidirectional: Send beacon (init: True)
+MIDI Send [0, 20, 33][2, 7f, 7e, 0, 40, 2, 3, f] (KemperNRPNExtendedMessage)
+MIDI Received [0, 0, 66][10, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][11, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][17, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][17, 13, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][14, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][14, 13, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][15, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][15, 13, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][14, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][14, 13, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][15, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][15, 13, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][14, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][14, 13, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][15, 0] (SystemExclusive)
+MIDI Received [0, 0, 66][15, 13, 0] (SystemExclusive)
+MIDI Received 47, 127 (ControlChange)
+MIDI Received 0, 0 (ControlChange)
+MIDI Received 32, 0 (ControlChange)
+MIDI Received <MIDIUnknownEvent object at 0x20020ee0> (MIDIUnknownEvent)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 4, 2, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 32, 0, 0, 41] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 32, 0, 0, 41, 43, 48, 4f, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 32, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 32, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 0, 0, 1] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 33, 0, 0, 1, 57, 57, 41, 48, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 33, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 34, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 34, 0, 0, 0, 2d, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 34, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 34, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 35, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 35, 0, 0, 0, 2d, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 35, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 35, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 38, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 38, 0, 0, 0, 2d, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 38, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 38, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 3a, 0, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][2, 7f, 3c, 0, 3a, 0, 0, 0, 2d, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 3a, 3, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 3a, 1e, 0, 0] (SystemExclusive)
+MIDI Received [0, 20, 33][0, 0, 1, 0, 3c, 0, 1, 14] (SystemExclusive)
+Bidirectional: Send beacon (init: True)
+MIDI Send [0, 20, 33][2, 7f, 7e, 0, 40, 2, 3, f] (KemperNRPNExtendedMessage)
+Bidirectional: Send beacon (init: True)
+MIDI Send [0, 20, 33][2, 7f, 7e, 0, 40, 2, 3, f] (KemperNRPNExtendedMessage)
+Bidirectional: Send beacon (init: True)
+MIDI Send [0, 20, 33][2, 7f, 7e, 0, 40, 2, 3, f] (KemperNRPNExtendedMessage)
+Bidirectional: Send beacon (init: True)
+MIDI Send [0, 20, 33][2, 7f, 7e, 0, 40, 2, 3, f] (KemperNRPNExtendedMessage)
+Traceback (most recent call last):
+  File "code.py", line 64, in <module>
+  File "/lib/pyswitch/controller/Controller.py", line 182, in process
+  File "/lib/pyswitch/controller/Controller.py", line 198, in tick
+  File "/lib/pyswitch/controller/Controller.py", line 224, in _process_switches
+  File "/lib/pyswitch/controller/FootSwitchController.py", line 119, in process
+KeyboardInterrupt: 
+
+Code done running.
+
+Press any key to enter the REPL. Use CTRL-D to reload.

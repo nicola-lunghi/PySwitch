@@ -6,7 +6,9 @@
 #################################################################################################################################
  
 import board
-from .adafruit import AdafruitSwitch
+from usb_midi import ports
+
+from .adafruit import AdafruitSwitch, AdfruitDinMidiDevice, AdfruitUsbMidiDevice
 
 #################################################################################################################################
 
@@ -62,4 +64,36 @@ class SwitchDefinitions:
     PA_MIDICAPTAIN_MINI_SWITCH_A = { "model": AdafruitSwitch(board.GP9),  "pixels": (9, 10, 11), "name": "A"  }
     PA_MIDICAPTAIN_MINI_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (12, 13, 14), "name": "B"  }
     PA_MIDICAPTAIN_MINI_SWITCH_C = { "model": AdafruitSwitch(board.GP11), "pixels": (15, 16, 17), "name": "C"  }
+
+
+###########################################################################################################################
+
+
+# Available MIDI ins/outs for known devices
+class MidiDevices:
+
+    # USB Midi in/out for PA MIDICaptain devices. No UART, so ports have to be adafruit MIDI ports from 
+    # the usb_midi module.
+    @staticmethod
+    def PA_MIDICAPTAIN_USB_MIDI(in_channel = None, out_channel = 0, in_buf_size = 100):
+        return AdfruitUsbMidiDevice(
+            port_in = ports[0],
+            port_out = ports[1],
+            in_channel = in_channel,
+            out_channel = out_channel,
+            in_buf_size = in_buf_size
+        )
+
+    # DIN Midi in/out for PA MIDICaptain devices. Uses UART mode so the ports must be board GPIO pins.
+    @staticmethod
+    def PA_MIDICAPTAIN_DIN_MIDI(in_channel = None, out_channel = 0, in_buf_size = 100):
+        return AdfruitDinMidiDevice(
+            gpio_in = board.GP16,
+            gpio_out = board.GP17,
+            in_channel = in_channel,
+            out_channel = out_channel,
+            baudrate = 31250,
+            timeout = 0.001,
+            in_buf_size = in_buf_size
+        )
 

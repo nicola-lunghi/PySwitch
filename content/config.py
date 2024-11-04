@@ -8,9 +8,6 @@
 
 Config = {
     
-    # Selects the MIDI channel to use [1..16] default is 1
-    #"midiChannel": 1,
-
     # Max. number of MIDI messages being parsed before the next switch state evaluation
     # is triggered. If set to 0, only one message is parsed per tick, which leads to 
     # flickering states sometimes. If set too high, switch states will not be read for too long.
@@ -21,12 +18,9 @@ Config = {
     # assumed that the Kemper device is offline. Optional, default is 2 seconds.
     #"maxRequestLifetimeMillis": 2000,
 
-    # MIDI buffer size (60 is default)
-    #"midiBufferSize": 60,
-
     # Update interval, for updating the rig date (which triggers all other data to update when changed) (milliseconds)
     # and other displays if assigned. 200 is the default.
-    "updateInterval": 3000,
+    #"updateInterval": 3000,
 
     ## Development Options ###################################################################################################################
 
@@ -49,9 +43,8 @@ Config = {
     #"clientDebugMapping": KemperMappings.RIG_NAME,  # Optional, if set the kemper classes will only output messages related to
                                                       # the specified mapping.
     #"debugClientRawMidi": True,                      # Debug raw kemper MIDI messages. Only regarded whe "debugKemper" is enabled, too.
-    "debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
-    "debugMidi": True,                               # Debug Adafruit MIDI controller. Normally it is sufficient and more readable 
-                                                      # to enable "debugKemperRawMidi" instead, which also shows the MIDI messages sent
+    #"debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
+    #"debugMidi": True,                               # Debug all MIDI communication
                                                       # and received. Optional.
     #"debugConditions": True,                         # Debug condition evaluation
 

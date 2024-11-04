@@ -2,7 +2,7 @@ from time import monotonic
 
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
-
+from adafruit_midi.midi_message import MIDIUnknownEvent
 
 # Color definitions (can be used for LEDs and labels)
 class Colors:
@@ -77,6 +77,10 @@ class Tools:
             # CC
             ret = repr(midi_message.control) + ", " + repr(midi_message.value)
 
+        elif isinstance(midi_message, MIDIUnknownEvent):
+            # Unknown
+            ret = repr(midi_message.status)
+        
         else:
             # All others
             ret = repr(midi_message)

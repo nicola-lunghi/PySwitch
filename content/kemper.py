@@ -876,7 +876,6 @@ class KemperMappings:
         response = KemperNRPNExtendedMessage(
             0x7e,
             [
-                0x00,
                 0x7f
             ]
         )
@@ -886,40 +885,30 @@ class KemperMappings:
 ####################################################################################################################
 
 
-PARAMETER_SET_4 = [
+PARAMETER_SET_2 = [
     KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_A),
     KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_A),
-    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_A),
 
     KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_B),
     KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_B),
-    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_B),
 
     KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_C),
     KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_C),
-    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_C),
 
     KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_D),
     KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_D),
-    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_D),
 
     KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_X),
     KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_X),
-    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_X),
 
     KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_MOD),
     KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_MOD),
-    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_MOD),
-
-    KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
-    KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
-    KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
 
     KemperMappings.RIG_NAME                
 ]
 
-SELECTED_PARAMETER_SET_ID = 0x04
-SELECTED_PARAMETER_SET = PARAMETER_SET_4
+SELECTED_PARAMETER_SET_ID = 0x02
+SELECTED_PARAMETER_SET = PARAMETER_SET_2
 
 
 # Implements the internal Kemper bidirectional communication protocol
@@ -948,12 +937,16 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         
     # Called before usage, with a midi handler.
     def init(self, midi):
-        self._midi = midi
+        self._midi = midi  
 
     # Must return (boolean) if the passed mapping is handled in the bidirectional protocol
     def is_bidirectional(self, mapping):
         return mapping in SELECTED_PARAMETER_SET
 
+    # Must return a color representation for the current state
+    def get_color(self):
+        return Colors.GREEN if self.state == self.STATE_RUNNING else Colors.RED
+ 
     # Must return (boolean) if the passed mapping should feed back the set value immediately
     # without waiting for a midi message.
     def feedback_value(self, mapping):
@@ -970,6 +963,7 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         elif self.state == self.STATE_RUNNING:
             if self.sensing_period.exceeded:
                 self.state = self.STATE_OFFLINE
+
                 self.resend_period.reset()
 
             if self.resend_period.exceeded:
@@ -992,7 +986,9 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
             return False
         
         if self.debug:
-            self._print("Reset time lease, no sensing message for too long")
+            self._print("Received sensing message, communication is alive")
+
+        self.state = self.STATE_RUNNING
 
         self.sensing_period.reset()
 

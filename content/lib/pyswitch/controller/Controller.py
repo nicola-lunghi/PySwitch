@@ -1,6 +1,4 @@
-from usb_midi import ports
-from adafruit_midi import MIDI
-
+from .MidiController import MidiController
 from .FootSwitchController import FootSwitchController
 from .measurements import RuntimeMeasurement
 from .actions.Action import Action
@@ -59,8 +57,6 @@ class Controller(Updater): #ClientRequestListener
         self.led_driver.init(self._get_num_pixels())
         
         # Parse some options
-        self._midiChannel = Tools.get_option(self.config, "midiChannel", 1)                                 # MIDI channel to use
-        self._midi_buffer_size = Tools.get_option(self.config, "midiBufferSize", 60)                        # MIDI buffer size
         self._max_consecutive_midi_msgs = Tools.get_option(self.config, "maxConsecutiveMidiMessages", 10)   # Max. number of MIDI messages being parsed before the next switch state evaluation
 
         self._debug = Tools.get_option(self.config, "debug", False)
@@ -75,7 +71,7 @@ class Controller(Updater): #ClientRequestListener
         self._prepare_ui(displays)
 
         # Start MIDI communication
-        self._init_midi()
+        self._init_midi(communication)
 
         # Client adapter to send and receive parameters
         value_provider = communication["valueProvider"]
@@ -119,16 +115,13 @@ class Controller(Updater): #ClientRequestListener
             )
 
     # Start MIDI communication and return the handler
-    def _init_midi(self):
+    def _init_midi(self, communication):
         if self._debug:
             Tools.print("-> Init MIDI")
 
-        self._midi = MIDI(
-            midi_out    = ports[1],
-            out_channel = self._midiChannel - 1,
-            midi_in     = ports[0],
-            in_buf_size = self._midi_buffer_size, 
-            debug       = Tools.get_option(self.config, "debugMidi")
+        self._midi = MidiController(
+            config = Tools.get_option(communication, "midi", {}),
+            debug  = Tools.get_option(self.config, "debugMidi")
         )
 
     # Returns how many NeoPixels are needed overall
@@ -157,13 +150,6 @@ class Controller(Updater): #ClientRequestListener
         
         else:
             raise Exception("Runtime measurement type " + repr(measurement.type) + " not supported")
-
-    # Update the client manually at last so all requests have been registered already
-    #def update(self):
-    #    super().update()
-
-    #    if isinstance(self.client, Updateable):
-    #        self.client.update()
 
     # Runs the processing loop (which never ends)
     def process(self):
