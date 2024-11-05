@@ -23,6 +23,12 @@ class MockHierarchicalDisplayElement(HierarchicalDisplayElement):
         self.num_print_calls += 1
 
 
+class MockUiController:
+    def __init__(self, width = 2000, height = 1000):
+        self.root = MockHierarchicalDisplayElement(
+            bounds = DisplayBounds(0, 0, width, height)
+        )
+
 #class MockUserInterface:
 #    def __init__(self, width = 2000, height = 1000):
 #        self.num_show_calls = 0

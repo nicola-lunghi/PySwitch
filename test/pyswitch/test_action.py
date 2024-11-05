@@ -221,7 +221,7 @@ class TestAction(unittest.TestCase):
 
 
     def test_label_not_found(self):
-        ui = MockUserInterface()
+        ui = MockUiController()
         appl = MockController(ui = ui)
         switch = MockFootSwitch()
         action = MockAction({
@@ -238,7 +238,7 @@ class TestAction(unittest.TestCase):
 
 
     def test_label(self):
-        ui = MockUserInterface()
+        ui = MockUiController()
         appl = MockController(ui = ui)
         switch = MockFootSwitch()
         action = MockAction({
@@ -262,7 +262,7 @@ class TestAction(unittest.TestCase):
 
 
     def test_label_existing_in_split_container(self):
-        ui = MockUserInterface()
+        ui = MockUiController()
         appl = MockController(ui = ui)
         switch = MockFootSwitch()
         action = MockAction({
@@ -292,7 +292,7 @@ class TestAction(unittest.TestCase):
 
 
     def test_label_new_in_split_container(self):
-        ui = MockUserInterface()
+        ui = MockUiController()
         appl = MockController(ui = ui)
         switch = MockFootSwitch()
         action = MockAction({
