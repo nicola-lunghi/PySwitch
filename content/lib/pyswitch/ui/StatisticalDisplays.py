@@ -1,4 +1,4 @@
-from .elements.elements import StatisticsDisplayLabel, PerformanceIndicator, BidirectionalProtocolState
+from .elements import StatisticsDisplayLabel, PerformanceIndicator, BidirectionalProtocolState
 from ..controller.measurements import RuntimeMeasurement, FreeMemoryMeasurement
 from ..controller.Controller import Controller
 

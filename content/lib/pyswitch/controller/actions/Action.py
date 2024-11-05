@@ -162,14 +162,14 @@ class Action(Updateable):
         if not definition:
             return None
         
-        label = self.appl.ui.root.search(definition)
+        label = self.appl.ui.search(definition)
         if label:
             return label
         
         # Not yet existent: Get container
-        container = self.appl.ui.root.search({
+        container = self.appl.ui.search({
             "id": definition["id"]
-        })
+        })        
 
         if not container:
             raise Exception("Action: Display element with ID " + repr(definition["id"]) + " not found")

@@ -1,4 +1,3 @@
-#from .Client import ClientRequestListener
 from ..misc import Tools, Updateable, Updater, EventEmitter
 
 # Base condition to be filled with custom objects or lists (which can be or contain Conditions themselves).
@@ -129,14 +128,14 @@ class ConditionTree:
 
     # Must be called before usage to get the conditions updated periodically. 
     # Updater must be an Updater instance to which the conditions are added.
-    def init(self, updater):
-        if not isinstance(updater, Updater):
+    def init(self, appl):
+        if not isinstance(appl, Updater):
             raise Exception("Invalid appl for ConditionTree, must be an Updater")
 
         # Initialize conditions and add them to the updateable list
         for c in self._conditions:
-            c.init(updater)            
-            updater.add_updateable(c)
+            c.init(appl)            
+            appl.add_updateable(c)
 
     # Returns a flat list of all contained data entries
     @property
@@ -226,7 +225,8 @@ class ConditionTree:
 # Comparison modes for ParameterCondition
 class ParameterConditionModes:    
     # Numeric
-    MODE_EQUAL = 0                   # Reference value must be a numeric value
+    MODE_EQUAL = 0                   # Reference can be anything
+    MODE_NOT_EQUAL = 1               # Reference can be anything
     
     MODE_GREATER = 10                # Reference value must be a numeric value
     MODE_GREATER_EQUAL = 11          # Reference value must be a numeric value
@@ -293,6 +293,9 @@ class ParameterCondition(Condition): #, ClientRequestListener):
             
         elif self._mode == ParameterConditionModes.MODE_EQUAL:
             return value == self._ref_value            
+            
+        elif self._mode == ParameterConditionModes.MODE_NOT_EQUAL:
+            return value != self._ref_value            
             
         elif self._mode == ParameterConditionModes.MODE_IN_RANGE:
             return value >= self._ref_value[0] and value <= self._ref_value[1]

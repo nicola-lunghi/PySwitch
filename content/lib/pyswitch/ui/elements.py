@@ -1,12 +1,12 @@
 from displayio import Group
 from adafruit_display_text import label, wrap_text_to_pixels
 
-from .DisplayElement import HierarchicalDisplayElement, DisplayBounds, DisplayElement
+from .ui import HierarchicalDisplayElement, DisplayBounds, DisplayElement
 
-from ...controller.ConditionTree import ConditionTree, Condition
-from ...controller.measurements import RuntimeMeasurement
-from ...controller.BidirectionalClient import BidirectionalClient
-from ...misc import Tools, Updateable, Colors
+from ..controller.ConditionTree import ConditionTree, Condition
+from ..controller.measurements import RuntimeMeasurement
+from ..controller.BidirectionalClient import BidirectionalClient
+from ..misc import Tools, Updateable, Colors
 
 
 # Data class for layouts
@@ -49,8 +49,10 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
     LINE_FEED = "\n"
 
     # layout can also be a Condition!
-    def __init__(self, layout, bounds = DisplayBounds(), name = "", id = 0):
-        super().__init__(bounds, name, id)
+    def __init__(self, layout, bounds = DisplayBounds(), name = "", id = 0, scale = 1):
+        super().__init__(bounds = bounds, name = name, id = id)
+
+        self._scale = scale
 
         if isinstance(layout, Condition):
             self._layout_tree = ConditionTree(
@@ -118,7 +120,8 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
             ),
             text = self._wrap_text(self.layout.text),
             color = self.layout.text_color,
-            line_spacing = self.layout.line_spacing
+            line_spacing = self.layout.line_spacing,
+            scale = self._scale
         )
         
         group = Group(
@@ -467,8 +470,8 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
     HORIZONTAL = 0
     VERTICAL = 1
 
-    def __init__(self, direction = 0, bounds = DisplayBounds(), name = "", id = 0):
-        super().__init__(bounds, name, id)
+    def __init__(self, direction = 0, bounds = DisplayBounds(), name = "", id = 0, children = None):
+        super().__init__(bounds = bounds, name = name, id = id, children = children)
 
         self.direction = direction
     
@@ -531,7 +534,7 @@ class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener)
     #     "textReset":   Text to show when a reset happened (on rig changes etc.). Optional.
     # }
     def __init__(self, parameter, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
-        super().__init__(bounds=bounds, layout=layout, name=name, id=id)
+        DisplayLabel.__init__(self, bounds = bounds, layout = layout, name = name, id = id)
 
         self._mapping = parameter["mapping"]
         self._depends = Tools.get_option(parameter, "depends", None)
@@ -565,6 +568,7 @@ class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener)
     def reset(self):
         self._last_value = None
         self._depends_last_value = None
+
         self.text = self._text_reset
 
     # Listen to client value returns (rig name and date)
@@ -593,13 +597,143 @@ class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener)
 ###########################################################################################################################
 
 
+class TunerDevianceDisplay(DisplayElement):
+
+    def __init__(self, bounds = DisplayBounds(), name = "", id = 0, width = 5):
+        DisplayElement.__init__(self, bounds = bounds, name = name, id = id)
+
+        self.width = width
+
+        self._current_color = None
+
+    def init(self, ui, appl):
+        DisplayElement.init(self, ui, appl)
+        
+        from adafruit_display_shapes.rect import Rect
+
+        self._marker_intune = Rect(
+            x = int((self.bounds.width - self.width) * 0.5),
+            y = self.bounds.y,
+            width = self.width,
+            height = self.bounds.height,
+            fill = Colors.WHITE
+        )
+
+        ui.splash.append(self._marker_intune)
+
+        self._marker = Rect(
+            x = int((self.bounds.width - self.width) * 0.5),
+            y = self.bounds.y,
+            width = self.width,
+            height = self.bounds.height,
+            fill = Colors.GREEN
+        )
+        self._current_color = self._marker.fill
+
+        ui.splash.append(self._marker)
+
+    # Sets deviance value in range [0..16383]
+    def set(self, value):
+        self._marker.x = int((self.bounds.width - self.width) * value / 16384)
+
+        if abs(value - 8192) >= 300:   # TODO Const
+            self.color = Colors.RED
+        else:
+            self.color = Colors.GREEN
+
+    @property 
+    def color(self):
+        return self._marker.fill
+    
+    @color.setter
+    def color(self, color):
+        if self._current_color == color:
+            return
+        
+        self._current_color = color
+        self._marker.fill = color
+
+
+###########################################################################################################################
+
+
+# Note names 
+TUNER_NOTE_NAMES = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B']     # (jazz man's variant)
+#TUNER_NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']     # (sharp variant)
+
+
+class TunerDisplay(HierarchicalDisplayElement):
+    
+    def __init__(self, mapping_note, mapping_deviance = None, bounds = DisplayBounds(), layout = {}, scale = 1, name = "", id = 0):
+        HierarchicalDisplayElement.__init__(self, bounds = bounds, name = name, id = id)
+
+        self._mapping_note = mapping_note
+        self._mapping_deviance = mapping_deviance
+
+        self.label = DisplayLabel(
+            bounds = bounds,
+            layout = layout,
+            scale = scale
+        )
+
+        self.add(self.label)
+
+        if self._mapping_deviance:
+            self.deviance = TunerDevianceDisplay(
+                bounds = bounds.bottom(40)
+            )
+            
+            self.add(self.deviance)
+
+        self._last_note = None
+        self._last_deviance = 8192
+
+    # We need access to the client, so we store appl here
+    def init(self, ui, appl):
+        HierarchicalDisplayElement.init(self, ui, appl)
+
+        self._appl = appl
+        
+        self._appl.client.register(self._mapping_note, self)
+        
+        if self._mapping_deviance:
+            self._appl.client.register(self._mapping_deviance, self)
+
+    # Reset the display
+    def reset(self):
+        self._last_note = None
+        self._last_deviance = 8192
+        
+        self.label.text = "Tuner"
+
+    # Listen to client value returns
+    def parameter_changed(self, mapping):
+        if mapping == self._mapping_note and mapping.value != self._last_note:
+            self._last_note = mapping.value
+
+            self.label.text = TUNER_NOTE_NAMES[mapping.value % 12]
+
+        if mapping == self._mapping_deviance and mapping.value != self._last_deviance:
+            self._last_deviance = mapping.value        
+            
+            self.deviance.set(self._last_deviance)
+            self.label.text_color = self.deviance.color
+
+    # Called when the client is offline (requests took too long)
+    def request_terminated(self, mapping):
+        self.reset()
+
+
+###########################################################################################################################
+
+
 # Shows a small dot indicating loop processing time (not visible when max. tick time is way below the updateInterval, warning
 # the user when tick time gets higher and shows an alert when tick time is higher than the update interval, which means that
 # the device is running on full capacity. If tick time is more than double the update interval, an even more severe alert is shown)
 class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
 
     def __init__(self, measurement, bounds = DisplayBounds(), name = "", id = 0):
-        super().__init__(bounds, name, id)
+        super().__init__(bounds = bounds, name = name, id = id)
 
         if not isinstance(measurement, RuntimeMeasurement):
             raise Exception("This can only be used with RuntimeMeasurements")
@@ -660,8 +794,8 @@ class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
 # Label showing statistical info
 class StatisticsDisplayLabel(DisplayLabel, Updateable):  #RuntimeMeasurementListener
     
-    def __init__(self, measurements, bounds = DisplayBounds(), layout = {}, id = 0):
-        super().__init__(bounds=bounds, layout=layout, name="Statistics", id=id)        
+    def __init__(self, measurements, bounds = DisplayBounds(), layout = {}, name = "Statistics", id = 0):
+        super().__init__(bounds = bounds, layout = layout, name = name, id = id)        
     
         for m in measurements:
             if not isinstance(m, RuntimeMeasurement):
@@ -717,7 +851,7 @@ class StatisticsDisplayLabel(DisplayLabel, Updateable):  #RuntimeMeasurementList
 class BidirectionalProtocolState(DisplayElement, Updateable):
 
     def __init__(self, bounds = DisplayBounds(), name = "", id = 0):
-        DisplayElement.__init__(self, bounds, name, id)
+        DisplayElement.__init__(self, bounds = bounds, name = name, id = id)
 
         self._current_color = None
 

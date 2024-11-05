@@ -31,7 +31,6 @@
 #Memory.start(zoom = 10)
 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader, AdafruitSwitch
-from pyswitch.ui.UserInterface import UserInterface
 from pyswitch.misc import Tools
 
 # Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)
@@ -47,20 +46,28 @@ led_driver = AdafruitNeoPixelDriver()
 # Buffered font loader
 font_loader = AdafruitFontLoader()
 
-# Create User interface
-gui = UserInterface(display_driver, font_loader)
-
 if not Tools.get_option(Config, "exploreMode"):
     # Normal operation
     from pyswitch.controller.Controller import Controller
+    from pyswitch.ui.UiController import UiController
 
     # Load configuration files
-    from displays import Displays
+    from display import Display
     from switches import Switches
     from communication import Communication
 
     # Controller instance (runs the processing loop and keeps everything together)
-    appl = Controller(led_driver, Communication, Config, Switches, Displays, gui)
+    appl = Controller(
+        led_driver = led_driver, 
+        communication = Communication, 
+        config = Config, 
+        switches = Switches, 
+        ui = UiController(
+            display_driver = display_driver,
+            font_loader = font_loader,
+            root = Display
+        )
+    )
     appl.process()
 
 else:
@@ -74,6 +81,6 @@ else:
         def create_switch(self, port):
             return AdafruitSwitch(port)
 
-    appl = ExploreModeController(board, SwitchFactory(), led_driver, gui)
+    appl = ExploreModeController(board, SwitchFactory(), led_driver, display_driver, font_loader)
     appl.process()
     

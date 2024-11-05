@@ -1,4 +1,4 @@
-from time import monotonic
+from time import monotonic, localtime
 
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
@@ -62,6 +62,12 @@ class Tools:
     def get_current_millis():
         return int(monotonic() * 1000)
         
+    # Returns a readable string with the current timestamp (local time)
+    @staticmethod
+    def formatted_timestamp():
+        ts = localtime()
+        return str(ts.tm_year) + "-" + "{:02d}".format(ts.tm_mon) + "-" + "{:02d}".format(ts.tm_mday) + " " + "{:02d}".format(ts.tm_hour) + ":" + "{:02d}".format(ts.tm_min) + ":" + "{:02d}".format(ts.tm_sec)
+
     # Stringifies a MIDI message.
     @staticmethod
     def stringify_midi_message(midi_message):

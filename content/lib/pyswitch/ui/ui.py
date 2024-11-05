@@ -1,4 +1,20 @@
-from ...misc import Tools
+from displayio import Group
+from ..misc import Tools
+
+
+# Couples a root element with a splash group
+class DisplaySplash:
+
+    def __init__(self, element, font_loader):
+        self.font_loader = font_loader
+
+        self.splash = Group()
+
+        self.root = element        
+        
+
+########################################################################################################################
+
 
 # Represents a screen area with dimensions.
 class DisplayBounds:
@@ -153,11 +169,18 @@ class DisplayElement:
     def init(self, ui, appl):
         self._initialized = True
 
+    def initialized(self):
+        return self._initialized
+
     # Search for a display element matching the condition.
     def search(self, position):
         if position["id"] == self.id:
             return self
         return None
+
+    # Returns a list of all contained DisplayElements.
+    def contents_flat(self):
+        return [self]
 
     # Returns a clone (changes on the returned object shall not reflect to this instance)
     @property
@@ -191,10 +214,10 @@ class DisplayElement:
 # Base class for elements containing other elements
 class HierarchicalDisplayElement(DisplayElement):
 
-    def __init__(self, bounds = DisplayBounds(), name = "", id = 0):
-        super().__init__(bounds, name, id)
+    def __init__(self, bounds = DisplayBounds(), children = None, name = "", id = 0):
+        super().__init__(bounds = bounds, name = name, id = id)
         
-        self._children = []        
+        self._children = children if children else []
         
     @property
     def children(self):        
@@ -230,8 +253,24 @@ class HierarchicalDisplayElement(DisplayElement):
             if child == None:
                 continue
             
+            if child.initialized():
+                continue
+
             child.init(ui, appl)
 
+    def initialized(self):
+        if not super().initialized():
+            return False
+
+        for child in self._children:
+            if child == None:
+                continue
+            
+            if not child.initialized():
+                return False
+            
+        return True
+    
     # Also notify all children that the bounds have been changed
     def bounds_changed(self):
         super().bounds_changed()
@@ -246,11 +285,13 @@ class HierarchicalDisplayElement(DisplayElement):
     def child(self, index):
         if index < 0 or index >= len(self._children): 
             raise Exception("Index out of range: " + repr(index))
+        
         return self._children[index]
 
     # Adds a child to the element. Returns the index of the new element.
     def add(self, child):
         self._children.append(child)
+
         return len(self._children) - 1
 
     # Sets an element at the specified index.
@@ -260,7 +301,7 @@ class HierarchicalDisplayElement(DisplayElement):
         
         while len(self._children) <= index:
             self.add(None)
-
+        
         self._children[index] = element            
 
     # Search for the first child matching the conditions. If
@@ -272,7 +313,7 @@ class HierarchicalDisplayElement(DisplayElement):
             index = Tools.get_option(position, "index", None)
 
             if index == None:
-                # No index: Return this element
+                # No index: Return this element                
                 return result
             
             elif index >= 0 and index < len(self._children):
@@ -290,6 +331,18 @@ class HierarchicalDisplayElement(DisplayElement):
                 return result
             
         return None
+
+    # Returns a list of all contained DisplayElements.
+    def contents_flat(self):
+        ret = [self]
+
+        for child in self._children:
+            if not child:
+                continue
+
+            ret += child.contents_flat()
+
+        return ret
 
     # Prints some debug info
     def print_debug_info(self, indentation = 0):   # pragma: no cover

@@ -1,6 +1,3 @@
-from adafruit_midi.system_exclusive import SystemExclusive
-from adafruit_midi.midi_message import MIDIMessage
-
 from .Client import Client, ClientRequest
 from ..misc import Updateable, Tools
 
@@ -71,9 +68,6 @@ class BidirectionalClient(Client, Updateable):
         if not midi_message:
             return
 
-        if not isinstance(midi_message, SystemExclusive):
-            return
-               
         self.protocol.receive(midi_message)
 
     # In case of bidirectional parammeters, "simulate" a parameter change directly after the MIDI message

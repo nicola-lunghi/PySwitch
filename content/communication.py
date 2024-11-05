@@ -30,8 +30,8 @@ Communication = {
     # parameters in each update cycle. Use this to implement bidirectional communication.
     "protocol": KemperBidirectionalProtocol(
         time_lease_seconds = 30               # When the controller is removed, the Profiler will stay in bidirectional
-                                              # mode for this amount of seconds. The communication is re-initiated every 80% 
-                                              # of this value. 
+                                              # mode for this amount of seconds. The communication is re-initiated every  
+                                              # half of this value. 
     ),
 
     # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 

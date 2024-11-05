@@ -11,7 +11,7 @@ from pyswitch.controller.ConditionTree import ParameterCondition, ParameterCondi
 from pyswitch.controller.actions.actions import PushButtonModes
 
 from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
-from displays import DisplayIds
+from display import DisplayIds
 
 
 # Layout used for the action labels (only used here locally)

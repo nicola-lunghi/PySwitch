@@ -12,7 +12,7 @@ Config = {
     # is triggered. If set to 0, only one message is parsed per tick, which leads to 
     # flickering states sometimes. If set too high, switch states will not be read for too long.
     # A good value is the maximum amount of switches. Default is 10.
-    #"maxConsecutiveMidiMessages": 10,
+    #"maxConsecutiveMidiMessages": 1000,
 
     # Max. milliseconds until a request is being terminated and it is
     # assumed that the Kemper device is offline. Optional, default is 2 seconds.
@@ -31,8 +31,6 @@ Config = {
     # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 
     #"debug": True,
 
-    #"debugUserInterfaceStructure": True,             # Show UI structure after init 
-    #"debugDisplay": True,                            # Show verbose messages from the display elements. Optional.
     #"debugActions": True,                            # Show verbose messages from actions. Optional.
     #"actionsDebugSwitchName": "1",                   # Optional, can be set to a switch assignment name (see Ports in definition.py)
                                                       # to only show action messages for the switch mentioned

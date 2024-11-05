@@ -1,6 +1,8 @@
 from .FootSwitchController import FootSwitchController
 from .actions.Action import Action
-from ..ui.elements.elements import DisplayLabel, DisplaySplitContainer
+from ..ui.UiController import UiController
+from ..ui.elements import DisplayLabel, DisplaySplitContainer
+from ..ui.ui import HierarchicalDisplayElement
 from ..misc import Updater, Colors, Tools
 
 # Action to explore switch GPIO assignments (used internally only in explore mode!)
@@ -61,10 +63,16 @@ class ExploreAction(Action):
 # Main application class for Explore Mode
 class ExploreModeController(Updater):
 
-    def __init__(self, board, switch_factory, led_driver = None, ui = None, num_pixels_per_switch = 3, num_port_columns = 5):
+    def __init__(self, board, switch_factory, led_driver = None, display_driver = None, font_loader = None, num_pixels_per_switch = 3, num_port_columns = 5):
         Updater.__init__(self)
 
-        self.ui = ui
+        self.ui = None
+        if display_driver and font_loader:
+            self.ui = UiController(
+                display_driver = display_driver, 
+                font_loader = font_loader
+            )
+
         self.config = {}
         self.num_pixels_per_switch = num_pixels_per_switch
         self._currently_shown_switch_index = -1
@@ -101,7 +109,11 @@ class ExploreModeController(Updater):
 
     # Set up user interface
     def _setup_ui(self):
-        bounds = self.ui.root.bounds.clone()
+        bounds = self.ui.bounds.clone()
+
+        root = HierarchicalDisplayElement(
+            bounds = bounds
+        )
 
         # Display for currently enlightened pixels
         self.pixel_display = DisplayLabel(
@@ -111,20 +123,24 @@ class ExploreModeController(Updater):
                 "backColor": Colors.DARK_GREEN
             }
         )
-        self.ui.root.add(self.pixel_display)
+        root.add(self.pixel_display)
 
         # Display for ports
         self._ports_display_rows = DisplaySplitContainer(
             bounds = bounds,
             direction = DisplaySplitContainer.VERTICAL
         )
-        self.ui.root.add(self._ports_display_rows)
+        root.add(self._ports_display_rows)
+
+        self.ui.set_root(root)
+
+        self.ui.init(self)
 
     # Runs the processing loop (which never ends)
     def process(self):
         # Show user interface    
         if self.ui:    
-            self.ui.show(self)
+            self.ui.show()
 
         # Start processing loop
         while self.tick():

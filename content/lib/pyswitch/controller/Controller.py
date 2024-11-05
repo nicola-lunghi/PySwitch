@@ -4,7 +4,7 @@ from .measurements import RuntimeMeasurement
 from .actions.Action import Action
 from .Client import Client
 from .BidirectionalClient import BidirectionalClient
-from ..misc import Tools, Updateable, Updater, PeriodCounter
+from ..misc import Tools, Updater, PeriodCounter
 from ..Memory import Memory
 
 
@@ -36,14 +36,20 @@ class Controller(Updater): #ClientRequestListener
     #           ]
     # value_provider: Value provider for the client
     # displays: list of DisplayElements to show on the TFT
-    def __init__(self, led_driver, communication, config = {}, switches = [], displays = [], ui = None, period_counter = None):
+    def __init__(self, led_driver, communication, config = {}, switches = [], ui = None, period_counter = None):
         Updater.__init__(self)
+
+        self.running = False
 
         # User interface
         self.ui = ui
 
         # Global config
         self.config = config
+
+        self._max_consecutive_midi_msgs = Tools.get_option(self.config, "maxConsecutiveMidiMessages", 10)   # Max. number of MIDI messages being parsed before the next switch state evaluation
+        self._debug = Tools.get_option(self.config, "debug", False)
+        #self._debug_ui_structure = Tools.get_option(self.config, "debugUserInterfaceStructure", False)        
 
         # Switch config
         self._switch_definitions = switches
@@ -56,25 +62,18 @@ class Controller(Updater): #ClientRequestListener
         self.led_driver = led_driver
         self.led_driver.init(self._get_num_pixels())
         
-        # Parse some options
-        self._max_consecutive_midi_msgs = Tools.get_option(self.config, "maxConsecutiveMidiMessages", 10)   # Max. number of MIDI messages being parsed before the next switch state evaluation
-
-        self._debug = Tools.get_option(self.config, "debug", False)
-        self._debug_ui_structure = Tools.get_option(self.config, "debugUserInterfaceStructure", False)        
-
         # Periodic update handler (the client is only asked when a certain time has passed)
         self.period = period_counter
         if not self.period:
             self.period = PeriodCounter(Tools.get_option(self.config, "updateInterval", 200))        
-
-        # Set up the screen elements
-        self._prepare_ui(displays)
 
         # Start MIDI communication
         self._init_midi(communication)
 
         # Client adapter to send and receive parameters
         value_provider = communication["valueProvider"]
+
+        # Bidirectional MIDI Protocol (optional)
         protocol = Tools.get_option(communication, "protocol", None)
         if protocol:
             self.client = BidirectionalClient(self._midi, self.config, value_provider, protocol)
@@ -82,25 +81,19 @@ class Controller(Updater): #ClientRequestListener
         else:
             self.client = Client(self._midi, self.config, value_provider)
 
+        # Set up the screen elements
+        self.ui.init(self)
+
         # Set up switches
-        self.switches = []
         self._init_switches()
 
         if self._debug:
-            Tools.print("Updateable queue length: " + repr(len(self.updateables)))
-
-    # Creates the display areas
-    def _prepare_ui(self, displays):
-        for element in displays:
-            element.debug = Tools.get_option(self.config, "debugDisplay")
-
-            self.ui.root.add(element)
-
-            if isinstance(element, Updateable):
-                self.add_updateable(element)
+            Tools.print("Updateable queue length: " + repr(len(self.updateables)))    
 
     # Initialize switches
     def _init_switches(self):
+        self.switches = []
+
         if self._debug:
             Tools.print("-> Init switches")
                     
@@ -154,16 +147,21 @@ class Controller(Updater): #ClientRequestListener
     # Runs the processing loop (which never ends)
     def process(self):
         # Show user interface
-        if self.ui:  
-            if self._debug:
-                Tools.print("-> Init UI:")            
+        #if self.ui:  
+        #    if self._debug:
+        #        Tools.print("-> Init UI:")            
 
-            if self._debug_ui_structure: 
-                self.ui.root.print_debug_info(3)
+        #    if self._debug_ui_structure: 
+        #        self.ui.root.print_debug_info(3)
 
-            Memory.watch("Controller: Showing UI")
+        #    Memory.watch("Controller: Showing UI")
 
-            self.ui.show(self)        
+        #    self.ui.show(self)        
+        #self.ui.current.root.print_debug_info(3)        
+        
+        self.ui.show()
+        
+        self.running = True
 
         if self._debug:
             Tools.print("-> Done initializing, starting processing loop")

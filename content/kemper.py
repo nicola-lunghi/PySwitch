@@ -6,7 +6,6 @@ from adafruit_midi.system_exclusive import SystemExclusive
 from pyswitch.misc import Colors, Defaults, PeriodCounter, Tools
 from pyswitch.controller.actions.actions import ParameterAction, PushButtonModes
 from pyswitch.controller.Client import ClientParameterMapping
-#from pyswitch.controller.BidirectionalClient import BidirectionalProtocol
 
 from pyswitch.controller.actions.actions import EffectEnableAction, ParameterAction, ResetDisplaysAction
 
@@ -724,12 +723,37 @@ class KemperMappings:
         type = KemperMidiValueProvider.PARAMETER_TYPE_STRING
     )
 
-    # Switch tuner mode on/off (no receive possible!)
+    # Switch tuner mode on/off (no receive possible when not in bidirectional mode)
     TUNER_MODE_STATE = ClientParameterMapping(
         name = "Tuner Mode",
         set = ControlChange(
             CC_TUNER_MODE, 
             0    # Dummy value, will be overridden
+        ),
+        response = KemperNRPNMessage(
+            0x01,
+            0x7f,
+            0x7e
+        )
+    )
+
+    # Tuner note (only sent in bidirectional mode)
+    TUNER_NOTE = ClientParameterMapping(
+        name = "Tuner Note",
+        response = KemperNRPNMessage(
+            0x01,
+            0x7d,
+            0x54
+        )
+    )
+
+    # Tuner deviance from "in tune" (only sent in bidirectional mode)
+    TUNER_DEVIANCE = ClientParameterMapping(
+        name = "Tuner Deviance",
+        response = KemperNRPNMessage(
+            0x01,
+            0x7c,
+            0x0f
         )
     )
 
@@ -904,7 +928,11 @@ PARAMETER_SET_2 = [
     KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_MOD),
     KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_MOD),
 
-    KemperMappings.RIG_NAME                
+    KemperMappings.RIG_NAME,
+
+    KemperMappings.TUNER_MODE_STATE,
+    KemperMappings.TUNER_NOTE,
+    KemperMappings.TUNER_DEVIANCE         
 ]
 
 SELECTED_PARAMETER_SET_ID = 0x02
@@ -925,11 +953,11 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         # about 500ms.
         self._mapping_sense = KemperMappings.BIDIRECTIONAL_SENSING
 
-        # Re-send the beacon after 80% of the lease time have passed
-        self.resend_period = PeriodCounter(time_lease_seconds * 1000 * 0.8)
+        # Re-send the beacon after half of the lease time have passed
+        self.resend_period = PeriodCounter(time_lease_seconds * 1000 * 0.5)
 
         # Period for initial beacons (those shall not be sent too often)
-        self.init_period = PeriodCounter(2000)
+        self.init_period = PeriodCounter(5000)
 
         # Period after which communication will be regarded as broken when no sensing message comes in
         # (the device sends this roughly every 500ms so we wait 1.5 seconds which should be sufficient)
@@ -937,6 +965,8 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         self.sensing_period.reset()
 
         self.debug = False   # This is set by the BidirectionalClient constructor
+        self._count_input_messages = 0
+        self._count_relevant_messages = 0
         
     # Called before usage, with a midi handler.
     def init(self, midi):
@@ -960,7 +990,7 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         if self.state == self.STATE_OFFLINE:
             if self.init_period.exceeded:
                 if self.debug:
-                    self._print("Send init beacon")
+                    self._print("Initialize communication")
 
                 self._send_beacon(
                     init = True
@@ -977,30 +1007,24 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
 
             if self.resend_period.exceeded:
                 if self.debug:
-                    self._print("Send keep-alive beacon")
+                    self._print("Send keep-alive message")
 
                 self._send_beacon()
 
-    #TODO_PERIOD = PeriodCounter(1000)
-    #TODO_VALUE_F = 0
-    #TODO_VALUE_51 = 0
-
     # Receive sensing messages and re-init (with init = 1 again) when they stop appearing for longer then 1 second
     def receive(self, midi_message):
+        if self.debug:
+            self._count_input_messages += 1
+
+        if not isinstance(midi_message, SystemExclusive):
+            return
+               
         # Compare manufacturer IDs
         if midi_message.manufacturer_id != self._mapping_sense.response.manufacturer_id:
             return False
         
-        # TODO remove (debug)
-        #resp = list(midi_message.data)
-        #if resp[:-2] == [0x00, 0x00, 0x01, 0x00, 0x7c, 0xf]:
-        #    KemperBidirectionalProtocol.TODO_VALUE_F = resp[-2] * 128 + resp[-1]            
-
-        #if resp[:-2] == [0x00, 0x00, 0x01, 0x00, 0x7c, 0x51]:
-        #    KemperBidirectionalProtocol.TODO_VALUE_51 = resp[-2] * 128 + resp[-1]
-
-        #if KemperBidirectionalProtocol.TODO_PERIOD.exceeded:
-        #    Tools.print("F: " + self._visualize_value(KemperBidirectionalProtocol.TODO_VALUE_F, 16384) + " (" + repr(KemperBidirectionalProtocol.TODO_VALUE_F) + ")  51: " + self._visualize_value(KemperBidirectionalProtocol.TODO_VALUE_F, 16384) + "(" + repr(KemperBidirectionalProtocol.TODO_VALUE_51) + ")")
+        if self.debug:
+            self._count_relevant_messages += 1
 
         # Check if the message belongs to the status sense mapping. The following have to match:
         #   2: function code, (0x7e)
@@ -1019,7 +1043,7 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
             self.resend_period.reset()
             
             if self.debug:
-               self._print("Connection got alive")
+               self._print("Connection established")
 
         self.state = self.STATE_RUNNING
 
@@ -1034,7 +1058,8 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
                     0x40,
                     SELECTED_PARAMETER_SET_ID,
                     self._get_flags(
-                        init = init
+                        init = init,
+                        tunemode = True
                     ),
                     self._time_lease_encoded
                 ]
@@ -1057,9 +1082,6 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         return 0x00 | (i << 0) | (s << 1) | (e << 2) | (n << 3) | (c << 4) | (t << 5)
 
     def _print(self, msg):
-        Tools.print("Bidirectional: " + msg)
-
-    # Returns a console visualization of free bytes for debugging
-    #def _visualize_value(self, value, max, size = 15):
-    #    num_chars = int((value / max) * size)
-    #    return "".join([("X" if i <= num_chars else ".") for i in range(size)])
+        Tools.print("Bidirectional (" + Tools.formatted_timestamp() + "): " + msg + " (Received " + repr(self._count_relevant_messages) + " / " + repr(self._count_input_messages) + ")")
+        self._count_input_messages = 0
+        self._count_relevant_messages = 0
