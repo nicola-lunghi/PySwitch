@@ -36,10 +36,12 @@ class Controller(Updater): #ClientRequestListener
     #           ]
     # value_provider: Value provider for the client
     # displays: list of DisplayElements to show on the TFT
-    def __init__(self, led_driver, communication, config = {}, switches = [], ui = None, period_counter = None):
+    def __init__(self, led_driver, communication, midi, config = {}, switches = [], ui = None, period_counter = None):
         Updater.__init__(self)
 
         self.running = False
+
+        self._midi = midi
 
         # User interface
         self.ui = ui
@@ -66,9 +68,6 @@ class Controller(Updater): #ClientRequestListener
         self.period = period_counter
         if not self.period:
             self.period = PeriodCounter(Tools.get_option(self.config, "updateInterval", 200))        
-
-        # Start MIDI communication
-        self._init_midi(communication)
 
         # Client adapter to send and receive parameters
         value_provider = communication["valueProvider"]
@@ -107,16 +106,6 @@ class Controller(Updater): #ClientRequestListener
             self.switches.append(
                 switch
             )
-
-    # Start MIDI communication and return the handler
-    def _init_midi(self, communication):
-        if self._debug:
-            Tools.print("-> Init MIDI")
-
-        self._midi = MidiController(
-            config = Tools.get_option(communication, "midi", {}),
-            debug  = Tools.get_option(self.config, "debugMidi")
-        )
 
     # Returns how many NeoPixels are needed overall
     def _get_num_pixels(self):

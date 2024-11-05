@@ -19,8 +19,8 @@ class SceneStep:
 
 
 class MockController(Controller):
-    def __init__(self, led_driver, communication, config = {}, switches = [],  ui = None, period_counter = None):
-        super().__init__(led_driver, communication, config, switches, ui, period_counter)
+    def __init__(self, led_driver, communication, midi, config = {}, switches = [],  ui = None, period_counter = None):
+        super().__init__(led_driver, communication, midi, config, switches, ui, period_counter)
 
         self._next_step = None
         self._cnt = 0
@@ -60,6 +60,24 @@ class MockController(Controller):
             raise Exception("Invalid test step")
         
         self._next_step = step
+
+
+##################################################################################################################################
+
+
+class MockMidiController:
+    def __init__(self):
+        self.messages_sent = []
+        self.next_receive_messages = []
+
+    def receive(self):
+        if self.next_receive_messages:
+            return self.next_receive_messages.pop(0)
+        
+        return None
+    
+    def send(self, midi_message):
+        self.messages_sent.append(midi_message)
 
 
 ##################################################################################################################################

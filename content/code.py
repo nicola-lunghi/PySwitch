@@ -60,6 +60,10 @@ if not Tools.get_option(Config, "exploreMode"):
     appl = Controller(
         led_driver = led_driver, 
         communication = Communication, 
+        midi = MidiController(
+            config = Tools.get_option(Communication, "midi", {}),
+            debug  = Tools.get_option(Config, "debugMidi")
+        ),
         config = Config, 
         switches = Switches, 
         ui = UiController(

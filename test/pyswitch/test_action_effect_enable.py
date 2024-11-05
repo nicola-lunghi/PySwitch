@@ -9,7 +9,7 @@ with patch.dict(sys.modules, {
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
     "usb_midi": MockUsbMidi(),
-    "adafruit_midi": MockAdafruitMIDI(),
+    #"adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
@@ -107,6 +107,7 @@ class TestActionEffectEnable(unittest.TestCase):
         appl = MockController(
             led_driver = led_driver,
             communication = comm,
+            midi = MockMidiController(),
             switches = [
                 {
                     "assignment": {
@@ -299,6 +300,7 @@ class TestActionEffectEnable(unittest.TestCase):
                 communication = {
                     "valueProvider": MockValueProvider()
                 },
+                midi = MockMidiController(),
                 switches = [
                     {
                         "assignment": {
@@ -374,6 +376,7 @@ class TestActionEffectEnable(unittest.TestCase):
         appl = MockController(
             led_driver = led_driver,
             communication = comm,
+            midi = MockMidiController(),
             switches = [
                 {
                     "assignment": {
@@ -652,6 +655,7 @@ class TestActionEffectEnable(unittest.TestCase):
         appl = MockController(
             led_driver = led_driver,
             communication = comm,
+            midi = MockMidiController(),
             switches = [
                 {
                     "assignment": {
@@ -826,6 +830,7 @@ class TestActionEffectEnable(unittest.TestCase):
         appl = MockController(
             led_driver = led_driver,
             communication = comm,
+            midi = MockMidiController(),
             switches = [
                 {
                     "assignment": {
@@ -951,6 +956,7 @@ class TestActionEffectEnable(unittest.TestCase):
         appl = MockController(
             led_driver = led_driver,
             communication = comm,
+            midi = MockMidiController(),
             switches = [
                 {
                     "assignment": {
@@ -1065,6 +1071,7 @@ class TestActionEffectEnable(unittest.TestCase):
         appl = MockController(
             led_driver = led_driver,
             communication = comm,
+            midi = MockMidiController(),
             switches = [
                 {
                     "assignment": {
