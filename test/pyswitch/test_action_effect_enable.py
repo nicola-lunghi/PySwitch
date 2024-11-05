@@ -12,6 +12,7 @@ with patch.dict(sys.modules, {
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     #from lib.pyswitch.controller.Controller import Controller
@@ -21,7 +22,7 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.controller.actions.actions import EffectEnableAction, PushButtonModes
     from lib.pyswitch.controller.Client import ClientParameterMapping
-    from lib.pyswitch.misc import Tools, Defaults
+    from lib.pyswitch.misc import Tools
 
 
 class MockCategoryProvider:
@@ -97,11 +98,15 @@ class TestActionEffectEnable(unittest.TestCase):
         period = MockPeriodCounter()
 
         vp = MockValueProvider()
+        comm = {
+            "valueProvider": vp
+        }
+        
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            value_provider = vp,
+            communication = comm,
             switches = [
                 {
                     "assignment": {
@@ -291,7 +296,9 @@ class TestActionEffectEnable(unittest.TestCase):
         with self.assertRaises(Exception):   
             appl = MockController(
                 led_driver = MockNeoPixelDriver(),
-                value_provider = MockValueProvider(),
+                communication = {
+                    "valueProvider": MockValueProvider()
+                },
                 switches = [
                     {
                         "assignment": {
@@ -359,11 +366,14 @@ class TestActionEffectEnable(unittest.TestCase):
         period = MockPeriodCounter()
 
         vp = MockValueProvider()
+        comm = {
+            "valueProvider": vp
+        }
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            value_provider = vp,
+            communication = comm,
             switches = [
                 {
                     "assignment": {
@@ -634,11 +644,14 @@ class TestActionEffectEnable(unittest.TestCase):
         period = MockPeriodCounter()
 
         vp = MockValueProvider()
+        comm = {
+            "valueProvider": vp
+        }
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            value_provider = vp,
+            communication = comm,
             switches = [
                 {
                     "assignment": {
@@ -805,11 +818,14 @@ class TestActionEffectEnable(unittest.TestCase):
         period = MockPeriodCounter()
 
         vp = MockValueProvider()
+        comm = {
+            "valueProvider": vp
+        }
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            value_provider = vp,
+            communication = comm,
             switches = [
                 {
                     "assignment": {
@@ -927,11 +943,14 @@ class TestActionEffectEnable(unittest.TestCase):
         period = MockPeriodCounter()
 
         vp = MockValueProvider()
+        comm = {
+            "valueProvider": vp
+        }
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            value_provider = vp,
+            communication = comm,
             switches = [
                 {
                     "assignment": {
@@ -1038,11 +1057,14 @@ class TestActionEffectEnable(unittest.TestCase):
         period = MockPeriodCounter()
 
         vp = MockValueProvider()
+        comm = {
+            "valueProvider": vp
+        }
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            value_provider = vp,
+            communication = comm,
             switches = [
                 {
                     "assignment": {

@@ -82,7 +82,8 @@ class Controller(Updater): #ClientRequestListener
             self.client = Client(self._midi, self.config, value_provider)
 
         # Set up the screen elements
-        self.ui.init(self)
+        if self.ui:
+            self.ui.init(self)
 
         # Set up switches
         self._init_switches()
@@ -147,19 +148,10 @@ class Controller(Updater): #ClientRequestListener
     # Runs the processing loop (which never ends)
     def process(self):
         # Show user interface
-        #if self.ui:  
-        #    if self._debug:
-        #        Tools.print("-> Init UI:")            
+        if self.ui:            
+            self.ui.show()
 
-        #    if self._debug_ui_structure: 
-        #        self.ui.root.print_debug_info(3)
-
-        #    Memory.watch("Controller: Showing UI")
-
-        #    self.ui.show(self)        
-        #self.ui.current.root.print_debug_info(3)        
-        
-        self.ui.show()
+            Memory.watch("Controller: Showing UI")
         
         self.running = True
 

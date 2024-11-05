@@ -47,6 +47,11 @@ class MockAdafruitMIDISystemExclusive:
             self.manufacturer_id = manufacturer_id
             self.data = data
 
+class MockAdafruitMIDIMessage:
+    class MIDIUnknownEvent:
+        def __init__(self, status = 0):
+            self.status = status
+
 
 class MockGC:
     mock = {

@@ -14,21 +14,13 @@ class SceneStep:
         self.evaluate = evaluate
         self.next = next
 
-    # Prepare step
-    #def prepare(self):
-    #    pass
-
-    # Evaluate results of step. Returns if the loop should continue.
-    #def evaluate(self, tick_result):
-    #    return False  # Quit processing loop
-    
 
 ##################################################################################################################################
 
 
 class MockController(Controller):
-    def __init__(self, led_driver, value_provider, config= {}, switches = [], displays = [], ui = None, period_counter = None):
-        super().__init__(led_driver, value_provider, config, switches, displays, ui, period_counter)
+    def __init__(self, led_driver, communication, config = {}, switches = [],  ui = None, period_counter = None):
+        super().__init__(led_driver, communication, config, switches, ui, period_counter)
 
         self._next_step = None
         self._cnt = 0
