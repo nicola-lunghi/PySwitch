@@ -28,8 +28,7 @@ Switches = [
     {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
+            KemperActionDefinitions.TUNER_MODE(
                 display = {
                     "id": DisplayIds.DISPLAY_HEADER,
                     "index": 0,
@@ -43,14 +42,14 @@ Switches = [
     {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
+            KemperActionDefinitions.RIG_VOLUME_BOOST(
+                boost_volume = 0.75,     # Value im [0..1] representing the Rig Volume Knob. Examples: 0.5 = 0dB (no boost), 0.75 = +6dB, 1.0 = +12dB
                 display = {
                     "id": DisplayIds.DISPLAY_HEADER,
                     "index": 1,
                     "layout": ACTION_LABEL_LAYOUT
                 }
-            )
+            )    
         ]
     },
 
@@ -59,7 +58,7 @@ Switches = [
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                 display = {
                     "id": DisplayIds.DISPLAY_FOOTER,
                     "index": 0,
@@ -74,7 +73,7 @@ Switches = [
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
                 display = {
                     "id": DisplayIds.DISPLAY_FOOTER,
                     "index": 1,

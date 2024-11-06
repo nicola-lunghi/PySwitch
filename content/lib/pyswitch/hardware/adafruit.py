@@ -1,8 +1,7 @@
 import board
-import busio
 
 # Display driver
-from busio import SPI
+from busio import SPI, UART
 from displayio import release_displays
 from adafruit_misc.adafruit_st7789 import ST7789
 from adafruit_midi import MIDI
@@ -206,7 +205,7 @@ class AdfruitDinMidiDevice:
                  out_channel = 0, 
         ):
 
-        midi_uart = busio.UART(
+        midi_uart = UART(
             gpio_in, 
             gpio_out, 
             baudrate = baudrate, 

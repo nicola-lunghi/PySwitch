@@ -25,33 +25,6 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.misc import Tools
 
 
-class MockCategoryProvider:
-    def get_effect_category(self, value):
-        return value * 10
-    
-    # Must return the effect color for a mapping value
-    def get_effect_category_color(self, value):
-        return (value, value + 2, value * 4)
-    
-    # Must return the effect name for a mapping value
-    def get_effect_category_name(self, value):
-        return "name" + repr(value)
-    
-    # Must return the value interpreted as "not assigned"
-    def get_category_not_assigned(self):
-        return 0
-
-
-class MockSlotInfoProvider:
-    def __init__(self):
-        self.output = "noname"
-
-    def get_name(self):
-        return self.output
-
-
-###############################################################################################
-
 
 class TestActionEffectEnable(unittest.TestCase):
 
@@ -167,6 +140,7 @@ class TestActionEffectEnable(unittest.TestCase):
             self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 0)
             self.assertEqual(action_1._effect_category, 0)
+            self.assertEqual(action_1.state, False)
 
             self.assertEqual(appl.switches[0].color, (0, 0, 0))
             self.assertEqual(appl.switches[0].brightness, 0.02)

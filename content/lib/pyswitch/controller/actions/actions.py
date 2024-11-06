@@ -66,7 +66,7 @@ class PushButtonAction(Action):
 
     # Update the state without functional changes. This is used to react to
     # parameters that have to be requested first. When the answer comes in, the state 
-    # is set again here, but no functional update is done.
+    # is set here again, but no functional update is done.
     def feedback_state(self, state):
         self._state = state
 
@@ -128,6 +128,20 @@ class PushButtonAction(Action):
 ################################################################################################################################
 
 
+# Comparison modes (for the valueEnabled value when requesting a value)
+class ParameterActionModes:
+    MODE_EQUAL = 0            # Enable when exactly the valueEnabled value comes in
+    
+    MODE_GREATERL = 10        # Enable when a value greater than valueEnabled comes in
+    MODE_GREATER_EQUAL = 20   # Enable when the valueEnabled value comes in, or anything greater
+
+    MODE_LESS = 30            # Enable when a value less than valueEnabled comes in
+    MODE_LESS_EQUAL = 40      # Enable when the valueEnabled value comes in, or anything less
+
+
+################################################################################################################################
+
+
 # Implements bipolar parameters on base of the PushButtonAction class
 class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
@@ -142,20 +156,23 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     # Generic MIDI parameter
     # Additional options:
     # {
-    #     "mode":           Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
-    #     "holdTimeMillis": Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
+    #     "mode":               Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
+    #     "holdTimeMillis":     Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
     #
-    #     "mapping":        A ClientParameterMapping instance. See mappings.py for some predeifined ones.
-    #                       This can also be an array: In this case the mappings are processed in the given order.
-    #     "mappingDisable": Mapping to be used on disabling the state. If mapping is an array, this has also to be an array.
-    #     "text":           Text (optional)
-    #     "color":          Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
-    #                       with one color for each LED segment of the switch (if more actions share the LEDs, only the first
-    #                       color is used)
-    #     "valueEnabled":   Value to be interpreted as "enabled". Optional: Default is 1. If mapping is a list, this must
-    #                       also be a list of values for the mappings.
-    #     "valueDisabled":  Value to be interpreted as "disabled". Optional: Default is 0. If mappingDisable (if provided)
-    #                       or mapping is a list, this must also be a list of values for the mappings.
+    #     "mapping":            A ClientParameterMapping instance. See mappings.py for some predeifined ones.
+    #                           This can also be an array: In this case the mappings are processed in the given order.
+    #     "mappingDisable":     Mapping to be used on disabling the state. If mapping is an array, this has also to be an array.
+    #     "text":               Text (optional)
+    #     "color":              Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
+    #                           with one color for each LED segment of the switch (if more actions share the LEDs, only the first
+    #                           color is used)
+    #     "valueEnabled":       Value to be interpreted as "enabled". Optional: Default is 1. If mapping is a list, this must
+    #                           also be a list of values for the mappings.
+    #     "valueDisabled":      Value to be interpreted as "disabled". Optional: Default is 0. If mappingDisable (if provided)
+    #                           or mapping is a list, this must also be a list of values for the mappings.
+    #     "setValueEnabled":    Optional: Value for setting. valueEnabled is only used for receiving if this is set.
+    #     "setValueDisabled":   Optional: Value for setting. valueDisabled is only used for receiving if this is set.
+    #     "comparisonMode":     Mode of comparison when receiving a value. Default is ParameterActionModes.MODE_GREATER_EQUAL.
     # }
     def __init__(self, config = {}):
         super().__init__(config)
@@ -169,7 +186,11 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         self._mapping_off = Tools.get_option(self.config, "mappingDisable", None)                       # Can be an array
         self._value_on = Tools.get_option(self.config, "valueEnabled", 1)                               # Can be an array
         self._value_off = Tools.get_option(self.config, "valueDisabled", 0)                             # Can be an array
+        self._set_value_on = Tools.get_option(self.config, "setValueEnabled", self._value_on)           # Can be an array
+        self._set_value_off = Tools.get_option(self.config, "setValueDisabled", self._value_off)        # Can be an array
         
+        self._comparison_mode = Tools.get_option(self.config, "comparisonMode", ParameterActionModes.MODE_GREATER_EQUAL)
+
         self._text = Tools.get_option(self.config, "text", False)
         self._text_disabled = Tools.get_option(self.config, "textDisabled", False)
 
@@ -180,7 +201,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
     def init(self, appl, switch):
         super().init(appl, switch)
-    
+
         # Global config
         self._dim_factor_on = Tools.get_option(
             self.config, "displayDimFactorOn", 
@@ -209,10 +230,19 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
             self._brightness_on = self.DEFAULT_LED_BRIGHTNESS_ON
             self._brightness_off = self.DEFAULT_LED_BRIGHTNESS_OFF
 
-        self.appl.client.register(self._mapping, self)
+        # Register all mappings
+        if isinstance(self._mapping, ClientParameterMapping):
+            self.appl.client.register(self._mapping, self)
+        else:
+            for m in self._mapping:
+                self.appl.client.register(m, self)
         
         if self._mapping_off:
-            self.appl.client.register(self._mapping_off, self)
+            if isinstance(self._mapping_off, ClientParameterMapping):
+                self.appl.client.register(self._mapping_off, self)
+            else:
+                for m in self._mapping_off:
+                    self.appl.client.register(m, self)
 
     # Set state (called by base class)
     def set(self, enabled):        
@@ -221,7 +251,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
         for mapping_def in mapping_definitions:
             self.appl.client.set(mapping_def["mapping"], mapping_def["value"])
-
+            
         # Request value
         self._request_value()
 
@@ -328,20 +358,23 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
                 candidates = self._mapping
 
         # Get array of mappings to execute
+        value_on = self._set_value_on
+        value_off = self._set_value_off
+
         if isinstance(candidates, ClientParameterMapping):
             all = [candidates]
 
             if state == True:
-                values = [self._value_on]
+                values = [value_on]
             else:
-                values = [self._value_off]
+                values = [value_off]
         else:
             all = candidates
 
             if state == True:
-                values = self._value_on
+                values = value_on
             else:
-                values = self._value_off
+                values = value_off
 
         ret = []
         for i in range(len(all)):
@@ -403,8 +436,24 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
             return
         
         state = False
-        if mapping.value >= self._request_mapping_value_on:
-            state = True
+        
+        if self._comparison_mode == ParameterActionModes.MODE_EQUAL:
+            if mapping.value == self._request_mapping_value_on:
+                state = True
+        elif self._comparison_mode == ParameterActionModes.MODE_GREATER_EQUAL:
+            if mapping.value >= self._request_mapping_value_on:
+                state = True
+        elif self._comparison_mode == ParameterActionModes.MODE_GREATER:
+            if mapping.value > self._request_mapping_value_on:
+                state = True
+        elif self._comparison_mode == ParameterActionModes.MODE_LESS_EQUAL:
+            if mapping.value <= self._request_mapping_value_on:
+                state = True
+        elif self._comparison_mode == ParameterActionModes.MODE_LESS:
+            if mapping.value < self._request_mapping_value_on:
+                state = True        
+        else:
+            raise Exception("Invalid comparison mode: " + repr(self._comparison_mode))        
 
         if self.debug:  # pragma: no cover
             self.print(" -> Receiving binary switch status " + repr(mapping.value) + ", counted as " + repr(state))

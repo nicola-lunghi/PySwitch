@@ -4,10 +4,9 @@ from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 
 from pyswitch.misc import Colors, Defaults, PeriodCounter, Tools
-from pyswitch.controller.actions.actions import ParameterAction, PushButtonModes
+from pyswitch.controller.actions.actions import ParameterAction, ParameterActionModes, PushButtonModes, EffectEnableAction, ResetDisplaysAction
 from pyswitch.controller.Client import ClientParameterMapping
 
-from pyswitch.controller.actions.actions import EffectEnableAction, ParameterAction, ResetDisplaysAction
 
 ####################################################################################################################
 
@@ -198,6 +197,11 @@ class KemperActionDefinitions:
     def TUNER_MODE(display = None, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
         return ParameterAction({
             "mapping": KemperMappings.TUNER_MODE_STATE,
+            "valueEnabled": 1,
+            "valueDisabled": 3,
+            "setValueEnabled": 1,
+            "setValueDisabled": 0,
+            "comparisonMode": ParameterActionModes.MODE_EQUAL,
             "display": display,
             "text": "Tuner",
             "color": Colors.WHITE,

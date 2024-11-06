@@ -1,6 +1,6 @@
-from ..controller.ConditionTree import ConditionTree
 from .ui import DisplayBounds, DisplaySplash
 from .elements import DisplayLabel
+from ..controller.ConditionTree import ConditionTree
 from ..misc import Updateable
 
 

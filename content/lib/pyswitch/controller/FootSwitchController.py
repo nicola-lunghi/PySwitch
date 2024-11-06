@@ -130,7 +130,7 @@ class FootSwitchController: #ConditionListener
         # Mark as pushed (prevents redundant messages in the following ticks, when the switch can still be down)
         self._pushed_state = True
         self._process_actions_push()
-
+        
     # Return if the switch is currently pushed
     @property
     def pushed(self):

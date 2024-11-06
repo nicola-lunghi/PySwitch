@@ -19,10 +19,10 @@ class DisplaySplash:
 # Represents a screen area with dimensions.
 class DisplayBounds:
     def __init__(self, x = 0, y = 0, w = 0, h = 0):
-        self.x = x
-        self.y = y
-        self.width = w
-        self.height = h 
+        self.x = int(x)
+        self.y = int(y)
+        self.width = int(w)
+        self.height = int(h)
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.width == other.width and self.height == other.height
@@ -45,13 +45,13 @@ class DisplayBounds:
     # Returns a copy which is translated
     def translated(self, x, y):
         cl = self.clone()
-        cl.translate(x, y)
+        cl.translate(int(x), int(y))
         return cl
 
     # Move by
     def translate(self, x, y):
-        self.x = self.x + x
-        self.y = self.y + y
+        self.x = self.x + int(x)
+        self.y = self.y + int(y)
 
     # Removes a part of the rectangle and returns it.
     def remove_from_top(self, amount):
@@ -59,11 +59,11 @@ class DisplayBounds:
             self.x,
             self.y,
             self.width,
-            amount
+            int(amount)
         )
 
-        self.y = self.y + amount
-        self.height = self.height - amount
+        self.y = self.y + int(amount)
+        self.height = self.height - int(amount)
         
         return ret
     
@@ -71,12 +71,12 @@ class DisplayBounds:
     def remove_from_bottom(self, amount):
         ret = DisplayBounds(
             self.x,
-            self.y + self.height - amount,
+            self.y + self.height - int(amount),
             self.width,
-            amount
+            int(amount)
         )
 
-        self.height = self.height - amount
+        self.height = self.height - int(amount)
         
         return ret
     
@@ -85,25 +85,25 @@ class DisplayBounds:
         ret = DisplayBounds(
             self.x,
             self.y,
-            amount,
+            int(amount),
             self.height
         )
 
-        self.x = self.x + amount
-        self.width = self.width - amount
+        self.x = self.x + int(amount)
+        self.width = self.width - int(amount)
         
         return ret
     
     # Removes a part of the rectangle and returns it.
     def remove_from_right(self, amount):
         ret = DisplayBounds(
-            self.x + self.width - amount,
+            self.x + self.width - int(amount),
             self.y,
-            amount,
+            int(amount),
             self.height
         )
 
-        self.width = self.width - amount
+        self.width = self.width - int(amount)
         
         return ret
 
@@ -113,16 +113,16 @@ class DisplayBounds:
             self.x,
             self.y,
             self.width,
-            amount
+            int(amount)
         )
     
     # Returns a part of the rectangle without modifying it
     def bottom(self, amount):
         return DisplayBounds(
             self.x,
-            self.y + self.height - amount,
+            self.y + self.height - int(amount),
             self.width,
-            amount
+            int(amount)
         )
     
     # Returns a part of the rectangle without modifying it
@@ -130,24 +130,24 @@ class DisplayBounds:
         return DisplayBounds(
             self.x,
             self.y,
-            amount,
+            int(amount),
             self.height
         )
 
     # Returns a part of the rectangle without modifying it    
     def right(self, amount):
         return DisplayBounds(
-            self.x + self.width - amount,
+            self.x + self.width - int(amount),
             self.y,
-            amount,
+            int(amount),
             self.height
         )
     
     # Returns a copy of the rectangle at the given position
     def with_position(self, x, y):
         return DisplayBounds(
-            x,
-            y,
+            int(x),
+            int(y),
             self.width,
             self.height
         )

@@ -49,6 +49,7 @@ font_loader = AdafruitFontLoader()
 if not Tools.get_option(Config, "exploreMode"):
     # Normal operation
     from pyswitch.controller.Controller import Controller
+    from pyswitch.controller.MidiController import MidiController
     from pyswitch.ui.UiController import UiController
 
     # Load configuration files

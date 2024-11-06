@@ -10,10 +10,10 @@ from lib.pyswitch.controller.MidiController import MidiController, MidiRouting
 from lib.pyswitch.hardware.hardware import MidiDevices
 
 # MIDI Devices in use (optionally you can specify the in/out channels here, too)
-#DIN_MIDI = MidiDevices.PA_MIDICAPTAIN_DIN_MIDI(
-#    in_channel = None,  # All
-#    out_channel = 0
-#)
+DIN_MIDI = MidiDevices.PA_MIDICAPTAIN_DIN_MIDI(
+    in_channel = None,  # All
+    out_channel = 0
+)
 USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
     in_channel = None,  # All
     out_channel = 0
@@ -38,11 +38,11 @@ Communication = {
     # the MidiController.PYSWITCH source/target or the application will not be able to communicate!
     "midi": {
         "routings": [
-            # MIDI Through from DIN to USB
-            #MidiRouting(
-            #    source = DIN_MIDI,
-            #    target = USB_MIDI
-            #),
+            # MIDI Through from USB to DIN
+            MidiRouting(
+                source = USB_MIDI,
+                target = DIN_MIDI
+            ),
             
             ###################################################
 

@@ -10,8 +10,8 @@ from pyswitch.misc import Colors, Defaults
 from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
 from pyswitch.controller.actions.actions import PushButtonModes
 
-from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, KemperMidiValueProvider
-from displays import DisplayIds
+from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
+from display import DisplayIds
 
 
 # Layout used for the action labels (only used here locally)
@@ -20,10 +20,6 @@ ACTION_LABEL_LAYOUT = {
     "backColor": Defaults.DEFAULT_LABEL_COLOR,
     "stroke": 1
 }
-
-# Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
-# when an answer to a value request is received.
-ValueProvider = KemperMidiValueProvider()
 
 # Defines the switch assignments
 Switches = [

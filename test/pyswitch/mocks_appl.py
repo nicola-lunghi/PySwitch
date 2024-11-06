@@ -151,7 +151,7 @@ class MockValueProvider:
             if not "mapping" in o or o["mapping"] != mapping:
                 continue
 
-            if "value" in o:   
+            if "value" in o:                   
                 mapping.value = o["value"]
 
             ret = o["result"] if "result" in o else False
@@ -276,6 +276,26 @@ class MockClient:
 ##################################################################################################################################
 
 
+class MockClientRequestListener:
+    def __init__(self):
+        self.parameter_changed_calls = []
+        self.request_terminated_calls = []
+
+    def parameter_changed(self, mapping):
+        self.parameter_changed_calls.append({
+            "mapping": mapping
+        })
+
+    # Called when the client is offline (requests took too long)
+    def request_terminated(self, mapping):
+        self.request_terminated_calls.append({
+            "mapping": mapping
+        })
+
+
+##################################################################################################################################
+
+
 class MockBidirectionalProtocol:
     def __init__(self):
         self.outputs_is_bidirectional = []
@@ -318,4 +338,35 @@ class MockBidirectionalProtocol:
     # Must return a color representation for the current state
     def get_color(self):
         return self.output_color
+
+
+##################################################################################################################################
+
+
+class MockCategoryProvider:
+    def get_effect_category(self, value):
+        return value * 10
+    
+    # Must return the effect color for a mapping value
+    def get_effect_category_color(self, value):
+        return (value, value + 2, value * 4)
+    
+    # Must return the effect name for a mapping value
+    def get_effect_category_name(self, value):
+        return "name" + repr(value)
+    
+    # Must return the value interpreted as "not assigned"
+    def get_category_not_assigned(self):
+        return 0
+
+
+##################################################################################################################################
+
+
+class MockSlotInfoProvider:
+    def __init__(self):
+        self.output = "noname"
+
+    def get_name(self):
+        return self.output
 

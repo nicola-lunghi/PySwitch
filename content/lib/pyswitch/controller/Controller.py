@@ -2,8 +2,7 @@ from .MidiController import MidiController
 from .FootSwitchController import FootSwitchController
 from .measurements import RuntimeMeasurement
 from .actions.Action import Action
-from .Client import Client
-from .BidirectionalClient import BidirectionalClient
+from .Client import Client, BidirectionalClient
 from ..misc import Tools, Updater, PeriodCounter
 from ..Memory import Memory
 

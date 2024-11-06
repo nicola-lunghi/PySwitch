@@ -15,26 +15,9 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     from adafruit_midi.control_change import ControlChange
-    from.mocks_appl import *
     from lib.pyswitch.controller.Client import Client, ClientParameterMapping, ClientRequest
 
-
-
-class MockClientRequestListener:
-    def __init__(self):
-        self.parameter_changed_calls = []
-        self.request_terminated_calls = []
-
-    def parameter_changed(self, mapping):
-        self.parameter_changed_calls.append({
-            "mapping": mapping
-        })
-
-    # Called when the client is offline (requests took too long)
-    def request_terminated(self, mapping):
-        self.request_terminated_calls.append({
-            "mapping": mapping
-        })
+    from.mocks_appl import *
 
 
 class MockClient:

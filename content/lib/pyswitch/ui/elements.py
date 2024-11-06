@@ -5,7 +5,7 @@ from .ui import HierarchicalDisplayElement, DisplayBounds, DisplayElement
 
 from ..controller.ConditionTree import ConditionTree, Condition
 from ..controller.measurements import RuntimeMeasurement
-from ..controller.BidirectionalClient import BidirectionalClient
+from ..controller.Client import BidirectionalClient
 from ..misc import Tools, Updateable, Colors
 
 
@@ -330,6 +330,9 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
 
     # Wrap text if requested
     def _wrap_text(self, text):
+        if not text:
+            return ""
+        
         if self.layout.max_text_width:
             return DisplayLabel.LINE_FEED.join(
                 wrap_text_to_pixels(

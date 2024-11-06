@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
 
-#from kemper import KemperMappings
+from kemper import KemperMappings
 
 Config = {
     
@@ -38,7 +38,7 @@ Config = {
                                                       # actions are triggered. Optional.
     #"debugParameters": True,                         # Show messages from the global parameter controller
     #"debugClient": True,                             # Show all requests and responses to/from the Kemper Profiler. Optional.
-    #"clientDebugMapping": KemperMappings.RIG_NAME,  # Optional, if set the kemper classes will only output messages related to
+    #"clientDebugMapping": KemperMappings.TUNER_MODE_STATE,  # Optional, if set the kemper classes will only output messages related to
                                                       # the specified mapping.
     #"debugClientRawMidi": True,                      # Debug raw kemper MIDI messages. Only regarded whe "debugKemper" is enabled, too.
     "debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
