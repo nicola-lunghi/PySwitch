@@ -5,6 +5,7 @@ generic configuration script. Features are:
 
 - Program (Foot)switches to send MIDI messages. Each switch can do multiple actions.
 - Request parameters via NRPN MIDI from the controlled device and evaluate them on a TFT screen or using NeoPixel LEDs (for example the rig/amp/IR names can be displayed)
+- Establish a bidirectional communication with the client device (implemented for the Kemper Profiler Player, but can be used for anything with similar protocol)
 - Use conditions in the configuration to make functions depending on MIDI parameters of the device
 - Define the device to be controlled via a custom python library, implementing base classes from the firmware
 
@@ -42,7 +43,8 @@ The whole configuration is done in some files in the root directory (of the devi
 
 - **config.py**: Global configuration (MIDI channel, processing control, debug switches)
 - **switches.py**: Defines which action(s) are triggered when a switch is pushed
-- **displays.py**: Defines the layout of the TFT display and which data to show
+- **display.py**: Defines the layout of the TFT display and which data to show
+- **communication.py**: Defines the communication with the client, as well as generic MIDI routing between available MIDI ports
 
 These files can make use of the objects contained in **kemper.py** which provide all necessary mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change).
 
@@ -245,7 +247,7 @@ Available condition types (see lib/pyswitch/controller/COnditionTree.py):
 
 ##### Display Labels for Actions
 
-The last example only uses the switch LEDs to indicate the effect status (brightness) and type (color). You can also connect a display area (defined in **displays.py**) to the action, so the effect type (color and name) and state (brightness) are also visualized on screen:
+The last example only uses the switch LEDs to indicate the effect status (brightness) and type (color). You can also connect a display area (defined in **display.py**) to the action, so the effect type (color and name) and state (brightness) are also visualized on screen:
 
 ```python
 Switches = [
@@ -255,7 +257,7 @@ Switches = [
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                 display = {
-                    # Some arbitrary ID defined in displays.py
+                    # Some arbitrary ID defined in display.py
                     "id": 123,
 
                     # Only used when the display element is a split container, to 
@@ -275,42 +277,45 @@ Switches = [
 
 ### TFT Display Layout Definition
 
-The file **displays.py** must only provide a list of DisplayElement instances in a list named Displays:
+The file **display.py** must provide a root DisplayElement to be shown. Normally, this is a HierarchicalDisplayElement:
 
 ```python
-Displays = [        
-    # Header area
-    DisplaySplitContainer(
-        id = 123,
-        name = "Header",
-        bounds = DisplayBounds(0, 0, 240, 40)  # x, y, width, height
-    ),
+Display = HierarchicalDisplayElement(
+    bounds = DisplayBounds(0, 0, 240, 240),
+    children = [        
+        # Header area
+        DisplaySplitContainer(
+            id = 123,
+            name = "Header",
+            bounds = DisplayBounds(0, 0, 240, 40)  # x, y, width, height
+        ),
 
-    # Footer area
-    DisplaySplitContainer(
-        id = 456,
-        name = "Footer",
-        bounds = DisplayBounds(0, 200, 240, 40)  # x, y, width, height
-    ),
+        # Footer area
+        DisplaySplitContainer(
+            id = 456,
+            name = "Footer",
+            bounds = DisplayBounds(0, 200, 240, 40)  # x, y, width, height
+        ),
 
-    # Rig name
-    ParameterDisplayLabel(
-        name = "Rig Name",
-        bounds = DisplayBounds(0, 40, 160, 40)  # x, y, width, height
-        layout = {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf",
-            "lineSpacing": 0.8,
-            "maxTextWidth": 220,
-        },
-        parameter = {
-            "mapping": KemperMappings.AMP_NAME,
-            "depends": KemperMappings.RIG_DATE   # Only update this when the 
-                                                 # rig date changed (optional)
-        }        
-    ),
+        # Rig name
+        ParameterDisplayLabel(
+            name = "Rig Name",
+            bounds = DisplayBounds(0, 40, 160, 40)  # x, y, width, height
+            layout = {
+                "font": "/fonts/PTSans-NarrowBold-40.pcf",
+                "lineSpacing": 0.8,
+                "maxTextWidth": 220,
+            },
+            parameter = {
+                "mapping": KemperMappings.AMP_NAME,
+                "depends": KemperMappings.RIG_DATE   # Only update this when the 
+                                                    # rig date changed (optional)
+            }        
+        ),
 
-    # ... Define further elements here
-]
+        # ... Define further elements here
+    ]
+)
 ```
 
 The areas are stacked in the defined order, elements defined down the list will overlap the upper ones. 
@@ -336,47 +341,57 @@ You can specify the dimensions and positions of all display elements manually li
 The following snippets demonstrate this: The next two examples do exactly the same thing on a 240x240 screen (other parameters omitted for clarity):
 
 ```python
-Displays = [ 
-    # Header (top 40 pixels)
-    DisplayLabel(bounds = DisplayBounds(0, 0, 240, 40)),
+Display = HierarchicalDisplayElement(
+    bounds = DisplayBounds(0, 0, 240, 240),
+    children = [        
+        # Header (top 40 pixels)
+        DisplayLabel(bounds = DisplayBounds(0, 0, 240, 40)),
 
-    # Footer (bottom 40 pixels)
-    DisplayLabel(bounds = DisplayBounds(0, 200, 240, 40)),
+        # Footer (bottom 40 pixels)
+        DisplayLabel(bounds = DisplayBounds(0, 200, 240, 40)),
 
-    # Rig name (remaining space)
-    DisplayLabel(bounds = DisplayBounds(0, 40, 240, 160))
+        # Rig name (remaining space)
+        DisplayLabel(bounds = DisplayBounds(0, 40, 240, 160))
 
-    # Some other display (above footer, but overlapping 
-    # the rig name area)
-    DisplayLabel(bounds = DisplayBounds(0, 180, 240, 20))
-]
+        # Some other display (above footer, but overlapping 
+        # the rig name area)
+        DisplayLabel(bounds = DisplayBounds(0, 180, 240, 20))
+    ]
+)
 ```
 
 ```python
 # Create instance with all available space
 bounds = DisplayBounds(0, 0, 240, 240)
 
-Displays = [ 
-    # Header (remove top 40 pixels from bounds and 
-    # use that area)
-    DisplayLabel(bounds = bounds.remove_from_top(40)),
+Display = HierarchicalDisplayElement(
+    bounds = bounds,
+    children = [        
+        # Header (remove top 40 pixels from bounds and 
+        # use that area)
+        DisplayLabel(bounds = bounds.remove_from_top(40)),
 
-    # Footer (remove bottom 40 pixels from bounds and 
-    # use that area)
-    DisplayLabel(bounds = bounds.remove_from_bottom(40)),
+        # Footer (remove bottom 40 pixels from bounds and 
+        # use that area)
+        DisplayLabel(bounds = bounds.remove_from_bottom(40)),
 
-    # Rig name (take remaining space (header and bottom 
-    # have been cut off))
-    DisplayLabel(bounds = bounds),
+        # Rig name (take remaining space (header and bottom 
+        # have been cut off))
+        DisplayLabel(bounds = bounds),
 
-    # Some other display (above footer, but overlapping 
-    # the rig name area, so we use bottom() which does 
-    # not change the bounds)
-    DisplayLabel(bounds = bounds.bottom(20)),
-]
+        # Some other display (above footer, but overlapping 
+        # the rig name area, so we use bottom() which does 
+        # not change the bounds)
+        DisplayLabel(bounds = bounds.bottom(20)),
+    ]
+)
 ```
 
 See the DisplayBounds class in /lib/pyswitch/ui/elements/DisplayElement.py for more available methods.
+
+
+TODO  =========================
+
 
 #### Conditional layouts
 
