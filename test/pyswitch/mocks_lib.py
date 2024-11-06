@@ -1,3 +1,5 @@
+import time as orig_time
+
 
 class MockTime:
     mock = {
@@ -10,6 +12,8 @@ class MockTime:
 
     def localtime():
         return MockTime.mock["localtimeReturn"]
+    
+    struct_time = orig_time.struct_time
 
 
 class MockUsbMidi:
@@ -155,22 +159,22 @@ class MockBoard:
 class MockDisplayShapes:
     class rect:
         class Rect:
-            def __init__(self, x = 0, y = 0, w = 0, h = 0, fill = None, outline = None, stroke = 0):
+            def __init__(self, x = 0, y = 0, width = 0, height = 0, fill = None, outline = None, stroke = 0):
                 self.x = x 
                 self.y = y
-                self.width = w
-                self.height = h
+                self.width = width
+                self.height = height
                 self.fill = fill 
                 self.outline = outline
                 self.stroke = stroke
 
     class roundrect:
         class RoundRect:
-            def __init__(self, x = 0, y = 0, w = 0, h = 0, fill = None, outline = None, stroke = 0, r = 0):
+            def __init__(self, x = 0, y = 0, width = 0, height = 0, fill = None, outline = None, stroke = 0, r = 0):
                 self.x = x 
                 self.y = y
-                self.width = w
-                self.height = h
+                self.width = width
+                self.height = height
                 self.fill = fill 
                 self.outline = outline
                 self.stroke = stroke

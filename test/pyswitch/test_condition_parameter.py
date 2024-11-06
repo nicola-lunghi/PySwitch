@@ -39,6 +39,20 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
+            mode = ParameterConditionModes.MODE_NOT_EQUAL,
+            ref_value = 2.2,
+            
+            answer_value_1 = 2.2,
+            expect_1 = False,
+            
+            answer_value_2 = 2.1,
+            expect_2 = True,
+            
+            answer_value_3 = 2.3,
+            expect_3 = True
+        )
+
+        self._test_functionality(
             mode = ParameterConditionModes.MODE_GREATER,
             ref_value = 2.2,
             

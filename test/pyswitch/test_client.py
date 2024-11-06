@@ -192,6 +192,59 @@ class TestClient(unittest.TestCase):
 ##############################################################################################
 
 
+    def test_request_endless(self):        
+        midi = MockAdafruitMIDI.MIDI()
+        vp = MockValueProvider()
+
+        client = Client(
+            midi = midi,
+            config = {
+                "maxRequestLifetimeMillis": 0
+            },
+            value_provider = vp
+        )
+
+        mapping_1 = ClientParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        listener = MockClientRequestListener()
+
+        client.register_mapping(mapping_1, listener, False)
+
+        answer_msg = SystemExclusive(
+            manufacturer_id = [0x00, 0x10, 0x20],
+            data = [0x00, 0x00, 0x07, 0x45]
+        )
+        
+        vp.outputs_parse = [
+            {
+                "mapping": mapping_1,
+                "result": True,
+                "value": 34
+            }
+        ]
+
+        req = client._requests[0]
+
+        client.receive(answer_msg)
+        self.assertEqual(listener.parameter_changed_calls, [
+            {
+                "mapping": mapping_1
+            }
+        ])        
+        
+        self.assertEqual(mapping_1.value, 34)
+        self.assertEqual(req.finished, False)
+        self.assertTrue(req in client._requests)
+
+
+##############################################################################################
+
+
     def test_request_terminate(self):        
         midi = MockAdafruitMIDI.MIDI()
         vp = MockValueProvider()
@@ -247,7 +300,7 @@ class TestClient(unittest.TestCase):
 ##############################################################################################
 
 
-    def test_mapping_eq_request(self):
+    def test_mapping_eq_response(self):
         mapping_1 = ClientParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
@@ -295,7 +348,7 @@ class TestClient(unittest.TestCase):
 ##############################################################################################
 
 
-    def test_mapping_eq_request_none(self):
+    def test_mapping_eq_response_none(self):
         mapping_1 = ClientParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
@@ -320,6 +373,68 @@ class TestClient(unittest.TestCase):
         self.assertFalse(mapping_2.can_set)
         self.assertFalse(mapping_2.can_receive)
         self.assertTrue(mapping_2.can_request)
+
+        self.assertTrue(mapping_1 != mapping_2)
+
+
+##############################################################################################
+
+
+    def test_mapping_eq_request(self):
+        mapping_1 = ClientParameterMapping(
+            request = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            )
+        )
+
+        mapping_2 = ClientParameterMapping(
+            request = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            )
+        )
+
+        self.assertFalse(mapping_1.can_set)
+        self.assertFalse(mapping_1.can_receive)
+        self.assertTrue(mapping_1.can_request)
+        self.assertFalse(mapping_2.can_set)
+        self.assertFalse(mapping_2.can_receive)
+        self.assertTrue(mapping_2.can_request)
+
+        self.assertFalse(mapping_1 == None)
+        self.assertFalse(None == mapping_2)
+
+        self.assertTrue(mapping_1 == mapping_2)
+
+        mapping_2.request.data[1] = 0x01
+        self.assertTrue(mapping_1 != mapping_2)
+
+        mapping_2.request.data[1] = 0x07
+        self.assertTrue(mapping_1 == mapping_2)
+
+        mapping_1.request.manufacturer_id[1] = 0x01
+        self.assertTrue(mapping_1 != mapping_2)
+
+
+##############################################################################################
+
+
+    def test_mapping_eq_request_none(self):
+        mapping_1 = ClientParameterMapping(
+            request = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            )        )
+
+        mapping_2 = ClientParameterMapping()
+
+        self.assertFalse(mapping_1.can_set)
+        self.assertFalse(mapping_1.can_receive)
+        self.assertTrue(mapping_1.can_request)
+        self.assertFalse(mapping_2.can_set)
+        self.assertFalse(mapping_2.can_receive)
+        self.assertFalse(mapping_2.can_request)
 
         self.assertTrue(mapping_1 != mapping_2)
 
@@ -418,6 +533,37 @@ class TestClient(unittest.TestCase):
         self.assertIsNone(mapping_set_only.response)
         self.assertEqual(mapping_set_only.name, "foo")
         self.assertEqual(mapping_set_only.type, 34)
+
+
+##############################################################################################
+
+
+    def test_set_and_receive_only(self):
+        mapping_1 = ClientParameterMapping(
+            type = 34,
+            name = "foo",
+            set = SystemExclusive(
+                manufacturer_id = [0x10, 0x10, 0x20],
+                data = [0x04, 0x07, 0x10]
+            ),
+            request = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            ),
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        mapping_set_and_receive_only = mapping_1.set_and_receive_only
+
+        self.assertEqual(mapping_1.set, mapping_set_and_receive_only.set)
+        self.assertEqual(mapping_1.response, mapping_set_and_receive_only.response)
+
+        self.assertIsNone(mapping_set_and_receive_only.request)
+        self.assertEqual(mapping_set_and_receive_only.name, "foo")
+        self.assertEqual(mapping_set_and_receive_only.type, 34)
 
 
 ##############################################################################################

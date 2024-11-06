@@ -10,8 +10,10 @@ with patch.dict(sys.modules, {
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+    "gc": MockGC()
 }):
     from lib.pyswitch.ui.ui import DisplayElement, DisplayBounds, HierarchicalDisplayElement
+    from.mocks_ui import MockHierarchicalDisplayElement
 
 
 class MockDisplayElement(DisplayElement):
@@ -21,18 +23,6 @@ class MockDisplayElement(DisplayElement):
         self.num_bounds_changed_calls = 0
 
     def bounds_changed(self):
-        self.num_bounds_changed_calls += 1
-
-
-class MockHierarchicalDisplayElement(HierarchicalDisplayElement):
-    def __init__(self, bounds = DisplayBounds(), name = "", id = 0, children = None):
-        super().__init__(bounds = bounds, name = name, id = id, children = children)
-
-        self.num_bounds_changed_calls = 0
-
-    def bounds_changed(self):
-        super().bounds_changed()
-        
         self.num_bounds_changed_calls += 1
 
 
@@ -70,6 +60,18 @@ class TestDisplayElement(unittest.TestCase):
 
         self.assertEqual(el.search({ "id": "foo" }), el)
         self.assertEqual(el.search({ "id": "bar" }), None)
+
+
+    def test_initialized(self):
+        el = DisplayElement(
+            id = "foo"
+        )
+
+        self.assertEqual(el.initialized(), False)
+
+        el.init(None, None)
+
+        self.assertEqual(el.initialized(), True)
 
 
 ###############################################################################################
@@ -137,19 +139,19 @@ class TestHierarchicalDisplayElement(unittest.TestCase):
         appl = Object()
         ui = Object()
 
-        el = HierarchicalDisplayElement(
+        el = MockHierarchicalDisplayElement(
             id = "foo"
         )
 
-        child_1 = HierarchicalDisplayElement(
+        child_1 = MockHierarchicalDisplayElement(
             id = "bar"
         )
 
-        child_2 = HierarchicalDisplayElement(
+        child_2 = MockHierarchicalDisplayElement(
             id = "bat"
         )
 
-        subchild_1 = HierarchicalDisplayElement(
+        subchild_1 = MockHierarchicalDisplayElement(
             id = "tar"
         )
 
@@ -159,18 +161,98 @@ class TestHierarchicalDisplayElement(unittest.TestCase):
         child_1.add(None)
         child_1.add(subchild_1)
 
-        self.assertEqual(el._initialized, False)
-        self.assertEqual(child_1._initialized, False)
-        self.assertEqual(child_2._initialized, False)
-        self.assertEqual(subchild_1._initialized, False)
+        self.assertEqual(el.initialized(), False)
+        self.assertEqual(child_1.initialized(), False)
+        self.assertEqual(child_2.initialized(), False)
+        self.assertEqual(subchild_1.initialized(), False)
 
         el.init(ui, appl)
 
-        self.assertEqual(el._initialized, True)
-        self.assertEqual(child_1._initialized, True)
-        self.assertEqual(child_2._initialized, True)
-        self.assertEqual(subchild_1._initialized, True)
+        self.assertEqual(el.initialized(), True)
+        self.assertEqual(child_1.initialized(), True)
+        self.assertEqual(child_2.initialized(), True)
+        self.assertEqual(subchild_1.initialized(), True)
+
+        self.assertEqual(el.num_init_calls, 1)
+        self.assertEqual(child_1.num_init_calls, 1)
+        self.assertEqual(child_2.num_init_calls, 1)
+        self.assertEqual(subchild_1.num_init_calls, 1)
+
+
+    def test_init_partially(self):
+        class Object:
+            pass
+
+        appl = Object()
+        ui = Object()
+
+        el = MockHierarchicalDisplayElement(
+            id = "foo"
+        )
+
+        child_1 = MockHierarchicalDisplayElement(
+            id = "bar"
+        )
+
+        child_2 = MockHierarchicalDisplayElement(
+            id = "bat"
+        )
+
+        subchild_1 = MockHierarchicalDisplayElement(
+            id = "tar"
+        )
         
+        el.add(child_1)
+        el.add(child_2)
+
+        child_1.add(None)
+        child_1.add(subchild_1)
+
+        child_1.init(ui, appl)
+
+        self.assertEqual(el.initialized(), False)
+        self.assertEqual(child_1.initialized(), True)
+        self.assertEqual(child_2.initialized(), False)
+        self.assertEqual(subchild_1.initialized(), True)
+
+        el.init(ui, appl)
+
+        self.assertEqual(el.initialized(), True)
+        self.assertEqual(child_1.initialized(), True)
+        self.assertEqual(child_2.initialized(), True)
+        self.assertEqual(subchild_1.initialized(), True)
+        
+        self.assertEqual(el.num_init_calls, 1)
+        self.assertEqual(child_1.num_init_calls, 1)
+        self.assertEqual(child_2.num_init_calls, 1)
+        self.assertEqual(subchild_1.num_init_calls, 1)
+
+        subchild_2 = MockHierarchicalDisplayElement(
+            id = "tar2"
+        )
+
+        child_1.add(subchild_2)
+
+        self.assertEqual(el.initialized(), False)
+        self.assertEqual(child_1.initialized(), False)
+        self.assertEqual(child_2.initialized(), True)
+        self.assertEqual(subchild_1.initialized(), True)
+        self.assertEqual(subchild_2.initialized(), False)
+
+        el.init(ui, appl)
+
+        self.assertEqual(el.initialized(), True)
+        self.assertEqual(child_1.initialized(), True)
+        self.assertEqual(child_2.initialized(), True)
+        self.assertEqual(subchild_1.initialized(), True)
+        self.assertEqual(subchild_2.initialized(), True)
+        
+        self.assertEqual(el.num_init_calls, 2)
+        self.assertEqual(child_1.num_init_calls, 2)
+        self.assertEqual(child_2.num_init_calls, 1)
+        self.assertEqual(subchild_1.num_init_calls, 1)
+        self.assertEqual(subchild_2.num_init_calls, 1)
+
 
     def test_bounds_changed(self):
         class Object:

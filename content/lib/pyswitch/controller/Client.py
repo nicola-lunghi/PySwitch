@@ -257,9 +257,6 @@ class ClientRequest(EventEmitter):
         self.mapping = mapping
         self.debug = self.client.debug     
         
-        #if not self.mapping.request:
-        #    raise Exception("No REQUEST message prepared for this MIDI mapping (" + self.mapping.name + ")")
-        
         if self.mapping.request and not isinstance(self.mapping.request, SystemExclusive):
             raise Exception("Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
 

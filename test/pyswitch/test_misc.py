@@ -12,8 +12,11 @@ with patch.dict(sys.modules, {
     "gc": MockGC(),
     "time": MockTime
 }):
+    import time
+    
     from adafruit_midi.system_exclusive import SystemExclusive
     from adafruit_midi.control_change import ControlChange
+    from adafruit_midi.midi_message import MIDIUnknownEvent
     from lib.pyswitch.misc import *
 
 
@@ -66,6 +69,14 @@ class TestMiscTools(unittest.TestCase):
         self.assertEqual(Tools.get_current_millis(), 1045567)
 
 
+    def test_format_timestamp(self):
+        MockTime.mock["localtimeReturn"] = time.struct_time((2009, 7, 18, 6, 5, 4, 0, 0, 0))
+        self.assertEqual(Tools.formatted_timestamp(), "2009-07-18 06:05:04")
+
+        MockTime.mock["localtimeReturn"] = time.struct_time((22019, 12, 8, 12, 35, 44, 0, 0, 0))
+        self.assertEqual(Tools.formatted_timestamp(), "22019-12-08 12:35:44")
+
+
     def test_stringify_midi_message_falsy(self):
         self.assertEqual(Tools.stringify_midi_message(None), repr(None))
         self.assertEqual(Tools.stringify_midi_message(0), repr(0))
@@ -92,6 +103,15 @@ class TestMiscTools(unittest.TestCase):
         self.assertIn("ControlChange", str)
         self.assertIn("2", str)
         self.assertIn("66", str)
+
+
+    def test_stringify_midi_message_ue(self):
+        message = MIDIUnknownEvent(33)
+
+        str = Tools.stringify_midi_message(message)
+
+        self.assertIn("MIDIUnknownEvent", str)
+        self.assertIn("33", str)
 
 
     def test_stringify_midi_message_others(self):

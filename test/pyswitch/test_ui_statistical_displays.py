@@ -29,3 +29,8 @@ class TestStatisticalDisplays(unittest.TestCase):
     def test_performance_dot(self):
         # Must not throw
         StatisticalDisplays.PERFORMANCE_DOT(DisplayBounds(20, 30, 40, 50))
+
+
+    def test_protocol_dot(self):
+        # Must not throw
+        StatisticalDisplays.BIDIRECTIONAL_PROTOCOL_STATE_DOT(DisplayBounds(20, 30, 40, 50))

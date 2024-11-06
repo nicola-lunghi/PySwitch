@@ -259,3 +259,63 @@ class MockMeasurement:
         self.num_update_calls += 1   
 
 
+##################################################################################################################################
+
+
+class MockClient:
+    def __init__(self):
+        self.register_calls = []
+
+    def register(self, mapping, listener):
+        self.register_calls.append({
+            "mapping": mapping,
+            "listener": listener
+        })
+
+
+##################################################################################################################################
+
+
+class MockBidirectionalProtocol:
+    def __init__(self):
+        self.outputs_is_bidirectional = []
+        self.outputs_feedback_value = []
+        self.output_color = (0, 0, 0)
+
+        self.num_update_calls = 0
+
+        self.init_calls = []
+        self.receive_calls = []
+
+    def init(self, midi):
+        self.init_calls.append(midi)
+
+    # Must return (boolean) if the passed mapping is handled in the bidirectional protocol
+    def is_bidirectional(self, mapping):
+        for o in self.outputs_is_bidirectional:
+            if o["mapping"] == mapping:
+                return o["result"]
+            
+        return False
+   
+    # Must return (boolean) if the passed mapping should feed back the set value immediately
+    # without waiting for a midi message.
+    def feedback_value(self, mapping):
+        for o in self.outputs_feedback_value:
+            if o["mapping"] == mapping:
+                return o["result"]
+            
+        return False
+
+    # Initialize the communication etc.
+    def update(self):
+        self.num_update_calls += 1
+   
+    # Receive midi messages (for example for state sensing)
+    def receive(self, midi_message):
+        self.receive_calls.append(midi_message)
+
+    # Must return a color representation for the current state
+    def get_color(self):
+        return self.output_color
+

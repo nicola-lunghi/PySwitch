@@ -221,7 +221,7 @@ class TestParameterLabel(unittest.TestCase):
 
             self.assertEqual(display.text, "")            
 
-            return False
+            return True
         
         # Step 3: Not exceeded
         def prep3():

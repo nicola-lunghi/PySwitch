@@ -18,9 +18,21 @@ class MockHierarchicalDisplayElement(HierarchicalDisplayElement):
         super().__init__(bounds = bounds, name = name, id = id, children = children)
 
         self.num_print_calls = 0
+        self.num_init_calls = 0
+        self.num_bounds_changed_calls = 0
 
     def print_debug_info(self, indentation = 0):
         self.num_print_calls += 1
+
+    def init(self, ui, appl):
+        super().init(ui, appl)
+
+        self.num_init_calls += 1
+
+    def bounds_changed(self):
+        super().bounds_changed()
+        
+        self.num_bounds_changed_calls += 1
 
 
 class MockST7789:

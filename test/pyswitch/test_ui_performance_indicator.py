@@ -53,7 +53,6 @@ class TestPerformanceIndicator(unittest.TestCase):
         with patch.dict(sys.modules, {
             "adafruit_display_shapes.circle": MockDisplayShapes().circle()
         }):
-
             display.init(ui, appl)
 
         self.assertEqual(appl.added, [m])

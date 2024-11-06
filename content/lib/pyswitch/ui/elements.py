@@ -634,9 +634,9 @@ class TunerDevianceDisplay(DisplayElement):
 
     # Sets deviance value in range [0..16383]
     def set(self, value):
-        self._marker.x = int((self.bounds.width - self.width) * value / 16384)
+        self._marker.x = int((self.bounds.width - self.width) * value / 16383)
 
-        if abs(value - 8192) >= 300:   # TODO Const
+        if abs(value - 8191) >= 300:   # TODO Const
             self.color = Colors.RED
         else:
             self.color = Colors.GREEN
@@ -664,7 +664,7 @@ TUNER_NOTE_NAMES = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B']     # 
 
 class TunerDisplay(HierarchicalDisplayElement):
     
-    def __init__(self, mapping_note, mapping_deviance = None, bounds = DisplayBounds(), layout = {}, scale = 1, name = "", id = 0):
+    def __init__(self, mapping_note, mapping_deviance = None, bounds = DisplayBounds(), layout = {}, scale = 1, name = "", id = 0, deviance_height = 40, deviance_width = 5):
         HierarchicalDisplayElement.__init__(self, bounds = bounds, name = name, id = id)
 
         self._mapping_note = mapping_note
@@ -680,7 +680,8 @@ class TunerDisplay(HierarchicalDisplayElement):
 
         if self._mapping_deviance:
             self.deviance = TunerDevianceDisplay(
-                bounds = bounds.bottom(40)
+                bounds = bounds.bottom(deviance_height),
+                width = deviance_width
             )
             
             self.add(self.deviance)
@@ -705,6 +706,7 @@ class TunerDisplay(HierarchicalDisplayElement):
         self._last_deviance = 8192
         
         self.label.text = "Tuner"
+        self.label.text_color = None
 
     # Listen to client value returns
     def parameter_changed(self, mapping):
@@ -720,8 +722,8 @@ class TunerDisplay(HierarchicalDisplayElement):
             self.label.text_color = self.deviance.color
 
     # Called when the client is offline (requests took too long)
-    def request_terminated(self, mapping):
-        self.reset()
+    #def request_terminated(self, mapping):
+    #    self.reset()
 
 
 ###########################################################################################################################
