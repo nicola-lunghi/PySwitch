@@ -349,5 +349,8 @@ class HierarchicalDisplayElement(DisplayElement):
         super().print_debug_info(indentation)
 
         for child in self._children:
+            if not child:
+                continue
+
             child.print_debug_info(indentation + 1)
 

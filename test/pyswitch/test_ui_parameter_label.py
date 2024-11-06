@@ -12,14 +12,16 @@ with patch.dict(sys.modules, {
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.ui.elements.elements import ParameterDisplayLabel
+    from lib.pyswitch.ui.elements import ParameterDisplayLabel
     from lib.pyswitch.controller.Client import ClientParameterMapping
 
-    from lib.pyswitch.ui.elements.DisplayElement import DisplayBounds
+    from lib.pyswitch.ui.ui import DisplayBounds
+    from lib.pyswitch.ui.UiController import UiController
     from lib.pyswitch.misc import Tools
 
     from .mocks_appl import *
@@ -53,15 +55,15 @@ class TestParameterLabel(unittest.TestCase):
             bounds = DisplayBounds(20, 30, 200, 300)
         )
 
-        ui = MockUserInterface()
+        ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
         vp = MockValueProvider()
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            value_provider = vp,
-            displays = [
-                display
-            ],
+            communication = {
+                "valueProvider": vp
+            },
+            midi = MockMidiController(),            
             period_counter = period,
             ui = ui
         )
@@ -169,15 +171,15 @@ class TestParameterLabel(unittest.TestCase):
             bounds = DisplayBounds(20, 30, 200, 300)
         )
 
-        ui = MockUserInterface()
+        ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
         vp = MockValueProvider()
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            value_provider = vp,
-            displays = [
-                display
-            ],
+            communication = {
+                "valueProvider": vp
+            },
+            midi = MockMidiController(),
             period_counter = period,
             ui = ui
         )
@@ -292,15 +294,15 @@ class TestParameterLabel(unittest.TestCase):
             bounds = DisplayBounds(20, 30, 200, 300)
         )
 
-        ui = MockUserInterface()
+        ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
         vp = MockValueProvider()
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            value_provider = vp,
-            displays = [
-                display
-            ],
+            communication = {
+                "valueProvider": vp
+            },
+            midi = MockMidiController(),
             period_counter = period,
             ui = ui
         )

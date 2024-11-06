@@ -72,6 +72,7 @@ if not Tools.get_option(Config, "exploreMode"):
             root = Display
         )
     )
+    
     appl.process()
 
 else:
@@ -85,6 +86,15 @@ else:
         def create_switch(self, port):
             return AdafruitSwitch(port)
 
-    appl = ExploreModeController(board, SwitchFactory(), led_driver, display_driver, font_loader)
+    appl = ExploreModeController(
+        board = board, 
+        switch_factory = SwitchFactory(), 
+        led_driver = led_driver, 
+        ui = UiController(
+            display_driver = display_driver,
+            font_loader = font_loader
+        )
+    )
+
     appl.process()
     

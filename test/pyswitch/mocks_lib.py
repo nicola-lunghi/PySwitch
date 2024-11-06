@@ -1,11 +1,15 @@
 
 class MockTime:
     mock = {
-        "monotonicReturn": 0
+        "monotonicReturn": 0,
+        "localtimeReturn": 0
     }
 
     def monotonic():
         return MockTime.mock["monotonicReturn"]
+
+    def localtime():
+        return MockTime.mock["localtimeReturn"]
 
 
 class MockUsbMidi:
@@ -96,13 +100,14 @@ class MockDisplayIO:
 class MockAdafruitDisplayText:
     class label:
         class Label:
-            def __init__(self, font = None, anchor_point = None, anchored_position = None, text = None, color = None, line_spacing = None):
+            def __init__(self, font = None, anchor_point = None, anchored_position = None, text = None, color = None, line_spacing = None, scale = 1):
                 self.font = font
                 self.anchor_point = anchor_point
                 self.anchored_position = anchored_position
                 self.text = text
                 self.color = color
                 self.line_spacing = line_spacing
+                self.scale = scale
 
     def wrap_text_to_pixels(self, text, text_width, font):
         return [

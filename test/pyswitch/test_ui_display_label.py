@@ -11,10 +11,11 @@ with patch.dict(sys.modules, {
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.elements.DisplayElement import DisplayBounds
-    from lib.pyswitch.ui.elements.elements import DisplayLabel, DisplayLabelLayout    
+    from lib.pyswitch.ui.ui import DisplayBounds
+    from lib.pyswitch.ui.elements import DisplayLabel, DisplayLabelLayout    
     from lib.pyswitch.misc import Updater
 
     from .mocks_appl import *
@@ -91,7 +92,7 @@ class TestDisplayLabel(unittest.TestCase):
             bounds = DisplayBounds(20, 21, 200, 210)
         )
 
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         u = Updater()
 
         with patch.dict(sys.modules, {
@@ -221,7 +222,7 @@ class TestDisplayLabel(unittest.TestCase):
             bounds = DisplayBounds(x, y, w, h)
         )
 
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         u = Updater()
 
         with patch.dict(sys.modules, {
@@ -345,7 +346,7 @@ class TestDisplayLabel(unittest.TestCase):
         self.assertEqual(label.back_color, (3, 4, 7))
 
         # Check background(s)
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         u = Updater()
 
         with patch.dict(sys.modules, {
@@ -389,7 +390,7 @@ class TestDisplayLabel(unittest.TestCase):
         self.assertEqual(label.back_color,((3, 4, 7), (6, 7, 8)))
 
         # Check background(s)
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         u = Updater()
 
         with patch.dict(sys.modules, {
@@ -435,7 +436,7 @@ class TestDisplayLabel(unittest.TestCase):
         self.assertEqual(label.back_color, ((3, 4, 7), (6, 7, 8), (12, 12, 11)))
 
         # Check background(s)
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         u = Updater()
 
         with patch.dict(sys.modules, {
@@ -610,7 +611,7 @@ class TestDisplayLabel(unittest.TestCase):
             })
 
         # Check elements
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         u = Updater()
 
         with patch.dict(sys.modules, {
@@ -667,7 +668,7 @@ class TestDisplayLabel(unittest.TestCase):
         self.assertEqual(label.stroke, 5)
 
         # Check elements
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         u = Updater()
 
         with patch.dict(sys.modules, {
@@ -766,7 +767,7 @@ class TestDisplayLabel(unittest.TestCase):
         self.assertEqual(label.text_color, (3, 4, 8))
 
         # Check elements
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         u = Updater()
 
         with patch.dict(sys.modules, {
@@ -820,7 +821,7 @@ class TestDisplayLabel(unittest.TestCase):
         self.assertEqual(label.text, "mustbeset")
 
         # Check elements
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         u = Updater()
 
         with patch.dict(sys.modules, {
@@ -858,7 +859,7 @@ class TestDisplayLabel(unittest.TestCase):
         )
 
         # Check elements
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         u = Updater()
 
         with patch.dict(sys.modules, {

@@ -20,7 +20,15 @@ class SceneStep:
 
 class MockController(Controller):
     def __init__(self, led_driver, communication, midi, config = {}, switches = [],  ui = None, period_counter = None):
-        super().__init__(led_driver, communication, midi, config, switches, ui, period_counter)
+        super().__init__(
+            led_driver = led_driver, 
+            communication = communication, 
+            midi = midi, 
+            config = config, 
+            switches = switches, 
+            ui = ui, 
+            period_counter = period_counter
+        )
 
         self._next_step = None
         self._cnt = 0
@@ -170,7 +178,7 @@ class MockValueProvider:
 
 class MockPushButtonAction(PushButtonAction):
     def __init__(self, config = {}, period_counter = None):
-        super().__init__(config, period_counter)
+        super().__init__(config = config, period_counter = period_counter)
 
         self.num_set_calls = 0
 
@@ -184,7 +192,7 @@ class MockPushButtonAction(PushButtonAction):
 class MockAction(Action):
 
     def __init__(self, config = {}):
-        super().__init__(config)
+        super().__init__(config = config)
 
         self.num_update_calls_overall = 0
         self.num_update_calls_enabled = 0

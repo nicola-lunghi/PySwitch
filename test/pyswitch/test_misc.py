@@ -8,6 +8,7 @@ from .mocks_lib import *
 with patch.dict(sys.modules, {
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC(),
     "time": MockTime
 }):

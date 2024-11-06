@@ -5,15 +5,18 @@ from unittest.mock import patch   # Necessary workaround! Needs to be separated.
 from .mocks_lib import *
 
 with patch.dict(sys.modules, {
+    "displayio": MockDisplayIO(),
+    "adafruit_display_text": MockAdafruitDisplayText(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
 }):
-    from lib.pyswitch.ui.elements.DisplayElement import DisplayElement, DisplayBounds, HierarchicalDisplayElement
+    from lib.pyswitch.ui.ui import DisplayElement, DisplayBounds, HierarchicalDisplayElement
 
 
 class MockDisplayElement(DisplayElement):
     def __init__(self, bounds = DisplayBounds(), name = "", id = 0):
-        super().__init__(bounds, name, id)
+        super().__init__(bounds = bounds, name = name, id = id)
 
         self.num_bounds_changed_calls = 0
 
@@ -22,8 +25,8 @@ class MockDisplayElement(DisplayElement):
 
 
 class MockHierarchicalDisplayElement(HierarchicalDisplayElement):
-    def __init__(self, bounds = DisplayBounds(), name = "", id = 0):
-        super().__init__(bounds, name, id)
+    def __init__(self, bounds = DisplayBounds(), name = "", id = 0, children = None):
+        super().__init__(bounds = bounds, name = name, id = id, children = children)
 
         self.num_bounds_changed_calls = 0
 

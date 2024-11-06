@@ -10,6 +10,7 @@ with patch.dict(sys.modules, {
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
@@ -261,31 +262,33 @@ class TestClient(unittest.TestCase):
         mapping_2 = ClientParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
+                data = [0x05, 0x07, 0x10]
             ),
             response = SystemExclusive(
-                manufacturer_id = [0x01, 0x11, 0x21],
-                data = [0x01, 0x01, 0x02]
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
             )
         )
 
         self.assertFalse(mapping_1.can_set)
         self.assertTrue(mapping_1.can_receive)
+        self.assertTrue(mapping_1.can_request)
         self.assertFalse(mapping_2.can_set)
         self.assertTrue(mapping_2.can_receive)
+        self.assertTrue(mapping_2.can_request)
 
         self.assertFalse(mapping_1 == None)
         self.assertFalse(None == mapping_2)
 
         self.assertTrue(mapping_1 == mapping_2)
 
-        mapping_2.request.data[1] = 0x01
+        mapping_2.response.data[1] = 0x01
         self.assertTrue(mapping_1 != mapping_2)
 
-        mapping_2.request.data[1] = 0x07
+        mapping_2.response.data[1] = 0x00
         self.assertTrue(mapping_1 == mapping_2)
 
-        mapping_1.request.manufacturer_id[1] = 0x01
+        mapping_1.response.manufacturer_id[1] = 0x01
         self.assertTrue(mapping_1 != mapping_2)
 
 
@@ -305,16 +308,18 @@ class TestClient(unittest.TestCase):
         )
 
         mapping_2 = ClientParameterMapping(
-            response = SystemExclusive(
+            request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x00, 0x09]
+                data = [0x05, 0x07, 0x09]
             )
         )
 
         self.assertFalse(mapping_1.can_set)
         self.assertTrue(mapping_1.can_receive)
+        self.assertTrue(mapping_1.can_request)
         self.assertFalse(mapping_2.can_set)
         self.assertFalse(mapping_2.can_receive)
+        self.assertTrue(mapping_2.can_request)
 
         self.assertTrue(mapping_1 != mapping_2)
 

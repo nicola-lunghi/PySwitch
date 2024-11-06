@@ -12,6 +12,7 @@ with patch.dict(sys.modules, {
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     from .mocks_measurements import *
@@ -20,10 +21,10 @@ with patch.dict(sys.modules, {
         "lib.pyswitch.controller.measurements": MockMeasurements()
     }):
 
-        from lib.pyswitch.ui.elements.DisplayElement import DisplayBounds
-        from lib.pyswitch.ui.elements.elements import StatisticsDisplayLabel
+        from lib.pyswitch.ui.ui import DisplayBounds
+        from lib.pyswitch.ui.elements import StatisticsDisplayLabel
 
-        from .mocks_ui import MockUserInterface
+        from .mocks_ui import *
 
 
 class MockController:
@@ -48,7 +49,7 @@ class TestStatisticsDisplayLabel(unittest.TestCase):
             }      
         )
 
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         appl = MockController()
 
         display.init(ui, appl)
@@ -83,7 +84,7 @@ class TestStatisticsDisplayLabel(unittest.TestCase):
             }      
         )
 
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         appl = MockController()
 
         display.init(ui, appl)

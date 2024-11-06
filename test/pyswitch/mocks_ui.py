@@ -23,11 +23,60 @@ class MockHierarchicalDisplayElement(HierarchicalDisplayElement):
         self.num_print_calls += 1
 
 
+class MockST7789:
+    def __init__(self):
+        self.show_calls = []
+
+    def show(self, splash):
+        self.show_calls.append(splash)
+
+
+class MockDisplayDriver:
+    def __init__(self, w = 0, h = 0, init = False):
+        self.width = w
+        self.height = h
+
+        if init:
+            self.init()
+
+    def init(self):
+        self.tft = MockST7789()
+
+
 class MockUiController:
-    def __init__(self, width = 2000, height = 1000):
+    def __init__(self, width = 2000, height = 1000, root = None):
         self.root = MockHierarchicalDisplayElement(
             bounds = DisplayBounds(0, 0, width, height)
-        )
+        ) if not root else root
+
+    def search(self, position):
+        return self.root.search(position)
+    
+    def create_label(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
+        return MockDisplayLabel(bounds=bounds, layout=layout, name=name, id=id)
+
+    def set_root(self, root):
+        self.root = root
+
+    def init(self, appl):
+        pass
+
+    def show(self):
+        pass
+
+    @property
+    def bounds(self):
+        return self.root.bounds
+    
+
+class MockDisplaySplash:
+    def __init__(self, element = None):
+        self.font_loader = MockFontLoader()
+
+        self.splash = []
+
+        self.root = element if element else MockHierarchicalDisplayElement()
+        
 
 #class MockUserInterface:
 #    def __init__(self, width = 2000, height = 1000):
@@ -52,7 +101,7 @@ class MockUiController:
 class MockDisplayLabel(DisplayElement):
 
     def __init__(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
-        super().__init__(bounds=bounds, name=name, id=id)
+        super().__init__(bounds = bounds, name = name, id = id)
 
         self.output_back_color = (0, 0, 0)
         self.output_text = ""

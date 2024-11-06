@@ -12,6 +12,7 @@ with patch.dict(sys.modules, {
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     from .mocks_misc import MockMisc
@@ -48,7 +49,14 @@ class MockSwitchFactory:
 
 class MockExploreModeController(ExploreModeController):
     def __init__(self, board, switch_factory, led_driver = None, ui = None, num_pixels_per_switch = 3, num_port_columns = 5):
-        super().__init__(board, switch_factory, led_driver, ui, num_pixels_per_switch, num_port_columns)
+        super().__init__(
+            board = board, 
+            switch_factory = switch_factory, 
+            led_driver = led_driver, 
+            ui = ui, 
+            num_pixels_per_switch = num_pixels_per_switch, 
+            num_port_columns = num_port_columns
+        )
 
         self._next_step = None
 
@@ -171,7 +179,7 @@ class TestExploreMode(unittest.TestCase):
         MockMisc.Tools.reset()
         led_driver = MockNeoPixelDriver()
         switch_factory = MockSwitchFactory()
-        ui = MockUserInterface(width = 999, height = 600)
+        ui = MockUiController(width = 999, height = 600)
 
         appl = MockExploreModeController(
             board = MockBoard(), 
@@ -258,7 +266,7 @@ class TestExploreMode(unittest.TestCase):
 
     def test_ui_gpio_detect_2rows(self):
         MockMisc.Tools.reset()
-        ui = MockUserInterface(width = 1000, height = 600)
+        ui = MockUiController(width = 1000, height = 600)
 
         appl = MockExploreModeController(
             board = MockBoard(), 
@@ -433,7 +441,7 @@ class TestExploreMode(unittest.TestCase):
         MockMisc.Tools.reset()
         led_driver = MockNeoPixelDriver()
         switch_factory = MockSwitchFactory()
-        ui = MockUserInterface()
+        ui = MockUiController()
 
         appl = MockExploreModeController(
             board = MockBoard(), 

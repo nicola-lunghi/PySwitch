@@ -12,6 +12,7 @@ with patch.dict(sys.modules, {
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     from .mocks_measurements import *
@@ -20,10 +21,10 @@ with patch.dict(sys.modules, {
         "lib.pyswitch.controller.measurements": MockMeasurements()
     }):
 
-        from lib.pyswitch.ui.elements.DisplayElement import DisplayBounds
-        from lib.pyswitch.ui.elements.elements import PerformanceIndicator
+        from lib.pyswitch.ui.ui import DisplayBounds
+        from lib.pyswitch.ui.elements import PerformanceIndicator
 
-        from .mocks_ui import MockUserInterface
+        from .mocks_ui import *
 
 
 class MockController:
@@ -46,7 +47,7 @@ class TestPerformanceIndicator(unittest.TestCase):
             bounds = DisplayBounds(20, 30, 200, 300)            
         )
 
-        ui = MockUserInterface()
+        ui = MockDisplaySplash()
         appl = MockController()
 
         with patch.dict(sys.modules, {

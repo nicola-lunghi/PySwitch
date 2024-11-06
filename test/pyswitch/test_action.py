@@ -33,7 +33,7 @@ class MockFootSwitch:
 
 class MockAction(Action):
     def __init__(self, config = {}, use_leds = False):
-        super().__init__(config)
+        super().__init__(config = config)
 
         self.uses_switch_leds = use_leds
 
@@ -248,7 +248,7 @@ class TestAction(unittest.TestCase):
         })
 
         label = DisplayElement(id = "foo")
-
+        
         ui.root.add(
             label
         )

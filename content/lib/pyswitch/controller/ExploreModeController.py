@@ -1,6 +1,5 @@
 from .FootSwitchController import FootSwitchController
 from .actions.Action import Action
-from ..ui.UiController import UiController
 from ..ui.elements import DisplayLabel, DisplaySplitContainer
 from ..ui.ui import HierarchicalDisplayElement
 from ..misc import Updater, Colors, Tools
@@ -63,15 +62,10 @@ class ExploreAction(Action):
 # Main application class for Explore Mode
 class ExploreModeController(Updater):
 
-    def __init__(self, board, switch_factory, led_driver = None, display_driver = None, font_loader = None, num_pixels_per_switch = 3, num_port_columns = 5):
+    def __init__(self, board, switch_factory, led_driver = None, ui = None, num_pixels_per_switch = 3, num_port_columns = 5):
         Updater.__init__(self)
 
-        self.ui = None
-        if display_driver and font_loader:
-            self.ui = UiController(
-                display_driver = display_driver, 
-                font_loader = font_loader
-            )
+        self.ui = ui
 
         self.config = {}
         self.num_pixels_per_switch = num_pixels_per_switch

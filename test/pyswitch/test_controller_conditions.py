@@ -10,6 +10,7 @@ with patch.dict(sys.modules, {
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     #from lib.pyswitch.controller.Controller import Controller
@@ -54,7 +55,10 @@ class TestControllerConditions(unittest.TestCase):
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            value_provider = MockValueProvider(),
+            communication = {
+                "valueProvider": MockValueProvider()
+            },
+            midi = MockMidiController(),
             switches = [
                 {
                     "assignment": {
@@ -280,7 +284,10 @@ class TestControllerConditions(unittest.TestCase):
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            value_provider = MockValueProvider(),
+            communication = {
+                "valueProvider": MockValueProvider()
+            },
+            midi = MockMidiController(),
             switches = [
                 {
                     "assignment": {

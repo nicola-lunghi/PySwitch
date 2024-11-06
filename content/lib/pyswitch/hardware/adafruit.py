@@ -7,6 +7,8 @@ from displayio import release_displays
 from adafruit_misc.adafruit_st7789 import ST7789
 from adafruit_midi import MIDI
 
+# These are all needed despite not used: If not imported, no messages
+# will go through the MIDI routings.
 from adafruit_midi.midi_message import MIDIUnknownEvent
 from adafruit_midi.channel_pressure import ChannelPressure
 from adafruit_midi.control_change import ControlChange

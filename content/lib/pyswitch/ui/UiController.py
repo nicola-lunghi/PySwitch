@@ -21,7 +21,7 @@ class UiController:
     # Initialize the GUI. Mus be called before usage, but after defining the contents.
     def init(self, appl):
         if not self._root:
-            raise Exception("GuiController has nothing to initialize")
+            raise Exception("UiController has nothing to initialize")
         
         self._appl = appl
 
@@ -47,7 +47,7 @@ class UiController:
     # Sets a new root element (can be conditional). Must be called before init().
     def set_root(self, root):
         if self._display_tree:
-            raise Exception("GuiController already initialized")
+            raise Exception("UiController already initialized")
         
         self._root = root
 

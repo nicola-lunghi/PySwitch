@@ -11,10 +11,11 @@ with patch.dict(sys.modules, {
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.elements.DisplayElement import DisplayBounds, DisplayElement
-    from lib.pyswitch.ui.elements.elements import DisplaySplitContainer
+    from lib.pyswitch.ui.ui import DisplayBounds, DisplayElement
+    from lib.pyswitch.ui.elements import DisplaySplitContainer
 
     from .mocks_appl import *
     from .mocks_ui import *
