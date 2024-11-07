@@ -52,30 +52,180 @@ These files can make use of the objects contained in **kemper.py** which provide
 
 The file **config.py** only defines one dict named Config, which by default is empty. Please refer to the comments in the file for details on the possible options, which are all optional.
 
-### Switch Assignment
+### MIDI Communication Setup
 
-The file **switches.py** must provide two objects:
-
-- **ValueProvider**: Must be an instance of a class which is capable of parsing MIDI messages for the client used. Use KemperMidiValueProvider (from kemper.py) to use the controller with Kemper devices:
+The **communication.py** file defines the handling of MIDI. This includes the client-specific parser as well as the MIDI routing. It must contain a Communication dictionary like follows:
 
 ```python
-ValueProvider = KemperMidiValueProvider()
+
+USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
+    in_channel = None,  # All channels will be received
+    out_channel = 0     # Send on channel 1
+)
+
+Communication = {
+
+    # Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
+    # when an answer to a value request is received.
+    "valueProvider": KemperMidiValueProvider(),
+
+    # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 
+    # the MidiController.PYSWITCH source/target or the application will not be able to communicate!
+    "midi": {
+        "routings": [
+            # Application: Receive MIDI messages from USB
+            MidiRouting(
+                source = USB_MIDI,
+                target = MidiController.APPLICATION
+            ),
+
+            # Application: Send MIDI messages to USB
+            MidiRouting(
+                source = MidiController.APPLICATION,
+                target = USB_MIDI
+            ),
+        ]
+    }
+}
 ```
 
-- **Switches**: Must be a list of switch definitions. A switch definitions consists of a dict with the following entries:
-	- **"assignment"**: Assignment to the hardware switch and corresponding LED pixels. Must be a dict. You can specify this manually, however it is recommended to use the predefined assignments in lib/pyswitch/hardware/hardware.py. Must contain the following entries:
+- "ValueProvider": Must be an instance of a class which is capable of parsing MIDI messages for the client used. Use KemperMidiValueProvider (from kemper.py) to use the controller with Kemper devices:
 
-		- **"model"**: Instance capable of reporting a switch state (reading a board GPIO). Use AdafruitSwitch from lib/pyswitch/hardware/adafruit.py
-		
-		- **"pixels"**: Tuple of pixel indices assigned to the switch, for example (0, 1, 2) for the first three LEDs. NeoPixels are controlled by index, and for example the PaintAudio MIDICaptain devices feature three LEDs per switch which can be addressed separately.
-		
-		- **"name"**: Optional name for debugging output
+- "midi": Configuration for the MidiController. This is a flexible MIDI routing class which can be configured using a list of MidiRouting instances, each defining one route (in one direction only). The example above defines the minimal necessary routings to run the application. If you do not provide any routings, the application will not be able to communicate to the outer world. 
 
-	- **"actions"**: List of actions to be triggered by the switch, see below.
+##### Routings
 
-	- **"initialColors"**: Optional: Color initially set before any actions are being processed. If not set, random colors are set.
+A routing has a source and a target, both of which must be instances being able to send and receive MIDI messages. You can use:
+- Adafruit's own MIDI handler (adafruit_midi.MIDI)
+- The wrappers AdfruitUsbMidiDevice (for USB MIDI) and AdfruitDinMidiDevice (for DIN MIDI) (recommended) which are also used in the example above (wrapped again by MidiDevices, see the source code there)
+- The constant MidiController.APPLICATION. This represents the application itself.
 
-	- **"initialBrightness"**: Optional: Brightness initially being set before any actions are being processed. If not set, the default (1) is used.
+This example will, in addition to normal operation as in the last example, also pass all data from DIN Input to USB output (MIDI Through):
+
+```python
+
+DIN_MIDI = MidiDevices.PA_MIDICAPTAIN_DIN_MIDI(
+    in_channel = None,  # All channels will be received
+    out_channel = 0     # Send on channel 1
+)
+
+USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
+    in_channel = None,  # All channels will be received
+    out_channel = 0     # Send on channel 1
+)
+
+Communication = {
+
+    # Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
+    # when an answer to a value request is received.
+    "valueProvider": KemperMidiValueProvider(),
+
+    # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 
+    # the MidiController.PYSWITCH source/target or the application will not be able to communicate!
+    "midi": {
+        "routings": [
+            # MIDI Through from DIN to USB
+            MidiRouting(
+                source = DIN_MIDI,
+                target = USB_MIDI
+            ),
+
+            # Application: Receive MIDI messages from USB
+            MidiRouting(
+                source = USB_MIDI,
+                target = MidiController.APPLICATION
+            ),
+
+            # Application: Send MIDI messages to USB
+            MidiRouting(
+                source = MidiController.APPLICATION,
+                target = USB_MIDI
+            ),
+        ]
+    }
+}
+```
+
+It is also possible to either route multiple sources to one target or vice verse, to distribute or merge messages. 
+The examples also contains samples for setting up MIDICaptain USB and DIN communication as well as MIDI through, or connecting the application to DIN and/or USB MIDI.
+
+#### Bidirectional Communication
+
+Some clients like the Kemper devices support a bidirectional communication mode. This wording is a bit misleading because the application will react to changes of the client also if this mode is not enabled. However, bidirectional mode will greatly reduce MIDI traffic and improve reaction delays, and for example the Tuner note and deviation infos necessary for the tuner display (see below) are just sent in bidirectional mode, so this is the preferred mode.
+
+See this chart for some differences between the operation modes:
+
+                                    | **Non-Bidirectional** | **Bidirectional**    |
+------------------------------------|-----------------------|----------------------|
+Reflect changes on the client       | Yes                   | Yes                  |
+------------------------------------|-----------------------|----------------------|
+Parameter values are requested      | Yes                   | No (*)               |
+periodically                        |                       |                      |
+------------------------------------|-----------------------|----------------------|
+Tuner information available         | No                    | Yes (Note and dev.)  |
+------------------------------------|-----------------------|----------------------|
+
+*(*) Bidirectional mode is not available for all parameters. However, you do not need to specify this, the **kemper.py** file contains the definitions looked up by the application.*
+
+To enable bidirectional communication, you have to provide a suitable protocol implementation (instance of BidirectionalProtocol) to the Communication object like follows, using the Kemper specific implementation from **kemper.py**:
+
+```python
+USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
+    in_channel = None,  # All channels will be received
+    out_channel = 0     # Send on channel 1
+)
+
+Communication = {
+
+    # Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
+    # when an answer to a value request is received.
+    "valueProvider": KemperMidiValueProvider(),
+
+    # Optional: Protocol to use. If not specified, the standard Client protocol is used which requests all
+    # parameters in each update cycle. Use this to implement bidirectional communication.
+    "protocol": KemperBidirectionalProtocol(
+        time_lease_seconds = 30               # When the controller is removed, the Profiler will stay in bidirectional
+                                              # mode for this amount of seconds. The communication is re-initiated every  
+                                              # half of this value. 
+    ),
+
+    # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 
+    # the MidiController.PYSWITCH source/target or the application will not be able to communicate!
+    "midi": {
+        "routings": [
+            # Application: Receive MIDI messages from USB
+            MidiRouting(
+                source = USB_MIDI,
+                target = MidiController.APPLICATION
+            ),
+
+            # Application: Send MIDI messages to USB
+            MidiRouting(
+                source = MidiController.APPLICATION,
+                target = USB_MIDI
+            ),
+        ]
+    }
+}
+```
+
+### Switch Assignment
+
+The file **switches.py** must provide a Switches list holding all switch assignments. A switch definitions consists of a dict with the following entries:
+	
+- **"assignment"**: Assignment to the hardware switch and corresponding LED pixels. Must be a dict. You can specify this manually, however it is recommended to use the predefined assignments in lib/pyswitch/hardware/hardware.py. Must contain the following entries:
+
+    - **"model"**: Instance capable of reporting a switch state (reading a board GPIO). Use AdafruitSwitch from lib/pyswitch/hardware/adafruit.py
+    
+    - **"pixels"**: Tuple of pixel indices assigned to the switch, for example (0, 1, 2) for the first three LEDs. NeoPixels are controlled by index, and for example the PaintAudio MIDICaptain devices feature three LEDs per switch which can be addressed separately.
+    
+    - **"name"**: Optional name for debugging output
+
+- **"actions"**: List of actions to be triggered by the switch, see below.
+
+- **"initialColors"**: Optional: Color initially set before any actions are being processed. If not set, random colors are set.
+
+- **"initialBrightness"**: Optional: Brightness initially being set before any actions are being processed. If not set, the default (1) is used.
 
 #### Switch Actions
 
@@ -277,7 +427,7 @@ Switches = [
 
 ### TFT Display Layout Definition
 
-The file **display.py** must provide a root DisplayElement to be shown. Normally, this is a HierarchicalDisplayElement:
+The file **display.py** must provide a root DisplayElement to be shown. Normally, this is a HierarchicalDisplayElement which can hold multiple other elements, however it can also be just one DisplayElement. Here we use the first option:
 
 ```python
 Display = HierarchicalDisplayElement(
@@ -332,6 +482,7 @@ All available area types are defined in lib/pyswitch/ui/elements/elements.py, se
 - **ParameterDisplayLabel**: DisplayLabel tied to a device parameter, which is shown and constantly updated (used for string parameter display)
 - **DisplaySplitContainer**: Container element which can hold any amount of labels. The amount of labels is automatically determined by their usages in the switches.py file for example. 
 - **PerformanceIndicator**: A small black dot getting red when the processing starts to lag (which can occur when too much stuff is configured)
+- **BidirectionalProtocolState**: A small black dot showing the state of the bidirectional communication protocol (green/red)
 - **StatisticsDisplayLabel**: A DisplayLabel showing processing statistics
 
 #### Subtractive Layouting
@@ -389,68 +540,57 @@ Display = HierarchicalDisplayElement(
 
 See the DisplayBounds class in /lib/pyswitch/ui/elements/DisplayElement.py for more available methods.
 
-
-TODO  =========================
-
-
 #### Conditional layouts
 
 The layout parameter for some types can also be a Condition (depending on a rig parameter for example) holding several layouts (also deeply, analog to the action conditions described above), for example to show some rig names with a different background or text color, like in this example:
 
 ```python
-Displays = [ 
-    # Rig name
-    ParameterDisplayLabel(
-        name = "Rig Name",
-        bounds = DisplayBounds(0, 0, 240, 240),   
+Display = ParameterDisplayLabel(
+    name = "Rig Name",
+    bounds = DisplayBounds(0, 0, 240, 240),   
 
-        layout = ParameterCondition(
-            mapping = KemperMappings.RIG_NAME,
-            mode = ParameterConditionModes.MODE_STRING_CONTAINS,
-            ref_value = "ORANGE",
+    layout = ParameterCondition(
+        mapping = KemperMappings.RIG_NAME,
+        mode = ParameterConditionModes.MODE_STRING_CONTAINS,
+        ref_value = "ORANGE",
 
-            yes = {
-                "font": "/fonts/PTSans-NarrowBold-40.pcf",
-                "lineSpacing": 0.8,
-                "maxTextWidth": 220,
-                "backColor": Colors.BLACK
-            },
+        yes = {
+            "font": "/fonts/PTSans-NarrowBold-40.pcf",
+            "lineSpacing": 0.8,
+            "maxTextWidth": 220,
+            "backColor": Colors.BLACK
+        },
 
-            no =  {
-                "font": "/fonts/PTSans-NarrowBold-40.pcf",
-                "lineSpacing": 0.8,
-                "maxTextWidth": 220,
-                "backColor": Colors.ORANGE
-            }
-        ),
-
-        parameter = {
-            "mapping": KemperMappings.RIG_NAME,
-            "depends": KemperMappings.RIG_DATE,
-            "textOffline": "Kemper Profiler (offline)",
-            "textReset": "Loading Rig..."
+        no =  {
+            "font": "/fonts/PTSans-NarrowBold-40.pcf",
+            "lineSpacing": 0.8,
+            "maxTextWidth": 220,
+            "backColor": Colors.ORANGE
         }
     ),
 
-    # ...
-]
+    parameter = {
+        "mapping": KemperMappings.RIG_NAME,
+        "depends": KemperMappings.RIG_DATE,
+        "textOffline": "Kemper Profiler (offline)",
+        "textReset": "Loading Rig..."
+    }
+)
 ```
 
 The rig name display will have an orange background when the rig name contains the word "ORANGE".
 
-**NOTE**: Not all layout parameters can be changed freely. It is not possible to:
+**NOTE**: Not all layout parameters can be changed freely. Due to resource issues on the microcontroller it is currently not possible to:
 - Background color must be set either not at all for all possible condition branches, or set for all of them (use Colors.BLACK or (0, 0, 0) instead of no background).
 - Corner radius cannot be changed.
 - If one branch uses a stroke greater than zero, all of them must have a stroke greater than zero. Set the outline color to the same as the back color to workaround this.
 
 ### Mappings
 
-#### General
-
 The MIDI messages to set/request parameters from the device are bundled in Mappings. A mapping (see class ClientParameterMapping) can contain the following:
 - SET message: MIDI message to be used to set the parameter (value will be overridden with the real value before sending)
 - REQUEST message: MIDI message to request the parameter from the device
-- RESPONSE message: MIDI message template to be used to compare incoming MIDI messages to. Defines how the device returns the value requested.
+- RESPONSE message: MIDI message template to be used to compare incoming MIDI messages to. Defines how the device receives the parameter value.
 
 See the ClientParameterMapping class for deeper details.
 
@@ -496,6 +636,44 @@ example_layout = {
 }
 ```
 
+#### Conditional displays
+
+If you need for example a big Tuner visualization display which is completely replacing the normal display when the client is in tuner mode, you need to make the Display a condition. Here is the described example (for which there is a specialized tuner element already):
+
+```python
+Display = ParameterCondition(
+    mapping = KemperMappings.TUNER_MODE_STATE,
+    ref_value = 1,
+    mode = ParameterConditionModes.MODE_NOT_EQUAL,
+
+    # Show normal display
+    yes = HierarchicalDisplayElement(
+        bounds = bounds,
+        children = [
+            # ... Define normal display elements
+        ]
+    ),
+
+    # Show tuner display (only useful if bidirectional communication is enabled)
+    no = TunerDisplay(
+        mapping_note = KemperMappings.TUNER_NOTE,
+        mapping_deviance = KemperMappings.TUNER_DEVIANCE,
+        
+        bounds = bounds,
+        
+        scale = 3,     # Show note name bigger
+        layout = {
+            "font": "/fonts/PTSans-NarrowBold-40.pcf",
+            "text": "Tuner"
+        }
+    )
+)
+```
+
+This shows the tuner display when the client sends a message corresponding to the KemperMappings.TUNER_MODE_STATE mapping with value 1, every other value switches back to normal display.
+
+TODO img
+
 ## Development
 
 The sources are all contained in the lib/pyswitch module, which has the following basic structure:
@@ -515,8 +693,9 @@ the Controller class in the **controller** folder represents the main applicatio
 
 ```python
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader
-from pyswitch.ui.UserInterface import UserInterface
 from pyswitch.controller.Controller import Controller
+from pyswitch.controller.MidiController import MidiController
+from pyswitch.ui.UiController import UiController
 
 # Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)
 display_driver = AdafruitST7789DisplayDriver()
@@ -531,15 +710,27 @@ led_driver = AdafruitNeoPixelDriver()
 # Buffered font loader
 font_loader = AdafruitFontLoader()
 
-# Create User interface
-gui = UserInterface(display_driver, font_loader)
-
 # Load configuration files
-from displays import Displays
-from switches import Switches, ValueProvider
+from display import Display
+from switches import Switches
+from communication import Communication
 
 # Controller instance (runs the processing loop and keeps everything together)
-appl = Controller(led_driver, Config, ValueProvider, Switches, Displays, gui)
+appl = Controller(
+    led_driver = led_driver, 
+    communication = Communication, 
+    midi = MidiController(
+        config = Communication["midi"]
+    ),
+    config = Config, 
+    switches = Switches, 
+    ui = UiController(
+        display_driver = display_driver,
+        font_loader = font_loader,
+        root = Display
+    )
+)
+
 appl.process()
 ```
 
@@ -575,7 +766,7 @@ while True:
             break  
 ```
 
-All things which need to be updated regularily like Actions (to get current states from the Kemper) or display elements listening to parameters (ParameterDisplayLabel) are registered to the controller instance using add_updateable(), so in the update() method of Controller, all registered Updateables are updated.
+All things which need to be updated regularily like Actions (to get current states from the Kemper for parameters not in bidirectional mode) or display elements listening to parameters (ParameterDisplayLabel) are registered to the controller instance using add_updateable(), so in the update() method of Controller, all registered Updateables are updated.
 
 ### Actions
 
@@ -631,7 +822,17 @@ This class implements the push and release methods and provides a **state** prop
 
 ### Parameter Request Handling
 
-The Client class executes all MIDI calls. 
+The Client class executes all MIDI calls. The BidirectionalClient class adds bidirectional communication on top of this.
+
+#### Register Parameter Mapping
+
+When you want to use a mapping somewhere (as the actions do for example), you have to register all used mappings in advance. This is done by calling register():
+
+```python
+def register(self, mapping, listener):
+```
+
+This is only relevant for bidirectional mappings, however it is important because you do not know in advance which parameters will become bidirectional at some times (for example when the parameter set is changed), so all mappings should be registered before the bidirectional protocol is initialized.
 
 #### Set Parameter Value
 
@@ -662,14 +863,29 @@ This requests the parameter (sends the REQUEST message of the passed mapping). T
 # Called by the Client class when a parameter request has been answered.
 # The value received is already set on the mapping.
 def parameter_changed(self, mapping):
-    pass
+    # IMPORTANT: Use mapping.value even if you have your 
+    # copy of the mapping referenced somewhere! The clients may
+    # have altered it in the process.
+    print("Value received: " + repr(mapping.value))
 
 # Called when the client is offline (requests took too long)
 def request_terminated(self, mapping):
     pass
 ```
 
-Internally, for each request a ClientRequest instance is created. If a mapping is requested which is already waiting, the listener is just added to the existing request. After the value has been received, all listeners are notified.
+Bidirectional mappings do not request values but must be able to receive them. Best practice is to implement everything for both modes (call register(), and request values). The request message (even when request() is called) will only be sent if the mapping is not bidirectional.
+
+Internally, for each parameter a ClientRequest instance is created and added to a list of open requests. This differs between the operation modes: 
+- In bidirectional mode, requests for bidirectional parameters will be created on register() already and never die. 
+- For non-bidirection mappings, the requests will be created when request() is called, and die when the value has been received.
+
+Every incoming MIDI message will be parsed by all open requests. This is the lifetime of a request:
+
+1. Created (either by calling client.request() for non-bidirectional mappings, or at time of calling register() for bidirectional ones)
+   When a request for the same mapping comes in at this time, the listener is just added to the existing request.
+2. When a value comes in (MIDI message):
+    - Tell all listeners that the value has changed by calling parameter_changed() on each listener.
+3. When the mapping is not bidirectional, the request will be set to finished, which will trigger the client to clean it up. When the mapping is bidirectional, the request will never be finished and stay forever to receive further values.
 
 #### Value Provider
 
@@ -799,10 +1015,10 @@ All code in the content/lib/pyswitch folder is unit tested to a coverage of > 90
 ```
 /content
 /test
+    /pyswitch         # Test code (test cases and mocks etc.)
     compose.yaml      # Config for docker compose to provide the test environment
     docker-run        # Runner script which starts the docker container and ssh into it
     Dockerfile        # Docker image (based on the official python image, but adds support for coverage.py)
-    /pyswitch         # Test code (test cases and mocks etc.)
     run               # Shell script to run tests (to be called in the docker terminal created by docker-run)
 ```
 
@@ -822,10 +1038,10 @@ The docker image is built, the container is started and you get a prompt from a 
 This should give you a result like this:
 
 ```console
-ccb45ff3d4fe:/# /project/test/run 
-.....................................................................................................................................................................
+a8545571c033:/# /project/test/run 
+..................................................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 165 tests in 0.058s
+Ran 194 tests in 0.159s
 
 OK
 Wrote HTML report to /project/test/report/index.html
@@ -833,7 +1049,7 @@ Wrote HTML report to /project/test/report/index.html
 
 You should find a coverage report in the test/report folder like this:
 
-![image](https://github.com/user-attachments/assets/4e5887ac-24df-49e1-9115-89486d1d87f4)
+TODO img
 
 ## License
 

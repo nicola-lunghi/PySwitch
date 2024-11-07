@@ -6,6 +6,12 @@
 # specific definitions and code is located in the files beneath this one, the src folder is generic)
 #
 #################################################################################################################################
+#
+# v 2.1
+# Changes @tunetown (Tom Weber):
+# - Bidirectional communication (Kemper)
+# - Tuner Splash
+# - Bug fixes
 # 
 # v 2.0
 # Changes @tunetown (Tom Weber):

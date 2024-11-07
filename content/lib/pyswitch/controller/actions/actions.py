@@ -132,7 +132,7 @@ class PushButtonAction(Action):
 class ParameterActionModes:
     MODE_EQUAL = 0            # Enable when exactly the valueEnabled value comes in
     
-    MODE_GREATERL = 10        # Enable when a value greater than valueEnabled comes in
+    MODE_GREATER = 10         # Enable when a value greater than valueEnabled comes in
     MODE_GREATER_EQUAL = 20   # Enable when the valueEnabled value comes in, or anything greater
 
     MODE_LESS = 30            # Enable when a value less than valueEnabled comes in
