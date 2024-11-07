@@ -830,29 +830,29 @@ class TestActionParameter(unittest.TestCase):
 
 
     def test_request(self):
-        self._test_request(ParameterActionModes.MODE_GREATER, 1, 0, 0, 0, False)
-        self._test_request(ParameterActionModes.MODE_GREATER, 1, 0, 1, 0, False)
-        self._test_request(ParameterActionModes.MODE_GREATER, 1, 0, 2, 0)
-        self._test_request(ParameterActionModes.MODE_GREATER, 1, 0, 16383, 0)
+        self._test_request(ParameterActionModes.GREATER, 1, 0, 0, 0, False)
+        self._test_request(ParameterActionModes.GREATER, 1, 0, 1, 0, False)
+        self._test_request(ParameterActionModes.GREATER, 1, 0, 2, 0)
+        self._test_request(ParameterActionModes.GREATER, 1, 0, 16383, 0)
 
-        self._test_request(ParameterActionModes.MODE_GREATER_EQUAL, 1, 0, 0, 0, False)
-        self._test_request(ParameterActionModes.MODE_GREATER_EQUAL, 1, 0, 1, 0)
-        self._test_request(ParameterActionModes.MODE_GREATER_EQUAL, 1, 0, 2, 0)
-        self._test_request(ParameterActionModes.MODE_GREATER_EQUAL, 1, 0, 16383, 0)
+        self._test_request(ParameterActionModes.GREATER_EQUAL, 1, 0, 0, 0, False)
+        self._test_request(ParameterActionModes.GREATER_EQUAL, 1, 0, 1, 0)
+        self._test_request(ParameterActionModes.GREATER_EQUAL, 1, 0, 2, 0)
+        self._test_request(ParameterActionModes.GREATER_EQUAL, 1, 0, 16383, 0)
 
-        self._test_request(ParameterActionModes.MODE_EQUAL, 1, 0, 0, 0, False)
-        self._test_request(ParameterActionModes.MODE_EQUAL, 1, 0, 1, 0)
-        self._test_request(ParameterActionModes.MODE_EQUAL, 1, 0, 2, 0, False)
+        self._test_request(ParameterActionModes.EQUAL, 1, 0, 0, 0, False)
+        self._test_request(ParameterActionModes.EQUAL, 1, 0, 1, 0)
+        self._test_request(ParameterActionModes.EQUAL, 1, 0, 2, 0, False)
 
-        self._test_request(ParameterActionModes.MODE_LESS_EQUAL, 1, 2, 0, 2)
-        self._test_request(ParameterActionModes.MODE_LESS_EQUAL, 1, 2, 1, 2)
-        self._test_request(ParameterActionModes.MODE_LESS_EQUAL, 1, 2, 2, 2, False)
-        self._test_request(ParameterActionModes.MODE_LESS_EQUAL, 1, 2, 3, 2, False)
+        self._test_request(ParameterActionModes.LESS_EQUAL, 1, 2, 0, 2)
+        self._test_request(ParameterActionModes.LESS_EQUAL, 1, 2, 1, 2)
+        self._test_request(ParameterActionModes.LESS_EQUAL, 1, 2, 2, 2, False)
+        self._test_request(ParameterActionModes.LESS_EQUAL, 1, 2, 3, 2, False)
 
-        self._test_request(ParameterActionModes.MODE_LESS, 1, 2, 0, 2)
-        self._test_request(ParameterActionModes.MODE_LESS, 1, 2, 1, 2, False)
-        self._test_request(ParameterActionModes.MODE_LESS, 1, 2, 2, 2, False)
-        self._test_request(ParameterActionModes.MODE_LESS, 1, 2, 3, 2, False)
+        self._test_request(ParameterActionModes.LESS, 1, 2, 0, 2)
+        self._test_request(ParameterActionModes.LESS, 1, 2, 1, 2, False)
+        self._test_request(ParameterActionModes.LESS, 1, 2, 2, 2, False)
+        self._test_request(ParameterActionModes.LESS, 1, 2, 3, 2, False)
 
         with self.assertRaises(Exception):
             self._test_request("invalid", 0, 1, 0, 1)
@@ -1497,7 +1497,7 @@ class TestActionParameter(unittest.TestCase):
 
             self.assertEqual(mapping_1.value, 1)
             
-            self.assertEqual(action_1.state, False)
+            self.assertEqual(action_1.state, True)
 
             return False
         

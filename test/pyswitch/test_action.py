@@ -93,18 +93,10 @@ class TestAction(unittest.TestCase):
         # One pixel
         switch.pixels = [11]
         self.assertEqual(action_4._get_led_segments(), [0])
-
-        with self.assertRaises(Exception):           
-            action_1._get_led_segments()
-
-        with self.assertRaises(Exception):           
-            action_2._get_led_segments()
-
-        with self.assertRaises(Exception):           
-            action_3._get_led_segments()
-        
-        with self.assertRaises(Exception):           
-            action_5._get_led_segments()
+        self.assertEqual(action_1._get_led_segments(), [])
+        self.assertEqual(action_2._get_led_segments(), [])
+        self.assertEqual(action_3._get_led_segments(), [])
+        self.assertEqual(action_5._get_led_segments(), [])
 
         # Two pixels
         switch.pixels = [11, 13]
@@ -160,12 +152,8 @@ class TestAction(unittest.TestCase):
         self.assertEqual(action_1._get_led_segments(), [0])
         self.assertEqual(action_2._get_led_segments(), [])
         self.assertEqual(action_4._get_led_segments(), [])
-
-        with self.assertRaises(Exception):           
-            action_3._get_led_segments()
-        
-        with self.assertRaises(Exception):           
-            action_5._get_led_segments()
+        self.assertEqual(action_3._get_led_segments(), [])
+        self.assertEqual(action_5._get_led_segments(), [])
 
         # Two pixels
         switch.pixels = [11, 13]

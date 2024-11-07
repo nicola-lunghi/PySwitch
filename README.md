@@ -155,15 +155,11 @@ Some clients like the Kemper devices support a bidirectional communication mode.
 
 See this chart for some differences between the operation modes:
 
-                                    | **Non-Bidirectional** | **Bidirectional**    |
-------------------------------------|-----------------------|----------------------|
-Reflect changes on the client       | Yes                   | Yes                  |
-------------------------------------|-----------------------|----------------------|
-Parameter values are requested      | Yes                   | No (*)               |
-periodically                        |                       |                      |
-------------------------------------|-----------------------|----------------------|
-Tuner information available         | No                    | Yes (Note and dev.)  |
-------------------------------------|-----------------------|----------------------|
+|                                             | **Non-Bidirectional** | **Bidirectional**    |
+|---------------------------------------------|-----------------------|----------------------|
+| Reflect changes on the client               | Yes                   | Yes                  |
+| Parameter values are requested periodically | Yes                   | No (*)               |
+| Tuner information available                 | No                    | Yes (Note and dev.)  |
 
 *(*) Bidirectional mode is not available for all parameters. However, you do not need to specify this, the **kemper.py** file contains the definitions looked up by the application.*
 
@@ -307,7 +303,7 @@ Switches = [
         "actions": [
             ParameterCondition(
                 mapping = KemperMappings.RIG_NAME,
-                mode = ParameterConditionModes.MODE_STRING_CONTAINS,
+                mode = ParameterConditionModes.STRING_CONTAINS,
                 ref_value = "TAP",
 
                 yes = [
@@ -337,7 +333,7 @@ Switches = [
         "actions": [
             ParameterCondition(
                 mapping = KemperMappings.RIG_NAME,
-                mode = ParameterConditionModes.MODE_STRING_CONTAINS,
+                mode = ParameterConditionModes.STRING_CONTAINS,
                 ref_value = "TAP",
 
                 yes = [
@@ -345,7 +341,7 @@ Switches = [
                         mapping = KemperMappings.EFFECT_STATE(
                             KemperEffectSlot.EFFECT_SLOT_ID_DLY
                         ),
-                        mode = ParameterConditionModes.MODE_EQUAL,
+                        mode = ParameterConditionModes.EQUAL,
                         ref_value = 1,
 						
                         yes = [
@@ -424,6 +420,41 @@ Switches = [
     #... Define further switches here
 ]
 ```
+
+#### Actions on Long Press (Hold)
+
+You can assign different actions to long pressing of switches. This is done using the HoldAction class, which takes actions assigned to short press and long press separately:
+
+```python
+Switches = [
+    {
+        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            HoldAction({
+                "actions": [
+                    KemperActionDefinitions.EFFECT_STATE(
+                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+                        display = {
+                            # ...
+                        },
+                    )
+                ],
+                "actionsHold": KemperActionDefinitions.BANK_UP(
+                    #use_leds = False    # See Note
+                )
+            })                        
+        ]
+    },
+
+    #... Define further switches here
+]
+```
+
+Also see the examples if you get problems, there are some working ones with HoldAction included.
+
+*NOTE: The LEDs of the switch will be shared among the actions participated. If you want just one action to use all LEDs of a switch, you can switch the usage off for an action using the use_leds parameter, for example with the hold action, so only the normal action will use the LEDs.*
+
+*NOTE: Do not assign the same display label to the actions, this does not make sense and will result in erratic output.*
 
 ### TFT Display Layout Definition
 
@@ -551,7 +582,7 @@ Display = ParameterDisplayLabel(
 
     layout = ParameterCondition(
         mapping = KemperMappings.RIG_NAME,
-        mode = ParameterConditionModes.MODE_STRING_CONTAINS,
+        mode = ParameterConditionModes.STRING_CONTAINS,
         ref_value = "ORANGE",
 
         yes = {
@@ -644,7 +675,7 @@ If you need for example a big Tuner visualization display which is completely re
 Display = ParameterCondition(
     mapping = KemperMappings.TUNER_MODE_STATE,
     ref_value = 1,
-    mode = ParameterConditionModes.MODE_NOT_EQUAL,
+    mode = ParameterConditionModes.NOT_EQUAL,
 
     # Show normal display
     yes = HierarchicalDisplayElement(

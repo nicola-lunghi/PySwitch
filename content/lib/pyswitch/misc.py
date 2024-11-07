@@ -4,6 +4,11 @@ from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 from adafruit_midi.midi_message import MIDIUnknownEvent
 
+
+# PySwitch version
+PYSWITCH_VERSION = "2.1.0"
+
+
 # Color definitions (can be used for LEDs and labels)
 class Colors:
     WHITE = (255, 255, 255)

@@ -16,6 +16,7 @@ with patch.dict(sys.modules, {
     #from lib.pyswitch.controller.Controller import Controller
     from .mocks_appl import *
     from lib.pyswitch.controller.ConditionTree import ConditionTree
+    from lib.pyswitch.controller.actions.actions import HoldAction
 
 
 class TestControllerConditions(unittest.TestCase):
@@ -509,6 +510,345 @@ class TestControllerConditions(unittest.TestCase):
             self.assertEqual(action_1.num_update_calls_enabled, 1)
             self.assertEqual(action_2.num_update_calls_enabled, 3)
             self.assertEqual(action_3.num_update_calls_enabled, 1)
+            return False
+
+        # Build scenes hierarchy
+        appl.next_step = SceneStep(
+            num_pass_ticks = 10,
+            prepare = prep1,
+            evaluate = eval1,
+
+            next = SceneStep(
+                num_pass_ticks = 0,
+                prepare = prep2,
+                evaluate = eval2,
+            
+                next = SceneStep(
+                    num_pass_ticks = 0,
+                    prepare = prep3,
+                    evaluate = eval3,
+            
+                    next = SceneStep(
+                        num_pass_ticks = 1,
+                        prepare = prep4,
+                        evaluate = eval4,
+
+                        next = SceneStep(
+                            num_pass_ticks = 2,
+                            prepare = prep5,
+                            evaluate = eval5,
+
+                            next = SceneStep(
+                                num_pass_ticks = 500,
+                                prepare = prep6,
+                                evaluate = eval6
+                            )
+                        )
+                    )
+                )
+            )
+        )
+
+        # Run process
+        appl.process()
+
+
+############################################################################################
+
+
+    def test_actions_deep_conditions_with_hold(self):
+        switch_1 = MockSwitch()
+        
+        action_0 = MockAction()
+        action_1 = MockAction()
+        action_2 = MockAction()
+        action_3 = MockAction()
+        action_4 = MockAction()
+        action_5 = MockAction()
+
+        period = MockPeriodCounter()
+        period_hold = MockPeriodCounter()
+
+        condition_3 = MockCondition(
+            no = [
+                action_3
+            ]
+        )
+
+        condition_2 = MockCondition(
+            yes = [
+                action_2
+            ],
+            no = condition_3
+        )
+
+        condition_1 = MockCondition(
+            yes = [
+                action_5,
+                HoldAction(
+                    config = {
+                        "actions": condition_2,
+                        "actionsHold": action_4
+                    },
+                    period_counter_hold = period_hold
+                )
+            ],
+            no = [
+                action_1
+            ]
+        )
+
+        appl = MockController(
+            led_driver = MockNeoPixelDriver(),
+            communication = {
+                "valueProvider": MockValueProvider()
+            },
+            midi = MockMidiController(),
+            switches = [
+                {
+                    "assignment": {
+                        "model": switch_1
+                    },
+                    "actions": [
+                        action_0,
+                        condition_1
+                    ]
+                }
+            ],
+            period_counter = period
+        )
+
+        # Build scene:
+        # Step 1: Conditions all true
+        def prep1():
+            period.exceed_next_time = True
+            
+            self.assertEqual(condition_1.true, True)
+            self.assertEqual(condition_1.num_update_calls, 0)
+
+            self.assertEqual(condition_2.true, True)
+            self.assertEqual(condition_2.num_update_calls, 0)
+            
+            self.assertEqual(condition_3.true, True)
+            self.assertEqual(condition_3.num_update_calls, 0)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 0)
+            self.assertEqual(action_1.num_update_calls_enabled, 0)
+            self.assertEqual(action_2.num_update_calls_enabled, 0)
+            self.assertEqual(action_3.num_update_calls_enabled, 0)
+            self.assertEqual(action_4.num_update_calls_enabled, 0)
+            self.assertEqual(action_5.num_update_calls_enabled, 0)
+
+        def eval1():
+            self.assertEqual(condition_1.true, True)
+
+            self.assertEqual(condition_1.num_update_calls, 1)
+            self.assertEqual(condition_2.num_update_calls, 1)
+            self.assertEqual(condition_3.num_update_calls, 1)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 1)
+            self.assertEqual(action_1.num_update_calls_enabled, 0)
+            self.assertEqual(action_2.num_update_calls_enabled, 1)
+            self.assertEqual(action_3.num_update_calls_enabled, 0)
+            self.assertEqual(action_4.num_update_calls_enabled, 1)
+            self.assertEqual(action_5.num_update_calls_enabled, 1)
+            return True
+
+        # Step 2: Conditions all false
+        def prep2():
+            switch_1.shall_be_pushed = True
+            period.exceed_next_time = True            
+            condition_1.bool_value = False
+            condition_2.bool_value = False
+            condition_3.bool_value = False
+            
+            self.assertEqual(condition_1.true, True)
+            self.assertEqual(condition_1.num_update_calls, 1)
+
+            self.assertEqual(condition_2.true, True)
+            self.assertEqual(condition_2.num_update_calls, 1)
+            
+            self.assertEqual(condition_3.true, True)
+            self.assertEqual(condition_3.num_update_calls, 1)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 1)
+            self.assertEqual(action_1.num_update_calls_enabled, 0)
+            self.assertEqual(action_2.num_update_calls_enabled, 1)
+            self.assertEqual(action_3.num_update_calls_enabled, 0)
+            self.assertEqual(action_4.num_update_calls_enabled, 1)
+            self.assertEqual(action_5.num_update_calls_enabled, 1)
+
+        def eval2():
+            self.assertEqual(condition_1.true, False)
+            self.assertEqual(condition_2.true, False)
+            self.assertEqual(condition_2.true, False)
+
+            self.assertEqual(condition_1.num_update_calls, 2)
+            self.assertEqual(condition_2.num_update_calls, 2)
+            self.assertEqual(condition_3.num_update_calls, 2)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 2)
+            self.assertEqual(action_1.num_update_calls_enabled, 1)
+            self.assertEqual(action_2.num_update_calls_enabled, 1)
+            self.assertEqual(action_3.num_update_calls_enabled, 0)
+            self.assertEqual(action_4.num_update_calls_enabled, 1)
+            self.assertEqual(action_5.num_update_calls_enabled, 1)
+            return True
+        
+        # Step 3: Condition 1 true again
+        def prep3():
+            period.exceed_next_time = True
+            condition_1.bool_value = True
+
+            self.assertEqual(condition_1.true, False)
+            self.assertEqual(condition_1.num_update_calls, 2)
+
+            self.assertEqual(condition_2.true, False)
+            self.assertEqual(condition_2.num_update_calls, 2)
+
+            self.assertEqual(condition_3.true, False)
+            self.assertEqual(condition_3.num_update_calls, 2)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 2)
+            self.assertEqual(action_1.num_update_calls_enabled, 1)
+            self.assertEqual(action_2.num_update_calls_enabled, 1)
+            self.assertEqual(action_3.num_update_calls_enabled, 0)
+            self.assertEqual(action_4.num_update_calls_enabled, 1)
+            self.assertEqual(action_5.num_update_calls_enabled, 1)
+
+        def eval3():
+            self.assertEqual(condition_1.num_update_calls, 3)
+            self.assertEqual(condition_2.num_update_calls, 3)
+            self.assertEqual(condition_3.num_update_calls, 3)
+
+            self.assertEqual(condition_1.true, True)
+            self.assertEqual(condition_2.true, False)
+            self.assertEqual(condition_3.true, False)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 3)
+            self.assertEqual(action_1.num_update_calls_enabled, 1)
+            self.assertEqual(action_2.num_update_calls_enabled, 1)
+            self.assertEqual(action_3.num_update_calls_enabled, 1)
+            self.assertEqual(action_4.num_update_calls_enabled, 2)
+            self.assertEqual(action_5.num_update_calls_enabled, 2)
+            return True
+        
+        # Step 4: Condition 2 true again
+        def prep4():
+            switch_1.shall_be_pushed = False
+            period.exceed_next_time = True
+            condition_2.bool_value = True
+            
+            self.assertEqual(condition_1.num_update_calls, 3)
+            self.assertEqual(condition_1.true, True)
+
+            self.assertEqual(condition_2.num_update_calls, 3)
+            self.assertEqual(condition_2.true, False)
+
+            self.assertEqual(condition_3.num_update_calls, 3)
+            self.assertEqual(condition_3.true, False)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 3)
+            self.assertEqual(action_1.num_update_calls_enabled, 1)
+            self.assertEqual(action_2.num_update_calls_enabled, 1)
+            self.assertEqual(action_3.num_update_calls_enabled, 1)
+            self.assertEqual(action_4.num_update_calls_enabled, 2)
+            self.assertEqual(action_5.num_update_calls_enabled, 2)
+
+        def eval4():
+            self.assertEqual(condition_1.num_update_calls, 4)
+            self.assertEqual(condition_1.true, True)
+            
+            self.assertEqual(condition_2.num_update_calls, 4)
+            self.assertEqual(condition_2.true, True)
+
+            self.assertEqual(condition_3.num_update_calls, 4)
+            self.assertEqual(condition_3.true, False)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 4)
+            self.assertEqual(action_1.num_update_calls_enabled, 1)
+            self.assertEqual(action_2.num_update_calls_enabled, 2)
+            self.assertEqual(action_3.num_update_calls_enabled, 1)
+            self.assertEqual(action_4.num_update_calls_enabled, 3)
+            self.assertEqual(action_5.num_update_calls_enabled, 3)
+            return True
+
+        # Step 5: Condition 3 true again
+        def prep5():
+            period.exceed_next_time = True
+            condition_3.bool_value = True
+            
+            self.assertEqual(condition_1.num_update_calls, 4)
+            self.assertEqual(condition_1.true, True)
+
+            self.assertEqual(condition_2.num_update_calls, 4)
+            self.assertEqual(condition_2.true, True)
+
+            self.assertEqual(condition_3.num_update_calls, 4)
+            self.assertEqual(condition_3.true, False)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 4)
+            self.assertEqual(action_1.num_update_calls_enabled, 1)
+            self.assertEqual(action_2.num_update_calls_enabled, 2)
+            self.assertEqual(action_3.num_update_calls_enabled, 1)
+            self.assertEqual(action_4.num_update_calls_enabled, 3)
+            self.assertEqual(action_5.num_update_calls_enabled, 3)
+
+        def eval5():
+            self.assertEqual(condition_1.num_update_calls, 5)
+            self.assertEqual(condition_1.true, True)
+            
+            self.assertEqual(condition_2.num_update_calls, 5)
+            self.assertEqual(condition_2.true, True)
+
+            self.assertEqual(condition_3.num_update_calls, 5)
+            self.assertEqual(condition_3.true, True)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 5)
+            self.assertEqual(action_1.num_update_calls_enabled, 1)
+            self.assertEqual(action_2.num_update_calls_enabled, 3)
+            self.assertEqual(action_3.num_update_calls_enabled, 1)
+            self.assertEqual(action_4.num_update_calls_enabled, 4)
+            self.assertEqual(action_5.num_update_calls_enabled, 4)
+            return True
+        
+        # Step 6: Condition 2 false again
+        def prep6():
+            period.exceed_next_time = True
+            condition_2.bool_value = False
+            
+            self.assertEqual(condition_1.num_update_calls, 5)
+            self.assertEqual(condition_1.true, True)
+
+            self.assertEqual(condition_2.num_update_calls, 5)
+            self.assertEqual(condition_2.true, True)
+
+            self.assertEqual(condition_3.num_update_calls, 5)
+            self.assertEqual(condition_3.true, True)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 5)
+            self.assertEqual(action_1.num_update_calls_enabled, 1)
+            self.assertEqual(action_2.num_update_calls_enabled, 3)
+            self.assertEqual(action_3.num_update_calls_enabled, 1)
+            self.assertEqual(action_4.num_update_calls_enabled, 4)
+            self.assertEqual(action_5.num_update_calls_enabled, 4)
+
+        def eval6():
+            self.assertEqual(condition_1.num_update_calls, 6)
+            self.assertEqual(condition_1.true, True)
+            
+            self.assertEqual(condition_2.num_update_calls, 6)
+            self.assertEqual(condition_2.true, False)
+
+            self.assertEqual(condition_3.num_update_calls, 6)
+            self.assertEqual(condition_3.true, True)
+
+            self.assertEqual(action_0.num_update_calls_enabled, 6)
+            self.assertEqual(action_1.num_update_calls_enabled, 1)
+            self.assertEqual(action_2.num_update_calls_enabled, 3)
+            self.assertEqual(action_3.num_update_calls_enabled, 1)
+            self.assertEqual(action_4.num_update_calls_enabled, 5)
+            self.assertEqual(action_5.num_update_calls_enabled, 5)
             return False
 
         # Build scenes hierarchy

@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
 
-from pyswitch.misc import Colors
+from pyswitch.misc import Colors, PYSWITCH_VERSION
 from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
 
 from pyswitch.ui.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds, TunerDisplay
@@ -71,7 +71,7 @@ Display = ParameterCondition(
 
                 parameter = {
                     "mapping": KemperMappings.RIG_NAME,
-                    "textOffline": "Kemper Profiler (offline)",
+                    "textOffline": "Kemper Control v" + repr(PYSWITCH_VERSION),
                     "textReset": "Loading Rig..."
                 }
             ),

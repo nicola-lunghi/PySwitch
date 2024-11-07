@@ -168,7 +168,7 @@ class KemperActionDefinitions:
 
     # Switch an effect slot on / off
     @staticmethod
-    def EFFECT_STATE(slot_id, display = None, mode = PushButtonModes.HOLD_MOMENTARY, id = False):
+    def EFFECT_STATE(slot_id, display = None, mode = PushButtonModes.HOLD_MOMENTARY, id = False, use_leds = True):
         return EffectEnableAction({
             "mapping": KemperMappings.EFFECT_STATE(slot_id),
             "mappingType": KemperMappings.EFFECT_TYPE(slot_id),
@@ -176,49 +176,53 @@ class KemperActionDefinitions:
             "slotInfo": KemperEffectSlot(slot_id),
             "mode": mode,
             "display": display,
-            "id": id
+            "id": id,
+            "useSwitchLeds": use_leds
         })
 
     # Rotary speed (fast/slow)
     @staticmethod
-    def ROTARY_SPEED(slot_id, display = None, color = Colors.DARK_BLUE, id = False):
+    def ROTARY_SPEED(slot_id, display = None, color = Colors.DARK_BLUE, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.ROTARY_SPEED(slot_id),
             "display": display,
             "text": "Fast",
             "color": color,
-            "id": id
+            "id": id,
+            "useSwitchLeds": use_leds
         })
 
     ## Special functions ####################################################################################################
 
     # Switch tuner mode on / off
     @staticmethod
-    def TUNER_MODE(display = None, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
+    def TUNER_MODE(display = None, color = Defaults.DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.TUNER_MODE_STATE,
             "valueEnabled": 1,
             "valueDisabled": 3,
             "setValueEnabled": 1,
             "setValueDisabled": 0,
-            "comparisonMode": ParameterActionModes.MODE_EQUAL,
+            "comparisonMode": ParameterActionModes.EQUAL,
             "display": display,
             "text": "Tuner",
             "color": Colors.WHITE,
             "color": color,
-            "id": id
+            "id": id,
+            "useSwitchLeds": use_leds
         })
 
     # Tap tempo
     @staticmethod
-    def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False):
+    def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.TAP_TEMPO,
             "display": display,
             "text": "Tap",
             "color": color,
             "mode": PushButtonModes.MOMENTARY,
-            "id": id
+            "id": id,
+            "useSwitchLeds": use_leds
         })
 
     ## Rig specific ##########################################################################################################
@@ -228,7 +232,7 @@ class KemperActionDefinitions:
     # boost rig volume by passing a value in range [0..1] (corresponding to the range of the
     # rig volume paramneter: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB)
     @staticmethod
-    def RIG_VOLUME_BOOST(boost_volume, display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.PINK, id = False):
+    def RIG_VOLUME_BOOST(boost_volume, display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.PINK, id = False, use_leds = True):
         return ParameterAction({
             "mode": mode,
             "mapping": KemperMappings.RIG_VOLUME,
@@ -237,7 +241,8 @@ class KemperActionDefinitions:
             "display": display,
             "text": "RigBoost",
             "color": color,
-            "id": id
+            "id": id,
+            "useSwitchLeds": use_leds
         })
 
     # Used to reset the screen areas which show rig info details directly after rig changes (if you dont use this, 
@@ -255,35 +260,37 @@ class KemperActionDefinitions:
 
     # Amp on/off
     @staticmethod
-    def AMP_STATE(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
+    def AMP_STATE(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.AMP_STATE,
             "mode": mode,
             "display": display,
             "text": "Amp",
             "color": color,
-            "id": id
+            "id": id,
+            "useSwitchLeds": use_leds
         })
 
     ## Cab ########################################################################################################################
 
     # Amp on/off
     @staticmethod
-    def CABINET_STATE(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False):
+    def CABINET_STATE(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.CABINET_STATE,
             "mode": mode,
             "display": display,
             "text": "Cab",
             "color": color,
-            "id": id
+            "id": id,
+            "useSwitchLeds": use_leds
         })
 
     ## Change Rig/Bank ############################################################################################################
 
     # Next bank (keeps rig index)
     @staticmethod
-    def BANK_UP(display = None, color = Colors.WHITE, id = False):
+    def BANK_UP(display = None, color = Colors.WHITE, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.NEXT_BANK,
             "mode": PushButtonModes.ONE_SHOT,
@@ -291,12 +298,13 @@ class KemperActionDefinitions:
             "display": display,
             "text": "Bank up",
             "color": color,
-            "id": id
+            "id": id,
+            "useSwitchLeds": use_leds
         })
     
     # Previous bank (keeps rig index)
     @staticmethod
-    def BANK_DOWN(display = None, color = Colors.WHITE, id = False):
+    def BANK_DOWN(display = None, color = Colors.WHITE, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.PREVIOUS_BANK,
             "mode": PushButtonModes.ONE_SHOT,
@@ -304,14 +312,15 @@ class KemperActionDefinitions:
             "display": display,
             "text": "Bank dn",
             "color": color,
-            "id": id
+            "id": id,
+            "useSwitchLeds": use_leds
         })
     
     # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
     # the current bank. Rigs are indexed starting from one, range: [1..5].
     # Optionally, banks can be switched too in the same logic using bank and bank_off.
     @staticmethod
-    def RIG_SELECT(rig, rig_off = None, bank = None, bank_off = None, display = None, color = Colors.YELLOW, id = False):
+    def RIG_SELECT(rig, rig_off = None, bank = None, bank_off = None, display = None, color = Colors.YELLOW, id = False, use_leds = True):
         # Texts always show the rig to be selected when the switch is pushed the next time
         text_rig_off = str(rig)
         text_rig_on = text_rig_off
@@ -379,7 +388,8 @@ class KemperActionDefinitions:
             },
             "displayDimFactorOn": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,  # Set equal dim factor (we do not need status display here)
             "mode": PushButtonModes.LATCH,
-            "id": id
+            "id": id,
+            "useSwitchLeds": use_leds
         })
 
 
@@ -971,10 +981,12 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         self.debug = False   # This is set by the BidirectionalClient constructor
         self._count_input_messages = 0
         self._count_relevant_messages = 0
+        self._has_been_running = False
         
     # Called before usage, with a midi handler.
-    def init(self, midi):
+    def init(self, midi, client):
         self._midi = midi  
+        self._client = client
 
     # Must return (boolean) if the passed mapping is handled in the bidirectional protocol
     def is_bidirectional(self, mapping):
@@ -996,20 +1008,21 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
                 if self.debug:
                     self._print("Initialize communication")
 
+                if self._has_been_running:
+                    self._client.notify_connection_lost()                    
+
                 self._send_beacon(
                     init = True
-                )                        
+                )
 
         elif self.state == self.STATE_RUNNING:
             if self.sensing_period.exceeded:
                 self.state = self.STATE_OFFLINE
 
                 if self.debug:
-                    self._print("Lost connection")
+                    self._print("Lost connection")                
 
-                self.resend_period.reset()
-
-            if self.resend_period.exceeded:
+            elif self.resend_period.exceeded:
                 if self.debug:
                     self._print("Send keep-alive message")
 
@@ -1049,7 +1062,8 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
             if self.debug:
                self._print("Connection established")
 
-        self.state = self.STATE_RUNNING
+            self._has_been_running = True
+            self.state = self.STATE_RUNNING
 
         self.sensing_period.reset()
 

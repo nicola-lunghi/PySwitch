@@ -208,7 +208,8 @@ class Action(Updateable):
             return []
         
         if not self.uses_switch_leds:
-            raise Exception("You have to set uses_switch_leds to True to use LEDs of switches in actions.")
+            #raise Exception("You have to set uses_switch_leds to True to use LEDs of switches in actions.")
+            return []
 
         if not self.enabled:
             return []
@@ -220,7 +221,7 @@ class Action(Updateable):
                 
         ret = []
 
-        index = self._get_index_among_led_actions()
+        index = self._get_index_among_led_actions(actions_using_leds)
         num_pixels = len(self.switch.pixels)
 
         if len(actions_using_leds) == 1:
@@ -251,18 +252,26 @@ class Action(Updateable):
         return ret
 
     # Returns the index of this action inside the LED-using actions of the switch.
-    def _get_index_among_led_actions(self):
-        actions_using_leds = self._get_actions_using_leds()
-
+    def _get_index_among_led_actions(self, actions_using_leds):
         for i in range(len(actions_using_leds)):
             if actions_using_leds[i] == self:
                 return i
         
-        raise Exception("Action not found in LED-using actions of switch " + self.switch.id)
+        raise Exception("Action " + repr(self.id) + " not found in LED-using actions of switch " + repr(self.switch.id))
 
-    # Returns a list of the actions of the switch which are bothe enabled and use LEDs.
+    # Returns a list of the actions of the switch which are both enabled and use LEDs.
     def _get_actions_using_leds(self):
-        return [a for a in self.switch.actions if a.uses_switch_leds and a.enabled]
+        ret = [] #[a for a in self.switch.actions if a.uses_switch_leds and a.enabled]
+
+        for a in self.switch.actions:
+            sub = a.get_all_actions()
+            ret = ret + [s for s in sub if s.uses_switch_leds and s.enabled]
+
+        return ret
+
+    # Must return a list containing self and all possible sub actions
+    def get_all_actions(self):
+        return [self]
 
     # Print to the debug console
     def print(self, msg):    # pragma: no cover
@@ -271,5 +280,5 @@ class Action(Updateable):
         
         enabled_text = "enabled" if self.enabled else "disabled"
 
-        Tools.print("Switch " + self.id + " (" + enabled_text + "): " + msg)
+        Tools.print("Switch/Action " + self.id + " (" + enabled_text + "): " + msg)
 

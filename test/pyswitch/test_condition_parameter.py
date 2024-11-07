@@ -25,7 +25,7 @@ class TestConditionParameter(unittest.TestCase):
 
     def test_functionality(self):
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_EQUAL,
+            mode = ParameterConditionModes.EQUAL,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -39,7 +39,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_NOT_EQUAL,
+            mode = ParameterConditionModes.NOT_EQUAL,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -53,7 +53,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_GREATER,
+            mode = ParameterConditionModes.GREATER,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -67,7 +67,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_GREATER_EQUAL,
+            mode = ParameterConditionModes.GREATER_EQUAL,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -81,7 +81,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_GREATER_EQUAL,
+            mode = ParameterConditionModes.GREATER_EQUAL,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -95,7 +95,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_LESS,
+            mode = ParameterConditionModes.LESS,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -109,7 +109,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_LESS_EQUAL,
+            mode = ParameterConditionModes.LESS_EQUAL,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -123,7 +123,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_IN_RANGE,
+            mode = ParameterConditionModes.IN_RANGE,
             ref_value = [2.2, 4.5],
             
             answer_value_1 = 2.2,
@@ -137,7 +137,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_IN_RANGE,
+            mode = ParameterConditionModes.IN_RANGE,
             ref_value = [2.2, 4.5],
             
             answer_value_1 = 4,
@@ -151,7 +151,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_NOT_IN_RANGE,
+            mode = ParameterConditionModes.NOT_IN_RANGE,
             ref_value = [2.2, 4.5],
             
             answer_value_1 = 2.2,
@@ -165,7 +165,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_NOT_IN_RANGE,
+            mode = ParameterConditionModes.NOT_IN_RANGE,
             ref_value = [2.2, 4.5],
             
             answer_value_1 = 4,
@@ -179,7 +179,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_STRING_CONTAINS,
+            mode = ParameterConditionModes.STRING_CONTAINS,
             ref_value = "foo",
             
             answer_value_1 = "bar",
@@ -193,7 +193,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_STRING_NOT_CONTAINS,
+            mode = ParameterConditionModes.STRING_NOT_CONTAINS,
             ref_value = "foo",
             
             answer_value_1 = "bar",
@@ -207,7 +207,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_STRING_STARTS_WITH,
+            mode = ParameterConditionModes.STRING_STARTS_WITH,
             ref_value = "foo",
             
             answer_value_1 = "foo",
@@ -221,7 +221,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_STRING_STARTS_WITH,
+            mode = ParameterConditionModes.STRING_STARTS_WITH,
             ref_value = "foo",
             
             answer_value_1 = "not",
@@ -235,7 +235,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_STRING_ENDS_WITH,
+            mode = ParameterConditionModes.STRING_ENDS_WITH,
             ref_value = "foo",
             
             answer_value_1 = "foo",
@@ -249,7 +249,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.MODE_STRING_ENDS_WITH,
+            mode = ParameterConditionModes.STRING_ENDS_WITH,
             ref_value = "foo",
             
             answer_value_1 = "not",
@@ -465,7 +465,7 @@ class TestConditionParameter(unittest.TestCase):
 
         condition_1 = ParameterCondition(
             mapping = mapping_1,
-            mode = ParameterConditionModes.MODE_GREATER_EQUAL,
+            mode = ParameterConditionModes.GREATER_EQUAL,
             ref_value = 2.2,
             yes = [
                 action_1
@@ -569,7 +569,7 @@ class TestConditionParameter(unittest.TestCase):
 
         condition_1 = ParameterCondition(
             mapping = mapping_1,
-            mode = ParameterConditionModes.MODE_GREATER_EQUAL,
+            mode = ParameterConditionModes.GREATER_EQUAL,
             ref_value = 2.2,
             yes = [
                 action_1

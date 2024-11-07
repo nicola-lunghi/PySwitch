@@ -1,6 +1,7 @@
 from .Action import Action
 from ..Client import ClientParameterMapping
 from ...misc import Tools, Defaults, Colors, PeriodCounter
+from ..ConditionTree import ConditionTree
 
 
 # Modes for PushButtonAction
@@ -128,15 +129,190 @@ class PushButtonAction(Action):
 ################################################################################################################################
 
 
+# Implements an abstraction layer for triggering different actions on hold/double click
+class HoldAction(Action):
+    
+    DEFAULT_HOLD_TIME_MILLIS = 600            # Default hold time
+
+    # config:
+    # {
+    #      "actions":               Default list of actions (can be conditional). Mandatory.
+    #      "actionsHold":           List of actions to perform on holding the switch (can be conditional). Optional.
+    #      "holdTimeMillis":        Optional hold time in milliseconds. Default is PushButtonMultiModes.DEFAULT_HOLD_TIME_MILLIS.
+    #                               Note that the sensing here is done only every processing update interval!
+    # }
+    def __init__(self, config = {}, period_counter_hold = None):
+        super().__init__(config)
+        
+        self._action_tree = None
+        self._action_hold_tree = None
+        self._active = False
+
+        # Hold period counter
+        self._period_hold = period_counter_hold
+        if not self._period_hold:
+            hold_time_ms = Tools.get_option(self.config, "holdTimeMillis", self.DEFAULT_HOLD_TIME_MILLIS)
+            self._period_hold = PeriodCounter(hold_time_ms)
+        
+    # Tie the enabled state of the actions to the one of this action
+    @Action.enabled.setter
+    def enabled(self, value):
+        Action.enabled.fset(self, value)
+
+        self.condition_changed(None)
+
+    # Set up action instances
+    def init(self, appl, switch):
+        super().init(appl, switch)
+
+        self._action_tree = self._init_actions(appl, switch, Tools.get_option(self.config, "actions", []))
+        self._action_hold_tree = self._init_actions(appl, switch, Tools.get_option(self.config, "actionsHold", []))
+
+        # Update actions to initialize the correct initial state
+        self.condition_changed(None)
+
+        self.update_displays()
+
+    # Initialize actions for a list
+    def _init_actions(self, appl, switch, action_definitions):
+        action_tree = ConditionTree(
+            subject = action_definitions,
+            listener = self
+        )
+
+        action_tree.init(appl)
+        actions = action_tree.entries
+
+        for action in actions:
+            action.init(appl, switch)        
+            appl.add_updateable(action)            
+            #action.update_displays()
+
+        return action_tree
+        
+    # Called on condition changes. The yes value will be True or False.
+    def condition_changed(self, condition):
+        self._actions = self._action_tree.values
+        self._actions_hold = self._action_hold_tree.values
+
+        all = self._action_tree.entries + self._action_hold_tree.entries
+        
+        if not self.enabled:
+            for action in all:
+                action.reset_display()
+                action.enabled = False
+            return
+
+        active_actions = self._actions + self._actions_hold        
+
+        to_disable = [a for a in all if a.enabled and not a in active_actions]
+        to_enable = [a for a in all if not a.enabled and a in active_actions]
+
+        # Execute the two lists in the correct order
+        for action in to_disable:
+            action.reset_display()
+            action.enabled = False
+
+        for action in to_enable:
+            action.enabled = True
+
+    # Can return child actions (used for LED addressing)
+    def get_all_actions(self):
+        ret = [self]
+
+        for a in self._action_tree.entries:
+            ret = ret + a.get_all_actions()
+
+        for a in self._action_hold_tree.entries:
+            ret = ret + a.get_all_actions()
+
+        return ret
+    
+    # Check if hold time exceeded
+    def do_update(self):
+        if self._active:
+            self._check_hold()
+
+    # Checks hold time and triggers hold action if exceeded.
+    def _check_hold(self):
+        if self._period_hold.exceeded:
+            self._active = False
+
+            # Hold click
+            for action in self._actions_hold:
+                action.push()        
+                action.release()
+
+            return True
+        
+        return False
+    
+    # Button pushed: Here, we just reset the period for hold, all processing takes 
+    # place in the release() method
+    def push(self):     
+        self._period_hold.reset()
+        self._active = True
+
+    # Button released
+    def release(self):
+        if not self._active:
+            return
+        
+        if self._check_hold():
+            return
+
+        # Normal click
+        for action in self._actions:
+            action.push()        
+            action.release()
+
+        self._active = False
+
+    # Applied to all sub-actions
+    def update_displays(self):
+        for action in self._actions:
+            action.update_displays()
+
+        for action in self._actions_hold:
+            action.update_displays()
+
+    # Applied to all sub-actions
+    def reset(self):
+        for action in self._actions:
+            action.reset()
+
+        for action in self._actions_hold:
+            action.reset()
+
+    # Applied to all sub-actions
+    def force_update(self):
+        for action in self._actions:
+            action.force_update()
+
+        for action in self._actions_hold:
+            action.force_update()
+
+    # Applied to all sub-actions
+    def reset_display(self):
+        for action in self._actions:
+            action.reset_display()
+
+        for action in self._actions_hold:
+            action.reset_display()
+
+
+################################################################################################################################
+
+
 # Comparison modes (for the valueEnabled value when requesting a value)
 class ParameterActionModes:
-    MODE_EQUAL = 0            # Enable when exactly the valueEnabled value comes in
+    EQUAL = 0            # Enable when exactly the valueEnabled value comes in
     
-    MODE_GREATER = 10         # Enable when a value greater than valueEnabled comes in
-    MODE_GREATER_EQUAL = 20   # Enable when the valueEnabled value comes in, or anything greater
+    GREATER = 10         # Enable when a value greater than valueEnabled comes in
+    GREATER_EQUAL = 20   # Enable when the valueEnabled value comes in, or anything greater
 
-    MODE_LESS = 30            # Enable when a value less than valueEnabled comes in
-    MODE_LESS_EQUAL = 40      # Enable when the valueEnabled value comes in, or anything less
+    LESS = 30            # Enable when a value less than valueEnabled comes in
+    LESS_EQUAL = 40      # Enable when the valueEnabled value comes in, or anything less
 
 
 ################################################################################################################################
@@ -156,28 +332,36 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     # Generic MIDI parameter
     # Additional options:
     # {
-    #     "mode":               Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
-    #     "holdTimeMillis":     Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
+    #     "mode":                Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
+    #     "holdTimeMillis":      Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
     #
-    #     "mapping":            A ClientParameterMapping instance. See mappings.py for some predeifined ones.
-    #                           This can also be an array: In this case the mappings are processed in the given order.
-    #     "mappingDisable":     Mapping to be used on disabling the state. If mapping is an array, this has also to be an array.
-    #     "text":               Text (optional)
-    #     "color":              Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
-    #                           with one color for each LED segment of the switch (if more actions share the LEDs, only the first
-    #                           color is used)
-    #     "valueEnabled":       Value to be interpreted as "enabled". Optional: Default is 1. If mapping is a list, this must
-    #                           also be a list of values for the mappings.
-    #     "valueDisabled":      Value to be interpreted as "disabled". Optional: Default is 0. If mappingDisable (if provided)
-    #                           or mapping is a list, this must also be a list of values for the mappings.
-    #     "setValueEnabled":    Optional: Value for setting. valueEnabled is only used for receiving if this is set.
-    #     "setValueDisabled":   Optional: Value for setting. valueDisabled is only used for receiving if this is set.
-    #     "comparisonMode":     Mode of comparison when receiving a value. Default is ParameterActionModes.MODE_GREATER_EQUAL.
+    #     "mapping":             A ClientParameterMapping instance. See mappings.py for some predeifined ones.
+    #                            This can also be an array: In this case the mappings are processed in the given order.
+    #     "mappingDisable":      Mapping to be used on disabling the state. If mapping is an array, this has also to be an array.
+    #
+    #     "text":                Text (optional)
+    #     "comparisonMode":      Mode of comparison when receiving a value. Default is ParameterActionModes.GREATER_EQUAL.    
+    #     "useSwitchLeds":       Use LEDs to visualize state. Optional, default is True
+    #
+    #     "color":               Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
+    #                            with one color for each LED segment of the switch (if more actions share the LEDs, only the first
+    #                            color is used)
+    #
+    #     "valueEnabled":        Value to be interpreted as "enabled". Optional: Default is 1. If mapping is a list, this must
+    #                            also be a list of values for the mappings.
+    #     "valueDisabled":       Value to be interpreted as "disabled". Optional: Default is 0. If mappingDisable (if provided)
+    #                            or mapping is a list, this must also be a list of values for the mappings.
+    #
+    #     "setValueEnabled":     Optional: Value for setting. valueEnabled is only used for receiving if this is set.
+    #     "setValueDisabled":    Optional: Value for setting. valueDisabled is only used for receiving if this is set.
+    #
+    #     "displayDimFactorOn":  Dim factor in range [0..1] for on state (display label)
+    #     "displayDimFactorOff": Dim factor in range [0..1] for off state (display label)
     # }
     def __init__(self, config = {}):
         super().__init__(config)
 
-        self.uses_switch_leds = True
+        self.uses_switch_leds = Tools.get_option(self.config, "useSwitchLeds", True)
 
         # Action config
         self.color = Tools.get_option(self.config, "color", Defaults.DEFAULT_SWITCH_COLOR)
@@ -189,7 +373,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         self._set_value_on = Tools.get_option(self.config, "setValueEnabled", self._value_on)           # Can be an array
         self._set_value_off = Tools.get_option(self.config, "setValueDisabled", self._value_off)        # Can be an array
         
-        self._comparison_mode = Tools.get_option(self.config, "comparisonMode", ParameterActionModes.MODE_GREATER_EQUAL)
+        self._comparison_mode = Tools.get_option(self.config, "comparisonMode", ParameterActionModes.GREATER_EQUAL)
 
         self._text = Tools.get_option(self.config, "text", False)
         self._text_disabled = Tools.get_option(self.config, "textDisabled", False)
@@ -426,8 +610,8 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
     # Called by the Client class when a parameter request has been answered
     def parameter_changed(self, mapping):
-        if not self.enabled:
-            return
+        #if not self.enabled:
+        #    return
          
         if not self._request_mapping:
             return            
@@ -437,19 +621,23 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         
         state = False
         
-        if self._comparison_mode == ParameterActionModes.MODE_EQUAL:
+        if self._comparison_mode == ParameterActionModes.EQUAL:
             if mapping.value == self._request_mapping_value_on:
                 state = True
-        elif self._comparison_mode == ParameterActionModes.MODE_GREATER_EQUAL:
+
+        elif self._comparison_mode == ParameterActionModes.GREATER_EQUAL:
             if mapping.value >= self._request_mapping_value_on:
                 state = True
-        elif self._comparison_mode == ParameterActionModes.MODE_GREATER:
+
+        elif self._comparison_mode == ParameterActionModes.GREATER:
             if mapping.value > self._request_mapping_value_on:
                 state = True
-        elif self._comparison_mode == ParameterActionModes.MODE_LESS_EQUAL:
+
+        elif self._comparison_mode == ParameterActionModes.LESS_EQUAL:
             if mapping.value <= self._request_mapping_value_on:
                 state = True
-        elif self._comparison_mode == ParameterActionModes.MODE_LESS:
+
+        elif self._comparison_mode == ParameterActionModes.LESS:
             if mapping.value < self._request_mapping_value_on:
                 state = True        
         else:
@@ -497,8 +685,6 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
     # }
     def __init__(self, config = {}):
         super().__init__(config)
-
-        self.uses_switch_leds = True
 
         # Mapping for effect type
         self._mapping_fxtype = self.config["mappingType"] 
@@ -579,9 +765,6 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
     def parameter_changed(self, mapping):
         super().parameter_changed(mapping)
 
-        if not self.enabled:
-            return
-         
         if mapping != self._mapping_fxtype:
             return
         
@@ -610,9 +793,6 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
         super().request_terminated(mapping)
-
-        if not self.enabled:
-            return
          
         if mapping != self._mapping_fxtype:
             return

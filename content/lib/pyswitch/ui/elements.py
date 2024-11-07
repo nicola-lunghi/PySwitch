@@ -725,8 +725,8 @@ class TunerDisplay(HierarchicalDisplayElement):
             self.label.text_color = self.deviance.color
 
     # Called when the client is offline (requests took too long)
-    #def request_terminated(self, mapping):
-    #    self.reset()
+    def request_terminated(self, mapping):
+        pass
 
 
 ###########################################################################################################################

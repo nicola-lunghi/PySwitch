@@ -8,7 +8,7 @@ from pyswitch.hardware.hardware import SwitchDefinitions
 
 from pyswitch.misc import Colors, Defaults
 from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
-from pyswitch.controller.actions.actions import PushButtonModes
+from pyswitch.controller.actions.actions import PushButtonModes, ParameterAction, HoldAction
 
 from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
 from display import DisplayIds

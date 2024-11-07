@@ -76,19 +76,83 @@ class TestBidirectionalClient(unittest.TestCase):
         listener = MockClientRequestListener()
         
         client.register(mapping_1, listener)
-        req = client._requests[0]
-        self.assertEqual(len(client._requests), 1)
+        req = client.requests[0]
+        self.assertEqual(len(client.requests), 1)
         self.assertEqual(req.mapping, mapping_1)
         self.assertIn(listener, req.listeners)
         self.assertEqual(len(midi.messages_sent), 0)
 
         client.register(mapping_2, listener)
-        self.assertEqual(len(client._requests), 1)
+        self.assertEqual(len(client.requests), 1)
         
         # Update
         self.assertEqual(protocol.num_update_calls, 0)
         client.update()
         self.assertEqual(protocol.num_update_calls, 1)
+
+
+#############################################################################################
+
+
+    def test_notify_connection_lost(self):
+        midi = MockMidiController()
+        vp = MockValueProvider()
+
+        mapping_1 = ClientParameterMapping(
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x01, 0x02, 0x03, 0x04]
+            ),
+            request = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            ),
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        mapping_2 = ClientParameterMapping(
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x21],
+                data = [0x01, 0x02, 0x03, 0x34]
+            ),
+            request = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x29]
+            ),
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x24],
+                data = [0x00, 0x00, 0x19]
+            )
+        )
+
+        protocol = MockBidirectionalProtocol()
+        protocol.outputs_is_bidirectional = [
+            {
+                "mapping": mapping_1,
+                "result": True
+            }
+        ]
+
+        client = BidirectionalClient(
+            midi = midi,
+            config = {},            
+            value_provider = vp,
+            protocol = protocol
+        )
+        
+        listener = MockClientRequestListener()
+        
+        client.register(mapping_1, listener)
+        client.register(mapping_2, listener)
+
+        client.notify_connection_lost()
+        self.assertEqual(listener.request_terminated_calls, [mapping_1])
+
+        client.notify_connection_lost()
+        self.assertEqual(listener.request_terminated_calls, [mapping_1, mapping_1])
 
 
 #############################################################################################
@@ -250,7 +314,7 @@ class TestBidirectionalClient(unittest.TestCase):
 
             self.assertEqual(vp.parse_calls[1]["mapping"], mapping_1)
             self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
-            self.assertEqual(appl.client._requests[0].mapping.value, 1)
+            self.assertEqual(appl.client.requests[0].mapping.value, 1)
 
             self.assertIn(answer_msg_param, protocol.receive_calls)
 

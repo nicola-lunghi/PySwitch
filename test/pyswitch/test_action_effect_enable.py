@@ -853,9 +853,9 @@ class TestActionEffectEnable(unittest.TestCase):
         def eval2():
             self.assertEqual(len(appl._midi.next_receive_messages), 0)
 
-            self.assertEqual(len(appl._midi.messages_sent), 1)
+            self.assertEqual(len(appl._midi.messages_sent), 2)
             self.assertEqual(len(vp.parse_calls), 1)
-            self.assertEqual(action_1._effect_category, 0)
+            self.assertEqual(action_1._effect_category, 10)
             
             return False
 

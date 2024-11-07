@@ -74,7 +74,7 @@ class FootSwitchController: #ConditionListener
         # Update actions to initialize the correct enabled state
         self.condition_changed(None)
         
-    # Called on condition changes. The yes value will be True or False.
+    # Called on condition changes.
     def condition_changed(self, condition):
         active_actions = self._action_tree.values
 
@@ -131,7 +131,7 @@ class FootSwitchController: #ConditionListener
         self._pushed_state = True
         self._process_actions_push()
         
-    # Return if the switch is currently pushed
+    # Return if the (hardware) switch is currently pushed
     @property
     def pushed(self):
         return self._switch.pushed

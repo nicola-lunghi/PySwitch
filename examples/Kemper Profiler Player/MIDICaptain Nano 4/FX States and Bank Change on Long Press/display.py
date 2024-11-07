@@ -75,30 +75,6 @@ Display = ParameterCondition(
                 }
             ),
 
-            # Detail area (amp/cab etc.)
-            ParameterDisplayLabel(
-                name = "Rig Detail",
-                bounds = bounds.bottom(DETAIL_HEIGHT),
-                layout = ParameterCondition(
-                    mapping = KemperMappings.AMP_STATE,
-                    mode = ParameterConditionModes.GREATER,
-                    ref_value = 0,
-
-                    yes = {
-                        "font": "/fonts/A12.pcf"
-                    },
-
-                    no =  {
-                        "font": "/fonts/A12.pcf",
-                        "textColor": Colors.BLACK
-                    }
-                ),
-                parameter = {
-                    "mapping": KemperMappings.AMP_NAME,
-                    "depends": KemperMappings.RIG_DATE   # Only update this when the rig date changed (optional)
-                }        
-            ),
-
             # Statistics area
             #StatisticalDisplays.STATS_DISPLAY(bounds),
 

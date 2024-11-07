@@ -8,7 +8,7 @@ from pyswitch.hardware.hardware import SwitchDefinitions
 
 from pyswitch.misc import Colors, Defaults
 from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
-from pyswitch.controller.actions.actions import PushButtonModes, ParameterAction
+from pyswitch.controller.actions.actions import PushButtonModes, ParameterAction, HoldAction
 
 from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
 from display import DisplayIds
@@ -42,12 +42,17 @@ Switches = [
     {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_MINI_SWITCH_3,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
-                display = {
-                    "id": DisplayIds.DISPLAY_FX_STATE_B
-                }
-            )    
+            HoldAction({
+                "actions": [
+                    KemperActionDefinitions.EFFECT_STATE(
+                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
+                        display = {
+                            "id": DisplayIds.DISPLAY_FX_STATE_B
+                        }
+                    )    
+                ],
+                "actionsHold": KemperActionDefinitions.BANK_UP()
+            })            
         ]
     },
 
@@ -77,10 +82,15 @@ Switches = [
     {
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_MINI_SWITCH_C,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
-                rig = 3,
-                color = Colors.YELLOW
-            )      
+            HoldAction({
+                "actions": [
+                    KemperActionDefinitions.RIG_SELECT(
+                        rig = 3,
+                        color = Colors.YELLOW
+                    )      
+                ],
+                "actionsHold": KemperActionDefinitions.BANK_DOWN()
+            })
         ]
     }
 ]

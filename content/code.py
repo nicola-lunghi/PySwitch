@@ -7,13 +7,15 @@
 #
 #################################################################################################################################
 #
-# v 2.1
+# v 2.1.0
 # Changes @tunetown (Tom Weber):
-# - Bidirectional communication (Kemper)
-# - Tuner Splash
-# - Bug fixes
+# - Bidirectional communication with the Kemper devices
+# - Tuner Splash showing tuner note and deviation from the note visually
+# - HoldAction to assign different actions on long press
+# - ParameterAction: Supports different comparison modes now
+# - Bug fixes / Unit Tests updated
 # 
-# v 2.0
+# v 2.0.0
 # Changes @tunetown (Tom Weber):
 # - Complete Rewrite (standalone firmware without dependency on PaintAudio Code, object oriented design etc.)
 # - Customization by config script

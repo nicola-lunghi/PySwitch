@@ -56,6 +56,10 @@ class Client: #(ClientRequestListener):
         # Helper to only clean up hanging requests from time to time as this is not urgent at all
         self._cleanup_terminated_period = PeriodCounter(self._max_request_lifetime / 2)    
 
+    @property
+    def requests(self):
+        return self._requests
+
     # Register the mapping and listener in advance (only plays a role for bidirectional parameters,
     # here this is redundant)
     def register(self, mapping, listener):
@@ -298,8 +302,7 @@ class ClientRequest(EventEmitter):
             return
         
         # Call the listeners
-        for listener in self.listeners:
-            listener.request_terminated(self.mapping)
+        self.notify_terminated()
 
         # Clear listeners
         self.listeners = None
@@ -337,6 +340,10 @@ class ClientRequest(EventEmitter):
         for listener in self.listeners:
             listener.parameter_changed(self.mapping)
 
+    def notify_terminated(self):
+        for listener in self.listeners:
+            listener.request_terminated(self.mapping)
+
     # Debug console output
     def _print(self, msg):  # pragma: no cover
         if self.client.debug_mapping != None and self.client.debug_mapping != self.mapping:
@@ -346,13 +353,14 @@ class ClientRequest(EventEmitter):
 
 
 ####################################################################################################################
+####################################################################################################################
 
 
 # Base class for bidirectional protocols
 #class BidirectionalProtocol:
 #
 #    # Called before usage, with a midi handler.
-#    def init(self, midi):
+#    def init(self, midi, client):
 #        pass
 #
 #    # Must return (boolean) if the passed mapping is handled in the bidirectional protocol
@@ -385,12 +393,9 @@ class BidirectionalClient(Client, Updateable):
     def __init__(self, midi, config, value_provider, protocol):
         Client.__init__(self, midi, config, value_provider)
 
-        #if not isinstance(protocol, BidirectionalProtocol):
-        #    raise Exception("Invalid protocol: " + repr(protocol))
-        
         self.protocol = protocol
         self.protocol.debug = Tools.get_option(config, "debugBidirectionalProtocol")
-        self.protocol.init(midi)
+        self.protocol.init(midi, self)
 
     # Register the mapping and listener in advance (only plays a role for bidirectional parameters)
     def register(self, mapping, listener):
@@ -433,6 +438,12 @@ class BidirectionalClient(Client, Updateable):
     # Update the protocol state
     def update(self):
         self.protocol.update()
+
+    # Calls request_terminated() on all listeners of requests with bidirectional mappings
+    def notify_connection_lost(self):
+        for r in self.requests:
+            if self.protocol.is_bidirectional(r.mapping):
+                r.notify_terminated()
 
     # Create a new request
     def create_request(self, mapping):

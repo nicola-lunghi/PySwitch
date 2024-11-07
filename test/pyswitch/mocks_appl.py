@@ -197,8 +197,19 @@ class MockAction(Action):
         self.num_update_calls_overall = 0
         self.num_update_calls_enabled = 0
         self.num_reset_calls = 0
+        self.num_push_calls = 0
+        self.num_release_calls = 0
+        self.num_update_displays_calls = 0
+        self.num_force_update_calls = 0
+        self.num_reset_display_calls = 0
         
         self.state = False
+
+    def push(self):
+        self.num_push_calls += 1
+
+    def release(self):
+        self.num_release_calls += 1
 
     def update(self):
         self.num_update_calls_overall += 1
@@ -208,6 +219,15 @@ class MockAction(Action):
 
     def reset(self):
         self.num_reset_calls += 1
+
+    def update_displays(self):
+        self.num_update_displays_calls += 1
+
+    def force_update(self): 
+        self.num_force_update_calls += 1
+
+    def reset_display(self): 
+        self.num_reset_display_calls += 1
 
 
 ##################################################################################################################################
@@ -282,15 +302,11 @@ class MockClientRequestListener:
         self.request_terminated_calls = []
 
     def parameter_changed(self, mapping):
-        self.parameter_changed_calls.append({
-            "mapping": mapping
-        })
+        self.parameter_changed_calls.append(mapping)
 
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
-        self.request_terminated_calls.append({
-            "mapping": mapping
-        })
+        self.request_terminated_calls.append(mapping)
 
 
 ##################################################################################################################################
@@ -307,8 +323,11 @@ class MockBidirectionalProtocol:
         self.init_calls = []
         self.receive_calls = []
 
-    def init(self, midi):
-        self.init_calls.append(midi)
+    def init(self, midi, client):
+        self.init_calls.append({
+            "midi": midi,
+            "client": client
+        })
 
     # Must return (boolean) if the passed mapping is handled in the bidirectional protocol
     def is_bidirectional(self, mapping):

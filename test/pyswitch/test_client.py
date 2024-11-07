@@ -147,7 +147,7 @@ class TestClient(unittest.TestCase):
         self.assertEqual(listener.parameter_changed_calls, [])
 
         # Receive correct message
-        req = client._requests[0]
+        req = client.requests[0]
         answer_msg = SystemExclusive(
             manufacturer_id = [0x00, 0x10, 0x20],
             data = [0x00, 0x00, 0x07, 0x45]
@@ -162,14 +162,10 @@ class TestClient(unittest.TestCase):
         ]
 
         client.receive(answer_msg)
-        self.assertEqual(listener.parameter_changed_calls, [
-            {
-                "mapping": mapping_1
-            }
-        ])
+        self.assertEqual(listener.parameter_changed_calls, [mapping_1])
         self.assertEqual(mapping_1.value, 34)
         self.assertEqual(req.finished, True)
-        self.assertEqual(client._requests, [])
+        self.assertEqual(client.requests, [])
 
 
 ##############################################################################################
@@ -211,18 +207,14 @@ class TestClient(unittest.TestCase):
             }
         ]
 
-        req = client._requests[0]
+        req = client.requests[0]
 
         client.receive(answer_msg)
-        self.assertEqual(listener.parameter_changed_calls, [
-            {
-                "mapping": mapping_1
-            }
-        ])        
+        self.assertEqual(listener.parameter_changed_calls, [mapping_1])        
         
         self.assertEqual(mapping_1.value, 34)
         self.assertEqual(req.finished, False)
-        self.assertTrue(req in client._requests)
+        self.assertTrue(req in client.requests)
 
 
 ##############################################################################################
@@ -256,7 +248,7 @@ class TestClient(unittest.TestCase):
         self.assertEqual(len(midi.messages_sent), 1)
         self.assertEqual(midi.messages_sent[0], mapping_1.request)
         
-        req = client._requests[0]        
+        req = client.requests[0]        
         req.terminate()
         self.assertEqual(req.finished, True)
 
@@ -277,7 +269,7 @@ class TestClient(unittest.TestCase):
         self.assertEqual(listener.parameter_changed_calls, [])
         self.assertEqual(mapping_1.value, None)
         
-        self.assertEqual(client._requests, [])
+        self.assertEqual(client.requests, [])
 
 
 ##############################################################################################
