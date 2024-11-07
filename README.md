@@ -703,7 +703,7 @@ Display = ParameterCondition(
 
 This shows the tuner display when the client sends a message corresponding to the KemperMappings.TUNER_MODE_STATE mapping with value 1, every other value switches back to normal display.
 
-TODO img
+![image](https://github.com/user-attachments/assets/f4ba454f-b8a2-403c-b6b0-962a80dc9137)
 
 ## Development
 
@@ -1080,7 +1080,7 @@ Wrote HTML report to /project/test/report/index.html
 
 You should find a coverage report in the test/report folder like this:
 
-TODO img
+![image](https://github.com/user-attachments/assets/1825017e-95e1-433b-8a9b-4199fe3c8d71)
 
 ## License
 
