@@ -158,10 +158,10 @@ See this chart for some differences between the operation modes:
 |                                             | **Non-Bidirectional** | **Bidirectional**    |
 |---------------------------------------------|-----------------------|----------------------|
 | Reflect changes on the client               | Yes                   | Yes                  |
-| Parameter values are requested periodically | Yes                   | No (*)               |
+| Parameter values are requested periodically | Yes                   | No (\*)               |
 | Tuner information available                 | No                    | Yes (Note and dev.)  |
 
-*(*) Bidirectional mode is not available for all parameters. However, you do not need to specify this, the **kemper.py** file contains the definitions looked up by the application.*
+*(\*) Bidirectional mode is not available for all parameters. However, you do not need to specify this, the **kemper.py** file contains the definitions looked up by the application.*
 
 To enable bidirectional communication, you have to provide a suitable protocol implementation (instance of BidirectionalProtocol) to the Communication object like follows, using the Kemper specific implementation from **kemper.py**:
 
