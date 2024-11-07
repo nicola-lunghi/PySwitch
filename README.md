@@ -1080,7 +1080,7 @@ Wrote HTML report to /project/test/report/index.html
 
 You should find a coverage report in the test/report folder like this:
 
-![image](https://github.com/user-attachments/assets/1825017e-95e1-433b-8a9b-4199fe3c8d71)
+![image](https://github.com/user-attachments/assets/c539aaad-704a-44b5-9408-2f19c8d4da67)
 
 ## License
 
