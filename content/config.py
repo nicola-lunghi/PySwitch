@@ -41,7 +41,7 @@ Config = {
     #"clientDebugMapping": KemperMappings.TUNER_MODE_STATE,  # Optional, if set the kemper classes will only output messages related to
                                                       # the specified mapping.
     #"debugClientRawMidi": True,                      # Debug raw kemper MIDI messages. Only regarded whe "debugKemper" is enabled, too.
-    "debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
+    #"debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
     #"debugMidi": True,                               # Debug all MIDI communication
                                                       # and received. Optional.
     #"debugConditions": True,                         # Debug condition evaluation
