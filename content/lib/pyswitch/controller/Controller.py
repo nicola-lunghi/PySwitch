@@ -154,6 +154,8 @@ class Controller(Updater): #ClientRequestListener
 
     # Single tick in the processing loop. Must return True to keep the loop alive.
     def tick(self):
+        #Memory.watch("Controller: tick")
+
         # If enabled, remember the tick starting time for statistics
         for m in self._measurements_tick_time:
             m.start()       

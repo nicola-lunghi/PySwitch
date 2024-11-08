@@ -82,7 +82,7 @@ Display = ParameterCondition(
             StatisticalDisplays.BIDIRECTIONAL_PROTOCOL_STATE_DOT(bounds),
 
             # Performance indicator (dot)
-            StatisticalDisplays.PERFORMANCE_DOT(bounds.translated(0, 7)),
+            #StatisticalDisplays.PERFORMANCE_DOT(bounds.translated(0, 7)),
         ]
     ),
 
