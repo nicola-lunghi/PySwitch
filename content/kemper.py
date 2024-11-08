@@ -28,6 +28,8 @@ CC_BANK_PRESELECT = 47
 CC_TAP_TEMPO = 30
 CC_ROTARY_SPEED = 33     # 1 = Fast, 0 = Slow
 
+CC_EFFECT_BUTTON_I = 75  # II to IV are consecutive from this: 76, 77, 78
+
 CC_VALUE_BANK_CHANGE = 0
 
 # Basic values for all NRPN messages
@@ -225,6 +227,36 @@ class KemperActionDefinitions:
             "useSwitchLeds": use_leds
         })
 
+    # Effect Button I-IIII (set only). num must be a number (1 to 4).
+    @staticmethod
+    def EFFECT_BUTTON(num, text = None, display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True):
+        if not text:
+            if num == 1:
+                text = "FX I"
+            elif num == 2:
+                text = "FX II"
+            elif num == 3:
+                text = "FX III"
+            elif num == 4:
+                text = "FX IIII"
+
+        return ParameterAction({
+            "mapping": KemperMappings.EFFECT_BUTTON(num),
+            "display": display,
+            "text": text,
+            "color": color,
+            "id": id,
+            "useSwitchLeds": use_leds,
+            "ledBrightness": {
+                "on": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF,               # Set equal brightness (we do not need status display here)
+                "off": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
+            },
+            "displayDimFactor": {
+                "on": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,              # Set equal dim factor (we do not need status display here)
+                "off": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF
+            }
+        })
+
     ## Rig specific ##########################################################################################################
 
     # Volume boost function, based on setting rig volume to a certain boost value. To 
@@ -386,7 +418,10 @@ class KemperActionDefinitions:
                 "on": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF,               # Set equal brightness (we do not need status display here)
                 "off": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
             },
-            "displayDimFactorOn": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,  # Set equal dim factor (we do not need status display here)
+            "displayDimFactor": {
+                "on": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,              # Set equal dim factor (we do not need status display here)
+                "off": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF
+            },
             "mode": PushButtonModes.LATCH,
             "id": id,
             "useSwitchLeds": use_leds
@@ -702,6 +737,16 @@ class KemperMappings:
                 NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, 
                 NRPN_ADDRESS_PAGE_FREEZE,
                 KemperEffectSlot.NRPN_FREEZE_SLOT_PARAMETER_ADDRESSES[slot_id]
+            )
+        )
+
+    # Effect Button I-IIII (set only). num must be a number (1 to 4).
+    def EFFECT_BUTTON(num): 
+        return ClientParameterMapping(
+            name = "Effect Button " + repr(num),
+            set = ControlChange(
+                CC_EFFECT_BUTTON_I + (num - 1),
+                0
             )
         )
 

@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
 
-from pyswitch.misc import Colors, PYSWITCH_VERSION
+from pyswitch.misc import Colors
 from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
 
 from pyswitch.ui.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds, TunerDisplay
@@ -34,7 +34,6 @@ DETAIL_HEIGHT = 20               # Height of the detail (amp/cab) display
 bounds = DisplayBounds(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
  
 # Defines the areas to be shown on the TFT display, and which values to show there.
-# Must be a DisplayElement object.
 Display = ParameterCondition(
     mapping = KemperMappings.TUNER_MODE_STATE,
     ref_value = 1,
@@ -43,7 +42,7 @@ Display = ParameterCondition(
     # Show normal display
     yes = HierarchicalDisplayElement(
         bounds = bounds,
-        children = [        
+        children = [
             # Header area (referenced by ID in the action configurations)
             DisplaySplitContainer(
                 id = DisplayIds.DISPLAY_HEADER,
@@ -71,27 +70,14 @@ Display = ParameterCondition(
 
                 parameter = {
                     "mapping": KemperMappings.RIG_NAME,
-                    "textOffline": "Kemper Control v" + repr(PYSWITCH_VERSION),
+                    "textOffline": "Kemper Profiler (offline)",
                     "textReset": "Loading Rig..."
                 }
             ),
 
-            # Detail area (amp/cab etc.)
-            #ParameterDisplayLabel(
-            #    name = "Rig Detail",
-            #    bounds = bounds.bottom(DETAIL_HEIGHT),
-            #    layout = {
-            #        "font": "/fonts/A12.pcf"
-            #    },
-            #    parameter = {
-            #        "mapping": KemperMappings.AMP_NAME,
-            #        "depends": KemperMappings.RIG_DATE   # Only update this when the rig date changed (optional)
-            #    }        
-            #),
-
             # Statistics area
             #StatisticalDisplays.STATS_DISPLAY(bounds),
-                
+
             # Bidirectional protocol state indicator (dot)
             StatisticalDisplays.BIDIRECTIONAL_PROTOCOL_STATE_DOT(bounds),
 

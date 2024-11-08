@@ -355,8 +355,15 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     #     "setValueEnabled":     Optional: Value for setting. valueEnabled is only used for receiving if this is set.
     #     "setValueDisabled":    Optional: Value for setting. valueDisabled is only used for receiving if this is set.
     #
-    #     "displayDimFactorOn":  Dim factor in range [0..1] for on state (display label)
-    #     "displayDimFactorOff": Dim factor in range [0..1] for off state (display label)
+    #     "displayDimFactor": {
+    #         "on":              Dim factor in range [0..1] for on state (display label)
+    #         "off":             Dim factor in range [0..1] for off state (display label)
+    #     }
+    #
+    #     "ledBrightness": {
+    #         "on":              LED brightness [0..1] for on state (Switch LEDs)
+    #         "off":             LED brightness [0..1] for off state (Switch LEDs)
+    #     }
     # }
     def __init__(self, config = {}):
         super().__init__(config)
@@ -386,24 +393,18 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     def init(self, appl, switch):
         super().init(appl, switch)
 
-        # Global config
-        self._dim_factor_on = Tools.get_option(
-            self.config, "displayDimFactorOn", 
-            Tools.get_option(
-                self.appl.config, 
-                "displayDimFactorOn", 
-                self.DEFAULT_SLOT_DIM_FACTOR_ON
-            )
-        )
-        self._dim_factor_off = Tools.get_option(
-            self.config, "displayDimFactorOff", 
-            Tools.get_option(
-                self.appl.config, 
-                "displayDimFactorOff", 
-                self.DEFAULT_SLOT_DIM_FACTOR_OFF
-            )
-        )
+        # Global config: Display dim factor (can be set in local and global config)
+        if Tools.get_option(self.config, "displayDimFactor") != False:
+            self._dim_factor_on = Tools.get_option(self.config["displayDimFactor"], "on", self.DEFAULT_SLOT_DIM_FACTOR_ON)
+            self._dim_factor_off = Tools.get_option(self.config["displayDimFactor"], "off", self.DEFAULT_SLOT_DIM_FACTOR_OFF)
+        elif Tools.get_option(self.appl.config, "displayDimFactor") != False:
+            self._dim_factor_on = Tools.get_option(self.appl.config["displayDimFactor"], "on", self.DEFAULT_SLOT_DIM_FACTOR_ON)
+            self._dim_factor_off = Tools.get_option(self.appl.config["displayDimFactor"], "off", self.DEFAULT_SLOT_DIM_FACTOR_OFF)
+        else:
+            self._dim_factor_on = self.DEFAULT_SLOT_DIM_FACTOR_ON
+            self._dim_factor_off = self.DEFAULT_SLOT_DIM_FACTOR_OFF
 
+        # Global config: LED brightness (can be set in local and global config)
         if Tools.get_option(self.config, "ledBrightness") != False:
             self._brightness_on = Tools.get_option(self.config["ledBrightness"], "on", self.DEFAULT_LED_BRIGHTNESS_ON)
             self._brightness_off = Tools.get_option(self.config["ledBrightness"], "off", self.DEFAULT_LED_BRIGHTNESS_OFF)

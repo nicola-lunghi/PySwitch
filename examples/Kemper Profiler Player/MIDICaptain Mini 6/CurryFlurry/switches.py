@@ -43,14 +43,9 @@ Switches = [
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_MINI_SWITCH_3,
         "actions": [
             HoldAction({
-                "actions": [
-                    KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
-                        display = {
-                            "id": DisplayIds.DISPLAY_FX_STATE_B
-                        }
-                    )    
-                ],
+                "actions": KemperActionDefinitions.EFFECT_BUTTON(
+                    num = 2
+                ),
                 "actionsHold": KemperActionDefinitions.BANK_UP()
             })            
         ]
@@ -83,12 +78,10 @@ Switches = [
         "assignment": SwitchDefinitions.PA_MIDICAPTAIN_MINI_SWITCH_C,
         "actions": [
             HoldAction({
-                "actions": [
-                    KemperActionDefinitions.RIG_SELECT(
-                        rig = 3,
-                        color = Colors.YELLOW
-                    )      
-                ],
+                "actions": KemperActionDefinitions.RIG_SELECT(
+                    rig = 3,
+                    color = Colors.YELLOW
+                ),
                 "actionsHold": KemperActionDefinitions.BANK_DOWN()
             })
         ]

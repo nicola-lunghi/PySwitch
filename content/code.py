@@ -7,13 +7,16 @@
 #
 #################################################################################################################################
 #
+# v 2.1.1
+# Changes @tunetown (Tom Weber):
+# - Added mappings for Effect Buttons I-IIII (set only, sadly there is no state feedback possibility from Kemper)
+#
 # v 2.1.0
 # Changes @tunetown (Tom Weber):
 # - Bidirectional communication with the Kemper devices
 # - Tuner Splash showing tuner note and deviation from the note visually
 # - HoldAction to assign different actions on long press
 # - ParameterAction: Supports different comparison modes now
-# - MIDI Routing
 # - Bug fixes / Unit Tests updated
 # 
 # v 2.0.0

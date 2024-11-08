@@ -42,16 +42,16 @@ Display = ParameterCondition(
     yes = HierarchicalDisplayElement(
         children = [
             # Header area (referenced by ID in the action configurations)
-            DisplayLabel(
-                id = DisplayIds.DISPLAY_FX_STATE_B,
-                name = "FX State B",
-                layout = {
-                    "font": "/fonts/H20.pcf",
-                    "backColor": Defaults.DEFAULT_LABEL_COLOR,
-                    "stroke": 1
-                },
-                bounds = bounds.remove_from_top(SLOT_HEIGHT)
-            ),
+            #DisplayLabel(
+            #    id = DisplayIds.DISPLAY_FX_STATE_B,
+            #    name = "FX State B",
+            #    layout = {
+            #        "font": "/fonts/H20.pcf",
+            #        "backColor": Defaults.DEFAULT_LABEL_COLOR,
+            #        "stroke": 1
+            #    },
+            #    bounds = bounds.remove_from_top(SLOT_HEIGHT)
+            #),
 
             # Rig name
             ParameterDisplayLabel(
