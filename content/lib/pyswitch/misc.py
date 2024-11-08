@@ -6,7 +6,7 @@ from adafruit_midi.midi_message import MIDIUnknownEvent
 
 
 # PySwitch version
-PYSWITCH_VERSION = "2.1.0"
+PYSWITCH_VERSION = "2.1.1"
 
 
 # Color definitions (can be used for LEDs and labels)
