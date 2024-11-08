@@ -23,7 +23,7 @@ class MidiRouting:
 class MidiController:
 
     # Used as source/target for routings to/from the application itself
-    APPLICATION = "appl"
+    APPLICATION = 1
 
     # config:
     # {

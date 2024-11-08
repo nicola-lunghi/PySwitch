@@ -1,14 +1,16 @@
+from micropython import const
+
 from .elements import StatisticsDisplayLabel, PerformanceIndicator, BidirectionalProtocolState
 from ..controller.measurements import RuntimeMeasurement, FreeMemoryMeasurement
 from ..controller.Controller import Controller
 
 
 # Properties for the performance indicator (dot)
-PERFORMANCE_INDICATOR_SIZE = 5
-PERFORMANCE_INDICATOR_MARGIN = 2
+_PERFORMANCE_INDICATOR_SIZE = const(5)
+_PERFORMANCE_INDICATOR_MARGIN = const(2)
 
 # Properties of the statistics display label
-STAT_HEIGHT = 40                 # Height
+_STAT_HEIGHT = const(40)                 # Height
 
 
 # Pre-defines some usefule statistics display elements to be used in Setup["displays"]
@@ -23,12 +25,12 @@ class StatisticalDisplays:
             ),
             name = "PerformanceDot",
             bounds = parent_bounds.top(
-                    PERFORMANCE_INDICATOR_SIZE
+                    _PERFORMANCE_INDICATOR_SIZE
                 ).right(
-                    PERFORMANCE_INDICATOR_SIZE
+                    _PERFORMANCE_INDICATOR_SIZE
                 ).translated(
-                    - PERFORMANCE_INDICATOR_MARGIN, 
-                    PERFORMANCE_INDICATOR_MARGIN
+                    - _PERFORMANCE_INDICATOR_MARGIN, 
+                    _PERFORMANCE_INDICATOR_MARGIN
                 )
         )
     
@@ -38,12 +40,12 @@ class StatisticalDisplays:
         return BidirectionalProtocolState(        
             name = "ProtocolDot",
             bounds = parent_bounds.top(
-                    PERFORMANCE_INDICATOR_SIZE
+                    _PERFORMANCE_INDICATOR_SIZE
                 ).right(
-                    PERFORMANCE_INDICATOR_SIZE
+                    _PERFORMANCE_INDICATOR_SIZE
                 ).translated(
-                    - PERFORMANCE_INDICATOR_MARGIN, 
-                    PERFORMANCE_INDICATOR_MARGIN
+                    - _PERFORMANCE_INDICATOR_MARGIN, 
+                    _PERFORMANCE_INDICATOR_MARGIN
                 )
         )
 
@@ -51,7 +53,7 @@ class StatisticalDisplays:
     @staticmethod
     def STATS_DISPLAY(parent_bounds):
         return StatisticsDisplayLabel(
-            bounds = parent_bounds.top(STAT_HEIGHT),
+            bounds = parent_bounds.top(_STAT_HEIGHT),
             layout = {
                 "font": "/fonts/A12.pcf",
                 "backColor": (50, 50, 50)

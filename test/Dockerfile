@@ -1,6 +1,6 @@
-FROM python:alpine3.20
+FROM python:latest
 
-RUN apk update && apk add bash
+#RUN apt-get update && apt-get install bash
 
 RUN python3 -m pip install coverage
 

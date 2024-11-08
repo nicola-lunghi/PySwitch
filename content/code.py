@@ -46,17 +46,17 @@ from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoP
 from pyswitch.misc import Tools
 
 # Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)
-display_driver = AdafruitST7789DisplayDriver()
-display_driver.init()
+_display_driver = AdafruitST7789DisplayDriver()
+_display_driver.init()
 
 # Load global config
 from config import Config
 
 # NeoPixel driver 
-led_driver = AdafruitNeoPixelDriver()
+_led_driver = AdafruitNeoPixelDriver()
 
 # Buffered font loader
-font_loader = AdafruitFontLoader()
+_font_loader = AdafruitFontLoader()
 
 if not Tools.get_option(Config, "exploreMode"):
     # Normal operation
@@ -70,8 +70,8 @@ if not Tools.get_option(Config, "exploreMode"):
     from communication import Communication
 
     # Controller instance (runs the processing loop and keeps everything together)
-    appl = Controller(
-        led_driver = led_driver, 
+    _appl = Controller(
+        led_driver = _led_driver, 
         communication = Communication, 
         midi = MidiController(
             config = Tools.get_option(Communication, "midi", {}),
@@ -80,13 +80,13 @@ if not Tools.get_option(Config, "exploreMode"):
         config = Config, 
         switches = Switches, 
         ui = UiController(
-            display_driver = display_driver,
-            font_loader = font_loader,
+            display_driver = _display_driver,
+            font_loader = _font_loader,
             root = Display
         )
     )
     
-    appl.process()
+    _appl.process()
 
 else:
     # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
@@ -95,19 +95,19 @@ else:
     import board
 
     # Switch factory
-    class SwitchFactory:
+    class _SwitchFactory:
         def create_switch(self, port):
             return AdafruitSwitch(port)
 
-    appl = ExploreModeController(
+    _appl = ExploreModeController(
         board = board, 
-        switch_factory = SwitchFactory(), 
-        led_driver = led_driver, 
+        switch_factory = _SwitchFactory(), 
+        led_driver = _led_driver, 
         ui = UiController(
-            display_driver = display_driver,
-            font_loader = font_loader
+            display_driver = _display_driver,
+            font_loader = _font_loader
         )
     )
 
-    appl.process()
+    _appl.process()
     

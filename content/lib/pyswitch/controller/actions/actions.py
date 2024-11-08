@@ -1,3 +1,5 @@
+from micropython import const
+
 from .Action import Action
 from ..Client import ClientParameterMapping
 from ...misc import Tools, Defaults, Colors, PeriodCounter
@@ -6,19 +8,19 @@ from ..ConditionTree import ConditionTree
 
 # Modes for PushButtonAction
 class PushButtonModes:    
-    ENABLE = 0                      # Switch the functionality on
-    DISABLE = 10                    # Switch the functionality off
-    LATCH = 20                      # Toggle state on every button push
-    MOMENTARY = 30                  # Enable on push, disable on release
-    MOMENTARY_INVERSE = 40          # Disable on push, Enable on release
-    HOLD_MOMENTARY = 50             # Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is 
-                                    # used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is 
-                                    # used (inverse or not: This depends on the current state of the functionality. When it is
-                                    # on, it will momentarily be switched off and vice versa).
-    ONE_SHOT = 100                  # Fire the SET command on every push (show as disabled)
+    ENABLE = const(0)                      # Switch the functionality on
+    DISABLE = const(10)                    # Switch the functionality off
+    LATCH = const(20)                      # Toggle state on every button push
+    MOMENTARY = const(30)                  # Enable on push, disable on release
+    MOMENTARY_INVERSE = const(40)          # Disable on push, Enable on release
+    HOLD_MOMENTARY = const(50)             # Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is 
+                                           # used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is 
+                                           # used (inverse or not: This depends on the current state of the functionality. When it is
+                                           # on, it will momentarily be switched off and vice versa).
+    ONE_SHOT = const(100)                  # Fire the SET command on every push (show as disabled)
 
     # Hold time for HOLD_MOMENTARY mode (milliseconds)
-    DEFAULT_LATCH_MOMENTARY_HOLD_TIME = 600  
+    DEFAULT_LATCH_MOMENTARY_HOLD_TIME = const(600)
 
 
 ################################################################################################################################
@@ -132,7 +134,7 @@ class PushButtonAction(Action):
 # Implements an abstraction layer for triggering different actions on hold/double click
 class HoldAction(Action):
     
-    DEFAULT_HOLD_TIME_MILLIS = 600            # Default hold time
+    DEFAULT_HOLD_TIME_MILLIS = const(600)            # Default hold time
 
     # config:
     # {
@@ -306,13 +308,13 @@ class HoldAction(Action):
 
 # Comparison modes (for the valueEnabled value when requesting a value)
 class ParameterActionModes:
-    EQUAL = 0            # Enable when exactly the valueEnabled value comes in
+    EQUAL = const(0)            # Enable when exactly the valueEnabled value comes in
     
-    GREATER = 10         # Enable when a value greater than valueEnabled comes in
-    GREATER_EQUAL = 20   # Enable when the valueEnabled value comes in, or anything greater
+    GREATER = const(10)         # Enable when a value greater than valueEnabled comes in
+    GREATER_EQUAL = const(20)   # Enable when the valueEnabled value comes in, or anything greater
 
-    LESS = 30            # Enable when a value less than valueEnabled comes in
-    LESS_EQUAL = 40      # Enable when the valueEnabled value comes in, or anything less
+    LESS = const(30)            # Enable when a value less than valueEnabled comes in
+    LESS_EQUAL = const(40)      # Enable when the valueEnabled value comes in, or anything less
 
 
 ################################################################################################################################

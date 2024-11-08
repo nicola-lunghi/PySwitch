@@ -1,15 +1,16 @@
+from micropython import const
 from gc import collect, mem_free, mem_alloc
 from .misc import Tools
 
 
 # Size for visualizations (num of characters. Best is an odd number)
-VISUALIZATION_SIZE = 15
+_VISUALIZATION_SIZE = const(15)
 
 # Memory monitoring tools
 class Memory:
 
     # Padding for the prefix string
-    PREFIX_LENGTH = 60
+    PREFIX_LENGTH = const(60)
 
     # Free space at first and last call of watch()
     TOTAL_BYTES = -1
@@ -23,16 +24,16 @@ class Memory:
     def start(prefix = None, zoom = 3):
         free_bytes = Memory._get_free_bytes()
         allocated_bytes = mem_alloc()
-        total_bytes = allocated_bytes + free_bytes
+        TOTAL_BYTES = allocated_bytes + free_bytes
         prefix_out = Memory._convert_prefix(prefix)
     
         # Initialize
         Memory.LAST_FREE_BYTES = free_bytes
-        Memory.TOTAL_BYTES = total_bytes
+        Memory.TOTAL_BYTES = TOTAL_BYTES
 
         Memory.ALLOCATED_BYTES_ZOOM = zoom
 
-        Tools.print(prefix_out + Tools.fill_up_to("Starting with " + Tools.format_size(free_bytes) + " of " + Tools.format_size(total_bytes), 63) + Memory._visualize_free_bytes(free_bytes))
+        Tools.print(prefix_out + Tools.fill_up_to("Starting with " + Tools.format_size(free_bytes) + " of " + Tools.format_size(TOTAL_BYTES), 63) + Memory._visualize_free_bytes(free_bytes))
 
     # Prints the memory allocated since the last call
     @staticmethod
@@ -73,13 +74,13 @@ class Memory:
 
     # Returns a console visualization of free bytes
     @staticmethod
-    def _visualize_free_bytes(free_bytes, size = VISUALIZATION_SIZE):
+    def _visualize_free_bytes(free_bytes, size = _VISUALIZATION_SIZE):
         num_chars = int((free_bytes / Memory.TOTAL_BYTES) * size)
         return "".join([("X" if i <= num_chars else ".") for i in range(size)])
 
     # Returns a console visualization of allocated_bytes bytes
     @staticmethod
-    def _visualize_allocated_bytes(allocated_bytes, size = VISUALIZATION_SIZE):
+    def _visualize_allocated_bytes(allocated_bytes, size = _VISUALIZATION_SIZE):
         zero_char = int(size / 2)
         value_char = int((-allocated_bytes * Memory.ALLOCATED_BYTES_ZOOM / Memory.TOTAL_BYTES) * size / 2) + zero_char
 

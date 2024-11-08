@@ -11,8 +11,8 @@ from ..Memory import Memory
 class Controller(Updater): #ClientRequestListener
 
     # IDs for all available measurements (for statistics)
-    STAT_ID_TICK_TIME = "Tick"             # Time one processing loop takes overall
-    STAT_ID_SWITCH_UPDATE_TIME = "SwUp"    # Time between switch state updates. This measurement costs a lot of overhead!
+    _STAT_ID_TICK_TIME = 1             # Time one processing loop takes overall
+    _STAT_ID_SWITCH_UPDATE_TIME = 2    # Time between switch state updates. This measurement costs a lot of overhead!
 
     # config:   Configuration dictionary. 
     # switches: [           list of switch definitions
@@ -122,11 +122,11 @@ class Controller(Updater): #ClientRequestListener
         if not isinstance(measurement, RuntimeMeasurement):
             return
 
-        if measurement.type == self.STAT_ID_TICK_TIME:        
+        if measurement.type == self._STAT_ID_TICK_TIME:        
             self._measurements_tick_time.append(measurement)
             self.add_updateable(measurement)
             
-        #elif measurement.type == self.STAT_ID_SWITCH_UPDATE_TIME:
+        #elif measurement.type == self._STAT_ID_SWITCH_UPDATE_TIME:
         #    self._measurements_switch_update.append(measurement)
         #    self.add_updateable(measurement)
         

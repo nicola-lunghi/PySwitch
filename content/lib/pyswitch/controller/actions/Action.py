@@ -6,7 +6,7 @@ from ...misc import Tools, Updateable, Defaults
 # inheriting from Action.
 class Action(Updateable):
     
-    next_id = 0   # Global counted action ids (internal, just used for debugging!)
+    _next_id = 0   # Global counted action ids (internal, just used for debugging!)
 
     # config: {
     #      "display": {
@@ -48,9 +48,9 @@ class Action(Updateable):
     def _init_id(self):
         self.id = Tools.get_option(self.config, "id", None)
         if not self.id:
-            self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action.next_id) + ")"
+            self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action._next_id) + ")"
             
-            Action.next_id = Action.next_id + 1
+            Action._next_id = Action._next_id + 1
 
     @property
     def enabled(self):
