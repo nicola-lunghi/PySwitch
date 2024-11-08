@@ -4,8 +4,6 @@
 #
 ##############################################################################################################################################
 
-from micropython import const
-
 from pyswitch.misc import Colors
 from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
 
@@ -19,21 +17,21 @@ from kemper import KemperMappings
 
 # IDs to address the display labels in the switch configuration
 class DisplayIds:
-    DISPLAY_HEADER = const(10)
-    DISPLAY_FOOTER = const(20)
+    DISPLAY_HEADER = 10
+    DISPLAY_FOOTER = 20  
 
 #############################################################################################################################################
 
 # Some only locally used constants
-_DISPLAY_WIDTH = const(240)
-_DISPLAY_HEIGHT = const(240)
-_SLOT_HEIGHT = const(40)                 # Slot height on the display
-_DETAIL_HEIGHT = const(20)               # Height of the detail (amp/cab) display
+DISPLAY_WIDTH = 240
+DISPLAY_HEIGHT = 240
+SLOT_HEIGHT = 40                 # Slot height on the display
+DETAIL_HEIGHT = 20               # Height of the detail (amp/cab) display
 
 #############################################################################################################################################
 
 # The DisplayBounds class is used to easily layout the display in a subtractive way. Initialize it with all available space:
-_bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT)
+bounds = DisplayBounds(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT)
  
 # Defines the areas to be shown on the TFT display, and which values to show there.
 Display = ParameterCondition(
@@ -43,26 +41,26 @@ Display = ParameterCondition(
 
     # Show normal display
     yes = HierarchicalDisplayElement(
-        bounds = _bounds,
+        bounds = bounds,
         children = [
             # Header area (referenced by ID in the action configurations)
             DisplaySplitContainer(
                 id = DisplayIds.DISPLAY_HEADER,
                 name = "Header",
-                bounds = _bounds.remove_from_top(_SLOT_HEIGHT)
+                bounds = bounds.remove_from_top(SLOT_HEIGHT)
             ),
 
             # Footer area (referenced by ID in the action configurations)
             DisplaySplitContainer(
                 id = DisplayIds.DISPLAY_FOOTER,
                 name = "Footer",
-                bounds = _bounds.remove_from_bottom(_SLOT_HEIGHT)
+                bounds = bounds.remove_from_bottom(SLOT_HEIGHT)
             ),
 
             # Rig name
             ParameterDisplayLabel(
                 name = "Rig Name",
-                bounds = _bounds,   # Takes what is left over
+                bounds = bounds,   # Takes what is left over
 
                 layout = {
                     "font": "/fonts/PTSans-NarrowBold-40.pcf",
@@ -78,13 +76,13 @@ Display = ParameterCondition(
             ),
 
             # Statistics area
-            #StatisticalDisplays.STATS_DISPLAY(_bounds),
+            #StatisticalDisplays.STATS_DISPLAY(bounds),
 
             # Bidirectional protocol state indicator (dot)
-            StatisticalDisplays.BIDIRECTIONAL_PROTOCOL_STATE_DOT(_bounds),
+            StatisticalDisplays.BIDIRECTIONAL_PROTOCOL_STATE_DOT(bounds),
 
             # Performance indicator (dot)
-            #StatisticalDisplays.PERFORMANCE_DOT(_bounds.translated(0, 7)),
+            StatisticalDisplays.PERFORMANCE_DOT(bounds.translated(0, 7)),
         ]
     ),
 
@@ -93,7 +91,7 @@ Display = ParameterCondition(
         mapping_note = KemperMappings.TUNER_NOTE,
         mapping_deviance = KemperMappings.TUNER_DEVIANCE,
         
-        bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
+        bounds = DisplayBounds(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT),
         
         scale = 3,
         layout = {
