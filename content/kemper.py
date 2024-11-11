@@ -4,8 +4,8 @@ from micropython import const
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 
-from pyswitch.misc import Colors, Defaults, PeriodCounter, Tools
-from pyswitch.controller.actions.actions import ParameterAction, ParameterActionModes, PushButtonModes, EffectEnableAction, ResetDisplaysAction
+from pyswitch.misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print
+from pyswitch.controller.actions.actions import ParameterAction, EffectEnableAction, ResetDisplaysAction, PushButtonAction
 from pyswitch.controller.Client import ClientParameterMapping
 
 
@@ -20,7 +20,7 @@ _NRPN_PRODUCT_TYPE = _NRPN_PRODUCT_TYPE_PROFILER_PLAYER
 
 ####################################################################################################################
 
-# CC Addresses
+# ControlChange Addresses
 _CC_TUNER_MODE = const(31)
 _CC_BANK_INCREASE = const(48)
 _CC_BANK_DECREASE = const(49)
@@ -171,7 +171,7 @@ class KemperActionDefinitions:
 
     # Switch an effect slot on / off
     @staticmethod
-    def EFFECT_STATE(slot_id, display = None, mode = PushButtonModes.HOLD_MOMENTARY, id = False, use_leds = True):
+    def EFFECT_STATE(slot_id, display = None, mode = PushButtonAction.HOLD_MOMENTARY, id = False, use_leds = True):
         return EffectEnableAction({
             "mapping": KemperMappings.EFFECT_STATE(slot_id),
             "mappingType": KemperMappings.EFFECT_TYPE(slot_id),
@@ -199,14 +199,14 @@ class KemperActionDefinitions:
 
     # Switch tuner mode on / off
     @staticmethod
-    def TUNER_MODE(display = None, color = Defaults.DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
+    def TUNER_MODE(display = None, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.TUNER_MODE_STATE,
             "valueEnabled": 1,
             "valueDisabled": 3,
             "setValueEnabled": 1,
             "setValueDisabled": 0,
-            "comparisonMode": ParameterActionModes.EQUAL,
+            "comparisonMode": ParameterAction.EQUAL,
             "display": display,
             "text": "Tuner",
             "color": Colors.WHITE,
@@ -223,7 +223,7 @@ class KemperActionDefinitions:
             "display": display,
             "text": "Tap",
             "color": color,
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "id": id,
             "useSwitchLeds": use_leds
         })
@@ -265,7 +265,7 @@ class KemperActionDefinitions:
     # boost rig volume by passing a value in range [0..1] (corresponding to the range of the
     # rig volume paramneter: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB)
     @staticmethod
-    def RIG_VOLUME_BOOST(boost_volume, display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Colors.PINK, id = False, use_leds = True):
+    def RIG_VOLUME_BOOST(boost_volume, display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = Colors.PINK, id = False, use_leds = True):
         return ParameterAction({
             "mode": mode,
             "mapping": KemperMappings.RIG_VOLUME,
@@ -293,7 +293,7 @@ class KemperActionDefinitions:
 
     # Amp on/off
     @staticmethod
-    def AMP_STATE(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
+    def AMP_STATE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.AMP_STATE,
             "mode": mode,
@@ -308,7 +308,7 @@ class KemperActionDefinitions:
 
     # Amp on/off
     @staticmethod
-    def CABINET_STATE(display = None, mode = PushButtonModes.HOLD_MOMENTARY, color = Defaults.DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
+    def CABINET_STATE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.CABINET_STATE,
             "mode": mode,
@@ -326,7 +326,7 @@ class KemperActionDefinitions:
     def BANK_UP(display = None, color = Colors.WHITE, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.NEXT_BANK,
-            "mode": PushButtonModes.ONE_SHOT,
+            "mode": PushButtonAction.ONE_SHOT,
             "valueEnabled": _CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank up",
@@ -340,7 +340,7 @@ class KemperActionDefinitions:
     def BANK_DOWN(display = None, color = Colors.WHITE, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.PREVIOUS_BANK,
-            "mode": PushButtonModes.ONE_SHOT,
+            "mode": PushButtonAction.ONE_SHOT,
             "valueEnabled": _CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank dn",
@@ -423,7 +423,7 @@ class KemperActionDefinitions:
                 "on": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,              # Set equal dim factor (we do not need status display here)
                 "off": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF
             },
-            "mode": PushButtonModes.LATCH,
+            "mode": PushButtonAction.LATCH,
             "id": id,
             "useSwitchLeds": use_leds
         })
@@ -453,8 +453,8 @@ class KemperEffectCategories: #(EffectCategoryProvider):
     CATEGORY_REVERB = const(14)
 
     # Effect colors. The order must match the enums for the effect types defined above!
-    CATEGORY_COLORS = [
-        Defaults.DEFAULT_LABEL_COLOR,                   # None
+    CATEGORY_COLORS = (
+        DEFAULT_LABEL_COLOR,                            # None
         Colors.ORANGE,                                  # Wah
         Colors.RED,                                     # Distortion
         Colors.BLUE,                                    # Comp
@@ -469,10 +469,10 @@ class KemperEffectCategories: #(EffectCategoryProvider):
         Colors.GREEN,                                   # Dual
         Colors.GREEN,                                   # Delay
         Colors.GREEN,                                   # Reverb
-    ]
+    )
 
     # Effect type display names. The order must match the enums for the effect types defined above!
-    CATEGORY_NAMES = [
+    CATEGORY_NAMES = (
         "-",
         "Wah",
         "Dist",
@@ -488,7 +488,7 @@ class KemperEffectCategories: #(EffectCategoryProvider):
         "Dual",
         "Delay",
         "Reverb"
-    ]
+    )
 
     # Must return the effect category for a mapping value
     def get_effect_category(self, kpp_effect_type):
@@ -969,7 +969,7 @@ class KemperMappings:
 ####################################################################################################################
 
 
-PARAMETER_SET_2 = [
+_PARAMETER_SET_2 = [
     KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_A),
     KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_A),
 
@@ -995,18 +995,18 @@ PARAMETER_SET_2 = [
     KemperMappings.TUNER_DEVIANCE         
 ]
 
-SELECTED_PARAMETER_SET_ID = const(0x02)
-SELECTED_PARAMETER_SET = PARAMETER_SET_2
+_SELECTED_PARAMETER_SET_ID = const(0x02)
+_SELECTED_PARAMETER_SET = _PARAMETER_SET_2
 
 
 # Implements the internal Kemper bidirectional communication protocol
 class KemperBidirectionalProtocol: #(BidirectionalProtocol):
     
-    STATE_OFFLINE = 10   # No commmunication initiated
-    STATE_RUNNING = 20   # Bidirectional communication established
+    _STATE_OFFLINE = 10   # No commmunication initiated
+    _STATE_RUNNING = 20   # Bidirectional communication established
 
     def __init__(self, time_lease_seconds):
-        self.state = self.STATE_OFFLINE
+        self.state = self._STATE_OFFLINE
         self._time_lease_encoded = self._encode_time_lease(time_lease_seconds)
 
         # This is the reponse template for the status sensing message the Profiler sends every
@@ -1025,7 +1025,6 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         self.sensing_period.reset()
 
         self.debug = False   # This is set by the BidirectionalClient constructor
-        self._count_input_messages = 0
         self._count_relevant_messages = 0
         self._has_been_running = False
         
@@ -1036,11 +1035,11 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
 
     # Must return (boolean) if the passed mapping is handled in the bidirectional protocol
     def is_bidirectional(self, mapping):
-        return mapping in SELECTED_PARAMETER_SET
+        return mapping in _SELECTED_PARAMETER_SET
 
     # Must return a color representation for the current state
     def get_color(self):
-        return Colors.GREEN if self.state == self.STATE_RUNNING else Colors.RED
+        return Colors.GREEN if self.state == self._STATE_RUNNING else Colors.RED
  
     # Must return (boolean) if the passed mapping should feed back the set value immediately
     # without waiting for a midi message.
@@ -1049,10 +1048,10 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
 
     # Initialize the communication and keeps it alive when time lease exceeds
     def update(self):
-        if self.state == self.STATE_OFFLINE:
+        if self.state == self._STATE_OFFLINE:
             if self.init_period.exceeded:
                 if self.debug:
-                    self._print("Initialize communication")
+                    self._print("Initialize")
 
                 if self._has_been_running:
                     self._client.notify_connection_lost()                    
@@ -1061,9 +1060,9 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
                     init = True
                 )
 
-        elif self.state == self.STATE_RUNNING:
+        elif self.state == self._STATE_RUNNING:
             if self.sensing_period.exceeded:
-                self.state = self.STATE_OFFLINE
+                self.state = self._STATE_OFFLINE
 
                 if self.debug:
                     self._print("Lost connection")                
@@ -1076,9 +1075,6 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
 
     # Receive sensing messages and re-init (with init = 1 again) when they stop appearing for longer then 1 second
     def receive(self, midi_message):
-        if self.debug:
-            self._count_input_messages += 1
-
         if not isinstance(midi_message, SystemExclusive):
             return
                
@@ -1099,17 +1095,14 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         if midi_message.data[2:5] != self._mapping_sense.response.data[2:5]:
             return False
         
-        #if self.debug:
-        #    self._print("Received sensing message, communication is alive")
-        
-        if self.state != self.STATE_RUNNING:
+        if self.state != self._STATE_RUNNING:
             self.resend_period.reset()
             
             if self.debug:
                self._print("Connection established")
 
             self._has_been_running = True
-            self.state = self.STATE_RUNNING
+            self.state = self._STATE_RUNNING
 
         self.sensing_period.reset()
 
@@ -1120,7 +1113,7 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
                 0x7e,
                 [
                     0x40,
-                    SELECTED_PARAMETER_SET_ID,
+                    _SELECTED_PARAMETER_SET_ID,
                     self._get_flags(
                         init = init,
                         tunemode = True
@@ -1146,6 +1139,5 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         return 0x00 | (i << 0) | (s << 1) | (e << 2) | (n << 3) | (c << 4) | (t << 5)
 
     def _print(self, msg):
-        Tools.print("Bidirectional (" + Tools.formatted_timestamp() + "): " + msg + " (Received " + repr(self._count_relevant_messages) + " / " + repr(self._count_input_messages) + ")")
-        self._count_input_messages = 0
+        do_print("Bidirectional (" + formatted_timestamp() + "): " + msg + " (Received " + repr(self._count_relevant_messages) + ")")
         self._count_relevant_messages = 0

@@ -6,6 +6,7 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
     "usb_midi": MockUsbMidi(),

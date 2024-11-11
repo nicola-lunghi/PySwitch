@@ -61,8 +61,8 @@ class MockUiController:
             bounds = DisplayBounds(0, 0, width, height)
         ) if not root else root
 
-    def search(self, position):
-        return self.root.search(position)
+    def search(self, id, index = None):
+        return self.root.search(id, index)
     
     def create_label(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
         return MockDisplayLabel(bounds=bounds, layout=layout, name=name, id=id)

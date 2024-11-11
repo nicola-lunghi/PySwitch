@@ -1,6 +1,6 @@
 from adafruit_midi.system_exclusive import SystemExclusive
 
-from ..misc import Tools, EventEmitter, PeriodCounter, Updateable
+from ..misc import EventEmitter, PeriodCounter, Updateable, get_option, compare_midi_messages #, do_print
 
 
 # Base class for listeners to client parameter changes
@@ -40,18 +40,17 @@ class Client: #(ClientRequestListener):
 
     def __init__(self, midi, config, value_provider):
         self.midi = midi
-        self._config = config
-
-        self.debug = Tools.get_option(self._config, "debugClient")
-        self.debug_mapping = Tools.get_option(self._config, "clientDebugMapping", None)
-        self.debug_raw_midi = Tools.get_option(self._config, "debugClientRawMidi")
+        
+        #self.debug = get_option(config, "debugClient")
+        #self.debug_mapping = get_option(config, "clientDebugMapping", None)
+        #self.debug_raw_midi = get_option(config, "debugClientRawMidi")
         
         self.value_provider = value_provider
 
         # List of ClientRequest objects    
         self._requests = []
 
-        self._max_request_lifetime = Tools.get_option(self._config, "maxRequestLifetimeMillis", 2000)
+        self._max_request_lifetime = get_option(config, "maxRequestLifetimeMillis", 2000)
 
         # Helper to only clean up hanging requests from time to time as this is not urgent at all
         self._cleanup_terminated_period = PeriodCounter(self._max_request_lifetime / 2)    
@@ -68,12 +67,12 @@ class Client: #(ClientRequestListener):
     # Sends the SET message of a mapping
     def set(self, mapping, value):
         if not mapping.set:
-            raise Exception("No SET message prepared for this MIDI mapping")
+            raise Exception() #"No SET message prepared for this MIDI mapping")
         
         self.value_provider.set_value(mapping, value)
                 
-        if self.debug:  # pragma: no cover
-            self._print("Send SET message (" + mapping.name + "): " + Tools.stringify_midi_message(mapping.set), mapping)
+        #if self.debug:  # pragma: no cover
+        #    self._print("Send SET message (" + mapping.name + "): " + stringify_midi_message(mapping.set), mapping)
 
         self.midi.send(mapping.set)
 
@@ -95,8 +94,8 @@ class Client: #(ClientRequestListener):
             # Add to list
             self._requests.append(req)
             
-            if self.debug:  # pragma: no cover
-                self._print("Added new request for " + mapping.name + ". Open requests: " + str(len(self._requests)), mapping)
+            #if self.debug:  # pragma: no cover
+            #    self._print("Added request for " + mapping.name + ". Open: " + str(len(self._requests)), mapping)
 
             # Send 
             if send:           
@@ -106,8 +105,8 @@ class Client: #(ClientRequestListener):
             # Existing request: Add listener
             req.add_listener(listener)
 
-            if self.debug:  # pragma: no cover
-                self._print("Added new listener to existing request for " + mapping.name + ". Open requests: " + str(len(self._requests)) + ", Listeners: " + str(len(req.listeners)), mapping)
+            #if self.debug:  # pragma: no cover
+            #    self._print("Added listener to request for " + mapping.name + ". Open: " + str(len(self._requests)) + ", Listeners: " + str(len(req.listeners)), mapping)
 
     # Create a new request
     def create_request(self, mapping):
@@ -161,17 +160,17 @@ class Client: #(ClientRequestListener):
             if request.lifetime and request.lifetime.exceeded:
                 request.terminate()
 
-                if self.debug:  # pragma: no cover
-                    self._print("Terminated request for " + request.mapping.name + ", took too long")
+                #if self.debug:  # pragma: no cover
+                #    self._print("Terminated request for " + request.mapping.name + ", took too long")
 
         self._cleanup_requests()
 
     # Debug console output
-    def _print(self, msg, mapping = None): # pragma: no cover
-        if self.debug_mapping != None and mapping != None and self.debug_mapping != mapping:
-            return
+    #def _print(self, msg, mapping = None): # pragma: no cover
+    #    if self.debug_mapping != None and mapping != None and self.debug_mapping != mapping:
+    #        return
         
-        Tools.print("Client: " + msg)
+    #    do_print("Client: " + msg)
 
 
 #######################################################################################################################
@@ -195,19 +194,19 @@ class ClientParameterMapping:
         
         if self.response != None:
             if other.response != None:
-                return Tools.compare_midi_messages(self.response, other.response)
+                return compare_midi_messages(self.response, other.response)
             else:
                 return False
             
         elif self.set != None:
             if other.set != None:
-                return Tools.compare_midi_messages(self.set, other.set)
+                return compare_midi_messages(self.set, other.set)
             else:
                 return False
             
         elif self.request != None:
             if other.request != None:
-                return Tools.compare_midi_messages(self.request, other.request)
+                return compare_midi_messages(self.request, other.request)
             else:
                 return False
             
@@ -258,16 +257,16 @@ class ClientRequest(EventEmitter):
         
         self.client = client
         self.mapping = mapping
-        self.debug = self.client.debug     
+        #self.debug = self.client.debug     
         
-        if self.mapping.request and not isinstance(self.mapping.request, SystemExclusive):
-            raise Exception("Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
+        #if self.mapping.request and not isinstance(self.mapping.request, SystemExclusive):
+        #    raise Exception() #"Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
 
-        if not self.mapping.response:
-            raise Exception("No response template message prepared for this MIDI mapping (" + self.mapping.name + ")")
+        #if not self.mapping.response:
+        #    raise Exception() #"No response template message prepared for this MIDI mapping (" + self.mapping.name + ")")
         
-        if not isinstance(self.mapping.response, SystemExclusive):
-            raise Exception("Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
+        #if not isinstance(self.mapping.response, SystemExclusive):
+        #    raise Exception() #"Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
         
         self.lifetime = self._init_lifetime(max_request_lifetime)
 
@@ -285,8 +284,8 @@ class ClientRequest(EventEmitter):
         if not self.mapping.can_request:
             return
 
-        if self.debug:   # pragma: no cover
-            self._print(" -> Send REQUEST message for " + self.mapping.name + ": " + Tools.stringify_midi_message(self.mapping.request))
+        #if self.debug:   # pragma: no cover
+        #    self._print(" -> Send REQUEST for " + self.mapping.name + ": " + stringify_midi_message(self.mapping.request))
 
         self.client.midi.send(self.mapping.request)
 
@@ -319,15 +318,15 @@ class ClientRequest(EventEmitter):
         if not isinstance(midi_message, SystemExclusive):
             return
 
-        if self.client.debug_raw_midi:  # pragma: no cover
-            self._print("RAW Receive : " + Tools.stringify_midi_message(midi_message))
-            self._print("RAW Template: " + Tools.stringify_midi_message(self.mapping.response))
+        #if self.client.debug_raw_midi:  # pragma: no cover
+        #    self._print("RAW Receive : " + stringify_midi_message(midi_message))
+        #    self._print("RAW Template: " + stringify_midi_message(self.mapping.response))
 
         if not self.client.value_provider.parse(self.mapping, midi_message):
             return
         
-        if self.debug:   # pragma: no cover
-            self._print("   -> Received value " + repr(self.mapping.value) + " for " + self.mapping.name + ": " + Tools.stringify_midi_message(midi_message))
+        #if self.debug:   # pragma: no cover
+        #    self._print("   -> Received value " + repr(self.mapping.value) + " for " + self.mapping.name + ": " + stringify_midi_message(midi_message))
 
         # Call the listeners (the mapping has the values set already)
         self.notify_listeners()
@@ -345,11 +344,11 @@ class ClientRequest(EventEmitter):
             listener.request_terminated(self.mapping)
 
     # Debug console output
-    def _print(self, msg):  # pragma: no cover
-        if self.client.debug_mapping != None and self.client.debug_mapping != self.mapping:
-            return
+    #def _print(self, msg):  # pragma: no cover
+    #    if self.client.debug_mapping != None and self.client.debug_mapping != self.mapping:
+    #        return
 
-        Tools.print("ClientRequest: " + msg)
+    #    do_print("ClientRequest: " + msg)
 
 
 ####################################################################################################################
@@ -394,7 +393,7 @@ class BidirectionalClient(Client, Updateable):
         Client.__init__(self, midi, config, value_provider)
 
         self.protocol = protocol
-        self.protocol.debug = Tools.get_option(config, "debugBidirectionalProtocol")
+        self.protocol.debug = get_option(config, "debugBidirectionalProtocol")
         self.protocol.init(midi, self)
 
     # Register the mapping and listener in advance (only plays a role for bidirectional parameters)
@@ -430,7 +429,7 @@ class BidirectionalClient(Client, Updateable):
         if self.protocol.feedback_value(mapping):
             req = self.get_matching_request(mapping)
             if not req:
-                raise Exception("No request for mapping: " + repr(mapping))
+                raise Exception() #"No request for mapping: " + repr(mapping))
             
             req.mapping.value = value
             req.notify_listeners()

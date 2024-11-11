@@ -5,7 +5,9 @@ from unittest.mock import patch   # Necessary workaround! Needs to be separated.
 from .mocks_lib import *
 
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "usb_midi": MockUsbMidi(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
@@ -16,16 +18,16 @@ with patch.dict(sys.modules, {
 
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
+    from lib.pyswitch.controller.ConditionTree import ParameterCondition
     from lib.pyswitch.controller.Client import ClientParameterMapping
-    from lib.pyswitch.misc import Tools
+    from lib.pyswitch.misc import compare_midi_messages
 
 
 class TestConditionParameter(unittest.TestCase):
 
     def test_functionality(self):
         self._test_functionality(
-            mode = ParameterConditionModes.EQUAL,
+            mode = ParameterCondition.EQUAL,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -39,7 +41,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.NOT_EQUAL,
+            mode = ParameterCondition.NOT_EQUAL,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -53,7 +55,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.GREATER,
+            mode = ParameterCondition.GREATER,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -67,7 +69,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.GREATER_EQUAL,
+            mode = ParameterCondition.GREATER_EQUAL,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -81,7 +83,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.GREATER_EQUAL,
+            mode = ParameterCondition.GREATER_EQUAL,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -95,7 +97,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.LESS,
+            mode = ParameterCondition.LESS,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -109,7 +111,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.LESS_EQUAL,
+            mode = ParameterCondition.LESS_EQUAL,
             ref_value = 2.2,
             
             answer_value_1 = 2.2,
@@ -123,7 +125,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.IN_RANGE,
+            mode = ParameterCondition.IN_RANGE,
             ref_value = [2.2, 4.5],
             
             answer_value_1 = 2.2,
@@ -137,7 +139,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.IN_RANGE,
+            mode = ParameterCondition.IN_RANGE,
             ref_value = [2.2, 4.5],
             
             answer_value_1 = 4,
@@ -151,7 +153,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.NOT_IN_RANGE,
+            mode = ParameterCondition.NOT_IN_RANGE,
             ref_value = [2.2, 4.5],
             
             answer_value_1 = 2.2,
@@ -165,7 +167,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.NOT_IN_RANGE,
+            mode = ParameterCondition.NOT_IN_RANGE,
             ref_value = [2.2, 4.5],
             
             answer_value_1 = 4,
@@ -179,7 +181,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.STRING_CONTAINS,
+            mode = ParameterCondition.STRING_CONTAINS,
             ref_value = "foo",
             
             answer_value_1 = "bar",
@@ -193,7 +195,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.STRING_NOT_CONTAINS,
+            mode = ParameterCondition.STRING_NOT_CONTAINS,
             ref_value = "foo",
             
             answer_value_1 = "bar",
@@ -207,7 +209,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.STRING_STARTS_WITH,
+            mode = ParameterCondition.STRING_STARTS_WITH,
             ref_value = "foo",
             
             answer_value_1 = "foo",
@@ -221,7 +223,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.STRING_STARTS_WITH,
+            mode = ParameterCondition.STRING_STARTS_WITH,
             ref_value = "foo",
             
             answer_value_1 = "not",
@@ -235,7 +237,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.STRING_ENDS_WITH,
+            mode = ParameterCondition.STRING_ENDS_WITH,
             ref_value = "foo",
             
             answer_value_1 = "foo",
@@ -249,7 +251,7 @@ class TestConditionParameter(unittest.TestCase):
         )
 
         self._test_functionality(
-            mode = ParameterConditionModes.STRING_ENDS_WITH,
+            mode = ParameterCondition.STRING_ENDS_WITH,
             ref_value = "foo",
             
             answer_value_1 = "not",
@@ -338,7 +340,7 @@ class TestConditionParameter(unittest.TestCase):
             
         def eval1():
             self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_1.request))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.request))
 
             return True
 
@@ -382,7 +384,7 @@ class TestConditionParameter(unittest.TestCase):
 
         def eval3():
             self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[1], mapping_1.request))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.request))
 
             self.assertEqual(condition_1.true, expect_2)
 
@@ -465,7 +467,7 @@ class TestConditionParameter(unittest.TestCase):
 
         condition_1 = ParameterCondition(
             mapping = mapping_1,
-            mode = ParameterConditionModes.GREATER_EQUAL,
+            mode = ParameterCondition.GREATER_EQUAL,
             ref_value = 2.2,
             yes = [
                 action_1
@@ -504,7 +506,7 @@ class TestConditionParameter(unittest.TestCase):
             
         def eval1():
             self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_1.request))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.request))
 
             return True
 
@@ -569,7 +571,7 @@ class TestConditionParameter(unittest.TestCase):
 
         condition_1 = ParameterCondition(
             mapping = mapping_1,
-            mode = ParameterConditionModes.GREATER_EQUAL,
+            mode = ParameterCondition.GREATER_EQUAL,
             ref_value = 2.2,
             yes = [
                 action_1

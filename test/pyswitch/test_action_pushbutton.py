@@ -6,7 +6,9 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "usb_midi": MockUsbMidi(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
@@ -14,7 +16,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
 
-    from lib.pyswitch.controller.actions.actions import PushButtonModes
+    #from lib.pyswitch.controller.actions.actions import PushButtonAction
     from .mocks_appl import *
 
 
@@ -22,7 +24,7 @@ class TestActionPushButton(unittest.TestCase):
 
     def test_set_reset(self):
         action_1 = MockPushButtonAction({
-            "mode": PushButtonModes.LATCH
+            "mode": PushButtonAction.LATCH
         })
 
         self.assertEqual(action_1.num_set_calls, 0)
@@ -59,7 +61,7 @@ class TestActionPushButton(unittest.TestCase):
     def test_latch(self):
         switch_1 = MockSwitch()
         action_1 = MockPushButtonAction({
-            "mode": PushButtonModes.LATCH
+            "mode": PushButtonAction.LATCH
         })
 
         appl = MockController(
@@ -152,7 +154,7 @@ class TestActionPushButton(unittest.TestCase):
     def test_enable(self):
         switch_1 = MockSwitch()
         action_1 = MockPushButtonAction({
-            "mode": PushButtonModes.ENABLE
+            "mode": PushButtonAction.ENABLE
         })
 
         appl = MockController(
@@ -245,7 +247,7 @@ class TestActionPushButton(unittest.TestCase):
     def test_disable(self):
         switch_1 = MockSwitch()
         action_1 = MockPushButtonAction({
-            "mode": PushButtonModes.DISABLE
+            "mode": PushButtonAction.DISABLE
         })
         action_1.state = True
 
@@ -339,7 +341,7 @@ class TestActionPushButton(unittest.TestCase):
     def test_momentary(self):
         switch_1 = MockSwitch()
         action_1 = MockPushButtonAction({
-            "mode": PushButtonModes.MOMENTARY
+            "mode": PushButtonAction.MOMENTARY
         })
 
         appl = MockController(
@@ -432,7 +434,7 @@ class TestActionPushButton(unittest.TestCase):
     def test_momentary_inverse(self):
         switch_1 = MockSwitch()
         action_1 = MockPushButtonAction({
-            "mode": PushButtonModes.MOMENTARY_INVERSE
+            "mode": PushButtonAction.MOMENTARY_INVERSE
         })
         action_1.state = True
 
@@ -526,7 +528,7 @@ class TestActionPushButton(unittest.TestCase):
     def test_one_shot(self):
         switch_1 = MockSwitch()
         action_1 = MockPushButtonAction({
-            "mode": PushButtonModes.ONE_SHOT
+            "mode": PushButtonAction.ONE_SHOT
         })
 
         appl = MockController(
@@ -621,7 +623,7 @@ class TestActionPushButton(unittest.TestCase):
         period = MockPeriodCounter()        
         action_1 = MockPushButtonAction(
             {
-                "mode": PushButtonModes.HOLD_MOMENTARY,
+                "mode": PushButtonAction.HOLD_MOMENTARY,
                 "holdTimeMillis": 500
             },
             period
@@ -727,7 +729,7 @@ class TestActionPushButton(unittest.TestCase):
         period = MockPeriodCounter()
         action_1 = MockPushButtonAction(
             {
-                "mode": PushButtonModes.HOLD_MOMENTARY,
+                "mode": PushButtonAction.HOLD_MOMENTARY,
                 "holdTimeMillis": 500
             },
             period

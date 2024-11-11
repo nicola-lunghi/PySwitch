@@ -6,6 +6,8 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "usb_midi": MockUsbMidi(),
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
@@ -15,9 +17,9 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     #from adafruit_midi.control_change import ControlChange
-    from lib.pyswitch.controller.actions.actions import EffectEnableAction, PushButtonModes
+    from lib.pyswitch.controller.actions.actions import EffectEnableAction
     from lib.pyswitch.controller.Client import ClientParameterMapping, BidirectionalClient
-    from lib.pyswitch.misc import Tools
+    from lib.pyswitch.misc import compare_midi_messages
 
     from.mocks_appl import *
     
@@ -195,7 +197,7 @@ class TestBidirectionalClient(unittest.TestCase):
         cp = MockCategoryProvider()
 
         action_1 = EffectEnableAction({
-            "mode": PushButtonModes.LATCH,
+            "mode": PushButtonAction.LATCH,
             "mapping": mapping_1,
             "mappingType": mapping_type_1,
             "categories": cp,
@@ -283,7 +285,7 @@ class TestBidirectionalClient(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 1)
 
             self.assertEqual(vp.parse_calls[0]["mapping"], mapping_type_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 1)
             self.assertEqual(action_1._effect_category, 10)
             self.assertEqual(action_1.state, False)
@@ -313,7 +315,7 @@ class TestBidirectionalClient(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 2)
 
             self.assertEqual(vp.parse_calls[1]["mapping"], mapping_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
             self.assertEqual(appl.client.requests[0].mapping.value, 1)
 
             self.assertIn(answer_msg_param, protocol.receive_calls)

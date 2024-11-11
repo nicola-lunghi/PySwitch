@@ -6,8 +6,10 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "usb_midi": MockUsbMidi(),
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
@@ -18,7 +20,7 @@ with patch.dict(sys.modules, {
     from .mocks_misc import MockMisc
 
     with patch.dict(sys.modules, {
-        "lib.pyswitch.misc": MockMisc()
+        "lib.pyswitch.misc": MockMisc
     }):
 
         from .mocks_appl import *
@@ -116,7 +118,7 @@ class TestExploreMode(unittest.TestCase):
 
 
     def test_console_gpio_detect(self):
-        MockMisc.Tools.reset()
+        MockMisc.reset_mock()
         led_driver = MockNeoPixelDriver()
         switch_factory = MockSwitchFactory()
 
@@ -127,34 +129,34 @@ class TestExploreMode(unittest.TestCase):
             num_pixels_per_switch = 2
         )
 
-        self.assertIn("EXPLORE MODE", MockMisc.Tools.msgs_str)
-        self.assertIn("GP4", MockMisc.Tools.msgs_str)
-        self.assertIn("GP6", MockMisc.Tools.msgs_str)
-        self.assertIn("GP11", MockMisc.Tools.msgs_str)
-        self.assertNotIn("Error", MockMisc.Tools.msgs_str)
+        self.assertIn("EXPLORE MODE", MockMisc.msgs_str)
+        self.assertIn("GP4", MockMisc.msgs_str)
+        self.assertIn("GP6", MockMisc.msgs_str)
+        self.assertIn("GP11", MockMisc.msgs_str)
+        self.assertNotIn("Error", MockMisc.msgs_str)
 
         self.assertEqual(len(appl.switches), 3)
         
         # Build scenario
         def prep1():
             switch_factory.find_by_port("MockPort_6").shall_be_pushed = True
-            MockMisc.Tools.reset()
+            MockMisc.reset_mock()
 
         def eval1():
-            self.assertNotIn("GP4", MockMisc.Tools.msgs_str)
-            self.assertIn("GP6", MockMisc.Tools.msgs_str)
-            self.assertNotIn("GP11", MockMisc.Tools.msgs_str)
+            self.assertNotIn("GP4", MockMisc.msgs_str)
+            self.assertIn("GP6", MockMisc.msgs_str)
+            self.assertNotIn("GP11", MockMisc.msgs_str)
             return True
 
         def prep2():
             switch_factory.find_by_port("MockPort_6").shall_be_pushed = False
             switch_factory.find_by_port("MockPort_11").shall_be_pushed = True
-            MockMisc.Tools.reset()
+            MockMisc.reset_mock()
 
         def eval2():
-            self.assertNotIn("GP4", MockMisc.Tools.msgs_str)
-            self.assertNotIn("GP6", MockMisc.Tools.msgs_str)
-            self.assertIn("GP11", MockMisc.Tools.msgs_str)            
+            self.assertNotIn("GP4", MockMisc.msgs_str)
+            self.assertNotIn("GP6", MockMisc.msgs_str)
+            self.assertIn("GP11", MockMisc.msgs_str)            
             return False
 
         # Build scenes hierarchy
@@ -176,7 +178,7 @@ class TestExploreMode(unittest.TestCase):
 
 
     def test_ui_gpio_detect_5rows(self):
-        MockMisc.Tools.reset()
+        MockMisc.reset_mock()
         led_driver = MockNeoPixelDriver()
         switch_factory = MockSwitchFactory()
         ui = MockUiController(width = 999, height = 600)
@@ -189,20 +191,20 @@ class TestExploreMode(unittest.TestCase):
             ui = ui
         )
 
-        self.assertNotIn("EXPLORE MODE", MockMisc.Tools.msgs_str)
-        self.assertNotIn("GP4", MockMisc.Tools.msgs_str)
-        self.assertNotIn("GP6", MockMisc.Tools.msgs_str)
-        self.assertNotIn("GP11", MockMisc.Tools.msgs_str)
-        self.assertNotIn("Error", MockMisc.Tools.msgs_str)
+        self.assertNotIn("EXPLORE MODE", MockMisc.msgs_str)
+        self.assertNotIn("GP4", MockMisc.msgs_str)
+        self.assertNotIn("GP6", MockMisc.msgs_str)
+        self.assertNotIn("GP11", MockMisc.msgs_str)
+        self.assertNotIn("Error", MockMisc.msgs_str)
 
         self.assertEqual(len(appl.switches), 3)
         self.assertEqual(len(ui.root.children), 2)
-        self.assertEqual(len(ui.root.child(1).children), 1)
-        self.assertEqual(len(ui.root.child(1).child(0).children), 3)
+        self.assertEqual(len(ui.root.children[1].children), 1)
+        self.assertEqual(len(ui.root.children[1].children[0].children), 3)
         
-        label_0 = ui.root.child(1).child(0).child(0)
-        label_1 = ui.root.child(1).child(0).child(1)
-        label_2 = ui.root.child(1).child(0).child(2)
+        label_0 = ui.root.children[1].children[0].children[0]
+        label_1 = ui.root.children[1].children[0].children[1]
+        label_2 = ui.root.children[1].children[0].children[2]
 
         self.assertEqual(label_0.bounds, DisplayBounds(0, 0, 333, 560))
         self.assertEqual(label_1.bounds, DisplayBounds(333, 0, 333, 560))
@@ -215,12 +217,12 @@ class TestExploreMode(unittest.TestCase):
         # Build scenario
         def prep1():
             switch_factory.find_by_port("MockPort_6").shall_be_pushed = True
-            MockMisc.Tools.reset()
+            MockMisc.reset_mock()
 
         def eval1():
-            self.assertNotIn("GP4", MockMisc.Tools.msgs_str)
-            self.assertIn("GP6", MockMisc.Tools.msgs_str)
-            self.assertNotIn("GP11", MockMisc.Tools.msgs_str)
+            self.assertNotIn("GP4", MockMisc.msgs_str)
+            self.assertIn("GP6", MockMisc.msgs_str)
+            self.assertNotIn("GP11", MockMisc.msgs_str)
 
             self.assertEqual(label_0.back_color, Colors.DARK_BLUE)
             self.assertEqual(label_1.back_color, Colors.DARK_BLUE)
@@ -230,12 +232,12 @@ class TestExploreMode(unittest.TestCase):
         def prep2():
             switch_factory.find_by_port("MockPort_6").shall_be_pushed = False
             switch_factory.find_by_port("MockPort_11").shall_be_pushed = True
-            MockMisc.Tools.reset()
+            MockMisc.reset_mock()
 
         def eval2():
-            self.assertNotIn("GP4", MockMisc.Tools.msgs_str)
-            self.assertNotIn("GP6", MockMisc.Tools.msgs_str)
-            self.assertIn("GP11", MockMisc.Tools.msgs_str)            
+            self.assertNotIn("GP4", MockMisc.msgs_str)
+            self.assertNotIn("GP6", MockMisc.msgs_str)
+            self.assertIn("GP11", MockMisc.msgs_str)            
 
             self.assertEqual(label_0.back_color, Colors.RED)
             self.assertEqual(label_1.back_color, Colors.DARK_BLUE)
@@ -253,19 +255,15 @@ class TestExploreMode(unittest.TestCase):
             )
         )
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.roundrect": MockDisplayShapes().roundrect(),
-            "adafruit_display_shapes.rect": MockDisplayShapes().rect()
-        }):
-            # Run process
-            appl.process()
+        # Run process
+        appl.process()
 
 
 ##################################################################################################
 
 
     def test_ui_gpio_detect_2rows(self):
-        MockMisc.Tools.reset()
+        MockMisc.reset_mock()
         ui = MockUiController(width = 1000, height = 600)
 
         appl = MockExploreModeController(
@@ -279,13 +277,13 @@ class TestExploreMode(unittest.TestCase):
 
         self.assertEqual(len(appl.switches), 3)
         self.assertEqual(len(ui.root.children), 2)
-        self.assertEqual(len(ui.root.child(1).children), 2)
-        self.assertEqual(len(ui.root.child(1).child(0).children), 2)
-        self.assertEqual(len(ui.root.child(1).child(1).children), 1)
+        self.assertEqual(len(ui.root.children[1].children), 2)
+        self.assertEqual(len(ui.root.children[1].children[0].children), 2)
+        self.assertEqual(len(ui.root.children[1].children[1].children), 1)
         
-        label_0 = ui.root.child(1).child(0).child(0)
-        label_1 = ui.root.child(1).child(0).child(1)
-        label_2 = ui.root.child(1).child(1).child(0)
+        label_0 = ui.root.children[1].children[0].children[0]
+        label_1 = ui.root.children[1].children[0].children[1]
+        label_2 = ui.root.children[1].children[1].children[0]
 
         self.assertEqual(label_0.bounds, DisplayBounds(0, 0, 500, 280))
         self.assertEqual(label_1.bounds, DisplayBounds(500, 0, 500, 280))
@@ -305,7 +303,7 @@ class TestExploreMode(unittest.TestCase):
         self._test_console_pixel_scan(2, "up")
 
     def _test_console_pixel_scan(self, switch_id, direction):
-        MockMisc.Tools.reset()
+        MockMisc.reset_mock()
         led_driver = MockNeoPixelDriver()
         switch_factory = MockSwitchFactory()
 
@@ -321,15 +319,15 @@ class TestExploreMode(unittest.TestCase):
         # Build scenario
         def prep1():
             switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.Tools.reset()
+            MockMisc.reset_mock()
             pass
 
         def eval1():
             if direction == "up":
-                self.assertIn("(0, 1, 2, 3) of 12", MockMisc.Tools.msgs_str)            
+                self.assertIn("(0, 1, 2, 3) of 12", MockMisc.msgs_str)            
                 self._assert_enlightened(led_driver, (0, 1, 2, 3))
             else:
-                self.assertIn("(8, 9, 10, 11) of 12", MockMisc.Tools.msgs_str)
+                self.assertIn("(8, 9, 10, 11) of 12", MockMisc.msgs_str)
                 self._assert_enlightened(led_driver, (8, 9, 10, 11))
             return True
 
@@ -341,10 +339,10 @@ class TestExploreMode(unittest.TestCase):
 
         def prep3():
             switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.Tools.reset()            
+            MockMisc.reset_mock()            
 
         def eval3():
-            self.assertIn("(4, 5, 6, 7) of 12", MockMisc.Tools.msgs_str)    
+            self.assertIn("(4, 5, 6, 7) of 12", MockMisc.msgs_str)    
             self._assert_enlightened(led_driver, (4, 5, 6, 7))        
             return True
         
@@ -356,15 +354,15 @@ class TestExploreMode(unittest.TestCase):
 
         def prep5():
             switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.Tools.reset()
+            MockMisc.reset_mock()
             pass
 
         def eval5():
             if direction == "up":
-                self.assertIn("(8, 9, 10, 11) of 12", MockMisc.Tools.msgs_str)
+                self.assertIn("(8, 9, 10, 11) of 12", MockMisc.msgs_str)
                 self._assert_enlightened(led_driver, (8, 9, 10, 11))
             else:
-                self.assertIn("(0, 1, 2, 3) of 12", MockMisc.Tools.msgs_str)     
+                self.assertIn("(0, 1, 2, 3) of 12", MockMisc.msgs_str)     
                 self._assert_enlightened(led_driver, (0, 1, 2, 3))       
             return True
         
@@ -376,15 +374,15 @@ class TestExploreMode(unittest.TestCase):
 
         def prep7():
             switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.Tools.reset()
+            MockMisc.reset_mock()
             pass
 
         def eval7():
             if direction == "up":
-                self.assertIn("(0, 1, 2, 3) of 12", MockMisc.Tools.msgs_str)     
+                self.assertIn("(0, 1, 2, 3) of 12", MockMisc.msgs_str)     
                 self._assert_enlightened(led_driver, (0, 1, 2, 3))       
             else:
-                self.assertIn("(8, 9, 10, 11) of 12", MockMisc.Tools.msgs_str)
+                self.assertIn("(8, 9, 10, 11) of 12", MockMisc.msgs_str)
                 self._assert_enlightened(led_driver, (8, 9, 10, 11))                
             return False
         
@@ -438,7 +436,7 @@ class TestExploreMode(unittest.TestCase):
         self._test_ui_pixel_scan(2, "up")
 
     def _test_ui_pixel_scan(self, switch_id, direction):
-        MockMisc.Tools.reset()
+        MockMisc.reset_mock()
         led_driver = MockNeoPixelDriver()
         switch_factory = MockSwitchFactory()
         ui = MockUiController()
@@ -454,21 +452,21 @@ class TestExploreMode(unittest.TestCase):
         self.assertEqual(len(appl.switches), 3)        
         self.assertEqual(len(ui.root.children), 2)
 
-        label = ui.root.child(0)
+        label = ui.root.children[0]
 
         # Build scenario
         def prep1():
             switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.Tools.reset()
+            MockMisc.reset_mock()
             pass
 
         def eval1():
             if direction == "up":
-                self.assertIn("(0, 1, 2) of 9", MockMisc.Tools.msgs_str)            
+                self.assertIn("(0, 1, 2) of 9", MockMisc.msgs_str)            
                 self._assert_enlightened(led_driver, (0, 1, 2))
                 self.assertIn("(0, 1, 2) of 9", label.text)
             else:
-                self.assertIn("(6, 7, 8) of 9", MockMisc.Tools.msgs_str)
+                self.assertIn("(6, 7, 8) of 9", MockMisc.msgs_str)
                 self._assert_enlightened(led_driver, (6, 7, 8))
                 self.assertIn("(6, 7, 8) of 9", label.text)
             return True
@@ -481,10 +479,10 @@ class TestExploreMode(unittest.TestCase):
 
         def prep3():
             switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.Tools.reset()            
+            MockMisc.reset_mock()            
 
         def eval3():
-            self.assertIn("(3, 4, 5) of 9", MockMisc.Tools.msgs_str)    
+            self.assertIn("(3, 4, 5) of 9", MockMisc.msgs_str)    
             self._assert_enlightened(led_driver, (3, 4, 5))        
             self.assertIn("(3, 4, 5) of 9", label.text)
             return True
@@ -497,16 +495,16 @@ class TestExploreMode(unittest.TestCase):
 
         def prep5():
             switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.Tools.reset()
+            MockMisc.reset_mock()
             pass
 
         def eval5():
             if direction == "up":
-                self.assertIn("(6, 7, 8) of 9", MockMisc.Tools.msgs_str)
+                self.assertIn("(6, 7, 8) of 9", MockMisc.msgs_str)
                 self._assert_enlightened(led_driver, (6, 7, 8))
                 self.assertIn("(6, 7, 8) of 9", label.text)
             else:
-                self.assertIn("(0, 1, 2) of 9", MockMisc.Tools.msgs_str)     
+                self.assertIn("(0, 1, 2) of 9", MockMisc.msgs_str)     
                 self._assert_enlightened(led_driver, (0, 1, 2))  
                 self.assertIn("(0, 1, 2) of 9", label.text)     
             return False
@@ -538,12 +536,8 @@ class TestExploreMode(unittest.TestCase):
             )
         )
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.roundrect": MockDisplayShapes().roundrect(),
-            "adafruit_display_shapes.rect": MockDisplayShapes().rect()
-        }):
-            # Run process
-            appl.process()
+        # Run process
+        appl.process()
 
 
 ##################################################################################################

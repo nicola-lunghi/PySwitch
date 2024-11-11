@@ -5,6 +5,7 @@ from unittest.mock import patch   # Necessary workaround! Needs to be separated.
 from .mocks_lib import *
 
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "usb_midi": MockUsbMidi(),
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
@@ -27,7 +28,7 @@ class TestConditionPushButton(unittest.TestCase):
         period = MockPeriodCounter()
 
         condition_1 = PushButtonCondition(
-            id = "foo",
+            action = action_2,
             enabled = [
                 action_3
             ],
@@ -126,62 +127,19 @@ class TestConditionPushButton(unittest.TestCase):
 #############################################################################
 
 
-    def test_action_not_defined(self):
-        action_1 = MockAction({ "id": "bar" })
-        action_2 = MockAction({ "id": "foo2" })
-        action_3 = MockAction()
-        action_4 = MockAction()
-
-        condition_1 = PushButtonCondition(
-            id = "foo",
-            enabled = [
-                action_3
-            ],
-            disabled = [
-                action_4
-            ]
-        )
-
-        MockController(
-            led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": MockValueProvider()
-            },
-            midi = MockMidiController(),
-            switches = [
-                {
-                    "assignment": {
-                        "model": MockSwitch()
-                    },
-                    "actions": [
-                        condition_1,                        
-                        action_1,
-                        action_2                  
-                    ]
-                }
-            ]
-        )
-
-        with self.assertRaises(Exception):
-            condition_1.update()
-
+    #def test_update_not_initialized(self):
+    #    action_3 = MockAction()
+    #    action_4 = MockAction()
         
-#############################################################################
+    #    condition_1 = PushButtonCondition(
+    #        action = MockAction(),
+    #        enabled = [
+    #            action_3
+    #        ],
+    #        disabled = [
+    #            action_4
+    #        ]
+    #    )
 
-
-    def test_update_not_initialized(self):
-        action_3 = MockAction()
-        action_4 = MockAction()
-        
-        condition_1 = PushButtonCondition(
-            id = "foo",
-            enabled = [
-                action_3
-            ],
-            disabled = [
-                action_4
-            ]
-        )
-
-        with self.assertRaises(Exception):
-            condition_1.update()
+    #    with self.assertRaises(Exception):
+    #        condition_1.update()

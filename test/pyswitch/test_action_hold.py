@@ -6,6 +6,7 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "usb_midi": MockUsbMidi(),
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
@@ -178,7 +179,7 @@ class TestActionPushButton(unittest.TestCase):
         action_hold = HoldAction()
         action_hold.init(MockController(), MockFootSwitch())
 
-        self.assertEqual(action_hold._period_hold.interval, HoldAction.DEFAULT_HOLD_TIME_MILLIS)
+        self.assertEqual(action_hold._period_hold.interval, 600)
 
 
     def test_reset(self):

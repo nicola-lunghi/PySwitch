@@ -5,8 +5,9 @@
 ##############################################################################################################################################
 
 from micropython import const
+
 from pyswitch.misc import Colors, PYSWITCH_VERSION
-from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
+from pyswitch.controller.ConditionTree import ParameterCondition
 
 from pyswitch.ui.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds, TunerDisplay
 from pyswitch.ui.ui import HierarchicalDisplayElement
@@ -41,7 +42,7 @@ Display = ParameterCondition(
     # Show normal display
     yes = HierarchicalDisplayElement(
         bounds = _bounds,
-        children = [        
+        children = [
             # Header area (referenced by ID in the action configurations)
             DisplaySplitContainer(
                 id = DISPLAY_ID_HEADER,
@@ -72,7 +73,7 @@ Display = ParameterCondition(
             ),
 
             # Statistics area
-            #STATS_DISPLAY(bounds),
+            #STATS_DISPLAY(_bounds),
 
             # Bidirectional protocol state indicator (dot)
             BIDIRECTIONAL_PROTOCOL_STATE_DOT(_bounds),
@@ -89,11 +90,10 @@ Display = ParameterCondition(
         
         bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
         
-        scale = 6,
+        scale = 3,
         layout = {
             "font": "/fonts/PTSans-NarrowBold-40.pcf",
             "text": "Tuner"
         }
     )
 )
-

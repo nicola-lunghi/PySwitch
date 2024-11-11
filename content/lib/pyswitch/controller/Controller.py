@@ -1,9 +1,8 @@
-from .MidiController import MidiController
 from .FootSwitchController import FootSwitchController
 from .measurements import RuntimeMeasurement
 from .actions.Action import Action
 from .Client import Client, BidirectionalClient
-from ..misc import Tools, Updater, PeriodCounter
+from ..misc import Updater, PeriodCounter, get_option
 from ..Memory import Memory
 
 
@@ -11,8 +10,8 @@ from ..Memory import Memory
 class Controller(Updater): #ClientRequestListener
 
     # IDs for all available measurements (for statistics)
-    _STAT_ID_TICK_TIME = 1             # Time one processing loop takes overall
-    _STAT_ID_SWITCH_UPDATE_TIME = 2    # Time between switch state updates. This measurement costs a lot of overhead!
+    STAT_ID_TICK_TIME = 1             # Time one processing loop takes overall
+    STAT_ID_SWITCH_UPDATE_TIME = 2    # Time between switch state updates. This measurement costs a lot of overhead!
 
     # config:   Configuration dictionary. 
     # switches: [           list of switch definitions
@@ -33,8 +32,6 @@ class Controller(Updater): #ClientRequestListener
     #                },
     #                ...
     #           ]
-    # value_provider: Value provider for the client
-    # displays: list of DisplayElements to show on the TFT
     def __init__(self, led_driver, communication, midi, config = {}, switches = [], ui = None, period_counter = None):
         Updater.__init__(self)
 
@@ -48,9 +45,8 @@ class Controller(Updater): #ClientRequestListener
         # Global config
         self.config = config
 
-        self._max_consecutive_midi_msgs = Tools.get_option(self.config, "maxConsecutiveMidiMessages", 10)   # Max. number of MIDI messages being parsed before the next switch state evaluation
-        self._debug = Tools.get_option(self.config, "debug", False)
-        #self._debug_ui_structure = Tools.get_option(self.config, "debugUserInterfaceStructure", False)        
+        # Max. number of MIDI messages being parsed before the next switch state evaluation
+        self._max_consecutive_midi_msgs = get_option(config, "maxConsecutiveMidiMessages", 10)   
 
         # Switch config
         self._switch_definitions = switches
@@ -66,18 +62,18 @@ class Controller(Updater): #ClientRequestListener
         # Periodic update handler (the client is only asked when a certain time has passed)
         self.period = period_counter
         if not self.period:
-            self.period = PeriodCounter(Tools.get_option(self.config, "updateInterval", 200))        
+            self.period = PeriodCounter(get_option(config, "updateInterval", 200))        
 
         # Client adapter to send and receive parameters
         value_provider = communication["valueProvider"]
 
         # Bidirectional MIDI Protocol (optional)
-        protocol = Tools.get_option(communication, "protocol", None)
+        protocol = get_option(communication, "protocol", None)
         if protocol:
-            self.client = BidirectionalClient(self._midi, self.config, value_provider, protocol)
+            self.client = BidirectionalClient(self._midi, config, value_provider, protocol)
             self.add_updateable(self.client)
         else:
-            self.client = Client(self._midi, self.config, value_provider)
+            self.client = Client(self._midi, config, value_provider)
 
         # Set up the screen elements
         if self.ui:
@@ -86,16 +82,10 @@ class Controller(Updater): #ClientRequestListener
         # Set up switches
         self._init_switches()
 
-        if self._debug:
-            Tools.print("Updateable queue length: " + repr(len(self.updateables)))    
-
     # Initialize switches
     def _init_switches(self):
         self.switches = []
 
-        if self._debug:
-            Tools.print("-> Init switches")
-                    
         for sw_def in self._switch_definitions:
             switch = FootSwitchController(
                 self,
@@ -110,7 +100,7 @@ class Controller(Updater): #ClientRequestListener
     def _get_num_pixels(self):
         ret = 0
         for sw_def in self._switch_definitions:
-            pixels = Tools.get_option(sw_def["assignment"], "pixels", [])
+            pixels = get_option(sw_def["assignment"], "pixels", [])
             for p in pixels:
                 pp1 = p + 1
                 if pp1 > ret:
@@ -122,31 +112,31 @@ class Controller(Updater): #ClientRequestListener
         if not isinstance(measurement, RuntimeMeasurement):
             return
 
-        if measurement.type == self._STAT_ID_TICK_TIME:        
+        if measurement.type == self.STAT_ID_TICK_TIME:        
             self._measurements_tick_time.append(measurement)
             self.add_updateable(measurement)
             
-        #elif measurement.type == self._STAT_ID_SWITCH_UPDATE_TIME:
+        #elif measurement.type == self.STAT_ID_SWITCH_UPDATE_TIME:
         #    self._measurements_switch_update.append(measurement)
         #    self.add_updateable(measurement)
         
         else:
-            raise Exception("Runtime measurement type " + repr(measurement.type) + " not supported")
+            raise Exception(repr(measurement.type)) #"Runtime measurement type " + repr(measurement.type) + " not supported")
 
     # Runs the processing loop (which never ends)
     def process(self):
         # Show user interface
         if self.ui:            
-            self.ui.show()
+            Memory.watch("Showing UI")
 
-            Memory.watch("Controller: Showing UI")
+            self.ui.show()
         
         self.running = True
 
-        if self._debug:
-            Tools.print("-> Done initializing, starting processing loop")
+        #if self._debug:
+        #    do_print("-> Done initializing, starting processing loop")
 
-        Memory.watch("Controller: Starting loop")
+        Memory.watch("Starting loop")
 
         # Start processing loop
         while self.tick():
@@ -154,8 +144,6 @@ class Controller(Updater): #ClientRequestListener
 
     # Single tick in the processing loop. Must return True to keep the loop alive.
     def tick(self):
-        #Memory.watch("Controller: tick")
-
         # If enabled, remember the tick starting time for statistics
         for m in self._measurements_tick_time:
             m.start()       
@@ -163,6 +151,8 @@ class Controller(Updater): #ClientRequestListener
         # Update all Updateables in periodic intervals, less frequently then every tick
         if self.period.exceeded:
             self.update()
+
+            Memory.watch("Controller: update", only_if_changed = True)
 
         # Receive all available MIDI messages            
         cnt = 0
@@ -201,9 +191,6 @@ class Controller(Updater): #ClientRequestListener
 
     # Resets all switches
     def reset_switches(self, ignore_switches_list = []):
-        if self._debug:  
-            Tools.print("-> Reset switches, ignoring " + repr(ignore_switches_list))
-
         for action in self.updateables:
             if not isinstance(action, Action):
                 continue
@@ -216,8 +203,6 @@ class Controller(Updater): #ClientRequestListener
     # Resets all display areas
     def reset_display_areas(self):   # pragma: no cover
         pass
-        #if self._debug:
-        #    Tools.print("-> Reset display areas")
 
         #self._info_parameters.reset()
 

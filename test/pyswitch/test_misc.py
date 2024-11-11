@@ -38,48 +38,48 @@ class MockUpdateable(Updateable):
 class TestMiscTools(unittest.TestCase):
 
     def test_get_option(self):
-        self.assertEqual(Tools.get_option("", "foo"), False)
-        self.assertEqual(Tools.get_option(False, "foo"), False)
-        self.assertEqual(Tools.get_option(None, "foo"), False)
-        self.assertEqual(Tools.get_option({}, "foo"), False)
+        self.assertEqual(get_option("", "foo"), False)
+        self.assertEqual(get_option(False, "foo"), False)
+        self.assertEqual(get_option(None, "foo"), False)
+        self.assertEqual(get_option({}, "foo"), False)
 
         some = {
             "foo": 2,
             "bar": "foo"
         }
-        self.assertEqual(Tools.get_option(some, "foo"), 2)
-        self.assertEqual(Tools.get_option(some, "bar"), "foo")
-        self.assertEqual(Tools.get_option(some, "bar", 555), "foo")
-        self.assertEqual(Tools.get_option(some, "bat", 555), 555)
-        self.assertEqual(Tools.get_option(some, "for"), False)
-        self.assertEqual(Tools.get_option(some, "for", -4), -4)        
+        self.assertEqual(get_option(some, "foo"), 2)
+        self.assertEqual(get_option(some, "bar"), "foo")
+        self.assertEqual(get_option(some, "bar", 555), "foo")
+        self.assertEqual(get_option(some, "bat", 555), 555)
+        self.assertEqual(get_option(some, "for"), False)
+        self.assertEqual(get_option(some, "for", -4), -4)        
 
 
     def test_get_current_millis(self):
         MockTime.mock["monotonicReturn"] = 1021
-        self.assertEqual(Tools.get_current_millis(), 1021000)
+        self.assertEqual(get_current_millis(), 1021000)
         
         MockTime.mock["monotonicReturn"] = 1045
-        self.assertEqual(Tools.get_current_millis(), 1045000)
+        self.assertEqual(get_current_millis(), 1045000)
 
         MockTime.mock["monotonicReturn"] = 1045.56
-        self.assertEqual(Tools.get_current_millis(), 1045560)
+        self.assertEqual(get_current_millis(), 1045560)
 
         MockTime.mock["monotonicReturn"] = 1045.567
-        self.assertEqual(Tools.get_current_millis(), 1045567)
+        self.assertEqual(get_current_millis(), 1045567)
 
 
     def test_format_timestamp(self):
         MockTime.mock["localtimeReturn"] = time.struct_time((2009, 7, 18, 6, 5, 4, 0, 0, 0))
-        self.assertEqual(Tools.formatted_timestamp(), "2009-07-18 06:05:04")
+        self.assertEqual(formatted_timestamp(), "2009-07-18 06:05:04")
 
         MockTime.mock["localtimeReturn"] = time.struct_time((22019, 12, 8, 12, 35, 44, 0, 0, 0))
-        self.assertEqual(Tools.formatted_timestamp(), "22019-12-08 12:35:44")
+        self.assertEqual(formatted_timestamp(), "22019-12-08 12:35:44")
 
 
     def test_stringify_midi_message_falsy(self):
-        self.assertEqual(Tools.stringify_midi_message(None), repr(None))
-        self.assertEqual(Tools.stringify_midi_message(0), repr(0))
+        self.assertEqual(stringify_midi_message(None), repr(None))
+        self.assertEqual(stringify_midi_message(0), repr(0))
 
 
     def test_stringify_midi_message_sysex(self):
@@ -88,7 +88,7 @@ class TestMiscTools(unittest.TestCase):
             data = [0x34, 0x45, 0x67]
         )
 
-        str = Tools.stringify_midi_message(message)
+        str = stringify_midi_message(message)
 
         self.assertIn("SystemExclusive", str)
         self.assertIn("[2, 3]", str)
@@ -98,7 +98,7 @@ class TestMiscTools(unittest.TestCase):
     def test_stringify_midi_message_cc(self):
         message = ControlChange(2, 66)
 
-        str = Tools.stringify_midi_message(message)
+        str = stringify_midi_message(message)
 
         self.assertIn("ControlChange", str)
         self.assertIn("2", str)
@@ -108,7 +108,7 @@ class TestMiscTools(unittest.TestCase):
     def test_stringify_midi_message_ue(self):
         message = MIDIUnknownEvent(33)
 
-        str = Tools.stringify_midi_message(message)
+        str = stringify_midi_message(message)
 
         self.assertIn("MIDIUnknownEvent", str)
         self.assertIn("33", str)
@@ -117,7 +117,7 @@ class TestMiscTools(unittest.TestCase):
     def test_stringify_midi_message_others(self):
         message = "nomessage"
 
-        str = Tools.stringify_midi_message(message)
+        str = stringify_midi_message(message)
 
         self.assertIn("nomessage", str)
 
@@ -132,38 +132,38 @@ class TestMiscTools(unittest.TestCase):
             data = [0x34, 0x45, 0x67]
         )
 
-        self.assertEqual(Tools.compare_midi_messages(message_1, message_2), True)
-        self.assertEqual(Tools.compare_midi_messages(message_1, None), False)
-        self.assertEqual(Tools.compare_midi_messages(None, message_2), False)
+        self.assertEqual(compare_midi_messages(message_1, message_2), True)
+        self.assertEqual(compare_midi_messages(message_1, None), False)
+        self.assertEqual(compare_midi_messages(None, message_2), False)
 
         message_1.data[1] = 0xa9
-        self.assertEqual(Tools.compare_midi_messages(message_1, message_2), False)
+        self.assertEqual(compare_midi_messages(message_1, message_2), False)
 
         message_1.data[1] = 0x45
-        self.assertEqual(Tools.compare_midi_messages(message_1, message_2), True)
+        self.assertEqual(compare_midi_messages(message_1, message_2), True)
 
         message_1.manufacturer_id[1] = 0x04
-        self.assertEqual(Tools.compare_midi_messages(message_1, message_2), False)
+        self.assertEqual(compare_midi_messages(message_1, message_2), False)
 
 
     def test_compare_midi_messagess_cc(self):
         message_1 = ControlChange(2, 66)
         message_2 = ControlChange(2, 66)
 
-        self.assertEqual(Tools.compare_midi_messages(message_1, message_2), True)
-        self.assertEqual(Tools.compare_midi_messages(message_1, None), False)
-        self.assertEqual(Tools.compare_midi_messages(None, message_2), False)
+        self.assertEqual(compare_midi_messages(message_1, message_2), True)
+        self.assertEqual(compare_midi_messages(message_1, None), False)
+        self.assertEqual(compare_midi_messages(None, message_2), False)
 
         message_1.control = 67
 
-        self.assertEqual(Tools.compare_midi_messages(message_1, message_2), False)
+        self.assertEqual(compare_midi_messages(message_1, message_2), False)
 
 
     def test_compare_midi_messagess_others(self):
         message_1 = "foo"
         message_2 = "bar"
 
-        self.assertEqual(Tools.compare_midi_messages(message_1, message_2), False)
+        self.assertEqual(compare_midi_messages(message_1, message_2), False)
 
 
 

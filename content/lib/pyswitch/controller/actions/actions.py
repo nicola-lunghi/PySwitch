@@ -2,12 +2,16 @@ from micropython import const
 
 from .Action import Action
 from ..Client import ClientParameterMapping
-from ...misc import Tools, Defaults, Colors, PeriodCounter
+from ...misc import Colors, PeriodCounter, DEFAULT_LABEL_COLOR, get_option
 from ..ConditionTree import ConditionTree
 
 
-# Modes for PushButtonAction
-class PushButtonModes:    
+# Hold time for HOLD_MOMENTARY mode (milliseconds)
+_DEFAULT_LATCH_MOMENTARY_HOLD_TIME = const(600)
+
+# Implements an abstraction layer for on/off parameters. Covers latch/momentary modes etc.
+class PushButtonAction(Action):
+    
     ENABLE = const(0)                      # Switch the functionality on
     DISABLE = const(10)                    # Switch the functionality off
     LATCH = const(20)                      # Toggle state on every button push
@@ -19,29 +23,19 @@ class PushButtonModes:
                                            # on, it will momentarily be switched off and vice versa).
     ONE_SHOT = const(100)                  # Fire the SET command on every push (show as disabled)
 
-    # Hold time for HOLD_MOMENTARY mode (milliseconds)
-    DEFAULT_LATCH_MOMENTARY_HOLD_TIME = const(600)
-
-
-################################################################################################################################
-
-
-# Implements an abstraction layer for on/off parameters. Covers latch/momentary modes etc.
-class PushButtonAction(Action):
-    
     # config:
     # {
-    #      "mode": Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
-    #      "holdTimeMillis": Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
+    #      "mode": Mode of operation (see PushButtonModes). Optional, default is HOLD_MOMENTARY,
+    #      "holdTimeMillis": Optional hold time in milliseconds. Default is DEFAULT_LATCH_MOMENTARY_HOLD_TIME
     # }
     def __init__(self, config = {}, period_counter = None):
         super().__init__(config)
 
-        self._mode = Tools.get_option(self.config, "mode", PushButtonModes.HOLD_MOMENTARY)
+        self._mode = get_option(config, "mode", self.HOLD_MOMENTARY)
         
         self._period = period_counter
         if not self._period:
-            hold_time_ms = Tools.get_option(self.config, "holdTimeMillis", PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME)
+            hold_time_ms = get_option(config, "holdTimeMillis", _DEFAULT_LATCH_MOMENTARY_HOLD_TIME)
             self._period = PeriodCounter(hold_time_ms)
         
         self._state = False
@@ -65,7 +59,7 @@ class PushButtonAction(Action):
 
     # Abstract: Set functionality on or off (bool).
     def set(self, state):
-        raise Exception("Must be implemented by deriving classes")  # pragma: no cover
+        pass                                                         # pragma: no cover
 
     # Update the state without functional changes. This is used to react to
     # parameters that have to be requested first. When the answer comes in, the state 
@@ -77,49 +71,49 @@ class PushButtonAction(Action):
 
     # Button pushed
     def push(self):
-        if self._mode == PushButtonModes.ENABLE:
+        if self._mode == self.ENABLE:
             # Enable
             self.state = True
 
-        elif self._mode == PushButtonModes.DISABLE:
+        elif self._mode == self.DISABLE:
             # Disable
             self.state = False
 
-        elif self._mode == PushButtonModes.LATCH:
+        elif self._mode == self.LATCH:
             # Latch mode: Simply toggle states
             self.state = not self.state
 
-        elif self._mode == PushButtonModes.MOMENTARY:
+        elif self._mode == self.MOMENTARY:
             # Momentary mode: Enable on push
             self.state = True
 
-        elif self._mode == PushButtonModes.MOMENTARY_INVERSE:
+        elif self._mode == self.MOMENTARY_INVERSE:
             # Momentary mode: Enable on push
             self.state = False
 
-        elif self._mode == PushButtonModes.HOLD_MOMENTARY:
+        elif self._mode == self.HOLD_MOMENTARY:
             # Hold Momentary: Toggle like latch, and remember the current timestamp
             self._period.reset()
             self.state = not self.state
 
-        elif self._mode == PushButtonModes.ONE_SHOT:
+        elif self._mode == self.ONE_SHOT:
             self._state = False    # Triggers that set() is called by the state property in the next line
             self.state = True
 
     # Button released
     def release(self):
-        if self._mode == PushButtonModes.MOMENTARY:
+        if self._mode == self.MOMENTARY:
             self.state = False
         
-        elif self._mode == PushButtonModes.MOMENTARY_INVERSE:
+        elif self._mode == self.MOMENTARY_INVERSE:
             self.state = True
         
-        elif self._mode == PushButtonModes.HOLD_MOMENTARY:
+        elif self._mode == self.HOLD_MOMENTARY:
             if self._period.exceeded:
                 # Momentary if the period exceeded
                 self.state = not self.state
 
-        elif self._mode == PushButtonModes.ONE_SHOT:
+        elif self._mode == self.ONE_SHOT:
             # Do not use the child classes set() method: We do not want an "off" message to be sent here.
             self.feedback_state(False)
 
@@ -131,16 +125,16 @@ class PushButtonAction(Action):
 ################################################################################################################################
 
 
+_DEFAULT_HOLD_TIME_MILLIS = const(600)            # Default hold time
+
 # Implements an abstraction layer for triggering different actions on hold/double click
 class HoldAction(Action):
-    
-    DEFAULT_HOLD_TIME_MILLIS = const(600)            # Default hold time
 
     # config:
     # {
     #      "actions":               Default list of actions (can be conditional). Mandatory.
     #      "actionsHold":           List of actions to perform on holding the switch (can be conditional). Optional.
-    #      "holdTimeMillis":        Optional hold time in milliseconds. Default is PushButtonMultiModes.DEFAULT_HOLD_TIME_MILLIS.
+    #      "holdTimeMillis":        Optional hold time in milliseconds. Default is DEFAULT_HOLD_TIME_MILLIS.
     #                               Note that the sensing here is done only every processing update interval!
     # }
     def __init__(self, config = {}, period_counter_hold = None):
@@ -150,10 +144,13 @@ class HoldAction(Action):
         self._action_hold_tree = None
         self._active = False
 
+        self._action_config = get_option(config, "actions", [])
+        self._action_config_hold = get_option(config, "actionsHold", [])
+
         # Hold period counter
         self._period_hold = period_counter_hold
         if not self._period_hold:
-            hold_time_ms = Tools.get_option(self.config, "holdTimeMillis", self.DEFAULT_HOLD_TIME_MILLIS)
+            hold_time_ms = get_option(config, "holdTimeMillis", _DEFAULT_HOLD_TIME_MILLIS)
             self._period_hold = PeriodCounter(hold_time_ms)
         
     # Tie the enabled state of the actions to the one of this action
@@ -167,8 +164,11 @@ class HoldAction(Action):
     def init(self, appl, switch):
         super().init(appl, switch)
 
-        self._action_tree = self._init_actions(appl, switch, Tools.get_option(self.config, "actions", []))
-        self._action_hold_tree = self._init_actions(appl, switch, Tools.get_option(self.config, "actionsHold", []))
+        self._action_tree = self._init_actions(appl, switch, self._action_config)
+        self._action_hold_tree = self._init_actions(appl, switch, self._action_config_hold)
+        
+        self._action_config = None
+        self._action_config_hold = None
 
         # Update actions to initialize the correct initial state
         self.condition_changed(None)
@@ -188,7 +188,6 @@ class HoldAction(Action):
         for action in actions:
             action.init(appl, switch)        
             appl.add_updateable(action)            
-            #action.update_displays()
 
         return action_tree
         
@@ -306,19 +305,6 @@ class HoldAction(Action):
 ################################################################################################################################
 
 
-# Comparison modes (for the valueEnabled value when requesting a value)
-class ParameterActionModes:
-    EQUAL = const(0)            # Enable when exactly the valueEnabled value comes in
-    
-    GREATER = const(10)         # Enable when a value greater than valueEnabled comes in
-    GREATER_EQUAL = const(20)   # Enable when the valueEnabled value comes in, or anything greater
-
-    LESS = const(30)            # Enable when a value less than valueEnabled comes in
-    LESS_EQUAL = const(40)      # Enable when the valueEnabled value comes in, or anything less
-
-
-################################################################################################################################
-
 
 # Implements bipolar parameters on base of the PushButtonAction class
 class ParameterAction(PushButtonAction): #, ClientRequestListener):
@@ -330,6 +316,15 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     # Dim factor for disabled effect slots (TFT display only)
     DEFAULT_SLOT_DIM_FACTOR_ON = 1
     DEFAULT_SLOT_DIM_FACTOR_OFF = 0.2
+
+    # Comparison modes (for the valueEnabled value when requesting a value)
+    EQUAL = const(0)            # Enable when exactly the valueEnabled value comes in
+    
+    GREATER = const(10)         # Enable when a value greater than valueEnabled comes in
+    GREATER_EQUAL = const(20)   # Enable when the valueEnabled value comes in, or anything greater
+
+    LESS = const(30)            # Enable when a value less than valueEnabled comes in
+    LESS_EQUAL = const(40)      # Enable when the valueEnabled value comes in, or anything less
 
     # Generic MIDI parameter
     # Additional options:
@@ -370,22 +365,34 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     def __init__(self, config = {}):
         super().__init__(config)
 
-        self.uses_switch_leds = Tools.get_option(self.config, "useSwitchLeds", True)
+        self.uses_switch_leds = get_option(config, "useSwitchLeds", True)
 
         # Action config
-        self.color = Tools.get_option(self.config, "color", Defaults.DEFAULT_SWITCH_COLOR)
+        self._mapping = config["mapping"]                                                          # Can be an array
+        self._mapping_off = get_option(config, "mappingDisable", None)                       # Can be an array
+        self._value_on = get_option(config, "valueEnabled", 1)                               # Can be an array
+        self._value_off = get_option(config, "valueDisabled", 0)                             # Can be an array
+        self._set_value_on = get_option(config, "setValueEnabled", self._value_on)           # Can be an array
+        self._set_value_off = get_option(config, "setValueDisabled", self._value_off)        # Can be an array
         
-        self._mapping = self.config["mapping"]                                                          # Can be an array
-        self._mapping_off = Tools.get_option(self.config, "mappingDisable", None)                       # Can be an array
-        self._value_on = Tools.get_option(self.config, "valueEnabled", 1)                               # Can be an array
-        self._value_off = Tools.get_option(self.config, "valueDisabled", 0)                             # Can be an array
-        self._set_value_on = Tools.get_option(self.config, "setValueEnabled", self._value_on)           # Can be an array
-        self._set_value_off = Tools.get_option(self.config, "setValueDisabled", self._value_off)        # Can be an array
-        
-        self._comparison_mode = Tools.get_option(self.config, "comparisonMode", ParameterActionModes.GREATER_EQUAL)
+        self._comparison_mode = get_option(config, "comparisonMode", self.GREATER_EQUAL)
 
-        self._text = Tools.get_option(self.config, "text", False)
-        self._text_disabled = Tools.get_option(self.config, "textDisabled", False)
+        self._text = get_option(config, "text", False)
+        self._text_disabled = get_option(config, "textDisabled", False)
+
+        if get_option(config, "displayDimFactor") != False:
+            self._dim_factor_on = get_option(config["displayDimFactor"], "on", self.DEFAULT_SLOT_DIM_FACTOR_ON)
+            self._dim_factor_off = get_option(config["displayDimFactor"], "off", self.DEFAULT_SLOT_DIM_FACTOR_OFF)
+        else:
+            self._dim_factor_on = self.DEFAULT_SLOT_DIM_FACTOR_ON
+            self._dim_factor_off = self.DEFAULT_SLOT_DIM_FACTOR_OFF
+
+        if get_option(config, "ledBrightness") != False:
+            self._brightness_on = get_option(config["ledBrightness"], "on", self.DEFAULT_LED_BRIGHTNESS_ON)
+            self._brightness_off = get_option(config["ledBrightness"], "off", self.DEFAULT_LED_BRIGHTNESS_OFF)
+        else:
+            self._brightness_on = self.DEFAULT_LED_BRIGHTNESS_ON
+            self._brightness_off = self.DEFAULT_LED_BRIGHTNESS_OFF
 
         self._get_request_mapping()        
 
@@ -394,28 +401,6 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
     def init(self, appl, switch):
         super().init(appl, switch)
-
-        # Global config: Display dim factor (can be set in local and global config)
-        if Tools.get_option(self.config, "displayDimFactor") != False:
-            self._dim_factor_on = Tools.get_option(self.config["displayDimFactor"], "on", self.DEFAULT_SLOT_DIM_FACTOR_ON)
-            self._dim_factor_off = Tools.get_option(self.config["displayDimFactor"], "off", self.DEFAULT_SLOT_DIM_FACTOR_OFF)
-        elif Tools.get_option(self.appl.config, "displayDimFactor") != False:
-            self._dim_factor_on = Tools.get_option(self.appl.config["displayDimFactor"], "on", self.DEFAULT_SLOT_DIM_FACTOR_ON)
-            self._dim_factor_off = Tools.get_option(self.appl.config["displayDimFactor"], "off", self.DEFAULT_SLOT_DIM_FACTOR_OFF)
-        else:
-            self._dim_factor_on = self.DEFAULT_SLOT_DIM_FACTOR_ON
-            self._dim_factor_off = self.DEFAULT_SLOT_DIM_FACTOR_OFF
-
-        # Global config: LED brightness (can be set in local and global config)
-        if Tools.get_option(self.config, "ledBrightness") != False:
-            self._brightness_on = Tools.get_option(self.config["ledBrightness"], "on", self.DEFAULT_LED_BRIGHTNESS_ON)
-            self._brightness_off = Tools.get_option(self.config["ledBrightness"], "off", self.DEFAULT_LED_BRIGHTNESS_OFF)
-        elif Tools.get_option(self.appl.config, "ledBrightness") != False:
-            self._brightness_on = Tools.get_option(self.appl.config["ledBrightness"], "on", self.DEFAULT_LED_BRIGHTNESS_ON)
-            self._brightness_off = Tools.get_option(self.appl.config["ledBrightness"], "off", self.DEFAULT_LED_BRIGHTNESS_OFF)
-        else:
-            self._brightness_on = self.DEFAULT_LED_BRIGHTNESS_ON
-            self._brightness_off = self.DEFAULT_LED_BRIGHTNESS_OFF
 
         # Register all mappings
         if isinstance(self._mapping, ClientParameterMapping):
@@ -437,7 +422,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         mapping_definitions = self._get_set_mappings(enabled)
 
         for mapping_def in mapping_definitions:
-            self.appl.client.set(mapping_def["mapping"], mapping_def["value"])
+            self.appl.client.set(mapping_def[0], mapping_def[1])
             
         # Request value
         self._request_value()
@@ -570,10 +555,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
             if not m.can_set:
                 continue
 
-            ret.append({
-                "mapping": m,
-                "value": values[i]
-            })
+            ret.append((m, values[i]))
 
         return ret
 
@@ -606,7 +588,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     def reset_display(self):
         if self.label:
             self.label.text = ""
-            self.label.back_color = Defaults.DEFAULT_LABEL_COLOR
+            self.label.back_color = DEFAULT_LABEL_COLOR
 
         self.switch_color = Colors.BLACK
         self.switch_brightness = 0
@@ -624,30 +606,27 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         
         state = False
         
-        if self._comparison_mode == ParameterActionModes.EQUAL:
+        if self._comparison_mode == self.EQUAL:
             if mapping.value == self._request_mapping_value_on:
                 state = True
 
-        elif self._comparison_mode == ParameterActionModes.GREATER_EQUAL:
+        elif self._comparison_mode == self.GREATER_EQUAL:
             if mapping.value >= self._request_mapping_value_on:
                 state = True
 
-        elif self._comparison_mode == ParameterActionModes.GREATER:
+        elif self._comparison_mode == self.GREATER:
             if mapping.value > self._request_mapping_value_on:
                 state = True
 
-        elif self._comparison_mode == ParameterActionModes.LESS_EQUAL:
+        elif self._comparison_mode == self.LESS_EQUAL:
             if mapping.value <= self._request_mapping_value_on:
                 state = True
 
-        elif self._comparison_mode == ParameterActionModes.LESS:
+        elif self._comparison_mode == self.LESS:
             if mapping.value < self._request_mapping_value_on:
                 state = True        
         else:
-            raise Exception("Invalid comparison mode: " + repr(self._comparison_mode))        
-
-        if self.debug:  # pragma: no cover
-            self.print(" -> Receiving binary switch status " + repr(mapping.value) + ", counted as " + repr(state))
+            raise Exception() #"Invalid comparison mode: " + repr(self._comparison_mode))        
 
         self.feedback_state(state)
 
@@ -658,9 +637,6 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         
         if mapping != self._request_mapping:
             return
-        
-        if self.debug:  # pragma: no cover
-            self.print(" -> Terminated request for parameter value, is the device offline?")
         
         self.state = False
 
@@ -690,13 +666,13 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
         super().__init__(config)
 
         # Mapping for effect type
-        self._mapping_fxtype = self.config["mappingType"] 
+        self._mapping_fxtype = config["mappingType"] 
 
         # Slot info provider of type SlotInfoProvider
-        self._slot_info = self.config["slotInfo"]
+        self._slot_info = config["slotInfo"]
         
         # Category provider of type EffectCategoryProvider
-        self._categories = self.config["categories"]
+        self._categories = config["categories"]
         
         self._effect_category = self._categories.get_category_not_assigned()  
         self._current_category = -1
@@ -705,7 +681,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
     def init(self, appl, switch):
         super().init(appl, switch)
         
-        self._debug_slot_names = Tools.get_option(self.appl.config, "showEffectSlotNames", False)
+        self._show_slot_names = get_option(self.appl.config, "showEffectSlotNames", False)
 
         self.appl.client.register(self._mapping_fxtype, self)
 
@@ -713,11 +689,8 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
     # Does not call super.do_update because the status is requested here later anyway.
     def do_update(self):
         if not self._mapping_fxtype.can_receive:
-            raise Exception("Mapping for effect type must be able to receive (provide request and response)")       
+            raise Exception() #"Mapping for effect type must be able to receive (provide request and response)")       
         
-        if self.debug:   # pragma: no cover
-            self.print("Request type")
-
         self.appl.client.request(self._mapping_fxtype, self)
 
     # Update display and LEDs to the current state and effect category
@@ -738,7 +711,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
 
         # Effect category text
         if self.label:
-            if self._debug_slot_names:
+            if self._show_slot_names:
                 self.label.text = self._slot_info.get_name() + ": " + self._categories.get_effect_category_name(self._effect_category) 
             else:
                 self.label.text = self._categories.get_effect_category_name(self._effect_category) 
@@ -774,9 +747,6 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
         # Convert to effect category
         category = self._categories.get_effect_category(mapping.value)
 
-        if self.debug:  # pragma: no cover
-            self.print(" -> Receiving effect category " + repr(category))
-
         if category == self._effect_category:
             # Request status also when category has not changed
             super().do_update()
@@ -799,9 +769,6 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
          
         if mapping != self._mapping_fxtype:
             return
-        
-        if self.debug:  # pragma: no cover
-            self.print(" -> Terminated request for effect type, is the device offline?")
         
         self._effect_category = self._categories.get_category_not_assigned() 
         
@@ -857,7 +824,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
 ################################################################################################################################
 
 
-# Simple action that prints a fixed text on the console
+# Reset displays
 class ResetDisplaysAction(Action):    
     
     # Used to reset the screen areas which show rig info details directly after rig changes.
@@ -870,9 +837,9 @@ class ResetDisplaysAction(Action):
     def __init__(self, config = {}):
         super().__init__(config)
                 
-        self._reset_switches = Tools.get_option(config, "resetSwitches")
-        self._ignore_own_switch = Tools.get_option(config, "ignoreOwnSwitch")
-        self._reset_display_areas = Tools.get_option(config, "resetDisplayAreas")
+        self._reset_switches = get_option(config, "resetSwitches")
+        self._ignore_own_switch = get_option(config, "ignoreOwnSwitch")
+        self._reset_display_areas = get_option(config, "resetDisplayAreas")
 
     def push(self):
         if self._reset_switches:

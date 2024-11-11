@@ -1,7 +1,7 @@
 from random import randint
 
 from .ConditionTree import ConditionTree
-from ..misc import Tools, Colors
+from ..misc import Colors, get_option
 
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
@@ -22,41 +22,32 @@ class FootSwitchController: #ConditionListener
     #         }),
     #         ...
     #     ],
-    #
-    #     "initialColors": [    Initial colors to set. Optional, if not set, the default initial color set is generated.
-    #         Colors.RED,
-    #         Colors.YELLOW,
-    #         Colors.ORANGE
-    #     ],
-    #     "initialBrightness":  Initial brightness. If not set, 1 is used. [0..1]
     # }
     def __init__(self, appl, config):
-        self.config = config        
-        self.pixels = Tools.get_option(self.config["assignment"], "pixels", [])
+        self.pixels = get_option(config["assignment"], "pixels", [])
         
-        self._switch = self.config["assignment"]["model"]
+        self._switch = config["assignment"]["model"]
         self._switch.init()
 
-        self.id = Tools.get_option(self.config["assignment"], "name", repr(self._switch))
+        self.id = get_option(config["assignment"], "name", repr(self._switch))
 
         self._appl = appl
         self._pushed_state = False
-        self._debug = Tools.get_option(self._appl.config, "debugSwitches")
 
         self._colors = [(0, 0, 0) for i in range(len(self.pixels))]
         self._brightnesses = [0 for i in range(len(self.pixels))]        
 
-        self._initial_switch_colors()
+        self.color = Colors.WHITE
+        self.brightness = 0.5
+        #self._initial_switch_colors()
 
+        self._action_definitions = get_option(config, "actions", [])
         self._init_actions()
         
     # Set up action instances
     def _init_actions(self):
-        if self._debug:
-            self._print("Init actions")
-        
         self._action_tree = ConditionTree(
-            subject = Tools.get_option(self.config, "actions", []),
+            subject = self._action_definitions,
             listener = self
         )
 
@@ -90,28 +81,17 @@ class FootSwitchController: #ConditionListener
             action.enabled = True
 
     # Set some initial colors on the neopixels
-    def _initial_switch_colors(self):
-        if not self.pixels:
-            # No LEDs defined for the switch
-            return
+    #def _initial_switch_colors(self):
+    #    if not self.pixels:
+    #        # No LEDs defined for the switch
+    #        return
         
-        if self._debug:
-            self._print("Set initial colors")
+    #    # Default color scheme: Random from a list of colors
+    #    available_colors = (Colors.GREEN, Colors.YELLOW, Colors.RED)  # Colors to be used (in that order)
+    #    index = randint(0, len(available_colors)-1)                   # Random start index  
 
-        initial_brightness = Tools.get_option(self.config, "initialBrightness", 1)
-
-        if Tools.get_option(self.config, "initialColors") != False:
-            # Colors from config file, if set
-            self.colors = self.config["initialColors"]
-            self.brightness = initial_brightness
-            return
-
-        # Default color scheme: Random from a list of colors
-        available_colors = (Colors.GREEN, Colors.YELLOW, Colors.RED)  # Colors to be used (in that order)
-        index = randint(0, len(available_colors)-1)                   # Random start index  
-
-        self.colors = [available_colors[(index + i) % len(available_colors)] for i in range(len(self.pixels))]
-        self.brightness = initial_brightness
+    #    self.colors = [available_colors[(index + i) % len(available_colors)] for i in range(len(self.pixels))]
+    #    self.brightness = 1
         
     # Process the switch: Check if it is currently pushed, set state accordingly
     def process(self):
@@ -119,7 +99,13 @@ class FootSwitchController: #ConditionListener
         if not self.pushed:
             if self._pushed_state:
                 self._pushed_state = False
-                self._process_actions_release()
+
+                # Process all release actions assigned to the switch 
+                for action in self.actions:
+                    if not action.enabled:
+                        continue
+
+                    action.release()
 
             return
 
@@ -129,35 +115,19 @@ class FootSwitchController: #ConditionListener
         
         # Mark as pushed (prevents redundant messages in the following ticks, when the switch can still be down)
         self._pushed_state = True
-        self._process_actions_push()
+
+        # Process all push actions assigned to the switch     
+        for action in self.actions:
+            if not action.enabled:
+                continue
+
+            action.push()
         
     # Return if the (hardware) switch is currently pushed
     @property
     def pushed(self):
         return self._switch.pushed
-                
-    # Processes all push actions assigned to the switch 
-    def _process_actions_push(self):
-        for action in self.actions:
-            if not action.enabled:
-                continue
-
-            if self._debug:
-                self._print("Push action " + action.id)
-
-            action.push()
-
-    # Processes all release actions assigned to the switch 
-    def _process_actions_release(self):
-        for action in self.actions:
-            if not action.enabled:
-                continue
-
-            if self._debug:
-                self._print("Release action " + action.id)
-                
-            action.release()
-
+                    
     # Colors of the switch (array)
     @property
     def colors(self):
@@ -168,14 +138,11 @@ class FootSwitchController: #ConditionListener
     @colors.setter
     def colors(self, colors):
         if len(colors) != len(self.pixels):
-            raise Exception("Invalid amount of colors: " + repr(len(colors)))
+            raise Exception(repr(len(colors))) #"Invalid amount of colors: " + repr(len(colors)))
         
         if not isinstance(colors, list):
-            raise Exception("Invalid type for colors, must be a list: " + repr(colors))
+            raise Exception(repr(colors)) #"Invalid type for colors, must be a list: " + repr(colors))
         
-        if self._debug:
-            self._print(" -> Set colors to " + repr(colors))
-
         self._colors = colors        
 
     # Color (this just uses the first one)
@@ -190,9 +157,6 @@ class FootSwitchController: #ConditionListener
     # set_brightness is called!
     @color.setter
     def color(self, color):
-        if self._debug:
-            self._print(" -> Set color to " + repr(color))
-
         for i in range(len(self.pixels)):
             self._colors[i] = color
 
@@ -224,15 +188,9 @@ class FootSwitchController: #ConditionListener
         if not self.pixels:
             return
         
-        if not isinstance(brightnesses, list):
-            raise Exception("Invalid type for brightnesses, must be a list: " + repr(brightnesses))
-        
         if len(brightnesses) != len(self.pixels):
-            raise Exception("Invalid amount of colors: " + repr(len(brightnesses)))
+            raise Exception() #"Invalid amount of colors: " + repr(len(brightnesses)))
         
-        if self._debug:
-            self._print(" -> Set brightnesses to " + repr(brightnesses))
-
         for i in range(len(self.pixels)):
             pixel = self.pixels[i]
             self._appl.led_driver.leds[pixel] = (
@@ -242,11 +200,6 @@ class FootSwitchController: #ConditionListener
             )
 
         self._brightnesses = brightnesses
-
-    # Debug console output
-    def _print(self, msg):
-        state_str = "pushed" if self.pushed else "off"            
-        Tools.print("Switch " + self.id + " (" + state_str + "): " + msg)
 
 
 ################################################################################################

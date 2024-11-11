@@ -1,5 +1,5 @@
 import math
-from ...misc import Tools, Updateable, Defaults
+from ...misc import get_option, Updateable, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR #, do_print
 
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
@@ -20,15 +20,26 @@ class Action(Updateable):
     #      "id":                   Optional ID for debugging. If not set, an automatic ID is generated.
     # }
     def __init__(self, config = {}):
-        self.config = config
-                
         self.uses_switch_leds = False             # Must be set True explicitly by child classes in __init__() if they use the switch LEDs
-        self._enabled = Tools.get_option(self.config, "enabled", True)
         self._initialized = False
-        self.id = None
 
-    def __repr__(self):
-        return self.__class__.__name__ + " " + repr(self.id)
+        self._display_id = None
+        self._display_index = None
+        self._display_layout = None
+
+        self.id = get_option(config, "id", None)
+        self.color = get_option(config, "color", DEFAULT_SWITCH_COLOR)
+        self._enabled = get_option(config, "enabled", True)
+        self._label_color = get_option(config, "color", None)
+
+        display = get_option(config, "display", None)
+        if display:
+            self._display_id = get_option(display, "id", None)
+            self._display_index = get_option(display, "index", None)
+            self._display_layout = get_option(display, "layout", None)
+
+    #def __repr__(self):
+    #    return self.__class__.__name__ + " " + repr(self.id)
 
     # Must be called before usage
     def init(self, appl, switch):
@@ -37,16 +48,12 @@ class Action(Updateable):
 
         self._init_id()
 
-        self.debug = Tools.get_option(self.appl.config, "debugActions")
-        self._debug_switch_port_name = Tools.get_option(self.appl.config, "actionsDebugSwitchName", None)
-
         self.label = self._get_display_label()   # DisplayLabel instance the action is connected to (or None).
 
         self._initialized = True
 
     # Sets up the debugging ID (either from config or a generated one)
     def _init_id(self):
-        self.id = Tools.get_option(self.config, "id", None)
         if not self.id:
             self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action._next_id) + ")"
             
@@ -63,18 +70,14 @@ class Action(Updateable):
         
         self._enabled = value
 
-        if self.debug:   # pragma: no cover
-            self.print("Set enabled to " + repr(value))
-
         self.force_update()
-
         self.update_displays()
 
     # Color of the switch segment(s) for the action (Difficult to do with multicolor, 
     # but this property is just needed to have a setter so this is not callable)
     @property
     def switch_color(self):  # pragma: no cover
-        raise Exception("Getter not implemented (yet)")
+        raise Exception() #"Getter not implemented (yet)")
 
     # color can also be a tuple!
     @switch_color.setter
@@ -158,67 +161,45 @@ class Action(Updateable):
 
     # Get the assigned label reference from the UI (or None)
     def _get_display_label(self):
-        definition = Tools.get_option(self.config, "display", None)
-        if not definition:
+        if not self._display_id:
             return None
         
-        label = self.appl.ui.search(definition)
+        label = self.appl.ui.search(self._display_id, self._display_index)
         if label:
             return label
         
         # Not yet existent: Get container
-        container = self.appl.ui.search({
-            "id": definition["id"]
-        })        
+        container = self.appl.ui.search(self._display_id)        
 
         if not container:
-            raise Exception("Action: Display element with ID " + repr(definition["id"]) + " not found")
+            raise Exception("Display " + repr(self._display_id) + " not found")
         
-        index = Tools.get_option(definition, "index", None)
-        if index == None:
+        if self._display_index == None:
             return container
 
-        layout = definition["layout"]
+        layout = self._display_layout
         
         # Set the color as the number of items cannot be changed later!
-        layout["backColor"] = Tools.get_option(
-            self.config, 
-            "color", 
-            Tools.get_option(
-                layout, 
-                "backColor",
-                Defaults.DEFAULT_LABEL_COLOR
-            )
-        )
+        layout["backColor"] = self._label_color if self._label_color else ( layout["backColor"] if "backColor" in layout else DEFAULT_LABEL_COLOR )
 
         label = self.appl.ui.create_label(
             layout = layout,
-            name = "Action " + self.id
+            name = self.id
         )
 
-        container.set(label, index)
+        container.set(label, self._display_index)
         return label
 
     # Returns the switch LED segments to use
     def _get_led_segments(self):
-        if not self._initialized:
-            raise Exception("Action not initialized")
+        #if not self._initialized:
+        #    raise Exception() #"Action not initialized")
         
-        if not self.switch.pixels:
+        if not self.switch.pixels or not self.uses_switch_leds or not self.enabled:
             return []
         
-        if not self.uses_switch_leds:
-            #raise Exception("You have to set uses_switch_leds to True to use LEDs of switches in actions.")
-            return []
-
-        if not self.enabled:
-            return []
-
         actions_using_leds = self._get_actions_using_leds()
 
-        if len(actions_using_leds) == 0:  # pragma: no cover    (cannot happen)
-            return []
-                
         ret = []
 
         index = self._get_index_among_led_actions(actions_using_leds)
@@ -233,21 +214,11 @@ class Action(Updateable):
 
             if index == 0:
                 ret = [i for i in range(0, pixels_for_first)]
-
-                if len(ret) != pixels_for_first:  # pragma: no cover
-                    raise Exception("Internal error: Must return " + str(pixels_for_first) + " segments")
             else:
                 ret = [pixels_for_first + index - 1]
 
-                if ret[0] >= num_pixels:  # pragma: no cover
-                    raise Exception("Internal error: Segment out of range")
-
         elif index < num_pixels:
             ret = [index]
-        
-        # Check results
-        if len(ret) > num_pixels:  # pragma: no cover
-            raise Exception("Invalid segments: " + repr(ret))
 
         return ret
 
@@ -257,11 +228,11 @@ class Action(Updateable):
             if actions_using_leds[i] == self:
                 return i
         
-        raise Exception("Action " + repr(self.id) + " not found in LED-using actions of switch " + repr(self.switch.id))
+        raise Exception() #"Action " + repr(self.id) + " not found in LED-using actions of switch " + repr(self.switch.id))
 
     # Returns a list of the actions of the switch which are both enabled and use LEDs.
     def _get_actions_using_leds(self):
-        ret = [] #[a for a in self.switch.actions if a.uses_switch_leds and a.enabled]
+        ret = [] 
 
         for a in self.switch.actions:
             sub = a.get_all_actions()
@@ -274,11 +245,8 @@ class Action(Updateable):
         return [self]
 
     # Print to the debug console
-    def print(self, msg):    # pragma: no cover
-        if self._debug_switch_port_name != None and self._debug_switch_port_name != self.switch.id:
-            return
-        
-        enabled_text = "enabled" if self.enabled else "disabled"
+    #def print(self, msg):    # pragma: no cover
+    #    enabled_text = "on" if self.enabled else "off"
 
-        Tools.print("Switch/Action " + self.id + " (" + enabled_text + "): " + msg)
+    #    do_print(self.id + " (" + enabled_text + "): " + msg)
 

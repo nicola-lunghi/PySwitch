@@ -6,10 +6,11 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
     "usb_midi": MockUsbMidi(),
-    #"adafruit_midi": MockAdafruitMIDI(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
@@ -20,9 +21,9 @@ with patch.dict(sys.modules, {
     from.mocks_ui import *
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.actions.actions import EffectEnableAction, PushButtonModes
+    from lib.pyswitch.controller.actions.actions import EffectEnableAction
     from lib.pyswitch.controller.Client import ClientParameterMapping
-    from lib.pyswitch.misc import Tools
+    from lib.pyswitch.misc import compare_midi_messages
 
 
 
@@ -60,7 +61,7 @@ class TestActionEffectEnable(unittest.TestCase):
         cp = MockCategoryProvider()
 
         action_1 = EffectEnableAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": mapping_1,
             "mappingType": mapping_type_1,
             "categories": cp,
@@ -137,7 +138,7 @@ class TestActionEffectEnable(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 1)
 
             self.assertEqual(vp.parse_calls[0]["mapping"], mapping_type_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 0)
             self.assertEqual(action_1._effect_category, 0)
             self.assertEqual(action_1.state, False)
@@ -169,7 +170,7 @@ class TestActionEffectEnable(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 2)
 
             self.assertEqual(vp.parse_calls[1]["mapping"], mapping_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
             self.assertEqual(mapping_1.value, 1)
 
             self.assertEqual(action_1.state, True)
@@ -198,7 +199,7 @@ class TestActionEffectEnable(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 3)
 
             self.assertEqual(vp.parse_calls[2]["mapping"], mapping_type_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[2]["message"], answer_msg_type))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[2]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 1)
             self.assertEqual(action_1._effect_category, 10)
             self.assertEqual(action_1.state, True)
@@ -282,7 +283,7 @@ class TestActionEffectEnable(unittest.TestCase):
                         },
                         "actions": [
                             EffectEnableAction({
-                                "mode": PushButtonModes.MOMENTARY,
+                                "mode": PushButtonAction.MOMENTARY,
                                 "mapping": ClientParameterMapping(),
                                 "mappingType": ClientParameterMapping(),
                                 "categories": MockCategoryProvider(),
@@ -331,7 +332,7 @@ class TestActionEffectEnable(unittest.TestCase):
         cp = MockCategoryProvider()
 
         action_1 = EffectEnableAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": mapping_1,
             "mappingType": mapping_type_1,
             "categories": cp,
@@ -409,7 +410,7 @@ class TestActionEffectEnable(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 1)
 
             self.assertEqual(vp.parse_calls[0]["mapping"], mapping_type_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 0)
             self.assertEqual(action_1._effect_category, 0)
 
@@ -440,7 +441,7 @@ class TestActionEffectEnable(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 2)
 
             self.assertEqual(vp.parse_calls[1]["mapping"], mapping_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
             self.assertEqual(mapping_1.value, 1)
 
             self.assertEqual(appl.switches[0].color, (0, 0, 0))
@@ -467,7 +468,7 @@ class TestActionEffectEnable(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 3)
 
             self.assertEqual(vp.parse_calls[2]["mapping"], mapping_type_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[2]["message"], answer_msg_type))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[2]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 1)
             self.assertEqual(action_1._effect_category, 10)
 
@@ -610,7 +611,7 @@ class TestActionEffectEnable(unittest.TestCase):
         slotinfo.output = "foo"
 
         action_1 = EffectEnableAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": mapping_1,
             "mappingType": mapping_type_1,
             "categories": cp,
@@ -785,7 +786,7 @@ class TestActionEffectEnable(unittest.TestCase):
         cp = MockCategoryProvider()
 
         action_1 = EffectEnableAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": mapping_1,
             "mappingType": mapping_type_1,
             "categories": cp,
@@ -911,7 +912,7 @@ class TestActionEffectEnable(unittest.TestCase):
         cp = MockCategoryProvider()
 
         action_1 = EffectEnableAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": mapping_1,
             "mappingType": mapping_type_1,
             "categories": cp,
@@ -1026,7 +1027,7 @@ class TestActionEffectEnable(unittest.TestCase):
         cp = MockCategoryProvider()
 
         action_1 = EffectEnableAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": mapping_1,
             "mappingType": mapping_type_1,
             "categories": cp,
@@ -1102,7 +1103,7 @@ class TestActionEffectEnable(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 1)
 
             self.assertEqual(vp.parse_calls[0]["mapping"], mapping_type_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 0)
             self.assertEqual(action_1._effect_category, 0)
 
@@ -1133,7 +1134,7 @@ class TestActionEffectEnable(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 2)
 
             self.assertEqual(vp.parse_calls[1]["mapping"], mapping_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
             self.assertEqual(mapping_1.value, 1)
 
             self.assertEqual(action_1.state, True)
@@ -1162,7 +1163,7 @@ class TestActionEffectEnable(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 3)
 
             self.assertEqual(vp.parse_calls[2]["mapping"], mapping_type_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[2]["message"], answer_msg_type))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[2]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 1)
             self.assertEqual(action_1._effect_category, 10)
             self.assertEqual(action_1.state, True)

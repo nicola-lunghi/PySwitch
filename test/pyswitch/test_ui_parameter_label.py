@@ -6,8 +6,10 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "usb_midi": MockUsbMidi(),
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
@@ -22,7 +24,7 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.ui.ui import DisplayBounds
     from lib.pyswitch.ui.UiController import UiController
-    from lib.pyswitch.misc import Tools
+    from lib.pyswitch.misc import compare_midi_messages
 
     from .mocks_appl import *
     from .mocks_ui import *
@@ -80,7 +82,7 @@ class TestParameterLabel(unittest.TestCase):
             
         def eval1():
             self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_1.request))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.request))
 
             return True
 
@@ -196,7 +198,7 @@ class TestParameterLabel(unittest.TestCase):
             
         def eval1():
             self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_2.request))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_2.request))
 
             return True
 
@@ -217,7 +219,7 @@ class TestParameterLabel(unittest.TestCase):
 
         def eval2():
             self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[1], mapping_1.request))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.request))
 
             self.assertEqual(display.text, "")            
 
@@ -316,7 +318,7 @@ class TestParameterLabel(unittest.TestCase):
             
         def eval1():
             self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_1.request))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.request))
 
             return True
 

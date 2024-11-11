@@ -14,8 +14,8 @@ with patch.dict(sys.modules, {
     "gc": MockGC(),
     "time": MockTime
 }):
-    from lib.pyswitch.controller.measurements import RuntimeMeasurement, FreeMemoryMeasurement
-    from lib.pyswitch.misc import Tools
+    from lib.pyswitch.controller.measurements import RuntimeMeasurement #, FreeMemoryMeasurement
+    from lib.pyswitch.misc import format_size
 
 
 class MockRuntimeMeasurementListener:
@@ -136,25 +136,25 @@ class TestMeasurementRuntime(unittest.TestCase):
 #################################################################################
 
 
-class TestMeasurementFreeMemory(unittest.TestCase):    
+#class TestMeasurementFreeMemory(unittest.TestCase):    
 
-    def test_measurement(self):
-        MockGC.mock = {
-            "collectCalls": 0,
-            "memFreeReturn": 1000
-        }
+#    def test_measurement(self):
+#        MockGC.mock = {
+#            "collectCalls": 0,
+#            "memFreeReturn": 1000
+#        }
 
-        m = FreeMemoryMeasurement()
+#        m = FreeMemoryMeasurement()
         
-        self.assertEqual(m.value(), 1000)
-        self.assertEqual(MockGC.mock["collectCalls"], 1)
-        self.assertIn(Tools.format_size(1000), m.get_message())
-        self.assertEqual(MockGC.mock["collectCalls"], 2)
+#        self.assertEqual(m.value(), 1000)
+#        self.assertEqual(MockGC.mock["collectCalls"], 1)
+#        self.assertIn(format_size(1000), m.get_message())
+#        self.assertEqual(MockGC.mock["collectCalls"], 2)
 
-        MockGC.mock["memFreeReturn"] = 222
-        self.assertEqual(m.value(), 222)
-        self.assertEqual(MockGC.mock["collectCalls"], 3)
-        self.assertIn(Tools.format_size(222), m.get_message())
+#        MockGC.mock["memFreeReturn"] = 222
+#        self.assertEqual(m.value(), 222)
+#        self.assertEqual(MockGC.mock["collectCalls"], 3)
+#        self.assertIn(format_size(222), m.get_message())
 
 
         

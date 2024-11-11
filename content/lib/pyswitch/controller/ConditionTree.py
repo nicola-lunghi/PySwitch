@@ -1,4 +1,4 @@
-from ..misc import Tools, Updateable, Updater, EventEmitter
+from ..misc import Updateable, Updater, EventEmitter, get_option
 
 # Base condition to be filled with custom objects or lists (which can be or contain Conditions themselves).
 # Compares the value of the mapping to the passed one, and notifies listeners when the value has changed.
@@ -58,9 +58,6 @@ class ConditionTree:
     # replacer      Optional instance of ConditionTreeEntryReplacer, used to replace the input entries.
     #
     def __init__(self, subject, listener = None, replacer = None, allow_lists = True):
-        #if not isinstance(listener, ConditionListener):
-        #    raise Exception("Invalid condition listener")
-
         self._entries = []                # Flat list of all data objects (no conditions)
         self._conditions = []             # List of conditions found
         self._allow_lists = allow_lists   # Allow lists of entries
@@ -79,7 +76,7 @@ class ConditionTree:
         
         elif isinstance(subject, list):
             if not self._allow_lists:
-                raise Exception("No lists allowed for conditional parameter")
+                raise Exception() #"No lists allowed for conditional parameter")
             
             ret = []
             for entry in subject:
@@ -130,7 +127,7 @@ class ConditionTree:
     # Updater must be an Updater instance to which the conditions are added.
     def init(self, appl):
         if not isinstance(appl, Updater):
-            raise Exception("Invalid appl for ConditionTree, must be an Updater")
+            raise Exception() #"Invalid appl for ConditionTree, must be an Updater")
 
         # Initialize conditions and add them to the updateable list
         for c in self._conditions:
@@ -152,7 +149,7 @@ class ConditionTree:
     @property   
     def value(self):
         if self._allow_lists:
-            raise Exception("This tree is built with lists and only returns lists of entries, use .values instead")
+            raise Exception() #"This tree is built with lists and only returns lists of entries, use .values instead")
         
         v = self._tree_value(self._tree)
         return v[0]
@@ -162,7 +159,7 @@ class ConditionTree:
     @property   
     def values(self):
         if not self._allow_lists:
-            raise Exception("This tree is built without list support and only returns a single entry, use .value instead")
+            raise Exception() #"This tree is built without list support and only returns a single entry, use .value instead")
         
         return self._tree_value(self._tree)
 
@@ -222,8 +219,11 @@ class ConditionTree:
 ########################################################################################################################################
 
 
-# Comparison modes for ParameterCondition
-class ParameterConditionModes:    
+# Condition to be filled with action specifications.
+# Compares the value of the mapping to the passed one, and enables the action or action_not.
+class ParameterCondition(Condition): #, ClientRequestListener):
+
+    # Comparison modes for ParameterCondition
     # Numeric
     EQUAL = 0                   # Reference can be anything
     NOT_EQUAL = 1               # Reference can be anything
@@ -244,13 +244,7 @@ class ParameterConditionModes:
     STRING_ENDS_WITH = 520      # Reference value must be a string
 
 
-########################################################################################################################################
-
-
-# Condition to be filled with action specifications.
-# Compares the value of the mapping to the passed one, and enables the action or action_not.
-class ParameterCondition(Condition): #, ClientRequestListener):
-    def __init__(self, mapping, ref_value, mode = ParameterConditionModes.GREATER_EQUAL, yes = None, no = None):
+    def __init__(self, mapping, ref_value, mode = 11, yes = None, no = None):
         super().__init__(yes = yes, no = no)
 
         self._mapping = mapping
@@ -263,60 +257,54 @@ class ParameterCondition(Condition): #, ClientRequestListener):
     def init(self, appl):
         super().init(appl)
 
-        self._debug = Tools.get_option(self.appl.config, "debugConditions")
+        self._debug = get_option(self.appl.config, "debugConditions")
 
         self.appl.client.register(self._mapping, self)
 
     # Used internally: Updates the condition on every update tick
     def update(self):
-        if not self.appl:
-            raise Exception("Condition not initialized")
-
-        if self._debug:   # pragma: no cover
-            self._print("Requesting value")
-
         self.appl.client.request(self._mapping, self)
 
     # Evaluate a received value and return True or False (heart of the condition)
     def _evaluate_value(self, value):
-        if self._mode == ParameterConditionModes.GREATER:
+        if self._mode == self.GREATER:
             return value > self._ref_value            
             
-        elif self._mode == ParameterConditionModes.GREATER_EQUAL:
+        elif self._mode == self.GREATER_EQUAL:
             return value >= self._ref_value            
             
-        elif self._mode == ParameterConditionModes.LESS:
+        elif self._mode == self.LESS:
             return value < self._ref_value            
             
-        elif self._mode == ParameterConditionModes.LESS_EQUAL:
+        elif self._mode == self.LESS_EQUAL:
             return value <= self._ref_value            
             
-        elif self._mode == ParameterConditionModes.EQUAL:
+        elif self._mode == self.EQUAL:
             return value == self._ref_value            
             
-        elif self._mode == ParameterConditionModes.NOT_EQUAL:
+        elif self._mode == self.NOT_EQUAL:
             return value != self._ref_value            
             
-        elif self._mode == ParameterConditionModes.IN_RANGE:
+        elif self._mode == self.IN_RANGE:
             return value >= self._ref_value[0] and value <= self._ref_value[1]
             
-        elif self._mode == ParameterConditionModes.NOT_IN_RANGE:
+        elif self._mode == self.NOT_IN_RANGE:
             return value < self._ref_value[0] or value > self._ref_value[1]
 
-        elif self._mode == ParameterConditionModes.STRING_CONTAINS:
+        elif self._mode == self.STRING_CONTAINS:
             return self._ref_value in value
         
-        elif self._mode == ParameterConditionModes.STRING_NOT_CONTAINS:
+        elif self._mode == self.STRING_NOT_CONTAINS:
             return self._ref_value not in value
         
-        elif self._mode == ParameterConditionModes.STRING_STARTS_WITH:
+        elif self._mode == self.STRING_STARTS_WITH:
             return value.startswith(self._ref_value)
         
-        elif self._mode == ParameterConditionModes.STRING_ENDS_WITH:
+        elif self._mode == self.STRING_ENDS_WITH:
             return value.endswith(self._ref_value)
         
         else:
-            raise Exception("Invalid condition mode: " + repr(self._mode))
+            raise Exception(repr(self._mode)) #"Invalid condition mode: " + repr(self._mode))
 
     # Called by the Client class when a parameter request has been answered.
     # The value received is already set on the mapping.
@@ -336,9 +324,6 @@ class ParameterCondition(Condition): #, ClientRequestListener):
 
         self.true = bool_value
 
-        if self._debug:   # pragma: no cover
-            self._print(" -> Received value " + repr(mapping.value) + ", evaluated to " + repr(self.true))
-
         for listener in self.listeners:
             listener.condition_changed(self)        
 
@@ -348,13 +333,6 @@ class ParameterCondition(Condition): #, ClientRequestListener):
             return
         
         self.true = True
-
-    # Debug console output
-    def _print(self, msg):   # pragma: no cover
-        if not self._debug:
-            return
-        
-        Tools.print("Condition for " + self._mapping.name + ": " + msg)
         
 
 ######################################################################################################
@@ -363,17 +341,13 @@ class ParameterCondition(Condition): #, ClientRequestListener):
 # Condition to be filled with action specifications.
 # Listens to another action (which must be a PushButtonAction).
 class PushButtonCondition(Condition):
-    def __init__(self, id, enabled = None, disabled = None):
+    def __init__(self, action, enabled = None, disabled = None):
         super().__init__(yes = enabled, no = disabled)
         
-        self._id = id
-        self._action = None
+        self._action = action
 
     # Used internally: Updates the condition on every update tick
     def update(self):
-        if not self._action:
-            self._action = self._determine_action(self._id)
-
         bool_value = self._action.state
 
         if self.true == bool_value:
@@ -383,16 +357,3 @@ class PushButtonCondition(Condition):
 
         for listener in self.listeners:
             listener.condition_changed(self)   
-
-    # Determine the action by ID
-    def _determine_action(self, id):
-        if not self.appl:
-            raise Exception("Condition not initialized")
-        
-        for switch in self.appl.switches:
-            for action in switch.actions:
-                if action.id == id:
-                    return action
-                
-        raise Exception("Action with ID " + repr(id) + " not defined")
-

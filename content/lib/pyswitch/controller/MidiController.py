@@ -1,6 +1,7 @@
-from ..misc import Tools
+#from ..misc import stringify_midi_message, do_print
 
 from adafruit_midi.midi_message import MIDIUnknownEvent
+
 
 # Describes a routing from source to target, which must be MidiDevices definitions.
 class MidiRouting:
@@ -25,19 +26,10 @@ class MidiController:
     # Used as source/target for routings to/from the application itself
     APPLICATION = 1
 
-    # config:
-    # {
-    #      "routings": [                # List of routings to be performed.
-    #          MidiRouting(...),
-    #          ...
-    #      ]
-    # }
-    def __init__(self, config = {}, debug = False):
-        self._config = config
-        self._debug = debug
+    # routings must be a list of MidiRouting instances
+    def __init__(self, routings, debug = False):
+        #self._debug = debug
         
-        routings = Tools.get_option(self._config, "routings", [])
-
         self._routings_from_appl = [x for x in routings if x.source == MidiController.APPLICATION]
         self._routings_to_appl = [x for x in routings if x.target == MidiController.APPLICATION]
         self._routings_external = [x for x in routings if x.source != MidiController.APPLICATION and x.target != MidiController.APPLICATION]
@@ -45,8 +37,8 @@ class MidiController:
     def send(self, midi_message):
         # Send to all routings which have APPLICATION as source
         for r in self._routings_from_appl:        
-            if self._debug:   # pragma: no cover
-                self._print("Send " + Tools.stringify_midi_message(midi_message) + " to " + repr(r.target))
+            #if self._debug:   # pragma: no cover
+            #    self._print("Send " + stringify_midi_message(midi_message) + " to " + repr(r.target))
 
             r.target.send(midi_message)
 
@@ -60,8 +52,8 @@ class MidiController:
 
             if msg:
                 # Return first message for APPLICATION in the queue (next ticks will deliver the next messages)
-                if self._debug:   # pragma: no cover
-                    self._print("Received " + Tools.stringify_midi_message(msg) + " from " + repr(r.source))
+                #if self._debug:   # pragma: no cover
+                #    self._print("Received " + stringify_midi_message(msg) + " from " + repr(r.source))
 
                 return msg                
     
@@ -95,14 +87,14 @@ class MidiController:
                 if isinstance(msg, MIDIUnknownEvent):
                     continue
                 
-                if self._debug:   # pragma: no cover
-                    self._print("Forwarding " + Tools.stringify_midi_message(msg) + " from " + repr(r.source) + " to " + repr(r.target))
+                #if self._debug:   # pragma: no cover
+                #    self._print("Forwarding " + stringify_midi_message(msg) + " from " + repr(r.source) + " to " + repr(r.target))
 
                 r.target.send(msg)
 
                 break
 
-    def _print(self, msg):  # pragma: no cover
-        Tools.print("MIDI " + msg)
+    #def _print(self, msg):  # pragma: no cover
+    #    do_print("MIDI " + msg)
         
         

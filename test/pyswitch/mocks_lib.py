@@ -1,6 +1,10 @@
 import time as orig_time
 
 
+class MockMicropython:
+    def const(a):
+        return a
+
 class MockTime:
     mock = {
         "monotonicReturn": 0,

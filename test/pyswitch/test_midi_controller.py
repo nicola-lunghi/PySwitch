@@ -6,6 +6,7 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "usb_midi": MockUsbMidi(),
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
@@ -29,18 +30,16 @@ class TestMidiController(unittest.TestCase):
 
         # Must not throw
         midi = MidiController(
-            config = {
-                "routings": [
-                    MidiRouting(
-                        source = MidiController.APPLICATION,
-                        target = sub_midi_2
-                    ),                    
-                    MidiRouting(
-                        source = sub_midi_1,
-                        target = MidiController.APPLICATION
-                    )
-                ]
-            }
+            routings = [
+                MidiRouting(
+                    source = MidiController.APPLICATION,
+                    target = sub_midi_2
+                ),                    
+                MidiRouting(
+                    source = sub_midi_1,
+                    target = MidiController.APPLICATION
+                )
+            ]
         )
 
         # Receive
@@ -82,18 +81,16 @@ class TestMidiController(unittest.TestCase):
 
         # Must not throw
         midi = MidiController(
-            config = {
-                "routings": [
-                    MidiRouting(
-                        source = MidiController.APPLICATION,
-                        target = sub_midi_1
-                    ),                    
-                    MidiRouting(
-                        source = MidiController.APPLICATION,
-                        target = sub_midi_2
-                    )
-                ]
-            }
+            routings = [
+                MidiRouting(
+                    source = MidiController.APPLICATION,
+                    target = sub_midi_1
+                ),                    
+                MidiRouting(
+                    source = MidiController.APPLICATION,
+                    target = sub_midi_2
+                )
+            ]
         )
 
         # Receive
@@ -122,18 +119,16 @@ class TestMidiController(unittest.TestCase):
 
         # Must not throw
         midi = MidiController(
-            config = {
-                "routings": [
-                    MidiRouting(
-                        source = sub_midi_1,
-                        target = MidiController.APPLICATION
-                    ),                    
-                    MidiRouting(
-                        source = sub_midi_2,
-                        target = MidiController.APPLICATION
-                    )
-                ]
-            }
+            routings = [
+                MidiRouting(
+                    source = sub_midi_1,
+                    target = MidiController.APPLICATION
+                ),                    
+                MidiRouting(
+                    source = sub_midi_2,
+                    target = MidiController.APPLICATION
+                )
+            ]
         )
 
         # Receive
@@ -181,18 +176,16 @@ class TestMidiController(unittest.TestCase):
 
         # Must not throw
         midi = MidiController(
-            config = {
-                "routings": [
-                    MidiRouting(
-                        source = sub_midi_1,
-                        target = sub_midi_2
-                    ),
-                    MidiRouting(
-                        source = sub_midi_1,
-                        target = sub_midi_3
-                    )
-                ]
-            }
+            routings = [
+                MidiRouting(
+                    source = sub_midi_1,
+                    target = sub_midi_2
+                ),
+                MidiRouting(
+                    source = sub_midi_1,
+                    target = sub_midi_3
+                )
+            ]
         )
 
         midi_message_1 = SystemExclusive(
@@ -239,18 +232,16 @@ class TestMidiController(unittest.TestCase):
 
         # Must not throw
         midi = MidiController(
-            config = {
-                "routings": [
-                    MidiRouting(
-                        source = sub_midi_1,
-                        target = sub_midi_3
-                    ),
-                    MidiRouting(
-                        source = sub_midi_2,
-                        target = sub_midi_3
-                    )
-                ]
-            }
+            routings = [
+                MidiRouting(
+                    source = sub_midi_1,
+                    target = sub_midi_3
+                ),
+                MidiRouting(
+                    source = sub_midi_2,
+                    target = sub_midi_3
+                )
+            ]
         )
 
         midi_message_1 = SystemExclusive(
@@ -299,5 +290,5 @@ class TestMidiController(unittest.TestCase):
         
     def test_no_args(self):
         # Must not throw
-        MidiController()
+        MidiController([])
 

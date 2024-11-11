@@ -1,11 +1,11 @@
 from lib.pyswitch.misc import Updateable
-from lib.pyswitch.controller.measurements import StatisticsMeasurement
+#from lib.pyswitch.controller.measurements import StatisticsMeasurement
 
 class MockMeasurements:
     
-    StatisticsMeasurement = StatisticsMeasurement
+    #StatisticsMeasurement = StatisticsMeasurement
 
-    class RuntimeMeasurement(StatisticsMeasurement, Updateable):
+    class RuntimeMeasurement(Updateable):
         # type is arbitrary and only used externally
         def __init__(self, type = 0, interval_millis = 0):
             self.type = type
@@ -15,8 +15,6 @@ class MockMeasurements:
             self.num_start_calls = 0
             self.num_reset_calls = 0
             self.num_finish_calls = 0
-
-            StatisticsMeasurement.__init__(self)
 
             self.output_average = 0
             self.output_value = 0

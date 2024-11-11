@@ -6,8 +6,10 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "usb_midi": MockUsbMidi(),
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
@@ -20,9 +22,9 @@ with patch.dict(sys.modules, {
     from .mocks_ui import *
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.actions.actions import ParameterAction, ParameterActionModes, PushButtonModes
+    from lib.pyswitch.controller.actions.actions import ParameterAction
     from lib.pyswitch.controller.Client import ClientParameterMapping
-    from lib.pyswitch.misc import Tools, Defaults
+    from lib.pyswitch.misc import compare_midi_messages, DEFAULT_LABEL_COLOR
 
 
 
@@ -39,7 +41,7 @@ class TestActionParameter(unittest.TestCase):
         )
 
         action_1 = ParameterAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": mapping_1,
             "valueEnabled": 10,
             "valueDisabled": 3,
@@ -85,7 +87,7 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.5)
@@ -105,7 +107,7 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.1)
@@ -144,7 +146,7 @@ class TestActionParameter(unittest.TestCase):
         )
 
         action_1 = ParameterAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": mapping_1,
             "valueEnabled": 10,
             "valueDisabled": 3,
@@ -192,7 +194,7 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.5)
@@ -212,7 +214,7 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.1)
@@ -258,7 +260,7 @@ class TestActionParameter(unittest.TestCase):
         )
 
         action_1 = ParameterAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": mapping_1,
             "mappingDisable": mapping_disable_1,
             "valueEnabled": 10,
@@ -305,7 +307,7 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.5)
@@ -325,7 +327,7 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[1], mapping_disable_1.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_disable_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.1)
@@ -387,7 +389,7 @@ class TestActionParameter(unittest.TestCase):
         )
 
         action_1 = ParameterAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": [
                 mapping_1,
                 mapping_2,
@@ -439,8 +441,8 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_2.set))
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[1], mapping_3.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_2.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_3.set))
 
             return True        
         
@@ -460,8 +462,8 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 4)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[2], mapping_disable_1.set))
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[3], mapping_disable_2.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[2], mapping_disable_1.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[3], mapping_disable_2.set))
 
             return False        
 
@@ -496,7 +498,7 @@ class TestActionParameter(unittest.TestCase):
         )
 
         action_1 = ParameterAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": mapping_1,
             "valueEnabled": 10,
             "valueDisabled": 3,
@@ -505,6 +507,11 @@ class TestActionParameter(unittest.TestCase):
                 "on": 0.5,
                 "off": 0.1
             },
+            "displayDimFactor": {
+                "on": 0.5,
+                "off": 0.2
+            },
+
             "text": "foo",
             "textDisabled": "bar"
         })
@@ -546,14 +553,14 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.5)
             self.assertEqual(led_driver.leds[0], (100, 50, 0))
 
             self.assertEqual(action_1.label.text, "foo")
-            self.assertEqual(action_1.label.back_color, (200, 100, 0))
+            self.assertEqual(action_1.label.back_color, (100, 50, 0))
             
             return True        
         
@@ -569,7 +576,7 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.1)
@@ -611,7 +618,7 @@ class TestActionParameter(unittest.TestCase):
         )
 
         action_1 = ParameterAction({
-            "mode": PushButtonModes.MOMENTARY,
+            "mode": PushButtonAction.MOMENTARY,
             "mapping": mapping_1,
             "valueEnabled": 10,
             "valueDisabled": 3,
@@ -659,7 +666,7 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].colors, [(200, 100, 0), (10, 20, 30)])
             self.assertEqual(appl.switches[0].brightnesses, [0.5, 0.5])
@@ -683,7 +690,7 @@ class TestActionParameter(unittest.TestCase):
             })
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].colors, [(200, 100, 0), (10, 20, 30)])
             self.assertEqual(appl.switches[0].brightnesses, [0.1, 0.1])
@@ -715,144 +722,30 @@ class TestActionParameter(unittest.TestCase):
 ###############################################################################################
 
 
-    def test_set_parameter_global_brightness(self):
-        switch_1 = MockSwitch()
-        
-        mapping_1 = ClientParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x01, 0x02, 0x03, 0x04]
-            )
-        )
-
-        action_1 = ParameterAction({
-            "mode": PushButtonModes.MOMENTARY,
-            "mapping": mapping_1,
-            "color": (200, 100, 0),
-            "text": "foo"
-        })
-        
-        vp = MockValueProvider()
-        led_driver = MockNeoPixelDriver()
-
-        appl = MockController(
-            led_driver = led_driver,
-            communication = {
-                "valueProvider": vp
-            },
-            midi = MockMidiController(),
-            switches = [
-                {
-                    "assignment": {
-                        "model": switch_1,
-                        "pixels": [0]
-                    },
-                    "actions": [
-                        action_1                        
-                    ]
-                }
-            ],
-            config = {
-                "ledBrightness": {
-                    "on": 0.5,
-                    "off": 0.1
-                }
-            }
-        )
-
-        action_1.label = MockDisplayLabel()
-
-        # Build scene:
-        # Step 1: Enable
-        def prep1():
-            switch_1.shall_be_pushed = True
-
-        def eval1():
-            self.assertEqual(len(vp.set_value_calls), 1)
-            self.assertDictEqual(vp.set_value_calls[0], {
-                "mapping": mapping_1,
-                "value": 1
-            })
-
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
-
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.5)
-            self.assertEqual(led_driver.leds[0], (100, 50, 0))
-
-            self.assertEqual(action_1.label.text, "foo")
-            self.assertEqual(action_1.label.back_color, (200, 100, 0))
-            
-            return True        
-        
-        # Step 2: Disable
-        def prep2():
-            switch_1.shall_be_pushed = False
-
-        def eval2():
-            self.assertEqual(len(vp.set_value_calls), 2)
-            self.assertDictEqual(vp.set_value_calls[1], {
-                "mapping": mapping_1,
-                "value": 0
-            })
-
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(Tools.compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
-
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.1)
-            self.assertEqual(led_driver.leds[0], (20, 10, 0))
-
-            self.assertEqual(action_1.label.text, "foo")
-            self.assertEqual(action_1.label.back_color, (40, 20, 0))
-                        
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
-
-
-###############################################################################################
-
-
     def test_request(self):
-        self._test_request(ParameterActionModes.GREATER, 1, 0, 0, 0, False)
-        self._test_request(ParameterActionModes.GREATER, 1, 0, 1, 0, False)
-        self._test_request(ParameterActionModes.GREATER, 1, 0, 2, 0)
-        self._test_request(ParameterActionModes.GREATER, 1, 0, 16383, 0)
+        self._test_request(ParameterAction.GREATER, 1, 0, 0, 0, False)
+        self._test_request(ParameterAction.GREATER, 1, 0, 1, 0, False)
+        self._test_request(ParameterAction.GREATER, 1, 0, 2, 0)
+        self._test_request(ParameterAction.GREATER, 1, 0, 16383, 0)
 
-        self._test_request(ParameterActionModes.GREATER_EQUAL, 1, 0, 0, 0, False)
-        self._test_request(ParameterActionModes.GREATER_EQUAL, 1, 0, 1, 0)
-        self._test_request(ParameterActionModes.GREATER_EQUAL, 1, 0, 2, 0)
-        self._test_request(ParameterActionModes.GREATER_EQUAL, 1, 0, 16383, 0)
+        self._test_request(ParameterAction.GREATER_EQUAL, 1, 0, 0, 0, False)
+        self._test_request(ParameterAction.GREATER_EQUAL, 1, 0, 1, 0)
+        self._test_request(ParameterAction.GREATER_EQUAL, 1, 0, 2, 0)
+        self._test_request(ParameterAction.GREATER_EQUAL, 1, 0, 16383, 0)
 
-        self._test_request(ParameterActionModes.EQUAL, 1, 0, 0, 0, False)
-        self._test_request(ParameterActionModes.EQUAL, 1, 0, 1, 0)
-        self._test_request(ParameterActionModes.EQUAL, 1, 0, 2, 0, False)
+        self._test_request(ParameterAction.EQUAL, 1, 0, 0, 0, False)
+        self._test_request(ParameterAction.EQUAL, 1, 0, 1, 0)
+        self._test_request(ParameterAction.EQUAL, 1, 0, 2, 0, False)
 
-        self._test_request(ParameterActionModes.LESS_EQUAL, 1, 2, 0, 2)
-        self._test_request(ParameterActionModes.LESS_EQUAL, 1, 2, 1, 2)
-        self._test_request(ParameterActionModes.LESS_EQUAL, 1, 2, 2, 2, False)
-        self._test_request(ParameterActionModes.LESS_EQUAL, 1, 2, 3, 2, False)
+        self._test_request(ParameterAction.LESS_EQUAL, 1, 2, 0, 2)
+        self._test_request(ParameterAction.LESS_EQUAL, 1, 2, 1, 2)
+        self._test_request(ParameterAction.LESS_EQUAL, 1, 2, 2, 2, False)
+        self._test_request(ParameterAction.LESS_EQUAL, 1, 2, 3, 2, False)
 
-        self._test_request(ParameterActionModes.LESS, 1, 2, 0, 2)
-        self._test_request(ParameterActionModes.LESS, 1, 2, 1, 2, False)
-        self._test_request(ParameterActionModes.LESS, 1, 2, 2, 2, False)
-        self._test_request(ParameterActionModes.LESS, 1, 2, 3, 2, False)
+        self._test_request(ParameterAction.LESS, 1, 2, 0, 2)
+        self._test_request(ParameterAction.LESS, 1, 2, 1, 2, False)
+        self._test_request(ParameterAction.LESS, 1, 2, 2, 2, False)
+        self._test_request(ParameterAction.LESS, 1, 2, 3, 2, False)
 
         with self.assertRaises(Exception):
             self._test_request("invalid", 0, 1, 0, 1)
@@ -951,7 +844,7 @@ class TestActionParameter(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 1)
 
             self.assertEqual(vp.parse_calls[0]["mapping"], mapping_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_1))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_1))
 
             self.assertEqual(mapping_1.value, test_value_on)
             self.assertEqual(action_1.state, exp_state_on)
@@ -976,7 +869,7 @@ class TestActionParameter(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 2)
 
             self.assertEqual(vp.parse_calls[1]["mapping"], mapping_1)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_1))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_1))
 
             self.assertEqual(mapping_1.value, test_value_off)
 
@@ -1211,7 +1104,7 @@ class TestActionParameter(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 1)
 
             self.assertEqual(vp.parse_calls[0]["mapping"], mapping_2)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_1))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_1))
 
             self.assertEqual(mapping_2.value, 2)
 
@@ -1235,7 +1128,7 @@ class TestActionParameter(unittest.TestCase):
             self.assertEqual(len(vp.parse_calls), 2)
 
             self.assertEqual(vp.parse_calls[1]["mapping"], mapping_2)
-            self.assertTrue(Tools.compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_1))
+            self.assertTrue(compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_1))
 
             self.assertEqual(mapping_2.value, -1)
 
@@ -1398,7 +1291,7 @@ class TestActionParameter(unittest.TestCase):
         # Reset displays
         action_1.reset_display()
             
-        self.assertEqual(action_1.label.back_color, Defaults.DEFAULT_LABEL_COLOR)
+        self.assertEqual(action_1.label.back_color, DEFAULT_LABEL_COLOR)
         self.assertEqual(appl.switches[0].color, (0, 0, 0))
         self.assertEqual(appl.switches[0].brightness, 0)
 

@@ -5,8 +5,10 @@ from unittest.mock import patch   # Necessary workaround! Needs to be separated.
 from .mocks_lib import *
 
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "usb_midi": MockUsbMidi(),
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
@@ -14,23 +16,23 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.StatisticalDisplays import StatisticalDisplays
+    from lib.pyswitch.ui.statistical import *
     from lib.pyswitch.ui.ui import DisplayBounds
 
 
 
 class TestStatisticalDisplays(unittest.TestCase):
 
-    def test_stat_display(self):
-        # Must not throw
-        StatisticalDisplays.STATS_DISPLAY(DisplayBounds(20, 30, 40, 50))
+    #def test_stat_display(self):
+    #    # Must not throw
+    #    STATS_DISPLAY(DisplayBounds(20, 30, 40, 50))
 
 
     def test_performance_dot(self):
         # Must not throw
-        StatisticalDisplays.PERFORMANCE_DOT(DisplayBounds(20, 30, 40, 50))
+        PERFORMANCE_DOT(DisplayBounds(20, 30, 40, 50))
 
 
     def test_protocol_dot(self):
         # Must not throw
-        StatisticalDisplays.BIDIRECTIONAL_PROTOCOL_STATE_DOT(DisplayBounds(20, 30, 40, 50))
+        BIDIRECTIONAL_PROTOCOL_STATE_DOT(DisplayBounds(20, 30, 40, 50))

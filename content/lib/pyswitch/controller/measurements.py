@@ -1,38 +1,40 @@
-from gc import collect, mem_free
+#from gc import collect, mem_free
 
-from ..misc import Tools, EventEmitter, Updateable
+from ..misc import EventEmitter, Updateable, get_current_millis
 
 
 # Base class for measurements
-class StatisticsMeasurement:
-    def __init__(self):
-        self.reset()
-
-    def value(self):
-        return 0      # pragma: no cover
-
-    def update(self):
-        pass          # pragma: no cover
-
-    # Reset measurement
-    def reset(self):
-        pass          # pragma: no cover
-
-    # Generate output message
-    def get_message(self):
-        return ""     # pragma: no cover
+#class StatisticsMeasurement:
+#    def __init__(self):
+#        self.reset()
+#
+#    def value(self):
+#        return 0      # pragma: no cover
+#
+#    def update(self):
+#        pass          # pragma: no cover
+#
+#    # Reset measurement
+#    def reset(self):
+#        pass          # pragma: no cover
+#
+#    # Generate output message
+#    def get_message(self):
+#        return ""     # pragma: no cover
 
 
 #########################################################################
 
 
 # Measurement of runtimes 
-class RuntimeMeasurement(StatisticsMeasurement, EventEmitter, Updateable):
+class RuntimeMeasurement(EventEmitter, Updateable):  #StatisticsMeasurement
     
     # type is arbitrary and only used externally
     def __init__(self, interval_millis, type = ""):
-        StatisticsMeasurement.__init__(self)
+        #StatisticsMeasurement.__init__(self)
         EventEmitter.__init__(self) #, RuntimeMeasurementListener)
+
+        self.reset()
 
         self.type = type
 
@@ -49,7 +51,7 @@ class RuntimeMeasurement(StatisticsMeasurement, EventEmitter, Updateable):
         return int(self._time_aggr / self._time_num)
     
     def update(self):
-        current = Tools.get_current_millis()
+        current = get_current_millis()
         if self._last_output + self.interval_millis < current:
             self._last_output = current
 
@@ -72,7 +74,7 @@ class RuntimeMeasurement(StatisticsMeasurement, EventEmitter, Updateable):
 
     # Start the measurement
     def start(self):
-        self.start_time = Tools.get_current_millis()
+        self.start_time = get_current_millis()
 
     # End the measurement
     def finish(self):
@@ -83,7 +85,7 @@ class RuntimeMeasurement(StatisticsMeasurement, EventEmitter, Updateable):
 
     # Adds the current diff to the haystack
     def _add(self):
-        self.end_time = Tools.get_current_millis()
+        self.end_time = get_current_millis()
         
         diff = self.end_time - self.start_time
         if diff > self.max:
@@ -113,17 +115,22 @@ class RuntimeMeasurement(StatisticsMeasurement, EventEmitter, Updateable):
 
 
 # Measurement of free memory
-class FreeMemoryMeasurement(StatisticsMeasurement):
+#class FreeMemoryMeasurement: #(StatisticsMeasurement):
 
-    # Generate output message
-    def get_message(self):
-        return "Free " + Tools.format_size(self.value())
+#    # Generate output message
+#    def get_message(self):
+#        return "Free " + format_size(self.value())
     
-    def value(self):
-        return self._get_free_memory_bytes()
+#    def value(self):
+#        return self._get_free_memory_bytes()
 
-    # Returns the available memory
-    def _get_free_memory_bytes(self):
-        collect()
-        return mem_free()
+#    # Returns the available memory
+#    def _get_free_memory_bytes(self):
+#        collect()
+#        return mem_free()
 
+#    def update(self):
+#        pass
+
+#    def reset(self):
+#        pass

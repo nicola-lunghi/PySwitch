@@ -613,8 +613,6 @@ The rig name display will have an orange background when the rig name contains t
 
 **NOTE**: Not all layout parameters can be changed freely. Due to resource issues on the microcontroller it is currently not possible to:
 - Background color must be set either not at all for all possible condition branches, or set for all of them (use Colors.BLACK or (0, 0, 0) instead of no background).
-- Corner radius cannot be changed.
-- If one branch uses a stroke greater than zero, all of them must have a stroke greater than zero. Set the outline color to the same as the back color to workaround this.
 
 ### Mappings
 
@@ -654,12 +652,9 @@ example_layout = {
     # for example (Colors.GREEN, Colors.YELLOW, Colors.RED)
     "backColor": (30, 30, 30), 
                                 
-    # Corner radius for the background (optional: default is 0). 
-    # Should be used sparingly because it takes a lot of memory!
-    "cornerRadius": 0,          
-
     # Ouline stroke (optional, default is 0). Width of the 
-    # optional outline
+    # optional outline. The outline is only "faked" for sake of memory 
+    # usage (just the background is reduced in size)
     "stroke":                   
                                 
     # Initial text (default is None).

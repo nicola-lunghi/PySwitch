@@ -2,7 +2,7 @@ from .FootSwitchController import FootSwitchController
 from .actions.Action import Action
 from ..ui.elements import DisplayLabel, DisplaySplitContainer
 from ..ui.ui import HierarchicalDisplayElement
-from ..misc import Updater, Colors, Tools
+from ..misc import Updater, Colors, do_print
 
 # Action to explore switch GPIO assignments (used internally only in explore mode!)
 # Also used to examine neopixel addressing.
@@ -26,7 +26,7 @@ class ExploreAction(Action):
 
     def push(self):
         pixel_out = self._trigger_pixel_search()
-        Tools.print("board." + self._name + " " + pixel_out)
+        do_print("board." + self._name + " " + pixel_out)
 
         if self.appl.ui:
             self.appl.pixel_display.text = pixel_out
@@ -66,8 +66,8 @@ class ExploreModeController(Updater):
         Updater.__init__(self)
 
         self.ui = ui
+        self.config = {}  # Dummy for other classes
 
-        self.config = {}
         self.num_pixels_per_switch = num_pixels_per_switch
         self._currently_shown_switch_index = -1
         self._switch_factory = switch_factory
@@ -88,18 +88,18 @@ class ExploreModeController(Updater):
             # Try to initialize all available ports. This gets us the list of ports successfully assigned.
             ports_assigned = self._init_switches(available_ports)
 
-            Tools.print("Explore mode: Assigned " + repr(len(ports_assigned)) + " ports")
+            do_print("Explore mode: Assigned " + repr(len(ports_assigned)) + " ports")
         else:
             # Try to initialize all available ports. This gets us the list of ports successfully assigned.
             ports_assigned = self._init_switches(available_ports)
 
-            Tools.print("+------------------+")
-            Tools.print("|   EXPLORE MODE   |")
-            Tools.print("+------------------+")
-            Tools.print("")
-            Tools.print("Listening to: ")
-            Tools.print(self._get_ports_string(ports_assigned))            
-            Tools.print("")
+            do_print("+------------------+")
+            do_print("|   EXPLORE MODE   |")
+            do_print("+------------------+")
+            do_print("")
+            do_print("Listening to: ")
+            do_print(self._get_ports_string(ports_assigned))            
+            do_print("")
 
     # Set up user interface
     def _setup_ui(self):
@@ -167,12 +167,15 @@ class ExploreModeController(Updater):
         # whether they increase or decrease.
         ret = None
         for switch in self.switches:
-            if switch.config["index"] == self._currently_shown_switch_index:
+            if switch.em_index == self._currently_shown_switch_index:
                 switch.color = Colors.WHITE
                 switch.brightness = 1
-                ret = switch.config["assignment"]["pixels"]
+                ret = switch.pixels
             else:
-                self._indicate_action_color(switch)
+                switch.color = Colors.BLUE
+                switch.brightness = 0.05
+                
+                #self._indicate_action_color(switch)
 
         return ret
     
@@ -201,7 +204,7 @@ class ExploreModeController(Updater):
                 pass
 
             except Exception as ex:
-                Tools.print("Error assigning port " + port_def["name"] + ":")
+                do_print("Error assigning port " + port_def["name"] + ":")
                 raise ex 
 
         return ret
@@ -227,10 +230,11 @@ class ExploreModeController(Updater):
                     })
                 ],
                 "initialColors": [Colors.WHITE for i in range(self.num_pixels_per_switch)],
-                "initialBrightness": 0,
-                "index": index              # This is a custom attribute not parsed by FootSwitch, but used internally in this class only
+                "initialBrightness": 0
             }
         )
+
+        switch.em_index = index              # This is a custom attribute not parsed by FootSwitch, but used internally in this class only
 
         self.switches.append(switch)
         return port_def["name"]
@@ -240,7 +244,7 @@ class ExploreModeController(Updater):
         if not self.ui:
             return None
         
-        row = self._ports_display_rows.last_child
+        row = self._ports_display_rows.children[len(self._ports_display_rows.children) - 1] if self._ports_display_rows.children else None
         if not row or len(row.children) >= self._num_port_columns:
             row = DisplaySplitContainer(
                 direction = DisplaySplitContainer.HORIZONTAL
@@ -290,20 +294,20 @@ class ExploreModeController(Updater):
         return ret
     
     # On a switch instance, set the color indicating whether it switches up or down
-    def _indicate_action_color(self, switch):
-        for action in switch.config["actions"]:
-            step = action.config["step"]
+    #def _indicate_action_color(self, switch):
+    #    for action in switch.config["actions"]:
+    #        step = action.config["step"]
 
-            if step > 0:
-                switch.color = Colors.GREEN
-                switch.brightness = 0.01
+    #        if step > 0:
+    #            switch.color = Colors.GREEN
+    #            switch.brightness = 0.01
 
-            elif step < 0:
-                switch.color = Colors.ORANGE
-                switch.brightness = 0.01
+    #        elif step < 0:
+    #            switch.color = Colors.ORANGE
+    #            switch.brightness = 0.01
 
-            else:
-                switch.brightness = 0
+    #        else:
+    #            switch.brightness = 0
 
-            return
+    #        return
 

@@ -5,6 +5,7 @@ from unittest.mock import patch   # Necessary workaround! Needs to be separated.
 from .mocks_lib import *
 
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
     "usb_midi": MockUsbMidi(),
@@ -12,12 +13,13 @@ with patch.dict(sys.modules, {
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
 
     from lib.pyswitch.ui.ui import DisplayBounds
-    from lib.pyswitch.ui.elements import TunerDisplay, TunerDevianceDisplay, DisplayLabel, TUNER_NOTE_NAMES
+    from lib.pyswitch.ui.elements import TunerDisplay, DisplayLabel, TUNER_NOTE_NAMES
     from lib.pyswitch.controller.Client import ClientParameterMapping
     from lib.pyswitch.ui.UiController import UiController
 
@@ -112,11 +114,11 @@ class TestTunerDisplay(unittest.TestCase):
 
         self.assertIsInstance(display.label, DisplayLabel)
         self.assertEqual(len(display.children), 1 if deviance_value == None else 2)
-        self.assertEqual(display.child(0), display.label)
+        self.assertEqual(display.children[0], display.label)
         self.assertEqual(display.label.bounds, DisplayBounds(20, 33, 444, 555))
 
         if deviance_value != None:
-            self.assertEqual(display.child(1), display.deviance)
+            self.assertEqual(display.children[1], display.deviance)
             self.assertEqual(display.deviance.bounds, DisplayBounds(20, 33 + 555 - 44, 444, 44))
 
         ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
@@ -232,8 +234,5 @@ class TestTunerDisplay(unittest.TestCase):
             )
         )
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.rect": MockDisplayShapes().rect()
-        }):
-            # Run process
-            appl.process()
+        # Run process
+        appl.process()

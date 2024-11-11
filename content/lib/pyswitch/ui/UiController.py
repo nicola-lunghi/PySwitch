@@ -1,4 +1,4 @@
-from .ui import DisplayBounds, DisplaySplash
+from .ui import DisplayBounds
 from .elements import DisplayLabel
 from ..controller.ConditionTree import ConditionTree
 from ..misc import Updateable
@@ -21,14 +21,13 @@ class UiController:
     # Initialize the GUI. Mus be called before usage, but after defining the contents.
     def init(self, appl):
         if not self._root:
-            raise Exception("UiController has nothing to initialize")
+            raise Exception() #"UiController has nothing to initialize")
         
         self._appl = appl
 
         self._display_tree = ConditionTree(
             subject = self._root,
             listener = self,
-            replacer = self,
             allow_lists = False
         )
         self._root = None
@@ -36,8 +35,10 @@ class UiController:
         self._display_tree.init(appl)
 
         # Add elements which are Updateables to the update queue
-        for splash in self._display_tree.entries:
-            updateable_elements = [i for i in splash.root.contents_flat() if isinstance(i, Updateable)]
+        for root_element in self._display_tree.entries:
+            root_element.make_splash(self._font_loader)
+
+            updateable_elements = [i for i in root_element.contents_flat() if isinstance(i, Updateable)]
             
             for element in updateable_elements:
                 appl.add_updateable(element)
@@ -47,13 +48,9 @@ class UiController:
     # Sets a new root element (can be conditional). Must be called before init().
     def set_root(self, root):
         if self._display_tree:
-            raise Exception("UiController already initialized")
+            raise Exception() #"UiController already initialized")
         
         self._root = root
-
-    # Replacer for ConditionTree: Create Splash handler from the element passed
-    def replace(self, element):
-        return DisplaySplash(element, self._font_loader)
 
     # Update display when condition(s) have changed
     def condition_changed(self, condition):
@@ -70,35 +67,35 @@ class UiController:
     # Shows the current splash
     def show(self):
         if not self._display_tree:
-            raise Exception("UiController not initialized")
+            raise Exception() #"UiController not initialized")
         
         # Initialize all uninitialized splash roots
-        for splash_container in self._display_tree.entries:
-            if not splash_container.root.initialized():
-                splash_container.root.init(splash_container, self._appl)
+        for root_element in self._display_tree.entries:
+            if not root_element.initialized():
+                root_element.init(root_element, self._appl)
 
-        splash_container = self.current
+        root_element = self.current
 
-        if splash_container == self._current_splash:
+        if root_element == self._current_splash:
             return
         
-        self._current_splash = splash_container
-        self._display_driver.tft.show(splash_container.splash)
+        self._current_splash = root_element
+        self._display_driver.tft.show(root_element.splash)
 
     # Search an element by definition in all possible splashes
-    def search(self, definition):
+    def search(self, id, index = None):
         if not self._display_tree:
-            raise Exception("UiController not initialized")
+            raise Exception() #"UiController not initialized")
         
-        for splash_container in self._display_tree.entries:
-            result = splash_container.root.search(definition)
+        for root_element in self._display_tree.entries:
+            result = root_element.search(id, index)
             if result:                
                 return result
             
         return None                
 
     # Creates a label
-    def create_label(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
+    def create_label(self, bounds = DisplayBounds(), layout = None, name = "", id = 0):
         return DisplayLabel(
             bounds = bounds,
             layout = layout,

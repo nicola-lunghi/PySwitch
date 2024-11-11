@@ -5,8 +5,10 @@ from unittest.mock import patch   # Necessary workaround! Needs to be separated.
 from .mocks_lib import *
 
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
@@ -46,10 +48,10 @@ class TestUiController(unittest.TestCase):
         ui.show()
 
         self.assertEqual(ui.current.font_loader, font_loader)
-        self.assertEqual(ui.current.root, display)
+        self.assertEqual(ui.current, display)
         self.assertEqual(ui.bounds, DisplayBounds(0, 0, 300, 400))
 
-        self.assertEqual(ui.current.root._initialized, True)
+        self.assertEqual(ui.current._initialized, True)
         self.assertEqual(display_driver.tft.show_calls, [ui.current.splash])
 
     
@@ -90,15 +92,15 @@ class TestUiController(unittest.TestCase):
             period.exceed_next_time = True
             condition_1.bool_value = False
 
-            self.assertEqual(ui.current.root, element_yes)
-            self.assertEqual(ui.current.root._initialized, True)
+            self.assertEqual(ui.current, element_yes)
+            self.assertEqual(ui.current._initialized, True)
             splashes["yes"] = ui.current.splash
 
             self.assertEqual(display_driver.tft.show_calls, [splashes["yes"]])            
 
         def eval1():
-            self.assertEqual(ui.current.root, element_no)
-            self.assertEqual(ui.current.root._initialized, True)
+            self.assertEqual(ui.current, element_no)
+            self.assertEqual(ui.current._initialized, True)
             splashes["no"] = ui.current.splash
 
             self.assertEqual(display_driver.tft.show_calls, [splashes["yes"], splashes["no"]])
@@ -112,7 +114,7 @@ class TestUiController(unittest.TestCase):
             appl.running = False
 
         def eval2():
-            self.assertEqual(ui.current.root, element_yes)
+            self.assertEqual(ui.current, element_yes)
             self.assertEqual(display_driver.tft.show_calls, [splashes["yes"], splashes["no"]])
 
             return True
@@ -124,7 +126,7 @@ class TestUiController(unittest.TestCase):
             appl.running = True
 
         def eval3():
-            self.assertEqual(ui.current.root, element_no)            
+            self.assertEqual(ui.current, element_no)            
             self.assertEqual(display_driver.tft.show_calls, [splashes["yes"], splashes["no"]])
 
             return True
@@ -135,7 +137,7 @@ class TestUiController(unittest.TestCase):
             condition_1.bool_value = True
 
         def eval4():
-            self.assertEqual(ui.current.root, element_yes)            
+            self.assertEqual(ui.current, element_yes)            
             self.assertEqual(display_driver.tft.show_calls, [splashes["yes"], splashes["no"], splashes["yes"]])
 
             return False
@@ -269,20 +271,20 @@ class TestUiController(unittest.TestCase):
         appl = MockController2()
         ui.init(appl)
 
-        self.assertEqual(ui.search({ "id": "yess" }), display_yes)
-        self.assertEqual(ui.search({ "id": 1 }), element_1)
-        self.assertEqual(ui.search({ "id": 2 }), element_2)
-        self.assertEqual(ui.search({ "id": 3 }), element_3)
-        self.assertEqual(ui.search({ "id": 4 }), None)
+        self.assertEqual(ui.search(id = "yess"), display_yes)
+        self.assertEqual(ui.search(id = 1), element_1)
+        self.assertEqual(ui.search(id = 2), element_2)
+        self.assertEqual(ui.search(id = 3), element_3)
+        self.assertEqual(ui.search(id = 4), None)
 
-        self.assertEqual(ui.search({ "id": "split" }), display_no)
-        self.assertEqual(ui.search({ "id": "sub_1" }), sub_1)
-        self.assertEqual(ui.search({ "id": "sub_2" }), sub_2)
+        self.assertEqual(ui.search(id = "split"), display_no)
+        self.assertEqual(ui.search(id = "sub_1"), sub_1)
+        self.assertEqual(ui.search(id = "sub_2"), sub_2)
 
-        self.assertEqual(ui.search({ "id": "split", "index": -1 }), None)
-        self.assertEqual(ui.search({ "id": "split", "index": 0 }), sub_1)
-        self.assertEqual(ui.search({ "id": "split", "index": 1 }), sub_2)
-        self.assertEqual(ui.search({ "id": "split", "index": 2 }), None)
+        self.assertEqual(ui.search(id = "split", index = -1), None)
+        self.assertEqual(ui.search(id = "split", index = 0), sub_1)
+        self.assertEqual(ui.search(id = "split", index = 1), sub_2)
+        self.assertEqual(ui.search(id = "split", index = 2), None)
 
 
 ##########################################################################################################

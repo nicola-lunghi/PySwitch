@@ -1,19 +1,5 @@
 from displayio import Group
-from ..misc import Tools
-
-
-# Couples a root element with a splash group
-class DisplaySplash:
-
-    def __init__(self, element, font_loader):
-        self.font_loader = font_loader
-
-        self.splash = Group()
-
-        self.root = element        
-        
-
-########################################################################################################################
+#from ..misc import Tools
 
 
 # Represents a screen area with dimensions.
@@ -27,8 +13,8 @@ class DisplayBounds:
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.width == other.width and self.height == other.height
 
-    def __repr__(self):
-        return repr((self.x, self.y, self.width, self.height))
+    #def __repr__(self):
+    #    return repr((self.x, self.y, self.width, self.height))
     
     def clone(self):
         return DisplayBounds(
@@ -38,9 +24,9 @@ class DisplayBounds:
             self.height
         )
 
-    @property
-    def empty(self):
-        return self.width == 0 or self.height == 0
+    #@property
+    #def empty(self):
+    #    return self.width == 0 or self.height == 0
 
     # Returns a copy which is translated
     def translated(self, x, y):
@@ -164,17 +150,22 @@ class DisplayElement:
         self.name = name
         self.id = id
         self._initialized = False
-        
+
     # Adds the element to the splash
     def init(self, ui, appl):
         self._initialized = True
+        
+    # Makes this element the splash holder which is passed as ui to init() later
+    def make_splash(self, font_loader):        
+        self.font_loader = font_loader
+        self.splash = Group()
 
     def initialized(self):
         return self._initialized
 
     # Search for a display element matching the condition.
-    def search(self, position):
-        if position["id"] == self.id:
+    def search(self, id, index = None):
+        if id == self.id:
             return self
         return None
 
@@ -200,12 +191,12 @@ class DisplayElement:
         pass                                       # pragma: no cover
 
     # Prints some debug info
-    def print_debug_info(self, indentation = 0):   # pragma: no cover
-        prefix = ""
-        for i in range(indentation):
-            prefix = prefix + "  "
-        
-        Tools.print(prefix + self.__class__.__name__ + " " + repr(self.name) + "(" + repr(self.id) + ") at " + repr(self.bounds))
+    #def print_debug_info(self, indentation = 0):   # pragma: no cover
+    #    prefix = ""
+    #    for i in range(indentation):
+    #        prefix = prefix + "  "
+    #    
+    #    do_print(prefix + self.__class__.__name__ + " " + repr(self.name) + "(" + repr(self.id) + ") at " + repr(self.bounds))
 
 
 #######################################################################################################################################
@@ -223,27 +214,27 @@ class HierarchicalDisplayElement(DisplayElement):
     def children(self):        
         return self._children
 
-    @property
-    def first_child(self):
-        if not self._children:
-            return None
-        
-        index = 0
-        while not self._children[index] and index < len(self._children):
-            index += 1
+    #@property
+    #def first_child(self):
+    #    if not self._children:
+    #        return None
+    #    
+    #    index = 0
+    #    while not self._children[index] and index < len(self._children):
+    #        index += 1
+    #
+    #    return self._children[index]
 
-        return self._children[index]
-
-    @property
-    def last_child(self):
-        if not self._children:
-            return None
-        
-        index = len(self._children) - 1
-        while not self._children[index] and index > 0:
-            index -= 1
-
-        return self._children[index]
+    #@property
+    #def last_child(self):
+    #    if not self._children:
+    #        return None
+    #    
+    #    index = len(self._children) - 1
+    #    while not self._children[index] and index > 0:
+    #        index -= 1
+    #
+    #    return self._children[index]
 
     # Initialize the elemenmt and all children
     def init(self, ui, appl):
@@ -282,11 +273,11 @@ class HierarchicalDisplayElement(DisplayElement):
             child.bounds_changed()
 
     # Returns the child element at position index
-    def child(self, index):
-        if index < 0 or index >= len(self._children): 
-            raise Exception("Index out of range: " + repr(index))
-        
-        return self._children[index]
+    #def child(self, index):
+    #    if index < 0 or index >= len(self._children): 
+    #        raise Exception(repr(index)) #"Index out of range: " + repr(index))
+    #    
+    #    return self._children[index]
 
     # Adds a child to the element. Returns the index of the new element.
     def add(self, child):
@@ -297,7 +288,7 @@ class HierarchicalDisplayElement(DisplayElement):
     # Sets an element at the specified index.
     def set(self, element, index):
         if index < 0:
-            raise Exception("Invalid set index: " + repr(index))
+            raise Exception(repr(index)) #"Invalid set index: " + repr(index))
         
         while len(self._children) <= index:
             self.add(None)
@@ -306,26 +297,24 @@ class HierarchicalDisplayElement(DisplayElement):
 
     # Search for the first child matching the conditions. If
     # an "index" value is passed, the child at this position is returned.
-    def search(self, position):
-        result = super().search(position)
+    def search(self, id, index = None):
+        result = super().search(id, index)
         if result != None:
             # This element matches the ID: Check if an index is also present
-            index = Tools.get_option(position, "index", None)
-
             if index == None:
                 # No index: Return this element                
                 return result
             
             elif index >= 0 and index < len(self._children):
                 # Index: Return the n-th child of this element
-                return self.child(index)
+                return self._children[index]
 
         # Also search in children
         for child in self._children:
             if not child:
                 continue
             
-            result = child.search(position)
+            result = child.search(id, index)
             if result:
                 # Child has found something
                 return result
@@ -345,12 +334,12 @@ class HierarchicalDisplayElement(DisplayElement):
         return ret
 
     # Prints some debug info
-    def print_debug_info(self, indentation = 0):   # pragma: no cover
-        super().print_debug_info(indentation)
-
-        for child in self._children:
-            if not child:
-                continue
-
-            child.print_debug_info(indentation + 1)
+    #def print_debug_info(self, indentation = 0):   # pragma: no cover
+    #    super().print_debug_info(indentation)
+    #
+    #    for child in self._children:
+    #        if not child:
+    #            continue
+    #
+    #        child.print_debug_info(indentation + 1)
 

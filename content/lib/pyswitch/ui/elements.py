@@ -1,12 +1,13 @@
 from displayio import Group
 from adafruit_display_text import label, wrap_text_to_pixels
+from adafruit_display_shapes.rect import Rect
 
 from .ui import HierarchicalDisplayElement, DisplayBounds, DisplayElement
 
 from ..controller.ConditionTree import ConditionTree, Condition
 from ..controller.measurements import RuntimeMeasurement
 from ..controller.Client import BidirectionalClient
-from ..misc import Tools, Updateable, Colors
+from ..misc import Updateable, Colors, get_option
 
 
 # Data class for layouts
@@ -19,24 +20,22 @@ class DisplayLabelLayout:
     #     "lineSpacing": Line spacing (optional), float (default: 1)
     #     "textColor": Text color (default is auto)
     #     "backColor": Background color (default is none) Can be a tuple also to show a rainbow background
-    #     "cornerRadius": Corner radius (optional: default is 0)
-    #     "stroke": Ouline stroke (optional)
     #     "text": Initial text (default is none)
+    #     "stroke": Amount of pixels to reduce from the background (fake frame, default: 0)
     # }
     def __init__(self, layout = {}):
-        self.font_path = Tools.get_option(layout, "font", None)
-        self.max_text_width = Tools.get_option(layout, "maxTextWidth")
-        self.line_spacing = Tools.get_option(layout, "lineSpacing", 1)
-        self.text = Tools.get_option(layout, "text", "")
-        self.text_color = Tools.get_option(layout, "textColor", None)
-        self.back_color = Tools.get_option(layout, "backColor", None)
-        self.corner_radius = Tools.get_option(layout, "cornerRadius", 0)
-        self.stroke = Tools.get_option(layout, "stroke", 0)            
+        self.font_path = get_option(layout, "font", None)
+        self.max_text_width = get_option(layout, "maxTextWidth")
+        self.line_spacing = get_option(layout, "lineSpacing", 1)
+        self.text = get_option(layout, "text", "")
+        self.text_color = get_option(layout, "textColor", None)
+        self.back_color = get_option(layout, "backColor", None)
+        self.stroke = get_option(layout, "stroke", 0)
 
     # Check mandatory fields
     def check(self, label_id):
         if not self.font_path:
-            raise Exception("No font specified for DisplayLabel " + repr(label_id))
+            raise Exception("Font missing: " + repr(label_id))
 
 
 ######################################################################################################################################
@@ -49,7 +48,7 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
     LINE_FEED = "\n"
 
     # layout can also be a Condition!
-    def __init__(self, layout, bounds = DisplayBounds(), name = "", id = 0, scale = 1):
+    def __init__(self, layout = None, bounds = DisplayBounds(), name = "", id = 0, scale = 1):
         super().__init__(bounds = bounds, name = name, id = id)
 
         self._scale = scale
@@ -66,16 +65,14 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
         else:
             self._layout_tree = None
 
-            self._layout = DisplayLabelLayout(layout)
+            self._layout = DisplayLabelLayout(layout if layout else {})
             self._layout.check(self.id)
 
         self._initial_text_color = self._layout.text_color        
         self._ui = None    
 
-        self._backgrounds = []    # Array of backgrounds, one for each color. If no back color is passed, 
-                                  # it is currently not possible to add backgrounds afterwards.        
-        self._frame = None        # Frame (only shown when stroke is > 0 and a back color is set)        
-        self._label = None        # Label for the text
+        self._background = None 
+        self._label = None      
 
     # Adds the slot to the splash
     def init(self, ui, appl):
@@ -88,21 +85,14 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
 
         # Append background, if any
         if self.back_color:
-            self._backgrounds = self._create_backgrounds()
-            self._frame = self._create_frame()    
-
-            if len(self._backgrounds) > 2:
-                # Multi backgrounds: Add first and last backgrounds first to enable overlap to show corner radius correctly
-                ui.splash.append(self._backgrounds[0])
-                ui.splash.append(self._backgrounds[len(self._backgrounds) - 1])
-                for i in range(1, len(self._backgrounds) - 1):
-                    ui.splash.append(self._backgrounds[i])
-            else:                
-                for bg in self._backgrounds:
-                    ui.splash.append(bg)
-
-            if self._frame != None:
-                ui.splash.append(self._frame)
+            self._background = Rect(
+                x = self.bounds.x + self._layout.stroke, 
+                y = self.bounds.y + self._layout.stroke,
+                width = self.bounds.width - self._layout.stroke * 2, 
+                height = self.bounds.height - self._layout.stroke * 2, 
+                fill = self.layout.back_color
+            )
+            ui.splash.append(self._background)
 
         # Trigger automatic text color determination
         self.text_color = self.layout.text_color
@@ -186,51 +176,13 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
 
         # Changes to the backgrounds
         if self._layout.back_color:
-            if not old.back_color:
-                raise Exception("You can only change the color if an initial color has been passed (not implemented yet)")
-        
             # Back color changed?
-            if old.back_color != self._layout.back_color:
-                if isinstance(self._layout.back_color[0], tuple):
-                    if not isinstance(old.back_color[0], tuple):
-                        raise Exception("Invalid amount of colors: " + repr(self._layout.back_color) + ", this label can only take one")
-                    
-                    if len(self._layout.back_color) != len(old.back_color):
-                        raise Exception("Invalid amount of colors: " + repr(self._layout.back_color) + ", must be " + repr(len(old.back_color)))
-                else:
-                    if isinstance(old.back_color[0], tuple):
-                        raise Exception("This label must be fed with " + repr(len(old.back_color)) + " colors")
-
-                for i in range(len(self._backgrounds)):
-                    background = self._backgrounds[i]
-
-                    if isinstance(self._layout.back_color[0], tuple):
-                        background.fill = self._layout.back_color[i]
-                    else:
-                        background.fill = self._layout.back_color
+            if old.back_color and old.back_color != self._layout.back_color:
+                if self._background:
+                    self._background.fill = self._layout.back_color
 
                 # Update text color, too (might change when no initial color has been set)
                 self.text_color = self._initial_text_color
-
-            # Corner radius changed?
-            if old.corner_radius != self._layout.corner_radius:
-                raise Exception("Changing corner radius is not supported")
-            
-        else:
-            if old.back_color:
-                raise Exception("You can only change the color if an initial color has been passed (not implemented yet)")
-
-        # Stroke changed?
-        if old.stroke != self._layout.stroke:
-            if self._layout.stroke > 0:
-                if not old.stroke:
-                    raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
-                
-                if self._frame:
-                    self._frame.stroke = self._layout.stroke
-            else:
-                if old.stroke:
-                    raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
 
     @property
     def back_color(self):
@@ -239,34 +191,20 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
     @back_color.setter
     def back_color(self, color):
         if self.layout.back_color and not color:
-            raise Exception("You can only change the background color if an initial background color has been passed (not implemented yet)")
+            return
+        #    raise Exception("You can not remove a background (set color to black instead)")            
 
         if not self.layout.back_color and color:
-            raise Exception("You can only change the background color if an initial background color has been passed (not implemented yet)")
+            return
+        #    raise Exception("You can only change the background color if an initial background color has been passed")
         
-        if color:
-            if isinstance(color[0], tuple):
-                if not isinstance(self.layout.back_color[0], tuple):
-                    raise Exception(repr(self.id) + ": Color type (tuple or single color) cannot be changed: " + repr(color))
-                
-                if len(color) != len(self.layout.back_color):
-                    raise Exception("Invalid amount of colors: " + repr(color) + " has to have " + repr(len(self.layout.back_color)) + " entries (" + self.name + ")")
-            else:
-                if isinstance(self.layout.back_color[0], tuple):
-                    raise Exception(repr(self.id) + ": Color type (tuple or single color) cannot be changed: " + repr(color))
-
         if self.layout.back_color == color:
             return
 
         self.layout.back_color = color
 
-        for i in range(len(self._backgrounds)):
-            background = self._backgrounds[i]
-
-            if isinstance(color[0], tuple):
-                background.fill = color[i]
-            else:
-                background.fill = color
+        if self._background:
+            self._background.fill = color
 
         # Update text color, too (might change when no initial color has been set)
         self.text_color = self._initial_text_color
@@ -288,31 +226,6 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
 
         if self._label:
             self._label.color = text_color
-
-    @property
-    def corner_radius(self):
-        return self.layout.corner_radius
-    
-    @property
-    def stroke(self):
-        return self._layout.stroke
-    
-    @stroke.setter
-    def stroke(self, stroke):
-        if self._layout.stroke == stroke:
-            return
-        
-        if self._layout.stroke > 0:
-            if stroke <= 0:
-                raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
-            
-            self._layout.stroke = stroke
-
-            if self._frame:
-                self._frame.stroke = self._layout.stroke
-        else:
-            if stroke > 0:
-                raise Exception("Cannot switch frame usage (yet). Please use stroke in all possible layouts or not at all.")
 
     @property
     def text(self):
@@ -344,123 +257,18 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
         else:
             return text
 
-    # For multicolor, this generates the dimensions for each background
-    def _get_background_bounds(self, index):
-        if not self.layout.back_color:
-            raise Exception("No background exists to get bounds for")
-        
-        if not isinstance(self.layout.back_color[0], tuple):
-            return self.bounds
-        
-        bg_height = int(self.bounds.height / len(self.layout.back_color))
-        overlap_top = 0
-        overlap_bottom = 0
-
-        if index == 0:
-            overlap_bottom = self.layout.corner_radius
-        if index == len(self.layout.back_color) - 1:
-            overlap_top = self.layout.corner_radius
-        
-        return DisplayBounds(
-            x = self.bounds.x,
-            y = self.bounds.y + index * bg_height - overlap_top,
-            w = self.bounds.width,
-            h = bg_height + overlap_top + overlap_bottom,
-        )
-
-    # Returns new backgrounds list
-    def _create_backgrounds(self):
-        if isinstance(self.layout.back_color[0], tuple):
-            ret = []            
-    
-            for i in range(len(self.layout.back_color)):
-                if i == 0 or i == len(self.layout.back_color) - 1:
-                    r = self.layout.corner_radius
-                else:
-                    # Create the middle backgrounds without corner radius
-                    r = 0
-
-                ret.append(
-                    self._create_rect(
-                        bounds = self._get_background_bounds(i), 
-                        color = self.layout.back_color[i],
-                        corner_radius = r
-                    )
-                )
-
-            return ret
-        else:
-            # Single background
-            return [
-                self._create_rect(
-                    bounds = self.bounds, 
-                    color = self.layout.back_color, 
-                    corner_radius = self.layout.corner_radius
-                )
-            ]
-
-    # Creates the frame if a stroke is set
-    def _create_frame(self):
-        if self.layout.stroke <= 0:
-            return None
-        
-        return self._create_rect(
-            bounds = self.bounds, 
-            corner_radius = self.layout.corner_radius, 
-            stroke = self.layout.stroke,
-            outline = Colors.BLACK
-        )
-
-    def _create_rect(self, bounds, color = None, corner_radius = 0, stroke = 0, outline = None):
-        if corner_radius <= 0:
-            from adafruit_display_shapes.rect import Rect
-
-            return Rect(
-                bounds.x, 
-                bounds.y,
-                bounds.width, 
-                bounds.height, 
-                fill = color,
-                outline = outline, 
-                stroke = stroke
-            )
-        else:
-            from adafruit_display_shapes.roundrect import RoundRect
-
-            return RoundRect(
-                bounds.x, 
-                bounds.y,
-                bounds.width, 
-                bounds.height, 
-                fill = color,
-                outline = outline, 
-                stroke = stroke,
-                r = corner_radius
-            )
-
     # Determines a matching text color to the current background color.
     # Algorithm adapted from https://nemecek.be/blog/172/how-to-calculate-contrast-color-in-python
     def _determine_text_color(self):
         if not self.back_color:
             return Colors.WHITE
         
-        if isinstance(self.layout.back_color[0], tuple):
-            luminance = 0
-            for bg_col in self.layout.back_color:
-                bg_luminance = self._get_luminance(bg_col)
-                if bg_luminance > luminance:
-                    luminance = bg_luminance
-        else:
-            luminance = self._get_luminance(self.back_color)
+        luminance = self.back_color[0] * 0.2126 + self.back_color[1] * 0.7151 + self.back_color[2] * 0.0721
 
         if luminance < 140:
             return Colors.WHITE
         else:
-            return Colors.BLACK
-        
-    # Get the luminance of a color, in range [0..255]. 
-    def _get_luminance(self, color):
-        return color[0] * 0.2126 + color[1] * 0.7151 + color[2] * 0.0721
+            return Colors.BLACK        
 
 
 ###########################################################################################################################
@@ -540,13 +348,13 @@ class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener)
         DisplayLabel.__init__(self, bounds = bounds, layout = layout, name = name, id = id)
 
         self._mapping = parameter["mapping"]
-        self._depends = Tools.get_option(parameter, "depends", None)
+        self._depends = get_option(parameter, "depends", None)
 
         self._last_value = None
         self._depends_last_value = None
 
-        self._text_offline = Tools.get_option(parameter, "textOffline", "")
-        self._text_reset = Tools.get_option(parameter, "textReset", "")        
+        self._text_offline = get_option(parameter, "textOffline", "")
+        self._text_reset = get_option(parameter, "textReset", "")        
     
     # We need access to the client, so we store appl here
     def init(self, ui, appl):
@@ -612,8 +420,6 @@ class TunerDevianceDisplay(DisplayElement):
     def init(self, ui, appl):
         DisplayElement.init(self, ui, appl)
         
-        from adafruit_display_shapes.rect import Rect
-
         self._marker_intune = Rect(
             x = int((self.bounds.width - self.width) * 0.5),
             y = self.bounds.y,
@@ -667,7 +473,17 @@ TUNER_NOTE_NAMES = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B']     # 
 
 class TunerDisplay(HierarchicalDisplayElement):
     
-    def __init__(self, mapping_note, mapping_deviance = None, bounds = DisplayBounds(), layout = {}, scale = 1, name = "", id = 0, deviance_height = 40, deviance_width = 5):
+    def __init__(self, 
+                 mapping_note, 
+                 mapping_deviance = None, 
+                 bounds = DisplayBounds(), 
+                 layout = {}, 
+                 scale = 1, 
+                 name = "", 
+                 id = 0, 
+                 deviance_height = 40, 
+                 deviance_width = 5
+        ):
         HierarchicalDisplayElement.__init__(self, bounds = bounds, name = name, id = id)
 
         self._mapping_note = mapping_note
@@ -726,7 +542,7 @@ class TunerDisplay(HierarchicalDisplayElement):
 
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
-        pass
+        pass                                       # pragma: no cover
 
 
 ###########################################################################################################################
@@ -741,26 +557,22 @@ class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
         super().__init__(bounds = bounds, name = name, id = id)
 
         if not isinstance(measurement, RuntimeMeasurement):
-            raise Exception("This can only be used with RuntimeMeasurements")
+            raise Exception() #"This can only be used with RuntimeMeasurements")
 
         self._measurement = measurement
         self._measurement.add_listener(self)    
-
-        # Display delay
-        self._max = 0
 
     # Add measurements to controller
     def init(self, ui, appl):
         super().init(ui, appl)
 
-        from adafruit_display_shapes.circle import Circle
-
         r = int(self.bounds.width / 2) if self.bounds.width > self.bounds.height else int(self.bounds.height / 2)
         
-        self._dot = Circle(
-            x0 = self.bounds.x + r, 
-            y0 = self.bounds.y + r,
-            r = r, 
+        self._dot = Rect(
+            x = self.bounds.x, 
+            y = self.bounds.y,
+            width = 2 * r,
+            height = 2 * r,
             fill = (0, 0, 0)
         )
         ui.splash.append(self._dot)
@@ -774,78 +586,78 @@ class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
             self._dot.fill = (0, 0, 0)
 
         elif tick_percentage <= 2.0:
-            self._dot.fill = self._fade_colors((0, 0, 0), (120, 120, 0), (tick_percentage - 1.0))
+            self._dot.fill = (120, 120, 0) #self._fade_colors((0, 0, 0), (120, 120, 0), (tick_percentage - 1.0))
 
-        elif tick_percentage <= 4.0:
-            self._dot.fill = self._fade_colors((120, 120, 0), (255, 0, 0), (tick_percentage - 2.0) / 2)
+        #elif tick_percentage <= 4.0:
+        #    self._dot.fill = self._fade_colors((120, 120, 0), (255, 0, 0), (tick_percentage - 2.0) / 2)
 
         else:
             self._dot.fill = (255, 0, 0)
             
     # Dim the color
-    def _fade_colors(self, color1, color2, factor):
-        factor1 = 1 - factor
-        factor2 = factor
-        return (
-            int(color1[0] * factor1 + color2[0] * factor2),
-            int(color1[1] * factor1 + color2[1] * factor2),
-            int(color1[2] * factor1 + color2[2] * factor2)
-        )            
+    #def _fade_colors(self, color1, color2, factor):
+    #    factor1 = 1 - factor
+    #    factor2 = factor
+    #    return (
+    #        int(color1[0] * factor1 + color2[0] * factor2),
+    #        int(color1[1] * factor1 + color2[1] * factor2),
+    #        int(color1[2] * factor1 + color2[2] * factor2)
+    #    )            
         
 
 ###########################################################################################################################
 
 
 # Label showing statistical info
-class StatisticsDisplayLabel(DisplayLabel, Updateable):  #RuntimeMeasurementListener
-    
-    def __init__(self, measurements, bounds = DisplayBounds(), layout = {}, name = "Statistics", id = 0):
-        super().__init__(bounds = bounds, layout = layout, name = name, id = id)        
-    
-        for m in measurements:
-            if not isinstance(m, RuntimeMeasurement):
-                continue
-            
-            m.add_listener(self)
-
-        self._measurements = measurements
-
-        self._texts = ["" for m in measurements]
-        self._current_texts = ["" for m in measurements]
-
-    # Add measurements to controller
-    def init(self, ui, appl):
-        super().init(ui, appl)
-
-        for m in self._measurements:
-            appl.add_runtime_measurement(m)
-
-    def update(self):
-        for i in range(len(self._texts)):
-            if self._current_texts[i] != self._texts[i]:
-                self._update_text()
-                return
-
-    def _update_text(self):
-        lines = []
-        for i in range(len(self._measurements)):
-            self._current_texts[i] = self._texts[i]
-            
-            lines.append(self._texts[i])
-
-        self.text = "\n".join(lines)    
-
-    def measurement_updated(self, measurement):
-        for i in range(len(self._measurements)):
-            m = self._measurements[i]
-
-            if not isinstance(m, RuntimeMeasurement):
-                self._texts[i] = m.get_message()
-            else:    
-                if m != measurement:
-                    continue
-                
-                self._texts[i] = m.get_message()
+#class StatisticsDisplayLabel(DisplayLabel, Updateable):  #RuntimeMeasurementListener
+#    
+#    def __init__(self, measurements, bounds = DisplayBounds(), layout = None, name = "", id = 0):
+#        super().__init__(bounds = bounds, layout = layout, name = name, id = id)        
+#    
+#        for m in measurements:
+#            if not isinstance(m, RuntimeMeasurement):
+#                continue
+#            
+#            m.add_listener(self)
+#
+#        self._measurements = measurements
+#
+#        self._texts = ["" for m in measurements]
+#        self._current_texts = ["" for m in measurements]
+#
+#    # Add measurements to controller
+#    def init(self, ui, appl):
+#        super().init(ui, appl)
+#
+#        for m in self._measurements:
+#            appl.add_runtime_measurement(m)
+#
+#    def update(self):
+#        for i in range(len(self._texts)):
+#            if self._current_texts[i] != self._texts[i]:
+#                self._update_text()
+#                return
+#
+#    def _update_text(self):
+#        lines = []
+#        for i in range(len(self._measurements)):
+#            self._current_texts[i] = self._texts[i]
+#            
+#            lines.append(self._texts[i])
+#
+#        self.text = "\n".join(lines)    
+#
+#    def measurement_updated(self, measurement):
+#        for i in range(len(self._measurements)):
+#            m = self._measurements[i]
+#
+#            if not isinstance(m, RuntimeMeasurement):
+#                self._texts[i] = m.get_message()
+#            else:    
+#                if m != measurement:
+#                    continue
+#                
+#                self._texts[i] = m.get_message()
         
 
 ###########################################################################################################################
@@ -867,14 +679,13 @@ class BidirectionalProtocolState(DisplayElement, Updateable):
         if not isinstance(self._appl.client, BidirectionalClient):
             return
 
-        from adafruit_display_shapes.circle import Circle
-
         r = int(self.bounds.width / 2) if self.bounds.width > self.bounds.height else int(self.bounds.height / 2)
         
-        self._dot = Circle(
-            x0 = self.bounds.x + r, 
-            y0 = self.bounds.y + r,
-            r = r, 
+        self._dot = Rect(
+            x = self.bounds.x, 
+            y = self.bounds.y,
+            width = 2 * r,
+            height = 2 * r,
             fill = (0, 0, 0)
         )
         ui.splash.append(self._dot)

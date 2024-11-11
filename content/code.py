@@ -7,6 +7,15 @@
 #
 #################################################################################################################################
 #
+# v 2.1.2
+# Changes @tunetown (Tom Weber):
+# - Memory usage optimized: 
+#     - Avoid keeping of dictionaries for longer than __init__
+#     - Removed corner radius from display elements
+#     - "fake stroke" (DisplayLabel)
+#     - On-flash consts (micropython optimization)
+# - Added examples
+#
 # v 2.1.1
 # Changes @tunetown (Tom Weber):
 # - Added mappings for Effect Buttons I-IIII (set only, sadly there is no state feedback possibility from Kemper)
@@ -40,10 +49,10 @@
 #################################################################################################################################
 
 from pyswitch.Memory import Memory # type: ignore
-Memory.start(zoom = 10)
+Memory.start()
 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader, AdafruitSwitch
-from pyswitch.misc import Tools
+from pyswitch.misc import get_option
 
 # Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)
 _display_driver = AdafruitST7789DisplayDriver()
@@ -58,7 +67,7 @@ _led_driver = AdafruitNeoPixelDriver()
 # Buffered font loader
 _font_loader = AdafruitFontLoader()
 
-if not Tools.get_option(Config, "exploreMode"):
+if not get_option(Config, "exploreMode"):
     # Normal operation
     from pyswitch.controller.Controller import Controller
     from pyswitch.controller.MidiController import MidiController
@@ -74,8 +83,8 @@ if not Tools.get_option(Config, "exploreMode"):
         led_driver = _led_driver, 
         communication = Communication, 
         midi = MidiController(
-            config = Tools.get_option(Communication, "midi", {}),
-            debug  = Tools.get_option(Config, "debugMidi")
+            routings = Communication["midi"]["routings"] if get_option(Communication, "midi") else [],
+            debug  = get_option(Config, "debugMidi")
         ),
         config = Config, 
         switches = Switches, 
@@ -92,6 +101,7 @@ else:
     # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
     # on unknown devices, to create layouts for the configuration.
     from pyswitch.controller.ExploreModeController import ExploreModeController
+    from pyswitch.ui.UiController import UiController
     import board
 
     # Switch factory

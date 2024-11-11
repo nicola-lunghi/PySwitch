@@ -4,8 +4,6 @@
 #
 ##############################################################################################################################################
 
-#from kemper import KemperMappings
-
 Config = {
     
     # Max. number of MIDI messages being parsed before the next switch state evaluation
@@ -37,14 +35,10 @@ Config = {
     #"debugSwitches": True,                           # Show verbose output for switches (color, brightness) or a switches 
                                                       # actions are triggered. Optional.
     #"debugParameters": True,                         # Show messages from the global parameter controller
-    #"debugClient": True,                             # Show all requests and responses to/from the Kemper Profiler. Optional.
-    #"clientDebugMapping": KemperMappings.TUNER_MODE_STATE,  # Optional, if set the kemper classes will only output messages related to
                                                       # the specified mapping.
-    #"debugClientRawMidi": True,                      # Debug raw kemper MIDI messages. Only regarded whe "debugKemper" is enabled, too.
-    "debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
+    #"debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
     #"debugMidi": True,                               # Debug all MIDI communication
                                                       # and received. Optional.
-    #"debugConditions": True,                         # Debug condition evaluation
 
     # Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 
