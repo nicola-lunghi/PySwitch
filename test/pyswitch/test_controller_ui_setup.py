@@ -17,12 +17,18 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-        
-    from lib.pyswitch.ui.ui import DisplayElement, HierarchicalDisplayElement
-    from lib.pyswitch.ui.UiController import UiController
+    from .mocks_misc import MockMisc
 
-    from .mocks_appl import *
-    from .mocks_ui import MockDisplayDriver, MockFontLoader, MockUpdateableDisplayElement
+    with patch.dict(sys.modules, {
+        "lib.pyswitch.misc": MockMisc
+    }):
+       
+        from lib.pyswitch.ui.ui import DisplayElement, HierarchicalDisplayElement
+        from lib.pyswitch.ui.UiController import UiController
+
+        from gc import gc_mock_data
+        from .mocks_appl import *
+        from .mocks_ui import MockDisplayDriver, MockFontLoader, MockUpdateableDisplayElement
 
 
 class MockUiController(UiController):
@@ -76,13 +82,7 @@ class TestControllerUiSetup(unittest.TestCase):
             ui = ui
         )
 
-        #self.assertEqual(len(ui.current.root.children), 3)
-
-        #self.assertEqual(ui.current.root.child(0), element_1)
-        #self.assertEqual(ui.current.root.child(1), element_2)
-        #self.assertEqual(ui.current.root.child(2), element_3)
-
-        # Build scene
+       # Build scene
         def prep1():      
             period.exceed_next_time = True      
             pass
@@ -99,4 +99,58 @@ class TestControllerUiSetup(unittest.TestCase):
         appl.process()
 
         self.assertEqual(ui.num_show_calls, 1)
+
+
+    def test_low_mem_warning_above(self):
+        gc_mock_data().reset()
+        gc_mock_data().output_mem_free_override(20)
+
+        appl = MockController(
+            led_driver = MockNeoPixelDriver(),
+            communication = {
+                "valueProvider": MockValueProvider()
+            },
+            midi = MockMidiController(),
+            config = {
+                "memoryWarnLimitBytes": 1024
+            }
+        )
+        
+        def eval1():            
+            return False
+
+        appl.next_step = SceneStep(
+            evaluate = eval1
+        )
+
+        appl.process()
+
+        self.assertEqual(appl.low_memory_warning, True)
+
+
+    def test_low_mem_warning_below(self):
+        gc_mock_data().reset()
+        gc_mock_data().output_mem_free_override(2048)
+
+        appl = MockController(
+            led_driver = MockNeoPixelDriver(),
+            communication = {
+                "valueProvider": MockValueProvider()
+            },
+            midi = MockMidiController(),
+            config = {
+                "memoryWarnLimitBytes": 1024
+            }
+        )
+        
+        def eval1():            
+            return False
+
+        appl.next_step = SceneStep(
+            evaluate = eval1
+        )
+
+        appl.process()
+
+        self.assertEqual(appl.low_memory_warning, False)
 

@@ -25,7 +25,6 @@ DISPLAY_ID_FOOTER = 20
 _DISPLAY_WIDTH = 240
 _DISPLAY_HEIGHT = 240
 _SLOT_HEIGHT = 40                 # Slot height on the display
-_DETAIL_HEIGHT = 20               # Height of the detail (amp/cab) display
 
 #############################################################################################################################################
 
@@ -89,8 +88,7 @@ Display = ParameterCondition(
         
         scale = 3,
         layout = {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf",
-            "text": "Tuner"
+            "font": "/fonts/PTSans-NarrowBold-40.pcf"
         }
     )
 )

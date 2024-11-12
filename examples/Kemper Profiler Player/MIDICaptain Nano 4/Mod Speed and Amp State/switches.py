@@ -79,9 +79,7 @@ Switches = [
                     "layout": _ACTION_LABEL_LAYOUT
                 },
 
-                # Multi-color action (uses different colors for the switch LEDs, the first color is 
-                # used for the display label if any)
-                color = ((255, 0, 0), (200, 200, 200), (200, 200, 200), (200, 200, 200), (255, 0, 0))
+                color = Colors.GRAY
             )
         ]
     }

@@ -66,23 +66,44 @@ class MockAdafruitMIDIMessage:
 
 
 class MockGC:
-    mock = {
-        "collectCalls": 0,
-        "memFreeReturn": 0,
-        "memAllocReturn": 0
-    }
+    class MockData:
+        def __init__(self):
+            self.reset()
 
-    @staticmethod
-    def collect():
-        MockGC.mock["collectCalls"] += 1
+        def reset(self):
+            self.collect_calls = 0
+            self._output_mem_free = 1024 * 20  # 20kB
+            self.output_mem_alloc = 0
 
-    @staticmethod
-    def mem_free():
-        return MockGC.mock["memFreeReturn"]
+        @property
+        def output_mem_free(self):
+            return self._output_mem_free
+        
+        @output_mem_free.setter
+        def output_mem_free(self, value):
+            # Shall not be lower than 20k
+            if value < 1024 * 20:
+                value = 1024 * 20
 
-    @staticmethod
-    def mem_alloc():
-        return MockGC.mock["memAllocReturn"]
+            self._output_mem_free = value
+
+        def output_mem_free_override(self, value):
+            self._output_mem_free = value
+
+    def __init__(self):
+        self.mock = MockGC.MockData()
+
+    def gc_mock_data(self):
+        return self.mock
+
+    def collect(self):
+        self.mock.collect_calls += 1
+
+    def mem_free(self):
+        return self.mock.output_mem_free
+
+    def mem_alloc(self):
+        return self.mock.output_mem_alloc
 
 
 class MockDisplayIO:

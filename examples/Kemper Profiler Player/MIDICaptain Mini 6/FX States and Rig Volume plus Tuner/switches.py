@@ -104,6 +104,7 @@ Switches = [
         "actions": [
             KemperActionDefinitions.RIG_VOLUME_BOOST(
                 boost_volume = 0.75,    # Value im [0..1] representing the Rig Volume Knob. Examples: 0.5 = 0dB (no boost), 0.75 = +6dB, 1.0 = +12dB
+                text = "Boost",
                 display = {
                     "id": DISPLAY_ID_FOOTER,
                     "index": 2,

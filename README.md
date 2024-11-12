@@ -58,7 +58,7 @@ The **communication.py** file defines the handling of MIDI. This includes the cl
 
 ```python
 
-USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
+_USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
     in_channel = None,  # All channels will be received
     out_channel = 0     # Send on channel 1
 )
@@ -75,21 +75,21 @@ Communication = {
         "routings": [
             # Application: Receive MIDI messages from USB
             MidiRouting(
-                source = USB_MIDI,
+                source = _USB_MIDI,
                 target = MidiController.APPLICATION
             ),
 
             # Application: Send MIDI messages to USB
             MidiRouting(
                 source = MidiController.APPLICATION,
-                target = USB_MIDI
+                target = _USB_MIDI
             ),
         ]
     }
 }
 ```
 
-- "ValueProvider": Must be an instance of a class which is capable of parsing MIDI messages for the client used. Use KemperMidiValueProvider (from kemper.py) to use the controller with Kemper devices:
+- "valueProvider": Must be an instance of a class which is capable of parsing MIDI messages for the client used. Use KemperMidiValueProvider (from kemper.py) to use the controller with Kemper devices:
 
 - "midi": Configuration for the MidiController. This is a flexible MIDI routing class which can be configured using a list of MidiRouting instances, each defining one route (in one direction only). The example above defines the minimal necessary routings to run the application. If you do not provide any routings, the application will not be able to communicate to the outer world. 
 
@@ -104,12 +104,12 @@ This example will, in addition to normal operation as in the last example, also 
 
 ```python
 
-DIN_MIDI = MidiDevices.PA_MIDICAPTAIN_DIN_MIDI(
+_DIN_MIDI = MidiDevices.PA_MIDICAPTAIN_DIN_MIDI(
     in_channel = None,  # All channels will be received
     out_channel = 0     # Send on channel 1
 )
 
-USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
+_USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
     in_channel = None,  # All channels will be received
     out_channel = 0     # Send on channel 1
 )
@@ -126,20 +126,20 @@ Communication = {
         "routings": [
             # MIDI Through from DIN to USB
             MidiRouting(
-                source = DIN_MIDI,
-                target = USB_MIDI
+                source = _DIN_MIDI,
+                target = _USB_MIDI
             ),
 
             # Application: Receive MIDI messages from USB
             MidiRouting(
-                source = USB_MIDI,
+                source = _USB_MIDI,
                 target = MidiController.APPLICATION
             ),
 
             # Application: Send MIDI messages to USB
             MidiRouting(
                 source = MidiController.APPLICATION,
-                target = USB_MIDI
+                target = _USB_MIDI
             ),
         ]
     }
@@ -166,7 +166,7 @@ See this chart for some differences between the operation modes:
 To enable bidirectional communication, you have to provide a suitable protocol implementation (instance of BidirectionalProtocol) to the Communication object like follows, using the Kemper specific implementation from **kemper.py**:
 
 ```python
-USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
+_USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
     in_channel = None,  # All channels will be received
     out_channel = 0     # Send on channel 1
 )
@@ -191,14 +191,14 @@ Communication = {
         "routings": [
             # Application: Receive MIDI messages from USB
             MidiRouting(
-                source = USB_MIDI,
+                source = _USB_MIDI,
                 target = MidiController.APPLICATION
             ),
 
             # Application: Send MIDI messages to USB
             MidiRouting(
                 source = MidiController.APPLICATION,
-                target = USB_MIDI
+                target = _USB_MIDI
             ),
         ]
     }
@@ -219,10 +219,6 @@ The file **switches.py** must provide a Switches list holding all switch assignm
 
 - **"actions"**: List of actions to be triggered by the switch, see below.
 
-- **"initialColors"**: Optional: Color initially set before any actions are being processed. If not set, random colors are set.
-
-- **"initialBrightness"**: Optional: Brightness initially being set before any actions are being processed. If not set, the default (1) is used.
-
 #### Switch Actions
 
 Example for assigning switch 1 of a MIDICaptain Nano 4 to switching the Kemper effect slot A on or off:
@@ -230,7 +226,7 @@ Example for assigning switch 1 of a MIDICaptain Nano 4 to switching the Kemper e
 ```python
 Switches = [
 	{
-        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
@@ -248,13 +244,13 @@ Switches = [
 
 Most actions feature a "mode" parameter. This parameter controls the behaviour of the switch as defined here:
 
-- PushButtonModes.ENABLE: Switch the functionality on (always, no switching off again!)
-- PushButtonModes.DISABLE: Switch the functionality off (always, no switching on again)
-- PushButtonModes.LATCH: Toggle state on every button push
-- PushButtonModes.MOMENTARY: Enable on push, disable on release
-- PushButtonModes.MOMENTARY_INVERSE: Disable on push, Enable on release
-- PushButtonModes.HOLD_MOMENTARY: Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is used (inverse or not: This depends on the current state of the functionality. When it is on, it will momentarily be switched off and vice versa). This is the default for most of the actions.
-- PushButtonModes.ONE_SHOT: Fire the SET command on every push (show as disabled)
+- **PushButtonModes.ENABLE**: Switch the functionality on (always, no switching off again!)
+- **PushButtonModes.DISABLE**: Switch the functionality off (always, no switching on again)
+- **PushButtonModes.LATCH**: Toggle state on every button push
+- **PushButtonModes.MOMENTARY**: Enable on push, disable on release
+- **PushButtonModes.MOMENTARY_INVERSE**: Disable on push, Enable on release
+- **PushButtonModes.HOLD_MOMENTARY**: Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is used (inverse or not: This depends on the current state of the functionality. When it is on, it will momentarily be switched off and vice versa). This is the default for most of the actions.
+- **PushButtonModes.ONE_SHOT**: Fire the SET command on every push (show as disabled)
 
 Each switch can be assigned to any number of actions, which are implementing the functionality for the switch. Actions are instances based on the lib/pyswitch/controller/actions/Action base class. Normally you would use predefined actions as provided by kemper.py (class KemperActionDefinitions as used in the example above), however you could also directly use the classes defined in lib/pyswitch/controller/actions/actions.py and provide all the MIDI mapping manually.
 
@@ -265,27 +261,11 @@ Most actions provide a color option: If set, this defines the color for switch L
 ```python
 Switches = [
 	{
-        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.ROTARY_SPEED(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                 color = (180, 0, 120)    # (R, G, B)
-            )
-        ]
-    }
-]
-```
-
-Optionally, you can also assign multiple colors to separately address the LEDs for a switch (the MIDICaptain series has three LED per switch). Here an example showing the same action as in the last example, but with three shades of purple for the LEDs:
-
-```python
-Switches = [
-	{
-        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
-        "actions": [
-            KemperActionDefinitions.ROTARY_SPEED(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                color = ((180, 0, 120), (120, 0, 80), (60, 0, 40))
             )
         ]
     }
@@ -299,11 +279,11 @@ Actions can also be defined depending on a parameter for example: Instead of a l
 ```python
 Switches = [
 	{
-        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             ParameterCondition(
                 mapping = KemperMappings.RIG_NAME,
-                mode = ParameterConditionModes.STRING_CONTAINS,
+                mode = ParameterCondition.STRING_CONTAINS,
                 ref_value = "TAP",
 
                 yes = [
@@ -329,11 +309,11 @@ Note that conditions can be deeply nested: Any action in the yes or no branches 
 ```python
 Switches = [
     {
-        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             ParameterCondition(
                 mapping = KemperMappings.RIG_NAME,
-                mode = ParameterConditionModes.STRING_CONTAINS,
+                mode = ParameterCondition.STRING_CONTAINS,
                 ref_value = "TAP",
 
                 yes = [
@@ -398,7 +378,7 @@ The last example only uses the switch LEDs to indicate the effect status (bright
 ```python
 Switches = [
     {
-        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
@@ -428,7 +408,7 @@ You can assign different actions to long pressing of switches. This is done usin
 ```python
 Switches = [
     {
-        "assignment": SwitchDefinitions.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             HoldAction({
                 "actions": [
@@ -467,20 +447,17 @@ Display = HierarchicalDisplayElement(
         # Header area
         DisplaySplitContainer(
             id = 123,
-            name = "Header",
             bounds = DisplayBounds(0, 0, 240, 40)  # x, y, width, height
         ),
 
         # Footer area
         DisplaySplitContainer(
             id = 456,
-            name = "Footer",
             bounds = DisplayBounds(0, 200, 240, 40)  # x, y, width, height
         ),
 
         # Rig name
         ParameterDisplayLabel(
-            name = "Rig Name",
             bounds = DisplayBounds(0, 40, 160, 40)  # x, y, width, height
             layout = {
                 "font": "/fonts/PTSans-NarrowBold-40.pcf",
@@ -514,7 +491,6 @@ All available area types are defined in lib/pyswitch/ui/elements/elements.py, se
 - **DisplaySplitContainer**: Container element which can hold any amount of labels. The amount of labels is automatically determined by their usages in the switches.py file for example. 
 - **PerformanceIndicator**: A small black dot getting red when the processing starts to lag (which can occur when too much stuff is configured)
 - **BidirectionalProtocolState**: A small black dot showing the state of the bidirectional communication protocol (green/red)
-- **StatisticsDisplayLabel**: A DisplayLabel showing processing statistics
 
 #### Subtractive Layouting
 
@@ -582,7 +558,7 @@ Display = ParameterDisplayLabel(
 
     layout = ParameterCondition(
         mapping = KemperMappings.RIG_NAME,
-        mode = ParameterConditionModes.STRING_CONTAINS,
+        mode = ParameterCondition.STRING_CONTAINS,
         ref_value = "ORANGE",
 
         yes = {
@@ -602,7 +578,7 @@ Display = ParameterDisplayLabel(
 
     parameter = {
         "mapping": KemperMappings.RIG_NAME,
-        "depends": KemperMappings.RIG_DATE,
+        #"depends": KemperMappings.RIG_DATE,  #Rig name is automatically updated in bidirectional mode
         "textOffline": "Kemper Profiler (offline)",
         "textReset": "Loading Rig..."
     }
@@ -617,9 +593,9 @@ The rig name display will have an orange background when the rig name contains t
 ### Mappings
 
 The MIDI messages to set/request parameters from the device are bundled in Mappings. A mapping (see class ClientParameterMapping) can contain the following:
-- SET message: MIDI message to be used to set the parameter (value will be overridden with the real value before sending)
-- REQUEST message: MIDI message to request the parameter from the device
-- RESPONSE message: MIDI message template to be used to compare incoming MIDI messages to. Defines how the device receives the parameter value.
+- **set**: MIDI message to be used to set the parameter (value will be overridden with the real value before sending)
+- **request**: MIDI message to request the parameter from the device. Only used for non-bidirectional mappings.
+- **response**: MIDI message template to be used to compare incoming MIDI messages to. Defines how the device receives the parameter value.
 
 See the ClientParameterMapping class for deeper details.
 
@@ -655,7 +631,7 @@ example_layout = {
     # Ouline stroke (optional, default is 0). Width of the 
     # optional outline. The outline is only "faked" for sake of memory 
     # usage (just the background is reduced in size)
-    "stroke":                   
+    "stroke": 1,
                                 
     # Initial text (default is None).
     "text": "Initial Text"      
@@ -670,7 +646,7 @@ If you need for example a big Tuner visualization display which is completely re
 Display = ParameterCondition(
     mapping = KemperMappings.TUNER_MODE_STATE,
     ref_value = 1,
-    mode = ParameterConditionModes.NOT_EQUAL,
+    mode = ParameterCondition.NOT_EQUAL,
 
     # Show normal display
     yes = HierarchicalDisplayElement(
@@ -689,8 +665,7 @@ Display = ParameterCondition(
         
         scale = 3,     # Show note name bigger
         layout = {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf",
-            "text": "Tuner"
+            "font": "/fonts/PTSans-NarrowBold-40.pcf"
         }
     )
 )
@@ -838,8 +813,6 @@ These properties can be used everywhere except in the constructor:
 
 - **label**: DisplayLabel instance bound to the action, if a display definition has been passed when creating it. If no display is set, this is None. Can be directly used to set the label text/color(s) etc.
 
-- **debug**: Boolean. Will be True when debugging actions is enabled in config.py
-
 #### PushButtonAction
 
 For most things, we need the push/release states of the hardware switches to be interpreted as latch/momentary etc., so for those we have the PushButtonAction base class which can be run in several modes (usable in all actions derived from it).
@@ -936,7 +909,7 @@ def set_value(self, mapping, value):
 The firmware is capable of running on several controllers, even if it has been developed on the PaintAudio MIDICaptain Nano 4. The definitions in hardware.py provide the hardware mappings for known devices (the MC Mini mapping comes from the original script from @gstrotmann):
 
 ```python
-class SwitchDefinitions:
+class Hardware:
 
     # PaintAudio MIDI Captain Nano (4 Switches)
     PA_MIDICAPTAIN_NANO_SWITCH_1 = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1" }
@@ -1006,33 +979,11 @@ Controller: Showing UI ..................................... Allocated 95.6 KiB 
 Controller: Starting loop .................................. Allocated 37.9 KiB     <<<<<<<|....... -> 53.7 KiB        26%  XXXX...........
 ```
 
-The Memory.watch() function can be placed wherever you need a measurement. It reports how much memory has been allocated since the last call, as well as how much is left.
+Every time memory is allocated or released, another message will be generated.
 
 ### Debug Performance Issues
 
-If you notify the device does not react sometimes when a switch is pressed, it might be that some action is taking much CPU. YOu can monitor the processing loop tick time by adding the following to your Displays list:
-
-```python
-Displays = [
-	# ...
-	
-	StatisticalDisplays.STATS_DISPLAY(bounds)
-]
-```
-
-This shows a display label with the max. and average tick times, as well as free memory, updated every second.
-
-For less invasive measurement, there is also an element showing a small black dot which gets red when tick time gets over the update interval:
-
-```python
-Displays = [
-	# ...
-	
-	StatisticalDisplays.STATS_DISPLAY(parent_bounds)
-]
-```
-
-(This will not fill the entire bounds passed but be placed at the top right corner)
+If you notify the device does not react immediately sometimes when a switch is pressed, it might be that some action is taking much CPU. You can monitor the processing loop tick time by enabling the "debugStats" option in **config.py**.
 
 ### Unit Testing
 

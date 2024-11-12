@@ -94,6 +94,7 @@ class TestDisplayLabel(unittest.TestCase):
 
         ui = MockDisplaySplash()
         u = Updater()
+        u.low_memory_warning = False
 
         label.init(ui, u)
 
@@ -194,6 +195,7 @@ class TestDisplayLabel(unittest.TestCase):
 
         ui = MockDisplaySplash()
         u = Updater()
+        u.low_memory_warning = False
 
         label.init(ui, u)
         
@@ -282,6 +284,7 @@ class TestDisplayLabel(unittest.TestCase):
         # Check background(s)
         ui = MockDisplaySplash()
         u = Updater()
+        u.low_memory_warning = False
 
         label.init(ui, u)
         
@@ -325,6 +328,7 @@ class TestDisplayLabel(unittest.TestCase):
         # Check elements
         ui = MockDisplaySplash()
         u = Updater()
+        u.low_memory_warning = False
 
         label.init(ui, u)
         
@@ -375,6 +379,7 @@ class TestDisplayLabel(unittest.TestCase):
         # Check elements
         ui = MockDisplaySplash()
         u = Updater()
+        u.low_memory_warning = False
 
         label.init(ui, u)
         
@@ -409,6 +414,7 @@ class TestDisplayLabel(unittest.TestCase):
         # Check elements
         ui = MockDisplaySplash()
         u = Updater()
+        u.low_memory_warning = False
 
         label.init(ui, u)
         
@@ -434,4 +440,25 @@ class TestDisplayLabel(unittest.TestCase):
         self.assertEqual(ui.splash[0].mock_content[0].text, "bar1\n(wrapped to 22 and font 'foo')")
 
 
+    def test_text_low_memory_warning(self):
+        label = DisplayLabel(
+            layout = {
+                "font": "foo",
+                "text": "foo"
+            },
+            bounds = DisplayBounds(20, 21, 200, 210)
+        )
 
+        ui = MockDisplaySplash()
+        u = Updater()
+        u.low_memory_warning = True
+
+        label.init(ui, u)
+        
+        self.assertIn("Memory", ui.splash[0].mock_content[0].text)
+        self.assertIn("Memory", label.text)
+
+        label.text = "foo2"
+        self.assertIn("Memory", ui.splash[0].mock_content[0].text)
+        self.assertIn("Memory", label.text)
+        

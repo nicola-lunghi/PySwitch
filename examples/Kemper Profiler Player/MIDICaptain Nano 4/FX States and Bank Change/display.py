@@ -89,10 +89,9 @@ Display = ParameterCondition(
         
         bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
         
-        scale = 6,
+        scale = 3,
         layout = {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf",
-            "text": "Tuner"
+            "font": "/fonts/PTSans-NarrowBold-40.pcf"
         }
     )
 )

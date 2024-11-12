@@ -7,6 +7,7 @@
     - Reduced class footprint
     -> Tested with big configuration (4 FX slot display labels, rig name, Tuner, 10 Switches with 3 LEDs each, Effect Enable Actions with expensive mappings on all switches) with no problems and still about 20% of RAM left
 - Added examples
+- Tuner sensitivity adjusted, colors changed for lighter ones
 
 # 2.1.1
 - Added mappings for Effect Buttons I-IIII (set only, sadly there is no state feedback possibility from Kemper)

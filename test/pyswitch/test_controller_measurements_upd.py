@@ -15,11 +15,12 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from .mocks_misc import MockMisc
+    from gc import gc_mock_data
 
     with patch.dict(sys.modules, {
         "lib.pyswitch.misc": MockMisc
     }):
-        from .mocks_appl import *
+        from .mocks_appl import *        
 
         from lib.pyswitch.controller.RuntimeMeasurement import RuntimeMeasurement
 
@@ -30,7 +31,7 @@ class TestControllerMeasurementsUpdate(unittest.TestCase):
         action_1 = MockAction()
         period = MockPeriodCounter()
 
-        MockGC.mock["collectCalls"] = 0
+        gc_mock_data().reset()
         MockMisc.reset_mock()
 
         appl = MockController(
@@ -58,15 +59,15 @@ class TestControllerMeasurementsUpdate(unittest.TestCase):
         m = appl._measurement_tick_time
         self.assertIsInstance(m, RuntimeMeasurement)
 
-        MockGC.mock["memFreeReturn"] = 56
+        gc_mock_data().output_mem_free = 1024 * 566
 
         # Build scene
         def prep1():            
             period.exceed_next_time = True
         
         def eval1():            
-            self.assertEqual(MockGC.mock["collectCalls"], 1)
-            self.assertIn(MockMisc.format_size(MockGC.mock["memFreeReturn"]), MockMisc.msgs_str)
+            self.assertGreaterEqual(gc_mock_data().collect_calls, 1)
+            self.assertIn(MockMisc.format_size(gc_mock_data().output_mem_free), MockMisc.msgs_str)
             return False
 
         appl.next_step = SceneStep(

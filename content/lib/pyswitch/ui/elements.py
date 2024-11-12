@@ -6,7 +6,7 @@ from .ui import HierarchicalDisplayElement, DisplayBounds, DisplayElement
 
 from ..controller.ConditionTree import ConditionTree, Condition
 from ..controller.Client import BidirectionalClient
-from ..misc import Updateable, Colors, get_option
+from ..misc import Updateable, Colors, get_option, do_print
 
 
 # Data class for layouts
@@ -69,6 +69,7 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
 
         self._initial_text_color = self._layout.text_color        
         self._ui = None    
+        self._appl = None
 
         self._background = None 
         self._label = None      
@@ -76,6 +77,7 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
     # Adds the slot to the splash
     def init(self, ui, appl):
         self._ui = ui
+        self._appl = appl
 
         if self._layout_tree:
             self._layout_tree.init(appl)
@@ -232,6 +234,10 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
 
     @text.setter
     def text(self, text):
+        # In case of low memory detected by the controller, we just show this information
+        if self._appl and self._appl.low_memory_warning:
+            text = "Low Memory!"
+        
         if self.layout.text == text:
             return
         
@@ -409,12 +415,23 @@ class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener)
 
 class TunerDevianceDisplay(DisplayElement):
 
-    def __init__(self, bounds = DisplayBounds(), name = "", id = 0, width = 5):
-        DisplayElement.__init__(self, bounds = bounds, name = name, id = id)
+    # Defines what to show as "in tune" (green). Aligned to a PolyTune tuner.
+    IN_TUNE_ABOVE = 7935  # = 7945 - 10;  109.9 Hz;
+    IN_TUNE_BELOW = 8444  # = 8434 + 10;  110.1 Hz;
+
+    def __init__(self, 
+                 bounds, 
+                 zoom,
+                 width, 
+                 id = 0
+        ):
+        DisplayElement.__init__(self, bounds = bounds, id = id)
 
         self.width = width
+        self._zoom = zoom
 
         self._current_color = None
+        self.in_tune = False
 
     def init(self, ui, appl):
         DisplayElement.init(self, ui, appl)
@@ -424,7 +441,7 @@ class TunerDevianceDisplay(DisplayElement):
             y = self.bounds.y,
             width = self.width,
             height = self.bounds.height,
-            fill = Colors.WHITE
+            fill = TunerDisplay.COLOR_NEUTRAL
         )
 
         ui.splash.append(self._marker_intune)
@@ -434,7 +451,7 @@ class TunerDevianceDisplay(DisplayElement):
             y = self.bounds.y,
             width = self.width,
             height = self.bounds.height,
-            fill = Colors.GREEN
+            fill = TunerDisplay.COLOR_IN_TUNE
         )
         self._current_color = self._marker.fill
 
@@ -442,19 +459,21 @@ class TunerDevianceDisplay(DisplayElement):
 
     # Sets deviance value in range [0..16383]
     def set(self, value):
-        self._marker.x = int((self.bounds.width - self.width) * value / 16383)
+        value_scaled = value
+        if self._zoom != 1:
+            value_scaled = max(-8192, min(int((value - 8192) * self._zoom), 8192)) + 8191
 
-        if abs(value - 8191) >= 300:   # TODO Const
-            self.color = Colors.RED
+        self._marker.x = int((self.bounds.width - self.width) * value_scaled / 16384)
+
+        if value >= self.IN_TUNE_ABOVE and value <= self.IN_TUNE_BELOW:
+            self.in_tune = True
+            self.set_color(TunerDisplay.COLOR_IN_TUNE)
         else:
-            self.color = Colors.GREEN
+            self.in_tune = False
+            self.set_color(TunerDisplay.COLOR_OUT_OF_TUNE)
 
-    @property 
-    def color(self):
-        return self._marker.fill
-    
-    @color.setter
-    def color(self, color):
+    # Sets the color
+    def set_color(self, color):
         if self._current_color == color:
             return
         
@@ -465,43 +484,47 @@ class TunerDevianceDisplay(DisplayElement):
 ###########################################################################################################################
 
 
-# Note names 
-TUNER_NOTE_NAMES = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B']     # (jazz man's variant)
-#TUNER_NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']     # (sharp variant)
-
-
 class TunerDisplay(HierarchicalDisplayElement):
-    
+
+    # Note names 
+    _TUNER_NOTE_NAMES = ('C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B')     # (jazz man's variant)
+    #_TUNER_NOTE_NAMES = ('C','C#','D','D#','E','F','F#','G','G#','A','A#','B')     # (sharp variant)
+
+    COLOR_OUT_OF_TUNE = Colors.ORANGE
+    COLOR_IN_TUNE = Colors.LIGHT_GREEN
+    COLOR_NEUTRAL = Colors.WHITE
+
     def __init__(self, 
                  mapping_note, 
                  mapping_deviance = None, 
                  bounds = DisplayBounds(), 
                  layout = {}, 
-                 scale = 1, 
-                 name = "", 
-                 id = 0, 
-                 deviance_height = 40, 
-                 deviance_width = 5
+                 scale = 1,                                # Scaling of the note display label
+                 deviance_height = 40,                     # Height of the deviance display
+                 deviance_width = 5,                       # Width of the deviance display pointer line and "in tune" marker
+                 deviance_zoom = 2.4,                      # Scaling of values. Set to > 1 to make the tuner display more sensitive.
         ):
-        HierarchicalDisplayElement.__init__(self, bounds = bounds, name = name, id = id)
+        HierarchicalDisplayElement.__init__(self, bounds = bounds)
 
         self._mapping_note = mapping_note
         self._mapping_deviance = mapping_deviance
 
-        self.label = DisplayLabel(
+        self.label_note = DisplayLabel(
             bounds = bounds,
             layout = layout,
             scale = scale
         )
+        self.add(self.label_note)
 
-        self.add(self.label)
+        self._label_left = None
+        self._label_right = None
 
         if self._mapping_deviance:
             self.deviance = TunerDevianceDisplay(
                 bounds = bounds.bottom(deviance_height),
-                width = deviance_width
-            )
-            
+                width = deviance_width,
+                zoom = deviance_zoom
+            )            
             self.add(self.deviance)
 
         self._last_note = None
@@ -523,25 +546,59 @@ class TunerDisplay(HierarchicalDisplayElement):
         self._last_note = None
         self._last_deviance = 8192
         
-        self.label.text = "Tuner"
-        self.label.text_color = None
+        self.label_note.text = "-"
+        self.label_note.text_color = self.COLOR_NEUTRAL
 
     # Listen to client value returns
     def parameter_changed(self, mapping):
         if mapping == self._mapping_note and mapping.value != self._last_note:
             self._last_note = mapping.value
 
-            self.label.text = TUNER_NOTE_NAMES[mapping.value % 12]
+            self.label_note.text = self._TUNER_NOTE_NAMES[mapping.value % 12]            
 
         if mapping == self._mapping_deviance and mapping.value != self._last_deviance:
             self._last_deviance = mapping.value        
             
-            self.deviance.set(self._last_deviance)
-            self.label.text_color = self.deviance.color
+            self.deviance.set(self._last_deviance)            
+
+            # Enable this for calibration.
+            #self._debug_calibration(mapping.value)            
+
+            if self.deviance.in_tune:
+                self.label_note.text_color = self.COLOR_IN_TUNE
+            else:
+                self.label_note.text_color = self.COLOR_OUT_OF_TUNE
 
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
         pass                                       # pragma: no cover
+
+    # For calibration: Shows statistics on the tuner deviance over a period of 4 seconds.
+    #def _debug_calibration(self, value):
+    #    if not hasattr(self, "_calib_period"):
+    #        from ..misc import PeriodCounter
+    #        self._calib_period = PeriodCounter(4000)
+    #        self._min = 9999999
+    #        self._max = -1
+    #        self._sum = 0
+    #        self._steps = 0
+    #    
+    #    self._sum += value
+    #    self._steps += 1
+    #
+    #    if value > self._max:
+    #        self._max = value
+    #    if value < self._min:
+    #        self._min = value
+    #
+    #    if self._calib_period.exceeded:
+    #        avg = int(self._sum / self._steps)
+    #        do_print("[ " + repr(self._min - avg) + " .. " + repr(self._max - avg) + " ] Avg: " + repr(avg))
+    #
+    #        self._min = 9999999
+    #        self._max = -1
+    #        self._sum = 0
+    #        self._steps = 0
 
 
 ###########################################################################################################################

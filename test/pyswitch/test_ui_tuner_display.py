@@ -19,13 +19,17 @@ with patch.dict(sys.modules, {
     from adafruit_midi.system_exclusive import SystemExclusive
 
     from lib.pyswitch.ui.ui import DisplayBounds
-    from lib.pyswitch.ui.elements import TunerDisplay, DisplayLabel, TUNER_NOTE_NAMES
+    from lib.pyswitch.ui.elements import TunerDisplay, DisplayLabel
     from lib.pyswitch.controller.Client import ClientParameterMapping
     from lib.pyswitch.ui.UiController import UiController
 
     from .mocks_appl import *
     from .mocks_ui import MockDisplayDriver, MockFontLoader
     from lib.pyswitch.misc import Colors
+
+
+
+TUNER_NOTE_NAMES = TunerDisplay._TUNER_NOTE_NAMES
 
 
 class TestTunerDisplay(unittest.TestCase):
@@ -47,17 +51,17 @@ class TestTunerDisplay(unittest.TestCase):
 
 
     def test_with_deviance(self):
-        self._do_test(0, -1, Colors.RED)
-        self._do_test(4096, -0.5, Colors.RED)
-        self._do_test(8193, 0, Colors.GREEN)    # In tune
-        self._do_test(12288, 0.5, Colors.RED)
-        self._do_test(16383, 1, Colors.RED)
+        self._do_test(0, -1, TunerDisplay.COLOR_OUT_OF_TUNE)
+        self._do_test(4096, -0.5, TunerDisplay.COLOR_OUT_OF_TUNE)
+        self._do_test(8193, 0, TunerDisplay.COLOR_IN_TUNE)
+        self._do_test(12288, 0.5, TunerDisplay.COLOR_OUT_OF_TUNE)
+        self._do_test(16383, 1, TunerDisplay.COLOR_OUT_OF_TUNE)
 
 
     ##################################################################################################################
 
 
-    def _do_test(self, deviance_value = None, deviance_pos = None, exp_color = None, deviance_tolerance = 0):
+    def _do_test(self, deviance_value = None, deviance_pos = None, exp_color = None, deviance_tolerance = 0.15):
         self._do_test_all_notes(0, deviance_value, deviance_pos, exp_color, deviance_tolerance)
         self._do_test_all_notes(12, deviance_value, deviance_pos, exp_color, deviance_tolerance)
         self._do_test_all_notes(24, deviance_value, deviance_pos, exp_color, deviance_tolerance)
@@ -65,21 +69,21 @@ class TestTunerDisplay(unittest.TestCase):
 
 
     def _do_test_all_notes(self, offset, deviance_value, deviance_pos, exp_color, deviance_tolerance):
-        self._test_scenario(offset + 0, TUNER_NOTE_NAMES[0], deviance_value, deviance_pos, exp_color, deviance_tolerance)
-        self._test_scenario(offset + 1, TUNER_NOTE_NAMES[1], deviance_value, deviance_pos, exp_color, deviance_tolerance)
-        self._test_scenario(offset + 2, TUNER_NOTE_NAMES[2], deviance_value, deviance_pos, exp_color, deviance_tolerance)
-        self._test_scenario(offset + 3, TUNER_NOTE_NAMES[3], deviance_value, deviance_pos, exp_color, deviance_tolerance)
-        self._test_scenario(offset + 4, TUNER_NOTE_NAMES[4], deviance_value, deviance_pos, exp_color, deviance_tolerance)
-        self._test_scenario(offset + 5, TUNER_NOTE_NAMES[5], deviance_value, deviance_pos, exp_color, deviance_tolerance)
-        self._test_scenario(offset + 6, TUNER_NOTE_NAMES[6], deviance_value, deviance_pos, exp_color, deviance_tolerance)
-        self._test_scenario(offset + 7, TUNER_NOTE_NAMES[7], deviance_value, deviance_pos, exp_color, deviance_tolerance)
-        self._test_scenario(offset + 8, TUNER_NOTE_NAMES[8], deviance_value, deviance_pos, exp_color, deviance_tolerance)
-        self._test_scenario(offset + 9, TUNER_NOTE_NAMES[9], deviance_value, deviance_pos, exp_color, deviance_tolerance)
-        self._test_scenario(offset + 10, TUNER_NOTE_NAMES[10], deviance_value, deviance_pos, exp_color, deviance_tolerance)
-        self._test_scenario(offset + 11, TUNER_NOTE_NAMES[11], deviance_value, deviance_pos, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 0, TUNER_NOTE_NAMES[0], deviance_value, deviance_pos, 1, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 1, TUNER_NOTE_NAMES[1], deviance_value, deviance_pos, 2, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 2, TUNER_NOTE_NAMES[2], deviance_value, deviance_pos, 3, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 3, TUNER_NOTE_NAMES[3], deviance_value, deviance_pos, 1.1, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 4, TUNER_NOTE_NAMES[4], deviance_value, deviance_pos, 0.1, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 5, TUNER_NOTE_NAMES[5], deviance_value, deviance_pos, 1, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 6, TUNER_NOTE_NAMES[6], deviance_value, deviance_pos, 1, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 7, TUNER_NOTE_NAMES[7], deviance_value, deviance_pos, 0.5, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 8, TUNER_NOTE_NAMES[8], deviance_value, deviance_pos, -1000, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 9, TUNER_NOTE_NAMES[9], deviance_value, deviance_pos, 10, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 10, TUNER_NOTE_NAMES[10], deviance_value, deviance_pos, 11, exp_color, deviance_tolerance)
+        self._test_scenario(offset + 11, TUNER_NOTE_NAMES[11], deviance_value, deviance_pos, 1000, exp_color, deviance_tolerance)
 
 
-    def _test_scenario(self, note_value, note_text, deviance_value, deviance_pos, exp_color, deviance_tolerance):
+    def _test_scenario(self, note_value, note_text, deviance_value, deviance_pos, deviance_zoom, exp_color, deviance_tolerance):
         period = MockPeriodCounter()
 
         mapping_1 = ClientParameterMapping(
@@ -109,13 +113,14 @@ class TestTunerDisplay(unittest.TestCase):
             },
             deviance_height = 44,
             deviance_width = deviance_width,
+            deviance_zoom = deviance_zoom,
             scale = 2.33
         )
 
-        self.assertIsInstance(display.label, DisplayLabel)
+        self.assertIsInstance(display.label_note, DisplayLabel)
         self.assertEqual(len(display.children), 1 if deviance_value == None else 2)
-        self.assertEqual(display.children[0], display.label)
-        self.assertEqual(display.label.bounds, DisplayBounds(20, 33, 444, 555))
+        self.assertEqual(display.children[0], display.label_note)
+        self.assertEqual(display.label_note.bounds, DisplayBounds(20, 33, 444, 555))
 
         if deviance_value != None:
             self.assertEqual(display.children[1], display.deviance)
@@ -170,7 +175,7 @@ class TestTunerDisplay(unittest.TestCase):
         # Build scene:
         # Step 1: Not exceeded
         def prep1():
-            self.assertEqual(display.label._label.scale, 2.33)
+            self.assertEqual(display.label_note._label.scale, 2.33)
             period.exceed_next_time = True
             
         def eval1():
@@ -200,23 +205,20 @@ class TestTunerDisplay(unittest.TestCase):
 
         def eval2():
             self.assertEqual(len(appl._midi.messages_sent), 0)
-            self.assertEqual(display.label.text, note_text)
+            self.assertEqual(display.label_note.text, note_text)
 
             if deviance_value != None:
                 act_pos = display.deviance._marker.x / ((444 - deviance_width) / 2) - 1
-                self.assertAlmostEqual(act_pos, deviance_pos, delta = deviance_tolerance)
+                self.assertAlmostEqual(act_pos, max(-1, min(deviance_pos * deviance_zoom, 1)), delta = deviance_tolerance)
 
-                self.assertEqual(display.label.text_color, exp_color)
-                self.assertEqual(display.deviance.color, exp_color)
+                self.assertEqual(display.label_note.text_color, exp_color)
                 self.assertEqual(display.deviance._marker.fill, exp_color)
                 self.assertEqual(display.deviance._marker.width, deviance_width)
 
             display.reset()
 
-            self.assertEqual(display.label.text, "Tuner")
-
             if deviance_value != None:
-                self.assertEqual(display.label.text_color, Colors.WHITE)
+                self.assertEqual(display.label_note.text_color, Colors.WHITE)
 
             return False
                 

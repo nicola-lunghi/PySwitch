@@ -6,7 +6,7 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-from pyswitch.misc import Colors, Defaults
+from pyswitch.misc import Colors, DEFAULT_LABEL_COLOR
 #from pyswitch.controller.ConditionTree import ParameterCondition
 from pyswitch.controller.actions.actions import PushButtonAction, ParameterAction, HoldAction
 
@@ -17,7 +17,7 @@ from display import DISPLAY_ID_FOOTER, DISPLAY_ID_HEADER
 # Layout used for the action labels (only used here locally)
 _ACTION_LABEL_LAYOUT = {
     "font": "/fonts/H20.pcf",
-    "backColor": Defaults.DEFAULT_LABEL_COLOR,
+    "backColor": DEFAULT_LABEL_COLOR,
     "stroke": 1
 }
 

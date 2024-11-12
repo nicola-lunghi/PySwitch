@@ -20,6 +20,10 @@ Config = {
     # and other displays if assigned. 200 is the default.
     #"updateInterval": 3000,
 
+    # Amount of bytes that must at least be free at the time processing starts (normally the program requires anther about
+    # 10kB for character loading etc., default threshold for the warning is 15kB).
+    #"memoryWarnLimitBytes": 1024 * 15,
+
     ## Development Options ###################################################################################################################
 
     # Optional, shows the effect slot names in the display labels for EffectEnableAction

@@ -111,8 +111,7 @@ Display = ParameterCondition(
         
         scale = 3,
         layout = {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf",
-            "text": "Tuner"
+            "font": "/fonts/PTSans-NarrowBold-40.pcf"
         }
     )
 )

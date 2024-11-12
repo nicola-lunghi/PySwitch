@@ -38,6 +38,7 @@ class Controller(Updater): #ClientRequestListener
         Updater.__init__(self)
 
         self.running = False
+        self.low_memory_warning = False
 
         self._midi = midi
 
@@ -54,6 +55,7 @@ class Controller(Updater): #ClientRequestListener
         # Statistical measurements (added by the displays etc.)
         self._measurement_tick_time = RuntimeMeasurement(interval_millis = get_option(config, "debugStatsInterval", update_interval))
         self._measurement_tick_time.add_listener(self)
+        self._memory_warn_limit = get_option(config, "memoryWarnLimitBytes", 1024 * 15)  # 15kB
 
         #self._measurement_switch_update = RuntimeMeasurement(interval_millis = get_option(config, "debugStatsInterval", update_interval))
         #self._measurement_switch_update.add_listener(self)
@@ -127,6 +129,13 @@ class Controller(Updater): #ClientRequestListener
         #    do_print("-> Done initializing, starting processing loop")
 
         Memory.watch("Starting loop")
+
+        # Check memory usage and issue a warning if too high
+        collect()
+        free_bytes = mem_free()
+        if free_bytes < self._memory_warn_limit:
+            do_print("WARNING: Low Memory: " + format_size(free_bytes))
+            self.low_memory_warning = True
 
         # Start processing loop
         while self.tick():

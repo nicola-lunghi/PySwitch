@@ -265,14 +265,14 @@ class KemperActionDefinitions:
     # boost rig volume by passing a value in range [0..1] (corresponding to the range of the
     # rig volume paramneter: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB)
     @staticmethod
-    def RIG_VOLUME_BOOST(boost_volume, display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = Colors.PINK, id = False, use_leds = True):
+    def RIG_VOLUME_BOOST(boost_volume, display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = Colors.PINK, id = False, use_leds = True, text = "RigBoost"):
         return ParameterAction({
             "mode": mode,
             "mapping": KemperMappings.RIG_VOLUME,
             "valueEnabled": KemperMidiValueProvider.NRPN_VALUE(boost_volume),
             "valueDisabled": KemperMidiValueProvider.NRPN_VALUE(0.5),           # 0dB
             "display": display,
-            "text": "RigBoost",
+            "text": text,
             "color": color,
             "id": id,
             "useSwitchLeds": use_leds
