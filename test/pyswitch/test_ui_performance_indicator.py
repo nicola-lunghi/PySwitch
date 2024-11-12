@@ -18,45 +18,45 @@ with patch.dict(sys.modules, {
 }):
     from .mocks_measurements import *
 
-    with patch.dict(sys.modules, {
-        "lib.pyswitch.controller.measurements": MockMeasurements()
-    }):
+    #with patch.dict(sys.modules, {
+    #    "lib.pyswitch.controller.RuntimeMeasurement": MockRuntimeMeasurement()
+    #}):
 
-        from lib.pyswitch.ui.ui import DisplayBounds
-        from lib.pyswitch.ui.elements import PerformanceIndicator
+    from lib.pyswitch.ui.ui import DisplayBounds
+    from lib.pyswitch.ui.elements import PerformanceIndicator
 
-        from .mocks_ui import *
+    from .mocks_ui import *
 
 
 class MockController:
     def __init__(self):
-        self.added = []
-        
-    def add_runtime_measurement(self, m):
-        self.added.append(m)
+        self.output_get_measurement = None
+        self.get_measurement_calls = []
 
+    def get_measurement(self, id):
+        self.get_measurement_calls.append(id)
+        return self.output_get_measurement
+        
 
 class TestPerformanceIndicator(unittest.TestCase):
 
     def test(self):
-        m = MockMeasurements.RuntimeMeasurement(
+        m = MockRuntimeMeasurement(
             interval_millis = 500
         )
 
         display = PerformanceIndicator(
-            measurement = m,
+            measurement_id = 33,
             bounds = DisplayBounds(20, 30, 200, 300)            
         )
 
         ui = MockDisplaySplash()
         appl = MockController()
+        appl.output_get_measurement = m
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.circle": MockDisplayShapes().circle()
-        }):
-            display.init(ui, appl)
+        display.init(ui, appl)
 
-        self.assertEqual(appl.added, [m])
+        self.assertEqual(appl.get_measurement_calls, [33])
         
         dot = ui.splash[0]
         self.assertEqual(dot.fill, (0, 0, 0))
@@ -79,12 +79,3 @@ class TestPerformanceIndicator(unittest.TestCase):
 
             last_brightness = brightness
             
-
-    def test_invalid_measurement(self):
-        m = MockMeasurements.FreeMemoryMeasurement()
-
-        with self.assertRaises(Exception):
-            PerformanceIndicator(
-                measurement = m,
-                bounds = DisplayBounds(20, 30, 200, 300)            
-            )

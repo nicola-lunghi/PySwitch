@@ -5,7 +5,6 @@ from adafruit_display_shapes.rect import Rect
 from .ui import HierarchicalDisplayElement, DisplayBounds, DisplayElement
 
 from ..controller.ConditionTree import ConditionTree, Condition
-from ..controller.measurements import RuntimeMeasurement
 from ..controller.Client import BidirectionalClient
 from ..misc import Updateable, Colors, get_option
 
@@ -553,14 +552,10 @@ class TunerDisplay(HierarchicalDisplayElement):
 # the device is running on full capacity. If tick time is more than double the update interval, an even more severe alert is shown)
 class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
 
-    def __init__(self, measurement, bounds = DisplayBounds(), name = "", id = 0):
+    def __init__(self, measurement_id, bounds = DisplayBounds(), name = "", id = 0):
         super().__init__(bounds = bounds, name = name, id = id)
 
-        if not isinstance(measurement, RuntimeMeasurement):
-            raise Exception() #"This can only be used with RuntimeMeasurements")
-
-        self._measurement = measurement
-        self._measurement.add_listener(self)    
+        self._measurement_id = measurement_id        
 
     # Add measurements to controller
     def init(self, ui, appl):
@@ -577,10 +572,11 @@ class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
         )
         ui.splash.append(self._dot)
 
-        appl.add_runtime_measurement(self._measurement)
+        self._measurement = appl.get_measurement(self._measurement_id)
+        self._measurement.add_listener(self)
 
     def measurement_updated(self, measurement):
-        tick_percentage = self._measurement.value() / self._measurement.interval_millis
+        tick_percentage = self._measurement.value / self._measurement.interval_millis
         
         if tick_percentage <= 1.0:
             self._dot.fill = (0, 0, 0)

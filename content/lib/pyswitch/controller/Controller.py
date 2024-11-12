@@ -1,8 +1,10 @@
+from gc import collect, mem_free
+
 from .FootSwitchController import FootSwitchController
-from .measurements import RuntimeMeasurement
+from .RuntimeMeasurement import RuntimeMeasurement
 from .actions.Action import Action
 from .Client import Client, BidirectionalClient
-from ..misc import Updater, PeriodCounter, get_option
+from ..misc import Updater, PeriodCounter, get_option, do_print, format_size
 from ..Memory import Memory
 
 
@@ -11,7 +13,7 @@ class Controller(Updater): #ClientRequestListener
 
     # IDs for all available measurements (for statistics)
     STAT_ID_TICK_TIME = 1             # Time one processing loop takes overall
-    STAT_ID_SWITCH_UPDATE_TIME = 2    # Time between switch state updates. This measurement costs a lot of overhead!
+    #STAT_ID_SWITCH_UPDATE_TIME = 2    # Time between switch state updates. This measurement costs a lot of overhead!
 
     # config:   Configuration dictionary. 
     # switches: [           list of switch definitions
@@ -44,25 +46,29 @@ class Controller(Updater): #ClientRequestListener
 
         # Global config
         self.config = config
+        update_interval = get_option(config, "updateInterval", 200)
 
         # Max. number of MIDI messages being parsed before the next switch state evaluation
         self._max_consecutive_midi_msgs = get_option(config, "maxConsecutiveMidiMessages", 10)   
 
-        # Switch config
-        self._switch_definitions = switches
-
         # Statistical measurements (added by the displays etc.)
-        self._measurements_tick_time = []
-        #self._measurements_switch_update = []
+        self._measurement_tick_time = RuntimeMeasurement(interval_millis = get_option(config, "debugStatsInterval", update_interval))
+        self._measurement_tick_time.add_listener(self)
+
+        #self._measurement_switch_update = RuntimeMeasurement(interval_millis = get_option(config, "debugStatsInterval", update_interval))
+        #self._measurement_switch_update.add_listener(self)
+
+        # Print statistical info
+        self._debug_stats = get_option(config, "debugStats", False)        
 
         # NeoPixel driver 
         self.led_driver = led_driver
-        self.led_driver.init(self._get_num_pixels())
+        self.led_driver.init(self._get_num_pixels(switches))
         
         # Periodic update handler (the client is only asked when a certain time has passed)
         self.period = period_counter
         if not self.period:
-            self.period = PeriodCounter(get_option(config, "updateInterval", 200))        
+            self.period = PeriodCounter(update_interval)        
 
         # Client adapter to send and receive parameters
         value_provider = communication["valueProvider"]
@@ -80,13 +86,13 @@ class Controller(Updater): #ClientRequestListener
             self.ui.init(self)
 
         # Set up switches
-        self._init_switches()
+        self._init_switches(switches)
 
     # Initialize switches
-    def _init_switches(self):
+    def _init_switches(self, switches):
         self.switches = []
 
-        for sw_def in self._switch_definitions:
+        for sw_def in switches:
             switch = FootSwitchController(
                 self,
                 sw_def
@@ -97,31 +103,15 @@ class Controller(Updater): #ClientRequestListener
             )
 
     # Returns how many NeoPixels are needed overall
-    def _get_num_pixels(self):
+    def _get_num_pixels(self, switches):
         ret = 0
-        for sw_def in self._switch_definitions:
+        for sw_def in switches:
             pixels = get_option(sw_def["assignment"], "pixels", [])
             for p in pixels:
                 pp1 = p + 1
                 if pp1 > ret:
                     ret = pp1
         return ret
-
-    # Adds a runtime measurement. 
-    def add_runtime_measurement(self, measurement):
-        if not isinstance(measurement, RuntimeMeasurement):
-            return
-
-        if measurement.type == self.STAT_ID_TICK_TIME:        
-            self._measurements_tick_time.append(measurement)
-            self.add_updateable(measurement)
-            
-        #elif measurement.type == self.STAT_ID_SWITCH_UPDATE_TIME:
-        #    self._measurements_switch_update.append(measurement)
-        #    self.add_updateable(measurement)
-        
-        else:
-            raise Exception(repr(measurement.type)) #"Runtime measurement type " + repr(measurement.type) + " not supported")
 
     # Runs the processing loop (which never ends)
     def process(self):
@@ -145,14 +135,16 @@ class Controller(Updater): #ClientRequestListener
     # Single tick in the processing loop. Must return True to keep the loop alive.
     def tick(self):
         # If enabled, remember the tick starting time for statistics
-        for m in self._measurements_tick_time:
-            m.start()       
+        self._measurement_tick_time.start()       
 
         # Update all Updateables in periodic intervals, less frequently then every tick
         if self.period.exceeded:
             self.update()
 
             Memory.watch("Controller: update", only_if_changed = True)
+
+            # Update tick time measurement
+            self._measurement_tick_time.update()
 
         # Receive all available MIDI messages            
         cnt = 0
@@ -170,8 +162,7 @@ class Controller(Updater): #ClientRequestListener
                 break  
 
         # Output statistical info if enabled
-        for m in self._measurements_tick_time:
-            m.finish()
+        self._measurement_tick_time.finish()        
 
         return True
 
@@ -179,15 +170,13 @@ class Controller(Updater): #ClientRequestListener
     def _process_switches(self):
         # This calls the start/finish methods on the statistics in reverse order to measure the time 
         # between switch updates        
-        #for m in self._measurements_switch_update:
-        #    m.finish()
+        #self._measurement_switch_update.finish()
 
         # Update switch states
         for switch in self.switches:
             switch.process()
 
-        #for m in self._measurements_switch_update:
-        #    m.start()
+        #self._measurement_switch_update.start()
 
     # Resets all switches
     def reset_switches(self, ignore_switches_list = []):
@@ -206,4 +195,14 @@ class Controller(Updater): #ClientRequestListener
 
         #self._info_parameters.reset()
 
+    def get_measurement(self, id):
+        if id == self.STAT_ID_TICK_TIME:
+            return self._measurement_tick_time
 
+    def measurement_updated(self, measurement):
+        if not self._debug_stats: 
+            return
+        
+        collect()
+        
+        do_print("Max " + str(measurement.value) + "ms, Avg " + str(measurement.average) + "ms, Free: " + format_size(mem_free()))

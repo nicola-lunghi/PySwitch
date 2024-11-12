@@ -896,31 +896,6 @@ class TestControllerConditions(unittest.TestCase):
 ############################################################################################
 
 
-    def test_condition_repr(self):
-        tree = ConditionTree(
-            [
-                MockCondition(
-                    yes = "Foo",
-                    no = MockCondition(
-                        yes = "Bar",
-                        no = "Fdd"
-                    )
-                ),
-                None
-            ]
-        )
-
-        rep = repr(tree)
-
-        self.assertEqual("Foo" in rep, True)
-        self.assertEqual("Bar" in rep, True)
-        self.assertEqual("Fdd" in rep, True)
-        self.assertEqual("MockCondition" in rep, True)
-
-
-############################################################################################
-
-
     def test_condition_invalid_subject(self):
         with self.assertRaises(Exception):            
             ConditionTree(
@@ -957,11 +932,65 @@ class TestControllerConditions(unittest.TestCase):
             replacer = repl
         )
 
-        rep = repr(tree)
+        rep = self._get_tree_repr(tree._tree)
 
         self.assertEqual("Foo (replaced)" in rep, True)
         self.assertEqual("Bar (replaced)" in rep, True)
         self.assertEqual("Fdd (replaced)" in rep, True)
+        self.assertEqual("MockCondition" in rep, True)
+
+
+    # Returns a representation of the passed tree
+    def _get_tree_repr(self, subject, indent = 0):
+        indent_str = "".join([" " for i in range(indent)])
+        
+        if subject == None:
+            return indent_str + repr(None) + "\n"
+        
+        elif isinstance(subject, list):
+            ret = indent_str + "[\n"
+    
+            for entry in subject:
+                ret += self._get_tree_repr(entry, indent + 2)
+    
+            return ret + indent_str + "]\n"
+    
+        elif isinstance(subject, Condition):
+            indent_str_p2 = "".join([" " for i in range(indent + 2)])
+    
+            ret = indent_str + subject.__class__.__name__ + "(\n"
+           
+            ret += indent_str_p2 + "yes: \n"
+            ret +=  self._get_tree_repr(subject.yes, indent + 4)
+    
+            ret += indent_str_p2 + "no: \n"
+            ret += self._get_tree_repr(subject.no, indent + 4)
+    
+            return ret + indent_str + ")\n"
+        
+        else:
+            return indent_str + repr(subject) + "\n"
+
+
+    def test_condition_repr(self):
+        tree = ConditionTree(
+            [
+                MockCondition(
+                    yes = "Foo",
+                    no = MockCondition(
+                        yes = "Bar",
+                        no = "Fdd"
+                    )
+                ),
+                None
+            ]
+        )
+
+        rep = self._get_tree_repr(tree._tree)
+
+        self.assertEqual("Foo" in rep, True)
+        self.assertEqual("Bar" in rep, True)
+        self.assertEqual("Fdd" in rep, True)
         self.assertEqual("MockCondition" in rep, True)
 
 

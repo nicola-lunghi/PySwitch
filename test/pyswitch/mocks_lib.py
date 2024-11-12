@@ -172,23 +172,23 @@ class MockDisplayShapes:
                 self.outline = outline
                 self.stroke = stroke
 
-    class roundrect:
-        class RoundRect:
-            def __init__(self, x = 0, y = 0, width = 0, height = 0, fill = None, outline = None, stroke = 0, r = 0):
-                self.x = x 
-                self.y = y
-                self.width = width
-                self.height = height
-                self.fill = fill 
-                self.outline = outline
-                self.stroke = stroke
-                self.r = r
+    #class roundrect:
+    #    class RoundRect:
+    #        def __init__(self, x = 0, y = 0, width = 0, height = 0, fill = None, outline = None, stroke = 0, r = 0):
+    #            self.x = x 
+    #            self.y = y
+    #            self.width = width
+    #            self.height = height
+    #            self.fill = fill 
+    #            self.outline = outline
+    #            self.stroke = stroke
+    #            self.r = r
 
-    class circle:
-        class Circle:
-            def __init__(self, x0 = 0, y0 = 0, r = 0, fill = None):
-                self.x0 = x0 
-                self.y0 = y0
-                self.fill = fill 
-                self.r = r
+    #class circle:
+    #    class Circle:
+    #        def __init__(self, x0 = 0, y0 = 0, r = 0, fill = None):
+    #            self.x0 = x0 
+    #            self.y0 = y0
+    #            self.fill = fill 
+    #            self.r = r
 

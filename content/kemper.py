@@ -358,14 +358,16 @@ class KemperActionDefinitions:
         text_rig_off = str(rig)
         text_rig_on = text_rig_off
 
+        mapping_rig_select = KemperMappings.RIG_SELECT(rig - 1)
+
         # Mappings and values: Start with a configuration for rig_off == None and bank(_off) = None.
         mapping = [
             ClientParameterMapping(),           # Dummy to be replaced by bank select if specified
-            KemperMappings.RIG_SELECT(rig - 1)
+            mapping_rig_select
         ]
         mapping_disable = [
             ClientParameterMapping(),           # Dummy to be replaced by bank select if specified
-            KemperMappings.RIG_SELECT(rig - 1)
+            mapping_rig_select
         ]
         value_enabled = [
             0,                                  # Dummy to be replaced by bank select if specified

@@ -46,18 +46,18 @@ class Action(Updateable):
         self.appl = appl
         self.switch = switch
 
-        self._init_id()
+        #self._init_id()
 
         self.label = self._get_display_label()   # DisplayLabel instance the action is connected to (or None).
 
         self._initialized = True
 
     # Sets up the debugging ID (either from config or a generated one)
-    def _init_id(self):
-        if not self.id:
-            self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action._next_id) + ")"
-            
-            Action._next_id = Action._next_id + 1
+    #def _init_id(self):
+    #    if not self.id:
+    #        self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action._next_id) + ")"
+    #        
+    #        Action._next_id = Action._next_id + 1
 
     @property
     def enabled(self):
@@ -188,13 +188,15 @@ class Action(Updateable):
         )
 
         container.set(label, self._display_index)
+
+        self._display_id = None
+        self._display_index = None
+        self._display_layout = None
+        
         return label
 
     # Returns the switch LED segments to use
     def _get_led_segments(self):
-        #if not self._initialized:
-        #    raise Exception() #"Action not initialized")
-        
         if not self.switch.pixels or not self.uses_switch_leds or not self.enabled:
             return []
         

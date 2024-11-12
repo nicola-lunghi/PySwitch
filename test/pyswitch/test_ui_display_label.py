@@ -95,10 +95,7 @@ class TestDisplayLabel(unittest.TestCase):
         ui = MockDisplaySplash()
         u = Updater()
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.rect": MockDisplayShapes().rect()
-        }):
-            label.init(ui, u)
+        label.init(ui, u)
 
         self.assertTrue(self._compare_layouts(label.layout, DisplayLabelLayout(layout_def_1)))
         self.assertEqual(label.text, "footext")
@@ -198,40 +195,36 @@ class TestDisplayLabel(unittest.TestCase):
         ui = MockDisplaySplash()
         u = Updater()
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
-            "adafruit_display_shapes.roundrect": MockDisplayShapes().roundrect()
-        }):            
-            label.init(ui, u)
+        label.init(ui, u)
+        
+        index = 0
+
+        if fill:
+            rect = ui.splash[index]
+            index += 1
+
+            self.assertIsInstance(rect, MockDisplayShapes.rect.Rect)
+
+            self.assertEqual(rect.x, x + stroke)
+            self.assertEqual(rect.y, y + stroke)
+            self.assertEqual(rect.width, w - stroke * 2)
+            self.assertEqual(rect.height, h - stroke * 2)
+            self.assertEqual(rect.fill, fill)
+            self.assertEqual(rect.outline, None)
+            self.assertEqual(rect.stroke, 0)
             
-            index = 0
+        group = ui.splash[index]
+        label = ui.splash[index].mock_content[0]
 
-            if fill:
-                rect = ui.splash[index]
-                index += 1
+        self.assertIsInstance(group, MockDisplayIO.Group)
+        self.assertIsInstance(label, MockAdafruitDisplayText.label.Label)
 
-                self.assertIsInstance(rect, MockDisplayShapes.rect.Rect)
+        self.assertEqual(group.x, x)
+        self.assertEqual(group.y, y)
+        self.assertEqual(group.scale, 1)
 
-                self.assertEqual(rect.x, x + stroke)
-                self.assertEqual(rect.y, y + stroke)
-                self.assertEqual(rect.width, w - stroke * 2)
-                self.assertEqual(rect.height, h - stroke * 2)
-                self.assertEqual(rect.fill, fill)
-                self.assertEqual(rect.outline, None)
-                self.assertEqual(rect.stroke, 0)
-                
-            group = ui.splash[index]
-            label = ui.splash[index].mock_content[0]
-
-            self.assertIsInstance(group, MockDisplayIO.Group)
-            self.assertIsInstance(label, MockAdafruitDisplayText.label.Label)
-
-            self.assertEqual(group.x, x)
-            self.assertEqual(group.y, y)
-            self.assertEqual(group.scale, 1)
-
-            self.assertEqual(label.text, text)
-            self.assertEqual(label.color, text_color_exp)
+        self.assertEqual(label.text, text)
+        self.assertEqual(label.color, text_color_exp)
 
 
 ###############################################################################################
@@ -290,24 +283,20 @@ class TestDisplayLabel(unittest.TestCase):
         ui = MockDisplaySplash()
         u = Updater()
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
-            "adafruit_display_shapes.roundrect": MockDisplayShapes().roundrect()
-        }):            
-            label.init(ui, u)
-            
-            self.assertEqual(ui.splash[0].fill, (3, 4, 7))
+        label.init(ui, u)
+        
+        self.assertEqual(ui.splash[0].fill, (3, 4, 7))
 
-            label.back_color = (200, 230, 240)
-            self.assertEqual(label.back_color, (200, 230, 240))
+        label.back_color = (200, 230, 240)
+        self.assertEqual(label.back_color, (200, 230, 240))
 
-            label.layout = DisplayLabelLayout({
-                "font": "foo",
-                "backColor": (3, 4, 7)
-            })
-            self.assertEqual(label.back_color, (3, 4, 7))
+        label.layout = DisplayLabelLayout({
+            "font": "foo",
+            "backColor": (3, 4, 7)
+        })
+        self.assertEqual(label.back_color, (3, 4, 7))
 
-            self.assertEqual(ui.splash[0].fill, (3, 4, 7))
+        self.assertEqual(ui.splash[0].fill, (3, 4, 7))
 
 
 ###############################################################################################
@@ -337,31 +326,27 @@ class TestDisplayLabel(unittest.TestCase):
         ui = MockDisplaySplash()
         u = Updater()
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
-            "adafruit_display_shapes.roundrect": MockDisplayShapes().roundrect()
-        }):            
-            label.init(ui, u)
-            
-            self.assertEqual(ui.splash[0].mock_content[0].color, (3, 4, 8))
+        label.init(ui, u)
+        
+        self.assertEqual(ui.splash[0].mock_content[0].color, (3, 4, 8))
 
-            label.text_color = None
-            self.assertEqual(ui.splash[0].mock_content[0].color, (255, 255, 255))
+        label.text_color = None
+        self.assertEqual(ui.splash[0].mock_content[0].color, (255, 255, 255))
 
-            label.text_color = (5, 6, 7)
-            self.assertEqual(label.text_color, (5, 6, 7))
+        label.text_color = (5, 6, 7)
+        self.assertEqual(label.text_color, (5, 6, 7))
 
-            label.layout = DisplayLabelLayout({
-                "font": "foo"
-            })
-            self.assertEqual(ui.splash[0].mock_content[0].color, (255, 255, 255))
+        label.layout = DisplayLabelLayout({
+            "font": "foo"
+        })
+        self.assertEqual(ui.splash[0].mock_content[0].color, (255, 255, 255))
 
-            label.layout = DisplayLabelLayout({
-                "font": "foo",
-                "textColor": (3, 4, 8)
-            })
-            self.assertEqual(label.text_color, (3, 4, 8))
-            self.assertEqual(ui.splash[0].mock_content[0].color, (3, 4, 8))
+        label.layout = DisplayLabelLayout({
+            "font": "foo",
+            "textColor": (3, 4, 8)
+        })
+        self.assertEqual(label.text_color, (3, 4, 8))
+        self.assertEqual(ui.splash[0].mock_content[0].color, (3, 4, 8))
 
 
 ###############################################################################################
@@ -391,28 +376,24 @@ class TestDisplayLabel(unittest.TestCase):
         ui = MockDisplaySplash()
         u = Updater()
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
-            "adafruit_display_shapes.roundrect": MockDisplayShapes().roundrect()
-        }):            
-            label.init(ui, u)
-            
-            self.assertEqual(ui.splash[0].mock_content[0].text, "mustbeset")
+        label.init(ui, u)
+        
+        self.assertEqual(ui.splash[0].mock_content[0].text, "mustbeset")
 
-            label.text = "foo"
-            self.assertEqual(label.text, "foo")
-            self.assertEqual(ui.splash[0].mock_content[0].text, "foo")
+        label.text = "foo"
+        self.assertEqual(label.text, "foo")
+        self.assertEqual(ui.splash[0].mock_content[0].text, "foo")
 
-            label.text = "bar1"
-            self.assertEqual(label.text, "bar1")
-            self.assertEqual(ui.splash[0].mock_content[0].text, "bar1")
+        label.text = "bar1"
+        self.assertEqual(label.text, "bar1")
+        self.assertEqual(ui.splash[0].mock_content[0].text, "bar1")
 
-            label.layout = DisplayLabelLayout({
-                "font": "foo",
-                "text": "mustnotbeset"
-            })
-            self.assertEqual(label.text, "bar1")
-            self.assertEqual(ui.splash[0].mock_content[0].text, "bar1")
+        label.layout = DisplayLabelLayout({
+            "font": "foo",
+            "text": "mustnotbeset"
+        })
+        self.assertEqual(label.text, "bar1")
+        self.assertEqual(ui.splash[0].mock_content[0].text, "bar1")
 
 
     def test_text_wrapped(self):
@@ -429,32 +410,28 @@ class TestDisplayLabel(unittest.TestCase):
         ui = MockDisplaySplash()
         u = Updater()
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
-            "adafruit_display_shapes.roundrect": MockDisplayShapes().roundrect()
-        }):            
-            label.init(ui, u)
-            
-            self.assertEqual(ui.splash[0].mock_content[0].text, "foo\n(wrapped to 12 and font 'foo')")
+        label.init(ui, u)
+        
+        self.assertEqual(ui.splash[0].mock_content[0].text, "foo\n(wrapped to 12 and font 'foo')")
 
-            label.text = "bar1"
-            self.assertEqual(label.text, "bar1")
-            self.assertEqual(ui.splash[0].mock_content[0].text, "bar1\n(wrapped to 12 and font 'foo')")
+        label.text = "bar1"
+        self.assertEqual(label.text, "bar1")
+        self.assertEqual(ui.splash[0].mock_content[0].text, "bar1\n(wrapped to 12 and font 'foo')")
 
-            label.layout = DisplayLabelLayout({
-                "font": "foo",
-                "text": "mustnotbeset"
-            })
-            self.assertEqual(label.text, "bar1")
-            self.assertEqual(ui.splash[0].mock_content[0].text, "bar1")
+        label.layout = DisplayLabelLayout({
+            "font": "foo",
+            "text": "mustnotbeset"
+        })
+        self.assertEqual(label.text, "bar1")
+        self.assertEqual(ui.splash[0].mock_content[0].text, "bar1")
 
-            label.layout = DisplayLabelLayout({
-                "font": "foo",
-                "text": "mustnotbeset",
-                "maxTextWidth": 22
-            })
-            self.assertEqual(label.text, "bar1")
-            self.assertEqual(ui.splash[0].mock_content[0].text, "bar1\n(wrapped to 22 and font 'foo')")
+        label.layout = DisplayLabelLayout({
+            "font": "foo",
+            "text": "mustnotbeset",
+            "maxTextWidth": 22
+        })
+        self.assertEqual(label.text, "bar1")
+        self.assertEqual(ui.splash[0].mock_content[0].text, "bar1\n(wrapped to 22 and font 'foo')")
 
 
 

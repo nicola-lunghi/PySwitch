@@ -6,11 +6,11 @@
 
 from micropython import const
 from pyswitch.misc import Colors, PYSWITCH_VERSION
-from pyswitch.controller.ConditionTree import ParameterCondition, ParameterConditionModes
+from pyswitch.controller.ConditionTree import ParameterCondition
 
 from pyswitch.ui.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds, DisplayLabel, TunerDisplay
 from pyswitch.ui.ui import HierarchicalDisplayElement
-from pyswitch.ui.StatisticalDisplays import BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
+from pyswitch.ui.statistical import BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
 
 from kemper import KemperMappings
 
@@ -51,9 +51,6 @@ Display = ParameterCondition(
                 }
             ),
 
-            # Statistics area
-            #STATS_DISPLAY(bounds),
-
             # Bidirectional protocol state indicator (dot)
             BIDIRECTIONAL_PROTOCOL_STATE_DOT(_bounds),
 
@@ -69,7 +66,7 @@ Display = ParameterCondition(
         
         bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
         
-        scale = 6,
+        scale = 3,
         layout = {
             "font": "/fonts/PTSans-NarrowBold-40.pcf",
             "text": "Tuner"

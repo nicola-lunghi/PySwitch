@@ -1,7 +1,6 @@
 from micropython import const
 
 from .Action import Action
-from ..Client import ClientParameterMapping
 from ...misc import Colors, PeriodCounter, DEFAULT_LABEL_COLOR, get_option
 from ..ConditionTree import ConditionTree
 
@@ -403,14 +402,14 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         super().init(appl, switch)
 
         # Register all mappings
-        if isinstance(self._mapping, ClientParameterMapping):
+        if not isinstance(self._mapping, list) and not isinstance(self._mapping, tuple):
             self.appl.client.register(self._mapping, self)
         else:
             for m in self._mapping:
                 self.appl.client.register(m, self)
         
         if self._mapping_off:
-            if isinstance(self._mapping_off, ClientParameterMapping):
+            if not isinstance(self._mapping_off, list) and not isinstance(self._mapping_off, tuple):
                 self.appl.client.register(self._mapping_off, self)
             else:
                 for m in self._mapping_off:
@@ -533,7 +532,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         value_on = self._set_value_on
         value_off = self._set_value_off
 
-        if isinstance(candidates, ClientParameterMapping):
+        if not isinstance(candidates, list) and not isinstance(candidates, tuple):
             all = [candidates]
 
             if state == True:
@@ -549,10 +548,11 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
                 values = value_off
 
         ret = []
+        
         for i in range(len(all)):
             m = all[i]
 
-            if not m.can_set:
+            if not m.set:
                 continue
 
             ret.append((m, values[i]))
@@ -564,9 +564,9 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         self._request_mapping_value_on = None
         self._request_mapping = None
 
-        if isinstance(self._mapping, ClientParameterMapping):
+        if not isinstance(self._mapping, list) and not isinstance(self._mapping, tuple): 
             # Mapping instance: Check if it can receive values
-            if self._mapping.can_receive:
+            if self._mapping.response:
                 self._request_mapping_value_on = self._value_on
                 self._request_mapping = self._mapping
         else:
@@ -574,7 +574,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
             for i in range(len(self._mapping)):
                 mapping = self._mapping[i]
 
-                if mapping.can_receive:
+                if mapping.response:
                     self._request_mapping = mapping
                     self._request_mapping_value_on = self._value_on[i]
                     break
@@ -688,7 +688,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
     # Request effect type periodically (which itself will trigger a status request).
     # Does not call super.do_update because the status is requested here later anyway.
     def do_update(self):
-        if not self._mapping_fxtype.can_receive:
+        if not self._mapping_fxtype.response:
             raise Exception() #"Mapping for effect type must be able to receive (provide request and response)")       
         
         self.appl.client.request(self._mapping_fxtype, self)

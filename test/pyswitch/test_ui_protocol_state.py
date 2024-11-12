@@ -53,10 +53,7 @@ class TestProtocolState(unittest.TestCase):
 
         ui = MockDisplaySplash()
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.circle": MockDisplayShapes().circle()
-        }):
-            display.init(ui, appl)
+        display.init(ui, appl)
 
         protocol.output_color = (2, 5, 6)
         display.update()
@@ -80,10 +77,7 @@ class TestProtocolState(unittest.TestCase):
 
         ui = MockDisplaySplash()
 
-        with patch.dict(sys.modules, {
-            "adafruit_display_shapes.circle": MockDisplayShapes().circle()
-        }):
-            display.init(ui, appl)
+        display.init(ui, appl)
 
         display.update()
         

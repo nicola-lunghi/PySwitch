@@ -263,25 +263,6 @@ class MockConditionReplacer:
 ##################################################################################################################################
 
 
-class MockMeasurement:
-    def __init__(self):
-        self.output_value = 0
-        self.output_message = ""
-        self.num_update_calls = 0
-
-    def get_message(self):
-        return self.output_message   
-    
-    def value(self):
-        return self.output_value     
-
-    def update(self):
-        self.num_update_calls += 1   
-
-
-##################################################################################################################################
-
-
 class MockClient:
     def __init__(self):
         self.register_calls = []

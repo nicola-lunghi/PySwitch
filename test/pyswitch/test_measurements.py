@@ -11,11 +11,9 @@ with patch.dict(sys.modules, {
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-    "gc": MockGC(),
     "time": MockTime
 }):
-    from lib.pyswitch.controller.measurements import RuntimeMeasurement #, FreeMemoryMeasurement
-    from lib.pyswitch.misc import format_size
+    from lib.pyswitch.controller.RuntimeMeasurement import RuntimeMeasurement
 
 
 class MockRuntimeMeasurementListener:
@@ -30,20 +28,15 @@ class TestMeasurementRuntime(unittest.TestCase):
 
     def test_measurement(self):
         m = RuntimeMeasurement(
-            interval_millis = 300,
-            type = "foo"
+            interval_millis = 300
         )
 
-        self.assertEqual(m.type, "foo")
         self.assertEqual(m.average, 0)
-        self.assertEqual(m.value(), 0)
+        self.assertEqual(m.value, 0)
 
         # finish without start: Must be ignored
         MockTime.mock["monotonicReturn"] = 0.9
         m.finish()
-
-        msg = m.get_message()
-        self.assertIn("No data", msg)
 
         # Tick with 500ms
         MockTime.mock["monotonicReturn"] = 1
@@ -52,11 +45,7 @@ class TestMeasurementRuntime(unittest.TestCase):
         m.finish()
 
         self.assertEqual(m.average, 500)
-        self.assertEqual(m.value(), 500)
-
-        msg = m.get_message()
-        self.assertIn("foo", msg)
-        self.assertIn("500ms", msg)
+        self.assertEqual(m.value, 500)
 
         # Tick with 300ms
         MockTime.mock["monotonicReturn"] = 2
@@ -65,12 +54,7 @@ class TestMeasurementRuntime(unittest.TestCase):
         m.finish()
 
         self.assertEqual(m.average, 400)
-        self.assertEqual(m.value(), 500)
-
-        msg = m.get_message()
-        self.assertIn("foo", msg)
-        self.assertIn("500ms", msg)
-        self.assertIn("400ms", msg)
+        self.assertEqual(m.value, 500)
 
         # Tick with 1000ms
         MockTime.mock["monotonicReturn"] = 3
@@ -79,22 +63,16 @@ class TestMeasurementRuntime(unittest.TestCase):
         m.finish()
 
         self.assertEqual(m.average, 600)
-        self.assertEqual(m.value(), 1000)
-
-        msg = m.get_message()
-        self.assertIn("foo", msg)
-        self.assertIn("600ms", msg)
-        self.assertIn("1000ms", msg)
+        self.assertEqual(m.value, 1000)
 
         m.reset()
         self.assertEqual(m.average, 0)
-        self.assertEqual(m.value(), 0)
+        self.assertEqual(m.value, 0)
 
 
     def test_update(self):
         m = RuntimeMeasurement(
-            interval_millis = 300,
-            type = "foo"
+            interval_millis = 300
         )
 
         listener_1 = MockRuntimeMeasurementListener()
@@ -133,28 +111,4 @@ class TestMeasurementRuntime(unittest.TestCase):
         self.assertEqual(listener_2.num_update_calls, 3)
 
 
-#################################################################################
 
-
-#class TestMeasurementFreeMemory(unittest.TestCase):    
-
-#    def test_measurement(self):
-#        MockGC.mock = {
-#            "collectCalls": 0,
-#            "memFreeReturn": 1000
-#        }
-
-#        m = FreeMemoryMeasurement()
-        
-#        self.assertEqual(m.value(), 1000)
-#        self.assertEqual(MockGC.mock["collectCalls"], 1)
-#        self.assertIn(format_size(1000), m.get_message())
-#        self.assertEqual(MockGC.mock["collectCalls"], 2)
-
-#        MockGC.mock["memFreeReturn"] = 222
-#        self.assertEqual(m.value(), 222)
-#        self.assertEqual(MockGC.mock["collectCalls"], 3)
-#        self.assertIn(format_size(222), m.get_message())
-
-
-        

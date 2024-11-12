@@ -210,40 +210,7 @@ class ClientParameterMapping:
             else:
                 return False
             
-        return False
-
-    @property
-    def can_set(self):
-        return self.set != None
-
-    @property
-    def can_request(self):
-        return self.request != None
-    
-    @property
-    def can_receive(self):
-        return self.response != None
-
-    # Returns a (shallow) copy of the mapping with no request/response and value. Use this
-    # if you have performance issues with too much requests.
-    @property
-    def set_only(self):
-        return ClientParameterMapping(
-            name = self.name,
-            set = self.set,
-            type = self.type
-        )
-    
-    # Returns a (shallow) copy of the mapping with no request/response and value. Use this
-    # if you have performance issues with too much requests.
-    @property
-    def set_and_receive_only(self):
-        return ClientParameterMapping(
-            name = self.name,
-            set = self.set,
-            response = self.response,
-            type = self.type
-        )
+        return False    
 
 
 ############################################################################################################
@@ -281,7 +248,7 @@ class ClientRequest(EventEmitter):
 
     # Sends the request
     def send(self):
-        if not self.mapping.can_request:
+        if not self.mapping.request:
             return
 
         #if self.debug:   # pragma: no cover
@@ -309,7 +276,7 @@ class ClientRequest(EventEmitter):
     # Parses an incoming MIDI message. If the message belongs to the mapping's request,
     # calls the listener with the received value.
     def parse(self, midi_message):
-        if not self.mapping.can_receive:
+        if not self.mapping.response:
             return 
         
         if self.finished:
@@ -401,13 +368,13 @@ class BidirectionalClient(Client, Updateable):
         if not self.protocol.is_bidirectional(mapping):
             return
 
-        self.register_mapping(mapping.set_and_receive_only, listener, False)
+        self.register_mapping(self._strip_request_message(mapping), listener, False)
 
     # Filter the request messages from the mappings which are part of a bidirectional parameter set
     # (those cannot be requested anymore but get updates from the client automatically).
     def request(self, mapping, listener):        
         if self.protocol.is_bidirectional(mapping):
-            super().request(mapping.set_and_receive_only, listener)
+            super().request(self._strip_request_message(mapping), listener)
         
         super().request(mapping, listener)
 
@@ -455,3 +422,12 @@ class BidirectionalClient(Client, Updateable):
         else:
             return super().create_request(mapping)
         
+    # Returns a (shallow) copy of the mapping with no request/response and value. Use this
+    # if you have performance issues with too much requests.
+    def _strip_request_message(self, mapping):
+        return ClientParameterMapping(
+            name = mapping.name,
+            set = mapping.set,
+            response = mapping.response,
+            type = mapping.type
+        )

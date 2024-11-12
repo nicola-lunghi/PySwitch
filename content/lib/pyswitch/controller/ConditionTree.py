@@ -66,8 +66,8 @@ class ConditionTree:
         self._tree = self._setup_tree(subject, listener)
     
     # Representational string
-    def __repr__(self):
-        return self._get_entry_repr(self._tree)
+    #def __repr__(self):
+    #    return self._get_entry_repr(self._tree)
 
     # Setup the tree from the passed subject
     def _setup_tree(self, subject, listener, enable = True):
@@ -185,35 +185,35 @@ class ConditionTree:
             return [tree]
 
     # Returns a representation of the passed subject
-    def _get_entry_repr(self, subject, indent = 0):
-        indent_str = "".join([" " for i in range(indent)])
-        
-        if subject == None:
-            return indent_str + repr(None) + "\n"
-        
-        elif isinstance(subject, list):
-            ret = indent_str + "[\n"
-
-            for entry in subject:
-                ret += self._get_entry_repr(entry, indent + 2)
-
-            return ret + indent_str + "]\n"
-
-        elif isinstance(subject, Condition):
-            indent_str_p2 = "".join([" " for i in range(indent + 2)])
-
-            ret = indent_str + subject.__class__.__name__ + "(\n"
-            
-            ret += indent_str_p2 + "yes: \n"
-            ret +=  self._get_entry_repr(subject.yes, indent + 4)
-
-            ret += indent_str_p2 + "no: \n"
-            ret += self._get_entry_repr(subject.no, indent + 4)
-
-            return ret + indent_str + ")\n"
-        
-        else:
-            return indent_str + repr(subject) + "\n"
+    #def _get_entry_repr(self, subject, indent = 0):
+    #    indent_str = "".join([" " for i in range(indent)])
+    #    
+    #    if subject == None:
+    #        return indent_str + repr(None) + "\n"
+    #    
+    #    elif isinstance(subject, list):
+    #        ret = indent_str + "[\n"
+    #
+    #        for entry in subject:
+    #            ret += self._get_entry_repr(entry, indent + 2)
+    #
+    #        return ret + indent_str + "]\n"
+    #
+    #    elif isinstance(subject, Condition):
+    #        indent_str_p2 = "".join([" " for i in range(indent + 2)])
+    #
+    #        ret = indent_str + subject.__class__.__name__ + "(\n"
+    #       
+    #        ret += indent_str_p2 + "yes: \n"
+    #        ret +=  self._get_entry_repr(subject.yes, indent + 4)
+    #
+    #        ret += indent_str_p2 + "no: \n"
+    #        ret += self._get_entry_repr(subject.no, indent + 4)
+    #
+    #        return ret + indent_str + ")\n"
+    #    
+    #    else:
+    #        return indent_str + repr(subject) + "\n"
 
 
 ########################################################################################################################################

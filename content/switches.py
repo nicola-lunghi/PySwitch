@@ -15,7 +15,7 @@ from display import DISPLAY_ID_FOOTER, DISPLAY_ID_HEADER
 
 
 # Layout used for the action labels (only used here locally)
-ACTION_LABEL_LAYOUT = {
+_ACTION_LABEL_LAYOUT = {
     "font": "/fonts/H20.pcf",
     "backColor": DEFAULT_LABEL_COLOR,
     "stroke": 1
@@ -35,7 +35,7 @@ Switches = [
                         display = {
                             "id": DISPLAY_ID_HEADER,
                             "index": 0,
-                            "layout": ACTION_LABEL_LAYOUT
+                            "layout": _ACTION_LABEL_LAYOUT
                         }
                     )                           
                 ],
@@ -55,7 +55,7 @@ Switches = [
                         display = {
                             "id": DISPLAY_ID_HEADER,
                             "index": 1,
-                            "layout": ACTION_LABEL_LAYOUT
+                            "layout": _ACTION_LABEL_LAYOUT
                         }
                     )                           
                 ],
@@ -73,7 +73,7 @@ Switches = [
                 display = {
                     "id": DISPLAY_ID_FOOTER,
                     "index": 0,
-                    "layout": ACTION_LABEL_LAYOUT
+                    "layout": _ACTION_LABEL_LAYOUT
                 }
             )
         ]
@@ -88,9 +88,9 @@ Switches = [
                 display = {
                     "id": DISPLAY_ID_FOOTER,
                     "index": 1,
-                    "layout": ACTION_LABEL_LAYOUT
+                    "layout": _ACTION_LABEL_LAYOUT
                 }
             )
         ]
-    }
+    },
 ]

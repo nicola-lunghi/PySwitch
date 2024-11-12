@@ -22,13 +22,15 @@ Config = {
 
     ## Development Options ###################################################################################################################
 
-    # Optional, shows the effect slot names for EffectEnableAction
+    # Optional, shows the effect slot names in the display labels for EffectEnableAction
     #"showEffectSlotNames": True,
 
-    # Debug mode, optional. Shows verbose console output. You can listen to that on the serial port via USB on your computer,
-    # see https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 
-    #"debug": True,
+    # Debug output is printed to serial console via USB. 
+    # See https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux 
 
+    #"debugStats": True,                              # Show info about runtime and memory usage periodically every update interval
+    #"debugStatsInterval": 2000,                      # Update interval for runtime statistics (also affects the performance dot, default is 
+                                                      # the "updateInterval" option)
     #"debugActions": True,                            # Show verbose messages from actions. Optional.
     #"actionsDebugSwitchName": "1",                   # Optional, can be set to a switch assignment name (see Ports in definition.py)
                                                       # to only show action messages for the switch mentioned

@@ -11,7 +11,7 @@ from pyswitch.controller.ConditionTree import ParameterCondition
 
 from pyswitch.ui.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds, TunerDisplay
 from pyswitch.ui.ui import HierarchicalDisplayElement
-from pyswitch.ui.StatisticalDisplays import BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
+from pyswitch.ui.statistical import BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
 
 from kemper import KemperMappings
 
@@ -71,9 +71,6 @@ Display = ParameterCondition(
                     "textReset": "Loading Rig..."
                 }
             ),
-
-            # Statistics area
-            #STATS_DISPLAY(_bounds),
 
             # Bidirectional protocol state indicator (dot)
             BIDIRECTIONAL_PROTOCOL_STATE_DOT(_bounds),
