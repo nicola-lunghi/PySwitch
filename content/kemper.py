@@ -3,10 +3,12 @@ from micropython import const
 
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
+from adafruit_midi.start import Start
 
 from pyswitch.misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print
 from pyswitch.controller.actions.actions import ParameterAction, EffectEnableAction, ResetDisplaysAction, PushButtonAction
 from pyswitch.controller.Client import ClientParameterMapping
+from pyswitch.controller.MidiController import MidiClockMessage
 
 
 ####################################################################################################################
@@ -58,6 +60,7 @@ _NRPN_FUNCTION_SET_SINGLE_PARAMETER = const(0x01)
 # NRPN parameters for effect slots
 _NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = const(0x00) 
 _NRPN_EFFECT_PARAMETER_ADDRESS_STATE = const(0x03)
+_NRPN_EFFECT_PARAMETER_ADDRESS_MIX = const(0x04)
 _NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED = const(0x1e)
 # ... add further parameters here
 
@@ -202,10 +205,8 @@ class KemperActionDefinitions:
     def TUNER_MODE(display = None, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
         return ParameterAction({
             "mapping": KemperMappings.TUNER_MODE_STATE,
-            "valueEnabled": 1,
-            "valueDisabled": 3,
-            "setValueEnabled": 1,
-            "setValueDisabled": 0,
+            "valueEnable": 1,
+            "valueDisable": 0,
             "comparisonMode": ParameterAction.EQUAL,
             "display": display,
             "text": "Tuner",
@@ -215,7 +216,7 @@ class KemperActionDefinitions:
             "useSwitchLeds": use_leds
         })
 
-    # Tap tempo
+    # Tap tempo (only control, no tempo feedback)
     @staticmethod
     def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = True):
         return ParameterAction({
@@ -226,6 +227,26 @@ class KemperActionDefinitions:
             "mode": PushButtonAction.MOMENTARY,
             "id": id,
             "useSwitchLeds": use_leds
+        })
+    
+    # Show tempo (visual feedback, will be enabled for short time every beat)
+    @staticmethod
+    def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True):
+        return ParameterAction({
+            "mapping": KemperMappings.MIDI_CLOCK,
+            "display": display,
+            "text": "Tempo",
+            "color": color,
+            "id": id,
+            "useSwitchLeds": use_leds
+        })
+    
+    # Show tempo (visual feedback, will be enabled for short time every beat)
+    @staticmethod
+    def START_CLOCK():
+        return ParameterAction({
+            "mapping": KemperMappings.MIDI_CLOCK_START,
+            "useSwitchLeds": False      
         })
 
     # Effect Button I-IIII (set only). num must be a number (1 to 4).
@@ -265,12 +286,20 @@ class KemperActionDefinitions:
     # boost rig volume by passing a value in range [0..1] (corresponding to the range of the
     # rig volume paramneter: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB)
     @staticmethod
-    def RIG_VOLUME_BOOST(boost_volume, display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = Colors.PINK, id = False, use_leds = True, text = "RigBoost"):
+    def RIG_VOLUME_BOOST(boost_volume, 
+                         display = None, 
+                         mode = PushButtonAction.HOLD_MOMENTARY, 
+                         color = Colors.PINK, 
+                         id = False, 
+                         use_leds = True, 
+                         text = "RigBoost", 
+                         remember_off_value = True
+        ):
         return ParameterAction({
             "mode": mode,
             "mapping": KemperMappings.RIG_VOLUME,
-            "valueEnabled": KemperMidiValueProvider.NRPN_VALUE(boost_volume),
-            "valueDisabled": KemperMidiValueProvider.NRPN_VALUE(0.5),           # 0dB
+            "valueEnable": KemperMidiValueProvider.NRPN_VALUE(boost_volume),
+            "valueDisable": KemperMidiValueProvider.NRPN_VALUE(0.5) if not remember_off_value else "auto",    # 0.5 = 0dB
             "display": display,
             "text": text,
             "color": color,
@@ -327,7 +356,7 @@ class KemperActionDefinitions:
         return ParameterAction({
             "mapping": KemperMappings.NEXT_BANK,
             "mode": PushButtonAction.ONE_SHOT,
-            "valueEnabled": _CC_VALUE_BANK_CHANGE,
+            "valueEnable": _CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank up",
             "color": color,
@@ -341,7 +370,7 @@ class KemperActionDefinitions:
         return ParameterAction({
             "mapping": KemperMappings.PREVIOUS_BANK,
             "mode": PushButtonAction.ONE_SHOT,
-            "valueEnabled": _CC_VALUE_BANK_CHANGE,
+            "valueEnable": _CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank dn",
             "color": color,
@@ -411,8 +440,8 @@ class KemperActionDefinitions:
         return ParameterAction({
             "mapping": mapping,
             "mappingDisable": mapping_disable,
-            "valueEnabled": value_enabled,
-            "valueDisabled": value_disabled,
+            "valueEnable": value_enabled,
+            "valueDisable": value_disabled,
             "display": display,
             "text": "Rig " + text_rig_on,
             "textDisabled": "Rig " + text_rig_off,
@@ -607,34 +636,63 @@ class KemperMidiValueProvider: #(ClientValueProvider):
     def NRPN_VALUE(value):
         return int(16383 * value)
 
+    def __init__(self):
+        self._count_clock = 0
+
     # Must parse the incoming MIDI message and set it on the passed mapping.
     # If the response template does not match, must return False.
     # Must return True to notify the listeners of a value change.
-    def parse(self, mapping, midi_message):
-        # Compare manufacturer IDs
-        if midi_message.manufacturer_id != mapping.response.manufacturer_id:
-            return False
-        
-        # Check if the message belongs to the mapping. The following have to match:
-        #   2: function code, 
-        #   3: instance ID, 
-        #   4: address page, 
-        #   5: address nunber
-        #
-        # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
-        # and device ID as for the request, however the device just sends two zeroes)
-        if midi_message.data[2:6] != mapping.response.data[2:6]:
-            return False
-        
-        # The values starting from index 6 are the value of the response.
-        if mapping.type == self.PARAMETER_TYPE_STRING:
-            # Take as string
-            mapping.value = ''.join(chr(int(c)) for c in list(midi_message.data[6:-1]))
-        else:
-            # Decode 14-bit value to int
-            mapping.value = midi_message.data[-2] * 128 + midi_message.data[-1]
+    def parse(self, mapping, midi_message):     
+        # SysEx (NRPN) Messages
+        if isinstance(midi_message, SystemExclusive):            
+            # Compare manufacturer IDs
+            if midi_message.manufacturer_id != mapping.response.manufacturer_id:
+                return False
+            
+            # Check if the message belongs to the mapping. The following have to match:
+            #   2: function code, 
+            #   3: instance ID, 
+            #   4: address page, 
+            #   5: address nunber
+            #
+            # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
+            # and device ID as for the request, however the device just sends two zeroes)
+            if midi_message.data[2:6] != mapping.response.data[2:6]:
+                return False
+            
+            # The values starting from index 6 are the value of the response.
+            if mapping.type == self.PARAMETER_TYPE_STRING:
+                # Take as string
+                mapping.value = ''.join(chr(int(c)) for c in list(midi_message.data[6:-1]))
+            else:
+                # Decode 14-bit value to int
+                mapping.value = midi_message.data[-2] * 128 + midi_message.data[-1]
 
-        return True
+            return True
+        
+        # MIDI Clock
+        elif isinstance(midi_message, MidiClockMessage):
+            self._count_clock += 1
+
+            if self._count_clock >= 24:
+                self._count_clock = 0
+
+            if self._count_clock >= 12:
+                mapping.value = 1
+            else:
+                mapping.value = 0    
+
+            return True
+        
+        # MIDI Clock start
+        elif isinstance(midi_message, Start):
+            self._count_clock = 0
+
+            mapping.value = 1
+
+            return True
+
+        return False
     
     # Must set the passed value on the SET message of the mapping.
     def set_value(self, mapping, value):
@@ -740,6 +798,26 @@ class KemperMappings:
                 _NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, 
                 _NRPN_ADDRESS_PAGE_FREEZE,
                 KemperEffectSlot.NRPN_FREEZE_SLOT_PARAMETER_ADDRESSES[slot_id]
+            )
+        )
+    
+    def EFFECT_MIX(slot_id):
+        return ClientParameterMapping(
+            name = "Mix " + str(slot_id),
+            set = KemperNRPNMessage(
+                _NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
+                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX
+            ),
+            request = KemperNRPNMessage(               
+                _NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
+                KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
+                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX
+            ),
+            response = KemperNRPNMessage(               
+                _NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, 
+                KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
+                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX
             )
         )
 
@@ -959,6 +1037,7 @@ class KemperMappings:
 
     # Used for state sensing in bidirection communication
     BIDIRECTIONAL_SENSING = ClientParameterMapping(
+        name = "Sense",
         response = KemperNRPNExtendedMessage(
             0x7e,
             [
@@ -966,7 +1045,17 @@ class KemperMappings:
             ]
         )
     ) 
+
+    # MIDI Clock message, sent 24x every beat
+    MIDI_CLOCK = ClientParameterMapping(
+        name = "Clock",
+        response = MidiClockMessage()
+    )
     
+    MIDI_CLOCK_START = ClientParameterMapping(
+        name = "Start",
+        response = Start()
+    )
 
 ####################################################################################################################
 
@@ -1078,7 +1167,7 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
     # Receive sensing messages and re-init (with init = 1 again) when they stop appearing for longer then 1 second
     def receive(self, midi_message):
         if not isinstance(midi_message, SystemExclusive):
-            return
+            return False
                
         # Compare manufacturer IDs
         if midi_message.manufacturer_id != self._mapping_sense.response.manufacturer_id:
@@ -1107,6 +1196,8 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
             self.state = self._STATE_RUNNING
 
         self.sensing_period.reset()
+
+        return True
 
     # Send beacon for bidirection communication
     def _send_beacon(self, init = False):

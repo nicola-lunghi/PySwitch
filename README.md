@@ -93,7 +93,7 @@ Communication = {
 
 - "midi": Configuration for the MidiController. This is a flexible MIDI routing class which can be configured using a list of MidiRouting instances, each defining one route (in one direction only). The example above defines the minimal necessary routings to run the application. If you do not provide any routings, the application will not be able to communicate to the outer world. 
 
-##### Routings
+##### MIDI Routings
 
 A routing has a source and a target, both of which must be instances being able to send and receive MIDI messages. You can use:
 - Adafruit's own MIDI handler (adafruit_midi.MIDI)
@@ -148,6 +148,14 @@ Communication = {
 
 It is also possible to either route multiple sources to one target or vice verse, to distribute or merge messages. 
 The examples also contains samples for setting up MIDICaptain USB and DIN communication as well as MIDI through, or connecting the application to DIN and/or USB MIDI.
+
+**NOTE**: Not all message types are forwarded by default to save memory, only the message types needed for the Kemper devices are enabled:
+- ControlChange
+- ProgramChange
+- SystemExclusive
+- MtcQuarterFrame (MIDI Clock)
+
+There are several other types defined in the <a href="https://docs.circuitpython.org/projects/midi/en/latest/" target="_blank">>adafruit_midi library</a>. If you need them to be processed, see file lib/pyswitch/hardware/adafruit.py and add the message types you need in the import section at the top (importing the type is sufficient, no further code changes needed).
 
 #### Bidirectional Communication
 
@@ -435,6 +443,101 @@ Also see the examples if you get problems, there are some working ones with Hold
 *NOTE: The LEDs of the switch will be shared among the actions participated. If you want just one action to use all LEDs of a switch, you can switch the usage off for an action using the use_leds parameter, for example with the hold action, so only the normal action will use the LEDs.*
 
 *NOTE: Do not assign the same display label to the actions, this does not make sense and will result in erratic output.*
+
+#### Manually creating Parameter Actions
+
+The actions used in the examples above are all defined in the class KemperMappings, which is a pure wrapper class providing easier access to the functionality. If you do not find the action you need, in most cases you can also directly specify the underlying Action. Either you take existing code from KemperMappings and modify it, or you create a ParameterAction (for example) from scratch, which is explained here:
+
+```python
+Switches = [
+    {
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            ParameterAction({
+                "mapping": KemperMappings.MAPPING_TO_PARAMETER_XY,
+                "display": {
+                    # ...
+                },
+                "text": "My Text",
+                "textDisabled": "Off Text",
+                "color": (255, 180, 0),   # Orange                
+            })                        
+        ]
+    }
+```
+
+This will switch the given Parameter on/off using default values (1/0). Please refer to the comments in lib/pyswitch/controller/actions/actions.py at the beginning of the ParameterAction class for details on all available options.
+
+We used a mapping which exists in KemperMappings here, however there are not all parameters already mapped for easy use. To control every parameter available, you can define the mapping yourself, too (here, controling the amp section state on/off):
+
+```python
+Switches = [
+    {
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            ParameterAction({
+                "mapping": ClientParameterMapping(
+                    set = KemperNRPNMessage(
+                        0x01,    # Function code for "change single parameter" 
+                        0x0a,    # Address page of the amp section
+                        0x02,    # Parameter address: Amp state (on/off)
+                    ),
+                    request = KemperNRPNMessage(
+                        0x41,    # Function code for "request single parameter" 
+                        0x0a,    # Address page of the amp section
+                        0x02,    # Parameter address: Amp state (on/off)
+                    ),
+                    response = KemperNRPNMessage(
+                        0x01,    # Function code for "receive single parameter" 
+                        0x0a,    # Address page of the amp section
+                        0x02,    # Parameter address: Amp state (on/off)
+                    )
+                ),
+                "display": {
+                    # ...
+                },
+                "text": "My Text",
+                "textDisabled": "Off Text",
+                "color": (255, 180, 0),   # Orange                
+            })                        
+        ]
+    }
+```
+
+This still uses a wrapper class called KemperNRPNMessage. This just wraps the standard MIDI SysEx type and fills the manufacturer ID etc. for the Kemper automatically. However you can also fully specify the messages yourself. The following is equivalent to the last one:
+
+```python
+Switches = [
+    {
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            ParameterAction({
+                "mapping": ClientParameterMapping(
+                    set = SystemExclusive(
+                        manufacturer_id = [0x00, 0x20, 0x33],
+                        data = [0x02, 0x7f, 0x01, 0x00, 0x0a, 0x02]
+                    ),
+                    request = SystemExclusive(
+                        manufacturer_id = [0x00, 0x20, 0x33],
+                        data = [0x02, 0x7f, 0x41, 0x00, 0x0a, 0x02]
+                    ),
+                    response = SystemExclusive(
+                        manufacturer_id = [0x00, 0x20, 0x33],
+                        data = [0x02, 0x7f, 0x01, 0x00, 0x0a, 0x02]
+                    )
+                ),
+                "display": {
+                    # ...
+                },
+                "text": "My Text",
+                "textDisabled": "Off Text",
+                "color": (255, 180, 0),   # Orange                
+            })                        
+        ]
+    }
+```
+
+Of course the messages sometimes can also be ControlChange messages (especially for setting stuff), but you get the idea.
 
 ### TFT Display Layout Definition
 

@@ -6,11 +6,11 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-from pyswitch.misc import DEFAULT_LABEL_COLOR #, Colors
-from pyswitch.controller.actions.actions import HoldAction  #, PushButtonAction
+from pyswitch.misc import DEFAULT_LABEL_COLOR, Colors
+from pyswitch.controller.actions.actions import HoldAction, ParameterAction, PushButtonAction
 #from pyswitch.controller.ConditionTree import ParameterCondition
 
-from kemper import KemperActionDefinitions, KemperEffectSlot #, KemperMappings
+from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, KemperMidiValueProvider
 from display import DISPLAY_ID_FOOTER, DISPLAY_ID_HEADER
 
 
@@ -28,19 +28,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            HoldAction({
-                "actions": [
-                    KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                        display = {
-                            "id": DISPLAY_ID_HEADER,
-                            "index": 0,
-                            "layout": _ACTION_LABEL_LAYOUT
-                        }
-                    )                           
-                ],
-                "actionsHold": KemperActionDefinitions.BANK_DOWN()
-            })
+            KemperActionDefinitions.TUNER_MODE(
+                display = {
+                    "id": DISPLAY_ID_HEADER,
+                    "index": 0,
+                    "layout": _ACTION_LABEL_LAYOUT
+                }
+            )
         ]
     },
 
@@ -50,16 +44,36 @@ Switches = [
         "actions": [
             HoldAction({
                 "actions": [
-                    KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
-                        display = {
+                    # Tap tempo incl. blinking
+                    KemperActionDefinitions.TAP_TEMPO(),
+                    KemperActionDefinitions.SHOW_TEMPO(),
+                    KemperActionDefinitions.START_CLOCK()
+                ],
+                "actionsHold": [
+                    # Freeze
+                    ParameterAction({
+                        "mapping": KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+                        "display": {
                             "id": DISPLAY_ID_HEADER,
                             "index": 1,
-                            "layout": _ACTION_LABEL_LAYOUT
-                        }
-                    )                           
-                ],
-                "actionsHold": KemperActionDefinitions.BANK_UP()
+                            "layout": _ACTION_LABEL_LAYOUT                            
+                        },
+                        "text": "Freeze",
+                        "color": Colors.DARK_GREEN,
+                        "mode": PushButtonAction.LATCH
+                    }),
+
+                    # Set delay mix to 1:1 when enabled, remembering the olf setting
+                    ParameterAction({
+                        "mode": PushButtonAction.LATCH,
+                        "mapping": KemperMappings.EFFECT_MIX(
+                            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY
+                        ),
+                        "valueEnable": KemperMidiValueProvider.NRPN_VALUE(0.5),
+                        "valueDisable": "auto",
+                        "useSwitchLeds": False
+                    })
+                ]
             })
         ]
     },
@@ -69,7 +83,7 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                 display = {
                     "id": DISPLAY_ID_FOOTER,
                     "index": 0,
@@ -84,7 +98,7 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
                 display = {
                     "id": DISPLAY_ID_FOOTER,
                     "index": 1,

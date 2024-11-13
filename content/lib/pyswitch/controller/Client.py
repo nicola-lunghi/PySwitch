@@ -1,7 +1,4 @@
-from adafruit_midi.system_exclusive import SystemExclusive
-
-from ..misc import EventEmitter, PeriodCounter, Updateable, get_option, compare_midi_messages #, do_print
-
+from ..misc import EventEmitter, PeriodCounter, Updateable, get_option, compare_midi_messages, stringify_midi_message, do_print
 
 # Base class for listeners to client parameter changes
 #class ClientRequestListener:
@@ -41,9 +38,8 @@ class Client: #(ClientRequestListener):
     def __init__(self, midi, config, value_provider):
         self.midi = midi
         
-        #self.debug = get_option(config, "debugClient")
-        #self.debug_mapping = get_option(config, "clientDebugMapping", None)
-        #self.debug_raw_midi = get_option(config, "debugClientRawMidi")
+        self._debug_unparsed_messages = get_option(config, "debugUnparsedMessage", False)
+        self._debug_exclude_types = get_option(config, "excludeMessageTypes", None)
         
         self.value_provider = value_provider
 
@@ -62,7 +58,8 @@ class Client: #(ClientRequestListener):
     # Register the mapping and listener in advance (only plays a role for bidirectional parameters,
     # here this is redundant)
     def register(self, mapping, listener):
-        pass
+        if not mapping.request and mapping.response:
+            self._register_mapping(mapping, listener, False)
 
     # Sends the SET message of a mapping
     def set(self, mapping, value):
@@ -71,32 +68,29 @@ class Client: #(ClientRequestListener):
         
         self.value_provider.set_value(mapping, value)
                 
-        #if self.debug:  # pragma: no cover
-        #    self._print("Send SET message (" + mapping.name + "): " + stringify_midi_message(mapping.set), mapping)
-
         self.midi.send(mapping.set)
 
     # Send the request message of a mapping. Calls the passed listener when the answer has arrived.
     def request(self, mapping, listener):
-        self.register_mapping(mapping, listener, True)
+        if not mapping.request:
+            return
+        
+        self._register_mapping(mapping, listener, True)
         
     # Registers a mapping request or adds the listener to an existing one. Optionally sends the
     # request message. Internal use only.
-    def register_mapping(self, mapping, listener, send):
+    def _register_mapping(self, mapping, listener, send):
         # Add request to the list
         req = self.get_matching_request(mapping)
         if not req:
             # New request
-            req = self.create_request(mapping)
+            req = self._create_request(mapping)
             
             req.add_listener(listener)
 
             # Add to list
             self._requests.append(req)
             
-            #if self.debug:  # pragma: no cover
-            #    self._print("Added request for " + mapping.name + ". Open: " + str(len(self._requests)), mapping)
-
             # Send 
             if send:           
                 req.send()            
@@ -105,15 +99,12 @@ class Client: #(ClientRequestListener):
             # Existing request: Add listener
             req.add_listener(listener)
 
-            #if self.debug:  # pragma: no cover
-            #    self._print("Added listener to request for " + mapping.name + ". Open: " + str(len(self._requests)) + ", Listeners: " + str(len(req.listeners)), mapping)
-
     # Create a new request
-    def create_request(self, mapping):
+    def _create_request(self, mapping):
         return ClientRequest(              
             self,
             mapping,
-            self._max_request_lifetime
+            self._max_request_lifetime if mapping.request else 0
         )
 
     # Receive MIDI messages
@@ -127,9 +118,11 @@ class Client: #(ClientRequestListener):
         # See if one of the waiting requests matches
         do_cleanup = False
 
+        parsed = False
         for request in self._requests:
-            request.parse(midi_message)
-            
+            if request.parse(midi_message):
+                parsed = True
+
             if request.finished:
                 do_cleanup = True
 
@@ -137,12 +130,15 @@ class Client: #(ClientRequestListener):
         if do_cleanup:
             self._cleanup_requests()
 
+        # Debug unparsed messages
+        if not parsed and self._debug_unparsed_messages:
+            if not self._debug_exclude_types or midi_message.__class__.__name__ not in self._debug_exclude_types:
+                do_print(stringify_midi_message(midi_message))
+            
+
     # Returns a matching request from the list if any, or None if no matching
     # request has been found.
     def get_matching_request(self, mapping):
-        if not isinstance(mapping.response, SystemExclusive):
-            return None
-        
         for request in self._requests:
             if request.mapping == mapping:
                 return request
@@ -160,17 +156,7 @@ class Client: #(ClientRequestListener):
             if request.lifetime and request.lifetime.exceeded:
                 request.terminate()
 
-                #if self.debug:  # pragma: no cover
-                #    self._print("Terminated request for " + request.mapping.name + ", took too long")
-
         self._cleanup_requests()
-
-    # Debug console output
-    #def _print(self, msg, mapping = None): # pragma: no cover
-    #    if self.debug_mapping != None and mapping != None and self.debug_mapping != mapping:
-    #        return
-        
-    #    do_print("Client: " + msg)
 
 
 #######################################################################################################################
@@ -224,16 +210,6 @@ class ClientRequest(EventEmitter):
         
         self.client = client
         self.mapping = mapping
-        #self.debug = self.client.debug     
-        
-        #if self.mapping.request and not isinstance(self.mapping.request, SystemExclusive):
-        #    raise Exception() #"Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
-
-        #if not self.mapping.response:
-        #    raise Exception() #"No response template message prepared for this MIDI mapping (" + self.mapping.name + ")")
-        
-        #if not isinstance(self.mapping.response, SystemExclusive):
-        #    raise Exception() #"Parameter requests do not work with ControlChange or other types. Use SystemExclusive instead. (" + self.mapping.name + ")")
         
         self.lifetime = self._init_lifetime(max_request_lifetime)
 
@@ -250,9 +226,6 @@ class ClientRequest(EventEmitter):
     def send(self):
         if not self.mapping.request:
             return
-
-        #if self.debug:   # pragma: no cover
-        #    self._print(" -> Send REQUEST for " + self.mapping.name + ": " + stringify_midi_message(self.mapping.request))
 
         self.client.midi.send(self.mapping.request)
 
@@ -274,33 +247,28 @@ class ClientRequest(EventEmitter):
         self.listeners = None
 
     # Parses an incoming MIDI message. If the message belongs to the mapping's request,
-    # calls the listener with the received value.
+    # calls the listener with the received value. Returns if the message has been used.
     def parse(self, midi_message):
         if not self.mapping.response:
-            return 
+            return False
         
         if self.finished:
-            return
-        
-        if not isinstance(midi_message, SystemExclusive):
-            return
+            return False
 
-        #if self.client.debug_raw_midi:  # pragma: no cover
-        #    self._print("RAW Receive : " + stringify_midi_message(midi_message))
-        #    self._print("RAW Template: " + stringify_midi_message(self.mapping.response))
+        if not isinstance(self.mapping.response, midi_message.__class__):
+            return False
 
         if not self.client.value_provider.parse(self.mapping, midi_message):
-            return
+            return False
         
-        #if self.debug:   # pragma: no cover
-        #    self._print("   -> Received value " + repr(self.mapping.value) + " for " + self.mapping.name + ": " + stringify_midi_message(midi_message))
-
         # Call the listeners (the mapping has the values set already)
         self.notify_listeners()
 
         # Clear listeners (only if the request has a restricted life time)
         if self.lifetime:
             self.listeners = None
+
+        return True
 
     def notify_listeners(self):
         for listener in self.listeners:
@@ -309,13 +277,6 @@ class ClientRequest(EventEmitter):
     def notify_terminated(self):
         for listener in self.listeners:
             listener.request_terminated(self.mapping)
-
-    # Debug console output
-    #def _print(self, msg):  # pragma: no cover
-    #    if self.client.debug_mapping != None and self.client.debug_mapping != self.mapping:
-    #        return
-
-    #    do_print("ClientRequest: " + msg)
 
 
 ####################################################################################################################
@@ -365,18 +326,19 @@ class BidirectionalClient(Client, Updateable):
 
     # Register the mapping and listener in advance (only plays a role for bidirectional parameters)
     def register(self, mapping, listener):
-        if not self.protocol.is_bidirectional(mapping):
-            return
-
-        self.register_mapping(self._strip_request_message(mapping), listener, False)
-
+        if self.protocol.is_bidirectional(mapping):
+            Client.register(self, self._strip_request_message(mapping), listener)
+        else:
+            Client.register(self, mapping, listener)
+        
     # Filter the request messages from the mappings which are part of a bidirectional parameter set
     # (those cannot be requested anymore but get updates from the client automatically).
-    def request(self, mapping, listener):        
-        if self.protocol.is_bidirectional(mapping):
-            super().request(self._strip_request_message(mapping), listener)
-        
-        super().request(mapping, listener)
+    #def request(self, mapping, listener):        
+    #    if self.protocol.is_bidirectional(mapping):
+    #        return
+    #        #super().request(self._strip_request_message(mapping), listener)
+    #    
+    #    super().request(mapping, listener)
 
     # Receive messages (also passes messages to the protocol)
     def receive(self, midi_message):
@@ -412,15 +374,15 @@ class BidirectionalClient(Client, Updateable):
                 r.notify_terminated()
 
     # Create a new request
-    def create_request(self, mapping):
-        # For bidirectional parameters, do not set a request lifetime so the requests never get cleaned up
-        if self.protocol.is_bidirectional(mapping):  
-            return ClientRequest(              
-                self,
-                mapping
-            )
-        else:
-            return super().create_request(mapping)
+    #def create_request(self, mapping):
+    #    # For bidirectional parameters, do not set a request lifetime so the requests never get cleaned up
+    #    if self.protocol.is_bidirectional(mapping):  
+    #        return ClientRequest(              
+    #            self,
+    #            mapping
+    #        )
+    #    else:
+    #        return super().create_request(mapping)
         
     # Returns a (shallow) copy of the mapping with no request/response and value. Use this
     # if you have performance issues with too much requests.

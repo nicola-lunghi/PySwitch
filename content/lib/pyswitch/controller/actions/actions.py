@@ -308,6 +308,15 @@ class HoldAction(Action):
 # Implements bipolar parameters on base of the PushButtonAction class
 class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
+    # Comparison modes (for the valueEnable value when requesting a value)
+    EQUAL = const(0)            # Enable when exactly the valueEnable value comes in
+    
+    GREATER = const(10)         # Enable when a value greater than valueEnable comes in
+    GREATER_EQUAL = const(20)   # Enable when the valueEnable value comes in, or anything greater
+
+    LESS = const(30)            # Enable when a value less than valueEnable comes in
+    LESS_EQUAL = const(40)      # Enable when the valueEnable value comes in, or anything less
+
     # Brightness values 
     DEFAULT_LED_BRIGHTNESS_ON = 0.3
     DEFAULT_LED_BRIGHTNESS_OFF = 0.02
@@ -316,69 +325,85 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     DEFAULT_SLOT_DIM_FACTOR_ON = 1
     DEFAULT_SLOT_DIM_FACTOR_OFF = 0.2
 
-    # Comparison modes (for the valueEnabled value when requesting a value)
-    EQUAL = const(0)            # Enable when exactly the valueEnabled value comes in
-    
-    GREATER = const(10)         # Enable when a value greater than valueEnabled comes in
-    GREATER_EQUAL = const(20)   # Enable when the valueEnabled value comes in, or anything greater
-
-    LESS = const(30)            # Enable when a value less than valueEnabled comes in
-    LESS_EQUAL = const(40)      # Enable when the valueEnabled value comes in, or anything less
-
-    # Generic MIDI parameter
+    # Generic MIDI parameter action.
+    #
     # Additional options:
     # {
-    #     "mode":                Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
+    #     "mode":                Mode of push button operation (see modes defined above). Optional, default is PushButtonModes.HOLD_MOMENTARY
+    #
     #     "holdTimeMillis":      Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
     #
     #     "mapping":             A ClientParameterMapping instance. See mappings.py for some predeifined ones.
     #                            This can also be an array: In this case the mappings are processed in the given order.
-    #     "mappingDisable":      Mapping to be used on disabling the state. If mapping is an array, this has also to be an array.
+    #                            Note that when multiple mappings are specified, the first one which is capable of receiving will 
+    #                            be used to receive values, the others are not listened to!
+    #
+    #     "mappingDisable":      Mapping to be used for disabling the action. If mapping is an array, this has also to be an array.
     #
     #     "text":                Text (optional)
-    #     "comparisonMode":      Mode of comparison when receiving a value. Default is ParameterActionModes.GREATER_EQUAL.    
-    #     "useSwitchLeds":       Use LEDs to visualize state. Optional, default is True
+    #
+    #     "comparisonMode":      Mode of comparison when receiving a value. Default is ParameterActionModes.GREATER_EQUAL. 
+    #
+    #     "useSwitchLeds":       Use LEDs to visualize state. Optional, default is True.
     #
     #     "color":               Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
     #                            with one color for each LED segment of the switch (if more actions share the LEDs, only the first
-    #                            color is used)
+    #                            color is used).
     #
-    #     "valueEnabled":        Value to be interpreted as "enabled". Optional: Default is 1. If mapping is a list, this must
+    #     "valueEnable":         Value to be sent as "enabled". Optional: Default is 1. If mapping is a list, this must
     #                            also be a list of values for the mappings.
-    #     "valueDisabled":       Value to be interpreted as "disabled". Optional: Default is 0. If mappingDisable (if provided)
+    #
+    #     "valueDisable":        Value to be sent as "disabled". Optional: Default is 0. If mappingDisable (if provided)
+    #                            or mapping is a list, this must also be a list of values for the mappings.
+    #                            SPECIAL: If you set this to "auto", the "disabled" value will be determined from the 
+    #                            client's current parameter value when the action state is False (the old value is restored).
+    #
+    #     "referenceValue":      Optional: The value of incoming messages will be compared against this to determine state
+    #                            (acc. to the comparison mode). If not set, "valueEnable" is used. If mappingDisable (if provided)
     #                            or mapping is a list, this must also be a list of values for the mappings.
     #
-    #     "setValueEnabled":     Optional: Value for setting. valueEnabled is only used for receiving if this is set.
-    #     "setValueDisabled":    Optional: Value for setting. valueDisabled is only used for receiving if this is set.
-    #
     #     "displayDimFactor": {
-    #         "on":              Dim factor in range [0..1] for on state (display label)
-    #         "off":             Dim factor in range [0..1] for off state (display label)
+    #         "on":              Dim factor in range [0..1] for on state (display label) Optional.
+    #         "off":             Dim factor in range [0..1] for off state (display label) Optional.
     #     }
     #
     #     "ledBrightness": {
-    #         "on":              LED brightness [0..1] for on state (Switch LEDs)
-    #         "off":             LED brightness [0..1] for off state (Switch LEDs)
+    #         "on":              LED brightness [0..1] for on state (Switch LEDs) Optional.
+    #         "off":             LED brightness [0..1] for off state (Switch LEDs) Optional.
     #     }
     # }
     def __init__(self, config = {}):
         super().__init__(config)
 
+        self._current_display_status = -1
+        self._current_color = -1
+
+        # Per default, this uses the LEDs. You can switch that off however.
         self.uses_switch_leds = get_option(config, "useSwitchLeds", True)
 
-        # Action config
-        self._mapping = config["mapping"]                                                          # Can be an array
-        self._mapping_off = get_option(config, "mappingDisable", None)                       # Can be an array
-        self._value_on = get_option(config, "valueEnabled", 1)                               # Can be an array
-        self._value_off = get_option(config, "valueDisabled", 0)                             # Can be an array
-        self._set_value_on = get_option(config, "setValueEnabled", self._value_on)           # Can be an array
-        self._set_value_off = get_option(config, "setValueDisabled", self._value_off)        # Can be an array
-        
+        # Mapping(s)
+        self._mapping = config["mapping"]                                                        # Can be an array        
+        self._mapping_off = get_option(config, "mappingDisable", None)                           # Can be an array
+
+        # Values
+        self._value_enable = get_option(config, "valueEnable", 1)                                # Can be an array
+        self._value_disable = get_option(config, "valueDisable", 0)                              # Can be an array
+        self._reference_value = get_option(config, "referenceValue", self._value_enable)         # Can be an array
+
+        # Auto mode for valueDisable
+        self._update_value_disabled = False
+        if not isinstance(self._value_disable, list):
+            self._update_value_disabled = (self._value_disable == "auto")
+        else:
+            self._update_value_disabled = [v == "auto" for v in self._value_disable]            
+
         self._comparison_mode = get_option(config, "comparisonMode", self.GREATER_EQUAL)
 
+        # Text(s)
         self._text = get_option(config, "text", False)
         self._text_disabled = get_option(config, "textDisabled", False)
 
+        # Dim factors for displays
         if get_option(config, "displayDimFactor") != False:
             self._dim_factor_on = get_option(config["displayDimFactor"], "on", self.DEFAULT_SLOT_DIM_FACTOR_ON)
             self._dim_factor_off = get_option(config["displayDimFactor"], "off", self.DEFAULT_SLOT_DIM_FACTOR_OFF)
@@ -386,6 +411,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
             self._dim_factor_on = self.DEFAULT_SLOT_DIM_FACTOR_ON
             self._dim_factor_off = self.DEFAULT_SLOT_DIM_FACTOR_OFF
 
+        # LED brightness settings
         if get_option(config, "ledBrightness") != False:
             self._brightness_on = get_option(config["ledBrightness"], "on", self.DEFAULT_LED_BRIGHTNESS_ON)
             self._brightness_off = get_option(config["ledBrightness"], "off", self.DEFAULT_LED_BRIGHTNESS_OFF)
@@ -393,15 +419,13 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
             self._brightness_on = self.DEFAULT_LED_BRIGHTNESS_ON
             self._brightness_off = self.DEFAULT_LED_BRIGHTNESS_OFF
 
+        # Determine the mapping to request
         self._get_request_mapping()        
 
-        self._current_display_status = -1
-        self._current_color = -1
-
+    # Register all mappings
     def init(self, appl, switch):
         super().init(appl, switch)
-
-        # Register all mappings
+        
         if not isinstance(self._mapping, list) and not isinstance(self._mapping, tuple):
             self.appl.client.register(self._mapping, self)
         else:
@@ -421,7 +445,8 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         mapping_definitions = self._get_set_mappings(enabled)
 
         for mapping_def in mapping_definitions:
-            self.appl.client.set(mapping_def[0], mapping_def[1])
+            if mapping_def[1] != "auto":
+                self.appl.client.set(mapping_def[0], mapping_def[1])   # mapping, value
             
         # Request value
         self._request_value()
@@ -518,6 +543,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
             )
 
     # For a given state, returns the mappings array to call set() on.
+    # Returns a list of tiples like (mapping, value)
     def _get_set_mappings(self, state):
         # We can have differing mappings for enabled and disabled state.
         if state == True:
@@ -529,23 +555,20 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
                 candidates = self._mapping
 
         # Get array of mappings to execute
-        value_on = self._set_value_on
-        value_off = self._set_value_off
-
         if not isinstance(candidates, list) and not isinstance(candidates, tuple):
             all = [candidates]
 
             if state == True:
-                values = [value_on]
+                values = [self._value_enable]
             else:
-                values = [value_off]
+                values = [self._value_disable]
         else:
             all = candidates
 
             if state == True:
-                values = value_on
+                values = self._value_enable
             else:
-                values = value_off
+                values = self._value_disable
 
         ret = []
         
@@ -561,13 +584,13 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
     # Get the mapping to be used for reuqesting values. This is the first one which is able to request. 
     def _get_request_mapping(self):
-        self._request_mapping_value_on = None
+        self._request_mapping_ref_value = None
         self._request_mapping = None
 
         if not isinstance(self._mapping, list) and not isinstance(self._mapping, tuple): 
             # Mapping instance: Check if it can receive values
             if self._mapping.response:
-                self._request_mapping_value_on = self._value_on
+                self._request_mapping_ref_value = self._reference_value
                 self._request_mapping = self._mapping
         else:
             # Array of mappings: Use the first one capable of receiving values
@@ -576,7 +599,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
                 if mapping.response:
                     self._request_mapping = mapping
-                    self._request_mapping_value_on = self._value_on[i]
+                    self._request_mapping_ref_value = self._reference_value[i]
                     break
 
     # Must reset all action states so the instance is being updated
@@ -597,7 +620,6 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     def parameter_changed(self, mapping):
         #if not self.enabled:
         #    return
-         
         if not self._request_mapping:
             return            
         
@@ -607,28 +629,39 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         state = False
         
         if self._comparison_mode == self.EQUAL:
-            if mapping.value == self._request_mapping_value_on:
+            if mapping.value == self._request_mapping_ref_value:
                 state = True
 
         elif self._comparison_mode == self.GREATER_EQUAL:
-            if mapping.value >= self._request_mapping_value_on:
+            if mapping.value >= self._request_mapping_ref_value:
                 state = True
 
         elif self._comparison_mode == self.GREATER:
-            if mapping.value > self._request_mapping_value_on:
+            if mapping.value > self._request_mapping_ref_value:
                 state = True
 
         elif self._comparison_mode == self.LESS_EQUAL:
-            if mapping.value <= self._request_mapping_value_on:
+            if mapping.value <= self._request_mapping_ref_value:
                 state = True
 
         elif self._comparison_mode == self.LESS:
-            if mapping.value < self._request_mapping_value_on:
+            if mapping.value < self._request_mapping_ref_value:
                 state = True        
         else:
             raise Exception() #"Invalid comparison mode: " + repr(self._comparison_mode))        
 
-        self.feedback_state(state)
+        self.feedback_state(state)        
+
+        # If enabled, update the disabled value
+        if state == True or not self._update_value_disabled:
+            return
+        
+        if not isinstance(self._value_disable, list):
+            self._value_disable = mapping.value
+        else:
+            for i in range(len(self._value_disable)):
+                if self._update_value_disabled[i]:
+                    self._value_disable[i] = mapping.value
 
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):

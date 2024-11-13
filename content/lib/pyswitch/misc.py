@@ -1,9 +1,6 @@
 from time import monotonic, localtime
 
-from adafruit_midi.control_change import ControlChange
-from adafruit_midi.system_exclusive import SystemExclusive
-from adafruit_midi.midi_message import MIDIUnknownEvent
-
+from .controller.MidiController import SystemExclusive, ControlChange, ProgramChange, MidiClockMessage, Start, MIDIUnknownEvent
 
 # PySwitch version
 PYSWITCH_VERSION = "2.1.2"
@@ -73,11 +70,23 @@ def stringify_midi_message(midi_message):
         # SysEx
         ret = _stringify_midi_message_part(midi_message.manufacturer_id) + _stringify_midi_message_part(midi_message.data)
 
-    elif isinstance(midi_message, ControlChange):
+    elif isinstance(midi_message, ControlChange):    
         # CC
         ret = repr(midi_message.control) + ", " + repr(midi_message.value)
 
-    elif isinstance(midi_message, MIDIUnknownEvent):
+    elif isinstance(midi_message, ProgramChange):    
+        # PC
+        ret = repr(midi_message.patch)
+
+    elif isinstance(midi_message, MidiClockMessage):    
+        # Clock
+        pass
+
+    elif isinstance(midi_message, Start):    
+        # Clock Start
+        pass
+
+    elif isinstance(midi_message, MIDIUnknownEvent):    
         # Unknown
         ret = repr(midi_message.status)
     
@@ -103,16 +112,29 @@ def _stringify_midi_message_part(part):
 
 # Compare two MIDI messages
 def compare_midi_messages(a, b):
-    if a.__class__.__name__ != b.__class__.__name__:
-        return False
+    #if a.__class__.__name__ != b.__class__.__name__:
+    #    return False
 
-    if isinstance(a, SystemExclusive):            
+    if isinstance(a, SystemExclusive) and isinstance(b, SystemExclusive):
         return a.data == b.data and a.manufacturer_id == b.manufacturer_id
 
-    if isinstance(a, ControlChange):
+    elif isinstance(a, ControlChange) and isinstance(b, ControlChange):
         return a.control == b.control
     
-    return a == b
+    elif isinstance(a, MidiClockMessage) and isinstance(b, MidiClockMessage):
+        return True
+    
+    elif isinstance(a, Start) and isinstance(b, Start):
+        return True
+
+    elif isinstance(a, ProgramChange) and isinstance(b, ProgramChange):
+        return a.patch == b.patch
+
+    elif isinstance(a, MIDIUnknownEvent) and isinstance(b, MIDIUnknownEvent):
+        return a.status == b.status
+
+    else:
+        return a == b
 
 # Size (bytes) output formatting 
 # Taken from https://stackoverflow.com/questions/1094841/get-a-human-readable-version-of-a-file-size 

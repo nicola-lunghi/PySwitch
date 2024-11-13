@@ -1,4 +1,8 @@
-# 2.1.2
+# PySwitch v2.2.0
+- RIG_VOLUME_BOOST now remembers the current rig volume before turning the boost on, and restores this volume when disabled again.
+- Receive MIDI Clock to show rig tempo (see examples)
+
+# PySwitch v2.1.2
 - Memory usage optimized: 
     - Avoid keeping of config dictionaries for longer than __init__
     - Removed corner radius from display elements
@@ -9,17 +13,17 @@
 - Added examples
 - Tuner sensitivity adjusted, colors changed for lighter ones
 
-# 2.1.1
+# PySwitch v2.1.1
 - Added mappings for Effect Buttons I-IIII (set only, sadly there is no state feedback possibility from Kemper)
 
-# 2.1.0
+# PySwitch v2.1.0
 - Bidirectional communication with the Kemper devices
 - Tuner Splash showing tuner note and deviation from the note visually
 - HoldAction to assign different actions on long press
 - ParameterAction: Supports different comparison modes now
 - Bug fixes / Unit Tests updated
  
-# 2.0.0
+# PySwitch v2.0.0
 - Complete Rewrite (standalone firmware without dependency on PaintAudio Code, object oriented design etc.)
 - Customization by config script
 - Out-of-the-box Compatibility with PaintAudio MIDICaptain Nano (4 Switches) and Mini (6 Switches),

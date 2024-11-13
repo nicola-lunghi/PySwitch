@@ -42,8 +42,7 @@ if not get_option(Config, "exploreMode"):
         led_driver = _led_driver, 
         communication = Communication, 
         midi = MidiController(
-            routings = Communication["midi"]["routings"] if get_option(Communication, "midi") else [],
-            debug  = get_option(Config, "debugMidi")
+            routings = Communication["midi"]["routings"]
         ),
         config = Config, 
         switches = Switches, 

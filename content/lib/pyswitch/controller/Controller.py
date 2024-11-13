@@ -60,7 +60,7 @@ class Controller(Updater): #ClientRequestListener
         #self._measurement_switch_update = RuntimeMeasurement(interval_millis = get_option(config, "debugStatsInterval", update_interval))
         #self._measurement_switch_update.add_listener(self)
 
-        # Print statistical info
+        # Print debug info        
         self._debug_stats = get_option(config, "debugStats", False)        
 
         # NeoPixel driver 

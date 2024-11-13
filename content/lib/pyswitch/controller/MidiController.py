@@ -1,6 +1,37 @@
 #from ..misc import stringify_midi_message, do_print
 
+
+# MIDI Message types: These are all needed to be imported, despite not used: If not, no messages
+# will go through the MIDI routings. If you encounter that messages are not forwarded, the type 
+# might perhaps miss here. (not all are enabled by default to minimize RAM usage).
+# If the message type (status) is not known by the adafruit_midi library at all, you can implement
+# the type yourself (see MidiClockMessage below)
+from adafruit_midi.midi_message import MIDIMessage
 from adafruit_midi.midi_message import MIDIUnknownEvent
+from adafruit_midi.control_change import ControlChange
+from adafruit_midi.program_change import ProgramChange
+from adafruit_midi.system_exclusive import SystemExclusive
+#from adafruit_midi.mtc_quarter_frame import MtcQuarterFrame
+#from adafruit_midi.channel_pressure import ChannelPressure
+#from adafruit_midi.note_off import NoteOff
+#from adafruit_midi.note_on import NoteOn
+#from adafruit_midi.pitch_bend import PitchBend
+#from adafruit_midi.timing_clock import TimingClock
+from adafruit_midi.start import Start
+#from adafruit_midi.stop import Stop
+
+
+# MIDI Clock custom message type
+class MidiClockMessage(MIDIMessage):
+    _STATUS = 0xF8
+    _STATUSMASK = 0xFF
+    LENGTH = 1
+    _slots = []
+
+MidiClockMessage.register_message_type()
+
+
+##################################################################################################
 
 
 # Describes a routing from source to target, which must be MidiDevices definitions.
@@ -27,9 +58,7 @@ class MidiController:
     APPLICATION = 1
 
     # routings must be a list of MidiRouting instances
-    def __init__(self, routings, debug = False):
-        #self._debug = debug
-        
+    def __init__(self, routings):
         self._routings_from_appl = [x for x in routings if x.source == MidiController.APPLICATION]
         self._routings_to_appl = [x for x in routings if x.target == MidiController.APPLICATION]
         self._routings_external = [x for x in routings if x.source != MidiController.APPLICATION and x.target != MidiController.APPLICATION]
@@ -83,7 +112,7 @@ class MidiController:
         
                 if not msg:
                     continue
-
+                
                 if isinstance(msg, MIDIUnknownEvent):
                     continue
                 
