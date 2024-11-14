@@ -61,7 +61,9 @@ _NRPN_FUNCTION_SET_SINGLE_PARAMETER = const(0x01)
 _NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = const(0x00) 
 _NRPN_EFFECT_PARAMETER_ADDRESS_STATE = const(0x03)
 _NRPN_EFFECT_PARAMETER_ADDRESS_MIX = const(0x04)
-_NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED = const(0x1e)
+_NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED = const(0x1e)  # 30
+_NRPN_EFFECT_PARAMETER_ADDRESS_MIX2 = const(0x36)  # 54
+_NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV = const(0x45)  # 69
 # ... add further parameters here
 
 # Rig parameters (page 0x04)
@@ -807,17 +809,17 @@ class KemperMappings:
             set = KemperNRPNMessage(
                 _NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX
+                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV
             ),
             request = KemperNRPNMessage(               
                 _NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX
+                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV
             ),
             response = KemperNRPNMessage(               
                 _NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX
+                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV
             )
         )
 

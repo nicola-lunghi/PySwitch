@@ -40,6 +40,7 @@ class Client: #(ClientRequestListener):
         
         self._debug_unparsed_messages = get_option(config, "debugUnparsedMessage", False)
         self._debug_exclude_types = get_option(config, "excludeMessageTypes", None)
+        self._debug_mapping = get_option(config, "debugMapping", None)
         
         self.value_provider = value_provider
 
@@ -220,6 +221,7 @@ class ClientRequest(EventEmitter):
             
         lifetime = PeriodCounter(max_request_lifetime)
         lifetime.reset()
+
         return lifetime
 
     # Sends the request
@@ -261,6 +263,9 @@ class ClientRequest(EventEmitter):
         if not self.client.value_provider.parse(self.mapping, midi_message):
             return False
         
+        if self.client._debug_mapping == self.mapping:    # pragma: no cover
+            do_print(self.mapping.name + ": Received value '" + repr(self.mapping.value) + "' from " + stringify_midi_message(midi_message))
+
         # Call the listeners (the mapping has the values set already)
         self.notify_listeners()
 

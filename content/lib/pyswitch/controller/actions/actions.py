@@ -304,7 +304,6 @@ class HoldAction(Action):
 ################################################################################################################################
 
 
-
 # Implements bipolar parameters on base of the PushButtonAction class
 class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
@@ -340,16 +339,6 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     #
     #     "mappingDisable":      Mapping to be used for disabling the action. If mapping is an array, this has also to be an array.
     #
-    #     "text":                Text (optional)
-    #
-    #     "comparisonMode":      Mode of comparison when receiving a value. Default is ParameterActionModes.GREATER_EQUAL. 
-    #
-    #     "useSwitchLeds":       Use LEDs to visualize state. Optional, default is True.
-    #
-    #     "color":               Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
-    #                            with one color for each LED segment of the switch (if more actions share the LEDs, only the first
-    #                            color is used).
-    #
     #     "valueEnable":         Value to be sent as "enabled". Optional: Default is 1. If mapping is a list, this must
     #                            also be a list of values for the mappings.
     #
@@ -362,6 +351,16 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     #                            (acc. to the comparison mode). If not set, "valueEnable" is used. If mappingDisable (if provided)
     #                            or mapping is a list, this must also be a list of values for the mappings.
     #
+    #     "comparisonMode":      Mode of comparison when receiving a value. Default is ParameterActionModes.GREATER_EQUAL. 
+    #
+    #     "text":                Text (optional)
+    #
+    #     "useSwitchLeds":       Use LEDs to visualize state. Optional, default is True.
+    #
+    #     "color":               Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
+    #                            with one color for each LED segment of the switch (if more actions share the LEDs, only the first
+    #                            color is used).
+    #
     #     "displayDimFactor": {
     #         "on":              Dim factor in range [0..1] for on state (display label) Optional.
     #         "off":             Dim factor in range [0..1] for off state (display label) Optional.
@@ -371,6 +370,11 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     #         "on":              LED brightness [0..1] for on state (Switch LEDs) Optional.
     #         "off":             LED brightness [0..1] for off state (Switch LEDs) Optional.
     #     }
+    #
+    #     "updateDisplays":      Optional callback function to update the display and LEDs. See documentation for details.
+    #                            Callback schema is: callback(action, mapping) => Bool, where action is the ParameterAction instance,
+    #                            and mapping.value holds the current value of the mapping. 
+    #                            Return True if your callback handled everything, or False for the default behaviour.
     # }
     def __init__(self, config = {}):
         super().__init__(config)
@@ -418,6 +422,9 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         else:
             self._brightness_on = self.DEFAULT_LED_BRIGHTNESS_ON
             self._brightness_off = self.DEFAULT_LED_BRIGHTNESS_OFF
+
+        # Callback based display update
+        self._update_displays_callback = get_option(config, "updateDisplays", None)
 
         # Determine the mapping to request
         self._get_request_mapping()        
@@ -468,15 +475,19 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         if not self.enabled:
             return
 
+        # Callback. If it returns True, we are finished here.
+        if callable(self._update_displays_callback) and self._update_displays_callback(self, self._request_mapping):            
+            return 
+        
         # Set color, if new
         if self.color != self._current_color:
             self._current_color = self.color
         
             self.set_switch_color(self.color)
             self.set_label_color(self.color)
-            self._update_label_text()
+            self._update_label_text()            
     
-        # Only update when state have been changed
+        # Update when state have been changed
         if self._current_display_status != self.state:
             self._current_display_status = self.state
 
@@ -618,8 +629,6 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
     # Called by the Client class when a parameter request has been answered
     def parameter_changed(self, mapping):
-        #if not self.enabled:
-        #    return
         if not self._request_mapping:
             return            
         
@@ -650,9 +659,12 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         else:
             raise Exception() #"Invalid comparison mode: " + repr(self._comparison_mode))        
 
+        # Remember value for callback
+        self._request_mapping.value = mapping.value
+
         self.feedback_state(state)        
 
-        # If enabled, update the disabled value
+        # If enabled, remember the value for later when disabled
         if state == True or not self._update_value_disabled:
             return
         
@@ -705,10 +717,14 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
         self._slot_info = config["slotInfo"]
         
         # Category provider of type EffectCategoryProvider
-        self._categories = config["categories"]
+        self.categories = config["categories"]
         
-        self._effect_category = self._categories.get_category_not_assigned()  
+        self._effect_category = self.categories.get_category_not_assigned()  
         self._current_category = -1
+
+    @property
+    def effect_category(self):
+        return self._effect_category
 
     # Initialize the action
     def init(self, appl, switch):
@@ -729,7 +745,6 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
     # Update display and LEDs to the current state and effect category
     def update_displays(self):
         if not self.enabled:
-            super().update_displays()
             return
         
         # Only update when category of state have been changed
@@ -740,20 +755,20 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
         self._current_category = self._effect_category
 
         # Effect category color
-        self.color = self._categories.get_effect_category_color(self._effect_category) 
+        self.color = self.categories.get_effect_category_color(self._effect_category) 
 
         # Effect category text
         if self.label:
             if self._show_slot_names:
-                self.label.text = self._slot_info.get_name() + ": " + self._categories.get_effect_category_name(self._effect_category) 
+                self.label.text = self._slot_info.get_name() + ": " + self.categories.get_effect_category_name(self._effect_category) 
             else:
-                self.label.text = self._categories.get_effect_category_name(self._effect_category) 
+                self.label.text = self.categories.get_effect_category_name(self._effect_category) 
     
         super().update_displays()
 
     # Update switch brightness
     def set_switch_color(self, color):
-        if self._effect_category == self._categories.get_category_not_assigned():
+        if self._effect_category == self.categories.get_category_not_assigned():
             # Set pixels to black (this effectively deactivates the LEDs) 
             color = Colors.BLACK
 
@@ -764,7 +779,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
         if not self.label:
             return
         
-        if self._effect_category == self._categories.get_category_not_assigned():
+        if self._effect_category == self.categories.get_category_not_assigned():
             # Do not dim the color when not assigned (this makes it black effectively) 
             self.label.back_color = color
         else:
@@ -778,7 +793,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
             return
         
         # Convert to effect category
-        category = self._categories.get_effect_category(mapping.value)
+        category = self.categories.get_effect_category(mapping.value)
 
         if category == self._effect_category:
             # Request status also when category has not changed
@@ -788,7 +803,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
         # New effect category
         self._effect_category = category
 
-        if self._effect_category == self._categories.get_category_not_assigned():
+        if self._effect_category == self.categories.get_category_not_assigned():
             self.state = False
 
         self.update_displays()
@@ -803,7 +818,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
         if mapping != self._mapping_fxtype:
             return
         
-        self._effect_category = self._categories.get_category_not_assigned() 
+        self._effect_category = self.categories.get_category_not_assigned() 
         
         self.update_displays()
 
@@ -811,7 +826,7 @@ class EffectEnableAction(ParameterAction): #, ClientRequestListener):
     def reset(self):
         super().reset()
 
-        self._effect_category = self._categories.get_category_not_assigned() 
+        self._effect_category = self.categories.get_category_not_assigned() 
         self.update_displays()
 
     # Must reset all action states so the instance is being updated

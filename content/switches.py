@@ -44,13 +44,22 @@ Switches = [
         "actions": [
             HoldAction({
                 "actions": [
-                    # Tap tempo incl. blinking
+                    # Tap tempo / Tempo display
                     KemperActionDefinitions.TAP_TEMPO(),
-                    KemperActionDefinitions.SHOW_TEMPO(),
-                    KemperActionDefinitions.START_CLOCK()
+                    KemperActionDefinitions.START_CLOCK(),  # Receives MIDI Clock Start to sync clock to device
+                    KemperActionDefinitions.SHOW_TEMPO()    # Receives MIDI Clock and shows beats with the LED(s)
                 ],
                 "actionsHold": [
-                    # Freeze
+                    # Enable delay (also on disable!)
+                    ParameterAction({
+                        "mode": PushButtonAction.ENABLE,
+                        "mapping": KemperMappings.EFFECT_STATE(
+                            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY
+                        ),
+                        "useSwitchLeds": False
+                    }),
+
+                    # Freeze on/off
                     ParameterAction({
                         "mapping": KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
                         "display": {
@@ -58,12 +67,12 @@ Switches = [
                             "index": 1,
                             "layout": _ACTION_LABEL_LAYOUT                            
                         },
-                        "text": "Freeze",
-                        "color": Colors.DARK_GREEN,
+                        "text": "Tap|Frz",
+                        "color": Colors.GREEN,
                         "mode": PushButtonAction.LATCH
-                    }),
+                    }),                    
 
-                    # Set delay mix to 1:1 when enabled, remembering the olf setting
+                    # Set delay mix to 1:1 when enabled, remembering the old setting
                     ParameterAction({
                         "mode": PushButtonAction.LATCH,
                         "mapping": KemperMappings.EFFECT_MIX(
@@ -71,6 +80,7 @@ Switches = [
                         ),
                         "valueEnable": KemperMidiValueProvider.NRPN_VALUE(0.5),
                         "valueDisable": "auto",
+                        "comparisonMode": ParameterAction.EQUAL,
                         "useSwitchLeds": False
                     })
                 ]
@@ -83,7 +93,7 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
                 display = {
                     "id": DISPLAY_ID_FOOTER,
                     "index": 0,
@@ -98,7 +108,7 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
                 display = {
                     "id": DISPLAY_ID_FOOTER,
                     "index": 1,

@@ -4,6 +4,8 @@
 #
 ##############################################################################################################################################
 
+#from kemper import KemperMappings, KemperEffectSlot
+
 Config = {
     
     # Max. number of MIDI messages being parsed before the next switch state evaluation
@@ -39,7 +41,10 @@ Config = {
     #"debugUnparsedMessage": True,                    # Shows all incoming MIDI messages which have not been parsed by the application.
     #"excludeMessageTypes": [ "SystemExclusive" ],    # Types to excude from "debugUnparsedMessage"
 
-    # Set this to True to boot into explore mode. This mode listens to all GPIO pins available
+    # When a ClientParameterMapping instance is set here, incoming messages for this mapping will be shown.
+    #"debugMapping": KemperMappings.EFFECT_MIX(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY)
+
+    # Explore Mode: Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 
     # Use this to detect the switch assignments on unknown devices. Optional.
     #"exploreMode": True

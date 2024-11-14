@@ -121,14 +121,11 @@ class Controller(Updater): #ClientRequestListener
         if self.ui:            
             Memory.watch("Showing UI")
 
-            self.ui.show()
+            self.ui.show()           
         
         self.running = True
 
-        #if self._debug:
-        #    do_print("-> Done initializing, starting processing loop")
-
-        Memory.watch("Starting loop")
+        Memory.watch("Application loaded")
 
         # Check memory usage and issue a warning if too high
         collect()
