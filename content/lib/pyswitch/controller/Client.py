@@ -131,7 +131,7 @@ class Client: #(ClientRequestListener):
             self._cleanup_requests()
 
         # Debug unparsed messages
-        if not parsed and self._debug_unparsed_messages:
+        if not parsed and self._debug_unparsed_messages:           # pragma: no cover
             if not self._debug_exclude_types or midi_message.__class__.__name__ not in self._debug_exclude_types:
                 do_print(stringify_midi_message(midi_message))
             

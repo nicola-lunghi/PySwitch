@@ -13,6 +13,9 @@ with patch.dict(sys.modules, {
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+    "adafruit_midi.start": MockAdafruitMIDIStart(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):

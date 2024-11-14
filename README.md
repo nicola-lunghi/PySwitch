@@ -375,7 +375,7 @@ Switches = [
 ]
 ```
 
-Available condition types (see lib/pyswitch/controller/COnditionTree.py):
+Available condition types (see lib/pyswitch/controller/ConditionTree.py):
 - **ParameterCondition**: Depends on a parameter. See implementation for available comparison modes.
 - **PushButtonCondition**: Depends on the state of another switch
 

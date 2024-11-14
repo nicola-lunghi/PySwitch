@@ -22,6 +22,7 @@ class MockMisc:
         return MockMisc.msgs[len(MockMisc.msgs)-1]
 
     compare_midi_messages = misc.compare_midi_messages
+    stringify_midi_message = misc.stringify_midi_message
     format_size = misc.format_size
     get_option = misc.get_option
     fill_up_to = misc.fill_up_to

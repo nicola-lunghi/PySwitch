@@ -11,6 +11,9 @@ with patch.dict(sys.modules, {
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+    "adafruit_midi.start": MockAdafruitMIDIStart(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
@@ -193,7 +196,7 @@ class TestClient(unittest.TestCase):
 
         listener = MockClientRequestListener()
 
-        client.register_mapping(mapping_1, listener, False)
+        client.register(mapping_1, listener)
 
         answer_msg = SystemExclusive(
             manufacturer_id = [0x00, 0x10, 0x20],
