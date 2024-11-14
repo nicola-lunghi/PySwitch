@@ -353,9 +353,11 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     #
     #     "comparisonMode":      Mode of comparison when receiving a value. Default is ParameterActionModes.GREATER_EQUAL. 
     #
+    #     "useSwitchLeds":       Use LEDs to visualize state. Optional, default is True.
+    #
     #     "text":                Text (optional)
     #
-    #     "useSwitchLeds":       Use LEDs to visualize state. Optional, default is True.
+    #     "textDisabled":        Text for diabled state (optional)
     #
     #     "color":               Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
     #                            with one color for each LED segment of the switch (if more actions share the LEDs, only the first

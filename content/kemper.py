@@ -8,83 +8,85 @@ from adafruit_midi.start import Start
 from pyswitch.misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print
 from pyswitch.controller.actions.actions import ParameterAction, EffectEnableAction, ResetDisplaysAction, PushButtonAction
 from pyswitch.controller.Client import ClientParameterMapping
-from pyswitch.controller.MidiController import MidiClockMessage
+#from pyswitch.controller.MidiController import MidiClockMessage
 
 
 ####################################################################################################################
 
 # Definitions of devices
-_NRPN_PRODUCT_TYPE_PROFILER = const(0x00)                     # Kemper Profiler
-_NRPN_PRODUCT_TYPE_PROFILER_PLAYER = const(0x02)              # Kemper Profiler Player
+NRPN_PRODUCT_TYPE_PROFILER = const(0x00)                     # Kemper Profiler
+NRPN_PRODUCT_TYPE_PROFILER_PLAYER = const(0x02)              # Kemper Profiler Player
 
 # This defines which type of device to control
-_NRPN_PRODUCT_TYPE = _NRPN_PRODUCT_TYPE_PROFILER_PLAYER
+NRPN_PRODUCT_TYPE = NRPN_PRODUCT_TYPE_PROFILER_PLAYER
 
 ####################################################################################################################
 
 # ControlChange Addresses
-_CC_TUNER_MODE = const(31)
-_CC_BANK_INCREASE = const(48)
-_CC_BANK_DECREASE = const(49)
-_CC_RIG_SELECT = const(50)       # This selects slot 1 of the current bank. The slots 2-5 can be addressed by adding (n-1) to the value.
-_CC_BANK_PRESELECT = const(47)
-_CC_TAP_TEMPO = const(30)
-_CC_ROTARY_SPEED = const(33)     # 1 = Fast, 0 = Slow
+CC_TUNER_MODE = const(31)
+CC_BANK_INCREASE = const(48)
+CC_BANK_DECREASE = const(49)
+CC_RIG_SELECT = const(50)       # This selects slot 1 of the current bank. The slots 2-5 can be addressed by adding (n-1) to the value.
+CC_BANK_PRESELECT = const(47)
+CC_TAP_TEMPO = const(30)
+CC_ROTARY_SPEED = const(33)     # 1 = Fast, 0 = Slow
+CC_MORPH_PEDAL = const(11)
+CC_MORPH_BUTTON = const(80)     # Also includes ride/fall times
 
-_CC_EFFECT_BUTTON_I = const(75)  # II to IV are consecutive from this: 76, 77, 78
+CC_EFFECT_BUTTON_I = const(75)  # II to IV are consecutive from this: 76, 77, 78
 
-_CC_VALUE_BANK_CHANGE = const(0)
+CC_VALUE_BANK_CHANGE = const(0)
 
 # Basic values for all NRPN messages
-_NRPN_MANUFACTURER_ID = [0x00, 0x20, 0x33]       # Kemper manufacturer ID
-_NRPN_DEVICE_ID_OMNI = const(0x7f)               # Omni (all devices, only supported mode)
-_NRPN_INSTANCE = const(0x00)                     # Instance ID for NRPN. The profiler only supports instance 0.
+NRPN_MANUFACTURER_ID = [0x00, 0x20, 0x33]       # Kemper manufacturer ID
+NRPN_DEVICE_ID_OMNI = const(0x7f)               # Omni (all devices, only supported mode)
+NRPN_INSTANCE = const(0x00)                     # Instance ID for NRPN. The profiler only supports instance 0.
 
 # NRPN Adress pages
-_NRPN_ADDRESS_PAGE_STRINGS = const(0x00)
-_NRPN_ADDRESS_PAGE_RIG_PARAMETERS = const(0x04)
-_NRPN_ADDRESS_PAGE_FREEZE = const(0x7d)
-_NRPN_ADDRESS_PAGE_AMP = const(0x0a)
-_NRPN_ADDRESS_PAGE_CABINET = const(0x0c)
+NRPN_ADDRESS_PAGE_STRINGS = const(0x00)
+NRPN_ADDRESS_PAGE_RIG_PARAMETERS = const(0x04)
+NRPN_ADDRESS_PAGE_FREEZE = const(0x7d)
+NRPN_ADDRESS_PAGE_AMP = const(0x0a)
+NRPN_ADDRESS_PAGE_CABINET = const(0x0c)
 
 # NRPN Function codes
-_NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER = const(0x41)
-_NRPN_FUNCTION_REQUEST_STRING_PARAMETER = const(0x43)
-_NRPN_FUNCTION_REQUEST_EXT_STRING_PARAMETER = const(0x47)
+NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER = const(0x41)
+NRPN_FUNCTION_REQUEST_STRING_PARAMETER = const(0x43)
+NRPN_FUNCTION_REQUEST_EXT_STRING_PARAMETER = const(0x47)
 
-_NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER = const(0x01)
-_NRPN_FUNCTION_RESPONSE_STRING_PARAMETER = const(0x03)
+NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER = const(0x01)
+NRPN_FUNCTION_RESPONSE_STRING_PARAMETER = const(0x03)
 
-_NRPN_FUNCTION_SET_SINGLE_PARAMETER = const(0x01)
+NRPN_FUNCTION_SET_SINGLE_PARAMETER = const(0x01)
 
 # NRPN parameters for effect slots
-_NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = const(0x00) 
-_NRPN_EFFECT_PARAMETER_ADDRESS_STATE = const(0x03)
-_NRPN_EFFECT_PARAMETER_ADDRESS_MIX = const(0x04)
-_NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED = const(0x1e)  # 30
-_NRPN_EFFECT_PARAMETER_ADDRESS_MIX2 = const(0x36)  # 54
-_NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV = const(0x45)  # 69
+NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = const(0x00) 
+NRPN_EFFECT_PARAMETER_ADDRESS_STATE = const(0x03)
+NRPN_EFFECT_PARAMETER_ADDRESS_MIX = const(0x04)
+NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED = const(0x1e)  # 30
+NRPN_EFFECT_PARAMETER_ADDRESS_MIX2 = const(0x36)  # 54
+NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV = const(0x45)  # 69
 # ... add further parameters here
 
 # Rig parameters (page 0x04)
-_NRPN_RIG_PARAMETER_VOLUME = const(0x01)
+NRPN_RIG_PARAMETER_VOLUME = const(0x01)
 # ... add further parameters here
 
 # Amp parameters (page 0x0a)
-_NRPN_AMP_PARAMETER_STATE = const(0x02)
+NRPN_AMP_PARAMETER_STATE = const(0x02)
 
 # Cab parameters (page 0x0c)
-_NRPN_CABINET_PARAMETER_STATE = const(0x02)
+NRPN_CABINET_PARAMETER_STATE = const(0x02)
 
 # NRPN String parameters
-_NRPN_STRING_PARAMETER_ID_RIG_NAME = const(0x01)
-_NRPN_STRING_PARAMETER_ID_RIG_DATE = const(0x03)
-_NRPN_STRING_PARAMETER_ID_AMP_NAME = const(0x10)
-_NRPN_STRING_PARAMETER_ID_CABINET_NAME = const(0x20)
+NRPN_STRING_PARAMETER_ID_RIG_NAME = const(0x01)
+NRPN_STRING_PARAMETER_ID_RIG_DATE = const(0x03)
+NRPN_STRING_PARAMETER_ID_AMP_NAME = const(0x10)
+NRPN_STRING_PARAMETER_ID_CABINET_NAME = const(0x20)
 
 # Generally used NRPN values
-_NRPN_PARAMETER_OFF = const(0)
-_NRPN_PARAMETER_ON = const(1)
+NRPN_PARAMETER_OFF = const(0)
+NRPN_PARAMETER_ON = const(1)
 
 
 ####################################################################################################################
@@ -235,7 +237,7 @@ class KemperActionDefinitions:
     @staticmethod
     def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True):
         return ParameterAction({
-            "mapping": KemperMappings.MIDI_CLOCK,
+            "mapping": KemperMappings.TEMPO_DISPLAY,
             "display": display,
             "text": "Tempo",
             "color": color,
@@ -243,13 +245,13 @@ class KemperActionDefinitions:
             "useSwitchLeds": use_leds
         })
     
-    # Show tempo (visual feedback, will be enabled for short time every beat)
-    @staticmethod
-    def START_CLOCK():
-        return ParameterAction({
-            "mapping": KemperMappings.MIDI_CLOCK_START,
-            "useSwitchLeds": False      
-        })
+    ## Show tempo (visual feedback, will be enabled for short time every beat)
+    #@staticmethod
+    #def START_CLOCK():
+    #    return ParameterAction({
+    #        "mapping": KemperMappings.MIDI_CLOCK_START,
+    #        "useSwitchLeds": False      
+    #    })
 
     # Effect Button I-IIII (set only). num must be a number (1 to 4).
     @staticmethod
@@ -279,6 +281,29 @@ class KemperActionDefinitions:
                 "on": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,              # Set equal dim factor (we do not need status display here)
                 "off": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF
             }
+        })
+    
+    # Morph button (faded change of morph state) No state feedback possible!
+    #
+    # NOTE: The Kemper MIDI Documentation differs from real behaviour here: The 
+    # device changes state on every 0/1 value sequence instead of accepting 0/1 for on/off!
+    # Even if you just send 1, it does not work: You have to send 0, then 1 to have the state change.
+    def MORPH_BUTTON(display = None, color = Colors.LIGHT_GREEN, text = "Morph", id = False, use_leds = True):
+        return ParameterAction({
+            "mode": PushButtonAction.ONE_SHOT,
+            "mapping": [
+                KemperMappings.MORPH_BUTTON,
+                KemperMappings.MORPH_BUTTON
+            ],
+            "valueEnable": [
+                0,
+                1
+            ],
+            "useSwitchLeds": use_leds,
+            "display": display,
+            "color": color,
+            "text": text,
+            "id": id
         })
 
     ## Rig specific ##########################################################################################################
@@ -358,7 +383,7 @@ class KemperActionDefinitions:
         return ParameterAction({
             "mapping": KemperMappings.NEXT_BANK,
             "mode": PushButtonAction.ONE_SHOT,
-            "valueEnable": _CC_VALUE_BANK_CHANGE,
+            "valueEnable": CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank up",
             "color": color,
@@ -372,7 +397,7 @@ class KemperActionDefinitions:
         return ParameterAction({
             "mapping": KemperMappings.PREVIOUS_BANK,
             "mode": PushButtonAction.ONE_SHOT,
-            "valueEnable": _CC_VALUE_BANK_CHANGE,
+            "valueEnable": CC_VALUE_BANK_CHANGE,
             "display": display,
             "text": "Bank dn",
             "color": color,
@@ -402,11 +427,11 @@ class KemperActionDefinitions:
         ]
         value_enabled = [
             0,                                  # Dummy to be replaced by bank select if specified
-            _NRPN_PARAMETER_ON
+            NRPN_PARAMETER_ON
         ]
         value_disabled = [
             0,                                  # Dummy to be replaced by bank select if specified
-            _NRPN_PARAMETER_ON
+            NRPN_PARAMETER_ON
         ]
 
         # Bank for main rig
@@ -582,9 +607,9 @@ class KemperNRPNMessage(SystemExclusive):
             function_code,
             address_page,
             address_number,
-            manufacturer_id = _NRPN_MANUFACTURER_ID, 
-            product_type = _NRPN_PRODUCT_TYPE,
-            device_id = _NRPN_DEVICE_ID_OMNI
+            manufacturer_id = NRPN_MANUFACTURER_ID, 
+            product_type = NRPN_PRODUCT_TYPE,
+            device_id = NRPN_DEVICE_ID_OMNI
         ):
 
         # Adafruit SystemExclusive
@@ -594,7 +619,7 @@ class KemperNRPNMessage(SystemExclusive):
                 product_type,                # 0x02 (Player), 0x00 (Profiler)
                 device_id,                   # 0x7f (omni) or manually set via parameter
                 function_code,               # Selects the function, for example 0x41 for requesting a single parameter
-                _NRPN_INSTANCE,               # 0x00
+                NRPN_INSTANCE,               # 0x00
                 address_page,                # Controller MSB (address page)
                 address_number               # Controller LSB (address number of parameter)
             ]
@@ -607,9 +632,9 @@ class KemperNRPNExtendedMessage(SystemExclusive):
             self, 
             function_code,
             controller,     # Must be a list
-            manufacturer_id = _NRPN_MANUFACTURER_ID, 
-            product_type = _NRPN_PRODUCT_TYPE,
-            device_id = _NRPN_DEVICE_ID_OMNI
+            manufacturer_id = NRPN_MANUFACTURER_ID, 
+            product_type = NRPN_PRODUCT_TYPE,
+            device_id = NRPN_DEVICE_ID_OMNI
         ):
 
         # Adafruit SystemExclusive
@@ -619,7 +644,7 @@ class KemperNRPNExtendedMessage(SystemExclusive):
                 product_type,                # 0x02 (Player), 0x00 (Profiler)
                 device_id,                   # 0x7f (omni) or manually set via parameter
                 function_code,               # Selects the function, for example 0x41 for requesting a single parameter
-                _NRPN_INSTANCE                # 0x00                
+                NRPN_INSTANCE                # 0x00                
             ] + controller
         )
 
@@ -638,8 +663,8 @@ class KemperMidiValueProvider: #(ClientValueProvider):
     def NRPN_VALUE(value):
         return int(16383 * value)
 
-    def __init__(self):
-        self._count_clock = 0
+    #def __init__(self):
+    #    self._count_clock = 0
 
     # Must parse the incoming MIDI message and set it on the passed mapping.
     # If the response template does not match, must return False.
@@ -672,27 +697,27 @@ class KemperMidiValueProvider: #(ClientValueProvider):
 
             return True
         
-        # MIDI Clock
-        elif isinstance(midi_message, MidiClockMessage):
-            self._count_clock += 1
+        # MIDI Clock (disabled in favor of the custom beat message the kemper sends. See mapping TEMPO_DISPLAY)
+        #elif isinstance(midi_message, MidiClockMessage):
+        #    self._count_clock += 1
 
-            if self._count_clock >= 24:
-                self._count_clock = 0
+        #    if self._count_clock >= 24:
+        #        self._count_clock = 0
 
-            if self._count_clock >= 12:
-                mapping.value = 1
-            else:
-                mapping.value = 0    
+        #    if self._count_clock >= 12:
+        #        mapping.value = 1
+        #    else:
+        #        mapping.value = 0    
 
-            return True
+        #    return True
         
         # MIDI Clock start
-        elif isinstance(midi_message, Start):
-            self._count_clock = 0
+        #elif isinstance(midi_message, Start):
+        #    self._count_clock = 0
 
-            mapping.value = 1
+        #    mapping.value = 1
 
-            return True
+        #    return True
 
         return False
     
@@ -731,14 +756,14 @@ class KemperMappings:
                 0    # Dummy value, will be overridden
             ),
             request = KemperNRPNMessage(               
-                _NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
+                NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_STATE
+                NRPN_EFFECT_PARAMETER_ADDRESS_STATE
             ),
             response = KemperNRPNMessage(
-                _NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+                NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_STATE
+                NRPN_EFFECT_PARAMETER_ADDRESS_STATE
             )
         )
     
@@ -748,14 +773,14 @@ class KemperMappings:
         return ClientParameterMapping(
             name = "Effect Type " + str(slot_id),
             request = KemperNRPNMessage(               
-                _NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
+                NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_TYPE
+                NRPN_EFFECT_PARAMETER_ADDRESS_TYPE
             ),
             response = KemperNRPNMessage(               
-                _NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, 
+                NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_TYPE
+                NRPN_EFFECT_PARAMETER_ADDRESS_TYPE
             )
         )
 
@@ -765,19 +790,19 @@ class KemperMappings:
         return ClientParameterMapping(
             name = "Rotary Speed " + str(slot_id),
             set = KemperNRPNMessage(
-                _NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED
+                NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED
             ),
             request = KemperNRPNMessage(               
-                _NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
+                NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED
+                NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED
             ),
             response = KemperNRPNMessage(
-                _NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+                NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED
+                NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED
             )
         )
 
@@ -787,18 +812,18 @@ class KemperMappings:
         return ClientParameterMapping(
             name = "Freeze " + str(slot_id),
             set = KemperNRPNMessage(
-                _NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
-                _NRPN_ADDRESS_PAGE_FREEZE,
+                NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                NRPN_ADDRESS_PAGE_FREEZE,
                 KemperEffectSlot.NRPN_FREEZE_SLOT_PARAMETER_ADDRESSES[slot_id]
             ),
             request = KemperNRPNMessage(               
-                _NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
-                _NRPN_ADDRESS_PAGE_FREEZE,
+                NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
+                NRPN_ADDRESS_PAGE_FREEZE,
                 KemperEffectSlot.NRPN_FREEZE_SLOT_PARAMETER_ADDRESSES[slot_id]
             ),
             response = KemperNRPNMessage(               
-                _NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, 
-                _NRPN_ADDRESS_PAGE_FREEZE,
+                NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, 
+                NRPN_ADDRESS_PAGE_FREEZE,
                 KemperEffectSlot.NRPN_FREEZE_SLOT_PARAMETER_ADDRESSES[slot_id]
             )
         )
@@ -807,19 +832,19 @@ class KemperMappings:
         return ClientParameterMapping(
             name = "Mix " + str(slot_id),
             set = KemperNRPNMessage(
-                _NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV
+                NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV
             ),
             request = KemperNRPNMessage(               
-                _NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
+                NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV
+                NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV
             ),
             response = KemperNRPNMessage(               
-                _NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, 
+                NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
-                _NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV
+                NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV
             )
         )
 
@@ -828,7 +853,7 @@ class KemperMappings:
         return ClientParameterMapping(
             name = "Effect Button " + repr(num),
             set = ControlChange(
-                _CC_EFFECT_BUTTON_I + (num - 1),
+                CC_EFFECT_BUTTON_I + (num - 1),
                 0
             )
         )
@@ -837,14 +862,14 @@ class KemperMappings:
     RIG_NAME = ClientParameterMapping(
         name = "Rig Name",
         request = KemperNRPNMessage(               
-            _NRPN_FUNCTION_REQUEST_STRING_PARAMETER,             
-            _NRPN_ADDRESS_PAGE_STRINGS,
-            _NRPN_STRING_PARAMETER_ID_RIG_NAME
+            NRPN_FUNCTION_REQUEST_STRING_PARAMETER,             
+            NRPN_ADDRESS_PAGE_STRINGS,
+            NRPN_STRING_PARAMETER_ID_RIG_NAME
         ),
         response = KemperNRPNMessage(
-            _NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
-            _NRPN_ADDRESS_PAGE_STRINGS,
-            _NRPN_STRING_PARAMETER_ID_RIG_NAME
+            NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
+            NRPN_ADDRESS_PAGE_STRINGS,
+            NRPN_STRING_PARAMETER_ID_RIG_NAME
         ),
         type = KemperMidiValueProvider.PARAMETER_TYPE_STRING
     )
@@ -853,14 +878,14 @@ class KemperMappings:
     RIG_DATE = ClientParameterMapping(
         name = "Rig Date",
         request = KemperNRPNMessage(               
-            _NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
-            _NRPN_ADDRESS_PAGE_STRINGS,
-            _NRPN_STRING_PARAMETER_ID_RIG_DATE
+            NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
+            NRPN_ADDRESS_PAGE_STRINGS,
+            NRPN_STRING_PARAMETER_ID_RIG_DATE
         ),
         response = KemperNRPNMessage(
-            _NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
-            _NRPN_ADDRESS_PAGE_STRINGS,
-            _NRPN_STRING_PARAMETER_ID_RIG_DATE
+            NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
+            NRPN_ADDRESS_PAGE_STRINGS,
+            NRPN_STRING_PARAMETER_ID_RIG_DATE
         ),
         type = KemperMidiValueProvider.PARAMETER_TYPE_STRING
     )
@@ -869,7 +894,7 @@ class KemperMappings:
     TUNER_MODE_STATE = ClientParameterMapping(
         name = "Tuner Mode",
         set = ControlChange(
-            _CC_TUNER_MODE, 
+            CC_TUNER_MODE, 
             0    # Dummy value, will be overridden
         ),
         response = KemperNRPNMessage(
@@ -903,28 +928,36 @@ class KemperMappings:
     TAP_TEMPO = ClientParameterMapping(
         name = "Tap Tempo",
         set = ControlChange(
-            _CC_TAP_TEMPO, 
+            CC_TAP_TEMPO, 
             0    # Dummy value, will be overridden
         )
+    )
+
+    MORPH_BUTTON = ClientParameterMapping(
+        set = ControlChange(CC_MORPH_BUTTON, 0)
+    )
+
+    MORPH_PEDAL = ClientParameterMapping(
+        set = ControlChange(CC_MORPH_PEDAL, 0)
     )
 
     # Rig volume
     RIG_VOLUME = ClientParameterMapping(
         name = "Rig Volume",
         set = KemperNRPNMessage(
-            _NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
-            _NRPN_ADDRESS_PAGE_RIG_PARAMETERS,
-            _NRPN_RIG_PARAMETER_VOLUME
+            NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+            NRPN_ADDRESS_PAGE_RIG_PARAMETERS,
+            NRPN_RIG_PARAMETER_VOLUME
         ),
         request = KemperNRPNMessage(
-            _NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
-            _NRPN_ADDRESS_PAGE_RIG_PARAMETERS,
-            _NRPN_RIG_PARAMETER_VOLUME
+            NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
+            NRPN_ADDRESS_PAGE_RIG_PARAMETERS,
+            NRPN_RIG_PARAMETER_VOLUME
         ),
         response = KemperNRPNMessage(
-            _NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
-            _NRPN_ADDRESS_PAGE_RIG_PARAMETERS,
-            _NRPN_RIG_PARAMETER_VOLUME
+            NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+            NRPN_ADDRESS_PAGE_RIG_PARAMETERS,
+            NRPN_RIG_PARAMETER_VOLUME
         )
     )
 
@@ -932,14 +965,14 @@ class KemperMappings:
     AMP_NAME = ClientParameterMapping(
         name = "Amp Name",
         request = KemperNRPNMessage(               
-            _NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
-            _NRPN_ADDRESS_PAGE_STRINGS,
-            _NRPN_STRING_PARAMETER_ID_AMP_NAME
+            NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
+            NRPN_ADDRESS_PAGE_STRINGS,
+            NRPN_STRING_PARAMETER_ID_AMP_NAME
         ),
         response = KemperNRPNMessage(
-            _NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
-            _NRPN_ADDRESS_PAGE_STRINGS,
-            _NRPN_STRING_PARAMETER_ID_AMP_NAME
+            NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
+            NRPN_ADDRESS_PAGE_STRINGS,
+            NRPN_STRING_PARAMETER_ID_AMP_NAME
         ),
         type = KemperMidiValueProvider.PARAMETER_TYPE_STRING
     )
@@ -948,19 +981,19 @@ class KemperMappings:
     AMP_STATE = ClientParameterMapping(
         name = "Amp Status",
         set = KemperNRPNMessage(
-            _NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
-            _NRPN_ADDRESS_PAGE_AMP,
-            _NRPN_AMP_PARAMETER_STATE
+            NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+            NRPN_ADDRESS_PAGE_AMP,
+            NRPN_AMP_PARAMETER_STATE
         ),
         request = KemperNRPNMessage(
-            _NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
-            _NRPN_ADDRESS_PAGE_AMP,
-            _NRPN_AMP_PARAMETER_STATE
+            NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
+            NRPN_ADDRESS_PAGE_AMP,
+            NRPN_AMP_PARAMETER_STATE
         ),
         response = KemperNRPNMessage(
-            _NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
-            _NRPN_ADDRESS_PAGE_AMP,
-            _NRPN_AMP_PARAMETER_STATE
+            NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+            NRPN_ADDRESS_PAGE_AMP,
+            NRPN_AMP_PARAMETER_STATE
         )
     )
 
@@ -968,14 +1001,14 @@ class KemperMappings:
     CABINET_NAME = ClientParameterMapping(
         name = "Cab Name",
         request = KemperNRPNMessage(               
-            _NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
-            _NRPN_ADDRESS_PAGE_STRINGS,
-            _NRPN_STRING_PARAMETER_ID_CABINET_NAME
+            NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
+            NRPN_ADDRESS_PAGE_STRINGS,
+            NRPN_STRING_PARAMETER_ID_CABINET_NAME
         ),
         response = KemperNRPNMessage(
-            _NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
-            _NRPN_ADDRESS_PAGE_STRINGS,
-            _NRPN_STRING_PARAMETER_ID_CABINET_NAME
+            NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
+            NRPN_ADDRESS_PAGE_STRINGS,
+            NRPN_STRING_PARAMETER_ID_CABINET_NAME
         ),
         type = KemperMidiValueProvider.PARAMETER_TYPE_STRING
     )
@@ -984,26 +1017,26 @@ class KemperMappings:
     CABINET_STATE = ClientParameterMapping(
         name = "Cab Status",
         set = KemperNRPNMessage(
-            _NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
-            _NRPN_ADDRESS_PAGE_CABINET,
-            _NRPN_CABINET_PARAMETER_STATE
+            NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+            NRPN_ADDRESS_PAGE_CABINET,
+            NRPN_CABINET_PARAMETER_STATE
         ),
         request = KemperNRPNMessage(
-            _NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
-            _NRPN_ADDRESS_PAGE_CABINET,
-            _NRPN_CABINET_PARAMETER_STATE
+            NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
+            NRPN_ADDRESS_PAGE_CABINET,
+            NRPN_CABINET_PARAMETER_STATE
         ),
         response = KemperNRPNMessage(
-            _NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
-            _NRPN_ADDRESS_PAGE_CABINET,
-            _NRPN_CABINET_PARAMETER_STATE
+            NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+            NRPN_ADDRESS_PAGE_CABINET,
+            NRPN_CABINET_PARAMETER_STATE
         )
     )
 
     NEXT_BANK = ClientParameterMapping(
         name = "Next Bank",
         set = ControlChange(
-            _CC_BANK_INCREASE,
+            CC_BANK_INCREASE,
             0    # Dummy value, will be overridden
         )
     )
@@ -1011,7 +1044,7 @@ class KemperMappings:
     PREVIOUS_BANK = ClientParameterMapping(
         name = "Prev Bank",
         set = ControlChange(
-            _CC_BANK_DECREASE,
+            CC_BANK_DECREASE,
             0    # Dummy value, will be overridden
         )
     )
@@ -1022,7 +1055,7 @@ class KemperMappings:
         return ClientParameterMapping(
             name = "Rig Select",
             set = ControlChange(
-                _CC_RIG_SELECT + rig,
+                CC_RIG_SELECT + rig,
                 0    # Dummy value, will be overridden
             )
         )
@@ -1032,7 +1065,7 @@ class KemperMappings:
     BANK_PRESELECT = ClientParameterMapping(
         name = "Bank Preselect",
         set = ControlChange(
-            _CC_BANK_PRESELECT,
+            CC_BANK_PRESELECT,
             0    # Dummy value, will be overridden
         )
     )
@@ -1049,14 +1082,26 @@ class KemperMappings:
     ) 
 
     # MIDI Clock message, sent 24x every beat
-    MIDI_CLOCK = ClientParameterMapping(
-        name = "Clock",
-        response = MidiClockMessage()
-    )
+    #MIDI_CLOCK = ClientParameterMapping(
+    #    name = "Clock",
+    #    response = MidiClockMessage()
+    #)
     
-    MIDI_CLOCK_START = ClientParameterMapping(
-        name = "Start",
-        response = Start()
+    #MIDI_CLOCK_START = ClientParameterMapping(
+    #    name = "Start",
+    #    response = Start()
+    #)
+
+    TEMPO_DISPLAY = ClientParameterMapping(
+        name = "Tempo",
+        response = KemperNRPNExtendedMessage(
+            0x01,
+            [
+                0x7c,
+                0x00,
+                0x00
+            ]
+        )
     )
 
 ####################################################################################################################

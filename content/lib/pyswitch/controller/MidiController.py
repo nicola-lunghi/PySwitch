@@ -17,18 +17,18 @@ from adafruit_midi.system_exclusive import SystemExclusive
 #from adafruit_midi.note_on import NoteOn
 #from adafruit_midi.pitch_bend import PitchBend
 #from adafruit_midi.timing_clock import TimingClock
-from adafruit_midi.start import Start
+#from adafruit_midi.start import Start
 #from adafruit_midi.stop import Stop
 
 
 # MIDI Clock custom message type
-class MidiClockMessage(MIDIMessage):
-    _STATUS = 0xF8
-    _STATUSMASK = 0xFF
-    LENGTH = 1
-    _slots = []
+#class MidiClockMessage(MIDIMessage):
+#    _STATUS = 0xF8
+#    _STATUSMASK = 0xFF
+#    LENGTH = 1
+#    _slots = []
 
-MidiClockMessage.register_message_type()
+#MidiClockMessage.register_message_type()
 
 
 ##################################################################################################

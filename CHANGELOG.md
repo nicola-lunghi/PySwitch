@@ -1,6 +1,8 @@
 # PySwitch v2.2.0
 - RIG_VOLUME_BOOST now remembers the current rig volume before turning the boost on, and restores this volume when disabled again.
-- Receive MIDI Clock to show rig tempo (see examples)
+- Tempo-synced blinking LEDs (all examples using TAP_TEMPO now include this feature)
+- Callback-based display/LED update in ParameterAction
+- Added some Mappings
 
 # PySwitch v2.1.2
 - Memory usage optimized: 

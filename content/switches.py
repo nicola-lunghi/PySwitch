@@ -10,7 +10,8 @@ from pyswitch.misc import DEFAULT_LABEL_COLOR, Colors
 from pyswitch.controller.actions.actions import HoldAction, ParameterAction, PushButtonAction
 #from pyswitch.controller.ConditionTree import ParameterCondition
 
-from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, KemperMidiValueProvider
+from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, KemperMidiValueProvider, CC_MORPH_PEDAL, ClientParameterMapping
+from adafruit_midi.control_change import ControlChange
 from display import DISPLAY_ID_FOOTER, DISPLAY_ID_HEADER
 
 
@@ -45,9 +46,8 @@ Switches = [
             HoldAction({
                 "actions": [
                     # Tap tempo / Tempo display
-                    KemperActionDefinitions.TAP_TEMPO(),
-                    KemperActionDefinitions.START_CLOCK(),  # Receives MIDI Clock Start to sync clock to device
-                    KemperActionDefinitions.SHOW_TEMPO()    # Receives MIDI Clock and shows beats with the LED(s)
+                    KemperActionDefinitions.TAP_TEMPO(use_leds = False),
+                    KemperActionDefinitions.SHOW_TEMPO()    # Shows beats with the LED(s)
                 ],
                 "actionsHold": [
                     # Enable delay (also on disable!)

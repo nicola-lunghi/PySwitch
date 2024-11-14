@@ -38,8 +38,8 @@ class Client: #(ClientRequestListener):
     def __init__(self, midi, config, value_provider):
         self.midi = midi
         
-        self._debug_unparsed_messages = get_option(config, "debugUnparsedMessage", False)
-        self._debug_exclude_types = get_option(config, "excludeMessageTypes", None)
+        self.debug_unparsed_messages = get_option(config, "debugUnparsedMessages", False)
+        self.debug_exclude_types = get_option(config, "excludeMessageTypes", None)
         self._debug_mapping = get_option(config, "debugMapping", None)
         
         self.value_provider = value_provider
@@ -114,7 +114,7 @@ class Client: #(ClientRequestListener):
             self._cleanup_hanging_requests()
 
         if not midi_message:
-            return
+            return False
         
         # See if one of the waiting requests matches
         do_cleanup = False
@@ -132,11 +132,11 @@ class Client: #(ClientRequestListener):
             self._cleanup_requests()
 
         # Debug unparsed messages
-        if not parsed and self._debug_unparsed_messages:           # pragma: no cover
-            if not self._debug_exclude_types or midi_message.__class__.__name__ not in self._debug_exclude_types:
-                do_print(stringify_midi_message(midi_message))
-            
+        if not parsed and self.debug_unparsed_messages:           # pragma: no cover
+            self.print_message(midi_message)
 
+        return parsed
+            
     # Returns a matching request from the list if any, or None if no matching
     # request has been found.
     def get_matching_request(self, mapping):
@@ -158,6 +158,13 @@ class Client: #(ClientRequestListener):
                 request.terminate()
 
         self._cleanup_requests()
+
+    # Print info about the passed message
+    def print_message(self, midi_message):  # pragma: no cover
+        if self.debug_exclude_types and midi_message.__class__.__name__ in self.debug_exclude_types:
+            return
+        
+        do_print(stringify_midi_message(midi_message))
 
 
 #######################################################################################################################
@@ -336,23 +343,27 @@ class BidirectionalClient(Client, Updateable):
         else:
             Client.register(self, mapping, listener)
         
-    # Filter the request messages from the mappings which are part of a bidirectional parameter set
-    # (those cannot be requested anymore but get updates from the client automatically).
-    #def request(self, mapping, listener):        
-    #    if self.protocol.is_bidirectional(mapping):
-    #        return
-    #        #super().request(self._strip_request_message(mapping), listener)
-    #    
-    #    super().request(mapping, listener)
-
     # Receive messages (also passes messages to the protocol)
     def receive(self, midi_message):
-        Client.receive(self, midi_message)
+        # Dirty hack to disable the debugging of unparsed messages in the Client implementation
+        tmp = self.debug_unparsed_messages
+        self.debug_unparsed_messages = False
+        parsed_by_client =  Client.receive(self, midi_message)
+        self.debug_unparsed_messages = tmp
+
+        if parsed_by_client:
+            return False
 
         if not midi_message:
-            return
+            return False
 
-        self.protocol.receive(midi_message)
+        parsed = self.protocol.receive(midi_message)
+
+        # Debug unparsed messages
+        if not parsed and self.debug_unparsed_messages:           # pragma: no cover
+            self.print_message(midi_message)
+
+        return parsed
 
     # In case of bidirectional parammeters, "simulate" a parameter change directly after the MIDI message
     def set(self, mapping, value):
@@ -377,17 +388,6 @@ class BidirectionalClient(Client, Updateable):
         for r in self.requests:
             if self.protocol.is_bidirectional(r.mapping):
                 r.notify_terminated()
-
-    # Create a new request
-    #def create_request(self, mapping):
-    #    # For bidirectional parameters, do not set a request lifetime so the requests never get cleaned up
-    #    if self.protocol.is_bidirectional(mapping):  
-    #        return ClientRequest(              
-    #            self,
-    #            mapping
-    #        )
-    #    else:
-    #        return super().create_request(mapping)
         
     # Returns a (shallow) copy of the mapping with no request/response and value. Use this
     # if you have performance issues with too much requests.

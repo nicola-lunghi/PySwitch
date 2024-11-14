@@ -82,8 +82,10 @@ Switches = [
                     "index": 1,
                     "layout": _ACTION_LABEL_LAYOUT
                 },
-                color = Colors.LIGHT_GREEN
-            )
+                color = Colors.LIGHT_GREEN,
+                use_leds = False
+            ),
+            KemperActionDefinitions.SHOW_TEMPO()    # Shows beats with the LED(s)
         ]
     }
 ]

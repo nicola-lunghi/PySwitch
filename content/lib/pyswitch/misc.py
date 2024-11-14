@@ -1,6 +1,6 @@
 from time import monotonic, localtime
 
-from .controller.MidiController import SystemExclusive, ControlChange, ProgramChange, MidiClockMessage, Start, MIDIUnknownEvent
+from .controller.MidiController import SystemExclusive, ControlChange, ProgramChange, MIDIUnknownEvent #, MidiClockMessage, Start, 
 
 # PySwitch version
 PYSWITCH_VERSION = "2.1.2"
@@ -68,7 +68,7 @@ def stringify_midi_message(midi_message):
     ret = ""
     if isinstance(midi_message, SystemExclusive):
         # SysEx
-        ret = _stringify_midi_message_part(midi_message.manufacturer_id) + _stringify_midi_message_part(midi_message.data)
+        ret = _stringify_midi_message_part(midi_message.manufacturer_id) + _stringify_midi_message_part(midi_message.data) + " String: " + ''.join(chr(int(c)) for c in list(midi_message.data))
 
     elif isinstance(midi_message, ControlChange):    
         # CC
@@ -78,13 +78,13 @@ def stringify_midi_message(midi_message):
         # PC
         ret = repr(midi_message.patch)
 
-    elif isinstance(midi_message, MidiClockMessage):    
-        # Clock
-        pass
+    #elif isinstance(midi_message, MidiClockMessage):    
+    #    # Clock
+    #    pass
 
-    elif isinstance(midi_message, Start):    
-        # Clock Start
-        pass
+    #elif isinstance(midi_message, Start):    
+    #    # Clock Start
+    #    pass
 
     elif isinstance(midi_message, MIDIUnknownEvent):    
         # Unknown
@@ -121,11 +121,11 @@ def compare_midi_messages(a, b):
     elif isinstance(a, ControlChange) and isinstance(b, ControlChange):
         return a.control == b.control
     
-    elif isinstance(a, MidiClockMessage) and isinstance(b, MidiClockMessage):
-        return True
+    #elif isinstance(a, MidiClockMessage) and isinstance(b, MidiClockMessage):
+    #    return True
     
-    elif isinstance(a, Start) and isinstance(b, Start):
-        return True
+    #elif isinstance(a, Start) and isinstance(b, Start):
+    #    return True
 
     elif isinstance(a, ProgramChange) and isinstance(b, ProgramChange):
         return a.patch == b.patch

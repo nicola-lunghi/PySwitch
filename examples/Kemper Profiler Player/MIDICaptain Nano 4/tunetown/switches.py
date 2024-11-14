@@ -45,9 +45,8 @@ Switches = [
             HoldAction({
                 "actions": [
                     # Tap tempo / Tempo display
-                    KemperActionDefinitions.TAP_TEMPO(),
-                    KemperActionDefinitions.START_CLOCK(),  # Receives MIDI Clock Start to sync clock to device
-                    KemperActionDefinitions.SHOW_TEMPO()    # Receives MIDI Clock and shows beats with the LED(s)
+                    KemperActionDefinitions.TAP_TEMPO(use_leds = False),
+                    KemperActionDefinitions.SHOW_TEMPO()    # Shows beats with the LED(s)
                 ],
                 "actionsHold": [
                     # Enable delay (also on disable!)

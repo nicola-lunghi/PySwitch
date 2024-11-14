@@ -20,10 +20,8 @@ with patch.dict(sys.modules, {
     from adafruit_midi.system_exclusive import SystemExclusive
     from adafruit_midi.control_change import ControlChange
     from adafruit_midi.program_change import ProgramChange
-    from adafruit_midi.start import Start
     from adafruit_midi.midi_message import MIDIUnknownEvent
     
-    from lib.pyswitch.controller.MidiController import MidiClockMessage
     from lib.pyswitch.misc import *
 
 
@@ -121,22 +119,6 @@ class TestMiscTools(unittest.TestCase):
         self.assertIn("56", str)
 
 
-    def test_stringify_midi_message_clock(self):
-        message = MidiClockMessage()
-
-        str = stringify_midi_message(message)
-
-        self.assertIn("MidiClockMessage", str)
-
-
-    def test_stringify_midi_message_start(self):
-        message = Start()
-
-        str = stringify_midi_message(message)
-
-        self.assertIn("Start", str)
-
-
     def test_stringify_midi_message_ue(self):
         message = MIDIUnknownEvent(33)
 
@@ -202,24 +184,6 @@ class TestMiscTools(unittest.TestCase):
         message_1.patch = 67
 
         self.assertEqual(compare_midi_messages(message_1, message_2), False)
-
-
-    def test_compare_midi_messagess_start(self):
-        message_1 = Start()
-        message_2 = Start()
-
-        self.assertEqual(compare_midi_messages(message_1, message_2), True)
-        self.assertEqual(compare_midi_messages(message_1, None), False)
-        self.assertEqual(compare_midi_messages(None, message_2), False)
-
-
-    def test_compare_midi_messagess_clock(self):
-        message_1 = MidiClockMessage()
-        message_2 = MidiClockMessage()
-
-        self.assertEqual(compare_midi_messages(message_1, message_2), True)
-        self.assertEqual(compare_midi_messages(message_1, None), False)
-        self.assertEqual(compare_midi_messages(None, message_2), False)
 
 
     def test_compare_midi_messagess_unknown(self):

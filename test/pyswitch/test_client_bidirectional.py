@@ -293,7 +293,7 @@ class TestBidirectionalClient(unittest.TestCase):
             self.assertEqual(action_1._effect_category, 10)
             self.assertEqual(action_1.state, False)
             
-            self.assertIn(answer_msg_type, protocol.receive_calls)
+            self.assertNotIn(answer_msg_type, protocol.receive_calls)
 
             return True
 
@@ -321,7 +321,7 @@ class TestBidirectionalClient(unittest.TestCase):
             self.assertTrue(compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
             self.assertEqual(appl.client.requests[0].mapping.value, 1)
 
-            self.assertIn(answer_msg_param, protocol.receive_calls)
+            self.assertNotIn(answer_msg_param, protocol.receive_calls)
 
             self.assertEqual(action_1.state, True)
 

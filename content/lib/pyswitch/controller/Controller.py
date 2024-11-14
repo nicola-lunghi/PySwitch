@@ -63,6 +63,9 @@ class Controller(Updater): #ClientRequestListener
         # Print debug info        
         self._debug_stats = get_option(config, "debugStats", False)        
 
+        # Clear MIDI buffers on startup
+        self._clear_buffers = get_option(config, "clearBuffers", False)
+
         # NeoPixel driver 
         self.led_driver = led_driver
         self.led_driver.init(self._get_num_pixels(switches))
@@ -133,6 +136,20 @@ class Controller(Updater): #ClientRequestListener
         if free_bytes < self._memory_warn_limit:
             do_print("WARNING: Low Memory: " + format_size(free_bytes))
             self.low_memory_warning = True
+        del free_bytes
+
+        # For debugging only: Empty buffer. This is only needed when 
+        # developing using MIDI routing between the device and client, 
+        # which may have buffering.
+        if self._clear_buffers:
+            cnt = 0
+            while True:
+                midimsg = self._midi.receive()
+                if not midimsg:
+                    print("Cleared MIDI Buffer (" + repr(cnt) + " messages)")
+                    break
+                cnt += 1
+            del cnt
 
         # Start processing loop
         while self.tick():

@@ -115,6 +115,9 @@ Switches = [
     # Switch C
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_C,
-        "actions": KemperActionDefinitions.TAP_TEMPO()
+        "actions": [
+            KemperActionDefinitions.TAP_TEMPO(use_leds = False),
+            KemperActionDefinitions.SHOW_TEMPO()    # Shows beats with the LED(s)
+        ]
     }
 ]

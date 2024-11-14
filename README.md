@@ -539,6 +539,62 @@ Switches = [
 
 Of course the messages sometimes can also be ControlChange messages (especially for setting stuff), but you get the idea.
 
+#### Callback based ParameterAction
+
+To be more flexible, the display update mechanisms of ParameterAction can be replaced completely by a custom callback. This can take over the control of the display and switch LEDs assigned to the action. Usage is as follows:
+
+```python
+
+# Define the callback function in your script
+def updateDisplays(action, mapping):
+    # You can access the current parameter value by 
+    # using mapping.value. The values are integers or 
+    # strings or None.
+    if mapping.value == 234:
+        # You can set the display label's properties.
+        # Beware that the label can be None.
+        if action.label:
+            action.label.back_color = Colors.RED
+            action.label.text = "foo"
+
+        # The LED segments can be set with special 
+        # properties of the Action base class, which 
+        # only control the segments assigned to the 
+        # action (see above). 
+        #
+        # Note that setting the color will not change 
+        # anything. You have to set the brightness after
+        # for the changes to take effect (even if the 
+        # brightness is already set).        
+        action.switch_color = (255, 255, 255) # (r, g, b), [0..255]
+        action.switch_brightness = 0.8        # [0..1]
+        
+        return True
+
+    # If nothing of False is returned, the default 
+    # behaviour of ParameterAction is processed.
+    return False
+
+Switches = [
+    {
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            ParameterAction({
+                "mapping": KemperMappings.MAPPING_TO_PARAMETER_XY,
+                "display": {
+                    # ...
+                },
+                "text": "My Text",
+                "textDisabled": "Off Text",
+                "color": (255, 180, 0),   # Orange
+                "updateDisplays": updateDisplays    # Dont use brackets!
+            })                        
+        ]
+    }
+```
+
+*NOTE: The options text, textDisabled, displayDimFactor, ledBrightness and color only control the default behaviour and are not relevant when the callback returns True.*
+
 ### TFT Display Layout Definition
 
 The file **display.py** must provide a root DisplayElement to be shown. Normally, this is a HierarchicalDisplayElement which can hold multiple other elements, however it can also be just one DisplayElement. Here we use the first option:
