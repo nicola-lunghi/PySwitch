@@ -34,7 +34,7 @@ _bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT)
  
 # Defines the areas to be shown on the TFT display, and which values to show there.
 Display = ParameterCondition(
-    mapping = KemperMappings.TUNER_MODE_STATE,
+    mapping = KemperMappings.TUNER_MODE_STATE(),
     ref_value = 1,
     mode = ParameterCondition.NOT_EQUAL,
 
@@ -64,7 +64,7 @@ Display = ParameterCondition(
                 },
 
                 parameter = {
-                    "mapping": KemperMappings.RIG_NAME,
+                    "mapping": KemperMappings.RIG_NAME(),
                     "textOffline": "Kemper Control " + PYSWITCH_VERSION,
                     "textReset": "Loading Rig..."
                 }
@@ -80,8 +80,8 @@ Display = ParameterCondition(
 
     # Show tuner display (only useful if bidirectional communication is enabled)
     no = TunerDisplay(
-        mapping_note = KemperMappings.TUNER_NOTE,
-        mapping_deviance = KemperMappings.TUNER_DEVIANCE,
+        mapping_note = KemperMappings.TUNER_NOTE(),
+        mapping_deviance = KemperMappings.TUNER_DEVIANCE(),
         
         bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
         
