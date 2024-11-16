@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
 
-from kemper import KemperMidiValueProvider, KemperBidirectionalProtocol
+from kemper import KemperBidirectionalProtocol
 
 from lib.pyswitch.controller.MidiController import MidiController, MidiRouting
 from lib.pyswitch.hardware.Hardware import Hardware
@@ -21,10 +21,6 @@ _DIN_MIDI = Hardware.PA_MIDICAPTAIN_DIN_MIDI(
 
 # Communication configuration
 Communication = {
-
-    # Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
-    # when an answer to a value request is received.
-    "valueProvider": KemperMidiValueProvider(),
 
     # Optional: Protocol to use. If not specified, the standard Client protocol is used which requests all
     # parameters in each update cycle. Use this to implement bidirectional communication.
