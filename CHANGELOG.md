@@ -3,6 +3,8 @@
 - Tempo-synced blinking LEDs (all examples using TAP_TEMPO now include this feature)
 - Callback-based display/LED update in ParameterAction
 - Added some Mappings
+- Changes to config files:
+    - communication.py: "valueProvider" no longer needed (now implemented in the mappings directly)
 
 # PySwitch v2.1.2
 - Memory usage optimized: 
