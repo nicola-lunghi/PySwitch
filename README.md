@@ -54,7 +54,7 @@ The file **config.py** only defines one dict named Config, which by default is e
 
 ### MIDI Communication Setup
 
-The **communication.py** file defines the handling of MIDI. This includes the client-specific parser as well as the MIDI routing. It must contain a Communication dictionary like follows:
+The **communication.py** file defines the handling of MIDI. This includes the MIDI routing. It must contain a Communication dictionary like follows:
 
 ```python
 
@@ -64,10 +64,6 @@ _USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
 )
 
 Communication = {
-
-    # Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
-    # when an answer to a value request is received.
-    "valueProvider": KemperMidiValueProvider(),
 
     # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 
     # the MidiController.PYSWITCH source/target or the application will not be able to communicate!
@@ -88,8 +84,6 @@ Communication = {
     }
 }
 ```
-
-- "valueProvider": Must be an instance of a class which is capable of parsing MIDI messages for the client used. Use KemperMidiValueProvider (from kemper.py) to use the controller with Kemper devices:
 
 - "midi": Configuration for the MidiController. This is a flexible MIDI routing class which can be configured using a list of MidiRouting instances, each defining one route (in one direction only). The example above defines the minimal necessary routings to run the application. If you do not provide any routings, the application will not be able to communicate to the outer world. 
 
@@ -115,10 +109,6 @@ _USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
 )
 
 Communication = {
-
-    # Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
-    # when an answer to a value request is received.
-    "valueProvider": KemperMidiValueProvider(),
 
     # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 
     # the MidiController.PYSWITCH source/target or the application will not be able to communicate!
@@ -180,10 +170,6 @@ _USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
 )
 
 Communication = {
-
-    # Value provider which is responsible for setting values on MIDI messages for value changes, and parse MIDI messages
-    # when an answer to a value request is received.
-    "valueProvider": KemperMidiValueProvider(),
 
     # Optional: Protocol to use. If not specified, the standard Client protocol is used which requests all
     # parameters in each update cycle. Use this to implement bidirectional communication.
@@ -1045,23 +1031,25 @@ Every incoming MIDI message will be parsed by all open requests. This is the lif
     - Tell all listeners that the value has changed by calling parameter_changed() on each listener.
 3. When the mapping is not bidirectional, the request will be set to finished, which will trigger the client to clean it up. When the mapping is bidirectional, the request will never be finished and stay forever to receive further values.
 
-#### Value Provider
+#### Client-Specific parsing
 
-For parsing the incoming messages, a value provider class is used, defined in the switches.py file. This has to be implemented for each controlled device. For Kemper devices, the KemperMidiValueProvider class is located in kemper.py.
-
-Value providers have to provide those two methods, which are device specific:
+For parsing the incoming messages and setting values before sending messages, a child class of ClientParameterMapping has to be used. This has to be implemented for each controlled device. For Kemper devices, the KemperParameterMapping class is defined in kemper.py.
 
 ```python
-# Must parse the incoming MIDI message and return the value contained.
-# If the response template does not match, must return None.
-# Must return True to notify the listeners of a value change.
-def parse(self, mapping, midi_message):
-    return False
-    
-# Must set the passed value on the SET message of the mapping.
-def set_value(self, mapping, value):
-    pass
+class MyMapping(ClientParameterMapping):
+
+    # Must parse the incoming MIDI message and set its value on the mapping.
+    # If the response template does not match, must return False, and
+    # vice versa must return True to notify the listeners of a value change.
+    def parse(self, midi_message):
+        return False    
+
+    # Must set the passed value on the SET message of the mapping.
+    def set_value(self, value):
+        pass
 ```
+
+You have to provide two methods, which are device specific. See the Kemper implementation for details.
 
 ## Explore Mode: Discover unknown IO Ports
 
