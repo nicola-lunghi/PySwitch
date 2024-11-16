@@ -3,8 +3,10 @@
 - Tempo-synced blinking LEDs (all examples using TAP_TEMPO now include this feature)
 - Callback-based display/LED update in ParameterAction
 - Added some Mappings
+- Mappings now can contain multiple messages, ParameterAction now cannot handle arrays anymore
 - Changes to config files:
     - communication.py: "valueProvider" no longer needed (now implemented in the mappings directly)
+    - All members of KemperMappings now are functions, you might have to add brackets: "KemperMappings.XXX()" instead of "KemperMappings.XXX"
 
 # PySwitch v2.1.2
 - Memory usage optimized: 

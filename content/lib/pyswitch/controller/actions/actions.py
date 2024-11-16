@@ -333,23 +333,19 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     #     "holdTimeMillis":      Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
     #
     #     "mapping":             A ClientParameterMapping instance. See mappings.py for some predeifined ones.
-    #                            This can also be an array: In this case the mappings are processed in the given order.
-    #                            Note that when multiple mappings are specified, the first one which is capable of receiving will 
-    #                            be used to receive values, the others are not listened to!
     #
-    #     "mappingDisable":      Mapping to be used for disabling the action. If mapping is an array, this has also to be an array.
+    #     "mappingDisable":      Mapping to be used for disabling the action. 
     #
-    #     "valueEnable":         Value to be sent as "enabled". Optional: Default is 1. If mapping is a list, this must
-    #                            also be a list of values for the mappings.
+    #     "valueEnable":         Value to be sent as "enabled". Optional: Default is 1. If mapping.set is a list, this must
+    #                            also be a list of values for the set messages in the mapping.
     #
-    #     "valueDisable":        Value to be sent as "disabled". Optional: Default is 0. If mappingDisable (if provided)
-    #                            or mapping is a list, this must also be a list of values for the mappings.
-    #                            SPECIAL: If you set this to "auto", the "disabled" value will be determined from the 
+    #     "valueDisable":        Value to be sent as "disabled". Optional: Default is 0. If mapping.set is a list, this must
+    #                            also be a list of values for the set messages in the mapping.
+    #                            SPECIAL: If you set this (or items of this) to "auto", the "disabled" value will be determined from the 
     #                            client's current parameter value when the action state is False (the old value is restored).
     #
     #     "referenceValue":      Optional: The value of incoming messages will be compared against this to determine state
-    #                            (acc. to the comparison mode). If not set, "valueEnable" is used. If mappingDisable (if provided)
-    #                            or mapping is a list, this must also be a list of values for the mappings.
+    #                            (acc. to the comparison mode). If not set, "valueEnable" is used (first entry if valueEnabled is a list). 
     #
     #     "comparisonMode":      Mode of comparison when receiving a value. Default is ParameterActionModes.GREATER_EQUAL. 
     #
@@ -388,13 +384,13 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         self.uses_switch_leds = get_option(config, "useSwitchLeds", True)
 
         # Mapping(s)
-        self._mapping = config["mapping"]                                                        # Can be an array        
-        self._mapping_off = get_option(config, "mappingDisable", None)                           # Can be an array
+        self._mapping = config["mapping"]
+        self._mapping_off = get_option(config, "mappingDisable", None)
 
         # Values
         self._value_enable = get_option(config, "valueEnable", 1)                                # Can be an array
         self._value_disable = get_option(config, "valueDisable", 0)                              # Can be an array
-        self._reference_value = get_option(config, "referenceValue", self._value_enable)         # Can be an array
+        self._reference_value = get_option(config, "referenceValue", self._value_enable if not isinstance(self._value_enable, list) else self._value_enable[0]) 
 
         # Auto mode for valueDisable
         self._update_value_disabled = False
@@ -429,34 +425,42 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         self._update_displays_callback = get_option(config, "updateDisplays", None)
 
         # Determine the mapping to request
-        self._get_request_mapping()        
+        #self._get_request_mapping()        
 
     # Register all mappings
     def init(self, appl, switch):
         super().init(appl, switch)
         
-        if not isinstance(self._mapping, list) and not isinstance(self._mapping, tuple):
-            self.appl.client.register(self._mapping, self)
-        else:
-            for m in self._mapping:
-                self.appl.client.register(m, self)
+        self.appl.client.register(self._mapping, self)
         
         if self._mapping_off:
-            if not isinstance(self._mapping_off, list) and not isinstance(self._mapping_off, tuple):
-                self.appl.client.register(self._mapping_off, self)
-            else:
-                for m in self._mapping_off:
-                    self.appl.client.register(m, self)
+            self.appl.client.register(self._mapping_off, self)
 
     # Set state (called by base class)
     def set(self, enabled):        
-        # Get mappings to execute
-        mapping_definitions = self._get_set_mappings(enabled)
+        if enabled:
+            set_mapping = self._mapping
+            value = self._value_enable
+        else:
+            if self._mapping_off:
+                set_mapping = self._mapping_off
+            else:
+                set_mapping = self._mapping
 
-        for mapping_def in mapping_definitions:
-            if mapping_def[1] != "auto":
-                self.appl.client.set(mapping_def[0], mapping_def[1])   # mapping, value
-            
+            value = self._value_disable
+
+        if not isinstance(self._value_disable, list):
+            if value != "auto":
+                self.appl.client.set(set_mapping, value)
+        else:
+            auto_contained = False
+            for v in self._value_disable:
+                if v == "auto":
+                    auto_contained = True
+                    break
+            if not auto_contained:
+                self.appl.client.set(set_mapping, value)
+
         # Request value
         self._request_value()
 
@@ -467,10 +471,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     # Cancel eventually pending requests (which might return outdated values)
     # Request parameter value
     def _request_value(self):
-        if not self._request_mapping:
-            return            
-        
-        self.appl.client.request(self._request_mapping, self)
+        self.appl.client.request(self._mapping, self) #_request_mapping, self)
 
     # Update display and LEDs to the current state
     def update_displays(self):
@@ -478,7 +479,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
             return
 
         # Callback. If it returns True, we are finished here.
-        if callable(self._update_displays_callback) and self._update_displays_callback(self, self._request_mapping):            
+        if callable(self._update_displays_callback) and self._update_displays_callback(self, self._mapping):            
             return 
         
         # Set color, if new
@@ -555,66 +556,6 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
                 int(color[2] * factor)
             )
 
-    # For a given state, returns the mappings array to call set() on.
-    # Returns a list of tiples like (mapping, value)
-    def _get_set_mappings(self, state):
-        # We can have differing mappings for enabled and disabled state.
-        if state == True:
-            candidates = self._mapping
-        else:
-            if self._mapping_off:
-                candidates = self._mapping_off
-            else:
-                candidates = self._mapping
-
-        # Get array of mappings to execute
-        if not isinstance(candidates, list) and not isinstance(candidates, tuple):
-            all = [candidates]
-
-            if state == True:
-                values = [self._value_enable]
-            else:
-                values = [self._value_disable]
-        else:
-            all = candidates
-
-            if state == True:
-                values = self._value_enable
-            else:
-                values = self._value_disable
-
-        ret = []
-        
-        for i in range(len(all)):
-            m = all[i]
-
-            if not m.set:
-                continue
-
-            ret.append((m, values[i]))
-
-        return ret
-
-    # Get the mapping to be used for reuqesting values. This is the first one which is able to request. 
-    def _get_request_mapping(self):
-        self._request_mapping_ref_value = None
-        self._request_mapping = None
-
-        if not isinstance(self._mapping, list) and not isinstance(self._mapping, tuple): 
-            # Mapping instance: Check if it can receive values
-            if self._mapping.response:
-                self._request_mapping_ref_value = self._reference_value
-                self._request_mapping = self._mapping
-        else:
-            # Array of mappings: Use the first one capable of receiving values
-            for i in range(len(self._mapping)):
-                mapping = self._mapping[i]
-
-                if mapping.response:
-                    self._request_mapping = mapping
-                    self._request_mapping_ref_value = self._reference_value[i]
-                    break
-
     # Must reset all action states so the instance is being updated
     def force_update(self):
         self._current_display_status = -1
@@ -631,38 +572,38 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
     # Called by the Client class when a parameter request has been answered
     def parameter_changed(self, mapping):
-        if not self._request_mapping:
+        if not self._mapping.response: 
             return            
         
-        if mapping != self._request_mapping:
+        if mapping != self._mapping: 
             return
         
         state = False
         
         if self._comparison_mode == self.EQUAL:
-            if mapping.value == self._request_mapping_ref_value:
+            if mapping.value == self._reference_value:
                 state = True
 
         elif self._comparison_mode == self.GREATER_EQUAL:
-            if mapping.value >= self._request_mapping_ref_value:
+            if mapping.value >= self._reference_value:
                 state = True
 
         elif self._comparison_mode == self.GREATER:
-            if mapping.value > self._request_mapping_ref_value:
+            if mapping.value > self._reference_value: 
                 state = True
 
         elif self._comparison_mode == self.LESS_EQUAL:
-            if mapping.value <= self._request_mapping_ref_value:
+            if mapping.value <= self._reference_value:
                 state = True
 
         elif self._comparison_mode == self.LESS:
-            if mapping.value < self._request_mapping_ref_value:
+            if mapping.value < self._reference_value: 
                 state = True        
         else:
             raise Exception() #"Invalid comparison mode: " + repr(self._comparison_mode))        
 
         # Remember value for callback
-        self._request_mapping.value = mapping.value
+        self._mapping.value = mapping.value
 
         self.feedback_state(state)        
 
@@ -678,11 +619,8 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
                     self._value_disable[i] = mapping.value
 
     # Called when the client is offline (requests took too long)
-    def request_terminated(self, mapping):
-        if not self._request_mapping:
-            return        
-        
-        if mapping != self._request_mapping:
+    def request_terminated(self, mapping):        
+        if mapping != self._mapping: 
             return
         
         self.state = False

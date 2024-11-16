@@ -329,17 +329,16 @@ class TestActionParameter(unittest.TestCase):
         period = MockPeriodCounter()
         
         mapping_1 = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x01, 0x02, 0x03, 0x04]
-            ),
-        )
-
-        mapping_2 = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x23],
-                data = [0x01, 0x02, 0x03, 0x04]
-            ),
+            set = [
+                SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x20],
+                    data = [0x01, 0x02, 0x03, 0x04]
+                ),
+                SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x20],
+                    data = [0x01, 0x02, 0x03, 0x05]
+                )
+            ],
             response = SystemExclusive(
                 manufacturer_id = [0x00, 0x11, 0x21],
                 data = [0x01, 0x02, 0x03, 0x05]
@@ -348,10 +347,7 @@ class TestActionParameter(unittest.TestCase):
 
         action_1 = ParameterAction({
             "mode": PushButtonAction.MOMENTARY,
-            "mapping": [
-                mapping_1,            
-                mapping_2
-            ],
+            "mapping": mapping_1,            
             "valueEnable": [11, 12],
             "valueDisable": [4, "auto"],
             "comparisonMode": ParameterAction.GREATER_EQUAL
@@ -389,15 +385,9 @@ class TestActionParameter(unittest.TestCase):
             self.assertEqual(action_1._update_value_disabled, [False, True])
 
         def eval1():
-            self.assertEqual(len(mapping_1.set_value_calls), 1)            
-            self.assertEqual(mapping_1.set_value_calls[0], 11)
-            
-            self.assertEqual(len(mapping_2.set_value_calls), 1)
-            self.assertEqual(mapping_2.set_value_calls[0], 12)
-
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_2.set))
+            self.assertEqual(len(mapping_1.set_value_calls), 0)            
+                        
+            self.assertEqual(len(appl._midi.messages_sent), 0)
             
             self.assertEqual(action_1.state, True)
 
@@ -409,12 +399,9 @@ class TestActionParameter(unittest.TestCase):
             self.assertEqual(action_1._value_disable, [4, "auto"])
 
         def eval2():
-            # Only the non-auto mapping must have been sent
-            self.assertEqual(len(mapping_1.set_value_calls), 2)
-            self.assertEqual(mapping_1.set_value_calls[1], 4)
+            self.assertEqual(len(mapping_1.set_value_calls), 0)
 
-            self.assertEqual(len(appl._midi.messages_sent), 3)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[2], mapping_1.set))
+            self.assertEqual(len(appl._midi.messages_sent), 0)
             
             self.assertEqual(action_1.state, False)
 
@@ -426,7 +413,7 @@ class TestActionParameter(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_1
             ]
-            mapping_2.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
                     "message": answer_msg_1,
                     "value": 7
@@ -446,14 +433,12 @@ class TestActionParameter(unittest.TestCase):
             switch_1.shall_be_pushed = True
 
         def eval4():
-            self.assertEqual(len(mapping_1.set_value_calls), 3)
-            self.assertEqual(mapping_1.set_value_calls[2], 11)
-            self.assertEqual(len(mapping_2.set_value_calls), 2)
-            self.assertEqual(mapping_2.set_value_calls[1], 12)
+            self.assertEqual(len(mapping_1.set_value_calls), 1)
+            self.assertEqual(mapping_1.set_value_calls[0], [11, 12])
 
-            self.assertEqual(len(appl._midi.messages_sent), 5)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[3], mapping_1.set))
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[4], mapping_2.set))
+            self.assertEqual(len(appl._midi.messages_sent), 2)
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set[0]))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set[1]))
             
             self.assertEqual(action_1.state, True)
 
@@ -465,7 +450,7 @@ class TestActionParameter(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_1
             ]
-            mapping_2.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
                     "message": answer_msg_1,
                     "value": 100
@@ -485,14 +470,12 @@ class TestActionParameter(unittest.TestCase):
             switch_1.shall_be_pushed = False
 
         def eval6():
-            self.assertEqual(len(mapping_1.set_value_calls), 4)
-            self.assertEqual(mapping_1.set_value_calls[3], 4)
-            self.assertEqual(len(mapping_2.set_value_calls), 3)
-            self.assertEqual(mapping_2.set_value_calls[2], 7)
+            self.assertEqual(len(mapping_1.set_value_calls), 2)
+            self.assertEqual(mapping_1.set_value_calls[1], [4, 7])
 
-            self.assertEqual(len(appl._midi.messages_sent), 7)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[5], mapping_1.set))
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[6], mapping_2.set))
+            self.assertEqual(len(appl._midi.messages_sent), 4)
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[2], mapping_1.set[0]))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[3], mapping_1.set[1]))
                         
             self.assertEqual(action_1.state, False)
 
@@ -648,47 +631,40 @@ class TestActionParameter(unittest.TestCase):
     def test_set_parameter_mappings_lists(self):
         switch_1 = MockSwitch()
         
-        mapping_1 = MockParameterMapping()
-
-        mapping_2 = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x01, 0x02, 0x03, 0x04]
-            )
-        )
-
-        mapping_3 = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x01, 0x02, 0x08, 0x04]
-            )
+        mapping_1 = MockParameterMapping(
+            set = [
+                SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x20],
+                    data = [0x01, 0x02, 0x03, 0x04]
+                ),
+                SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x22],
+                    data = [0x01, 0x02, 0x03, 0x05]
+                ),
+                SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x22],
+                    data = [0x01, 0x02, 0x03, 0x88]
+                )
+            ]
         )
 
         mapping_disable_1 = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x01, 0x02, 0x33, 0x04]
-            )
-        )
-
-        mapping_disable_2 = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x01, 0x02, 0x39, 0x04]
-            )
+            set = [
+                SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x20],
+                    data = [0x01, 0x02, 0x39, 0x04]
+                ),
+                SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x30],
+                    data = [0x01, 0x02, 0x39, 0x07]
+                )
+            ]
         )
 
         action_1 = ParameterAction({
             "mode": PushButtonAction.MOMENTARY,
-            "mapping": [
-                mapping_1,
-                mapping_2,
-                mapping_3
-            ],
-            "mappingDisable": [
-                mapping_disable_1,
-                mapping_disable_2
-            ],
+            "mapping": mapping_1,
+            "mappingDisable": mapping_disable_1,
             "valueEnable": [1, 2, 3],
             "valueDisable": [0, -1]
         })
@@ -716,14 +692,13 @@ class TestActionParameter(unittest.TestCase):
             switch_1.shall_be_pushed = True
 
         def eval1():
-            self.assertEqual(len(mapping_2.set_value_calls), 1)
-            self.assertEqual(mapping_2.set_value_calls[0], 2)
-            self.assertEqual(len(mapping_3.set_value_calls), 1)
-            self.assertEqual(mapping_3.set_value_calls[0], 3)
+            self.assertEqual(len(mapping_1.set_value_calls), 1)
+            self.assertEqual(mapping_1.set_value_calls[0], [1, 2, 3])
 
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_2.set))
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_3.set))
+            self.assertEqual(len(appl._midi.messages_sent), 3)
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set[0]))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set[1]))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[2], mapping_1.set[2]))
 
             return True        
         
@@ -733,13 +708,11 @@ class TestActionParameter(unittest.TestCase):
 
         def eval2():
             self.assertEqual(len(mapping_disable_1.set_value_calls), 1)
-            self.assertEqual(mapping_disable_1.set_value_calls[0], 0)
-            self.assertEqual(len(mapping_disable_2.set_value_calls), 1)
-            self.assertEqual(mapping_disable_2.set_value_calls[0], -1)
+            self.assertEqual(mapping_disable_1.set_value_calls[0], [0, -1])
 
-            self.assertEqual(len(appl._midi.messages_sent), 4)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[2], mapping_disable_1.set))
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[3], mapping_disable_2.set))
+            self.assertEqual(len(appl._midi.messages_sent), 5)
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[3], mapping_disable_1.set[0]))
+            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[4], mapping_disable_1.set[1]))
 
             return False        
 
@@ -1145,36 +1118,31 @@ class TestActionParameter(unittest.TestCase):
     def test_request_mappings_lists(self):
         switch_1 = MockSwitch()
         
-        mapping_1 = MockParameterMapping()
-
-        mapping_2 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x27, 0x09]
-            ),
-            response = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x30, 0x19]
-            )
-        )
-
-        mapping_3 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x27, 0x01]
-            ),
-            response = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x30, 0x29]
-            )
+        mapping_1 = MockParameterMapping(
+            request = [
+                SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x20],
+                    data = [0x05, 0x27, 0x09]
+                ),
+                SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x21],
+                    data = [0x05, 0x27, 0x0a]
+                )
+            ],
+            response = [
+                SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x20],
+                    data = [0x00, 0x30, 0x19]
+                ),
+                SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x21],
+                    data = [0x00, 0x30, 0x1d]
+                )
+            ]
         )
 
         action_1 = ParameterAction({
-            "mapping": [
-                mapping_1,
-                mapping_2,
-                mapping_3
-            ],
+            "mapping": mapping_1,
             "valueEnable": [1, 2, 3],
             "valueDisable": [0, -1, -2]
         })
@@ -1213,13 +1181,14 @@ class TestActionParameter(unittest.TestCase):
             period.exceed_next_time = True
 
         def eval1():
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertEqual(appl._midi.messages_sent[0], mapping_2.request)
+            self.assertEqual(len(appl._midi.messages_sent), 2)
+            self.assertEqual(appl._midi.messages_sent[0], mapping_1.request[0])
+            self.assertEqual(appl._midi.messages_sent[1], mapping_1.request[1])
             return True
 
         # Step without update
         def eval2():
-            self.assertEqual(len(appl._midi.messages_sent), 1)
+            self.assertEqual(len(appl._midi.messages_sent), 2)
             return True
 
         # Receive value 
@@ -1229,7 +1198,7 @@ class TestActionParameter(unittest.TestCase):
                 answer_msg_1,
                 answer_msg_2
             ]
-            mapping_2.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
                     "message": answer_msg_1,
                     "value": 2
@@ -1237,7 +1206,7 @@ class TestActionParameter(unittest.TestCase):
             ]
 
         def eval3():
-            self.assertEqual(mapping_2.value, 2)
+            self.assertEqual(mapping_1.value, 2)
 
             return True
         
@@ -1247,15 +1216,15 @@ class TestActionParameter(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_1
             ]
-            mapping_2.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
                     "message": answer_msg_1,
-                    "value": -1
+                    "value": 66
                 }
             ]
 
         def eval4():
-            self.assertEqual(mapping_2.value, -1)
+            self.assertEqual(mapping_1.value, 66)
 
             return False
 

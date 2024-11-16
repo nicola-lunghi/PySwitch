@@ -61,10 +61,15 @@ class ClientParameterMapping:
     def parse(self, midi_message):   # pragma: no cover
         return False    
     
-    # Must set the passed value on the SET message of the mapping.
+    # Must set the passed value(s) on the SET message(s) of the mapping.
     def set_value(self, value):      # pragma: no cover
         pass
 
+    # Returns if the mapping has finished receiving a result. Per default,
+    # this returns True which is valid for mappings with one response.
+    def result_finished(self):
+        return True
+    
 
 ############################################################################################################
 
@@ -76,6 +81,7 @@ class Client: #(ClientRequestListener):
         self.midi = midi
         
         self.debug_unparsed_messages = get_option(config, "debugUnparsedMessages", False)
+        self._debug_sent_messages = get_option(config, "debugSentMessages", False)
         self.debug_exclude_types = get_option(config, "excludeMessageTypes", None)
         self._debug_mapping = get_option(config, "debugMapping", None)
         
@@ -97,19 +103,32 @@ class Client: #(ClientRequestListener):
         if not mapping.request and mapping.response:
             self._register_mapping(mapping, listener, False)
 
-    # Sends the SET message of a mapping
+    # Sends the SET message of a mapping. Value has to be a list if the mapping's set field is a list, too!
     def set(self, mapping, value):
         if not mapping.set:
-            raise Exception() #"No SET message prepared for this MIDI mapping")
+            return
         
         mapping.set_value(value)
                 
-        self.midi.send(mapping.set)
+        if isinstance(mapping.set, list):
+            for m in mapping.set:
+                if not m:
+                    continue
+
+                if self._debug_sent_messages:
+                    self.print_message(m)
+
+                self.midi.send(m)
+        else:
+            if self._debug_sent_messages:
+                self.print_message(mapping.set)
+                
+            self.midi.send(mapping.set)
 
     # Send the request message of a mapping. Calls the passed listener when the answer has arrived.
     def request(self, mapping, listener):
-        if not mapping.request:
-            return
+        if not mapping.request or not mapping.response:
+            return            
         
         self._register_mapping(mapping, listener, True)
         
@@ -129,7 +148,7 @@ class Client: #(ClientRequestListener):
             
             # Send 
             if send:           
-                req.send()            
+                req.send()
 
         else:
             # Existing request: Add listener
@@ -231,7 +250,13 @@ class ClientRequest(EventEmitter):
         if not self.mapping.request:
             return
 
-        self.client.midi.send(self.mapping.request)
+        if isinstance(self.mapping.request, list):
+            for m in self.mapping.request:
+                if not m:
+                    continue
+                self.client.midi.send(m)    
+        else:
+            self.client.midi.send(self.mapping.request)
 
     # Returns if the request is finished
     @property
@@ -259,12 +284,12 @@ class ClientRequest(EventEmitter):
         if self.finished:
             return False
 
-        if not isinstance(self.mapping.response, midi_message.__class__):
-            return False
-
         if not self.mapping.parse(midi_message):
             return False
-        
+
+        if not self.mapping.result_finished():
+            return
+
         if self.client._debug_mapping == self.mapping:    # pragma: no cover
             do_print(self.mapping.name + ": Received value '" + repr(self.mapping.value) + "' from " + stringify_midi_message(midi_message))
 

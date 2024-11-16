@@ -292,14 +292,8 @@ class KemperActionDefinitions:
     def MORPH_BUTTON(display = None, color = Colors.LIGHT_GREEN, text = "Morph", id = False, use_leds = True):
         return ParameterAction({
             "mode": PushButtonAction.ONE_SHOT,
-            "mapping": [
-                KemperMappings.MORPH_BUTTON(),
-                KemperMappings.MORPH_BUTTON()
-            ],
-            "valueEnable": [
-                0,
-                1
-            ],
+            "mapping": KemperMappings.MORPH_BUTTON(),
+            "valueEnable": [0, 1],
             "useSwitchLeds": use_leds,
             "display": display,
             "color": color,
@@ -418,31 +412,19 @@ class KemperActionDefinitions:
         mapping_rig_select = KemperMappings.RIG_SELECT(rig - 1)
 
         # Mappings and values: Start with a configuration for rig_off == None and bank(_off) = None.
-        mapping = [
-            KemperParameterMapping(),           # Dummy to be replaced by bank select if specified
-            mapping_rig_select
-        ]
-        mapping_disable = [
-            KemperParameterMapping(),           # Dummy to be replaced by bank select if specified
-            mapping_rig_select
-        ]
-        value_enabled = [
-            0,                                  # Dummy to be replaced by bank select if specified
-            NRPN_PARAMETER_ON
-        ]
-        value_disabled = [
-            0,                                  # Dummy to be replaced by bank select if specified
-            NRPN_PARAMETER_ON
-        ]
+        mapping = mapping_rig_select
+        mapping_disable = mapping
+        value_enable = NRPN_PARAMETER_ON
+        value_disable = NRPN_PARAMETER_ON
 
         # Bank for main rig
         if bank != None:
-            mapping[0] = KemperMappings.BANK_PRESELECT()
+            mapping = KemperMappings.BANK_AND_RIG_SELECT(rig - 1)
             if rig_off == None:
-                mapping_disable[0] = KemperMappings.BANK_PRESELECT()
+                mapping_disable = mapping
             
-            value_enabled[0] = bank - 1
-            value_disabled[0] = bank - 1
+            value_enable = [bank - 1, 1]
+            value_disable = [bank - 1, 1]
             
             text_rig_off = str(bank) + "-" + text_rig_off
             if rig_off == None:
@@ -451,16 +433,16 @@ class KemperActionDefinitions:
         # Alternate rig (the rig selected when the switch state is False)
         if rig_off != None:
             # Use a different mapping for disabling
-            mapping_disable[1] = KemperMappings.RIG_SELECT(rig_off - 1)
+            mapping_disable = KemperMappings.RIG_SELECT(rig_off - 1)
             text_rig_on = str(rig_off)
 
         # Bank for alternate rig
         if bank_off != None:
             if rig_off == None:
-                raise Exception("RIG_SELECT: If bank_off is set, you must also provide rig_off.")
+                raise Exception() #"RIG_SELECT: If bank_off is set, you must also provide rig_off.")
             
-            mapping_disable[0] = KemperMappings.BANK_PRESELECT()
-            value_disabled[0] = bank_off - 1
+            mapping_disable = KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1)
+            value_disable = [bank_off - 1, 1]
             
             text_rig_on = str(bank_off) + "-" + text_rig_on
 
@@ -468,8 +450,8 @@ class KemperActionDefinitions:
         return ParameterAction({
             "mapping": mapping,
             "mappingDisable": mapping_disable,
-            "valueEnable": value_enabled,
-            "valueDisable": value_disabled,
+            "valueEnable": value_enable,
+            "valueDisable": value_disable,
             "display": display,
             "text": "Rig " + text_rig_on,
             "textDisabled": "Rig " + text_rig_off,
@@ -718,15 +700,22 @@ class KemperParameterMapping(ClientParameterMapping):
 
         return False
     
-    # Must set the passed value on the SET message of the mapping.
+    # Must set the passed value(s) on the SET message(s) of the mapping.
     def set_value(self, value):
-        if isinstance(self.set, ControlChange):
-            # Set value directly (CC takes int values)
-            self.set.value = value
+        if isinstance(self.set, list):
+            for i in range(len(self.set)):
+                self._set_value(self.set[i], value[i])
+        else:
+            self._set_value(self.set, value)
 
-        elif isinstance(self.set, SystemExclusive):            
+    def _set_value(self, midi_message, value):
+        if isinstance(midi_message, ControlChange):
+            # Set value directly (CC takes int values)            
+            midi_message.value = value
+
+        elif isinstance(midi_message, SystemExclusive):            
             # Fill up message to appropriate length for the specification
-            data = list(self.set.data)
+            data = list(midi_message.data)
             while len(data) < 8:
                 data.append(0)
             
@@ -734,7 +723,7 @@ class KemperParameterMapping(ClientParameterMapping):
             data[6] = int(floor(value / 128))
             data[7] = int(value % 128)
 
-            self.set.data = bytes(data)
+            midi_message.data = bytes(data)
         
 
 ####################################################################################################################
@@ -856,7 +845,7 @@ class KemperMappings:
         )
 
     # Rig name (request only)
-    def RIG_NAME():
+    def RIG_NAME(): 
         return KemperParameterMapping(
             name = "Rig Name",
             request = KemperNRPNMessage(               
@@ -873,7 +862,7 @@ class KemperMappings:
         )
 
     # Rig date (request only)
-    def RIG_DATE():
+    def RIG_DATE(): 
         return KemperParameterMapping(
             name = "Rig Date",
             request = KemperNRPNMessage(               
@@ -890,7 +879,7 @@ class KemperMappings:
         )
 
     # Switch tuner mode on/off (no receive possible when not in bidirectional mode)
-    def TUNER_MODE_STATE():
+    def TUNER_MODE_STATE(): 
         return KemperParameterMapping(
             name = "Tuner Mode",
             set = ControlChange(
@@ -905,7 +894,7 @@ class KemperMappings:
         )
 
     # Tuner note (only sent in bidirectional mode)
-    def TUNER_NOTE():
+    def TUNER_NOTE(): 
         return KemperParameterMapping(
             name = "Tuner Note",
             response = KemperNRPNMessage(
@@ -916,7 +905,7 @@ class KemperMappings:
         )
 
     # Tuner deviance from "in tune" (only sent in bidirectional mode)
-    def TUNER_DEVIANCE():
+    def TUNER_DEVIANCE(): 
         return KemperParameterMapping(
             name = "Tuner Deviance",
             response = KemperNRPNMessage(
@@ -927,7 +916,7 @@ class KemperMappings:
         )
 
     # Switch tuner mode on/off (no receive possible!)
-    def TAP_TEMPO():
+    def TAP_TEMPO(): 
         return KemperParameterMapping(
             name = "Tap Tempo",
             set = ControlChange(
@@ -936,18 +925,21 @@ class KemperMappings:
             )
         )
 
-    def MORPH_BUTTON():
+    def MORPH_BUTTON(): 
         return KemperParameterMapping(
-            set = ControlChange(CC_MORPH_BUTTON, 0)
+            set = [
+                ControlChange(CC_MORPH_BUTTON, 0),
+                ControlChange(CC_MORPH_BUTTON, 1)
+            ]
         )
 
-    def MORPH_PEDAL():
+    def MORPH_PEDAL(): 
         return KemperParameterMapping(
             set = ControlChange(CC_MORPH_PEDAL, 0)
         )
 
     # Rig volume
-    def RIG_VOLUME():
+    def RIG_VOLUME(): 
         return KemperParameterMapping(
             name = "Rig Volume",
             set = KemperNRPNMessage(
@@ -968,7 +960,7 @@ class KemperMappings:
         )
 
     # Amp name (request only)
-    def AMP_NAME():
+    def AMP_NAME(): 
         return KemperParameterMapping(
             name = "Amp Name",
             request = KemperNRPNMessage(               
@@ -985,7 +977,7 @@ class KemperMappings:
         )
 
     # Amp on/off
-    def AMP_STATE():
+    def AMP_STATE(): 
         return KemperParameterMapping(
             name = "Amp Status",
             set = KemperNRPNMessage(
@@ -1006,7 +998,7 @@ class KemperMappings:
         )
 
     # Cab name (request only)
-    def CABINET_NAME():
+    def CABINET_NAME(): 
         return KemperParameterMapping(
             name = "Cab Name",
             request = KemperNRPNMessage(               
@@ -1023,7 +1015,7 @@ class KemperMappings:
         )
     
     # Cab on/off
-    def CABINET_STATE():
+    def CABINET_STATE(): 
         return KemperParameterMapping(
             name = "Cab Status",
             set = KemperNRPNMessage(
@@ -1043,7 +1035,7 @@ class KemperMappings:
             )
         )
 
-    def NEXT_BANK():
+    def NEXT_BANK(): 
         return KemperParameterMapping(
             name = "Next Bank",
             set = ControlChange(
@@ -1061,8 +1053,7 @@ class KemperMappings:
             )
         )
 
-    # Selects a rig inside the current bank. Rig index must be in range [0..4]
-    @staticmethod
+    # Selects a rig of the current bank. Rig index must be in range [0..4]
     def RIG_SELECT(rig):
         return KemperParameterMapping(
             name = "Rig Select",
@@ -1072,15 +1063,20 @@ class KemperMappings:
             )
         )
     
-    # Pre-selects a bank. CHanges will take effect when the next RIG_SELECT message is sent.
-    # Bank index must be in range [0..124]
-    def BANK_PRESELECT():
+    # Selects a rig of a specific bank. Rig index must be in range [0..4]
+    def BANK_AND_RIG_SELECT(rig):
         return KemperParameterMapping(
-            name = "Bank Preselect",
-            set = ControlChange(
-                CC_BANK_PRESELECT,
-                0    # Dummy value, will be overridden
-            )
+            name = "Rig+Bank",
+            set = [
+                ControlChange(
+                    CC_BANK_PRESELECT,
+                    0    # Dummy value, will be overridden
+                ),
+                ControlChange(
+                    CC_RIG_SELECT + rig,
+                    0    # Dummy value, will be overridden
+                )
+            ]
         )
 
     # Used for state sensing in bidirection communication
@@ -1096,17 +1092,15 @@ class KemperMappings:
         ) 
 
     # MIDI Clock message, sent 24x every beat
-    #def MIDI_CLOCK():
-    #    return KemperParameterMapping(
-    #        name = "Clock",
-    #        response = MidiClockMessage()
-    #    )
+    #MIDI_CLOCK = KemperParameterMapping(
+    #    name = "Clock",
+    #    response = MidiClockMessage()
+    #)
     
-    #def MIDI_CLOCK_START():
-    #    return KemperParameterMapping(
-    #        name = "Start",
-    #        response = Start()
-    #    )
+    #MIDI_CLOCK_START = KemperParameterMapping(
+    #    name = "Start",
+    #    response = Start()
+    #)
 
     def TEMPO_DISPLAY():
         return KemperParameterMapping(

@@ -145,6 +145,7 @@ class MockParameterMapping(ClientParameterMapping):
         super().__init__(name = name, set = set, request = request, response = response, value = value)
 
         self.outputs_parse = []
+        self.output_result_finished = None
         self.set_value_calls = []
 
     def parse(self, midi_message):
@@ -153,7 +154,20 @@ class MockParameterMapping(ClientParameterMapping):
                 continue
 
             if "value" in o:
-                self.value = o["value"]
+                value = o["value"]
+
+                if "valueIndex" in o:
+                    value_index = o["valueIndex"]
+
+                    if not isinstance(self.value, list):
+                        self.value = []
+                    
+                    while len(self.value) < value_index + 1:
+                        self.value.append(None)
+
+                    self.value[value_index] = value
+                else:
+                    self.value = value
         
             return True
         return False
@@ -161,6 +175,12 @@ class MockParameterMapping(ClientParameterMapping):
     def set_value(self, value):
         self.set_value_calls.append(value)
 
+    def result_finished(self):
+        if self.output_result_finished != None:
+            return self.output_result_finished
+        else:
+            return super().result_finished()
+    
 
 ##################################################################################################################################
 

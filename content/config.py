@@ -39,6 +39,7 @@ Config = {
                                                       # the "updateInterval" option)
     "debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
     #"debugUnparsedMessages": True,                   # Shows all incoming MIDI messages which have not been parsed by the application.
+    #"debugSentMessages": True,                       # Shows all sent messages
     #"excludeMessageTypes": [ "SystemExclusive" ],    # Types to excude from "debugUnparsedMessage"
 
     # When a ClientParameterMapping instance is set here, incoming messages for this mapping will be shown.
