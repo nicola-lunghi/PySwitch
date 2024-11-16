@@ -16,6 +16,9 @@ class ClientParameterMapping:
         if not other:
             return False
         
+        if self.__class__ != other.__class__:
+            return False
+        
         if self.response != None:
             if other.response != None:
                 return self._compare(self.response, other.response)

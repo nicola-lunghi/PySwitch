@@ -22,6 +22,9 @@ with patch.dict(sys.modules, {
     from.mocks_appl import *
 
 
+class MockParameterMapping2(MockParameterMapping):
+    pass
+
 class MockClient:
     def __init__(self):
         self.debug = False
@@ -405,6 +408,38 @@ class TestClient(unittest.TestCase):
         self.assertEqual(client.requests, [])
 
 
+##############################################################################################
+
+
+    def test_mapping_eq_different_types(self):
+        mapping_1 = MockParameterMapping(
+            request = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            ),
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        mapping_2 = MockParameterMapping2(
+            request = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            ),
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        self.assertFalse(mapping_1 == None)
+        self.assertFalse(None == mapping_2)
+
+        self.assertTrue(mapping_1 != mapping_2)
+        
+        
 ##############################################################################################
 
 
