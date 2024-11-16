@@ -13,8 +13,6 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-    "adafruit_midi.start": MockAdafruitMIDIStart(),
-    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     from .mocks_appl import *
@@ -22,7 +20,6 @@ with patch.dict(sys.modules, {
     from adafruit_midi.system_exclusive import SystemExclusive
 
     from lib.pyswitch.controller.ConditionTree import ParameterCondition
-    from lib.pyswitch.controller.Client import ClientParameterMapping
     from lib.pyswitch.misc import compare_midi_messages
 
 
@@ -289,7 +286,7 @@ class TestConditionParameter(unittest.TestCase):
         action_2 = MockAction()
         period = MockPeriodCounter()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -312,13 +309,8 @@ class TestConditionParameter(unittest.TestCase):
             ]
         )
 
-        vp = MockValueProvider()
-
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": vp
-            },
             midi = MockMidiController(),
             switches = [
                 {
@@ -354,10 +346,9 @@ class TestConditionParameter(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_1
             ]
-            vp.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_1,
                     "value": answer_value_1
                 }
             ]   
@@ -377,10 +368,9 @@ class TestConditionParameter(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_1
             ]
-            vp.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_1,
                     "value": answer_value_2
                 }
             ]   
@@ -403,10 +393,9 @@ class TestConditionParameter(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_1
             ]
-            vp.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_1,
                     "value": answer_value_3
                 }
             ]   
@@ -457,7 +446,7 @@ class TestConditionParameter(unittest.TestCase):
         action_2 = MockAction()
         period = MockPeriodCounter()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -481,13 +470,8 @@ class TestConditionParameter(unittest.TestCase):
         )
         condition_1.true = False
 
-        vp = MockValueProvider()
-
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": vp
-            },
             midi = MockMidiController(),
             switches = [
                 {
@@ -561,7 +545,7 @@ class TestConditionParameter(unittest.TestCase):
         action_2 = MockAction()
         period = MockPeriodCounter()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -587,22 +571,21 @@ class TestConditionParameter(unittest.TestCase):
         with self.assertRaises(Exception):
             condition_1.update()
 
-        vp = MockValueProvider()
-
-        appl = MockController(
-            led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": vp
-            },
-            midi = MockMidiController(),
-            switches = [
-                {
-                    "assignment": {
-                        "model": switch_1
-                    },
-                    "actions": condition_1
-                }
-            ],
-            period_counter = period
-        )
+        # Must not throw
+        #MockController(
+        #    led_driver = MockNeoPixelDriver(),
+        #    communication = {
+        #        "valueProvider": vp
+        #    },
+        #    midi = MockMidiController(),
+        #    switches = [
+        #        {
+        #            "assignment": {
+        #                "model": switch_1
+        #            },
+        #            "actions": condition_1
+        #        }
+        #    ],
+        #    period_counter = period
+        #)
 

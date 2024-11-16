@@ -10,7 +10,7 @@ from pyswitch.misc import DEFAULT_LABEL_COLOR, Colors
 from pyswitch.controller.actions.actions import HoldAction, ParameterAction, PushButtonAction
 #from pyswitch.controller.ConditionTree import ParameterCondition
 
-from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, KemperMidiValueProvider, CC_MORPH_PEDAL, ClientParameterMapping
+from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, NRPN_VALUE, CC_MORPH_PEDAL, ClientParameterMapping
 from adafruit_midi.control_change import ControlChange
 from display import DISPLAY_ID_FOOTER, DISPLAY_ID_HEADER
 
@@ -78,7 +78,7 @@ Switches = [
                         "mapping": KemperMappings.EFFECT_MIX(
                             slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY
                         ),
-                        "valueEnable": KemperMidiValueProvider.NRPN_VALUE(0.5),
+                        "valueEnable": NRPN_VALUE(0.5),
                         "valueDisable": "auto",
                         "comparisonMode": ParameterAction.EQUAL,
                         "useSwitchLeds": False

@@ -16,14 +16,11 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-    "adafruit_midi.start": MockAdafruitMIDIStart(),
-    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
 
     from lib.pyswitch.ui.elements import ParameterDisplayLabel
-    from lib.pyswitch.controller.Client import ClientParameterMapping
 
     from lib.pyswitch.ui.ui import DisplayBounds
     from lib.pyswitch.ui.UiController import UiController
@@ -38,7 +35,7 @@ class TestParameterLabel(unittest.TestCase):
     def test(self):
         period = MockPeriodCounter()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -61,13 +58,9 @@ class TestParameterLabel(unittest.TestCase):
         )
 
         ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
-        vp = MockValueProvider()
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": vp
-            },
             midi = MockMidiController(),            
             period_counter = period,
             ui = ui
@@ -96,10 +89,9 @@ class TestParameterLabel(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_1
             ]
-            vp.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_1,
                     "value": "Some text"
                 }
             ]   
@@ -143,7 +135,7 @@ class TestParameterLabel(unittest.TestCase):
     def test_with_dependency(self):
         period = MockPeriodCounter()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -154,7 +146,7 @@ class TestParameterLabel(unittest.TestCase):
             )
         )
 
-        mapping_2 = ClientParameterMapping(
+        mapping_2 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x21],
                 data = [0x01, 0x02, 0x03, 0x05]
@@ -177,13 +169,9 @@ class TestParameterLabel(unittest.TestCase):
         )
 
         ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
-        vp = MockValueProvider()
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": vp
-            },
             midi = MockMidiController(),
             period_counter = period,
             ui = ui
@@ -212,10 +200,9 @@ class TestParameterLabel(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_1
             ]
-            vp.outputs_parse = [
+            mapping_2.outputs_parse = [
                 {
-                    "mapping": mapping_2,
-                    "result": True,
+                    "message": answer_msg_1,
                     "value": 3
                 }
             ]   
@@ -235,10 +222,9 @@ class TestParameterLabel(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_1
             ]
-            vp.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_1,
                     "value": "Sometext"
                 }
             ]   
@@ -277,7 +263,7 @@ class TestParameterLabel(unittest.TestCase):
     def test_timeout(self):
         period = MockPeriodCounter()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -300,13 +286,9 @@ class TestParameterLabel(unittest.TestCase):
         )
 
         ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
-        vp = MockValueProvider()
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": vp
-            },
             midi = MockMidiController(),
             period_counter = period,
             ui = ui

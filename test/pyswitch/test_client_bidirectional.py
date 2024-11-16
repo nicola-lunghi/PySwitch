@@ -14,14 +14,12 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-    "adafruit_midi.start": MockAdafruitMIDIStart(),
-    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
-    #from adafruit_midi.control_change import ControlChange
+
     from lib.pyswitch.controller.actions.actions import EffectEnableAction
-    from lib.pyswitch.controller.Client import ClientParameterMapping, BidirectionalClient
+    from lib.pyswitch.controller.Client import BidirectionalClient
     from lib.pyswitch.misc import compare_midi_messages
 
     from.mocks_appl import *
@@ -31,9 +29,8 @@ class TestBidirectionalClient(unittest.TestCase):
 
     def test_register(self):
         midi = MockMidiController()
-        vp = MockValueProvider()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -48,7 +45,7 @@ class TestBidirectionalClient(unittest.TestCase):
             )
         )
 
-        mapping_2 = ClientParameterMapping(
+        mapping_2 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x21],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -74,7 +71,6 @@ class TestBidirectionalClient(unittest.TestCase):
         client = BidirectionalClient(
             midi = midi,
             config = {},            
-            value_provider = vp,
             protocol = protocol
         )
         
@@ -101,9 +97,8 @@ class TestBidirectionalClient(unittest.TestCase):
 
     def test_notify_connection_lost(self):
         midi = MockMidiController()
-        vp = MockValueProvider()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -118,7 +113,7 @@ class TestBidirectionalClient(unittest.TestCase):
             )
         )
 
-        mapping_2 = ClientParameterMapping(
+        mapping_2 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x21],
                 data = [0x01, 0x02, 0x03, 0x34]
@@ -144,7 +139,6 @@ class TestBidirectionalClient(unittest.TestCase):
         client = BidirectionalClient(
             midi = midi,
             config = {},            
-            value_provider = vp,
             protocol = protocol
         )
         
@@ -171,7 +165,7 @@ class TestBidirectionalClient(unittest.TestCase):
     def _test_all(self, do_feedback):
         switch_1 = MockSwitch()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -186,7 +180,7 @@ class TestBidirectionalClient(unittest.TestCase):
             )
         )
 
-        mapping_type_1 = ClientParameterMapping(
+        mapping_type_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x21],
                 data = [0x05, 0x07, 0x10]
@@ -210,7 +204,6 @@ class TestBidirectionalClient(unittest.TestCase):
         
         period = MockPeriodCounter()
 
-        vp = MockValueProvider()
         protocol = MockBidirectionalProtocol()
         protocol.outputs_is_bidirectional = [
             {
@@ -228,10 +221,7 @@ class TestBidirectionalClient(unittest.TestCase):
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": vp,
-                "protocol": protocol
-            },
+            protocol = protocol,
             midi = MockMidiController(),
             switches = [
                 {
@@ -272,10 +262,9 @@ class TestBidirectionalClient(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 1
                 }
             ]
@@ -285,10 +274,6 @@ class TestBidirectionalClient(unittest.TestCase):
 
             self.assertEqual(len(appl._midi.messages_sent), 1)
 
-            self.assertEqual(len(vp.parse_calls), 1)
-
-            self.assertEqual(vp.parse_calls[0]["mapping"], mapping_type_1)
-            self.assertTrue(compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 1)
             self.assertEqual(action_1._effect_category, 10)
             self.assertEqual(action_1.state, False)
@@ -302,10 +287,9 @@ class TestBidirectionalClient(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_param
             ]
-            vp.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_param,
                     "value": 1
                 }
             ]
@@ -315,10 +299,6 @@ class TestBidirectionalClient(unittest.TestCase):
 
             self.assertEqual(len(appl._midi.messages_sent), 1)
             
-            self.assertEqual(len(vp.parse_calls), 2)
-
-            self.assertEqual(vp.parse_calls[1]["mapping"], mapping_1)
-            self.assertTrue(compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
             self.assertEqual(appl.client.requests[0].mapping.value, 1)
 
             self.assertNotIn(answer_msg_param, protocol.receive_calls)

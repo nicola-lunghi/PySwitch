@@ -14,7 +14,6 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-    "adafruit_midi.start": MockAdafruitMIDIStart(),
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
@@ -22,7 +21,6 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.ui.ui import DisplayBounds
     from lib.pyswitch.ui.elements import TunerDisplay, DisplayLabel
-    from lib.pyswitch.controller.Client import ClientParameterMapping
     from lib.pyswitch.ui.UiController import UiController
 
     from .mocks_appl import *
@@ -88,7 +86,7 @@ class TestTunerDisplay(unittest.TestCase):
     def _test_scenario(self, note_value, note_text, deviance_value, deviance_pos, deviance_zoom, exp_color, deviance_tolerance):
         period = MockPeriodCounter()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             response = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x00, 0x00, 0x09]
@@ -97,7 +95,7 @@ class TestTunerDisplay(unittest.TestCase):
 
         mapping_2 = None
         if deviance_value != None:
-            mapping_2 = ClientParameterMapping(
+            mapping_2 = MockParameterMapping(
                 response = SystemExclusive(
                     manufacturer_id = [0x00, 0x10, 0x20],
                     data = [0x00, 0x00, 0x10]
@@ -129,7 +127,6 @@ class TestTunerDisplay(unittest.TestCase):
             self.assertEqual(display.deviance.bounds, DisplayBounds(20, 33 + 555 - 44, 444, 44))
 
         ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
-        vp = MockValueProvider()
         
         protocol = MockBidirectionalProtocol()
         protocol.outputs_is_bidirectional = [
@@ -155,10 +152,7 @@ class TestTunerDisplay(unittest.TestCase):
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": vp,
-                "protocol": protocol
-            },
+            protocol = protocol,
             midi = MockMidiController(),
             period_counter = period,
             ui = ui
@@ -192,18 +186,19 @@ class TestTunerDisplay(unittest.TestCase):
                 answer_msg_1,
                 answer_msg_2
             ]
-            vp.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_1,
                     "value": note_value
-                },
-                {
-                    "mapping": mapping_2,
-                    "result": True,
-                    "value": deviance_value
                 }
             ]
+            if mapping_2:
+                mapping_2.outputs_parse = [
+                    {
+                        "message": answer_msg_2,
+                        "value": deviance_value
+                    }
+                ]
 
         def eval2():
             self.assertEqual(len(appl._midi.messages_sent), 0)

@@ -15,8 +15,6 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-    "adafruit_midi.start": MockAdafruitMIDIStart(),
-    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     from lib.pyswitch.ui.ui import DisplayBounds
@@ -25,41 +23,6 @@ with patch.dict(sys.modules, {
 
     from .mocks_appl import *
     from .mocks_ui import *
-
-
-#class CheckAreaColors:
-#    def __init__(self, testcase):
-#        self.case = testcase
-
-#    # Checks if the passed parts (rects or round rects) fill up the area completely,
-#    # split in rows
-#    def run(self, area, parts, colors):
-#        part_height = int(area.height / len(colors))
-
-#        # Check one pixel in the middle of each expected color area
-#        for i in range(len(colors)):
-#            x = area.x + int(area.width / 2)
-#            y = int(part_height / 2) + i * part_height
-
-#            exp_color = colors[i]
-#            act_color = self._render_color(parts, x, y)#
-
-#            self.case.assertEqual(act_color, exp_color)
-
-#    # Returns the color at a given pixel position
-#    def _render_color(self, parts, x, y):
-#        ret = None
-        
-#        for part in parts:
-#            if (part.x <= x and part.x + part.width >= x and
-#                part.y <= y and part.y + part.height >= y):
-                
-#                ret = part.fill
-
-#        return ret
-
-
-###############################################################################################
 
 
 class TestDisplayLabel(unittest.TestCase):

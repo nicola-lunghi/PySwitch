@@ -13,13 +13,11 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-    "adafruit_midi.start": MockAdafruitMIDIStart(),
-    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     from adafruit_midi.control_change import ControlChange
-    from lib.pyswitch.controller.Client import Client, ClientParameterMapping, ClientRequest
+    from lib.pyswitch.controller.Client import Client
 
     from.mocks_appl import *
 
@@ -33,15 +31,13 @@ class TestClient(unittest.TestCase):
 
     def test_set(self):
         midi = MockAdafruitMIDI.MIDI()
-        vp = MockValueProvider()
-
+        
         client = Client(
             midi = midi,
-            config = {},
-            value_provider = vp
+            config = {}
         )
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -60,10 +56,7 @@ class TestClient(unittest.TestCase):
 
         self.assertEqual(len(midi.messages_sent), 1)
         self.assertEqual(midi.messages_sent[0], mapping_1.set)
-        self.assertEqual(vp.set_value_calls, [{
-            "mapping": mapping_1,
-            "value": 33
-        }])
+        self.assertEqual(mapping_1.set_value_calls, [33])
 
 
 ##############################################################################################
@@ -71,15 +64,13 @@ class TestClient(unittest.TestCase):
 
     def test_set_not_settable(self):        
         midi = MockAdafruitMIDI.MIDI()
-        vp = MockValueProvider()
 
         client = Client(
             midi = midi,
             config = {},
-            value_provider = vp
         )
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
@@ -99,15 +90,13 @@ class TestClient(unittest.TestCase):
 
     def test_request(self):        
         midi = MockAdafruitMIDI.MIDI()
-        vp = MockValueProvider()
 
         client = Client(
             midi = midi,
             config = {},
-            value_provider = vp
         )
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
@@ -133,23 +122,6 @@ class TestClient(unittest.TestCase):
         client.receive(ControlChange(3, 4))
         self.assertEqual(listener.parameter_changed_calls, [])
 
-        # Receive wrong message
-        answer_msg = SystemExclusive(
-            manufacturer_id = [0x00, 0x10, 0x20],
-            data = [0x00, 0x00, 0x07, 0x45]
-        )
-
-        vp.outputs_parse = [
-            {
-                "mapping": mapping_1,
-                "result": False
-                #"value": 0
-            }
-        ]
-
-        client.receive(answer_msg)
-        self.assertEqual(listener.parameter_changed_calls, [])
-
         # Receive correct message
         req = client.requests[0]
         answer_msg = SystemExclusive(
@@ -157,10 +129,9 @@ class TestClient(unittest.TestCase):
             data = [0x00, 0x00, 0x07, 0x45]
         )
 
-        vp.outputs_parse = [
+        mapping_1.outputs_parse = [
             {
-                "mapping": mapping_1,
-                "result": True,
+                "message": answer_msg,
                 "value": 34
             }
         ]
@@ -177,17 +148,15 @@ class TestClient(unittest.TestCase):
 
     def test_request_endless(self):        
         midi = MockAdafruitMIDI.MIDI()
-        vp = MockValueProvider()
 
         client = Client(
             midi = midi,
             config = {
                 "maxRequestLifetimeMillis": 0
-            },
-            value_provider = vp
+            }
         )
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             response = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x00, 0x00, 0x09]
@@ -203,10 +172,9 @@ class TestClient(unittest.TestCase):
             data = [0x00, 0x00, 0x07, 0x45]
         )
         
-        vp.outputs_parse = [
+        mapping_1.outputs_parse = [
             {
-                "mapping": mapping_1,
-                "result": True,
+                "message": answer_msg,
                 "value": 34
             }
         ]
@@ -226,15 +194,13 @@ class TestClient(unittest.TestCase):
 
     def test_request_terminate(self):        
         midi = MockAdafruitMIDI.MIDI()
-        vp = MockValueProvider()
 
         client = Client(
             midi = midi,
-            config = {},
-            value_provider = vp
+            config = {}
         )
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
@@ -261,10 +227,9 @@ class TestClient(unittest.TestCase):
             data = [0x00, 0x00, 0x07, 0x45]
         )
 
-        vp.outputs_parse = [
+        mapping_1.outputs_parse = [
             {
-                "mapping": mapping_1,
-                "result": True,
+                "message": answer_msg,
                 "value": 34
             }
         ]
@@ -280,7 +245,7 @@ class TestClient(unittest.TestCase):
 
 
     def test_mapping_eq_response(self):
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
@@ -291,7 +256,7 @@ class TestClient(unittest.TestCase):
             )
         )
 
-        mapping_2 = ClientParameterMapping(
+        mapping_2 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x10]
@@ -321,7 +286,7 @@ class TestClient(unittest.TestCase):
 
 
     def test_mapping_eq_response_none(self):
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
@@ -332,7 +297,7 @@ class TestClient(unittest.TestCase):
             )
         )
 
-        mapping_2 = ClientParameterMapping(
+        mapping_2 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
@@ -346,14 +311,14 @@ class TestClient(unittest.TestCase):
 
 
     def test_mapping_eq_request(self):
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
             )
         )
 
-        mapping_2 = ClientParameterMapping(
+        mapping_2 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
@@ -379,13 +344,13 @@ class TestClient(unittest.TestCase):
 
 
     def test_mapping_eq_request_none(self):
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
             )        )
 
-        mapping_2 = ClientParameterMapping()
+        mapping_2 = MockParameterMapping()
 
         self.assertTrue(mapping_1 != mapping_2)
 
@@ -394,14 +359,14 @@ class TestClient(unittest.TestCase):
 
 
     def test_mapping_eq_set(self):
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
             )
         )
 
-        mapping_2 = ClientParameterMapping(
+        mapping_2 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
@@ -418,14 +383,14 @@ class TestClient(unittest.TestCase):
 
 
     def test_mapping_eq_set_none(self):
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x09]
             )
         )
 
-        mapping_2 = ClientParameterMapping()
+        mapping_2 = MockParameterMapping()
 
         self.assertTrue(mapping_1 != mapping_2)
 
@@ -434,59 +399,8 @@ class TestClient(unittest.TestCase):
 
 
     def test_mapping_eq_all_none(self):
-        mapping_1 = ClientParameterMapping()
-        mapping_2 = ClientParameterMapping()
+        mapping_1 = MockParameterMapping()
+        mapping_2 = MockParameterMapping()
 
         self.assertTrue(mapping_1 != mapping_2)
 
-
-##############################################################################################
-
-
-    #def test_request_invalid_mappings(self):
-        #with self.assertRaises(Exception):           
-        #    ClientRequest(
-        #        MockClient(),
-        #        ClientParameterMapping(),
-        #        400
-        #    )
-
-        #with self.assertRaises(Exception):           
-        #    ClientRequest(
-        #        MockClient(),
-        #        ClientParameterMapping(
-        #            request = SystemExclusive(
-        #                manufacturer_id = [0x00, 0x10, 0x20],
-        #                data = [0x05, 0x07, 0x09]
-        #            )
-        #        ),
-        #        400
-        #    )
-
-        #with self.assertRaises(Exception):           
-        #    ClientRequest(
-        #        MockClient(),
-        #        ClientParameterMapping(
-        #            request = ControlChange(2, 3),
-        #            response = SystemExclusive(
-        #                manufacturer_id = [0x00, 0x10, 0x20],
-        #                data = [0x05, 0x07, 0x09]
-        #            )
-        #        ),
-        #        400
-        #    )
-
-        #with self.assertRaises(Exception):           
-        #    ClientRequest(
-        #        MockClient(),
-        #        ClientParameterMapping(
-        #            request = SystemExclusive(
-        #                manufacturer_id = [0x00, 0x10, 0x20],
-        #                data = [0x05, 0x07, 0x09]
-        #            ),
-        #            response = ControlChange(2, 3)
-        #        ),
-        #        400
-        #    )
-
-        

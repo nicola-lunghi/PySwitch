@@ -16,8 +16,6 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-    "adafruit_midi.start": MockAdafruitMIDIStart(),
-    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     from .mocks_misc import MockMisc
@@ -67,9 +65,6 @@ class TestControllerUiSetup(unittest.TestCase):
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": MockValueProvider()
-            },
             midi = MockMidiController(),
             switches = [
                 {
@@ -110,9 +105,6 @@ class TestControllerUiSetup(unittest.TestCase):
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": MockValueProvider()
-            },
             midi = MockMidiController(),
             config = {
                 "memoryWarnLimitBytes": 1024
@@ -137,9 +129,6 @@ class TestControllerUiSetup(unittest.TestCase):
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
-            communication = {
-                "valueProvider": MockValueProvider()
-            },
             midi = MockMidiController(),
             config = {
                 "memoryWarnLimitBytes": 1024

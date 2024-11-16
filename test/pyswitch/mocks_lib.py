@@ -63,9 +63,9 @@ class MockAdafruitMIDISystemExclusive:
             self.manufacturer_id = manufacturer_id
             self.data = data
 
-class MockAdafruitMIDIStart:
-    class Start:
-        pass
+#class MockAdafruitMIDIStart:
+#    class Start:
+#        pass
     
 
 class MockAdafruitMIDIMessage:

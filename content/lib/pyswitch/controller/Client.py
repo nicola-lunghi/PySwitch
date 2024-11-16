@@ -1,49 +1,84 @@
 from ..misc import EventEmitter, PeriodCounter, Updateable, get_option, compare_midi_messages, stringify_midi_message, do_print
 
-# Base class for listeners to client parameter changes
-#class ClientRequestListener:
-#
-#    # Called by the Client class when a parameter request has been answered.
-#    # The value received is already set on the mapping.
-#    def parameter_changed(self, mapping):
-#        pass
-#
-#    # Called when the client is offline (requests took too long)
-#    def request_terminated(self, mapping):
-#        pass
+
+# Midi mapping for a client command. Contains commands to set or request a parameter
+class ClientParameterMapping:
+    # Takes MIDI messages as argument (ControlChange or SystemExclusive)
+    def __init__(self, name = "", set = None, request = None, response = None, value = None):
+        self.name = name          # Mapping name (used for debug output only)
+        self.set = set            # MIDI Message to set the parameter
+        self.request = request    # MIDI Message to request the value
+        self.response = response  # Response template MIDI message for parsing the received answer        
+        self.value = value        # Value of the parameter (buffer). After receiving an answer, the value 
+                                  # is buffered here.                                  
+
+    def __eq__(self, other):
+        if not other:
+            return False
+        
+        if self.response != None:
+            if other.response != None:
+                return self._compare(self.response, other.response)
+            else:
+                return False
+            
+        elif self.set != None:
+            if other.set != None:
+                return self._compare(self.set, other.set)
+            else:
+                return False
+            
+        elif self.request != None:
+            if other.request != None:
+                return self._compare(self.request, other.request)
+            else:
+                return False
+            
+        return False
+
+    # Compare message or list of messages
+    def _compare(self, a, b):
+        if isinstance(a, list):
+            if isinstance(b, list):
+                if len(a) != len(b):
+                    return False
+                
+                for i in range(len(a)):
+                    if not compare_midi_messages(a[i], b[i]):
+                        return False
+                return True
+            else:
+                return False
+        else:
+            if not isinstance(b, list):
+                return compare_midi_messages(a, b)
+            else:
+                return False
+            
+    # Must parse the incoming MIDI message and set its value on the mapping.
+    # If the response template does not match, must return False, and
+    # vice versa must return True to notify the listeners of a value change.
+    def parse(self, midi_message):   # pragma: no cover
+        return False    
+    
+    # Must set the passed value on the SET message of the mapping.
+    def set_value(self, value):      # pragma: no cover
+        pass
 
 
-######################################################################################################################
-
-
-# Must implement preparation of MIDI messages for sending as well as parsing the received ones.
-#class ClientValueProvider:
-#    # Must parse the incoming MIDI message and set it on the passed mapping.
-#    # If the response template does not match, must return False.
-#    # Must return True to notify the listeners of a value change.
-#    def parse(self, mapping, midi_message):
-#        return False
-#
-#    # Must set the passed value on the SET message of the mapping.
-#    def set_value(self, mapping, value):
-#        pass
-
-
-######################################################################################################################
+############################################################################################################
 
 
 # Implements all MIDI communication to and from the client device
 class Client: #(ClientRequestListener):
 
-    def __init__(self, midi, config, value_provider):
+    def __init__(self, midi, config):
         self.midi = midi
         
         self.debug_unparsed_messages = get_option(config, "debugUnparsedMessages", False)
         self.debug_exclude_types = get_option(config, "excludeMessageTypes", None)
         self._debug_mapping = get_option(config, "debugMapping", None)
         
-        self.value_provider = value_provider
-
         # List of ClientRequest objects    
         self._requests = []
 
@@ -67,7 +102,7 @@ class Client: #(ClientRequestListener):
         if not mapping.set:
             raise Exception() #"No SET message prepared for this MIDI mapping")
         
-        self.value_provider.set_value(mapping, value)
+        mapping.set_value(value)
                 
         self.midi.send(mapping.set)
 
@@ -170,46 +205,6 @@ class Client: #(ClientRequestListener):
 #######################################################################################################################
 
 
-# Midi mapping for a client command. Contains commands to set or request a parameter
-class ClientParameterMapping:
-    # Takes MIDI messages as argument (ControlChange or SystemExclusive)
-    def __init__(self, name = "", set = None, request = None, response = None, type = None, value = None):
-        self.name = name          # Mapping name (used for debug output only)
-        self.set = set            # MIDI Message to set the parameter
-        self.request = request    # MIDI Message to request the value
-        self.response = response  # Response template MIDI message for parsing the received answer        
-        self.type = type          # Type of mapping
-        self.value = value        # Value of the parameter (buffer). After receiving an answer, the value 
-                                  # is buffered here.                                  
-
-    def __eq__(self, other):
-        if not other:
-            return False
-        
-        if self.response != None:
-            if other.response != None:
-                return compare_midi_messages(self.response, other.response)
-            else:
-                return False
-            
-        elif self.set != None:
-            if other.set != None:
-                return compare_midi_messages(self.set, other.set)
-            else:
-                return False
-            
-        elif self.request != None:
-            if other.request != None:
-                return compare_midi_messages(self.request, other.request)
-            else:
-                return False
-            
-        return False    
-
-
-############################################################################################################
-
-
 # Model for a request for a value
 class ClientRequest(EventEmitter):
 
@@ -267,7 +262,7 @@ class ClientRequest(EventEmitter):
         if not isinstance(self.mapping.response, midi_message.__class__):
             return False
 
-        if not self.client.value_provider.parse(self.mapping, midi_message):
+        if not self.mapping.parse(midi_message):
             return False
         
         if self.client._debug_mapping == self.mapping:    # pragma: no cover
@@ -289,6 +284,22 @@ class ClientRequest(EventEmitter):
     def notify_terminated(self):
         for listener in self.listeners:
             listener.request_terminated(self.mapping)
+
+
+####################################################################################################################
+
+
+# Base class for listeners to client parameter changes
+#class ClientRequestListener:
+#
+#    # Called by the Client class when a parameter request has been answered.
+#    # The value received is already set on the mapping.
+#    def parameter_changed(self, mapping):
+#        pass
+#
+#    # Called when the client is offline (requests took too long)
+#    def request_terminated(self, mapping):
+#        pass
 
 
 ####################################################################################################################
@@ -329,8 +340,8 @@ class ClientRequest(EventEmitter):
 
 class BidirectionalClient(Client, Updateable):
 
-    def __init__(self, midi, config, value_provider, protocol):
-        Client.__init__(self, midi, config, value_provider)
+    def __init__(self, midi, config, protocol):
+        Client.__init__(self, midi, config)
 
         self.protocol = protocol
         self.protocol.debug = get_option(config, "debugBidirectionalProtocol")
@@ -339,9 +350,9 @@ class BidirectionalClient(Client, Updateable):
     # Register the mapping and listener in advance (only plays a role for bidirectional parameters)
     def register(self, mapping, listener):
         if self.protocol.is_bidirectional(mapping):
-            Client.register(self, self._strip_request_message(mapping), listener)
-        else:
-            Client.register(self, mapping, listener)
+            mapping.request = None
+    
+        Client.register(self, mapping, listener)
         
     # Receive messages (also passes messages to the protocol)
     def receive(self, midi_message):
@@ -389,12 +400,3 @@ class BidirectionalClient(Client, Updateable):
             if self.protocol.is_bidirectional(r.mapping):
                 r.notify_terminated()
         
-    # Returns a (shallow) copy of the mapping with no request/response and value. Use this
-    # if you have performance issues with too much requests.
-    def _strip_request_message(self, mapping):
-        return ClientParameterMapping(
-            name = mapping.name,
-            set = mapping.set,
-            response = mapping.response,
-            type = mapping.type
-        )

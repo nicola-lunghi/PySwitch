@@ -15,8 +15,6 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-    "adafruit_midi.start": MockAdafruitMIDIStart(),
-    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     #from adafruit_midi.system_exclusive import SystemExclusive
@@ -25,7 +23,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.ui.elements import BidirectionalProtocolState
     from lib.pyswitch.controller.Client import BidirectionalClient
     
-    from .mocks_appl import MockBidirectionalProtocol, MockMidiController, MockValueProvider, MockClient
+    from .mocks_appl import MockBidirectionalProtocol, MockMidiController, MockClient
     from .mocks_ui import MockDisplaySplash
     
 
@@ -49,7 +47,6 @@ class TestProtocolState(unittest.TestCase):
             client = BidirectionalClient(
                 midi = MockMidiController(), 
                 config = {}, 
-                value_provider = MockValueProvider(), 
                 protocol = protocol
             )
         )

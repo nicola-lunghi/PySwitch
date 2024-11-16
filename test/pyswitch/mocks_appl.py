@@ -1,6 +1,7 @@
 from lib.pyswitch.controller.actions.Action import Action
 from lib.pyswitch.controller.actions.actions import PushButtonAction
 from lib.pyswitch.controller.Controller import Controller
+from lib.pyswitch.controller.Client import ClientParameterMapping
 from lib.pyswitch.controller.ConditionTree import Condition
 
 from .mocks_lib import *
@@ -19,10 +20,10 @@ class SceneStep:
 
 
 class MockController(Controller):
-    def __init__(self, led_driver, communication, midi, config = {}, switches = [],  ui = None, period_counter = None):
+    def __init__(self, led_driver, midi, protocol = None, config = {}, switches = [],  ui = None, period_counter = None):
         super().__init__(
             led_driver = led_driver, 
-            communication = communication, 
+            protocol = protocol,
             midi = midi, 
             config = config, 
             switches = switches, 
@@ -139,38 +140,26 @@ class MockSwitch:
 ##################################################################################################################################
 
 
-class MockValueProvider:
-    def __init__(self):
-        self.outputs_parse = []
-        self.parse_calls = []
+class MockParameterMapping(ClientParameterMapping):
+    def __init__(self, name = "", set = None, request = None, response = None, value = None):
+        super().__init__(name = name, set = set, request = request, response = response, value = value)
 
+        self.outputs_parse = []
         self.set_value_calls = []
 
-    def parse(self, mapping, midi_message):        
+    def parse(self, midi_message):
         for o in self.outputs_parse:
-            if not "mapping" in o or o["mapping"] != mapping:
+            if midi_message != o["message"]:
                 continue
 
-            if "value" in o:                   
-                mapping.value = o["value"]
-
-            ret = o["result"] if "result" in o else False
-
-            self.parse_calls.append({
-                "mapping": mapping,
-                "message": midi_message,
-                "return": ret
-            })
-
-            return ret
+            if "value" in o:
+                self.value = o["value"]
         
+            return True
         return False
     
-    def set_value(self, mapping, value):
-        self.set_value_calls.append({
-            "mapping": mapping,
-            "value": value
-        })
+    def set_value(self, value):
+        self.set_value_calls.append(value)
 
 
 ##################################################################################################################################

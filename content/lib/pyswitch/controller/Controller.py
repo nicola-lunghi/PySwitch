@@ -34,7 +34,7 @@ class Controller(Updater): #ClientRequestListener
     #                },
     #                ...
     #           ]
-    def __init__(self, led_driver, communication, midi, config = {}, switches = [], ui = None, period_counter = None):
+    def __init__(self, led_driver, midi, protocol = None, config = {}, switches = [], ui = None, period_counter = None):
         Updater.__init__(self)
 
         self.running = False
@@ -75,16 +75,12 @@ class Controller(Updater): #ClientRequestListener
         if not self.period:
             self.period = PeriodCounter(update_interval)        
 
-        # Client adapter to send and receive parameters
-        value_provider = communication["valueProvider"]
-
         # Bidirectional MIDI Protocol (optional)
-        protocol = get_option(communication, "protocol", None)
         if protocol:
-            self.client = BidirectionalClient(self._midi, config, value_provider, protocol)
+            self.client = BidirectionalClient(self._midi, config, protocol)
             self.add_updateable(self.client)
         else:
-            self.client = Client(self._midi, config, value_provider)
+            self.client = Client(self._midi, config)
 
         # Set up the screen elements
         if self.ui:

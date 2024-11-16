@@ -15,8 +15,6 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-    "adafruit_midi.start": MockAdafruitMIDIStart(),
-    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
     #from lib.pyswitch.controller.Controller import Controller
@@ -25,7 +23,6 @@ with patch.dict(sys.modules, {
     from adafruit_midi.system_exclusive import SystemExclusive
 
     from lib.pyswitch.controller.actions.actions import EffectEnableAction
-    from lib.pyswitch.controller.Client import ClientParameterMapping
     from lib.pyswitch.misc import compare_midi_messages
 
 
@@ -35,7 +32,7 @@ class TestActionEffectEnable(unittest.TestCase):
     def test_requests(self):
         switch_1 = MockSwitch()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -50,7 +47,7 @@ class TestActionEffectEnable(unittest.TestCase):
             )
         )
 
-        mapping_type_1 = ClientParameterMapping(
+        mapping_type_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x10]
@@ -74,16 +71,10 @@ class TestActionEffectEnable(unittest.TestCase):
         
         period = MockPeriodCounter()
 
-        vp = MockValueProvider()
-        comm = {
-            "valueProvider": vp
-        }
-        
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            communication = comm,
             midi = MockMidiController(),
             switches = [
                 {
@@ -125,10 +116,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 0
                 }
             ]
@@ -138,10 +128,6 @@ class TestActionEffectEnable(unittest.TestCase):
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
 
-            self.assertEqual(len(vp.parse_calls), 1)
-
-            self.assertEqual(vp.parse_calls[0]["mapping"], mapping_type_1)
-            self.assertTrue(compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 0)
             self.assertEqual(action_1._effect_category, 0)
             self.assertEqual(action_1.state, False)
@@ -157,10 +143,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_param
             ]
-            vp.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_param,
                     "value": 1
                 }
             ]
@@ -170,12 +155,7 @@ class TestActionEffectEnable(unittest.TestCase):
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
             
-            self.assertEqual(len(vp.parse_calls), 2)
-
-            self.assertEqual(vp.parse_calls[1]["mapping"], mapping_1)
-            self.assertTrue(compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
             self.assertEqual(mapping_1.value, 1)
-
             self.assertEqual(action_1.state, True)
 
             self.assertEqual(appl.switches[0].color, (0, 0, 0))
@@ -190,19 +170,14 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 1
                 }
             ]
-
+            
         def eval4():
-            self.assertEqual(len(vp.parse_calls), 3)
-
-            self.assertEqual(vp.parse_calls[2]["mapping"], mapping_type_1)
-            self.assertTrue(compare_midi_messages(vp.parse_calls[2]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 1)
             self.assertEqual(action_1._effect_category, 10)
             self.assertEqual(action_1.state, True)
@@ -219,10 +194,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 0
                 }
             ]
@@ -272,31 +246,28 @@ class TestActionEffectEnable(unittest.TestCase):
 
 
     def test_requests_non_receivable_fxtype_mapping(self):
-        with self.assertRaises(Exception):   
-            appl = MockController(
-                led_driver = MockNeoPixelDriver(),
-                communication = {
-                    "valueProvider": MockValueProvider()
-                },
-                midi = MockMidiController(),
-                switches = [
-                    {
-                        "assignment": {
-                            "model": MockSwitch()
-                        },
-                        "actions": [
-                            EffectEnableAction({
-                                "mode": PushButtonAction.MOMENTARY,
-                                "mapping": ClientParameterMapping(),
-                                "mappingType": ClientParameterMapping(),
-                                "categories": MockCategoryProvider(),
-                                "slotInfo": MockSlotInfoProvider()
-                            })                        
-                        ]
-                    }
-                ]
-            )
+        appl = MockController(
+            led_driver = MockNeoPixelDriver(),
+            midi = MockMidiController(),
+            switches = [
+                {
+                    "assignment": {
+                        "model": MockSwitch()
+                    },
+                    "actions": [
+                        EffectEnableAction({
+                            "mode": PushButtonAction.MOMENTARY,
+                            "mapping": ClientParameterMapping(),
+                            "mappingType": ClientParameterMapping(),
+                            "categories": MockCategoryProvider(),
+                            "slotInfo": MockSlotInfoProvider()
+                        })                        
+                    ]
+                }
+            ]
+        )
 
+        with self.assertRaises(Exception):   
             appl.update()
 
 
@@ -306,7 +277,7 @@ class TestActionEffectEnable(unittest.TestCase):
     def test_requests_with_label(self):
         switch_1 = MockSwitch()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -321,7 +292,7 @@ class TestActionEffectEnable(unittest.TestCase):
             )
         )
 
-        mapping_type_1 = ClientParameterMapping(
+        mapping_type_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x10]
@@ -344,16 +315,10 @@ class TestActionEffectEnable(unittest.TestCase):
         })
         
         period = MockPeriodCounter()
-
-        vp = MockValueProvider()
-        comm = {
-            "valueProvider": vp
-        }
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            communication = comm,
             midi = MockMidiController(),
             switches = [
                 {
@@ -397,10 +362,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 0
                 }
             ]
@@ -410,10 +374,6 @@ class TestActionEffectEnable(unittest.TestCase):
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
 
-            self.assertEqual(len(vp.parse_calls), 1)
-
-            self.assertEqual(vp.parse_calls[0]["mapping"], mapping_type_1)
-            self.assertTrue(compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 0)
             self.assertEqual(action_1._effect_category, 0)
 
@@ -428,10 +388,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_param
             ]
-            vp.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_param,
                     "value": 1
                 }
             ]
@@ -441,10 +400,6 @@ class TestActionEffectEnable(unittest.TestCase):
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
             
-            self.assertEqual(len(vp.parse_calls), 2)
-
-            self.assertEqual(vp.parse_calls[1]["mapping"], mapping_1)
-            self.assertTrue(compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
             self.assertEqual(mapping_1.value, 1)
 
             self.assertEqual(appl.switches[0].color, (0, 0, 0))
@@ -459,19 +414,14 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 1
                 }
             ]
 
         def eval4():
-            self.assertEqual(len(vp.parse_calls), 3)
-
-            self.assertEqual(vp.parse_calls[2]["mapping"], mapping_type_1)
-            self.assertTrue(compare_midi_messages(vp.parse_calls[2]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 1)
             self.assertEqual(action_1._effect_category, 10)
 
@@ -490,10 +440,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 2
                 }
             ]
@@ -516,10 +465,10 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_param
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = []
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_param,
                     "value": 0
                 }
             ]
@@ -583,7 +532,7 @@ class TestActionEffectEnable(unittest.TestCase):
     def test_show_effect_slot_names(self):
         switch_1 = MockSwitch()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -598,7 +547,7 @@ class TestActionEffectEnable(unittest.TestCase):
             )
         )
 
-        mapping_type_1 = ClientParameterMapping(
+        mapping_type_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x10]
@@ -623,16 +572,10 @@ class TestActionEffectEnable(unittest.TestCase):
         })
         
         period = MockPeriodCounter()
-
-        vp = MockValueProvider()
-        comm = {
-            "valueProvider": vp
-        }
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            communication = comm,
             midi = MockMidiController(),
             switches = [
                 {
@@ -679,10 +622,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 0
                 }
             ]
@@ -695,10 +637,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_param
             ]
-            vp.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_param,
                     "value": 1
                 }
             ]
@@ -712,10 +653,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 1
                 }
             ]
@@ -760,7 +700,7 @@ class TestActionEffectEnable(unittest.TestCase):
     def test_action_disabled(self):
         switch_1 = MockSwitch()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -775,7 +715,7 @@ class TestActionEffectEnable(unittest.TestCase):
             )
         )
 
-        mapping_type_1 = ClientParameterMapping(
+        mapping_type_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x10]
@@ -798,16 +738,10 @@ class TestActionEffectEnable(unittest.TestCase):
         })
         
         period = MockPeriodCounter()
-
-        vp = MockValueProvider()
-        comm = {
-            "valueProvider": vp
-        }
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            communication = comm,
             midi = MockMidiController(),
             switches = [
                 {
@@ -844,10 +778,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 1
                 }
             ]
@@ -858,7 +791,6 @@ class TestActionEffectEnable(unittest.TestCase):
             self.assertEqual(len(appl._midi.next_receive_messages), 0)
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertEqual(len(vp.parse_calls), 1)
             self.assertEqual(action_1._effect_category, 10)
             
             return False
@@ -886,7 +818,7 @@ class TestActionEffectEnable(unittest.TestCase):
     def test_request_timeout(self):
         switch_1 = MockSwitch()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -901,7 +833,7 @@ class TestActionEffectEnable(unittest.TestCase):
             )
         )
 
-        mapping_type_1 = ClientParameterMapping(
+        mapping_type_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x10]
@@ -924,16 +856,10 @@ class TestActionEffectEnable(unittest.TestCase):
         })
         
         period = MockPeriodCounter()
-
-        vp = MockValueProvider()
-        comm = {
-            "valueProvider": vp
-        }
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            communication = comm,
             midi = MockMidiController(),
             switches = [
                 {
@@ -1001,7 +927,7 @@ class TestActionEffectEnable(unittest.TestCase):
     def test_reset(self):
         switch_1 = MockSwitch()
 
-        mapping_1 = ClientParameterMapping(
+        mapping_1 = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x01, 0x02, 0x03, 0x04]
@@ -1016,7 +942,7 @@ class TestActionEffectEnable(unittest.TestCase):
             )
         )
 
-        mapping_type_1 = ClientParameterMapping(
+        mapping_type_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x05, 0x07, 0x10]
@@ -1039,16 +965,10 @@ class TestActionEffectEnable(unittest.TestCase):
         })
         
         period = MockPeriodCounter()
-
-        vp = MockValueProvider()
-        comm = {
-            "valueProvider": vp
-        }
         led_driver = MockNeoPixelDriver()
 
         appl = MockController(
             led_driver = led_driver,
-            communication = comm,
             midi = MockMidiController(),
             switches = [
                 {
@@ -1090,10 +1010,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 0
                 }
             ]
@@ -1103,10 +1022,6 @@ class TestActionEffectEnable(unittest.TestCase):
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
 
-            self.assertEqual(len(vp.parse_calls), 1)
-
-            self.assertEqual(vp.parse_calls[0]["mapping"], mapping_type_1)
-            self.assertTrue(compare_midi_messages(vp.parse_calls[0]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 0)
             self.assertEqual(action_1._effect_category, 0)
 
@@ -1121,10 +1036,9 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_param
             ]
-            vp.outputs_parse = [
+            mapping_1.outputs_parse = [
                 {
-                    "mapping": mapping_1,
-                    "result": True,
+                    "message": answer_msg_param,
                     "value": 1
                 }
             ]
@@ -1134,10 +1048,6 @@ class TestActionEffectEnable(unittest.TestCase):
 
             self.assertEqual(len(appl._midi.messages_sent), 2)
             
-            self.assertEqual(len(vp.parse_calls), 2)
-
-            self.assertEqual(vp.parse_calls[1]["mapping"], mapping_1)
-            self.assertTrue(compare_midi_messages(vp.parse_calls[1]["message"], answer_msg_param))
             self.assertEqual(mapping_1.value, 1)
 
             self.assertEqual(action_1.state, True)
@@ -1154,19 +1064,14 @@ class TestActionEffectEnable(unittest.TestCase):
             appl._midi.next_receive_messages = [
                 answer_msg_type
             ]
-            vp.outputs_parse = [
+            mapping_type_1.outputs_parse = [
                 {
-                    "mapping": mapping_type_1,
-                    "result": True,
+                    "message": answer_msg_type,
                     "value": 1
                 }
             ]
 
         def eval4():
-            self.assertEqual(len(vp.parse_calls), 3)
-
-            self.assertEqual(vp.parse_calls[2]["mapping"], mapping_type_1)
-            self.assertTrue(compare_midi_messages(vp.parse_calls[2]["message"], answer_msg_type))
             self.assertEqual(mapping_type_1.value, 1)
             self.assertEqual(action_1._effect_category, 10)
             self.assertEqual(action_1.state, True)
