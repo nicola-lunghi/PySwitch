@@ -1,7 +1,7 @@
 # PySwitch v2.2.0
 - RIG_VOLUME_BOOST now remembers the current rig volume before turning the boost on, and restores this volume when disabled again.
 - Tempo-synced blinking LEDs (all examples using TAP_TEMPO now include this feature)
-- Callback-based display/LED update in ParameterAction
+- Bank colors for RIG_SELECT action (added possibility of Callback-based display/LED update in ParameterAction, enabling user-defined callbacks, too)
 - Added some Mappings
 - Mappings now can contain multiple messages, ParameterAction now cannot handle arrays anymore
 - Changes to config files:
