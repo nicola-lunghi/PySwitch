@@ -107,8 +107,12 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
+            KemperActionDefinitions.RIG_SELECT(
+                #slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
+                rig = 1,
+                bank = 2,
+                rig_off = 3,
+                bank_off = 3,
                 display = {
                     "id": DISPLAY_ID_FOOTER,
                     "index": 1,

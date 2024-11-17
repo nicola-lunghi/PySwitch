@@ -15,8 +15,14 @@ class Action(Updateable):
     #                              place is used which takes up the whole area space. 
     #          "layout":           Layout definition for the action label (mandatory)
     #      },
+    #
     #      "enabled": True,        Optional bool parameter to disable/enable the action. Mostly used internally only. Defaults to True 
     #                              when not specified.
+    # 
+    #      "color":                Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
+    #                              with one color for each LED segment of the switch (if more actions share the LEDs, only the first
+    #                              color is used).
+    #
     #      "id":                   Optional ID for debugging. If not set, an automatic ID is generated.
     # }
     def __init__(self, config = {}):

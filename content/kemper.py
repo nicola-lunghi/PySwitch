@@ -3,6 +3,7 @@ from micropython import const
 
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
+from adafruit_midi.program_change import ProgramChange
 
 from pyswitch.misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print
 from pyswitch.controller.actions.actions import ParameterAction, EffectEnableAction, ResetDisplaysAction, PushButtonAction
@@ -18,6 +19,9 @@ NRPN_PRODUCT_TYPE_PROFILER_PLAYER = const(0x02)              # Kemper Profiler P
 # This defines which type of device to control
 NRPN_PRODUCT_TYPE = NRPN_PRODUCT_TYPE_PROFILER_PLAYER
 
+# Defines how many rigs one bank has
+NUM_RIGS_PER_BANK = 5
+
 ####################################################################################################################
 
 # ControlChange Addresses
@@ -30,6 +34,7 @@ CC_TAP_TEMPO = const(30)
 CC_ROTARY_SPEED = const(33)     # 1 = Fast, 0 = Slow
 CC_MORPH_PEDAL = const(11)
 CC_MORPH_BUTTON = const(80)     # Also includes ride/fall times
+CC_RIG_INDEX_PART_1 = const(32) # The second part will be sent as program change.
 
 CC_EFFECT_BUTTON_I = const(75)  # II to IV are consecutive from this: 76, 77, 78
 
@@ -221,7 +226,7 @@ class KemperActionDefinitions:
             "useSwitchLeds": use_leds
         })
 
-    # Tap tempo (only control, no tempo feedback)
+    # Tap tempo (with blinking LED display)
     @staticmethod
     def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = True):
         return ParameterAction({
@@ -404,18 +409,13 @@ class KemperActionDefinitions:
     # the current bank. Rigs are indexed starting from one, range: [1..5].
     # Optionally, banks can be switched too in the same logic using bank and bank_off.
     @staticmethod
-    def RIG_SELECT(rig, rig_off = None, bank = None, bank_off = None, display = None, color = Colors.YELLOW, id = False, use_leds = True):
-        # Texts always show the rig to be selected when the switch is pushed the next time
-        text_rig_off = str(rig)
-        text_rig_on = text_rig_off
-
-        mapping_rig_select = KemperMappings.RIG_SELECT(rig - 1)
-
+    def RIG_SELECT(rig, rig_off = None, bank = None, bank_off = None, display = None, color = Colors.YELLOW, id = False, use_leds = True, update_displays = None):
         # Mappings and values: Start with a configuration for rig_off == None and bank(_off) = None.
-        mapping = mapping_rig_select
+        mapping = KemperMappings.RIG_SELECT(rig - 1)
         mapping_disable = mapping
+
         value_enable = NRPN_PARAMETER_ON
-        value_disable = NRPN_PARAMETER_ON
+        value_disable = value_enable
 
         # Bank for main rig
         if bank != None:
@@ -426,15 +426,10 @@ class KemperActionDefinitions:
             value_enable = [bank - 1, 1]
             value_disable = [bank - 1, 1]
             
-            text_rig_off = str(bank) + "-" + text_rig_off
-            if rig_off == None:
-                text_rig_on = text_rig_off
-
         # Alternate rig (the rig selected when the switch state is False)
         if rig_off != None:
             # Use a different mapping for disabling
             mapping_disable = KemperMappings.RIG_SELECT(rig_off - 1)
-            text_rig_on = str(rig_off)
 
         # Bank for alternate rig
         if bank_off != None:
@@ -443,8 +438,6 @@ class KemperActionDefinitions:
             
             mapping_disable = KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1)
             value_disable = [bank_off - 1, 1]
-            
-            text_rig_on = str(bank_off) + "-" + text_rig_on
 
         # Finally we can create the action definition ;)
         return ParameterAction({
@@ -452,22 +445,51 @@ class KemperActionDefinitions:
             "mappingDisable": mapping_disable,
             "valueEnable": value_enable,
             "valueDisable": value_disable,
+            "comparisonMode": ParameterAction.NO_STATE_CHANGE,
             "display": display,
-            "text": "Rig " + text_rig_on,
-            "textDisabled": "Rig " + text_rig_off,
             "color": color,
-            "ledBrightness": {
+            "ledBrightness": {                                                  # Only necessary if rig id is still None
                 "on": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF,               # Set equal brightness (we do not need status display here)
                 "off": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
             },
-            "displayDimFactor": {
-                "on": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,              # Set equal dim factor (we do not need status display here)
-                "off": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF
-            },
             "mode": PushButtonAction.LATCH,
             "id": id,
-            "useSwitchLeds": use_leds
+            "useSwitchLeds": use_leds,
+            "updateDisplays": KemperActionDefinitions.update_displays_rig_select if not update_displays else update_displays
         })
+
+    # Bank colors
+    BANK_COLORS = [
+        Colors.BLUE,
+        Colors.YELLOW,
+        Colors.RED,
+        Colors.TURQUOISE,
+        Colors.PURPLE
+    ]
+
+    # Callback for RIG_SELECT
+    @staticmethod
+    def update_displays_rig_select(action, mapping):
+        if mapping.value == None:
+            # Fallback to default behaviour
+            return False
+        
+        # Calculate bank and rig numbers in range [0...]
+        bank = int(mapping.value / NUM_RIGS_PER_BANK)
+        rig = mapping.value % NUM_RIGS_PER_BANK
+
+        # Label text
+        action.label.text = "Rig " + repr(bank) + "-" + repr(rig + 1)
+
+        # Bank color
+        bank_color = KemperActionDefinitions.BANK_COLORS[bank % len(KemperActionDefinitions.BANK_COLORS)]
+        action.label.back_color = bank_color
+
+        action.switch_color = bank_color
+        action.switch_brightness = ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
+
+        # Tell the caller that we handled everything
+        return True
 
 
 ####################################################################################################################
@@ -649,11 +671,23 @@ class KemperParameterMapping(ClientParameterMapping):
     # If the response template does not match, must return False, and
     # vice versa must return True to notify the listeners of a value change.
     def parse(self, midi_message):     
+        result = self.parse_against(midi_message, self.response)
+        if result != None:
+            self.value = result
+            return True
+        
+        return False
+
+    # Parse a message against a response message
+    def parse_against(self, midi_message, response):     
         # SysEx (NRPN) Messages
-        if isinstance(midi_message, SystemExclusive):            
+        if isinstance(midi_message, SystemExclusive):
+            if not isinstance(response, SystemExclusive):
+                return None
+                     
             # Compare manufacturer IDs
-            if midi_message.manufacturer_id != self.response.manufacturer_id:
-                return False
+            if midi_message.manufacturer_id != response.manufacturer_id:
+                return None
             
             # Check if the message belongs to the mapping. The following have to match:
             #   2: function code, 
@@ -663,19 +697,32 @@ class KemperParameterMapping(ClientParameterMapping):
             #
             # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
             # and device ID as for the request, however the device just sends two zeroes)
-            if midi_message.data[2:6] != self.response.data[2:6]:
-                return False
+            if midi_message.data[2:6] != response.data[2:6]:
+                return None
             
             # The values starting from index 6 are the value of the response.
             if self.type == self.PARAMETER_TYPE_STRING:
                 # Take as string
-                self.value = ''.join(chr(int(c)) for c in list(midi_message.data[6:-1]))
+                return ''.join(chr(int(c)) for c in list(midi_message.data[6:-1]))
             else:
                 # Decode 14-bit value to int
-                self.value = midi_message.data[-2] * 128 + midi_message.data[-1]
+                return midi_message.data[-2] * 128 + midi_message.data[-1]
 
-            return True
-        
+        # CC Messages
+        elif isinstance(midi_message, ControlChange):
+            if not isinstance(response, ControlChange):
+                return None
+            
+            if midi_message.control == response.control:
+                return midi_message.value
+
+        # PC Messages
+        elif isinstance(midi_message, ProgramChange):
+            if not isinstance(response, ProgramChange):
+                return None
+            
+            return midi_message.patch
+
         # MIDI Clock (disabled in favor of the custom beat message the kemper sends. See mapping TEMPO_DISPLAY)
         #elif isinstance(midi_message, MidiClockMessage):
         #    self._count_clock += 1
@@ -698,7 +745,7 @@ class KemperParameterMapping(ClientParameterMapping):
 
         #    return True
 
-        return False
+        return None
     
     # Must set the passed value(s) on the SET message(s) of the mapping.
     def set_value(self, value):
@@ -725,6 +772,42 @@ class KemperParameterMapping(ClientParameterMapping):
 
             midi_message.data = bytes(data)
         
+
+####################################################################################################################
+
+
+# Parser for two-part messages: The result value will be 128 * value1 + value2, 
+# notified when the second message arrives.
+class KemperTwoPartParameterMapping(KemperParameterMapping):
+
+    def __init__(self, name = "", set = None, request = None, response = None, value = None, type = 0):
+        super().__init__(name = name, set = set, request = request, response = response, value = value, type = type)
+
+        self._value_1 = None
+    
+    # Must parse the incoming MIDI message and set its value on the mapping.
+    # If the response template does not match, must return False, and
+    # vice versa must return True to notify the listeners of a value change.
+    def parse(self, midi_message): 
+        value_1 = self.parse_against(midi_message, self.response[0])
+        if value_1 != None:
+            self._value_1 = value_1
+            return True
+        
+        value_2 = self.parse_against(midi_message, self.response[1])
+
+        if value_2 != None and self._value_1 != None:
+            self.value = 128 * self._value_1 + value_2
+            self._value_1 = None
+            return True
+        
+        return False
+            
+    # Returns if the mapping has finished receiving a result. Per default,
+    # this returns True which is valid for mappings with one response.
+    def result_finished(self):
+        return (self._value_1 == None)
+
 
 ####################################################################################################################
 
@@ -1055,17 +1138,27 @@ class KemperMappings:
 
     # Selects a rig of the current bank. Rig index must be in range [0..4]
     def RIG_SELECT(rig):
-        return KemperParameterMapping(
+        return KemperTwoPartParameterMapping(
             name = "Rig Select",
             set = ControlChange(
                 CC_RIG_SELECT + rig,
                 0    # Dummy value, will be overridden
-            )
+            ),
+
+            response = [
+                ControlChange(
+                    CC_RIG_INDEX_PART_1,
+                    0    # Dummy value, will be ignored
+                ),
+                ProgramChange(
+                    0    # Dummy value, will be ignored
+                )
+            ]
         )
     
     # Selects a rig of a specific bank. Rig index must be in range [0..4]
     def BANK_AND_RIG_SELECT(rig):
-        return KemperParameterMapping(
+        return KemperTwoPartParameterMapping(
             name = "Rig+Bank",
             set = [
                 ControlChange(
@@ -1075,6 +1168,16 @@ class KemperMappings:
                 ControlChange(
                     CC_RIG_SELECT + rig,
                     0    # Dummy value, will be overridden
+                )
+            ],
+
+            response = [
+                ControlChange(
+                    CC_RIG_INDEX_PART_1,
+                    0    # Dummy value, will be ignored
+                ),
+                ProgramChange(
+                    0    # Dummy value, will be ignored
                 )
             ]
         )
@@ -1114,6 +1217,7 @@ class KemperMappings:
                 ]
             )
         )
+    
 
 ####################################################################################################################
 

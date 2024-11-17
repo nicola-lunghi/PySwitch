@@ -976,6 +976,11 @@ class TestActionParameter(unittest.TestCase):
         self._test_request(ParameterAction.LESS, 1, 2, 2, 2, False)
         self._test_request(ParameterAction.LESS, 1, 2, 3, 2, False)
 
+        self._test_request(ParameterAction.NO_STATE_CHANGE, 1, 2, 0, 2, False)
+        self._test_request(ParameterAction.NO_STATE_CHANGE, 1, 2, 1, 2, False)
+        self._test_request(ParameterAction.NO_STATE_CHANGE, 1, 2, 2, 2, False)
+        self._test_request(ParameterAction.NO_STATE_CHANGE, 1, 2, 3, 2, False)
+
         with self.assertRaises(Exception):
             self._test_request("invalid", 0, 1, 0, 1)
 

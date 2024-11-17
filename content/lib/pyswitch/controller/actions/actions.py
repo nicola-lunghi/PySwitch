@@ -308,13 +308,15 @@ class HoldAction(Action):
 class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
     # Comparison modes (for the valueEnable value when requesting a value)
-    EQUAL = const(0)            # Enable when exactly the valueEnable value comes in
+    EQUAL = const(0)                 # Enable when exactly the valueEnable value comes in
     
-    GREATER = const(10)         # Enable when a value greater than valueEnable comes in
-    GREATER_EQUAL = const(20)   # Enable when the valueEnable value comes in, or anything greater
+    GREATER = const(10)              # Enable when a value greater than valueEnable comes in
+    GREATER_EQUAL = const(20)        # Enable when the valueEnable value comes in, or anything greater
 
-    LESS = const(30)            # Enable when a value less than valueEnable comes in
-    LESS_EQUAL = const(40)      # Enable when the valueEnable value comes in, or anything less
+    LESS = const(30)                 # Enable when a value less than valueEnable comes in
+    LESS_EQUAL = const(40)           # Enable when the valueEnable value comes in, or anything less
+
+    NO_STATE_CHANGE = const(999)     # Do not receive any values
 
     # Brightness values 
     DEFAULT_LED_BRIGHTNESS_ON = 0.3
@@ -354,10 +356,6 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     #     "text":                Text (optional)
     #
     #     "textDisabled":        Text for diabled state (optional)
-    #
-    #     "color":               Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
-    #                            with one color for each LED segment of the switch (if more actions share the LEDs, only the first
-    #                            color is used).
     #
     #     "displayDimFactor": {
     #         "on":              Dim factor in range [0..1] for on state (display label) Optional.
@@ -599,6 +597,10 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         elif self._comparison_mode == self.LESS:
             if mapping.value < self._reference_value: 
                 state = True        
+
+        elif self._comparison_mode == self.NO_STATE_CHANGE:
+            state = self.state
+
         else:
             raise Exception() #"Invalid comparison mode: " + repr(self._comparison_mode))        
 
