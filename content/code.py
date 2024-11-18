@@ -33,7 +33,7 @@ if not get_option(Config, "exploreMode"):
     from pyswitch.ui.UiController import UiController
 
     # Load configuration files
-    from display import Display
+    from display import Splashes
     from switches import Switches
     from communication import Communication
 
@@ -49,7 +49,7 @@ if not get_option(Config, "exploreMode"):
         ui = UiController(
             display_driver = _display_driver,
             font_loader = _font_loader,
-            root = Display
+            splash_callback = Splashes
         )
     )
     

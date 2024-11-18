@@ -3,7 +3,7 @@ from time import monotonic, localtime
 from .controller.MidiController import SystemExclusive, ControlChange, ProgramChange, MIDIUnknownEvent #, MidiClockMessage, Start, 
 
 # PySwitch version
-PYSWITCH_VERSION = "2.1.2"
+PYSWITCH_VERSION = "2.2.0"
 
 # Default background color for display slots
 DEFAULT_LABEL_COLOR = (50, 50, 50)   
@@ -234,3 +234,15 @@ class PeriodCounter:
             return True
         return False
             
+
+###############################################################################################################
+
+
+class Callback:
+    # Can optionally return mappings which will be listened to.
+    def get_mappings(self):
+        return []
+    
+    # Callback function
+    def get(self):
+        return None

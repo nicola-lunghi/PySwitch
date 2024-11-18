@@ -24,7 +24,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.ui.UiController import UiController
 
     from .mocks_appl import *
-    from .mocks_ui import MockDisplayDriver, MockFontLoader
+    from .mocks_ui import MockDisplayDriver, MockFontLoader, MockSplashCallback
     from lib.pyswitch.misc import Colors
 
 
@@ -126,7 +126,11 @@ class TestTunerDisplay(unittest.TestCase):
             self.assertEqual(display.children[1], display.deviance)
             self.assertEqual(display.deviance.bounds, DisplayBounds(20, 33 + 555 - 44, 444, 44))
 
-        ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
+        ui = UiController(
+            display_driver = MockDisplayDriver(init = True), 
+            font_loader = MockFontLoader(), 
+            splash_callback = MockSplashCallback(output = display)
+        )
         
         protocol = MockBidirectionalProtocol()
         protocol.outputs_is_bidirectional = [

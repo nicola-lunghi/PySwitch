@@ -1,105 +1,62 @@
 from .ui import DisplayBounds
-from .elements import DisplayLabel
-from ..controller.ConditionTree import ConditionTree
-from ..misc import Updateable
+from ..misc import Updateable, Updater
 
 
-class UiController:
+class UiController(Updater, Updateable):
 
     # Creates the displays. root can be a DisplayElement or a condition.
-    def __init__(self, display_driver, font_loader, root = None):        
+    def __init__(self, display_driver, font_loader, splash_callback):     
+        Updater.__init__(self)
+
         self._font_loader = font_loader
         self._display_driver = display_driver
+        self._splash_callback = splash_callback
 
-        self._display_tree = None
-        self._root = root
-       
+        self._current_splash_element = None
+
     @property
     def bounds(self):
         return DisplayBounds(0, 0, self._display_driver.width, self._display_driver.height)
 
-    # Initialize the GUI. Mus be called before usage, but after defining the contents.
+    # Initialize the GUI. Mus be called before usage.
     def init(self, appl):
-        if not self._root:
-            raise Exception() #"UiController has nothing to initialize")
-        
         self._appl = appl
 
-        self._display_tree = ConditionTree(
-            subject = self._root,
-            listener = self,
-            allow_lists = False
-        )
-        self._root = None
+        mappings = self._splash_callback.get_mappings()
+        for m in mappings:
+            self._appl.client.register(m, self)
 
-        self._display_tree.init(appl)
+    def update(self):
+        Updater.update(self)
 
-        # Add elements which are Updateables to the update queue
-        for root_element in self._display_tree.entries:
-            root_element.make_splash(self._font_loader)
+        mappings = self._splash_callback.get_mappings()
+        for m in mappings:
+            self._appl.client.request(m, self)
 
-            updateable_elements = [i for i in root_element.contents_flat() if isinstance(i, Updateable)]
-            
-            for element in updateable_elements:
-                appl.add_updateable(element)
-
-        self._current_splash = None
-
-    # Sets a new root element (can be conditional). Must be called before init().
-    def set_root(self, root):
-        if self._display_tree:
-            raise Exception() #"UiController already initialized")
-        
-        self._root = root
-
-    # Update display when condition(s) have changed
-    def condition_changed(self, condition):
-        if not self._appl.running:
-            return
-                
-        # Show (potentially different) splash
+    def parameter_changed(self, mapping):
         self.show()
 
-    @property
-    def current(self):
-        return self._display_tree.value
+    #@property
+    #def current(self):
+    #    return self._current_splash_element #self._display_tree.value
 
     # Shows the current splash
     def show(self):
-        if not self._display_tree:
-            raise Exception() #"UiController not initialized")
-        
-        # Initialize all uninitialized splash roots
-        for root_element in self._display_tree.entries:
-            if not root_element.initialized():
-                root_element.init(root_element, self._appl)
+        # Get DisplayElement from callback
+        splash_element = self._splash_callback.get()
 
-        root_element = self.current
-
-        if root_element == self._current_splash:
+        if splash_element == self._current_splash_element:
             return
-        
-        self._current_splash = root_element
-        self._display_driver.tft.show(root_element.splash)
 
-    # Search an element by definition in all possible splashes
-    def search(self, id, index = None):
-        if not self._display_tree:
-            raise Exception() #"UiController not initialized")
-        
-        for root_element in self._display_tree.entries:
-            result = root_element.search(id, index)
-            if result:                
-                return result
-            
-        return None                
+        # Make it a splash (creates the Group if not yet done)
+        splash_element.make_splash(self._font_loader)
 
-    # Creates a label
-    def create_label(self, bounds = DisplayBounds(), layout = None, name = "", id = 0):
-        return DisplayLabel(
-            bounds = bounds,
-            layout = layout,
-            name = name,
-            id = id if id else name
-        )
-    
+        if not splash_element.initialized():
+            splash_element.init(splash_element, self._appl)
+
+        # Add elements which are Updateables to the update queue
+        self.updateables = [i for i in splash_element.contents_flat() if isinstance(i, Updateable)]
+        
+        # Show splash
+        self._current_splash_element = splash_element
+        self._display_driver.tft.show(splash_element.splash)

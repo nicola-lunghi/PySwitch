@@ -53,17 +53,6 @@ class TestDisplaySplitContainer(unittest.TestCase):
         self.assertEqual(el_2.bounds, DisplayBounds(220, 30, 200, 500))        
         self.assertEqual(el_3.bounds, DisplayBounds(420, 30, 200, 500))        
 
-        cont.set(el_4, 1)
-        self.assertEqual(el_1.bounds, DisplayBounds(20, 30, 200, 500))        
-        self.assertEqual(el_4.bounds, DisplayBounds(220, 30, 200, 500))        
-        self.assertEqual(el_3.bounds, DisplayBounds(420, 30, 200, 500))        
-
-        cont.set(el_5, 4)
-        self.assertEqual(el_1.bounds, DisplayBounds(20, 30, 150, 500))        
-        self.assertEqual(el_4.bounds, DisplayBounds(170, 30, 150, 500))        
-        self.assertEqual(el_3.bounds, DisplayBounds(320, 30, 150, 500))        
-        self.assertEqual(el_5.bounds, DisplayBounds(470, 30, 150, 500))        
-
 
     def test_split_vertical(self):
         cont = DisplaySplitContainer(
@@ -89,13 +78,3 @@ class TestDisplaySplitContainer(unittest.TestCase):
         self.assertEqual(el_2.bounds, DisplayBounds(20, 230, 500, 200))        
         self.assertEqual(el_3.bounds, DisplayBounds(20, 430, 500, 200))        
 
-        cont.set(el_4, 1)
-        self.assertEqual(el_1.bounds, DisplayBounds(20, 30, 500, 200))        
-        self.assertEqual(el_4.bounds, DisplayBounds(20, 230, 500, 200))        
-        self.assertEqual(el_3.bounds, DisplayBounds(20, 430, 500, 200))        
-
-        cont.set(el_5, 4)
-        self.assertEqual(el_1.bounds, DisplayBounds(20, 30, 500, 150))        
-        self.assertEqual(el_4.bounds, DisplayBounds(20, 180, 500, 150))        
-        self.assertEqual(el_3.bounds, DisplayBounds(20, 330, 500, 150))        
-        self.assertEqual(el_5.bounds, DisplayBounds(20, 480, 500, 150))        

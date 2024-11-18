@@ -13,9 +13,6 @@ class DisplayBounds:
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.width == other.width and self.height == other.height
 
-    #def __repr__(self):
-    #    return repr((self.x, self.y, self.width, self.height))
-    
     def clone(self):
         return DisplayBounds(
             self.x,
@@ -23,10 +20,6 @@ class DisplayBounds:
             self.width,
             self.height
         )
-
-    #@property
-    #def empty(self):
-    #    return self.width == 0 or self.height == 0
 
     # Returns a copy which is translated
     def translated(self, x, y):
@@ -149,6 +142,8 @@ class DisplayElement:
         self._bounds = bounds.clone()
         self.name = name
         self.id = id
+        self.splash = None
+
         self._initialized = False
 
     # Adds the element to the splash
@@ -156,18 +151,15 @@ class DisplayElement:
         self._initialized = True
         
     # Makes this element the splash holder which is passed as ui to init() later
-    def make_splash(self, font_loader):        
+    def make_splash(self, font_loader):
+        if self.splash:
+            return      
+        
         self.font_loader = font_loader
         self.splash = Group()
 
     def initialized(self):
         return self._initialized
-
-    # Search for a display element matching the condition.
-    def search(self, id, index = None):
-        if id == self.id:
-            return self
-        return None
 
     # Returns a list of all contained DisplayElements.
     def contents_flat(self):
@@ -214,29 +206,7 @@ class HierarchicalDisplayElement(DisplayElement):
     def children(self):        
         return self._children
 
-    #@property
-    #def first_child(self):
-    #    if not self._children:
-    #        return None
-    #    
-    #    index = 0
-    #    while not self._children[index] and index < len(self._children):
-    #        index += 1
-    #
-    #    return self._children[index]
-
-    #@property
-    #def last_child(self):
-    #    if not self._children:
-    #        return None
-    #    
-    #    index = len(self._children) - 1
-    #    while not self._children[index] and index > 0:
-    #        index -= 1
-    #
-    #    return self._children[index]
-
-    # Initialize the elemenmt and all children
+    # Initialize the element and all children
     def init(self, ui, appl):
         super().init(ui, appl)
 
@@ -249,6 +219,7 @@ class HierarchicalDisplayElement(DisplayElement):
 
             child.init(ui, appl)
 
+    # Returns if the element is initialized already
     def initialized(self):
         if not super().initialized():
             return False
@@ -272,54 +243,9 @@ class HierarchicalDisplayElement(DisplayElement):
 
             child.bounds_changed()
 
-    # Returns the child element at position index
-    #def child(self, index):
-    #    if index < 0 or index >= len(self._children): 
-    #        raise Exception(repr(index)) #"Index out of range: " + repr(index))
-    #    
-    #    return self._children[index]
-
-    # Adds a child to the element. Returns the index of the new element.
+    # Adds a child to the element. 
     def add(self, child):
         self._children.append(child)
-
-        return len(self._children) - 1
-
-    # Sets an element at the specified index.
-    def set(self, element, index):
-        if index < 0:
-            raise Exception(repr(index)) #"Invalid set index: " + repr(index))
-        
-        while len(self._children) <= index:
-            self.add(None)
-        
-        self._children[index] = element            
-
-    # Search for the first child matching the conditions. If
-    # an "index" value is passed, the child at this position is returned.
-    def search(self, id, index = None):
-        result = super().search(id, index)
-        if result != None:
-            # This element matches the ID: Check if an index is also present
-            if index == None:
-                # No index: Return this element                
-                return result
-            
-            elif index >= 0 and index < len(self._children):
-                # Index: Return the n-th child of this element
-                return self._children[index]
-
-        # Also search in children
-        for child in self._children:
-            if not child:
-                continue
-            
-            result = child.search(id, index)
-            if result:
-                # Child has found something
-                return result
-            
-        return None
 
     # Returns a list of all contained DisplayElements.
     def contents_flat(self):

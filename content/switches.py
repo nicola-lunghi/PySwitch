@@ -6,21 +6,12 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-from pyswitch.misc import DEFAULT_LABEL_COLOR, Colors
+from pyswitch.misc import Colors
 from pyswitch.controller.actions.actions import HoldAction, ParameterAction, PushButtonAction
-#from pyswitch.controller.ConditionTree import ParameterCondition
 
-from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, NRPN_VALUE, CC_MORPH_PEDAL, ClientParameterMapping
-from adafruit_midi.control_change import ControlChange
-from display import DISPLAY_ID_FOOTER, DISPLAY_ID_HEADER
+from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, NRPN_VALUE
+from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
-
-# Layout used for the action labels (only used here locally)
-_ACTION_LABEL_LAYOUT = {
-    "font": "/fonts/H20.pcf",
-    "backColor": DEFAULT_LABEL_COLOR,
-    "stroke": 1
-}
 
 # Defines the switch assignments
 Switches = [
@@ -30,11 +21,7 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.TUNER_MODE(
-                display = {
-                    "id": DISPLAY_ID_HEADER,
-                    "index": 0,
-                    "layout": _ACTION_LABEL_LAYOUT
-                }
+                display = DISPLAY_HEADER_1
             )
         ]
     },
@@ -62,11 +49,7 @@ Switches = [
                     # Freeze on/off
                     ParameterAction({
                         "mapping": KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
-                        "display": {
-                            "id": DISPLAY_ID_HEADER,
-                            "index": 1,
-                            "layout": _ACTION_LABEL_LAYOUT                            
-                        },
+                        "display": DISPLAY_HEADER_2,
                         "text": "Tap|Frz",
                         "color": Colors.GREEN,
                         "mode": PushButtonAction.LATCH
@@ -94,11 +77,7 @@ Switches = [
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
-                display = {
-                    "id": DISPLAY_ID_FOOTER,
-                    "index": 0,
-                    "layout": _ACTION_LABEL_LAYOUT
-                }
+                display = DISPLAY_FOOTER_1
             )
         ]
     },
@@ -113,11 +92,7 @@ Switches = [
                 bank = 2,
                 rig_off = 3,
                 bank_off = 3,
-                display = {
-                    "id": DISPLAY_ID_FOOTER,
-                    "index": 1,
-                    "layout": _ACTION_LABEL_LAYOUT
-                }
+                display = DISPLAY_FOOTER_2
             )
         ]
     },

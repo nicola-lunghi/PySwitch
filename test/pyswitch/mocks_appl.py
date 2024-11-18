@@ -275,6 +275,7 @@ class MockConditionReplacer:
 class MockClient:
     def __init__(self):
         self.register_calls = []
+        self.request_calls = []
 
     def register(self, mapping, listener):
         self.register_calls.append({
@@ -282,6 +283,11 @@ class MockClient:
             "listener": listener
         })
 
+    def request(self, mapping, listener):
+        self.request_calls.append({
+            "mapping": mapping,
+            "listener": listener
+        })
 
 ##################################################################################################################################
 

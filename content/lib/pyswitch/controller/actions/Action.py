@@ -9,12 +9,7 @@ class Action(Updateable):
     _next_id = 0   # Global counted action ids (internal, just used for debugging!)
 
     # config: {
-    #      "display": {
-    #          "area":             ID of the display area. See displays defintion in config.
-    #          "index":            Position inside the display area (optional for split container display areas). If omitted, always the first 
-    #                              place is used which takes up the whole area space. 
-    #          "layout":           Layout definition for the action label (mandatory)
-    #      },
+    #      "display":              Optional DisplayLabel instance
     #
     #      "enabled": True,        Optional bool parameter to disable/enable the action. Mostly used internally only. Defaults to True 
     #                              when not specified.
@@ -29,41 +24,19 @@ class Action(Updateable):
         self.uses_switch_leds = False             # Must be set True explicitly by child classes in __init__() if they use the switch LEDs
         self._initialized = False
 
-        self._display_id = None
-        self._display_index = None
-        self._display_layout = None
+        self.label = get_option(config, "display", None)
 
         self.id = get_option(config, "id", None)
         self.color = get_option(config, "color", DEFAULT_SWITCH_COLOR)
         self._enabled = get_option(config, "enabled", True)
         self._label_color = get_option(config, "color", None)
 
-        display = get_option(config, "display", None)
-        if display:
-            self._display_id = get_option(display, "id", None)
-            self._display_index = get_option(display, "index", None)
-            self._display_layout = get_option(display, "layout", None)
-
-    #def __repr__(self):
-    #    return self.__class__.__name__ + " " + repr(self.id)
-
     # Must be called before usage
     def init(self, appl, switch):
         self.appl = appl
         self.switch = switch
 
-        #self._init_id()
-
-        self.label = self._get_display_label()   # DisplayLabel instance the action is connected to (or None).
-
         self._initialized = True
-
-    # Sets up the debugging ID (either from config or a generated one)
-    #def _init_id(self):
-    #    if not self.id:
-    #        self.id = self.switch.id + " | " + self.__class__.__name__ + " (" + repr(Action._next_id) + ")"
-    #        
-    #        Action._next_id = Action._next_id + 1
 
     @property
     def enabled(self):
@@ -165,42 +138,6 @@ class Action(Updateable):
     def reset_display(self):
         pass                                      # pragma: no cover
 
-    # Get the assigned label reference from the UI (or None)
-    def _get_display_label(self):
-        if not self._display_id:
-            return None
-        
-        label = self.appl.ui.search(self._display_id, self._display_index)
-        if label:
-            return label
-        
-        # Not yet existent: Get container
-        container = self.appl.ui.search(self._display_id)        
-
-        if not container:
-            raise Exception("Display " + repr(self._display_id) + " not found")
-        
-        if self._display_index == None:
-            return container
-
-        layout = self._display_layout
-        
-        # Set the color as the number of items cannot be changed later!
-        layout["backColor"] = self._label_color if self._label_color else ( layout["backColor"] if "backColor" in layout else DEFAULT_LABEL_COLOR )
-
-        label = self.appl.ui.create_label(
-            layout = layout,
-            name = self.id
-        )
-
-        container.set(label, self._display_index)
-
-        self._display_id = None
-        self._display_index = None
-        self._display_layout = None
-        
-        return label
-
     # Returns the switch LED segments to use
     def _get_led_segments(self):
         if not self.switch.pixels or not self.uses_switch_leds or not self.enabled:
@@ -251,10 +188,4 @@ class Action(Updateable):
     # Must return a list containing self and all possible sub actions
     def get_all_actions(self):
         return [self]
-
-    # Print to the debug console
-    #def print(self, msg):    # pragma: no cover
-    #    enabled_text = "on" if self.enabled else "off"
-
-    #    do_print(self.id + " (" + enabled_text + "): " + msg)
 

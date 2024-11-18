@@ -37,13 +37,13 @@ class Controller(Updater): #ClientRequestListener
     def __init__(self, led_driver, midi, protocol = None, config = {}, switches = [], ui = None, period_counter = None):
         Updater.__init__(self)
 
-        self.running = False
+        #self.running = False
         self.low_memory_warning = False
 
         self._midi = midi
 
         # User interface
-        self.ui = ui
+        self.ui = ui        
 
         # Global config
         self.config = config
@@ -85,6 +85,7 @@ class Controller(Updater): #ClientRequestListener
         # Set up the screen elements
         if self.ui:
             self.ui.init(self)
+            self.add_updateable(ui)
 
         # Set up switches
         self._init_switches(switches)
@@ -122,7 +123,7 @@ class Controller(Updater): #ClientRequestListener
 
             self.ui.show()           
         
-        self.running = True
+        #self.running = True
 
         Memory.watch("Application loaded")
 

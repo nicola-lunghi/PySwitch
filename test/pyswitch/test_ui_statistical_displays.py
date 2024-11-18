@@ -17,7 +17,7 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.statistical import *
+    from lib.pyswitch.ui.elements import PERFORMANCE_DOT, BIDIRECTIONAL_PROTOCOL_STATE_DOT
     from lib.pyswitch.ui.ui import DisplayBounds
 
 

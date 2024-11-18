@@ -6,6 +6,7 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
@@ -18,10 +19,6 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from .mocks_measurements import *
-
-    #with patch.dict(sys.modules, {
-    #    "lib.pyswitch.controller.RuntimeMeasurement": MockRuntimeMeasurement()
-    #}):
 
     from lib.pyswitch.ui.ui import DisplayBounds
     from lib.pyswitch.ui.elements import PerformanceIndicator

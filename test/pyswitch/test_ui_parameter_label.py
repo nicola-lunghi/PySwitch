@@ -57,7 +57,11 @@ class TestParameterLabel(unittest.TestCase):
             bounds = DisplayBounds(20, 30, 200, 300)
         )
 
-        ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
+        ui = UiController(
+            display_driver = MockDisplayDriver(init = True), 
+            font_loader = MockFontLoader(), 
+            splash_callback = MockSplashCallback(output = display)
+        )
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
@@ -168,7 +172,11 @@ class TestParameterLabel(unittest.TestCase):
             bounds = DisplayBounds(20, 30, 200, 300)
         )
 
-        ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
+        ui = UiController(
+            display_driver = MockDisplayDriver(init = True), 
+            font_loader = MockFontLoader(), 
+            splash_callback = MockSplashCallback(output = display)
+        )
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),
@@ -285,7 +293,11 @@ class TestParameterLabel(unittest.TestCase):
             bounds = DisplayBounds(20, 30, 200, 300)
         )
 
-        ui = UiController(MockDisplayDriver(init = True), MockFontLoader(), display)
+        ui = UiController(
+            display_driver = MockDisplayDriver(init = True), 
+            font_loader = MockFontLoader(), 
+            splash_callback = MockSplashCallback(output = display)
+        )
 
         appl = MockController(
             led_driver = MockNeoPixelDriver(),

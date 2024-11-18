@@ -5,6 +5,7 @@ from unittest.mock import patch   # Necessary workaround! Needs to be separated.
 from .mocks_lib import *
 
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
@@ -54,15 +55,6 @@ class TestDisplayElement(unittest.TestCase):
         with self.assertRaises(Exception):
             el.bounds = DisplayBounds(0, 0, 20, 20)
             
-
-    def test_search(self):
-        el = DisplayElement(
-            id = "foo"
-        )
-
-        self.assertEqual(el.search(id = "foo"), el)
-        self.assertEqual(el.search(id = "bar"), None)
-
 
     def test_initialized(self):
         el = DisplayElement(
@@ -297,76 +289,3 @@ class TestHierarchicalDisplayElement(unittest.TestCase):
         self.assertEqual(child_2.num_bounds_changed_calls, 1)
         self.assertEqual(subchild_1.num_bounds_changed_calls, 1)
         
-
-    def test_set(self):
-        el = HierarchicalDisplayElement(
-            id = "foo"
-        )
-
-        child_1 = HierarchicalDisplayElement(
-            id = "bar"
-        )
-
-        child_2 = HierarchicalDisplayElement(
-            id = "bat"
-        )
-
-        subchild_1 = HierarchicalDisplayElement(
-            id = "tar"
-        )
-
-        el.add(child_1)
-        el.set(child_2, 4)
-
-        child_1.set(None, 2)
-        child_1.add(subchild_1)
-
-        self.assertEqual(el.children, [child_1, None, None, None, child_2])
-        self.assertEqual(child_1.children, [None, None, None, subchild_1])
-        self.assertEqual(child_2.children, [])
-        self.assertEqual(subchild_1.children, [])
-
-        with self.assertRaises(Exception):
-            el.set(None, -1)
-
-
-    def test_search(self):
-        el = MockHierarchicalDisplayElement(
-            id = "foo"
-        )
-
-        child_1 = MockHierarchicalDisplayElement(
-            id = "bar"
-        )
-
-        child_2 = MockHierarchicalDisplayElement(
-            id = "bat"
-        )
-
-        subchild_1 = MockHierarchicalDisplayElement(
-            id = "tar"
-        )
-
-        el.add(child_1)
-        el.add(child_2)
-
-        child_1.add(None)
-        child_1.add(subchild_1)
-
-        # No index
-        self.assertEqual(el.search(id = "none"), None)
-        self.assertEqual(el.search(id = "foo"), el)
-        self.assertEqual(el.search(id = "bar"), child_1)
-        self.assertEqual(el.search(id = "bat"), child_2)
-        self.assertEqual(el.search(id = "tar"), subchild_1)
-
-        # With index
-        self.assertEqual(el.search(id = "foo", index = -1), None)
-        self.assertEqual(el.search(id = "foo", index = 0), child_1)
-        self.assertEqual(el.search(id = "foo", index = 1), child_2)
-        self.assertEqual(el.search(id = "foo", index = 2), None)
-
-        self.assertEqual(el.search(id = "bar", index = -1), None)
-        self.assertEqual(el.search(id = "bar", index = 0), None)
-        self.assertEqual(el.search(id = "bar", index = 1), subchild_1)
-        self.assertEqual(el.search(id = "bar", index = 2), None)

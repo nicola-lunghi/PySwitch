@@ -1,3 +1,4 @@
+from micropython import const
 from displayio import Group
 from adafruit_display_text import label, wrap_text_to_pixels
 from adafruit_display_shapes.rect import Rect
@@ -6,7 +7,8 @@ from .ui import HierarchicalDisplayElement, DisplayBounds, DisplayElement
 
 from ..controller.ConditionTree import ConditionTree, Condition
 from ..controller.Client import BidirectionalClient
-from ..misc import Updateable, Colors, get_option, do_print
+from ..controller.Controller import Controller
+from ..misc import Updateable, Colors, get_option #, do_print
 
 
 # Data class for layouts
@@ -290,6 +292,8 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
         super().__init__(bounds = bounds, name = name, id = id, children = children)
 
         self.direction = direction
+        
+        self.bounds_changed()
     
     # Add a child element
     def add(self, child):
@@ -297,9 +301,9 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
         self.bounds_changed()
 
     # Sets a child element at the given index
-    def set(self, element, index):
-        super().set(element, index)
-        self.bounds_changed()
+    #def set(self, element, index):
+    #    super().set(element, index)
+    #    self.bounds_changed()
 
     # Update dimensions of all contained elements
     def bounds_changed(self):
@@ -561,7 +565,7 @@ class TunerDisplay(HierarchicalDisplayElement):
             
             self.deviance.set(self._last_deviance)            
 
-            # Enable this for calibration.
+            # Uncomment this for calibration.
             #self._debug_calibration(mapping.value)            
 
             if self.deviance.in_tune:
@@ -639,23 +643,10 @@ class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
             self._dot.fill = (0, 0, 0)
 
         elif tick_percentage <= 2.0:
-            self._dot.fill = (120, 120, 0) #self._fade_colors((0, 0, 0), (120, 120, 0), (tick_percentage - 1.0))
-
-        #elif tick_percentage <= 4.0:
-        #    self._dot.fill = self._fade_colors((120, 120, 0), (255, 0, 0), (tick_percentage - 2.0) / 2)
+            self._dot.fill = (120, 120, 0) 
 
         else:
             self._dot.fill = (255, 0, 0)
-            
-    # Dim the color
-    #def _fade_colors(self, color1, color2, factor):
-    #    factor1 = 1 - factor
-    #    factor2 = factor
-    #    return (
-    #        int(color1[0] * factor1 + color2[0] * factor2),
-    #        int(color1[1] * factor1 + color2[1] * factor2),
-    #        int(color1[2] * factor1 + color2[2] * factor2)
-    #    )            
         
 
 ###########################################################################################################################
@@ -755,3 +746,41 @@ class BidirectionalProtocolState(DisplayElement, Updateable):
         self._current_color = new_color
         self._dot.fill = self._current_color
             
+
+###########################################################################################################################
+
+
+# Properties for the performance indicator (dot)
+_PERFORMANCE_INDICATOR_SIZE = const(5)
+_PERFORMANCE_INDICATOR_MARGIN = const(2)
+
+
+# Performance indicator (dot). Will be placed at the right upper corner of the passed bounds.
+def PERFORMANCE_DOT(parent_bounds):
+    return PerformanceIndicator(        
+        measurement_id = Controller.STAT_ID_TICK_TIME,
+        #name = "PerformanceDot",
+        bounds = parent_bounds.top(
+                _PERFORMANCE_INDICATOR_SIZE
+            ).right(
+                _PERFORMANCE_INDICATOR_SIZE
+            ).translated(
+                - _PERFORMANCE_INDICATOR_MARGIN, 
+                _PERFORMANCE_INDICATOR_MARGIN
+            )
+    )
+
+# Bidirectional protocol state indicator (dot). Will be placed at the right upper corner of the passed bounds.
+def BIDIRECTIONAL_PROTOCOL_STATE_DOT(parent_bounds):
+    return BidirectionalProtocolState(        
+        #name = "ProtocolDot",
+        bounds = parent_bounds.top(
+                _PERFORMANCE_INDICATOR_SIZE
+            ).right(
+                _PERFORMANCE_INDICATOR_SIZE
+            ).translated(
+                - _PERFORMANCE_INDICATOR_MARGIN, 
+                _PERFORMANCE_INDICATOR_MARGIN
+            )
+    )
+

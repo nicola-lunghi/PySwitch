@@ -6,6 +6,7 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
@@ -206,110 +207,6 @@ class TestAction(unittest.TestCase):
         action_4.uses_switch_leds = False
         self.assertEqual(action_1._get_led_segments(), [])
         
-
-########################################################################################
-
-
-    def test_label_not_found(self):
-        ui = MockUiController()
-        appl = MockController(ui = ui)
-        switch = MockFootSwitch()
-        action = MockAction({
-            "display": {
-                "id": "foo"
-            }
-        })
-
-        with self.assertRaises(Exception):       
-            action.init(appl, switch)
-
-
-########################################################################################
-
-
-    def test_label(self):
-        ui = MockUiController()
-        appl = MockController(ui = ui)
-        switch = MockFootSwitch()
-        action = MockAction({
-            "display": {
-                "id": "foo"
-            }
-        })
-
-        label = DisplayElement(id = "foo")
-        
-        ui.root.add(
-            label
-        )
-
-        action.init(appl, switch)
-
-        self.assertEqual(action.label, label)
-
-
-########################################################################################
-
-
-    def test_label_existing_in_split_container(self):
-        ui = MockUiController()
-        appl = MockController(ui = ui)
-        switch = MockFootSwitch()
-        action = MockAction({
-            "display": {
-                "id": "foo",
-                "index": 1
-            }
-        })
-
-        label_1 = DisplayElement(id = "child1")
-        label_2 = DisplayElement(id = "child2")
-
-        container = MockHierarchicalDisplayElement(id = "foo")
-        container.add(label_1)
-        container.add(label_2)
-
-        ui.root.add(
-            container
-        )
-
-        action.init(appl, switch)
-
-        self.assertEqual(action.label, label_2)
-
-
-########################################################################################
-
-
-    def test_label_new_in_split_container(self):
-        ui = MockUiController()
-        appl = MockController(ui = ui)
-        switch = MockFootSwitch()
-        action = MockAction({
-            "display": {
-                "id": "foo",
-                "index": 1,
-                "layout": {
-                    "font": "foofont",
-                    "backColor": (2, 3, 4),
-                    "stroke": 3
-                }
-            }
-        })
-
-        container = MockHierarchicalDisplayElement(id = "foo")
-
-        ui.root.add(
-            container
-        )
-
-        action.init(appl, switch)
-
-        self.assertEqual(action.label, ui.root.children[0].children[1])
-        self.assertEqual(action.label.layout["font"], "foofont")
-        self.assertEqual(action.label.layout["backColor"], (2, 3, 4))
-        self.assertEqual(action.label.layout["stroke"], 3)
-
 
 ########################################################################################
 

@@ -29,16 +29,22 @@ with patch.dict(sys.modules, {
 
         from gc import gc_mock_data
         from .mocks_appl import *
-        from .mocks_ui import MockDisplayDriver, MockFontLoader, MockUpdateableDisplayElement
+        from .mocks_ui import MockDisplayDriver, MockFontLoader, MockUpdateableDisplayElement, MockSplashCallback
 
 
 class MockUiController(UiController):
-    def __init__(self, display_driver = MockDisplayDriver(), font_loader = MockFontLoader(), root = None):        
-        super().__init__(display_driver, font_loader, root)
+    def __init__(self, 
+                 display_driver = MockDisplayDriver(init = True), 
+                 font_loader = MockFontLoader(), 
+                 splash_callback = None
+        ):
+        super().__init__(display_driver, font_loader, splash_callback)
 
         self.num_show_calls = 0
 
     def show(self):
+        super().show()
+
         self.num_show_calls += 1
 
 
@@ -54,12 +60,14 @@ class TestControllerUiSetup(unittest.TestCase):
         element_3 = MockUpdateableDisplayElement(id = 3)
 
         ui = MockUiController(
-            root = HierarchicalDisplayElement(
-                children = [
-                    element_1,
-                    element_2,
-                    element_3
-                ]
+            splash_callback = MockSplashCallback(
+                output = HierarchicalDisplayElement(
+                    children = [
+                        element_1,
+                        element_2,
+                        element_3
+                    ]
+                )
             )
         )
 

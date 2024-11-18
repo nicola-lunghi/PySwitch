@@ -1,6 +1,6 @@
 from lib.pyswitch.ui.elements import HierarchicalDisplayElement
 from lib.pyswitch.ui.ui import DisplayBounds, DisplayElement
-from lib.pyswitch.misc import Updateable
+from lib.pyswitch.misc import Updateable, Callback
 
 
 class MockUpdateableDisplayElement(DisplayElement, Updateable):
@@ -90,26 +90,6 @@ class MockDisplaySplash:
         self.root = element if element else MockHierarchicalDisplayElement()
         
 
-#class MockUserInterface:
-#    def __init__(self, width = 2000, height = 1000):
-#        self.num_show_calls = 0
-
-#        self.root = MockHierarchicalDisplayElement(
-#            bounds = DisplayBounds(0, 0, width, height)
-#        )
-
-#        self.font_loader = MockFontLoader()
-#        self.splash = []
-
-#    def show(self, appl):
-#        self.num_show_calls += 1
-
-#        self.root.init(self, appl)
-
-#    def create_label(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
-#        return MockDisplayLabel(bounds=bounds, layout=layout, name=name, id=id)
-        
-
 class MockDisplayLabel(DisplayElement):
 
     def __init__(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
@@ -148,3 +128,15 @@ class MockFont:
 class MockFontLoader:
     def get(self, path):
         return MockFont(path)
+
+
+class MockSplashCallback(Callback):
+    def __init__(self, mappings = [], output = None):
+        self.mappings = mappings
+        self.output_get = output
+
+    def get_mappings(self):
+        return self.mappings
+    
+    def get(self):
+        return self.output_get
