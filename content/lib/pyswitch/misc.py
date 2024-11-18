@@ -238,11 +238,25 @@ class PeriodCounter:
 ###############################################################################################################
 
 
-class Callback:
+class Callback(Updateable):
     # Can optionally return mappings which will be listened to.
     def get_mappings(self):
         return []
     
     # Callback function
     def get(self):
-        return None
+        return None     # pragma: no cover
+    
+    # Must be called before usage
+    def init(self, appl, listener):
+        self._appl = appl
+        self._listener = listener
+
+        mappings = self.get_mappings()
+        for m in mappings:
+            self._appl.client.register(m, self._listener)
+
+    def update(self):
+        mappings = self.get_mappings()
+        for m in mappings:
+            self._appl.client.request(m, self._listener)

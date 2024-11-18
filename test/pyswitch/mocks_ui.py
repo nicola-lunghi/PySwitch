@@ -136,7 +136,10 @@ class MockSplashCallback(Callback):
         self.output_get = output
 
     def get_mappings(self):
-        return self.mappings
+        if self.mappings:
+            return self.mappings
+        else:
+            return super().get_mappings()
     
     def get(self):
         return self.output_get
