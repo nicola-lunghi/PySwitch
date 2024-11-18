@@ -40,7 +40,7 @@ if not get_option(Config, "exploreMode"):
     # Controller instance (runs the processing loop and keeps everything together)
     _appl = Controller(
         led_driver = _led_driver, 
-        protocol = Communication["protocol"],
+        protocol = get_option(Communication, "protocol", None),
         midi = MidiController(
             routings = Communication["midi"]["routings"]
         ),

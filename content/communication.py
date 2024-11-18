@@ -24,11 +24,11 @@ Communication = {
 
     # Optional: Protocol to use. If not specified, the standard Client protocol is used which requests all
     # parameters in each update cycle. Use this to implement bidirectional communication.
-    "protocol": KemperBidirectionalProtocol(
-        time_lease_seconds = 30               # When the controller is removed, the Profiler will stay in bidirectional
-                                              # mode for this amount of seconds. The communication is re-initiated every  
-                                              # half of this value. 
-    ),
+    #"protocol": KemperBidirectionalProtocol(
+    #    time_lease_seconds = 30               # When the controller is removed, the Profiler will stay in bidirectional
+    #                                          # mode for this amount of seconds. The communication is re-initiated every  
+    #                                          # half of this value. 
+    #),
 
     # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 
     # the MidiController.PYSWITCH source/target or the application will not be able to communicate!

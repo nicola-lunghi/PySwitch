@@ -180,6 +180,9 @@ class Updater:
         if not isinstance(u, Updateable):
             return
         
+        if u in self.updateables:
+            return
+        
         self.updateables.append(u)
 
     # Update all updateables. 
@@ -239,24 +242,33 @@ class PeriodCounter:
 
 
 class Callback(Updateable):
+    def __init__(self):
+        super().__init__()
+        self._initialized = False
+
     # Can optionally return mappings which will be listened to.
     def get_mappings(self):
         return []
     
-    # Callback function
-    def get(self):
+    # Callback function. Data is an optional field to transfer stuff to the callback generically.
+    def get(self, data):
         return None     # pragma: no cover
     
     # Must be called before usage
     def init(self, appl, listener):
+        if self._initialized: 
+            return
+        
         self._appl = appl
         self._listener = listener
 
-        mappings = self.get_mappings()
-        for m in mappings:
+        for m in self.get_mappings():
             self._appl.client.register(m, self._listener)
 
+        self._appl.add_updateable(self)
+
+        self._initialized = True
+
     def update(self):
-        mappings = self.get_mappings()
-        for m in mappings:
+        for m in self.get_mappings():
             self._appl.client.request(m, self._listener)

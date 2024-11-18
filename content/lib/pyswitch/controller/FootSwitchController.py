@@ -1,6 +1,3 @@
-from random import randint
-
-from .ConditionTree import ConditionTree
 from ..misc import Colors, get_option
 
 
@@ -17,8 +14,7 @@ class FootSwitchController: #ConditionListener
     #     "actions": [         Array of actions. Entries must be either Action instances or Conditions with Action
     #                          instance(s) inside (conditions can be deep).
     #         ExampleAction({
-    #             "id":                 Action id. Optional.
-    #             ...                   (individual options depending on the specific action type)
+    #             ...                  
     #         }),
     #         ...
     #     ],
@@ -39,59 +35,18 @@ class FootSwitchController: #ConditionListener
 
         self.color = Colors.WHITE
         self.brightness = 0.5
-        #self._initial_switch_colors()
 
-        self._action_definitions = get_option(config, "actions", [])
+        self.actions = get_option(config, "actions", [])
         self._init_actions()
         
     # Set up action instances
     def _init_actions(self):
-        self._action_tree = ConditionTree(
-            subject = self._action_definitions,
-            listener = self
-        )
-
-        self._action_tree.init(self._appl)
-
-        self.actions = self._action_tree.entries
-
         for action in self.actions:
             action.init(self._appl, self)
             
             self._appl.add_updateable(action)
             
             action.update_displays()
-
-        # Update actions to initialize the correct enabled state
-        self.condition_changed(None)
-        
-    # Called on condition changes.
-    def condition_changed(self, condition):
-        active_actions = self._action_tree.values
-
-        to_disable = [a for a in self.actions if a.enabled and not a in active_actions]
-        to_enable = [a for a in self.actions if not a.enabled and a in active_actions]
-
-        # Execute the two lists in the correct order
-        for action in to_disable:
-            action.reset_display()
-            action.enabled = False
-
-        for action in to_enable:
-            action.enabled = True
-
-    # Set some initial colors on the neopixels
-    #def _initial_switch_colors(self):
-    #    if not self.pixels:
-    #        # No LEDs defined for the switch
-    #        return
-        
-    #    # Default color scheme: Random from a list of colors
-    #    available_colors = (Colors.GREEN, Colors.YELLOW, Colors.RED)  # Colors to be used (in that order)
-    #    index = randint(0, len(available_colors)-1)                   # Random start index  
-
-    #    self.colors = [available_colors[(index + i) % len(available_colors)] for i in range(len(self.pixels))]
-    #    self.brightness = 1
         
     # Process the switch: Check if it is currently pushed, set state accordingly
     def process(self):

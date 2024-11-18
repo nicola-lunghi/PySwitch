@@ -184,7 +184,7 @@ class KemperActionDefinitions:
 
     # Switch an effect slot on / off
     @staticmethod
-    def EFFECT_STATE(slot_id, display = None, mode = PushButtonAction.HOLD_MOMENTARY, id = False, use_leds = True):
+    def EFFECT_STATE(slot_id, display = None, mode = PushButtonAction.HOLD_MOMENTARY, id = False, use_leds = True, enable_callback = None):
         return EffectEnableAction({
             "mapping": KemperMappings.EFFECT_STATE(slot_id),
             "mappingType": KemperMappings.EFFECT_TYPE(slot_id),
@@ -193,26 +193,28 @@ class KemperActionDefinitions:
             "mode": mode,
             "display": display,
             "id": id,
-            "useSwitchLeds": use_leds
+            "useSwitchLeds": use_leds,
+            "enableCallback": enable_callback
         })
 
     # Rotary speed (fast/slow)
     @staticmethod
-    def ROTARY_SPEED(slot_id, display = None, color = Colors.DARK_BLUE, id = False, use_leds = True):
+    def ROTARY_SPEED(slot_id, display = None, color = Colors.DARK_BLUE, id = False, use_leds = True, enable_callback = None):
         return ParameterAction({
             "mapping": KemperMappings.ROTARY_SPEED(slot_id),
             "display": display,
             "text": "Fast",
             "color": color,
             "id": id,
-            "useSwitchLeds": use_leds
+            "useSwitchLeds": use_leds,
+            "enableCallback": enable_callback
         })
 
     ## Special functions ####################################################################################################
 
     # Switch tuner mode on / off
     @staticmethod
-    def TUNER_MODE(display = None, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
+    def TUNER_MODE(display = None, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True, enable_callback = None):
         return ParameterAction({
             "mapping": KemperMappings.TUNER_MODE_STATE(),
             "valueEnable": 1,
@@ -223,12 +225,13 @@ class KemperActionDefinitions:
             "color": Colors.WHITE,
             "color": color,
             "id": id,
-            "useSwitchLeds": use_leds
+            "useSwitchLeds": use_leds,
+            "enableCallback": enable_callback
         })
 
     # Tap tempo (with blinking LED display)
     @staticmethod
-    def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = True):
+    def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = True, enable_callback = None):
         return ParameterAction({
             "mapping": KemperMappings.TAP_TEMPO(),
             "display": display,
@@ -236,19 +239,21 @@ class KemperActionDefinitions:
             "color": color,
             "mode": PushButtonAction.MOMENTARY,
             "id": id,
-            "useSwitchLeds": use_leds
+            "useSwitchLeds": use_leds,
+            "enableCallback": enable_callback
         })
     
     # Show tempo (visual feedback, will be enabled for short time every beat)
     @staticmethod
-    def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True):
+    def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True, enable_callback = None):
         return ParameterAction({
             "mapping": KemperMappings.TEMPO_DISPLAY(),
             "display": display,
             "text": "Tempo",
             "color": color,
             "id": id,
-            "useSwitchLeds": use_leds
+            "useSwitchLeds": use_leds,
+            "enableCallback": enable_callback
         })
     
     ## Show tempo (visual feedback, will be enabled for short time every beat)
@@ -261,7 +266,7 @@ class KemperActionDefinitions:
 
     # Effect Button I-IIII (set only). num must be a number (1 to 4).
     @staticmethod
-    def EFFECT_BUTTON(num, text = None, display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True):
+    def EFFECT_BUTTON(num, text = None, display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True, enable_callback = None):
         if not text:
             if num == 1:
                 text = "FX I"
@@ -286,7 +291,8 @@ class KemperActionDefinitions:
             "displayDimFactor": {
                 "on": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,              # Set equal dim factor (we do not need status display here)
                 "off": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF
-            }
+            },
+            "enableCallback": enable_callback
         })
     
     # Morph button (faded change of morph state) No state feedback possible!
@@ -294,7 +300,7 @@ class KemperActionDefinitions:
     # NOTE: The Kemper MIDI Documentation differs from real behaviour here: The 
     # device changes state on every 0/1 value sequence instead of accepting 0/1 for on/off!
     # Even if you just send 1, it does not work: You have to send 0, then 1 to have the state change.
-    def MORPH_BUTTON(display = None, color = Colors.LIGHT_GREEN, text = "Morph", id = False, use_leds = True):
+    def MORPH_BUTTON(display = None, color = Colors.LIGHT_GREEN, text = "Morph", id = False, use_leds = True, enable_callback = None):
         return ParameterAction({
             "mode": PushButtonAction.ONE_SHOT,
             "mapping": KemperMappings.MORPH_BUTTON(),
@@ -303,7 +309,8 @@ class KemperActionDefinitions:
             "display": display,
             "color": color,
             "text": text,
-            "id": id
+            "id": id,
+            "enableCallback": enable_callback
         })
 
     ## Rig specific ##########################################################################################################
@@ -320,7 +327,8 @@ class KemperActionDefinitions:
                          id = False, 
                          use_leds = True, 
                          text = "RigBoost", 
-                         remember_off_value = True
+                         remember_off_value = True, 
+                         enable_callback = None
         ):
         return ParameterAction({
             "mode": mode,
@@ -331,25 +339,27 @@ class KemperActionDefinitions:
             "text": text,
             "color": color,
             "id": id,
-            "useSwitchLeds": use_leds
+            "useSwitchLeds": use_leds,
+            "enableCallback": enable_callback
         })
 
     # Used to reset the screen areas which show rig info details directly after rig changes (if you dont use this, 
     # you get no visual feedback on the device that a new rig is coming up)
     @staticmethod
-    def RESET_RIG_INFO_DISPLAYS(id = False):
+    def RESET_RIG_INFO_DISPLAYS(id = False, enable_callback = None):
         return ResetDisplaysAction({
             "resetSwitches": True,
             "ignoreOwnSwitch": True,
             "resetDisplayAreas": True,
-            "id": id
+            "id": id,
+            "enableCallback": enable_callback
         })
 
     ## Amp ########################################################################################################################
 
     # Amp on/off
     @staticmethod
-    def AMP_STATE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
+    def AMP_STATE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True, enable_callback = None):
         return ParameterAction({
             "mapping": KemperMappings.AMP_STATE(),
             "mode": mode,
@@ -357,14 +367,15 @@ class KemperActionDefinitions:
             "text": "Amp",
             "color": color,
             "id": id,
-            "useSwitchLeds": use_leds
+            "useSwitchLeds": use_leds,
+            "enableCallback": enable_callback
         })
 
     ## Cab ########################################################################################################################
 
     # Amp on/off
     @staticmethod
-    def CABINET_STATE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True):
+    def CABINET_STATE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True, enable_callback = None):
         return ParameterAction({
             "mapping": KemperMappings.CABINET_STATE(),
             "mode": mode,
@@ -372,14 +383,15 @@ class KemperActionDefinitions:
             "text": "Cab",
             "color": color,
             "id": id,
-            "useSwitchLeds": use_leds
+            "useSwitchLeds": use_leds,
+            "enableCallback": enable_callback
         })
 
     ## Change Rig/Bank ############################################################################################################
 
     # Next bank (keeps rig index)
     @staticmethod
-    def BANK_UP(display = None, color = Colors.WHITE, id = False, use_leds = True):
+    def BANK_UP(display = None, color = Colors.WHITE, id = False, use_leds = True, enable_callback = None):
         return ParameterAction({
             "mapping": KemperMappings.NEXT_BANK(),
             "mode": PushButtonAction.ONE_SHOT,
@@ -388,12 +400,13 @@ class KemperActionDefinitions:
             "text": "Bank up",
             "color": color,
             "id": id,
-            "useSwitchLeds": use_leds
+            "useSwitchLeds": use_leds,
+            "enableCallback": enable_callback
         })
     
     # Previous bank (keeps rig index)
     @staticmethod
-    def BANK_DOWN(display = None, color = Colors.WHITE, id = False, use_leds = True):
+    def BANK_DOWN(display = None, color = Colors.WHITE, id = False, use_leds = True, enable_callback = None):
         return ParameterAction({
             "mapping": KemperMappings.PREVIOUS_BANK(),
             "mode": PushButtonAction.ONE_SHOT,
@@ -402,14 +415,26 @@ class KemperActionDefinitions:
             "text": "Bank dn",
             "color": color,
             "id": id,
-            "useSwitchLeds": use_leds
+            "useSwitchLeds": use_leds,
+            "enableCallback": enable_callback
         })
     
     # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
     # the current bank. Rigs are indexed starting from one, range: [1..5].
     # Optionally, banks can be switched too in the same logic using bank and bank_off.
     @staticmethod
-    def RIG_SELECT(rig, rig_off = None, bank = None, bank_off = None, display = None, color = Colors.YELLOW, id = False, use_leds = True, update_displays = None):
+    def RIG_SELECT(rig, 
+                   rig_off = None, 
+                   bank = None, 
+                   bank_off = None, 
+                   display = None, 
+                   color = Colors.YELLOW, 
+                   id = False, 
+                   use_leds = True, 
+                   update_displays = None, 
+                   enable_callback = None
+        ):
+        
         # Mappings and values: Start with a configuration for rig_off == None and bank(_off) = None.
         mapping = KemperMappings.RIG_SELECT(rig - 1)
         mapping_disable = mapping
@@ -455,7 +480,8 @@ class KemperActionDefinitions:
             "mode": PushButtonAction.LATCH,
             "id": id,
             "useSwitchLeds": use_leds,
-            "updateDisplays": KemperActionDefinitions.update_displays_rig_select if not update_displays else update_displays
+            "updateDisplays": KemperActionDefinitions.update_displays_rig_select if not update_displays else update_displays,
+            "enableCallback": enable_callback
         })
 
     # Bank colors

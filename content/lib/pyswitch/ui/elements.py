@@ -301,9 +301,9 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
         self.bounds_changed()
 
     # Sets a child element at the given index
-    #def set(self, element, index):
-    #    super().set(element, index)
-    #    self.bounds_changed()
+    def set(self, element, index):
+        super().set(element, index)
+        self.bounds_changed()
 
     # Update dimensions of all contained elements
     def bounds_changed(self):

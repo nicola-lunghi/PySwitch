@@ -18,12 +18,13 @@ from kemper import KemperMappings
 # Callback returning the splash(es) to show.
 class _SplashCallback(Callback):
     def __init__(self):
+        Callback.__init__(self)
         self.mapping = KemperMappings.TUNER_MODE_STATE()
 
     def get_mappings(self):
-        return [self.mapping]
+        yield self.mapping
 
-    def get(self):
+    def get(self, data):
         if self.mapping.value != 1:
             return _SPLASH_DEFAULT
         else:

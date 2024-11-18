@@ -23,19 +23,14 @@ class UiController(Updater, Updateable):
         self._appl = appl
 
         self._splash_callback.init(appl, self)
-        self.add_updateable(self._splash_callback)
 
     def parameter_changed(self, mapping):
         self.show()
 
-    #@property
-    #def current(self):
-    #    return self._current_splash_element #self._display_tree.value
-
     # Shows the current splash
     def show(self):
         # Get DisplayElement from callback
-        splash_element = self._splash_callback.get()
+        splash_element = self._splash_callback.get(None)
 
         if splash_element == self._current_splash_element:
             return
@@ -48,7 +43,6 @@ class UiController(Updater, Updateable):
 
         # Add elements which are Updateables to the update queue
         self.updateables = [i for i in splash_element.contents_flat() if isinstance(i, Updateable)]
-        self.add_updateable(self._splash_callback)
         
         # Show splash
         self._current_splash_element = splash_element

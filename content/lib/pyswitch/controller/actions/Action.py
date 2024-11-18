@@ -1,5 +1,5 @@
 import math
-from ...misc import get_option, Updateable, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR #, do_print
+from ...misc import get_option, Updateable, Callback, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR #, do_print
 
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
@@ -11,8 +11,7 @@ class Action(Updateable):
     # config: {
     #      "display":              Optional DisplayLabel instance
     #
-    #      "enabled": True,        Optional bool parameter to disable/enable the action. Mostly used internally only. Defaults to True 
-    #                              when not specified.
+    #      "enableCallback":       Callback to set enabled state
     # 
     #      "color":                Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
     #                              with one color for each LED segment of the switch (if more actions share the LEDs, only the first
@@ -28,7 +27,7 @@ class Action(Updateable):
 
         self.id = get_option(config, "id", None)
         self.color = get_option(config, "color", DEFAULT_SWITCH_COLOR)
-        self._enabled = get_option(config, "enabled", True)
+        self._enable_callback = get_option(config, "enableCallback", None)
         self._label_color = get_option(config, "color", None)
 
     # Must be called before usage
@@ -36,22 +35,21 @@ class Action(Updateable):
         self.appl = appl
         self.switch = switch
 
+        if self._enable_callback:
+            self._enable_callback.init(appl, self)
+
         self._initialized = True
 
-    @property
-    def enabled(self):
-        return self._enabled
-
-    @enabled.setter
-    def enabled(self, value):
-        if self._enabled == value:
-            return 
-        
-        self._enabled = value
-
+    # Parameter of callback changed
+    def parameter_changed(self, mapping):
+        print(888)
         self.force_update()
         self.update_displays()
 
+    @property
+    def enabled(self):
+        return self._enable_callback.get(self) if self._enable_callback else True
+        
     # Color of the switch segment(s) for the action (Difficult to do with multicolor, 
     # but this property is just needed to have a setter so this is not callable)
     @property
