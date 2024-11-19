@@ -516,11 +516,11 @@ class KemperEffectEnableCallback(BinaryParameterCallback):
         self._current_category = self._effect_category
 
         # Effect category color
-        action.color = self.CATEGORY_COLORS[self._effect_category]
+        self.color = self.CATEGORY_COLORS[self._effect_category]
 
         # Effect category text
         if action.label:
-            action.label.text = self.CATEGORY_NAMES[self._effect_category]         
+            action.label.text = self.CATEGORY_NAMES[self._effect_category]
 
         super().update_displays(action)
 

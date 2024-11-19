@@ -105,7 +105,7 @@ class BinaryParameterCallback(Callback):
                  
                  # Optional: The value of incoming messages will be compared against this to determine state
                  # (acc. to the comparison mode). If not set, "valueEnable" is used (first entry if valueEnabled is a list). 
-                 reference_value = 1,
+                 reference_value = None,
 
                  # Mode of comparison when receiving a value. Default is GREATER_EQUAL. 
                  comparison_mode = 20,
@@ -129,7 +129,7 @@ class BinaryParameterCallback(Callback):
 
         self._value_enable = value_enable
         self._value_disable = value_disable
-        self._reference_value = reference_value
+        self._reference_value = reference_value if reference_value != None else ( self._value_enable if not isinstance(self._value_enable, list) else self._value_enable[0] )
         self._text = text
         self._text_disabled = text_disabled
         self._comparison_mode = comparison_mode
@@ -137,11 +137,11 @@ class BinaryParameterCallback(Callback):
         self._display_dim_factor_off = display_dim_factor_off
         self._led_brightness_on = led_brightness_on
         self._led_brightness_off = led_brightness_off
-        self._color = color
+        self.color = color
 
-        self._current_display_state = -1
+        #self._current_display_state = -1
         self._current_value = self       # Just some value which will never occur as a mapping value ;)
-        self._current_color = -1
+        #self._current_color = -1
 
         # Auto mode for value_disable
         self._update_value_disabled = False
@@ -172,7 +172,7 @@ class BinaryParameterCallback(Callback):
 
         if not isinstance(self._value_disable, list):
             if value != "auto":
-                self.appl.client.set(set_mapping, value)
+                self._appl.client.set(set_mapping, value)
         else:
             auto_contained = False
             for v in self._value_disable:
@@ -180,7 +180,7 @@ class BinaryParameterCallback(Callback):
                     auto_contained = True
                     break
             if not auto_contained:
-                self.appl.client.set(set_mapping, value)
+                self._appl.client.set(set_mapping, value)
 
         # Request value
         self.update()
@@ -191,20 +191,20 @@ class BinaryParameterCallback(Callback):
             self.evaluate_value(action, self._mapping.value)
 
         # Set color, if new
-        if self._color != self._current_color:
-            self._current_color = self._color
+        #if self.color != self._current_color:
+        #    self._current_color = self.color
         
-            self.set_switch_color(action, self._color)
-            self.set_label_color(action, self._color)
-            self._update_label_text(action)            
+        self.set_switch_color(action, self.color)
+        self.set_label_color(action, self.color)
+        self._update_label_text(action)            
     
         # Update when state have been changed
-        if self._current_display_state != action.state:
-            self._current_display_state = action.state
+        #if self._current_display_state != action.state:
+        #    self._current_display_state = action.state
 
-            self.set_switch_color(action, self._color)
-            self.set_label_color(action, self._color)
-            self._update_label_text(action)
+        #    self.set_switch_color(action, self.color)
+        #    self.set_label_color(action, self.color)
+        #    self._update_label_text(action)
 
     # Evaluate a new value
     def evaluate_value(self, action, value):
@@ -240,7 +240,7 @@ class BinaryParameterCallback(Callback):
         action.feedback_state(state)        
 
         # If enabled, remember the value for later when disabled
-        if state == True or not self._update_value_disabled:
+        if state == True or not self._update_value_disabled or value == None:
             return
         
         if not isinstance(self._value_disable, list):
@@ -277,13 +277,13 @@ class BinaryParameterCallback(Callback):
         if not action.label:
             return
             
-        if self._text == False:
+        if not self._text:
             return
         
         if action.state == True or not self._mapping.response:
             action.label.text = self._text
         else:
-            if self._text_disabled != False:
+            if self._text_disabled:
                 action.label.text = self._text_disabled
             else:
                 action.label.text = self._text
