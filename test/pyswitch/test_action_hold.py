@@ -33,7 +33,7 @@ class MockFootSwitch:
         self.id = "foo"
 
 
-class TestActionPushButton(unittest.TestCase):
+class TestActionHold(unittest.TestCase):
 
 
     def test(self):
@@ -49,7 +49,9 @@ class TestActionPushButton(unittest.TestCase):
                     action_1,
                     action_2
                 ],
-                "actionsHold": action_3
+                "actionsHold": [
+                    action_3
+                ]
             },
             hold_period
         )
@@ -58,10 +60,10 @@ class TestActionPushButton(unittest.TestCase):
 
         action_hold.init(appl, MockFootSwitch())
 
-        self.assertEqual(len(appl.updateables), 3)
-        self.assertIn(action_1, appl.updateables)
-        self.assertIn(action_2, appl.updateables)
-        self.assertIn(action_3, appl.updateables)
+        self.assertEqual(len(action_hold.updateables), 3)
+        self.assertIn(action_1, action_hold.updateables)
+        self.assertIn(action_2, action_hold.updateables)
+        self.assertIn(action_3, action_hold.updateables)
 
         self.assertEqual(len(action_hold.get_all_actions()), 4)
         self.assertIn(action_hold, action_hold.get_all_actions())
@@ -137,44 +139,6 @@ class TestActionPushButton(unittest.TestCase):
         self.assertEqual(action_3.num_release_calls, 2)
 
 
-    def test_enable_sub_actions(self):
-        action_1 = MockAction()
-        action_2 = MockAction()
-        action_3 = MockAction()
-    
-        action_hold = HoldAction(
-            {
-                "actions": [
-                    action_1,
-                    action_2
-                ],
-                "actionsHold": action_3
-            }
-        )
-
-        appl = MockController()
-        action_hold.init(appl, MockFootSwitch())
-
-        self.assertEqual(action_hold.enabled, True)
-        self.assertEqual(action_1.enabled, True)
-        self.assertEqual(action_2.enabled, True)
-        self.assertEqual(action_3.enabled, True)
-
-        action_hold.enabled = False
-
-        self.assertEqual(action_hold.enabled, False)
-        self.assertEqual(action_1.enabled, False)
-        self.assertEqual(action_2.enabled, False)
-        self.assertEqual(action_3.enabled, False)
-
-        action_hold.enabled = True
-
-        self.assertEqual(action_hold.enabled, True)
-        self.assertEqual(action_1.enabled, True)
-        self.assertEqual(action_2.enabled, True)
-        self.assertEqual(action_3.enabled, True)
-
-
     def test_minimal(self):
         # Must not throw
         action_hold = HoldAction()
@@ -194,7 +158,9 @@ class TestActionPushButton(unittest.TestCase):
                     action_1,
                     action_2
                 ],
-                "actionsHold": action_3
+                "actionsHold": [
+                    action_3
+                ]
             }
         )
 
@@ -229,7 +195,9 @@ class TestActionPushButton(unittest.TestCase):
                     action_1,
                     action_2
                 ],
-                "actionsHold": action_3
+                "actionsHold": [
+                    action_3
+                ]
             }
         )
 
@@ -264,7 +232,9 @@ class TestActionPushButton(unittest.TestCase):
                     action_1,
                     action_2
                 ],
-                "actionsHold": action_3
+                "actionsHold": [
+                    action_3
+                ]
             }
         )
 
@@ -299,7 +269,9 @@ class TestActionPushButton(unittest.TestCase):
                     action_1,
                     action_2
                 ],
-                "actionsHold": action_3
+                "actionsHold": [
+                    action_3
+                ]
             }
         )
 

@@ -21,7 +21,7 @@ class _EnableCallback(Callback):
         yield self.mapping
 
     def get(self, action):  
-        if not self.mapping.value:
+        if self.mapping.value == None:
             return (action.id == 10)
         
         if action.id == 10:
@@ -30,6 +30,7 @@ class _EnableCallback(Callback):
             return (self.mapping.value < NRPN_VALUE(0.5))
         
 _enable_callback = _EnableCallback()
+
 
 # Defines the switch assignments
 Switches = [

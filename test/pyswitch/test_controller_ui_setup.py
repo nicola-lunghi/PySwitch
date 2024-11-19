@@ -29,7 +29,8 @@ with patch.dict(sys.modules, {
 
         from gc import gc_mock_data
         from .mocks_appl import *
-        from .mocks_ui import MockDisplayDriver, MockFontLoader, MockUpdateableDisplayElement, MockSplashCallback
+        from .mocks_ui import MockDisplayDriver, MockFontLoader, MockUpdateableDisplayElement
+        from .mocks_callback import MockCallback
 
 
 class MockUiController(UiController):
@@ -60,7 +61,7 @@ class TestControllerUiSetup(unittest.TestCase):
         element_3 = MockUpdateableDisplayElement(id = 3)
 
         ui = MockUiController(
-            splash_callback = MockSplashCallback(
+            splash_callback = MockCallback(
                 output = HierarchicalDisplayElement(
                     children = [
                         element_1,

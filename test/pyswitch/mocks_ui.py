@@ -56,38 +56,27 @@ class MockDisplayDriver:
 
 
 class MockUiController:
-    def __init__(self, width = 2000, height = 1000, root = None):
-        self.root = MockHierarchicalDisplayElement(
-            bounds = DisplayBounds(0, 0, width, height)
-        ) if not root else root
+    def __init__(self, width = 2000, height = 1000, splash_callback = None):
+        self.bounds = DisplayBounds(0, 0, width, height)
+        self.cb = splash_callback
 
-    def search(self, id, index = None):
-        return self.root.search(id, index)
-    
-    def create_label(self, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
-        return MockDisplayLabel(bounds=bounds, layout=layout, name=name, id=id)
-
-    def set_root(self, root):
-        self.root = root
+    def set_callback(self, splash_callback):
+        self.cb = splash_callback
 
     def init(self, appl):
         pass
 
     def show(self):
-        pass
-
-    @property
-    def bounds(self):
-        return self.root.bounds
+        self.shown_root = self.cb.get()
     
 
-class MockDisplaySplash:
-    def __init__(self, element = None):
-        self.font_loader = MockFontLoader()
+#class MockDisplaySplash:
+#    def __init__(self, element = None):
+#        self.font_loader = MockFontLoader()
 
-        self.splash = []
+#        self.splash = []
 
-        self.root = element if element else MockHierarchicalDisplayElement()
+#        self.root = element if element else MockHierarchicalDisplayElement()
         
 
 class MockDisplayLabel(DisplayElement):
@@ -130,16 +119,3 @@ class MockFontLoader:
         return MockFont(path)
 
 
-class MockSplashCallback(Callback):
-    def __init__(self, mappings = [], output = None):
-        self.mappings = mappings
-        self.output_get = output
-
-    def get_mappings(self):
-        if self.mappings:
-            return self.mappings
-        else:
-            return super().get_mappings()
-    
-    def get(self):
-        return self.output_get

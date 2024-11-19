@@ -19,12 +19,11 @@ with patch.dict(sys.modules, {
 }):
     #from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.ui.ui import DisplayBounds
+    from lib.pyswitch.ui.ui import DisplayBounds, DisplayElement
     from lib.pyswitch.ui.elements import BidirectionalProtocolState
     from lib.pyswitch.controller.Client import BidirectionalClient
     
     from .mocks_appl import MockBidirectionalProtocol, MockMidiController, MockClient
-    from .mocks_ui import MockDisplaySplash
     
 
 class MockController:
@@ -51,7 +50,8 @@ class TestProtocolState(unittest.TestCase):
             )
         )
 
-        ui = MockDisplaySplash()
+        ui = DisplayElement()
+        ui.make_splash(None)
 
         display.init(ui, appl)
 
@@ -75,7 +75,8 @@ class TestProtocolState(unittest.TestCase):
             client = MockClient()
         )
 
-        ui = MockDisplaySplash()
+        ui = DisplayElement()
+        ui.make_splash(None)
 
         display.init(ui, appl)
 

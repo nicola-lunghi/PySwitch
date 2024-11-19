@@ -2,7 +2,6 @@ from lib.pyswitch.controller.actions.Action import Action
 from lib.pyswitch.controller.actions.actions import PushButtonAction
 from lib.pyswitch.controller.Controller import Controller
 from lib.pyswitch.controller.Client import ClientParameterMapping
-from lib.pyswitch.controller.ConditionTree import Condition
 
 from .mocks_lib import *
 
@@ -238,36 +237,6 @@ class MockAction(Action):
     def reset_display(self): 
         self.num_reset_display_calls += 1
 
-
-##################################################################################################################################
-
-
-class MockCondition(Condition):
-    def __init__(self, yes = None, no = None):
-        super().__init__(yes = yes, no = no)
-
-        self.bool_value = True
-        self.num_update_calls = 0
-
-    def update(self):
-        self.num_update_calls += 1
-
-        if self.true == self.bool_value:
-            return
-
-        self.true = self.bool_value
-
-        for listener in self.listeners:
-            listener.condition_changed(self)   
-
-
-##################################################################################################################################
-
-
-class MockConditionReplacer:
-    def replace(self, entry):
-        return entry + " (replaced)"
-    
 
 ##################################################################################################################################
 

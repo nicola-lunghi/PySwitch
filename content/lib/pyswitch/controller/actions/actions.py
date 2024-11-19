@@ -1,12 +1,8 @@
 from micropython import const
 
 from .Action import Action
-from ...misc import Colors, PeriodCounter, DEFAULT_LABEL_COLOR, get_option
-from ..ConditionTree import ConditionTree
+from ...misc import Colors, PeriodCounter, DEFAULT_LABEL_COLOR, get_option, Updater
 
-
-# Hold time for HOLD_MOMENTARY mode (milliseconds)
-_DEFAULT_LATCH_MOMENTARY_HOLD_TIME = const(600)
 
 # Implements an abstraction layer for on/off parameters. Covers latch/momentary modes etc.
 class PushButtonAction(Action):
@@ -22,6 +18,9 @@ class PushButtonAction(Action):
                                            # on, it will momentarily be switched off and vice versa).
     ONE_SHOT = const(100)                  # Fire the SET command on every push (show as disabled)
 
+    # Hold time for HOLD_MOMENTARY mode (milliseconds)
+    DEFAULT_LATCH_MOMENTARY_HOLD_TIME = const(600)
+
     # config:
     # {
     #      "mode": Mode of operation (see PushButtonModes). Optional, default is HOLD_MOMENTARY,
@@ -34,7 +33,7 @@ class PushButtonAction(Action):
         
         self._period = period_counter
         if not self._period:
-            hold_time_ms = get_option(config, "holdTimeMillis", _DEFAULT_LATCH_MOMENTARY_HOLD_TIME)
+            hold_time_ms = get_option(config, "holdTimeMillis", self.DEFAULT_LATCH_MOMENTARY_HOLD_TIME)
             self._period = PeriodCounter(hold_time_ms)
         
         self._state = False
@@ -124,10 +123,11 @@ class PushButtonAction(Action):
 ################################################################################################################################
 
 
-_DEFAULT_HOLD_TIME_MILLIS = const(600)            # Default hold time
-
 # Implements an abstraction layer for triggering different actions on hold/double click
-class HoldAction(Action):
+class HoldAction(Action, Updater):
+
+    # Default hold time
+    DEFAULT_HOLD_TIME_MILLIS = const(600)            
 
     # config:
     # {
@@ -137,93 +137,40 @@ class HoldAction(Action):
     #                               Note that the sensing here is done only every processing update interval!
     # }
     def __init__(self, config = {}, period_counter_hold = None):
-        super().__init__(config)
+        Action.__init__(self, config)
+        Updater.__init__(self)
         
-        self._action_tree = None
-        self._action_hold_tree = None
         self._active = False
 
-        self._action_config = get_option(config, "actions", [])
-        self._action_config_hold = get_option(config, "actionsHold", [])
+        self._actions = get_option(config, "actions", [])
+        self._actions_hold = get_option(config, "actionsHold", [])
 
         # Hold period counter
         self._period_hold = period_counter_hold
         if not self._period_hold:
-            hold_time_ms = get_option(config, "holdTimeMillis", _DEFAULT_HOLD_TIME_MILLIS)
+            hold_time_ms = get_option(config, "holdTimeMillis", self.DEFAULT_HOLD_TIME_MILLIS)
             self._period_hold = PeriodCounter(hold_time_ms)
         
-    # Tie the enabled state of the actions to the one of this action
-    @Action.enabled.setter
-    def enabled(self, value):
-        Action.enabled.fset(self, value)
-
-        self.condition_changed(None)
-
     # Set up action instances
     def init(self, appl, switch):
         super().init(appl, switch)
 
-        self._action_tree = self._init_actions(appl, switch, self._action_config)
-        self._action_hold_tree = self._init_actions(appl, switch, self._action_config_hold)
-        
-        self._action_config = None
-        self._action_config_hold = None
-
-        # Update actions to initialize the correct initial state
-        self.condition_changed(None)
-
-        self.update_displays()
-
-    # Initialize actions for a list
-    def _init_actions(self, appl, switch, action_definitions):
-        action_tree = ConditionTree(
-            subject = action_definitions,
-            listener = self
-        )
-
-        action_tree.init(appl)
-        actions = action_tree.entries
-
-        for action in actions:
+        for action in self._actions + self._actions_hold:
             action.init(appl, switch)        
-            appl.add_updateable(action)            
+            self.add_updateable(action)    
 
-        return action_tree
+    def update(self):
+        Action.update(self)
+        Updater.update(self)
         
-    # Called on condition changes. The yes value will be True or False.
-    def condition_changed(self, condition):
-        self._actions = self._action_tree.values
-        self._actions_hold = self._action_hold_tree.values
-
-        all = self._action_tree.entries + self._action_hold_tree.entries
-        
-        if not self.enabled:
-            for action in all:
-                action.reset_display()
-                action.enabled = False
-            return
-
-        active_actions = self._actions + self._actions_hold        
-
-        to_disable = [a for a in all if a.enabled and not a in active_actions]
-        to_enable = [a for a in all if not a.enabled and a in active_actions]
-
-        # Execute the two lists in the correct order
-        for action in to_disable:
-            action.reset_display()
-            action.enabled = False
-
-        for action in to_enable:
-            action.enabled = True
-
     # Can return child actions (used for LED addressing)
     def get_all_actions(self):
         ret = [self]
 
-        for a in self._action_tree.entries:
+        for a in self._actions:
             ret = ret + a.get_all_actions()
 
-        for a in self._action_hold_tree.entries:
+        for a in self._actions_hold:
             ret = ret + a.get_all_actions()
 
         return ret

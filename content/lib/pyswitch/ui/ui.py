@@ -1,5 +1,4 @@
 from displayio import Group
-#from ..misc import Tools
 
 
 # Represents a screen area with dimensions.

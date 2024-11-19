@@ -22,6 +22,7 @@ with patch.dict(sys.modules, {
 
     from .mocks_ui import *
     from .mocks_appl import *
+    from .mocks_callback import *
 
 
 class MockController2(Updater):
@@ -31,7 +32,7 @@ class MockController2(Updater):
 
 
 class MockUiController(UiController):
-    def __init__(self, display_driver, font_loader, splash_callback):
+    def __init__(self, display_driver, font_loader, splash_callback = None):
         super().__init__(display_driver, font_loader, splash_callback)
 
         self.num_show_calls = 0
@@ -54,7 +55,7 @@ class TestUiController(unittest.TestCase):
         font_loader = MockFontLoader()
 
         display = DisplayElement(id = 1)
-        ui = UiController(display_driver, font_loader, MockSplashCallback(output = display))        
+        ui = UiController(display_driver, font_loader, MockCallback(output = display))        
 
         appl = MockController2()
         ui.init(appl)
@@ -90,8 +91,11 @@ class TestUiController(unittest.TestCase):
         display = DisplayElement(id = 1)
         ui = MockUiController(
             display_driver = display_driver, 
-            font_loader = font_loader, 
-            splash_callback = MockSplashCallback(
+            font_loader = font_loader
+        )
+
+        ui.set_callback(
+            MockCallback(
                 output = display,
                 mappings = [
                     mapping_1,
@@ -123,7 +127,7 @@ class TestUiController(unittest.TestCase):
             }
         ])
 
-        ui.update()
+        appl.update()
 
         self.assertEqual(appl.client.request_calls, [
             {
@@ -142,6 +146,7 @@ class TestUiController(unittest.TestCase):
 
         self.assertEqual(ui.num_show_calls, 2)
 
+
     def test_add_updateables(self):
         display_driver = MockDisplayDriver(w = 300, h = 400, init = True)
 
@@ -158,7 +163,7 @@ class TestUiController(unittest.TestCase):
             ]
         )
 
-        ui = UiController(display_driver, MockFontLoader(), MockSplashCallback(output = display))
+        ui = UiController(display_driver, MockFontLoader(), MockCallback(output = display))
         appl = MockController2()
         appl.add_updateable(ui)
         ui.init(appl)
@@ -186,7 +191,7 @@ class TestUiController(unittest.TestCase):
 
         element_1 = DisplayElement(id = 1)
 
-        ui = UiController(display_driver, font_loader, MockSplashCallback(output = element_1))
+        ui = UiController(display_driver, font_loader, MockCallback(output = element_1))
 
         with self.assertRaises(Exception):
             ui.show()

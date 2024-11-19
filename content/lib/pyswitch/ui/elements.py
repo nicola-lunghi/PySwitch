@@ -5,7 +5,6 @@ from adafruit_display_shapes.rect import Rect
 
 from .ui import HierarchicalDisplayElement, DisplayBounds, DisplayElement
 
-from ..controller.ConditionTree import ConditionTree, Condition
 from ..controller.Client import BidirectionalClient
 from ..controller.Controller import Controller
 from ..misc import Updateable, Colors, get_option #, do_print
@@ -43,65 +42,53 @@ class DisplayLabelLayout:
 
 
 # Controller for a generic rectangular label on the user interface.
-class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryReplacer):
+class DisplayLabel(DisplayElement):
 
     # Line feed used for display
     LINE_FEED = "\n"
 
-    # layout can also be a Condition!
     def __init__(self, layout = None, bounds = DisplayBounds(), name = "", id = 0, scale = 1):
         super().__init__(bounds = bounds, name = name, id = id)
 
+        self._layout = DisplayLabelLayout(layout if layout else {})
+        self._layout.check(self.id)
+
         self._scale = scale
 
-        if isinstance(layout, Condition):
-            self._layout_tree = ConditionTree(
-                subject = layout,
-                listener = self,
-                replacer = self,
-                allow_lists = False
-            )
-
-            self._layout = self._layout_tree.value
-        else:
-            self._layout_tree = None
-
-            self._layout = DisplayLabelLayout(layout if layout else {})
-            self._layout.check(self.id)
-
         self._initial_text_color = self._layout.text_color        
+
         self._ui = None    
         self._appl = None
-
         self._background = None 
-        self._label = None      
+        self._label = None
+        
+        # This seems to be a strange bug in micropython: Can be replaced when further attributes are coming.
+        # The field is not used anywhere.
+        self._bugfix = None
 
     # Adds the slot to the splash
     def init(self, ui, appl):
         self._ui = ui
         self._appl = appl
 
-        if self._layout_tree:
-            self._layout_tree.init(appl)
-
         self._update_font()
 
         # Append background, if any
-        if self.back_color:
+        if self._layout.back_color:
             self._background = Rect(
                 x = self.bounds.x + self._layout.stroke, 
                 y = self.bounds.y + self._layout.stroke,
                 width = self.bounds.width - self._layout.stroke * 2, 
                 height = self.bounds.height - self._layout.stroke * 2, 
-                fill = self.layout.back_color
+                fill = self._layout.back_color
             )
             ui.splash.append(self._background)
 
         # Trigger automatic text color determination
-        self.text_color = self.layout.text_color
+        self.text_color = self._layout.text_color
 
         # Trigger text wrapping
-        self.text = self.layout.text
+        self.text = self._layout.text
 
         # Append text area
         self._label = label.Label(
@@ -111,9 +98,9 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
                 int(self.bounds.width / 2), 
                 int(self.bounds.height / 2)
             ),
-            text = self._wrap_text(self.layout.text),
-            color = self.layout.text_color,
-            line_spacing = self.layout.line_spacing,
+            text = self._wrap_text(self._layout.text),
+            color = self._layout.text_color,
+            line_spacing = self._layout.line_spacing,
             scale = self._scale
         )
         
@@ -123,88 +110,75 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
             y = self.bounds.y
         )
         group.append(self._label)
-
-        # Adds all backgrounds and the frame to the splash
-        super().init(ui, appl)
-
-        # Add label (group) to splash        
         ui.splash.append(group)
 
-    # Called on condition changes. The yes value will be True or False.
-    def condition_changed(self, condition):
-        self.layout = self._layout_tree.value
+        super().init(ui, appl)
 
-    # Replace layout entries in the layout tree
-    def replace(self, entry):
-        l = DisplayLabelLayout(entry)
-        l.check(self.id)
-        return l
-        
     # Update font according to layout
     def _update_font(self):
-        self._font = self._ui.font_loader.get(self.layout.font_path)
+        self._font = self._ui.font_loader.get(self._layout.font_path)
 
-    @property
-    def layout(self):
-        return self._layout
+    #@property
+    #def layout(self):
+    #    return self._layout
     
-    @layout.setter
-    def layout(self, layout):
-        old = self._layout
-        self._layout = layout
+    #@layout.setter
+    #def layout(self, layout):
+    #    old = self._layout
+    #    self._layout = layout
                 
-        # Changes to the label
-        if self._label:
-            # Font changed?
-            if old.font_path != self._layout.font_path:
-                self._update_font()
-                self._label.font = self._font
+    #    # Changes to the label
+    #    if self._label:
+    #        # Font changed?
+    #        if old.font_path != self._layout.font_path:
+    #            self._update_font()
+    #            self._label.font = self._font
 
-            # Text or wrapping changed?
-            if old.text != self._layout.text or old.max_text_width != self._layout.max_text_width:
-                self._layout.text = old.text                              # Keep text!
-                self._label.text = self._wrap_text(self._layout.text)
+    #        # Text or wrapping changed?
+    #        if old.text != self._layout.text or old.max_text_width != self._layout.max_text_width:
+    #            self._layout.text = old.text                              # Keep text!
+    #            self._label.text = self._wrap_text(self._layout.text)
 
-            # Line spacing changed?
-            if old.line_spacing != self._layout.line_spacing:
-                self._label.line_spacing = self._layout.line_spacing
+    #        # Line spacing changed?
+    #        if old.line_spacing != self._layout.line_spacing:
+    #            self._label.line_spacing = self._layout.line_spacing
 
-            # Text color changed?
-            if old.text_color != self._layout.text_color:
-                if not self._layout.text_color:
-                    self._layout.text_color = self._determine_text_color()
+    #        # Text color changed?
+    #        if old.text_color != self._layout.text_color:
+    #            if not self._layout.text_color:
+    #                self._layout.text_color = self._determine_text_color()
 
-                self._label.color = self._layout.text_color
-                self._initial_text_color = self._layout.text_color
+    #            self._label.color = self._layout.text_color
+    #            self._initial_text_color = self._layout.text_color
 
-        # Changes to the backgrounds
-        if self._layout.back_color:
-            # Back color changed?
-            if old.back_color and old.back_color != self._layout.back_color:
-                if self._background:
-                    self._background.fill = self._layout.back_color
+    #    # Changes to the backgrounds
+    #    if self._layout.back_color:
+    #        # Back color changed?
+    #        if old.back_color and old.back_color != self._layout.back_color:
+    #            if self._background:
+    #                self._background.fill = self._layout.back_color
 
-                # Update text color, too (might change when no initial color has been set)
-                self.text_color = self._initial_text_color
+    #            # Update text color, too (might change when no initial color has been set)
+    #            self.text_color = self._initial_text_color
 
     @property
     def back_color(self):
-        return self.layout.back_color
+        return self._layout.back_color
 
     @back_color.setter
     def back_color(self, color):
-        if self.layout.back_color and not color:
+        if self._layout.back_color and not color:
             return
         #    raise Exception("You can not remove a background (set color to black instead)")            
 
-        if not self.layout.back_color and color:
+        if not self._layout.back_color and color:
             return
         #    raise Exception("You can only change the background color if an initial background color has been passed")
         
-        if self.layout.back_color == color:
+        if self._layout.back_color == color:
             return
 
-        self.layout.back_color = color
+        self._layout.back_color = color
 
         if self._background:
             self._background.fill = color
@@ -214,7 +188,7 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
 
     @property
     def text_color(self):
-        return self.layout.text_color
+        return self._layout.text_color
 
     @text_color.setter
     def text_color(self, color):
@@ -222,17 +196,17 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
         if not text_color:
             text_color = self._determine_text_color()
 
-        if self.layout.text_color == text_color:
+        if self._layout.text_color == text_color:
             return
         
-        self.layout.text_color = text_color
+        self._layout.text_color = text_color
 
         if self._label:
             self._label.color = text_color
 
     @property
     def text(self):
-        return self.layout.text
+        return self._layout.text
 
     @text.setter
     def text(self, text):
@@ -240,10 +214,10 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
         if self._appl and self._appl.low_memory_warning:
             text = "Low Memory!"
         
-        if self.layout.text == text:
+        if self._layout.text == text:
             return
         
-        self.layout.text = text
+        self._layout.text = text
 
         if self._label:
             self._label.text = self._wrap_text(text)
@@ -253,11 +227,11 @@ class DisplayLabel(DisplayElement): #, ConditionListener, ConditionTreeEntryRepl
         if not text:
             return ""
         
-        if self.layout.max_text_width:
+        if self._layout.max_text_width:
             return DisplayLabel.LINE_FEED.join(
                 wrap_text_to_pixels(
                     text, 
-                    self.layout.max_text_width,
+                    self._layout.max_text_width,
                     self._font
                 )
             )
@@ -353,7 +327,7 @@ class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener)
     #     "textOffline": Text to show initially and when the client is offline (optional)
     #     "textReset":   Text to show when a reset happened (on rig changes etc.). Optional.
     # }
-    def __init__(self, parameter, bounds = DisplayBounds(), layout = {}, name = "", id = 0):
+    def __init__(self, parameter, bounds = DisplayBounds(), layout = None, name = "", id = 0):
         DisplayLabel.__init__(self, bounds = bounds, layout = layout, name = name, id = id)
 
         self._mapping = parameter["mapping"]

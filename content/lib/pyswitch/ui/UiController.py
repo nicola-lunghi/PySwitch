@@ -5,7 +5,7 @@ from ..misc import Updateable, Updater
 class UiController(Updater, Updateable):
 
     # Creates the displays. root can be a DisplayElement or a condition.
-    def __init__(self, display_driver, font_loader, splash_callback):     
+    def __init__(self, display_driver, font_loader, splash_callback = None):     
         Updater.__init__(self)
 
         self._font_loader = font_loader
@@ -13,6 +13,9 @@ class UiController(Updater, Updateable):
         self._splash_callback = splash_callback
 
         self._current_splash_element = None
+
+    def set_callback(self, splash_callback):
+        self._splash_callback = splash_callback
 
     @property
     def bounds(self):
@@ -26,6 +29,9 @@ class UiController(Updater, Updateable):
 
     def parameter_changed(self, mapping):
         self.show()
+
+    def update(self):
+        Updater.update(self)
 
     # Shows the current splash
     def show(self):

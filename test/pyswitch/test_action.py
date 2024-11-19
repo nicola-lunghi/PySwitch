@@ -16,14 +16,22 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
+    from adafruit_midi.system_exclusive import SystemExclusive
     from lib.pyswitch.controller.actions.Action import Action
+    from lib.pyswitch.misc import Updater
+    
     from .mocks_ui import *
+    from .mocks_appl import *
+    from .mocks_callback import *
 
 
-class MockController:
+class MockController(Updater):
     def __init__(self, config = {}, ui = None):
+        super().__init__()
+
         self.config = config
         self.ui = ui
+        self.client = MockClient()
 
 
 class MockFootSwitch:
@@ -40,30 +48,82 @@ class MockAction(Action):
 
         self.uses_switch_leds = use_leds
 
+        self.num_update_displays_calls = 0
+        self.num_force_update_calls = 0
+
+    def update_displays(self):
+        self.num_update_displays_calls += 1
+
+    def force_update(self): 
+        self.num_force_update_calls += 1
+
 
 #################################################################################
 
 
 class TestAction(unittest.TestCase):
 
-    #def test_repr(self):
-    #    appl = MockController()
-    #    switch = MockFootSwitch(id = "foo")
-    #    action = MockAction()
+    def test_enabled_callback(self):
+        cb = MockCallback(output = True)
 
-    #    self.assertTrue("MockAction" in repr(action))        
+        action_1 = MockAction(config = {
+            "enableCallback": cb
+        })
 
-    #    action.init(appl, switch)
+        self.assertEqual(action_1.enabled, True)
 
-    #    self.assertTrue("MockAction" in repr(action))
-    #    self.assertTrue("foo" in repr(action))
+        cb.output_get = False
 
-    #    self.assertTrue("MockAction" in action.id)
-    #    self.assertTrue("foo" in action.id)
+        self.assertEqual(action_1.enabled, False)
 
 
-#################################################################################
+    def test_enabled_callback_mappings(self):
+        mapping_1 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
 
+        mapping_2 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x22],
+                data = [0x00, 0x00, 0xe9]
+            )
+        )
+
+        cb = MockCallback(
+            output = True,
+            mappings = [
+                mapping_1,
+                mapping_2
+            ]
+        )
+
+        action_1 = MockAction(
+            config = {
+                "enableCallback": cb
+            }
+        )
+
+        appl = MockController()
+
+        action_1.init(appl, MockFootSwitch())
+
+        self.assertEqual([x["mapping"] for x in appl.client.register_calls], [mapping_1, mapping_2])
+
+        appl.update()
+
+        self.assertEqual([x["mapping"] for x in appl.client.request_calls], [mapping_1, mapping_2])
+
+        listener_1 = appl.client.register_calls[0]["listener"]
+        self.assertEqual(appl.client.register_calls[1]["listener"], listener_1)
+
+        listener_1.parameter_changed(None)
+
+        self.assertEqual(action_1.num_force_update_calls, 1)
+        self.assertEqual(action_1.num_update_displays_calls, 1)
+        
 
     def test_led_segments_one_action(self):
         appl = MockController()
@@ -129,8 +189,11 @@ class TestAction(unittest.TestCase):
         appl = MockController()
         switch = MockFootSwitch()
         
-        action_1 = MockAction(use_leds = True)
-        action_2 = MockAction(use_leds = True)
+        cb_1 = MockCallback(output = True)
+        cb_2 = MockCallback(output = True)
+
+        action_1 = MockAction(use_leds = True, config = { "enableCallback": cb_1 })
+        action_2 = MockAction(use_leds = True, config = { "enableCallback": cb_2 })
         action_3 = MockAction()
         action_4 = MockAction(use_leds = True)
         action_5 = MockAction()
@@ -189,58 +252,24 @@ class TestAction(unittest.TestCase):
         self.assertEqual(action_4._get_led_segments(), [5])
 
         # Disable action 1
-        action_1.enabled = False
+        cb_1.output_get = False
         self.assertEqual(action_1._get_led_segments(), [])
         self.assertEqual(action_2._get_led_segments(), [0, 1, 2, 3, 4])
         self.assertEqual(action_4._get_led_segments(), [5])
 
         # Disable action 2
-        action_1.enabled = True
-        action_2.enabled = False
+        cb_1.output_get = True
+        cb_2.output_get = False
         self.assertEqual(action_1._get_led_segments(), [0, 1, 2, 3, 4])
         self.assertEqual(action_2._get_led_segments(), [])
         self.assertEqual(action_4._get_led_segments(), [5])
 
         # No LED actions at all but action 1 but this is disabled        
-        action_1.enabled = False
+        cb_1.output_get = False
         action_2.uses_switch_leds = False
         action_4.uses_switch_leds = False
         self.assertEqual(action_1._get_led_segments(), [])
         
-
-########################################################################################
-
-
-    def test_property_enabled(self):
-        appl = MockController()
-        switch = MockFootSwitch()
-        action = MockAction({
-            "enabled": False
-        })
-
-        action.init(appl, switch)
-
-        self.assertEqual(action.enabled, False)
-
-        action.enabled = False
-        self.assertEqual(action.enabled, False)
-
-        action.enabled = True
-        self.assertEqual(action.enabled, True)
-
-
-########################################################################################
-
-
-    def test_property_enabled_default(self):
-        appl = MockController()
-        switch = MockFootSwitch()
-        action = MockAction()
-
-        action.init(appl, switch)
-
-        self.assertEqual(action.enabled, True)
-
 
 ########################################################################################
 
@@ -328,11 +357,14 @@ class TestAction(unittest.TestCase):
         appl = MockController()
         switch = MockFootSwitch()
         
+        cb_4 = MockCallback(output = True)
+        cb_5 = MockCallback(output = True)
+
         action_1 = MockAction()
         action_2 = MockAction(use_leds = True)
         action_3 = MockAction()
-        action_4 = MockAction(use_leds = True)
-        action_5 = MockAction(use_leds = True)
+        action_4 = MockAction(use_leds = True, config = { "enableCallback": cb_4 })
+        action_5 = MockAction(use_leds = True, config = { "enableCallback": cb_5 })
 
         action_1.init(appl, switch)
         action_2.init(appl, switch)
@@ -392,8 +424,8 @@ class TestAction(unittest.TestCase):
         self.assertEqual(switch.brightnesses, [0.2, 0.4, 0.6])
 
         ### Only action 2 is enabled ##############################################
-        action_4.enabled = False
-        action_5.enabled = False
+        cb_4.output_get = False
+        cb_5.output_get = False
 
         # One pixel
         switch.pixels = [11]

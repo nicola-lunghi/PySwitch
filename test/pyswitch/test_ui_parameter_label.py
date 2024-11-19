@@ -28,6 +28,7 @@ with patch.dict(sys.modules, {
 
     from .mocks_appl import *
     from .mocks_ui import *
+    from .mocks_callback import *
 
 
 class TestParameterLabel(unittest.TestCase):
@@ -60,7 +61,7 @@ class TestParameterLabel(unittest.TestCase):
         ui = UiController(
             display_driver = MockDisplayDriver(init = True), 
             font_loader = MockFontLoader(), 
-            splash_callback = MockSplashCallback(output = display)
+            splash_callback = MockCallback(output = display)
         )
 
         appl = MockController(
@@ -175,7 +176,7 @@ class TestParameterLabel(unittest.TestCase):
         ui = UiController(
             display_driver = MockDisplayDriver(init = True), 
             font_loader = MockFontLoader(), 
-            splash_callback = MockSplashCallback(output = display)
+            splash_callback = MockCallback(output = display)
         )
 
         appl = MockController(
@@ -296,7 +297,7 @@ class TestParameterLabel(unittest.TestCase):
         ui = UiController(
             display_driver = MockDisplayDriver(init = True), 
             font_loader = MockFontLoader(), 
-            splash_callback = MockSplashCallback(output = display)
+            splash_callback = MockCallback(output = display)
         )
 
         appl = MockController(

@@ -27,60 +27,6 @@ with patch.dict(sys.modules, {
 
 class TestDisplayLabel(unittest.TestCase):
 
-    def test_layout_condition(self):
-        layout_def_1 = {
-            "font": "foo",
-            "maxTextWidth": 222,
-            "lineSpacing": 0.6,
-            "text": "footext",
-            "textColor": (2, 3, 4),
-            "backColor": (20, 30, 40),
-            "stroke": 4
-        }
-
-        layout_def_2 = {
-            "font": "bar",
-            "maxTextWidth": 223,
-            "lineSpacing": 0.7,
-            "text": "bartext",
-            "textColor": (3, 4, 5),
-            "backColor": (30, 40, 50),
-            "stroke": 5
-        }
-
-        condition_1 = MockCondition(
-            yes = layout_def_1,
-            no = layout_def_2,
-        )
-
-        label = DisplayLabel(
-            layout = condition_1,
-            bounds = DisplayBounds(20, 21, 200, 210)
-        )
-
-        ui = MockDisplaySplash()
-        u = Updater()
-        u.low_memory_warning = False
-
-        label.init(ui, u)
-
-        self.assertTrue(self._compare_layouts(label.layout, DisplayLabelLayout(layout_def_1)))
-        self.assertEqual(label.text, "footext")
-
-        condition_1.bool_value = False
-        u.update()
-        
-        self.assertTrue(self._compare_layouts(label.layout, DisplayLabelLayout(layout_def_2)))
-        self.assertEqual(label.text, "footext")
-
-        # Set identical layout (shall not change anything)
-        layout_def_2["text"] = "footext"
-        label.layout = DisplayLabelLayout(layout_def_2)
-
-        self.assertTrue(self._compare_layouts(label.layout, DisplayLabelLayout(layout_def_2)))
-        self.assertEqual(label.text, "footext")
-
-
     def test_layout_no_font(self):
         with self.assertRaises(Exception):            
             DisplayLabel(
@@ -99,7 +45,7 @@ class TestDisplayLabel(unittest.TestCase):
 
         self.assertTrue(
             self._compare_layouts(
-                label.layout,
+                label._layout,
                 DisplayLabelLayout({
                     "font": "foo",
                     "maxTextWidth": False,
@@ -159,7 +105,9 @@ class TestDisplayLabel(unittest.TestCase):
             bounds = DisplayBounds(x, y, w, h)
         )
 
-        ui = MockDisplaySplash()
+        ui = DisplayElement()
+        ui.make_splash(MockFontLoader())
+
         u = Updater()
         u.low_memory_warning = False
 
@@ -168,7 +116,7 @@ class TestDisplayLabel(unittest.TestCase):
         index = 0
 
         if fill:
-            rect = ui.splash[index]
+            rect = ui.splash.mock_content[index]
             index += 1
 
             self.assertIsInstance(rect, MockDisplayShapes.rect.Rect)
@@ -181,8 +129,8 @@ class TestDisplayLabel(unittest.TestCase):
             self.assertEqual(rect.outline, None)
             self.assertEqual(rect.stroke, 0)
             
-        group = ui.splash[index]
-        label = ui.splash[index].mock_content[0]
+        group = ui.splash.mock_content[index]
+        label = ui.splash.mock_content[index].mock_content[0]
 
         self.assertIsInstance(group, MockDisplayIO.Group)
         self.assertIsInstance(label, MockAdafruitDisplayText.label.Label)
@@ -241,31 +189,21 @@ class TestDisplayLabel(unittest.TestCase):
         label.back_color = (200, 230, 240)
         self.assertEqual(label.back_color, (200, 230, 240))
 
-        label.layout = DisplayLabelLayout({
-            "font": "foo",
-            "backColor": (3, 4, 7)
-        })
-        self.assertEqual(label.back_color, (3, 4, 7))
-
         # Check background(s)
-        ui = MockDisplaySplash()
+        ui = DisplayElement()
+        ui.make_splash(MockFontLoader())
+
         u = Updater()
         u.low_memory_warning = False
 
         label.init(ui, u)
         
-        self.assertEqual(ui.splash[0].fill, (3, 4, 7))
+        self.assertEqual(ui.splash.mock_content[0].fill, (200, 230, 240))
 
         label.back_color = (200, 230, 240)
         self.assertEqual(label.back_color, (200, 230, 240))
 
-        label.layout = DisplayLabelLayout({
-            "font": "foo",
-            "backColor": (3, 4, 7)
-        })
-        self.assertEqual(label.back_color, (3, 4, 7))
-
-        self.assertEqual(ui.splash[0].fill, (3, 4, 7))
+        self.assertEqual(ui.splash.mock_content[0].fill, (200, 230, 240))
 
 
 ###############################################################################################
@@ -285,38 +223,22 @@ class TestDisplayLabel(unittest.TestCase):
         label.text_color = (5, 6, 7)
         self.assertEqual(label.text_color, (5, 6, 7))
 
-        label.layout = DisplayLabelLayout({
-            "font": "foo",
-            "textColor": (3, 4, 8)
-        })
-        self.assertEqual(label.text_color, (3, 4, 8))
-
         # Check elements
-        ui = MockDisplaySplash()
+        ui = DisplayElement()
+        ui.make_splash(MockFontLoader())
+
         u = Updater()
         u.low_memory_warning = False
 
         label.init(ui, u)
         
-        self.assertEqual(ui.splash[0].mock_content[0].color, (3, 4, 8))
+        self.assertEqual(ui.splash.mock_content[0].mock_content[0].color, (5, 6, 7))
 
         label.text_color = None
-        self.assertEqual(ui.splash[0].mock_content[0].color, (255, 255, 255))
+        self.assertEqual(ui.splash.mock_content[0].mock_content[0].color, (255, 255, 255))
 
         label.text_color = (5, 6, 7)
         self.assertEqual(label.text_color, (5, 6, 7))
-
-        label.layout = DisplayLabelLayout({
-            "font": "foo"
-        })
-        self.assertEqual(ui.splash[0].mock_content[0].color, (255, 255, 255))
-
-        label.layout = DisplayLabelLayout({
-            "font": "foo",
-            "textColor": (3, 4, 8)
-        })
-        self.assertEqual(label.text_color, (3, 4, 8))
-        self.assertEqual(ui.splash[0].mock_content[0].color, (3, 4, 8))
 
 
 ###############################################################################################
@@ -336,35 +258,24 @@ class TestDisplayLabel(unittest.TestCase):
         label.text = "bar"
         self.assertEqual(label.text, "bar")
 
-        label.layout = DisplayLabelLayout({
-            "font": "foo",
-            "text": "mustbeset"
-        })
-        self.assertEqual(label.text, "mustbeset")
-
         # Check elements
-        ui = MockDisplaySplash()
+        ui = DisplayElement()
+        ui.make_splash(MockFontLoader())
+
         u = Updater()
         u.low_memory_warning = False
 
         label.init(ui, u)
         
-        self.assertEqual(ui.splash[0].mock_content[0].text, "mustbeset")
+        self.assertEqual(ui.splash.mock_content[0].mock_content[0].text, "bar")
 
         label.text = "foo"
         self.assertEqual(label.text, "foo")
-        self.assertEqual(ui.splash[0].mock_content[0].text, "foo")
+        self.assertEqual(ui.splash.mock_content[0].mock_content[0].text, "foo")
 
         label.text = "bar1"
         self.assertEqual(label.text, "bar1")
-        self.assertEqual(ui.splash[0].mock_content[0].text, "bar1")
-
-        label.layout = DisplayLabelLayout({
-            "font": "foo",
-            "text": "mustnotbeset"
-        })
-        self.assertEqual(label.text, "bar1")
-        self.assertEqual(ui.splash[0].mock_content[0].text, "bar1")
+        self.assertEqual(ui.splash.mock_content[0].mock_content[0].text, "bar1")
 
 
     def test_text_wrapped(self):
@@ -378,32 +289,19 @@ class TestDisplayLabel(unittest.TestCase):
         )
 
         # Check elements
-        ui = MockDisplaySplash()
+        ui = DisplayElement()
+        ui.make_splash(MockFontLoader())
+
         u = Updater()
         u.low_memory_warning = False
 
         label.init(ui, u)
         
-        self.assertEqual(ui.splash[0].mock_content[0].text, "foo\n(wrapped to 12 and font 'foo')")
+        self.assertEqual(ui.splash.mock_content[0].mock_content[0].text, "foo\n(wrapped to 12 and font 'foo')")
 
         label.text = "bar1"
         self.assertEqual(label.text, "bar1")
-        self.assertEqual(ui.splash[0].mock_content[0].text, "bar1\n(wrapped to 12 and font 'foo')")
-
-        label.layout = DisplayLabelLayout({
-            "font": "foo",
-            "text": "mustnotbeset"
-        })
-        self.assertEqual(label.text, "bar1")
-        self.assertEqual(ui.splash[0].mock_content[0].text, "bar1")
-
-        label.layout = DisplayLabelLayout({
-            "font": "foo",
-            "text": "mustnotbeset",
-            "maxTextWidth": 22
-        })
-        self.assertEqual(label.text, "bar1")
-        self.assertEqual(ui.splash[0].mock_content[0].text, "bar1\n(wrapped to 22 and font 'foo')")
+        self.assertEqual(ui.splash.mock_content[0].mock_content[0].text, "bar1\n(wrapped to 12 and font 'foo')")        
 
 
     def test_text_low_memory_warning(self):
@@ -415,16 +313,18 @@ class TestDisplayLabel(unittest.TestCase):
             bounds = DisplayBounds(20, 21, 200, 210)
         )
 
-        ui = MockDisplaySplash()
+        ui = DisplayElement()
+        ui.make_splash(MockFontLoader())
+
         u = Updater()
         u.low_memory_warning = True
 
         label.init(ui, u)
         
-        self.assertIn("Memory", ui.splash[0].mock_content[0].text)
+        self.assertIn("Memory", ui.splash.mock_content[0].mock_content[0].text)
         self.assertIn("Memory", label.text)
 
         label.text = "foo2"
-        self.assertIn("Memory", ui.splash[0].mock_content[0].text)
+        self.assertIn("Memory", ui.splash.mock_content[0].mock_content[0].text)
         self.assertIn("Memory", label.text)
         

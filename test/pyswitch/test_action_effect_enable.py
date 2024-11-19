@@ -17,14 +17,14 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    #from lib.pyswitch.controller.Controller import Controller
     from .mocks_appl import *
     from.mocks_ui import *
+    from .mocks_callback import *
+
     from adafruit_midi.system_exclusive import SystemExclusive
 
     from lib.pyswitch.controller.actions.actions import EffectEnableAction
-    from lib.pyswitch.misc import compare_midi_messages
-
+    
 
 
 class TestActionEffectEnable(unittest.TestCase):
@@ -727,6 +727,7 @@ class TestActionEffectEnable(unittest.TestCase):
         )
 
         cp = MockCategoryProvider()
+        cb = MockCallback(output = True)
 
         action_1 = EffectEnableAction({
             "mode": PushButtonAction.MOMENTARY,
@@ -785,7 +786,7 @@ class TestActionEffectEnable(unittest.TestCase):
                 }
             ]
 
-            action_1.enabled = False
+            cb.output_get = False
 
         def eval2():
             self.assertEqual(len(appl._midi.next_receive_messages), 0)

@@ -1,5 +1,22 @@
 import math
-from ...misc import get_option, Updateable, Callback, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR #, do_print
+from ...misc import get_option, Updateable, DEFAULT_SWITCH_COLOR
+
+
+# Listener to listen to callback mapping changes (implemented separately to keep
+# the action base class free of callbacks)
+class _CallbackMappingListener:
+    def __init__(self, action):
+        self._action = action
+
+    def parameter_changed(self, mapping):
+        self._action.force_update()
+        self._action.update_displays()
+
+    def request_terminated(self, mapping):
+        pass                                   # pragma: no cover
+
+
+################################################################################################################################################
 
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
@@ -36,15 +53,9 @@ class Action(Updateable):
         self.switch = switch
 
         if self._enable_callback:
-            self._enable_callback.init(appl, self)
+            self._enable_callback.init(appl, _CallbackMappingListener(self))
 
         self._initialized = True
-
-    # Parameter of callback changed
-    def parameter_changed(self, mapping):
-        print(888)
-        self.force_update()
-        self.update_displays()
 
     @property
     def enabled(self):

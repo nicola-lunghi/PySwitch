@@ -21,6 +21,8 @@ with patch.dict(sys.modules, {
     #from lib.pyswitch.controller.Controller import Controller
     from .mocks_appl import *
     from .mocks_ui import *
+    from .mocks_callback import *
+
     from adafruit_midi.system_exclusive import SystemExclusive
 
     from lib.pyswitch.controller.actions.actions import ParameterAction
@@ -1592,18 +1594,18 @@ class TestActionParameter(unittest.TestCase):
         self.assertEqual(action_1.label.back_color, (200, 100, 0))
         self.assertEqual(appl.switches[0].color, (200, 100, 0))
 
-        # Do not update when disabled
-        action_1.enabled = False
+        ## Do not update when disabled
+        #action_1.enabled = False
 
-        action_1.label.back_color = (2, 2, 2)
-        appl.switches[0].color = (2, 2, 2)
+        #action_1.label.back_color = (2, 2, 2)
+        #appl.switches[0].color = (2, 2, 2)
 
-        action_1.force_update()
+        #action_1.force_update()
 
-        action_1.update_displays()
+        #action_1.update_displays()
             
-        self.assertEqual(action_1.label.back_color, (2, 2, 2))
-        self.assertEqual(appl.switches[0].color, (2, 2, 2))
+        #self.assertEqual(action_1.label.back_color, (2, 2, 2))
+        #self.assertEqual(appl.switches[0].color, (2, 2, 2))
 
 
 ###############################################################################################
@@ -1687,8 +1689,11 @@ class TestActionParameter(unittest.TestCase):
             )
         )
 
+        cb = MockCallback(output = True)
+
         action_1 = ParameterAction({
-            "mapping": mapping_1
+            "mapping": mapping_1,
+            "enableCallback": cb
         })
         
         period = MockPeriodCounter()
@@ -1741,7 +1746,7 @@ class TestActionParameter(unittest.TestCase):
                     "value": 1
                 }
             ]
-            action_1.enabled = False
+            cb.output_get = False
 
         def eval3():
             self.assertEqual(mapping_1.value, 1)

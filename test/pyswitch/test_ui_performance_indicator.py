@@ -48,7 +48,9 @@ class TestPerformanceIndicator(unittest.TestCase):
             bounds = DisplayBounds(20, 30, 200, 300)            
         )
 
-        ui = MockDisplaySplash()
+        ui = DisplayElement()
+        ui.make_splash(None)
+
         appl = MockController()
         appl.output_get_measurement = m
 
@@ -56,7 +58,7 @@ class TestPerformanceIndicator(unittest.TestCase):
 
         self.assertEqual(appl.get_measurement_calls, [33])
         
-        dot = ui.splash[0]
+        dot = ui.splash.mock_content[0]
         self.assertEqual(dot.fill, (0, 0, 0))
 
         m.output_value = 201

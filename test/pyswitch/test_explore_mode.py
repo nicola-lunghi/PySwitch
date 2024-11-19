@@ -192,6 +192,8 @@ class TestExploreMode(unittest.TestCase):
             ui = ui
         )
 
+        ui.show()
+
         self.assertNotIn("EXPLORE MODE", MockMisc.msgs_str)
         self.assertNotIn("GP4", MockMisc.msgs_str)
         self.assertNotIn("GP6", MockMisc.msgs_str)
@@ -199,13 +201,13 @@ class TestExploreMode(unittest.TestCase):
         self.assertNotIn("Error", MockMisc.msgs_str)
 
         self.assertEqual(len(appl.switches), 3)
-        self.assertEqual(len(ui.root.children), 2)
-        self.assertEqual(len(ui.root.children[1].children), 1)
-        self.assertEqual(len(ui.root.children[1].children[0].children), 3)
+        self.assertEqual(len(ui.shown_root.children), 2)
+        self.assertEqual(len(ui.shown_root.children[1].children), 1)
+        self.assertEqual(len(ui.shown_root.children[1].children[0].children), 3)
         
-        label_0 = ui.root.children[1].children[0].children[0]
-        label_1 = ui.root.children[1].children[0].children[1]
-        label_2 = ui.root.children[1].children[0].children[2]
+        label_0 = ui.shown_root.children[1].children[0].children[0]
+        label_1 = ui.shown_root.children[1].children[0].children[1]
+        label_2 = ui.shown_root.children[1].children[0].children[2]
 
         self.assertEqual(label_0.bounds, DisplayBounds(0, 0, 333, 560))
         self.assertEqual(label_1.bounds, DisplayBounds(333, 0, 333, 560))
@@ -276,15 +278,17 @@ class TestExploreMode(unittest.TestCase):
             num_port_columns = 2
         )
 
+        ui.show()
+
         self.assertEqual(len(appl.switches), 3)
-        self.assertEqual(len(ui.root.children), 2)
-        self.assertEqual(len(ui.root.children[1].children), 2)
-        self.assertEqual(len(ui.root.children[1].children[0].children), 2)
-        self.assertEqual(len(ui.root.children[1].children[1].children), 1)
+        self.assertEqual(len(ui.shown_root.children), 2)
+        self.assertEqual(len(ui.shown_root.children[1].children), 2)
+        self.assertEqual(len(ui.shown_root.children[1].children[0].children), 2)
+        self.assertEqual(len(ui.shown_root.children[1].children[1].children), 1)
         
-        label_0 = ui.root.children[1].children[0].children[0]
-        label_1 = ui.root.children[1].children[0].children[1]
-        label_2 = ui.root.children[1].children[1].children[0]
+        label_0 = ui.shown_root.children[1].children[0].children[0]
+        label_1 = ui.shown_root.children[1].children[0].children[1]
+        label_2 = ui.shown_root.children[1].children[1].children[0]
 
         self.assertEqual(label_0.bounds, DisplayBounds(0, 0, 500, 280))
         self.assertEqual(label_1.bounds, DisplayBounds(500, 0, 500, 280))
@@ -451,12 +455,14 @@ class TestExploreMode(unittest.TestCase):
         )
 
         self.assertEqual(len(appl.switches), 3)        
-        self.assertEqual(len(ui.root.children), 2)
-
-        label = ui.root.children[0]
+        
+        label = []  # Use a list to keep the field global (dirty hack)
 
         # Build scenario
         def prep1():
+            self.assertEqual(len(ui.shown_root.children), 2)
+            label.append(ui.shown_root.children[0])
+
             switch_factory.switches[switch_id].shall_be_pushed = True
             MockMisc.reset_mock()
             pass
@@ -465,11 +471,11 @@ class TestExploreMode(unittest.TestCase):
             if direction == "up":
                 self.assertIn("(0, 1, 2) of 9", MockMisc.msgs_str)            
                 self._assert_enlightened(led_driver, (0, 1, 2))
-                self.assertIn("(0, 1, 2) of 9", label.text)
+                self.assertIn("(0, 1, 2) of 9", label[0].text)
             else:
                 self.assertIn("(6, 7, 8) of 9", MockMisc.msgs_str)
                 self._assert_enlightened(led_driver, (6, 7, 8))
-                self.assertIn("(6, 7, 8) of 9", label.text)
+                self.assertIn("(6, 7, 8) of 9", label[0].text)
             return True
 
         def prep2():
@@ -485,7 +491,7 @@ class TestExploreMode(unittest.TestCase):
         def eval3():
             self.assertIn("(3, 4, 5) of 9", MockMisc.msgs_str)    
             self._assert_enlightened(led_driver, (3, 4, 5))        
-            self.assertIn("(3, 4, 5) of 9", label.text)
+            self.assertIn("(3, 4, 5) of 9", label[0].text)
             return True
         
         def prep4():
@@ -503,11 +509,11 @@ class TestExploreMode(unittest.TestCase):
             if direction == "up":
                 self.assertIn("(6, 7, 8) of 9", MockMisc.msgs_str)
                 self._assert_enlightened(led_driver, (6, 7, 8))
-                self.assertIn("(6, 7, 8) of 9", label.text)
+                self.assertIn("(6, 7, 8) of 9", label[0].text)
             else:
                 self.assertIn("(0, 1, 2) of 9", MockMisc.msgs_str)     
                 self._assert_enlightened(led_driver, (0, 1, 2))  
-                self.assertIn("(0, 1, 2) of 9", label.text)     
+                self.assertIn("(0, 1, 2) of 9", label[0].text)     
             return False
         
 

@@ -41,10 +41,10 @@ _ACTION_LABEL_LAYOUT = {
     "stroke": 1
 }
 
-DISPLAY_HEADER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_HEADER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_FOOTER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_FOOTER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
+DISPLAY_HEADER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT, id = 1)
+DISPLAY_HEADER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT, id = 2)
+DISPLAY_FOOTER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT, id = 3)
+DISPLAY_FOOTER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT, id = 4)
 
 #############################################################################################################################################
 
@@ -96,7 +96,9 @@ _SPLASH_DEFAULT = HierarchicalDisplayElement(
                 "mapping": KemperMappings.RIG_NAME(),
                 "textOffline": "Kemper Control " + PYSWITCH_VERSION,
                 "textReset": "Loading Rig..."
-            }
+            },
+            
+            id = 10
         ),
 
         # Bidirectional protocol state indicator (dot)
