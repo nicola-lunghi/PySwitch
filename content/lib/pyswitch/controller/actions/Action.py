@@ -1,5 +1,5 @@
 import math
-from ...misc import get_option, Updateable, DEFAULT_SWITCH_COLOR
+from ...misc import get_option, Updateable
 
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
@@ -9,50 +9,57 @@ class Action(Updateable):
     _next_id = 0   # Global counted action ids (internal, just used for debugging!)
 
     # config: {
+    #      "callback":             Callback instance to update the display and LEDs. Must contain an update_displays(action) function. Optional. 
+    #
     #      "display":              Optional DisplayLabel instance
     #
-    #      "enableCallback":       Callback to set enabled state
+    #      "enableCallback":       Callback to set enabled state (optional). Must contain an enabled(action) function.
     # 
-    #      "color":                Color for switch and display (optional, default: white). Can be either one color or a tuple of colors
-    #                              with one color for each LED segment of the switch (if more actions share the LEDs, only the first
-    #                              color is used).
-    #
     #      "id":                   Optional ID for debugging. If not set, an automatic ID is generated.
+    #
+    #      "useSwitchLeds":        Use LEDs to visualize state. Optional, default is False.
+    #
     # }
     def __init__(self, config = {}):
-        self.uses_switch_leds = False             # Must be set True explicitly by child classes in __init__() if they use the switch LEDs
+        self.uses_switch_leds = get_option(config, "useSwitchLeds", False)
         self._initialized = False
 
         self.label = get_option(config, "display", None)
+        self.callback = get_option(config, "callback", None)
 
         self.id = get_option(config, "id", None)
-        self.color = get_option(config, "color", DEFAULT_SWITCH_COLOR)
+
         self._enable_callback = get_option(config, "enableCallback", None)
-        self._label_color = get_option(config, "color", None)
 
     # Must be called before usage
     def init(self, appl, switch):
         self.appl = appl
         self.switch = switch
 
-        # Enable callback
-        if self._enable_callback:
-            that = self
-            class _CallbackMappingListener:
-                def parameter_changed(self, mapping):
-                    that.force_update()
+        that = self
+        class _CallbackListener:
+            def parameter_changed(self, mapping):
+                if that.enabled:
+                    #that.force_update()
                     that.update_displays()
 
-                def request_terminated(self, mapping):
-                    pass                                   # pragma: no cover
+            def request_terminated(self, mapping):
+                if that.enabled:
+                    that.update_displays()
 
-            self._enable_callback.init(appl, _CallbackMappingListener())
+        # Enable callback
+        if self._enable_callback:            
+            self._enable_callback.init(appl, _CallbackListener())
+
+        # Update display callback
+        if self.callback:
+            self.callback.init(appl, _CallbackListener())
 
         self._initialized = True
 
     @property
     def enabled(self):
-        return self._enable_callback.get(self) if self._enable_callback else True
+        return self._enable_callback.enabled(self) if self._enable_callback else True
         
     # Color of the switch segment(s) for the action (Difficult to do with multicolor, 
     # but this property is just needed to have a setter so this is not callable)
@@ -126,19 +133,20 @@ class Action(Updateable):
 
     # Called to update the displays (LEDs and label)
     def update_displays(self):
-        pass                                      # pragma: no cover
-
+        if self.callback and self.enabled:
+            self.callback.update_displays(self)
+    
     # Reset the action
     def reset(self):
         pass                                      # pragma: no cover
 
     # Must reset all action states so the instance is being updated
-    def force_update(self):
-        pass                                      # pragma: no cover
+    #def force_update(self):
+    #    pass                                      # pragma: no cover
 
     # Must reset the displays
-    def reset_display(self):
-        pass                                      # pragma: no cover
+    #def reset_display(self):
+    #    pass                                      # pragma: no cover
 
     # Returns the switch LED segments to use
     def _get_led_segments(self):

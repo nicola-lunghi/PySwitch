@@ -1,7 +1,7 @@
 from micropython import const
 
 from .Action import Action
-from ...misc import Colors, PeriodCounter, DEFAULT_LABEL_COLOR, get_option, Updater
+from ...misc import PeriodCounter, get_option, Updater
 
 
 # Implements an abstraction layer for on/off parameters. Covers latch/momentary modes etc.
@@ -23,8 +23,9 @@ class PushButtonAction(Action):
 
     # config:
     # {
-    #      "mode": Mode of operation (see PushButtonModes). Optional, default is HOLD_MOMENTARY,
-    #      "holdTimeMillis": Optional hold time in milliseconds. Default is DEFAULT_LATCH_MOMENTARY_HOLD_TIME
+    #      "callback":        The callback has to additionally implement the function state_changed_by_user(action).
+    #      "mode":            Mode of operation (see PushButtonModes). Optional, default is HOLD_MOMENTARY,
+    #      "holdTimeMillis":  Optional hold time in milliseconds. Default is DEFAULT_LATCH_MOMENTARY_HOLD_TIME
     # }
     def __init__(self, config = {}, period_counter = None):
         super().__init__(config)
@@ -51,13 +52,16 @@ class PushButtonAction(Action):
             return
         
         self._state = state
-        self.set(self._state)
+        #self.set(self._state)
+        
+        if self.callback:
+            self.callback.state_changed_by_user(self)
 
         self.update_displays()
 
-    # Abstract: Set functionality on or off (bool).
-    def set(self, state):
-        pass                                                         # pragma: no cover
+    # Set functionality on or off (bool).
+    #def set(self, state):
+    #    pass                                                         # pragma: no cover
 
     # Update the state without functional changes. This is used to react to
     # parameters that have to be requested first. When the answer comes in, the state 
@@ -217,6 +221,8 @@ class HoldAction(Action, Updater):
 
     # Applied to all sub-actions
     def update_displays(self):
+        super().update_displays()
+
         for action in self._actions:
             action.update_displays()
 
@@ -232,46 +238,46 @@ class HoldAction(Action, Updater):
             action.reset()
 
     # Applied to all sub-actions
-    def force_update(self):
-        for action in self._actions:
-            action.force_update()
+    #def force_update(self):
+    #    for action in self._actions:
+    #        action.force_update()
 
-        for action in self._actions_hold:
-            action.force_update()
+    #    for action in self._actions_hold:
+    #        action.force_update()
 
     # Applied to all sub-actions
-    def reset_display(self):
-        for action in self._actions:
-            action.reset_display()
+    #def reset_display(self):
+    #    for action in self._actions:
+    #        action.reset_display()
 
-        for action in self._actions_hold:
-            action.reset_display()
+    #    for action in self._actions_hold:
+    #        action.reset_display()
 
 
 ################################################################################################################################
 
 
-# Implements bipolar parameters on base of the PushButtonAction class
-class ParameterAction(PushButtonAction): #, ClientRequestListener):
+# Implements generic parameter switching on base of the PushButtonAction class
+#class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
-    # Comparison modes (for the valueEnable value when requesting a value)
-    EQUAL = const(0)                 # Enable when exactly the valueEnable value comes in
+#    # Comparison modes (for the valueEnable value when requesting a value)
+#    EQUAL = const(0)                 # Enable when exactly the valueEnable value comes in
     
-    GREATER = const(10)              # Enable when a value greater than valueEnable comes in
-    GREATER_EQUAL = const(20)        # Enable when the valueEnable value comes in, or anything greater
+#    GREATER = const(10)              # Enable when a value greater than valueEnable comes in
+#    GREATER_EQUAL = const(20)        # Enable when the valueEnable value comes in, or anything greater
 
-    LESS = const(30)                 # Enable when a value less than valueEnable comes in
-    LESS_EQUAL = const(40)           # Enable when the valueEnable value comes in, or anything less
+#    LESS = const(30)                 # Enable when a value less than valueEnable comes in
+#    LESS_EQUAL = const(40)           # Enable when the valueEnable value comes in, or anything less
 
-    NO_STATE_CHANGE = const(999)     # Do not receive any values
+#    NO_STATE_CHANGE = const(999)     # Do not receive any values
 
-    # Brightness values 
-    DEFAULT_LED_BRIGHTNESS_ON = 0.3
-    DEFAULT_LED_BRIGHTNESS_OFF = 0.02
+#    # Brightness values 
+#    DEFAULT_LED_BRIGHTNESS_ON = 0.3
+#    DEFAULT_LED_BRIGHTNESS_OFF = 0.02
 
-    # Dim factor for disabled effect slots (TFT display only)
-    DEFAULT_SLOT_DIM_FACTOR_ON = 1
-    DEFAULT_SLOT_DIM_FACTOR_OFF = 0.2
+#    # Dim factor for disabled effect slots (TFT display only)
+#    DEFAULT_SLOT_DIM_FACTOR_ON = 1
+#    DEFAULT_SLOT_DIM_FACTOR_OFF = 0.2
 
     # Generic MIDI parameter action.
     #
@@ -313,463 +319,259 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     #         "on":              LED brightness [0..1] for on state (Switch LEDs) Optional.
     #         "off":             LED brightness [0..1] for off state (Switch LEDs) Optional.
     #     }
-    #
-    #     "updateDisplays":      Optional Callback instance to update the display and LEDs. See documentation for details.
-    #                            Data passed on get() is a tuple: (action, mapping) where action is the ParameterAction instance,
-    #                            and mapping.value holds the current value of the mapping. 
-    #                            Must return True if everything has been handled.
     # }
-    def __init__(self, config = {}):
-        super().__init__(config)
+#    def __init__(self, config = {}):
+#        super().__init__(config)
 
-        self._current_display_state = -1
-        self._current_color = -1
+#        self._current_display_state = -1
+#        self._current_color = -1
 
-        # Per default, this uses the LEDs. You can switch that off however.
-        self.uses_switch_leds = get_option(config, "useSwitchLeds", True)
+#        # Per default, this uses the LEDs. You can switch that off however.
+#        self.uses_switch_leds = get_option(config, "useSwitchLeds", True)
 
-        # Mapping(s)
-        self._mapping = config["mapping"]
-        self._mapping_off = get_option(config, "mappingDisable", None)
+#        # Mapping(s)
+#        self._mapping = config["mapping"]
+#        self._mapping_off = get_option(config, "mappingDisable", None)
 
-        # Values
-        self._value_enable = get_option(config, "valueEnable", 1)                                # Can be an array
-        self._value_disable = get_option(config, "valueDisable", 0)                              # Can be an array
-        self._reference_value = get_option(config, "referenceValue", self._value_enable if not isinstance(self._value_enable, list) else self._value_enable[0]) 
+#        # Values
+#        self._value_enable = get_option(config, "valueEnable", 1)                                # Can be an array
+#        self._value_disable = get_option(config, "valueDisable", 0)                              # Can be an array
+#        self._reference_value = get_option(config, "referenceValue", self._value_enable if not isinstance(self._value_enable, list) else self._value_enable[0]) 
 
-        # Auto mode for valueDisable
-        self._update_value_disabled = False
-        if not isinstance(self._value_disable, list):
-            self._update_value_disabled = (self._value_disable == "auto")
-        else:
-            self._update_value_disabled = [v == "auto" for v in self._value_disable]            
+#        # Auto mode for valueDisable
+#        self._update_value_disabled = False
+#        if not isinstance(self._value_disable, list):
+#            self._update_value_disabled = (self._value_disable == "auto")
+#        else:
+#            self._update_value_disabled = [v == "auto" for v in self._value_disable]            
 
-        self._comparison_mode = get_option(config, "comparisonMode", self.GREATER_EQUAL)
+#        self._comparison_mode = get_option(config, "comparisonMode", self.GREATER_EQUAL)
 
-        # Text(s)
-        self._text = get_option(config, "text", False)
-        self._text_disabled = get_option(config, "textDisabled", False)
+#        # Text(s)
+#        self._text = get_option(config, "text", False)
+#        self._text_disabled = get_option(config, "textDisabled", False)
 
-        # Dim factors for displays
-        if get_option(config, "displayDimFactor") != False:
-            self._dim_factor_on = get_option(config["displayDimFactor"], "on", self.DEFAULT_SLOT_DIM_FACTOR_ON)
-            self._dim_factor_off = get_option(config["displayDimFactor"], "off", self.DEFAULT_SLOT_DIM_FACTOR_OFF)
-        else:
-            self._dim_factor_on = self.DEFAULT_SLOT_DIM_FACTOR_ON
-            self._dim_factor_off = self.DEFAULT_SLOT_DIM_FACTOR_OFF
+#        # Dim factors for displays
+#        if get_option(config, "displayDimFactor") != False:
+#            self._dim_factor_on = get_option(config["displayDimFactor"], "on", self.DEFAULT_SLOT_DIM_FACTOR_ON)
+#            self._dim_factor_off = get_option(config["displayDimFactor"], "off", self.DEFAULT_SLOT_DIM_FACTOR_OFF)
+#        else:
+#            self._dim_factor_on = self.DEFAULT_SLOT_DIM_FACTOR_ON
+#            self._dim_factor_off = self.DEFAULT_SLOT_DIM_FACTOR_OFF
 
-        # LED brightness settings
-        if get_option(config, "ledBrightness") != False:
-            self._brightness_on = get_option(config["ledBrightness"], "on", self.DEFAULT_LED_BRIGHTNESS_ON)
-            self._brightness_off = get_option(config["ledBrightness"], "off", self.DEFAULT_LED_BRIGHTNESS_OFF)
-        else:
-            self._brightness_on = self.DEFAULT_LED_BRIGHTNESS_ON
-            self._brightness_off = self.DEFAULT_LED_BRIGHTNESS_OFF
+#        # LED brightness settings
+#        if get_option(config, "ledBrightness") != False:
+#            self._brightness_on = get_option(config["ledBrightness"], "on", self.DEFAULT_LED_BRIGHTNESS_ON)
+#            self._brightness_off = get_option(config["ledBrightness"], "off", self.DEFAULT_LED_BRIGHTNESS_OFF)
+#        else:
+#            self._brightness_on = self.DEFAULT_LED_BRIGHTNESS_ON
+#            self._brightness_off = self.DEFAULT_LED_BRIGHTNESS_OFF
 
-        # Callback based display update
-        self._update_displays_callback = get_option(config, "updateDisplays", None)
-
-    # Register all mappings
-    def init(self, appl, switch):
-        super().init(appl, switch)
+#    # Register all mappings
+#    def init(self, appl, switch):
+#        super().init(appl, switch)
         
-        self.appl.client.register(self._mapping, self)
+#        self.appl.client.register(self._mapping, self)
         
-        if self._mapping_off:
-            self.appl.client.register(self._mapping_off, self)
+#        if self._mapping_off:
+#            self.appl.client.register(self._mapping_off, self)
 
-        if self._update_displays_callback:
-            that = self
+#    # Set state (called by base class)
+#    def set(self, enabled):        
+#        if enabled:
+#            set_mapping = self._mapping
+#            value = self._value_enable
+#        else:
+#            if self._mapping_off:
+#                set_mapping = self._mapping_off
+#            else:
+#                set_mapping = self._mapping
 
-            class _CallbackMappingListener:
-                def parameter_changed(self, mapping):
-                    that.force_update()
-                    that.update_displays()
+#            value = self._value_disable
 
-                def request_terminated(self, mapping):
-                    pass                                   # pragma: no cover
+#        if not isinstance(self._value_disable, list):
+#            if value != "auto":
+#                self.appl.client.set(set_mapping, value)
+#        else:
+#            auto_contained = False
+#            for v in self._value_disable:
+#                if v == "auto":
+#                    auto_contained = True
+#                    break
+#            if not auto_contained:
+#                self.appl.client.set(set_mapping, value)
 
+#        # Request value
+#        self._request_value()
 
-            self._update_displays_callback.init(appl, _CallbackMappingListener())
+#    # Request real state from controlled device
+#    def do_update(self):
+#        self._request_value()
 
-    # Set state (called by base class)
-    def set(self, enabled):        
-        if enabled:
-            set_mapping = self._mapping
-            value = self._value_enable
-        else:
-            if self._mapping_off:
-                set_mapping = self._mapping_off
-            else:
-                set_mapping = self._mapping
+#    # Request parameter value
+#    def _request_value(self):
+#        self.appl.client.request(self._mapping, self) #_request_mapping, self)
 
-            value = self._value_disable
-
-        if not isinstance(self._value_disable, list):
-            if value != "auto":
-                self.appl.client.set(set_mapping, value)
-        else:
-            auto_contained = False
-            for v in self._value_disable:
-                if v == "auto":
-                    auto_contained = True
-                    break
-            if not auto_contained:
-                self.appl.client.set(set_mapping, value)
-
-        # Request value
-        self._request_value()
-
-    # Request real state from controlled device
-    def do_update(self):
-        self._request_value()
-
-    # Cancel eventually pending requests (which might return outdated values)
-    # Request parameter value
-    def _request_value(self):
-        self.appl.client.request(self._mapping, self) #_request_mapping, self)
-
-    # Update display and LEDs to the current state
-    def update_displays(self):
-        if not self.enabled:
-            return
+#    # Update display and LEDs to the current state
+#    def update_displays(self):
+#        if not self.enabled:
+#            return
 
         # Callback. If it returns True, we are finished here.
-        if self._update_displays_callback and self._update_displays_callback.get((self, self._mapping)):
-            self._current_color = self.color
-            self._current_display_state = self.state
-            return 
+        #if self._update_displays_callback and self._update_displays_callback.get((self, self._mapping)):
+        #    self._current_color = self.color
+        #    self._current_display_state = self.state
+        #    return 
         
         # Set color, if new
-        if self.color != self._current_color:
-            self._current_color = self.color
+#        if self.color != self._current_color:
+#            self._current_color = self.color
         
-            self.set_switch_color(self.color)
-            self.set_label_color(self.color)
-            self._update_label_text()            
+#            self.set_switch_color(self.color)
+#            self.set_label_color(self.color)
+#            self._update_label_text()            
     
-        # Update when state have been changed
-        if self._current_display_state != self.state:
-            self._current_display_state = self.state
+#        # Update when state have been changed
+#        if self._current_display_state != self.state:
+#            self._current_display_state = self.state
 
-            self.set_switch_color(self.color)
-            self.set_label_color(self.color)
-            self._update_label_text()
+#            self.set_switch_color(self.color)
+#            self.set_label_color(self.color)
+#            self._update_label_text()
 
-    # Update switch brightness
-    def set_switch_color(self, color):
-        # Update switch LED color 
-        self.switch_color = color
+#    # Update switch brightness
+#    def set_switch_color(self, color):
+#        # Update switch LED color 
+#        self.switch_color = color
 
-        if self.state == True:
-            # Switched on
-            self.switch_brightness = self._brightness_on
-        else:
-            # Switched off
-            self.switch_brightness = self._brightness_off
+#        if self.state == True:
+#            # Switched on
+#            self.switch_brightness = self._brightness_on
+#        else:
+#            # Switched off
+#            self.switch_brightness = self._brightness_off
 
-    # Update label color, if any
-    def set_label_color(self, color):
-        if not self.label:
-            return
+#    # Update label color, if any
+#    def set_label_color(self, color):
+#        if not self.label:
+#            return
             
-        if self.state == True:
-            self.label.back_color = self._dim_color(color, self._dim_factor_on)
-        else:
-            self.label.back_color = self._dim_color(color, self._dim_factor_off)
+#        if self.state == True:
+#            self.label.back_color = self._dim_color(color, self._dim_factor_on)
+#        else:
+#            self.label.back_color = self._dim_color(color, self._dim_factor_off)
 
-    # Update text if set
-    def _update_label_text(self):
-        if not self.label:
-            return
+#    # Update text if set
+#    def _update_label_text(self):
+#        if not self.label:
+#            return
             
-        if self._text == False:
-            return
+#        if self._text == False:
+#            return
         
-        if self.state == True:
-            self.label.text = self._text
-        else:
-            if self._text_disabled != False:
-                self.label.text = self._text_disabled
-            else:
-                self.label.text = self._text
+#        if self.state == True:
+#            self.label.text = self._text
+#        else:
+#            if self._text_disabled != False:
+#                self.label.text = self._text_disabled
+#            else:
+#                self.label.text = self._text
 
-    # Dims a passed color for display of disabled state
-    def _dim_color(self, color, factor):
-        if isinstance(color[0], tuple):
-            # Multi color
-            ret = []
-            for c in color:
-                ret.append((
-                    int(c[0] * factor),
-                    int(c[1] * factor),
-                    int(c[2] * factor)
-                ))
-            return ret
-        else:
-            # Single color
-            return (
-                int(color[0] * factor),
-                int(color[1] * factor),
-                int(color[2] * factor)
-            )
+#    # Dims a passed color for display of disabled state
+#    def _dim_color(self, color, factor):
+#        if isinstance(color[0], tuple):
+#            # Multi color
+#            ret = []
+#            for c in color:
+#                ret.append((
+#                    int(c[0] * factor),
+#                    int(c[1] * factor),
+#                    int(c[2] * factor)
+#                ))
+#            return ret
+#        else:
+#            # Single color
+#            return (
+#                int(color[0] * factor),
+#                int(color[1] * factor),
+#                int(color[2] * factor)
+#            )
+#
+#    # Must reset all action states so the instance is being updated
+#    def force_update(self):
+#        self._current_display_state = -1
+#        self._current_color = -1
 
-    # Must reset all action states so the instance is being updated
-    def force_update(self):
-        self._current_display_state = -1
-        self._current_color = -1
+#    # Must reset the displays
+#    def reset_display(self):
+#        if self.label:
+#            self.label.text = ""
+#            self.label.back_color = DEFAULT_LABEL_COLOR
 
-    # Must reset the displays
-    def reset_display(self):
-        if self.label:
-            self.label.text = ""
-            self.label.back_color = DEFAULT_LABEL_COLOR
+#        self.switch_color = Colors.BLACK
+#        self.switch_brightness = 0
 
-        self.switch_color = Colors.BLACK
-        self.switch_brightness = 0
-
-    # Called by the Client class when a parameter request has been answered
-    def parameter_changed(self, mapping):
-        if not self._mapping.response: 
-            return            
+#    # Called by the Client class when a parameter request has been answered
+#    def parameter_changed(self, mapping):
+#        if not self._mapping.response: 
+#            return            
         
-        if mapping != self._mapping: 
-            return
+#        if mapping != self._mapping: 
+#            return
         
-        state = False
+#        state = False
         
-        if self._comparison_mode == self.EQUAL:
-            if mapping.value == self._reference_value:
-                state = True
+#        if self._comparison_mode == self.EQUAL:
+#            if mapping.value == self._reference_value:
+#                state = True
 
-        elif self._comparison_mode == self.GREATER_EQUAL:
-            if mapping.value >= self._reference_value:
-                state = True
+#        elif self._comparison_mode == self.GREATER_EQUAL:
+#            if mapping.value >= self._reference_value:
+#                state = True
 
-        elif self._comparison_mode == self.GREATER:
-            if mapping.value > self._reference_value: 
-                state = True
+#        elif self._comparison_mode == self.GREATER:
+#            if mapping.value > self._reference_value: 
+#                state = True
 
-        elif self._comparison_mode == self.LESS_EQUAL:
-            if mapping.value <= self._reference_value:
-                state = True
+#        elif self._comparison_mode == self.LESS_EQUAL:
+#            if mapping.value <= self._reference_value:
+#                state = True
 
-        elif self._comparison_mode == self.LESS:
-            if mapping.value < self._reference_value: 
-                state = True        
+#        elif self._comparison_mode == self.LESS:
+#            if mapping.value < self._reference_value: 
+#                state = True        
 
-        elif self._comparison_mode == self.NO_STATE_CHANGE:
-            state = self.state
+#        elif self._comparison_mode == self.NO_STATE_CHANGE:
+#            state = self.state
 
-        else:
-            raise Exception() #"Invalid comparison mode: " + repr(self._comparison_mode))        
+#        else:
+#            raise Exception() #"Invalid comparison mode: " + repr(self._comparison_mode))        
 
-        # Remember value for callback
-        self._mapping.value = mapping.value
+#        # Remember value for callback
+#        self._mapping.value = mapping.value
+#
+#        self.feedback_state(state)        
 
-        self.feedback_state(state)        
-
-        # If enabled, remember the value for later when disabled
-        if state == True or not self._update_value_disabled:
-            return
+#        # If enabled, remember the value for later when disabled
+#        if state == True or not self._update_value_disabled:
+#            return
         
-        if not isinstance(self._value_disable, list):
-            self._value_disable = mapping.value
-        else:
-            for i in range(len(self._value_disable)):
-                if self._update_value_disabled[i]:
-                    self._value_disable[i] = mapping.value
+#        if not isinstance(self._value_disable, list):
+#            self._value_disable = mapping.value
+#        else:
+#            for i in range(len(self._value_disable)):
+#                if self._update_value_disabled[i]:
+#                    self._value_disable[i] = mapping.value
 
-    # Called when the client is offline (requests took too long)
-    def request_terminated(self, mapping):        
-        if mapping != self._mapping: 
-            return
+#    # Called when the client is offline (requests took too long)
+#    def request_terminated(self, mapping):        
+#        if mapping != self._mapping: 
+#            return
         
-        self.state = False
+#        self.state = False
 
-        self.update_displays()
+#        self.update_displays()
 
-
-################################################################################################################################
-
-
-# Implements the effect enable/disable footswitch action
-class EffectEnableAction(ParameterAction): #, ClientRequestListener):
-    
-    # Switches an effect on/off, if the slot is assigned. Based on ParameterAction, so all options there
-    # are available here, too.
-    # 
-    # Additional options:
-    # {
-    #     "slotInfo":       SlotInfoProvider
-    #     "mapping":        A ClientParameterMapping instance to determine the effect status (on/off). 
-    #                       Here, this cannot be an array!
-    #     "mappingType":    A ClientParameterMapping instance to determine the effect type. 
-    #     "categories":     A EffectCategoryProvider instance to determine the colors and names of the effect types.
-    #     "mode":           Mode of operation (see PushButtonModes). Optional, default is PushButtonModes.HOLD_MOMENTARY,
-    #     "holdTimeMillis": Optional hold time in milliseconds. Default is PushButtonModes.DEFAULT_LATCH_MOMENTARY_HOLD_TIME
-    # }
-    def __init__(self, config = {}):
-        super().__init__(config)
-
-        # Mapping for effect type
-        self._mapping_fxtype = config["mappingType"] 
-
-        # Slot info provider of type SlotInfoProvider
-        self._slot_info = config["slotInfo"]
-        
-        # Category provider of type EffectCategoryProvider
-        self.categories = config["categories"]
-        
-        self._effect_category = self.categories.get_category_not_assigned()  
-        self._current_category = -1
-
-    @property
-    def effect_category(self):
-        return self._effect_category
-
-    # Initialize the action
-    def init(self, appl, switch):
-        super().init(appl, switch)
-        
-        self._show_slot_names = get_option(self.appl.config, "showEffectSlotNames", False)
-
-        self.appl.client.register(self._mapping_fxtype, self)
-
-    # Request effect type periodically (which itself will trigger a status request).
-    # Does not call super.do_update because the status is requested here later anyway.
-    def do_update(self):
-        if not self._mapping_fxtype.response:
-            raise Exception() #"Mapping for effect type must be able to receive (provide request and response)")       
-        
-        self.appl.client.request(self._mapping_fxtype, self)
-
-    # Update display and LEDs to the current state and effect category
-    def update_displays(self):
-        if not self.enabled:
-            return
-        
-        # Only update when category of state have been changed
-        if self._current_category == self._effect_category:
-            super().update_displays()
-            return
-        
-        self._current_category = self._effect_category
-
-        # Effect category color
-        self.color = self.categories.get_effect_category_color(self._effect_category) 
-
-        # Effect category text
-        if self.label:
-            if self._show_slot_names:
-                self.label.text = self._slot_info.get_name() + ": " + self.categories.get_effect_category_name(self._effect_category) 
-            else:
-                self.label.text = self.categories.get_effect_category_name(self._effect_category) 
-    
-        super().update_displays()
-
-    # Update switch brightness
-    def set_switch_color(self, color):
-        if self._effect_category == self.categories.get_category_not_assigned():
-            # Set pixels to black (this effectively deactivates the LEDs) 
-            color = Colors.BLACK
-
-        super().set_switch_color(color)
-    
-    # Update label color, if any
-    def set_label_color(self, color):
-        if not self.label:
-            return
-        
-        if self._effect_category == self.categories.get_category_not_assigned():
-            # Do not dim the color when not assigned (this makes it black effectively) 
-            self.label.back_color = color
-        else:
-            super().set_label_color(color)
-
-    # Called by the Client class when a parameter request has been answered
-    def parameter_changed(self, mapping):
-        super().parameter_changed(mapping)
-
-        if mapping != self._mapping_fxtype:
-            return
-        
-        # Convert to effect category
-        category = self.categories.get_effect_category(mapping.value)
-
-        if category == self._effect_category:
-            # Request status also when category has not changed
-            super().do_update()
-            return
-
-        # New effect category
-        self._effect_category = category
-
-        if self._effect_category == self.categories.get_category_not_assigned():
-            self.state = False
-
-        self.update_displays()
-
-        # Request status, too
-        super().do_update()
-
-    # Called when the client is offline (requests took too long)
-    def request_terminated(self, mapping):
-        super().request_terminated(mapping)
-         
-        if mapping != self._mapping_fxtype:
-            return
-        
-        self._effect_category = self.categories.get_category_not_assigned() 
-        
-        self.update_displays()
-
-    # Reset the action
-    def reset(self):
-        super().reset()
-
-        self._effect_category = self.categories.get_category_not_assigned() 
-        self.update_displays()
-
-    # Must reset all action states so the instance is being updated
-    def force_update(self):
-        super().force_update()
-        
-        self._current_category = -1
-
-
-#######################################################################################################
-
-
-# Category provider base class. A category provider must translate the value of 
-# the effect type mapping set on the action's config to an effect category including
-# the corresponding color and name.
-#class EffectCategoryProvider:
-#    # Must return the effect category for a mapping value
-#    def get_effect_category(self, value):
-#        raise Exception("Implement in child classes")
-#    
-#    # Must return the effect color for a mapping value
-#    def get_effect_category_color(self, value):
-#        return Colors.BLACK
-#    
-#    # Must return the effect name for a mapping value
-#    def get_effect_category_name(self, value):
-#        return ""
-#    
-#    # Must return the value interpreted as "not assigned"
-#    def get_category_not_assigned(self):
-#        raise Exception("Implement in child classes")
-    
-
-#######################################################################################################
- 
- 
-## Provider class for slot information
-#class SlotInfoProvider:
-#    # Must return the slot name
-#    def get_name(self):
-#        raise Exception("Implement in child classes")
 
 ################################################################################################################################
 

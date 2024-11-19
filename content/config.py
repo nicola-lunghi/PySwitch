@@ -46,7 +46,7 @@ Config = {
     #"excludeMessageTypes": [ "SystemExclusive" ],    # Types to excude from "debugUnparsedMessage"
 
     # When a ClientParameterMapping instance is set here, incoming messages for this mapping will be shown.
-    #"debugMapping": KemperMappings.RIG_VOLUME(),
+    #"debugMapping": KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_B),
 
     # Explore Mode: Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 

@@ -237,38 +237,3 @@ class PeriodCounter:
             return True
         return False
             
-
-###############################################################################################################
-
-
-class Callback(Updateable):
-    def __init__(self):
-        super().__init__()
-        self._initialized = False
-
-    # Can optionally return mappings which will be listened to.
-    def get_mappings(self):
-        return []
-    
-    # Callback function. Data is an optional field to transfer stuff to the callback generically.
-    def get(self, data):
-        return None     # pragma: no cover
-    
-    # Must be called before usage
-    def init(self, appl, listener):
-        if self._initialized: 
-            return
-        
-        self._appl = appl
-        self._listener = listener
-
-        for m in self.get_mappings():
-            self._appl.client.register(m, self._listener)
-
-        self._appl.add_updateable(self)
-
-        self._initialized = True
-
-    def update(self):
-        for m in self.get_mappings():
-            self._appl.client.request(m, self._listener)

@@ -5,32 +5,13 @@
 ##############################################################################################################################################
 
 from micropython import const
-from pyswitch.misc import Callback, PYSWITCH_VERSION, DEFAULT_LABEL_COLOR #, Colors
+from pyswitch.misc import DEFAULT_LABEL_COLOR #, Colors
 
-from pyswitch.ui.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds
+from pyswitch.ui.elements import DisplaySplitContainer, DisplayBounds
 from pyswitch.ui.elements import TunerDisplay, DisplayLabel, BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
 from pyswitch.ui.ui import HierarchicalDisplayElement
 
-from kemper import KemperMappings
-
-#############################################################################################################################################
-
-# Callback returning the splash(es) to show.
-class _SplashCallback(Callback):
-    def __init__(self):
-        Callback.__init__(self)
-        self.mapping = KemperMappings.TUNER_MODE_STATE()
-
-    def get_mappings(self):
-        yield self.mapping
-
-    def get(self, data):
-        if self.mapping.value != 1:
-            return _SPLASH_DEFAULT
-        else:
-            return _SPLASH_TUNER
-
-Splashes = _SplashCallback()
+from kemper import KemperMappings, KemperRigNameCallback, TunerDisplayCallback
 
 #############################################################################################################################################
 
@@ -41,10 +22,10 @@ _ACTION_LABEL_LAYOUT = {
     "stroke": 1
 }
 
-DISPLAY_HEADER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT, id = 1)
-DISPLAY_HEADER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT, id = 2)
-DISPLAY_FOOTER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT, id = 3)
-DISPLAY_FOOTER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT, id = 4)
+DISPLAY_HEADER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
+DISPLAY_HEADER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
+DISPLAY_FOOTER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
+DISPLAY_FOOTER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
 
 #############################################################################################################################################
 
@@ -61,63 +42,59 @@ _display_bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT)
 # Default display
 _bounds_default = _display_bounds.clone()
 
-_SPLASH_DEFAULT = HierarchicalDisplayElement(
-    bounds = _bounds_default,
-    children = [
-        # Header area (referenced by ID in the action configurations)
-        DisplaySplitContainer(
-            bounds = _bounds_default.remove_from_top(_SLOT_HEIGHT),
-            children = [
-                DISPLAY_HEADER_1,
-                DISPLAY_HEADER_2
-            ]
-        ),
+Splashes = TunerDisplayCallback(
+    splash_default = HierarchicalDisplayElement(
+        bounds = _bounds_default,
+        children = [
+            # Header area (referenced by ID in the action configurations)
+            DisplaySplitContainer(
+                bounds = _bounds_default.remove_from_top(_SLOT_HEIGHT),
+                children = [
+                    DISPLAY_HEADER_1,
+                    DISPLAY_HEADER_2
+                ]
+            ),
 
-        # Footer area (referenced by ID in the action configurations)
-        DisplaySplitContainer(
-            bounds = _bounds_default.remove_from_bottom(_SLOT_HEIGHT),
-            children = [
-                DISPLAY_FOOTER_1,
-                DISPLAY_FOOTER_2
-            ]
-        ),
+            # Footer area (referenced by ID in the action configurations)
+            DisplaySplitContainer(
+                bounds = _bounds_default.remove_from_bottom(_SLOT_HEIGHT),
+                children = [
+                    DISPLAY_FOOTER_1,
+                    DISPLAY_FOOTER_2
+                ]
+            ),
 
-        # Rig name
-        ParameterDisplayLabel(
-            bounds = _bounds_default,   # Takes what is left over
+            # Rig name
+            DisplayLabel(
+                bounds = _bounds_default,   # Takes what is left over
 
-            layout = {
-                "font": "/fonts/PTSans-NarrowBold-40.pcf",
-                "lineSpacing": 0.8,
-                "maxTextWidth": 220
-            },
+                layout = {
+                    "font": "/fonts/PTSans-NarrowBold-40.pcf",
+                    "lineSpacing": 0.8,
+                    "maxTextWidth": 220,
+                    "text": KemperRigNameCallback.DEFAULT_TEXT,
+                },
 
-            parameter = {
-                "mapping": KemperMappings.RIG_NAME(),
-                "textOffline": "Kemper Control " + PYSWITCH_VERSION,
-                "textReset": "Loading Rig..."
-            },
-            
-            id = 10
-        ),
+                callback = KemperRigNameCallback()
+            ),
 
-        # Bidirectional protocol state indicator (dot)
-        BIDIRECTIONAL_PROTOCOL_STATE_DOT(_bounds_default),
+            # Bidirectional protocol state indicator (dot)
+            BIDIRECTIONAL_PROTOCOL_STATE_DOT(_bounds_default),
 
-        # Performance indicator (dot)
-        PERFORMANCE_DOT(_bounds_default.translated(0, 7)),
-    ]
-)
+            # Performance indicator (dot)
+            PERFORMANCE_DOT(_bounds_default.translated(0, 7)),
+        ]
+    ),
 
-# Tuner display
-_SPLASH_TUNER = TunerDisplay(
-    mapping_note = KemperMappings.TUNER_NOTE(),
-    mapping_deviance = KemperMappings.TUNER_DEVIANCE(),
-    
-    bounds = _display_bounds,
-    
-    scale = 3,
-    layout = {
-        "font": "/fonts/PTSans-NarrowBold-40.pcf"
-    }
+    splash_tuner = TunerDisplay(
+        mapping_note = KemperMappings.TUNER_NOTE(),
+        mapping_deviance = KemperMappings.TUNER_DEVIANCE(),
+        
+        bounds = _display_bounds,
+        
+        scale = 3,
+        layout = {
+            "font": "/fonts/PTSans-NarrowBold-40.pcf"
+        }
+    )
 )

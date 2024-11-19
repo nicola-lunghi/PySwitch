@@ -4,7 +4,7 @@ from ..misc import Updateable, Updater
 
 class UiController(Updater, Updateable):
 
-    # Creates the displays. root can be a DisplayElement or a condition.
+    # splash_callback must contain a get_root() function
     def __init__(self, display_driver, font_loader, splash_callback = None):     
         Updater.__init__(self)
 
@@ -36,7 +36,7 @@ class UiController(Updater, Updateable):
     # Shows the current splash
     def show(self):
         # Get DisplayElement from callback
-        splash_element = self._splash_callback.get(None)
+        splash_element = self._splash_callback.get_root()
 
         if splash_element == self._current_splash_element:
             return

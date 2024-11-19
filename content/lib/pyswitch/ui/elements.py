@@ -47,31 +47,39 @@ class DisplayLabel(DisplayElement):
     # Line feed used for display
     LINE_FEED = "\n"
 
-    def __init__(self, layout = None, bounds = DisplayBounds(), name = "", id = 0, scale = 1):
+    def __init__(self, layout = None, bounds = DisplayBounds(), name = "", id = 0, scale = 1, callback = None):
         super().__init__(bounds = bounds, name = name, id = id)
 
         self._layout = DisplayLabelLayout(layout if layout else {})
         self._layout.check(self.id)
+        self._initial_text_color = self._layout.text_color        
 
         self._scale = scale
-
-        self._initial_text_color = self._layout.text_color        
+        self._callback = callback
 
         self._ui = None    
         self._appl = None
         self._background = None 
         self._label = None
         
-        # This seems to be a strange bug in micropython: Can be replaced when further attributes are coming.
-        # The field is not used anywhere.
-        self._bugfix = None
-
     # Adds the slot to the splash
     def init(self, ui, appl):
         self._ui = ui
         self._appl = appl
 
         self._update_font()
+
+        if self._callback:
+            that = self
+
+            class _CallbackMappingListener:
+                def parameter_changed(self, mapping):
+                    that._callback.update_label(that)
+
+                def request_terminated(self, mapping):
+                    that._callback.update_label(that)       
+
+            self._callback.init(appl, _CallbackMappingListener())
 
         # Append background, if any
         if self._layout.back_color:
@@ -118,62 +126,17 @@ class DisplayLabel(DisplayElement):
     def _update_font(self):
         self._font = self._ui.font_loader.get(self._layout.font_path)
 
-    #@property
-    #def layout(self):
-    #    return self._layout
-    
-    #@layout.setter
-    #def layout(self, layout):
-    #    old = self._layout
-    #    self._layout = layout
-                
-    #    # Changes to the label
-    #    if self._label:
-    #        # Font changed?
-    #        if old.font_path != self._layout.font_path:
-    #            self._update_font()
-    #            self._label.font = self._font
-
-    #        # Text or wrapping changed?
-    #        if old.text != self._layout.text or old.max_text_width != self._layout.max_text_width:
-    #            self._layout.text = old.text                              # Keep text!
-    #            self._label.text = self._wrap_text(self._layout.text)
-
-    #        # Line spacing changed?
-    #        if old.line_spacing != self._layout.line_spacing:
-    #            self._label.line_spacing = self._layout.line_spacing
-
-    #        # Text color changed?
-    #        if old.text_color != self._layout.text_color:
-    #            if not self._layout.text_color:
-    #                self._layout.text_color = self._determine_text_color()
-
-    #            self._label.color = self._layout.text_color
-    #            self._initial_text_color = self._layout.text_color
-
-    #    # Changes to the backgrounds
-    #    if self._layout.back_color:
-    #        # Back color changed?
-    #        if old.back_color and old.back_color != self._layout.back_color:
-    #            if self._background:
-    #                self._background.fill = self._layout.back_color
-
-    #            # Update text color, too (might change when no initial color has been set)
-    #            self.text_color = self._initial_text_color
-
     @property
     def back_color(self):
         return self._layout.back_color
 
     @back_color.setter
     def back_color(self, color):
-        if self._layout.back_color and not color:
-            return
-        #    raise Exception("You can not remove a background (set color to black instead)")            
+        if self._layout.back_color and not color:            
+            raise Exception() #"You can not remove a background (set color to black instead)")            
 
         if not self._layout.back_color and color:
-            return
-        #    raise Exception("You can only change the background color if an initial background color has been passed")
+            raise Exception() #"You can only change the background color if an initial background color has been passed")
         
         if self._layout.back_color == color:
             return
@@ -318,7 +281,7 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
 
 
 # DisplayLabel which is connected to a client parameter
-class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener):
+#class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener):
     
     # parameter: {
     #     "mapping":     A ClientParameterMapping instance whose values should be shown in the area
@@ -327,65 +290,65 @@ class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener)
     #     "textOffline": Text to show initially and when the client is offline (optional)
     #     "textReset":   Text to show when a reset happened (on rig changes etc.). Optional.
     # }
-    def __init__(self, parameter, bounds = DisplayBounds(), layout = None, name = "", id = 0):
-        DisplayLabel.__init__(self, bounds = bounds, layout = layout, name = name, id = id)
+#    def __init__(self, parameter, bounds = DisplayBounds(), layout = None, name = "", id = 0):
+#        DisplayLabel.__init__(self, bounds = bounds, layout = layout, name = name, id = id)
 
-        self._mapping = parameter["mapping"]
-        self._depends = get_option(parameter, "depends", None)
+#        self._mapping = parameter["mapping"]
+#        self._depends = get_option(parameter, "depends", None)
 
-        self._last_value = None
-        self._depends_last_value = None
+#        self._last_value = None
+#        self._depends_last_value = None
 
-        self._text_offline = get_option(parameter, "textOffline", "")
-        self._text_reset = get_option(parameter, "textReset", "")        
+#        self._text_offline = get_option(parameter, "textOffline", "")
+#        self._text_reset = get_option(parameter, "textReset", "")        
     
-    # We need access to the client, so we store appl here
-    def init(self, ui, appl):
-        super().init(ui, appl)
+#    # We need access to the client, so we store appl here
+#    def init(self, ui, appl):
+#        super().init(ui, appl)
 
-        self.text = self._text_offline
-        self._appl = appl
+#        self.text = self._text_offline
+#        self._appl = appl
 
-        self._appl.client.register(self._mapping, self)
+#        self._appl.client.register(self._mapping, self)
         
-        if self._depends:
-            self._appl.client.register(self._depends, self)
+#        if self._depends:
+#            self._appl.client.register(self._depends, self)
         
     # Called on every update tick
-    def update(self):
-        if not self._depends:
-            self._appl.client.request(self._mapping, self)
-        else:
-            self._appl.client.request(self._depends, self)
+#    def update(self):
+#        if not self._depends:
+#            self._appl.client.request(self._mapping, self)
+#        else:
+#            self._appl.client.request(self._depends, self)
 
-    # Reset the parameter display
-    def reset(self):
-        self._last_value = None
-        self._depends_last_value = None
+#    # Reset the parameter display
+#    def reset(self):
+#        self._last_value = None
+#        self._depends_last_value = None
 
-        self.text = self._text_reset
+#        self.text = self._text_reset
 
-    # Listen to client value returns (rig name and date)
-    def parameter_changed(self, mapping):
-        if mapping == self._mapping and mapping.value != self._last_value:
-            # Main mapping changed
-            self._last_value = mapping.value
+#    # Listen to client value returns (rig name and date)
+#    def parameter_changed(self, mapping):
+#        if mapping == self._mapping and mapping.value != self._last_value:
+#            # Main mapping changed
+#            self._last_value = mapping.value
 
-            # Set value on display
-            self.text = mapping.value
+#            # Set value on display
+#            self.text = mapping.value
 
-        if mapping == self._depends and mapping.value != self._depends_last_value:
-            # Dependency has changed: Request update of main mapping
-            self._depends_last_value = mapping.value        
+#        if mapping == self._depends and mapping.value != self._depends_last_value:
+#            # Dependency has changed: Request update of main mapping
+#            self._depends_last_value = mapping.value        
             
-            self._appl.client.request(self._mapping, self)
+#            self._appl.client.request(self._mapping, self)
 
-    # Called when the client is offline (requests took too long)
-    def request_terminated(self, mapping):
-        self.text = self._text_offline
+#    # Called when the client is offline (requests took too long)
+#    def request_terminated(self, mapping):
+#       self.text = self._text_offline
 
-        self._last_value = None
-        self._depends_last_value = None
+#        self._last_value = None
+#        self._depends_last_value = None
 
 
 ###########################################################################################################################

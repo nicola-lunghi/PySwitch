@@ -6,11 +6,13 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-from pyswitch.misc import Colors, Callback
-from pyswitch.controller.actions.actions import HoldAction, ParameterAction, PushButtonAction
+from pyswitch.misc import Colors
+from pyswitch.controller.actions.actions import HoldAction, PushButtonAction
+from pyswitch.controller.actions.callbacks import BinaryParameterCallback, Callback
 
 from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, NRPN_VALUE
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
+
 
 class _EnableCallback(Callback):
     def __init__(self):
@@ -20,7 +22,7 @@ class _EnableCallback(Callback):
     def get_mappings(self):
         yield self.mapping
 
-    def get(self, action):  
+    def enabled(self, action):  
         if self.mapping.value == None:
             return (action.id == 10)
         
@@ -66,33 +68,33 @@ Switches = [
                 ],
                 "actionsHold": [
                     # Enable delay (also on disable!)
-                    ParameterAction({
-                        "mode": PushButtonAction.ENABLE,
-                        "mapping": KemperMappings.EFFECT_STATE(
-                            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY
+                    PushButtonAction({
+                        "callback": BinaryParameterCallback(
+                            mapping = KemperMappings.EFFECT_STATE(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY)                            
                         ),
-                        "useSwitchLeds": False
+                        "mode": PushButtonAction.ENABLE,
                     }),
 
                     # Freeze on/off
-                    ParameterAction({
-                        "mapping": KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+                    PushButtonAction({
+                        "callback": BinaryParameterCallback(
+                            mapping = KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+                            text = "Tap|Frz",
+                            color = Colors.GREEN
+                        ),
+                        "mode": PushButtonAction.LATCH,
                         "display": DISPLAY_HEADER_2,
-                        "text": "Tap|Frz",
-                        "color": Colors.GREEN,
-                        "mode": PushButtonAction.LATCH
                     }),                    
 
                     # Set delay mix to 1:1 when enabled, remembering the old setting
-                    ParameterAction({
-                        "mode": PushButtonAction.LATCH,
-                        "mapping": KemperMappings.EFFECT_MIX(
-                            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY
+                    PushButtonAction({
+                        "callback": BinaryParameterCallback(
+                            mapping = KemperMappings.EFFECT_MIX(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+                            value_enable = NRPN_VALUE(0.5),
+                            value_disable = "auto",
+                            comparison_mode = BinaryParameterCallback.EQUAL,
                         ),
-                        "valueEnable": NRPN_VALUE(0.5),
-                        "valueDisable": "auto",
-                        "comparisonMode": ParameterAction.EQUAL,
-                        "useSwitchLeds": False
+                        "mode": PushButtonAction.LATCH
                     })
                 ]
             })
@@ -115,7 +117,6 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             KemperActionDefinitions.RIG_SELECT(
-                #slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
                 rig = 1,
                 bank = 2,
                 rig_off = 3,

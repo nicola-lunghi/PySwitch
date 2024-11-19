@@ -5,8 +5,9 @@ from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 from adafruit_midi.program_change import ProgramChange
 
-from pyswitch.misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print
-from pyswitch.controller.actions.actions import ParameterAction, EffectEnableAction, ResetDisplaysAction, PushButtonAction
+from pyswitch.misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print, PYSWITCH_VERSION
+from pyswitch.controller.actions.actions import ResetDisplaysAction, PushButtonAction
+from pyswitch.controller.actions.callbacks import BinaryParameterCallback, DEFAULT_LED_BRIGHTNESS_OFF, Callback
 from pyswitch.controller.Client import ClientParameterMapping
 
 
@@ -97,99 +98,33 @@ def NRPN_VALUE(value):
 
 ####################################################################################################################
 
-
-# Kemper Effect slot IDs, MIDI addresses and display properties
-class KemperEffectSlot:
-    
-    # IDs for the available effect slots
-    EFFECT_SLOT_ID_A = const(0)
-    EFFECT_SLOT_ID_B = const(1)
-    EFFECT_SLOT_ID_C = const(2)
-    EFFECT_SLOT_ID_D = const(3)
-    
-    EFFECT_SLOT_ID_X = const(4)
-    EFFECT_SLOT_ID_MOD = const(5)
-    EFFECT_SLOT_ID_DLY = const(6)
-    EFFECT_SLOT_ID_REV = const(7)
-
-    # CC Address for Effect Slot enable/disable. Order has to match the one defined above!
-    CC_EFFECT_SLOT_ENABLE = (
-        const(17),    # Slot A
-        const(18),    # Slot B
-        const(19),    # Slot C
-        const(20),    # Slot D
-
-        const(22),    # Slot X
-        const(24),    # Slot MOD        
-        const(27),    # Slot DLY (with Spillover)        
-        const(29)     # Slot REV (with Spillover)
-    )
-
-    # Slot address pages. Order has to match the one defined above!
-    NRPN_SLOT_ADDRESS_PAGE = (
-        const(0x32),   # Slot A
-        const(0x33),   # Slot B
-        const(0x34),   # Slot C
-        const(0x35),   # Slot D
-
-        const(0x38),   # Slot X
-        const(0x3a),   # Slot MOD
-        const(0x3c),   # Slot DLY
-        const(0x3d)    # Slot REV
-    )    
-
-    # Freeze parameter addresses on page 0x7d (Looper and Delay Freeze) for all slots. 
-    # Order has to match the one defined above!
-    NRPN_FREEZE_SLOT_PARAMETER_ADDRESSES = [
-        const(0x6b),   # Slot A
-        const(0x6c),   # Slot B
-        const(0x6d),   # Slot C
-        const(0x6e),   # Slot D
-
-        const(0x6f),   # Slot X
-        const(0x71),   # Slot MOD
-        const(0x72),   # Slot DLY
-        const(0x73)    # Slot REV
-    ]    
-
-     # Slot names for display. Order has to match the one defined above!
-    EFFECT_SLOT_NAMES = [
-        "A",
-        "B",
-        "C",
-        "D",
-
-        "X",
-        "MOD",
-        "DLY",
-        "REV"
-    ]
-
-    def __init__(self, slot_id):
-        self._slot_id = slot_id
-
-    # Must return the lot name
-    def get_name(self):
-        return KemperEffectSlot.EFFECT_SLOT_NAMES[self._slot_id]
-    
-
-####################################################################################################################
-
 # All defined actions here have one parameter in common: A display definition (see definitions.py)
 # which assigns a display label to the action (optional: If omitted, no visual feedback is given 
 # on the display).
 class KemperActionDefinitions: 
 
-    ## Effect slots ########################################################################################################
-
-    # Switch an effect slot on / off
+    # Binary parameters (for all binary parameter mappings which support 0/1 values for on/off)
     @staticmethod
-    def EFFECT_STATE(slot_id, display = None, mode = PushButtonAction.HOLD_MOMENTARY, id = False, use_leds = True, enable_callback = None):
-        return EffectEnableAction({
-            "mapping": KemperMappings.EFFECT_STATE(slot_id),
-            "mappingType": KemperMappings.EFFECT_TYPE(slot_id),
-            "categories": KemperEffectCategories(),
-            "slotInfo": KemperEffectSlot(slot_id),
+    def BINARY_SWITCH(mapping, 
+                      display = None, 
+                      text = "", 
+                      mode = PushButtonAction.HOLD_MOMENTARY, 
+                      color = Colors.WHITE, 
+                      id = False, 
+                      use_leds = True, 
+                      enable_callback = None,
+                      value_on = 1,
+                      value_off = 0
+        ):
+        return PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = mapping,
+                text = text,
+                color = color,
+                value_enable = value_on,
+                value_disable = value_off,
+                comparison_mode = BinaryParameterCallback.EQUAL
+            ),
             "mode": mode,
             "display": display,
             "id": id,
@@ -197,47 +132,54 @@ class KemperActionDefinitions:
             "enableCallback": enable_callback
         })
 
-    # Rotary speed (fast/slow)
+    ## Special functions ####################################################################################################
+
+    # Switch an effect slot on / off
     @staticmethod
-    def ROTARY_SPEED(slot_id, display = None, color = Colors.DARK_BLUE, id = False, use_leds = True, enable_callback = None):
-        return ParameterAction({
-            "mapping": KemperMappings.ROTARY_SPEED(slot_id),
+    def EFFECT_STATE(slot_id, 
+                     display = None, 
+                     mode = PushButtonAction.HOLD_MOMENTARY, 
+                     id = False, 
+                     use_leds = True, 
+                     enable_callback = None
+        ):
+        return PushButtonAction({
+            "callback": KemperEffectEnableCallback(slot_id),
+            "mode": mode,
             "display": display,
-            "text": "Fast",
-            "color": color,
             "id": id,
             "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
+            "enableCallback": enable_callback,
         })
-
-    ## Special functions ####################################################################################################
 
     # Switch tuner mode on / off
     @staticmethod
-    def TUNER_MODE(display = None, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True, enable_callback = None):
-        return ParameterAction({
-            "mapping": KemperMappings.TUNER_MODE_STATE(),
-            "valueEnable": 1,
-            "valueDisable": 0,
-            "comparisonMode": ParameterAction.EQUAL,
-            "display": display,
-            "text": "Tuner",
-            "color": Colors.WHITE,
-            "color": color,
+    def TUNER_MODE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True, enable_callback = None):
+        return PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = KemperMappings.TUNER_MODE_STATE(),
+                text = "Tuner",
+                color = color,
+                comparison_mode = BinaryParameterCallback.EQUAL,
+            ),
+            "mode": mode,   
+            "display": display,            
             "id": id,
             "useSwitchLeds": use_leds,
             "enableCallback": enable_callback
         })
 
-    # Tap tempo (with blinking LED display)
+    # Tap tempo 
     @staticmethod
     def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = True, enable_callback = None):
-        return ParameterAction({
-            "mapping": KemperMappings.TAP_TEMPO(),
-            "display": display,
-            "text": "Tap",
-            "color": color,
+        return PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = KemperMappings.TAP_TEMPO(),
+                text = "Tap",
+                color = color
+            ),
             "mode": PushButtonAction.MOMENTARY,
+            "display": display,
             "id": id,
             "useSwitchLeds": use_leds,
             "enableCallback": enable_callback
@@ -245,25 +187,19 @@ class KemperActionDefinitions:
     
     # Show tempo (visual feedback, will be enabled for short time every beat)
     @staticmethod
-    def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True, enable_callback = None):
-        return ParameterAction({
-            "mapping": KemperMappings.TEMPO_DISPLAY(),
+    def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, text = "Tempo", id = False, use_leds = True, enable_callback = None):
+        return PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = KemperMappings.TEMPO_DISPLAY(),
+                text = text,
+                color = color
+            ),
             "display": display,
-            "text": "Tempo",
-            "color": color,
             "id": id,
             "useSwitchLeds": use_leds,
             "enableCallback": enable_callback
         })
     
-    ## Show tempo (visual feedback, will be enabled for short time every beat)
-    #@staticmethod
-    #def START_CLOCK():
-    #    return ParameterAction({
-    #        "mapping": KemperMappings.MIDI_CLOCK_START(),
-    #        "useSwitchLeds": False      
-    #    })
-
     # Effect Button I-IIII (set only). num must be a number (1 to 4).
     @staticmethod
     def EFFECT_BUTTON(num, text = None, display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True, enable_callback = None):
@@ -277,21 +213,24 @@ class KemperActionDefinitions:
             elif num == 4:
                 text = "FX IIII"
 
-        return ParameterAction({
-            "mapping": KemperMappings.EFFECT_BUTTON(num),
+        return PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = KemperMappings.EFFECT_BUTTON(num),
+                text = text,
+                color = color
+            ),
+            "mode": PushButtonAction.LATCH,
             "display": display,
-            "text": text,
-            "color": color,
             "id": id,
             "useSwitchLeds": use_leds,
-            "ledBrightness": {
-                "on": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF,               # Set equal brightness (we do not need status display here)
-                "off": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
-            },
-            "displayDimFactor": {
-                "on": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,              # Set equal dim factor (we do not need status display here)
-                "off": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF
-            },
+            #"ledBrightness": {
+            #    "on": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF,               # Set equal brightness (we do not need status display here)
+            #    "off": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
+            #},
+            #"displayDimFactor": {
+            #    "on": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,              # Set equal dim factor (we do not need status display here)
+            #    "off": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF
+            #},
             "enableCallback": enable_callback
         })
     
@@ -301,14 +240,16 @@ class KemperActionDefinitions:
     # device changes state on every 0/1 value sequence instead of accepting 0/1 for on/off!
     # Even if you just send 1, it does not work: You have to send 0, then 1 to have the state change.
     def MORPH_BUTTON(display = None, color = Colors.LIGHT_GREEN, text = "Morph", id = False, use_leds = True, enable_callback = None):
-        return ParameterAction({
-            "mode": PushButtonAction.ONE_SHOT,
-            "mapping": KemperMappings.MORPH_BUTTON(),
-            "valueEnable": [0, 1],
+        return PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = KemperMappings.MORPH_BUTTON(),
+                text = text,
+                color = color,
+                value_enable = [0, 1],
+            ),
+            "mode": PushButtonAction.ONE_SHOT,            
             "useSwitchLeds": use_leds,
             "display": display,
-            "color": color,
-            "text": text,
             "id": id,
             "enableCallback": enable_callback
         })
@@ -330,14 +271,16 @@ class KemperActionDefinitions:
                          remember_off_value = True, 
                          enable_callback = None
         ):
-        return ParameterAction({
+        return PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = KemperMappings.RIG_VOLUME(),
+                text = text,
+                color = color,
+                value_enable = NRPN_VALUE(boost_volume),
+                value_disable = NRPN_VALUE(0.5) if not remember_off_value else "auto",    # 0.5 = 0dB
+            ),
             "mode": mode,
-            "mapping": KemperMappings.RIG_VOLUME(),
-            "valueEnable": NRPN_VALUE(boost_volume),
-            "valueDisable": NRPN_VALUE(0.5) if not remember_off_value else "auto",    # 0.5 = 0dB
             "display": display,
-            "text": text,
-            "color": color,
             "id": id,
             "useSwitchLeds": use_leds,
             "enableCallback": enable_callback
@@ -355,50 +298,20 @@ class KemperActionDefinitions:
             "enableCallback": enable_callback
         })
 
-    ## Amp ########################################################################################################################
-
-    # Amp on/off
-    @staticmethod
-    def AMP_STATE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True, enable_callback = None):
-        return ParameterAction({
-            "mapping": KemperMappings.AMP_STATE(),
-            "mode": mode,
-            "display": display,
-            "text": "Amp",
-            "color": color,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
-        })
-
-    ## Cab ########################################################################################################################
-
-    # Amp on/off
-    @staticmethod
-    def CABINET_STATE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True, enable_callback = None):
-        return ParameterAction({
-            "mapping": KemperMappings.CABINET_STATE(),
-            "mode": mode,
-            "display": display,
-            "text": "Cab",
-            "color": color,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
-        })
-
     ## Change Rig/Bank ############################################################################################################
 
     # Next bank (keeps rig index)
     @staticmethod
-    def BANK_UP(display = None, color = Colors.WHITE, id = False, use_leds = True, enable_callback = None):
-        return ParameterAction({
-            "mapping": KemperMappings.NEXT_BANK(),
+    def BANK_UP(display = None, color = Colors.WHITE, text = "Bank up", id = False, use_leds = True, enable_callback = None):
+        return PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = KemperMappings.NEXT_BANK(),
+                text = text,
+                color = color,
+                value_enable = CC_VALUE_BANK_CHANGE
+            ),
             "mode": PushButtonAction.ONE_SHOT,
-            "valueEnable": CC_VALUE_BANK_CHANGE,
             "display": display,
-            "text": "Bank up",
-            "color": color,
             "id": id,
             "useSwitchLeds": use_leds,
             "enableCallback": enable_callback
@@ -406,14 +319,16 @@ class KemperActionDefinitions:
     
     # Previous bank (keeps rig index)
     @staticmethod
-    def BANK_DOWN(display = None, color = Colors.WHITE, id = False, use_leds = True, enable_callback = None):
-        return ParameterAction({
-            "mapping": KemperMappings.PREVIOUS_BANK(),
+    def BANK_DOWN(display = None, color = Colors.WHITE, text = "Bank dn", id = False, use_leds = True, enable_callback = None):
+        return PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = KemperMappings.PREVIOUS_BANK(),
+                text = text,
+                color = color,
+                value_enable = CC_VALUE_BANK_CHANGE
+            ),
             "mode": PushButtonAction.ONE_SHOT,
-            "valueEnable": CC_VALUE_BANK_CHANGE,
             "display": display,
-            "text": "Bank dn",
-            "color": color,
             "id": id,
             "useSwitchLeds": use_leds,
             "enableCallback": enable_callback
@@ -431,7 +346,6 @@ class KemperActionDefinitions:
                    color = Colors.YELLOW, 
                    id = False, 
                    use_leds = True, 
-                   update_displays = None, 
                    enable_callback = None
         ):
         
@@ -464,65 +378,66 @@ class KemperActionDefinitions:
             mapping_disable = KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1)
             value_disable = [bank_off - 1, 1]
 
+        class RigSelectDisplayCallback(BinaryParameterCallback):
+            # Bank colors
+            BANK_COLORS = [
+                Colors.BLUE,
+                Colors.YELLOW,
+                Colors.RED,
+                Colors.TURQUOISE,
+                Colors.PURPLE
+            ]
+
+            def __init__(self):
+                super().__init__(
+                    mapping = mapping,
+                    mapping_disable = mapping_disable,
+                    color = color,
+                    value_enable = value_enable,
+                    value_disable = value_disable,
+                    comparison_mode = self.NO_STATE_CHANGE
+                )
+
+            def update_displays(self, action):
+                if mapping.value == None:
+                    # Fallback to default behaviour
+                    super().update_displays(action)
+                    return
+                
+                # Calculate bank and rig numbers in range [0...]
+                bank = int(mapping.value / NUM_RIGS_PER_BANK)
+                rig = mapping.value % NUM_RIGS_PER_BANK
+
+                # Label text
+                action.label.text = "Rig " + repr(bank) + "-" + repr(rig + 1)
+
+                # Bank color
+                bank_color = self.BANK_COLORS[bank % len(self.BANK_COLORS)]
+                action.label.back_color = bank_color
+
+                action.switch_color = bank_color
+                action.switch_brightness = DEFAULT_LED_BRIGHTNESS_OFF
+    
         # Finally we can create the action definition ;)
-        return ParameterAction({
-            "mapping": mapping,
-            "mappingDisable": mapping_disable,
-            "valueEnable": value_enable,
-            "valueDisable": value_disable,
-            "comparisonMode": ParameterAction.NO_STATE_CHANGE,
+        return PushButtonAction({
             "display": display,
-            "color": color,
-            "ledBrightness": {                                                  # Only necessary if rig id is still None
-                "on": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF,               # Set equal brightness (we do not need status display here)
-                "off": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
-            },
+            #"ledBrightness": {                                                  # Only necessary if rig id is still None
+            #    "on": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF,               # Set equal brightness (we do not need status display here)
+            #    "off": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
+            #},
             "mode": PushButtonAction.LATCH,
             "id": id,
             "useSwitchLeds": use_leds,
-            "updateDisplays": KemperActionDefinitions.update_displays_rig_select if not update_displays else update_displays,
+            "callback": RigSelectDisplayCallback(),
             "enableCallback": enable_callback
         })
-
-    # Bank colors
-    BANK_COLORS = [
-        Colors.BLUE,
-        Colors.YELLOW,
-        Colors.RED,
-        Colors.TURQUOISE,
-        Colors.PURPLE
-    ]
-
-    # Callback for RIG_SELECT
-    @staticmethod
-    def update_displays_rig_select(action, mapping):
-        if mapping.value == None:
-            # Fallback to default behaviour
-            return False
-        
-        # Calculate bank and rig numbers in range [0...]
-        bank = int(mapping.value / NUM_RIGS_PER_BANK)
-        rig = mapping.value % NUM_RIGS_PER_BANK
-
-        # Label text
-        action.label.text = "Rig " + repr(bank) + "-" + repr(rig + 1)
-
-        # Bank color
-        bank_color = KemperActionDefinitions.BANK_COLORS[bank % len(KemperActionDefinitions.BANK_COLORS)]
-        action.label.back_color = bank_color
-
-        action.switch_color = bank_color
-        action.switch_brightness = ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
-
-        # Tell the caller that we handled everything
-        return True
 
 
 ####################################################################################################################
 
 
-# Provides mapping of the kemper internal effect types to effect categories
-class KemperEffectCategories: #(EffectCategoryProvider):
+# Used for effect enable/disable ParameterAction
+class KemperEffectEnableCallback(BinaryParameterCallback):
 
     # Effect types enum (used internally, also for indexing colors, so be sure these are always a row from 0 to n)
     CATEGORY_NONE = const(0)
@@ -579,52 +494,110 @@ class KemperEffectCategories: #(EffectCategoryProvider):
         "Reverb"
     )
 
+    def __init__(self, slot_id):
+        super().__init__(mapping = KemperMappings.EFFECT_STATE(slot_id))
+
+        self.mapping_fxtype = KemperMappings.EFFECT_TYPE(slot_id)
+
+        self._effect_category = self.CATEGORY_NONE  
+        self._current_category = -1
+    
+    def get_mappings(self):
+        for m in super().get_mappings():
+            yield m
+        yield self.mapping_fxtype
+    
+    def update_displays(self, action):    
+        self._effect_category = self._get_effect_category(self.mapping_fxtype.value) if self.mapping_fxtype.value != None else self.CATEGORY_NONE
+        
+        if self._effect_category == self.CATEGORY_NONE:
+            action.state = False
+
+        self._current_category = self._effect_category
+
+        # Effect category color
+        action.color = self.CATEGORY_COLORS[self._effect_category]
+
+        # Effect category text
+        if action.label:
+            action.label.text = self.CATEGORY_NAMES[self._effect_category]         
+
+        super().update_displays(action)
+
     # Must return the effect category for a mapping value
-    def get_effect_category(self, kpp_effect_type):
+    def _get_effect_category(self, kpp_effect_type):
         # NOTE: The ranges are defined by Kemper with a lot of unused numbers, so the borders between types
         # could need to be adjusted with future Kemper firmware updates!
         if (kpp_effect_type == 0):
-            return KemperEffectCategories.CATEGORY_NONE
+            return self.CATEGORY_NONE
         elif (0 < kpp_effect_type and kpp_effect_type <= 14):
-            return KemperEffectCategories.CATEGORY_WAH
+            return self.CATEGORY_WAH
         elif (14 < kpp_effect_type and kpp_effect_type <= 45):
-            return KemperEffectCategories.CATEGORY_DISTORTION
+            return self.CATEGORY_DISTORTION
         elif (45 < kpp_effect_type and kpp_effect_type <= 55):
-            return KemperEffectCategories.CATEGORY_COMPRESSOR
+            return self.CATEGORY_COMPRESSOR
         elif (55 < kpp_effect_type and kpp_effect_type <= 60):
-            return KemperEffectCategories.CATEGORY_NOISE_GATE       
+            return self.CATEGORY_NOISE_GATE       
         elif (60 < kpp_effect_type and kpp_effect_type <= 64):
-            return KemperEffectCategories.CATEGORY_SPACE            
+            return self.CATEGORY_SPACE            
         elif (64 < kpp_effect_type and kpp_effect_type <= 80):
-            return KemperEffectCategories.CATEGORY_CHORUS
+            return self.CATEGORY_CHORUS
         elif (80 < kpp_effect_type and kpp_effect_type <= 95):
-            return KemperEffectCategories.CATEGORY_PHASER_FLANGER
+            return self.CATEGORY_PHASER_FLANGER
         elif (95 < kpp_effect_type and kpp_effect_type <= 110):
-            return KemperEffectCategories.CATEGORY_EQUALIZER
+            return self.CATEGORY_EQUALIZER
         elif (110 < kpp_effect_type and kpp_effect_type <= 120):
-            return KemperEffectCategories.CATEGORY_BOOSTER
+            return self.CATEGORY_BOOSTER
         elif (120 < kpp_effect_type and kpp_effect_type <= 125):
-            return KemperEffectCategories.CATEGORY_LOOPER
+            return self.CATEGORY_LOOPER
         elif (125 < kpp_effect_type and kpp_effect_type <= 135):
-            return KemperEffectCategories.CATEGORY_PITCH
+            return self.CATEGORY_PITCH
         elif (135 < kpp_effect_type and kpp_effect_type <= 143):
-            return KemperEffectCategories.CATEGORY_DUAL
+            return self.CATEGORY_DUAL
         elif (143 < kpp_effect_type and kpp_effect_type <= 170):
-            return KemperEffectCategories.CATEGORY_DELAY
+            return self.CATEGORY_DELAY
         else:
-            return KemperEffectCategories.CATEGORY_REVERB
-    
-    # Must return the effect color for a mapping value
-    def get_effect_category_color(self, kpp_effect_type):
-        return KemperEffectCategories.CATEGORY_COLORS[kpp_effect_type]
-    
-    # Must return the effect name for a mapping value
-    def get_effect_category_name(self, kpp_effect_type):
-        return KemperEffectCategories.CATEGORY_NAMES[kpp_effect_type]
-    
-    # Must return the value interpreted as "not assigned"
-    def get_category_not_assigned(self):
-        return KemperEffectCategories.CATEGORY_NONE
+            return self.CATEGORY_REVERB
+        
+
+####################################################################################################################
+
+
+class KemperRigNameCallback(Callback):
+    DEFAULT_TEXT = "Kemper Control " + PYSWITCH_VERSION
+
+    def __init__(self):
+        Callback.__init__(self)
+        self.mapping = KemperMappings.RIG_NAME()
+
+    def get_mappings(self):
+        yield self.mapping
+
+    def update_label(self, label):
+        label.text = self.mapping.value if self.mapping.value else self.DEFAULT_TEXT
+
+
+####################################################################################################################
+
+
+# Callback for on-demand Tuner display
+class TunerDisplayCallback(Callback):
+    def __init__(self, splash_default, splash_tuner):
+        Callback.__init__(self)
+
+        self.mapping = KemperMappings.TUNER_MODE_STATE()
+        
+        self._splash_tuner = splash_tuner
+        self._splash_default = splash_default
+
+    def get_mappings(self):
+        yield self.mapping
+
+    def get_root(self):
+        if self.mapping.value != 1:
+            return self._splash_default
+        else:
+            return self._splash_tuner
 
 
 ####################################################################################################################
@@ -678,6 +651,65 @@ class KemperNRPNExtendedMessage(SystemExclusive):
                 NRPN_INSTANCE                # 0x00                
             ] + controller
         )
+
+
+####################################################################################################################
+
+
+# Kemper Effect slot IDs, MIDI addresses and display properties
+class KemperEffectSlot:
+    
+    # IDs for the available effect slots
+    EFFECT_SLOT_ID_A = const(0)
+    EFFECT_SLOT_ID_B = const(1)
+    EFFECT_SLOT_ID_C = const(2)
+    EFFECT_SLOT_ID_D = const(3)
+    
+    EFFECT_SLOT_ID_X = const(4)
+    EFFECT_SLOT_ID_MOD = const(5)
+    EFFECT_SLOT_ID_DLY = const(6)
+    EFFECT_SLOT_ID_REV = const(7)
+
+    # CC Address for Effect Slot enable/disable. Order has to match the one defined above!
+    CC_EFFECT_SLOT_ENABLE = (
+        const(17),    # Slot A
+        const(18),    # Slot B
+        const(19),    # Slot C
+        const(20),    # Slot D
+
+        const(22),    # Slot X
+        const(24),    # Slot MOD        
+        const(27),    # Slot DLY (with Spillover)        
+        const(29)     # Slot REV (with Spillover)
+    )
+
+    # Slot address pages. Order has to match the one defined above!
+    NRPN_SLOT_ADDRESS_PAGE = (
+        const(0x32),   # Slot A
+        const(0x33),   # Slot B
+        const(0x34),   # Slot C
+        const(0x35),   # Slot D
+
+        const(0x38),   # Slot X
+        const(0x3a),   # Slot MOD
+        const(0x3c),   # Slot DLY
+        const(0x3d)    # Slot REV
+    )    
+
+    # Freeze parameter addresses on page 0x7d (Looper and Delay Freeze) for all slots. 
+    # Order has to match the one defined above!
+    NRPN_FREEZE_SLOT_PARAMETER_ADDRESSES = [
+        const(0x6b),   # Slot A
+        const(0x6c),   # Slot B
+        const(0x6d),   # Slot C
+        const(0x6e),   # Slot D
+
+        const(0x6f),   # Slot X
+        const(0x71),   # Slot MOD
+        const(0x72),   # Slot DLY
+        const(0x73)    # Slot REV
+    ]    
+
 
 ####################################################################################################################
 
