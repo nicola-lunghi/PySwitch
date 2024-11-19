@@ -314,15 +314,15 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
     #         "off":             LED brightness [0..1] for off state (Switch LEDs) Optional.
     #     }
     #
-    #     "updateDisplays":      Optional callback function to update the display and LEDs. See documentation for details.
-    #                            Callback schema is: callback(action, mapping) => Bool, where action is the ParameterAction instance,
+    #     "updateDisplays":      Optional Callback instance to update the display and LEDs. See documentation for details.
+    #                            Data passed on get() is a tuple: (action, mapping) where action is the ParameterAction instance,
     #                            and mapping.value holds the current value of the mapping. 
-    #                            Return True if your callback handled everything, or False for the default behaviour.
+    #                            Must return True if everything has been handled.
     # }
     def __init__(self, config = {}):
         super().__init__(config)
 
-        self._current_display_status = -1
+        self._current_display_state = -1
         self._current_color = -1
 
         # Per default, this uses the LEDs. You can switch that off however.
@@ -369,9 +369,6 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         # Callback based display update
         self._update_displays_callback = get_option(config, "updateDisplays", None)
 
-        # Determine the mapping to request
-        #self._get_request_mapping()        
-
     # Register all mappings
     def init(self, appl, switch):
         super().init(appl, switch)
@@ -380,6 +377,20 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
         
         if self._mapping_off:
             self.appl.client.register(self._mapping_off, self)
+
+        if self._update_displays_callback:
+            that = self
+
+            class _CallbackMappingListener:
+                def parameter_changed(self, mapping):
+                    that.force_update()
+                    that.update_displays()
+
+                def request_terminated(self, mapping):
+                    pass                                   # pragma: no cover
+
+
+            self._update_displays_callback.init(appl, _CallbackMappingListener())
 
     # Set state (called by base class)
     def set(self, enabled):        
@@ -424,7 +435,9 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
             return
 
         # Callback. If it returns True, we are finished here.
-        if callable(self._update_displays_callback) and self._update_displays_callback(self, self._mapping):            
+        if self._update_displays_callback and self._update_displays_callback.get((self, self._mapping)):
+            self._current_color = self.color
+            self._current_display_state = self.state
             return 
         
         # Set color, if new
@@ -436,8 +449,8 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
             self._update_label_text()            
     
         # Update when state have been changed
-        if self._current_display_status != self.state:
-            self._current_display_status = self.state
+        if self._current_display_state != self.state:
+            self._current_display_state = self.state
 
             self.set_switch_color(self.color)
             self.set_label_color(self.color)
@@ -503,7 +516,7 @@ class ParameterAction(PushButtonAction): #, ClientRequestListener):
 
     # Must reset all action states so the instance is being updated
     def force_update(self):
-        self._current_display_status = -1
+        self._current_display_state = -1
         self._current_color = -1
 
     # Must reset the displays

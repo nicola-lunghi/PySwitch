@@ -7,6 +7,7 @@ class MockCallback(Callback):
 
         self.mappings = mappings
         self.output_get = output
+        self.get_calls = []
 
     def get_mappings(self):
         if self.mappings:
@@ -15,4 +16,5 @@ class MockCallback(Callback):
             return super().get_mappings()
     
     def get(self, data):
+        self.get_calls.append(data)
         return self.output_get

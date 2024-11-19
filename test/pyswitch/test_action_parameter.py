@@ -1280,33 +1280,40 @@ class TestActionParameter(unittest.TestCase):
             )
         )
 
-        cb_calls = []
-        cb_data = {
-            "return": False,
-            "label_color": (0, 0, 0),
-            "label_text": "",
-            "pixel_color": (0, 0, 0),
-            "pixel_brighness": 0,
-            "calls": [],
-            "exp_value": 0
-        }
-
         that = self
 
-        def cb(action, mapping):
-            cb_data["calls"].append((action, mapping))
+        class MockCallback2(MockCallback):
+            def __init__(self, mappings = None, output = None):
+                super().__init__(mappings = mappings, output = output)
 
-            if mapping.value != None:
-                that.assertEqual(mapping.value, cb_data["exp_value"])
+                self.exp_value = None
+                self.label_color = None
+                self.label_text = None
+                self.pixel_color = None
+                self.pixel_brightness = None
 
-            if cb_data["return"]:
-                action.label.text = cb_data["label_text"]
-                action.label.back_color = cb_data["label_color"]
+            def get(self, data):
+                ret = super().get(data)
 
-                action_1.switch_color = cb_data["pixel_color"]
-                action_1.switch_brightness = cb_data["pixel_brightness"]
+                action = data[0]
+                mapping = data[1]
 
-            return cb_data["return"]
+                that.assertEqual(action, action_1)
+                that.assertEqual(mapping, mapping_1)
+
+                if mapping.value != None and self.exp_value != None:
+                    that.assertEqual(mapping.value, self.exp_value)
+
+                if ret:                    
+                    action.label.text = self.label_text
+                    action.label.back_color = self.label_color
+
+                    action.switch_color = self.pixel_color
+                    action.switch_brightness = self.pixel_brightness
+
+                return ret
+
+        cb = MockCallback2(mappings = [mapping_1])
 
         action_1 = ParameterAction({
             "mode": PushButtonAction.MOMENTARY,
@@ -1362,7 +1369,7 @@ class TestActionParameter(unittest.TestCase):
             switch_1.shall_be_pushed = True
 
         def eval1():
-            cb_data["calls"] = []
+            cb.get_calls = []
             return True        
         
         # Receive value: Default behaviour
@@ -1381,11 +1388,11 @@ class TestActionParameter(unittest.TestCase):
                 }
             ]
 
-            cb_data["return"] = False
-            cb_data["exp_value"] = 1
+            cb.output_get = False
+            cb.exp_value = 1
 
         def eval2():
-            self.assertIn((action_1, mapping_1), cb_data["calls"])
+            self.assertIn((action_1, mapping_1), cb.get_calls)
             self.assertEqual(mapping_1.value, 1)
 
             self.assertEqual(action_1.label.back_color, (200, 200, 200))
@@ -1410,12 +1417,12 @@ class TestActionParameter(unittest.TestCase):
                 }
             ]
 
-            cb_data["return"] = True
-            cb_data["label_color"] = (244, 233, 211)
-            cb_data["label_text"] = "bar"
-            cb_data["pixel_color"] = (22, 33, 44)
-            cb_data["pixel_brightness"] = 0.4
-            cb_data["exp_value"] = 22
+            cb.output_get = True
+            cb.label_color = (244, 233, 211)
+            cb.label_text = "bar"
+            cb.pixel_color = (22, 33, 44)
+            cb.pixel_brightness = 0.4
+            cb.exp_value = 22
 
         def eval3():
             self.assertEqual(mapping_1.value, 22)
