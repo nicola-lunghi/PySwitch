@@ -35,6 +35,7 @@ class Action(Updateable):
         self.appl = appl
         self.switch = switch
 
+        # Enable callback
         if self._enable_callback:
             that = self
             class _CallbackMappingListener:
