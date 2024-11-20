@@ -330,55 +330,6 @@ class ClientRequest(EventEmitter):
 ####################################################################################################################
 
 
-# Base class for listeners to client parameter changes
-#class ClientRequestListener:
-#
-#    # Called by the Client class when a parameter request has been answered.
-#    # The value received is already set on the mapping.
-#    def parameter_changed(self, mapping):
-#        pass
-#
-#    # Called when the client is offline (requests took too long)
-#    def request_terminated(self, mapping):
-#        pass
-
-
-####################################################################################################################
-####################################################################################################################
-
-
-# Base class for bidirectional protocols
-#class BidirectionalProtocol:
-#
-#    # Called before usage, with a midi handler.
-#    def init(self, midi, client):
-#        pass
-#
-#    # Must return (boolean) if the passed mapping is handled in the bidirectional protocol
-#    def is_bidirectional(self, mapping):
-#        return False
-#   
-#    # Must return (boolean) if the passed mapping should feed back the set value immediately
-#    # without waiting for a midi message.
-#    def feedback_value(self, mapping):
-#        return False
-#
-#    # Initialize the communication etc.
-#    def update(self):
-#        pass
-#   
-#    # Receive midi messages (for example for state sensing)
-#    def receive(self, midi_message):
-#        pass
-#
-#    # Must return a color representation for the current state
-#    def get_color(self):
-#        return (0, 0, 0)
-
-
-####################################################################################################################
-
-
 class BidirectionalClient(Client, Updateable):
 
     def __init__(self, midi, config, protocol):
@@ -443,3 +394,52 @@ class BidirectionalClient(Client, Updateable):
             if protocol.is_bidirectional(r.mapping):
                 r.notify_terminated()
         
+
+####################################################################################################################
+
+
+# Base class for listeners to client parameter changes
+#class ClientRequestListener:
+#
+#    # Called by the Client class when a parameter request has been answered.
+#    # The value received is already set on the mapping.
+#    def parameter_changed(self, mapping):
+#        pass
+#
+#    # Called when the client is offline (requests took too long)
+#    def request_terminated(self, mapping):
+#        pass
+
+
+####################################################################################################################
+####################################################################################################################
+
+
+# Base class for bidirectional protocols
+#class BidirectionalProtocol:
+#
+#    # Called before usage, with a midi handler.
+#    def init(self, midi, client):
+#        pass
+#
+#    # Must return (boolean) if the passed mapping is handled in the bidirectional protocol
+#    def is_bidirectional(self, mapping):
+#        return False
+#   
+#    # Must return (boolean) if the passed mapping should feed back the set value immediately
+#    # without waiting for a midi message.
+#    def feedback_value(self, mapping):
+#        return False
+#
+#    # Initialize the communication etc.
+#    def update(self):
+#        pass
+#   
+#    # Receive midi messages (for example for state sensing)
+#    def receive(self, midi_message):
+#        pass
+#
+#    # Must return a color representation for the current state
+#    def get_color(self):
+#        return (0, 0, 0)
+

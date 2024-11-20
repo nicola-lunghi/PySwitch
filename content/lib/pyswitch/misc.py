@@ -112,21 +112,12 @@ def _stringify_midi_message_part(part):
 
 # Compare two MIDI messages
 def compare_midi_messages(a, b):
-    #if a.__class__.__name__ != b.__class__.__name__:
-    #    return False
-
     if isinstance(a, SystemExclusive) and isinstance(b, SystemExclusive):
         return a.data == b.data and a.manufacturer_id == b.manufacturer_id
 
     elif isinstance(a, ControlChange) and isinstance(b, ControlChange):
         return a.control == b.control
     
-    #elif isinstance(a, MidiClockMessage) and isinstance(b, MidiClockMessage):
-    #    return True
-    
-    #elif isinstance(a, Start) and isinstance(b, Start):
-    #    return True
-
     elif isinstance(a, ProgramChange) and isinstance(b, ProgramChange):
         return a.patch == b.patch
 
@@ -135,6 +126,22 @@ def compare_midi_messages(a, b):
 
     else:
         return a == b
+
+#def hash_midi_message(midi_message):
+#    if isinstance(midi_message, SystemExclusive):
+#        return hash(midi_message.manufacturer_id + midi_message.data)
+#
+#    elif isinstance(midi_message, ControlChange):
+#        return hash(midi_message.control + 1024)
+#   
+#    elif isinstance(midi_message, ProgramChange):
+#        return 500
+#
+#    elif isinstance(midi_message, MIDIUnknownEvent):
+#        return midi_message.status
+#
+#    else:
+#        return id(midi_message)
 
 # Size (bytes) output formatting 
 # Taken from https://stackoverflow.com/questions/1094841/get-a-human-readable-version-of-a-file-size 

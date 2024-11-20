@@ -6,20 +6,33 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-from pyswitch.misc import DEFAULT_LABEL_COLOR, Colors
-from pyswitch.controller.actions.actions import HoldAction, ParameterAction, PushButtonAction
-#from pyswitch.controller.ConditionTree import ParameterCondition
+from pyswitch.misc import Colors
+from pyswitch.controller.actions.actions import HoldAction, PushButtonAction
+from pyswitch.controller.actions.callbacks import BinaryParameterCallback, Callback
 
-from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, KemperMidiValueProvider
-from display import DISPLAY_ID_FOOTER, DISPLAY_ID_HEADER
+from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, NRPN_VALUE
+from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
 
-# Layout used for the action labels (only used here locally)
-_ACTION_LABEL_LAYOUT = {
-    "font": "/fonts/H20.pcf",
-    "backColor": DEFAULT_LABEL_COLOR,
-    "stroke": 1
-}
+class _EnableCallback(Callback):
+    def __init__(self):
+        Callback.__init__(self)
+        self.mapping = KemperMappings.RIG_VOLUME()
+
+    def get_mappings(self):
+        yield self.mapping
+
+    def enabled(self, action):  
+        if self.mapping.value == None:
+            return (action.id == 10)
+        
+        if action.id == 10:
+            return (self.mapping.value >= NRPN_VALUE(0.5))
+        if action.id == 20:
+            return (self.mapping.value < NRPN_VALUE(0.5))
+        
+_enable_callback = _EnableCallback()
+
 
 # Defines the switch assignments
 Switches = [
@@ -29,12 +42,17 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.TUNER_MODE(
-                display = {
-                    "id": DISPLAY_ID_HEADER,
-                    "index": 0,
-                    "layout": _ACTION_LABEL_LAYOUT
-                }
-            )
+                id = 10,
+                display = DISPLAY_HEADER_1,
+                enable_callback = _enable_callback
+            ),
+
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
+                id = 20,
+                display = DISPLAY_HEADER_1,
+                enable_callback = _enable_callback
+            )            
         ]
     },
 
@@ -50,37 +68,34 @@ Switches = [
                 ],
                 "actionsHold": [
                     # Enable delay (also on disable!)
-                    ParameterAction({
-                        "mode": PushButtonAction.ENABLE,
-                        "mapping": KemperMappings.EFFECT_STATE(
-                            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY
+                    PushButtonAction({
+                        "callback": BinaryParameterCallback(
+                            mapping = KemperMappings.EFFECT_STATE(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY)                            
                         ),
-                        "useSwitchLeds": False
+                        "mode": PushButtonAction.ENABLE,
                     }),
 
                     # Freeze on/off
-                    ParameterAction({
-                        "mapping": KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
-                        "display": {
-                            "id": DISPLAY_ID_HEADER,
-                            "index": 1,
-                            "layout": _ACTION_LABEL_LAYOUT                            
-                        },
-                        "text": "Tap|Frz",
-                        "color": Colors.GREEN,
-                        "mode": PushButtonAction.LATCH
+                    PushButtonAction({
+                        "callback": BinaryParameterCallback(
+                            mapping = KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+                            text = "Tap|Frz",
+                            color = Colors.GREEN
+                        ),
+                        "mode": PushButtonAction.LATCH,
+                        "display": DISPLAY_HEADER_2,
+                        "useSwitchLeds": True
                     }),                    
 
                     # Set delay mix to 1:1 when enabled, remembering the old setting
-                    ParameterAction({
-                        "mode": PushButtonAction.LATCH,
-                        "mapping": KemperMappings.EFFECT_MIX(
-                            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY
+                    PushButtonAction({
+                        "callback": BinaryParameterCallback(
+                            mapping = KemperMappings.EFFECT_MIX(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+                            value_enable = NRPN_VALUE(0.5),
+                            value_disable = "auto",
+                            comparison_mode = BinaryParameterCallback.EQUAL,
                         ),
-                        "valueEnable": KemperMidiValueProvider.NRPN_VALUE(0.5),
-                        "valueDisable": "auto",
-                        "comparisonMode": ParameterAction.EQUAL,
-                        "useSwitchLeds": False
+                        "mode": PushButtonAction.LATCH
                     })
                 ]
             })
@@ -93,11 +108,7 @@ Switches = [
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
-                display = {
-                    "id": DISPLAY_ID_FOOTER,
-                    "index": 0,
-                    "layout": _ACTION_LABEL_LAYOUT
-                }
+                display = DISPLAY_FOOTER_1
             )
         ]
     },
@@ -106,13 +117,12 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
-                display = {
-                    "id": DISPLAY_ID_FOOTER,
-                    "index": 1,
-                    "layout": _ACTION_LABEL_LAYOUT
-                }
+            KemperActionDefinitions.RIG_SELECT(
+                rig = 1,
+                bank = 2,
+                rig_off = 3,
+                bank_off = 3,
+                display = DISPLAY_FOOTER_2
             )
         ]
     },
