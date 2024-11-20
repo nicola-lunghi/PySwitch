@@ -201,12 +201,13 @@ class BinaryParameterCallback(Callback):
 
     def update_displays(self, action):
         value = self._mapping.value
-        color = self.color
-        state = action.state
 
         if value != self._current_value:
             self._current_value = value
             self.evaluate_value(action, value)
+
+        state = action.state
+        color = self.color
 
         # Set color, if new, or state have been changed
         if color != self._current_color or self._current_display_state != state:
@@ -321,3 +322,67 @@ class BinaryParameterCallback(Callback):
                 int(color[1] * factor),
                 int(color[2] * factor)
             )
+        
+
+###########################################################################################################
+
+
+# Used for effect enable/disable
+class EffectEnableCallback(BinaryParameterCallback):
+
+    # The "None" Type is defined here, all others in derived classes
+    CATEGORY_NONE = const(0)
+
+    # Only used on init and reset
+    CATEGORY_INITIAL = const(-1)
+    
+    def __init__(self, mapping_state, mapping_type):
+        super().__init__(mapping = mapping_state)
+
+        self.mapping_fxtype = mapping_type
+
+        self._effect_category = self.CATEGORY_NONE  
+        self._current_category = self.CATEGORY_INITIAL
+    
+    def get_mappings(self):
+        for m in super().get_mappings():
+            yield m
+        yield self.mapping_fxtype
+    
+    def reset(self):
+        super().reset()
+        
+        self._current_category = self.CATEGORY_INITIAL
+
+    def update_displays(self, action):  
+        self._effect_category = self.get_effect_category(self.mapping_fxtype.value) if self.mapping_fxtype.value != None else self.CATEGORY_NONE
+        
+        if self._current_category == self._effect_category:
+            super().update_displays(action)
+            return
+
+        if self._effect_category == self.CATEGORY_NONE:
+            action.state = False
+
+        self._current_category = self._effect_category
+
+        # Effect category color
+        self.color = self.get_effect_category_color(self._effect_category)
+
+        # Effect category text
+        if action.label:
+            action.label.text = self.get_effect_category_text(self._effect_category)
+
+        super().update_displays(action)
+
+    # Must return the effect category for a mapping value
+    def get_effect_category(self, kpp_effect_type):
+        pass                                           # pragma: no cover
+
+    # Must return the color for a category    
+    def get_effect_category_color(self, category):
+        pass                                           # pragma: no cover
+
+    # Must return the text to show for a category    
+    def get_effect_category_text(self, category):
+        pass                                           # pragma: no cover

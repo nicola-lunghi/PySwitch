@@ -8,30 +8,10 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
 from pyswitch.controller.actions.actions import HoldAction, PushButtonAction
-from pyswitch.controller.actions.callbacks import BinaryParameterCallback, Callback
+from pyswitch.controller.actions.callbacks import BinaryParameterCallback
 
 from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, NRPN_VALUE
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
-
-
-class _EnableCallback(Callback):
-    def __init__(self):
-        Callback.__init__(self)
-        self.mapping = KemperMappings.RIG_VOLUME()
-
-    def get_mappings(self):
-        yield self.mapping
-
-    def enabled(self, action):  
-        if self.mapping.value == None:
-            return (action.id == 10)
-        
-        if action.id == 10:
-            return (self.mapping.value >= NRPN_VALUE(0.5))
-        if action.id == 20:
-            return (self.mapping.value < NRPN_VALUE(0.5))
-        
-_enable_callback = _EnableCallback()
 
 
 # Defines the switch assignments
@@ -43,15 +23,7 @@ Switches = [
         "actions": [
             KemperActionDefinitions.TUNER_MODE(
                 id = 10,
-                display = DISPLAY_HEADER_1,
-                enable_callback = _enable_callback
-            ),
-
-            KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
-                id = 20,
-                display = DISPLAY_HEADER_1,
-                enable_callback = _enable_callback
+                display = DISPLAY_HEADER_1
             )            
         ]
     },
@@ -117,11 +89,8 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
-                rig = 1,
-                bank = 2,
-                rig_off = 3,
-                bank_off = 3,
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
                 display = DISPLAY_FOOTER_2
             )
         ]

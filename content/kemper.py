@@ -7,8 +7,9 @@ from adafruit_midi.program_change import ProgramChange
 
 from pyswitch.misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print, PYSWITCH_VERSION
 from pyswitch.controller.actions.actions import ResetDisplaysAction, PushButtonAction
-from pyswitch.controller.actions.callbacks import BinaryParameterCallback, DEFAULT_LED_BRIGHTNESS_OFF, Callback
+from pyswitch.controller.actions.callbacks import BinaryParameterCallback, DEFAULT_LED_BRIGHTNESS_OFF, Callback, EffectEnableCallback
 from pyswitch.controller.Client import ClientParameterMapping
+from pyswitch.ui.elements import TunerDisplay
 
 
 ####################################################################################################################
@@ -437,10 +438,9 @@ class KemperActionDefinitions:
 
 
 # Used for effect enable/disable ParameterAction
-class KemperEffectEnableCallback(BinaryParameterCallback):
+class KemperEffectEnableCallback(EffectEnableCallback):
 
     # Effect types enum (used internally, also for indexing colors, so be sure these are always a row from 0 to n)
-    CATEGORY_NONE = const(0)
     CATEGORY_WAH = const(1)
     CATEGORY_DISTORTION = const(2)
     CATEGORY_COMPRESSOR = const(3)
@@ -495,46 +495,13 @@ class KemperEffectEnableCallback(BinaryParameterCallback):
     )
 
     def __init__(self, slot_id):
-        super().__init__(mapping = KemperMappings.EFFECT_STATE(slot_id))
-
-        self.mapping_fxtype = KemperMappings.EFFECT_TYPE(slot_id)
-
-        self._effect_category = self.CATEGORY_NONE  
-        self._current_category = -1
+        super().__init__(
+            mapping_state = KemperMappings.EFFECT_STATE(slot_id),
+            mapping_type = KemperMappings.EFFECT_TYPE(slot_id)
+        )
     
-    def get_mappings(self):
-        for m in super().get_mappings():
-            yield m
-        yield self.mapping_fxtype
-    
-    def reset(self):
-        super().reset()
-        
-        self._current_category = -1
-
-    def update_displays(self, action):  
-        self._effect_category = self._get_effect_category(self.mapping_fxtype.value) if self.mapping_fxtype.value != None else self.CATEGORY_NONE
-        
-        if self._current_category == self._effect_category:
-            super().update_displays(action)
-            return
-
-        if self._effect_category == self.CATEGORY_NONE:
-            action.state = False
-
-        self._current_category = self._effect_category
-
-        # Effect category color
-        self.color = self.CATEGORY_COLORS[self._effect_category]
-
-        # Effect category text
-        if action.label:
-            action.label.text = self.CATEGORY_NAMES[self._effect_category]
-
-        super().update_displays(action)
-
     # Must return the effect category for a mapping value
-    def _get_effect_category(self, kpp_effect_type):
+    def get_effect_category(self, kpp_effect_type):
         # NOTE: The ranges are defined by Kemper with a lot of unused numbers, so the borders between types
         # could need to be adjusted with future Kemper firmware updates!
         if (kpp_effect_type == 0):
@@ -568,6 +535,14 @@ class KemperEffectEnableCallback(BinaryParameterCallback):
         else:
             return self.CATEGORY_REVERB
         
+    # Must return the color for a category    
+    def get_effect_category_color(self, category):
+        return self.CATEGORY_COLORS[category]
+
+    # Must return the text to show for a category    
+    def get_effect_category_text(self, category):
+        return self.CATEGORY_NAMES[category]
+         
 
 ####################################################################################################################
 
@@ -591,13 +566,26 @@ class KemperRigNameCallback(Callback):
 
 # Callback for on-demand Tuner display
 class TunerDisplayCallback(Callback):
-    def __init__(self, splash_default, splash_tuner):
+    def __init__(self, splash_default, splash_tuner = None):
         Callback.__init__(self)
 
         self.mapping = KemperMappings.TUNER_MODE_STATE()
         
         self._splash_tuner = splash_tuner
         self._splash_default = splash_default
+
+        if not self._splash_tuner:
+            self._splash_tuner = TunerDisplay(
+                mapping_note = KemperMappings.TUNER_NOTE(),
+                mapping_deviance = KemperMappings.TUNER_DEVIANCE(),
+                
+                bounds = self._splash_default.bounds,
+                
+                scale = 3,
+                layout = {
+                    "font": "/fonts/PTSans-NarrowBold-40.pcf"
+                }
+            )
 
     def get_mappings(self):
         yield self.mapping

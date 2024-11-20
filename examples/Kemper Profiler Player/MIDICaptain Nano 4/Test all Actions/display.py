@@ -8,10 +8,10 @@ from micropython import const
 from pyswitch.misc import DEFAULT_LABEL_COLOR #, Colors
 
 from pyswitch.ui.elements import DisplaySplitContainer, DisplayBounds
-from pyswitch.ui.elements import TunerDisplay, DisplayLabel, BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
+from pyswitch.ui.elements import DisplayLabel, BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
 from pyswitch.ui.ui import HierarchicalDisplayElement
 
-from kemper import KemperMappings, KemperRigNameCallback, TunerDisplayCallback
+from kemper import KemperRigNameCallback, TunerDisplayCallback
 
 #############################################################################################################################################
 
@@ -84,17 +84,5 @@ Splashes = TunerDisplayCallback(
             # Performance indicator (dot)
             PERFORMANCE_DOT(_bounds_default.translated(0, 7)),
         ]
-    ),
-
-    splash_tuner = TunerDisplay(
-        mapping_note = KemperMappings.TUNER_NOTE(),
-        mapping_deviance = KemperMappings.TUNER_DEVIANCE(),
-        
-        bounds = _display_bounds,
-        
-        scale = 3,
-        layout = {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf"
-        }
     )
 )
