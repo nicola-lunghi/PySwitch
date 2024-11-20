@@ -1,5 +1,5 @@
 from ..misc import EventEmitter, PeriodCounter, Updateable, get_option, compare_midi_messages, stringify_midi_message, do_print
-
+#from ..stats import RuntimeStatistics
 
 # Midi mapping for a client command. Contains commands to set or request a parameter
 class ClientParameterMapping:
@@ -19,21 +19,30 @@ class ClientParameterMapping:
         if self.__class__ != other.__class__:
             return False
         
-        if self.response != None:
-            if other.response != None:
-                return self._compare(self.response, other.response)
+        response = self.response
+        if response != None:
+            other_response = other.response
+
+            if other_response != None:
+                return self._compare(response, other_response)
             else:
                 return False
-            
-        elif self.set != None:
-            if other.set != None:
-                return self._compare(self.set, other.set)
+
+        set = self.set            
+        if set != None: 
+            other_set = other.set
+
+            if other_set != None:
+                return self._compare(set, other_set)
             else:
                 return False
-            
-        elif self.request != None:
-            if other.request != None:
-                return self._compare(self.request, other.request)
+
+        request = self.request    
+        if request != None:
+            other_request = other.request
+
+            if other_request != None:
+                return self._compare(request, other_request)
             else:
                 return False
             
@@ -129,6 +138,7 @@ class Client: #(ClientRequestListener):
             self.midi.send(mapping.set)
 
     # Send the request message of a mapping. Calls the passed listener when the answer has arrived.
+    #@RuntimeStatistics.measure
     def request(self, mapping, listener):
         if not mapping.request or not mapping.response:
             return            
@@ -166,6 +176,7 @@ class Client: #(ClientRequestListener):
         )
 
     # Receive MIDI messages
+    #@RuntimeStatistics.measure
     def receive(self, midi_message):
         if self._cleanup_terminated_period.exceeded:
             self._cleanup_hanging_requests()
@@ -196,6 +207,7 @@ class Client: #(ClientRequestListener):
             
     # Returns a matching request from the list if any, or None if no matching
     # request has been found.
+    #@RuntimeStatistics.measure
     def get_matching_request(self, mapping):
         for request in self._requests:
             if request.mapping == mapping:
@@ -287,14 +299,15 @@ class ClientRequest(EventEmitter):
         if self.finished:
             return False
 
-        if not self.mapping.parse(midi_message):
+        mapping = self.mapping
+        if not mapping.parse(midi_message):
             return False
 
-        if not self.mapping.result_finished():
+        if not mapping.result_finished():
             return
 
-        if self.client._debug_mapping == self.mapping:    # pragma: no cover
-            do_print(self.mapping.name + ": Received value '" + repr(self.mapping.value) + "' from " + stringify_midi_message(midi_message))
+        if self.client._debug_mapping == mapping:    # pragma: no cover
+            do_print(mapping.name + ": Received value '" + repr(mapping.value) + "' from " + stringify_midi_message(midi_message))
 
         # Call the listeners (the mapping has the values set already)
         self.notify_listeners()
@@ -383,6 +396,7 @@ class BidirectionalClient(Client, Updateable):
         Client.register(self, mapping, listener)
         
     # Receive messages (also passes messages to the protocol)
+    #@RuntimeStatistics.measure
     def receive(self, midi_message):
         # Dirty hack to disable the debugging of unparsed messages in the Client implementation
         tmp = self.debug_unparsed_messages
@@ -424,7 +438,8 @@ class BidirectionalClient(Client, Updateable):
 
     # Calls request_terminated() on all listeners of requests with bidirectional mappings
     def notify_connection_lost(self):
+        protocol = self.protocol
         for r in self.requests:
-            if self.protocol.is_bidirectional(r.mapping):
+            if protocol.is_bidirectional(r.mapping):
                 r.notify_terminated()
         

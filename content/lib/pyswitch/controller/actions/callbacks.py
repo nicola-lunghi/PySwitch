@@ -1,5 +1,6 @@
 from micropython import const
-from ...misc import DEFAULT_SWITCH_COLOR, Updateable, Colors, DEFAULT_LABEL_COLOR
+from ...misc import DEFAULT_SWITCH_COLOR, Updateable #, Colors, DEFAULT_LABEL_COLOR
+#from ...stats import RuntimeStatistics
 
 
 class Callback(Updateable):
@@ -27,9 +28,12 @@ class Callback(Updateable):
 
         self._initialized = True
 
+    #@RuntimeStatistics.measure
     def update(self):
+        cl = self._appl.client
+
         for m in self.get_mappings():
-            self._appl.client.request(m, self)
+            cl.request(m, self)
 
     def parameter_changed(self, mapping):
         # Take over value before calling the listener
@@ -139,9 +143,9 @@ class BinaryParameterCallback(Callback):
         self._led_brightness_off = led_brightness_off
         self.color = color
 
-        #self._current_display_state = -1
+        self._current_display_state = -1
         self._current_value = self       # Just some value which will never occur as a mapping value ;)
-        #self._current_color = -1
+        self._current_color = -1
 
         # Auto mode for value_disable
         self._update_value_disabled = False
@@ -186,52 +190,51 @@ class BinaryParameterCallback(Callback):
         self.update()
 
     def update_displays(self, action):
-        if self._mapping.value != self._current_value:
-            self._current_value = self._mapping.value
-            self.evaluate_value(action, self._mapping.value)
+        value = self._mapping.value
+        color = self.color
+        state = action.state
 
-        # Set color, if new
-        #if self.color != self._current_color:
-        #    self._current_color = self.color
+        if value != self._current_value:
+            self._current_value = value
+            self.evaluate_value(action, value)
+
+        # Set color, if new, or state have been changed
+        if color != self._current_color or self._current_display_state != state:
+            self._current_color = color
+            self._current_display_state = state
         
-        self.set_switch_color(action, self.color)
-        self.set_label_color(action, self.color)
-        self._update_label_text(action)            
-    
-        # Update when state have been changed
-        #if self._current_display_state != action.state:
-        #    self._current_display_state = action.state
-
-        #    self.set_switch_color(action, self.color)
-        #    self.set_label_color(action, self.color)
-        #    self._update_label_text(action)
-
+            self.set_switch_color(action, color)
+            self.set_label_color(action, color)
+            self._update_label_text(action)            
+            
     # Evaluate a new value
     def evaluate_value(self, action, value):
         state = False
 
         if value != None:
-            if self._comparison_mode == self.EQUAL:
+            mode = self._comparison_mode
+
+            if mode == self.EQUAL:
                 if value == self._reference_value:
                     state = True
 
-            elif self._comparison_mode == self.GREATER_EQUAL:
+            elif mode == self.GREATER_EQUAL:
                 if value >= self._reference_value:
                     state = True
 
-            elif self._comparison_mode == self.GREATER:
+            elif mode == self.GREATER:
                 if value > self._reference_value: 
                     state = True
 
-            elif self._comparison_mode == self.LESS_EQUAL:
+            elif mode == self.LESS_EQUAL:
                 if value <= self._reference_value:
                     state = True
 
-            elif self._comparison_mode == self.LESS:
+            elif mode == self.LESS:
                 if value < self._reference_value: 
                     state = True        
 
-            elif self._comparison_mode == self.NO_STATE_CHANGE:
+            elif mode == self.NO_STATE_CHANGE:
                 state = self.state
 
             else:
@@ -246,9 +249,10 @@ class BinaryParameterCallback(Callback):
         if not isinstance(self._value_disable, list):
             self._value_disable = value
         else:
-            for i in range(len(self._value_disable)):
+            vd = self._value_disable
+            for i in range(len(vd)):
                 if self._update_value_disabled[i]:
-                    self._value_disable[i] = value
+                    vd[i] = value
 
     # Update switch brightness
     def set_switch_color(self, action, color):

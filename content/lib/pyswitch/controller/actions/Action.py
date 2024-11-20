@@ -1,6 +1,6 @@
 import math
 from ...misc import get_option, Updateable
-
+#from ...stats import RuntimeStatistics
 
 # Base class for actions. All functionality is encapsulated in a class for each, 
 # inheriting from Action.
@@ -38,11 +38,13 @@ class Action(Updateable):
 
         that = self
         class _CallbackListener:
+            #@RuntimeStatistics.measure
             def parameter_changed(self, mapping):
                 if that.enabled:
                     #that.force_update()
                     that.update_displays()
 
+            #@RuntimeStatistics.measure
             def request_terminated(self, mapping):
                 if that.enabled:
                     that.update_displays()
@@ -59,7 +61,8 @@ class Action(Updateable):
 
     @property
     def enabled(self):
-        return self._enable_callback.enabled(self) if self._enable_callback else True
+        ec = self._enable_callback
+        return ec.enabled(self) if ec else True
         
     # Color of the switch segment(s) for the action (Difficult to do with multicolor, 
     # but this property is just needed to have a setter so this is not callable)
@@ -132,9 +135,14 @@ class Action(Updateable):
         pass                                      # pragma: no cover
 
     # Called to update the displays (LEDs and label)
+    #@RuntimeStatistics.measure
     def update_displays(self):
-        if self.callback and self.enabled:
-            self.callback.update_displays(self)
+        if not self.enabled:
+            return
+        
+        cb = self.callback
+        if cb:
+            cb.update_displays(self)
     
     # Reset the action
     def reset(self):

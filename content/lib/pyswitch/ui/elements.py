@@ -251,28 +251,30 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
         if len(active_children) == 0:
             return
         
+        bounds = self.bounds
+
         # Currently, only horizontally placed segments are possible. May be changed by adding
         # a parameter.
         if self.direction == DisplaySplitContainer.HORIZONTAL:
             # Horizontal
-            slot_width = int(self.bounds.width / len(active_children))
+            slot_width = int(bounds.width / len(active_children))
 
             for i in range(len(active_children)):
                 active_children[i].bounds = DisplayBounds(
-                    self.bounds.x + i * slot_width,
-                    self.bounds.y,
+                    bounds.x + i * slot_width,
+                    bounds.y,
                     slot_width,
-                    self.bounds.height
+                    bounds.height
                 )
         else:
             # Vertical
-            slot_height = int(self.bounds.height / len(active_children))
+            slot_height = int(bounds.height / len(active_children))
 
             for i in range(len(active_children)):
                 active_children[i].bounds = DisplayBounds(
-                    self.bounds.x,
-                    self.bounds.y + i * slot_height,
-                    self.bounds.width,
+                    bounds.x,
+                    bounds.y + i * slot_height,
+                    bounds.width,
                     slot_height
                 )
 
@@ -354,11 +356,12 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
 ###########################################################################################################################
 
 
+IN_TUNE_ABOVE = const(7935)  # = 7945 - 10;  109.9 Hz;
+IN_TUNE_BELOW = const(8444)  # = 8434 + 10;  110.1 Hz;
+
 class TunerDevianceDisplay(DisplayElement):
 
     # Defines what to show as "in tune" (green). Aligned to a PolyTune tuner.
-    IN_TUNE_ABOVE = 7935  # = 7945 - 10;  109.9 Hz;
-    IN_TUNE_BELOW = 8444  # = 8434 + 10;  110.1 Hz;
 
     def __init__(self, 
                  bounds, 
@@ -406,7 +409,7 @@ class TunerDevianceDisplay(DisplayElement):
 
         self._marker.x = int((self.bounds.width - self.width) * value_scaled / 16384)
 
-        if value >= self.IN_TUNE_ABOVE and value <= self.IN_TUNE_BELOW:
+        if value >= IN_TUNE_ABOVE and value <= IN_TUNE_BELOW:
             self.in_tune = True
             self.set_color(TunerDisplay.COLOR_IN_TUNE)
         else:
@@ -492,13 +495,15 @@ class TunerDisplay(HierarchicalDisplayElement):
 
     # Listen to client value returns
     def parameter_changed(self, mapping):
-        if mapping == self._mapping_note and mapping.value != self._last_note:
+        value = mapping.value
+
+        if mapping == self._mapping_note and value != self._last_note:
             self._last_note = mapping.value
 
-            self.label_note.text = self._TUNER_NOTE_NAMES[mapping.value % 12]            
+            self.label_note.text = self._TUNER_NOTE_NAMES[value % 12]            
 
-        if mapping == self._mapping_deviance and mapping.value != self._last_deviance:
-            self._last_deviance = mapping.value        
+        if mapping == self._mapping_deviance and value != self._last_deviance:
+            self._last_deviance = value        
             
             self.deviance.set(self._last_deviance)            
 

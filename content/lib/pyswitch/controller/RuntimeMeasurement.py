@@ -1,15 +1,15 @@
 from ..misc import EventEmitter, Updateable, get_current_millis
 
-
 # Measurement of runtimes 
 class RuntimeMeasurement(EventEmitter, Updateable):  
     
     # type is arbitrary and only used externally
-    def __init__(self, interval_millis):
+    def __init__(self, interval_millis, name = None):
         EventEmitter.__init__(self) #, RuntimeMeasurementListener)
 
         self.interval_millis = interval_millis
         self._last_output = 0
+        self.name = name
 
         self.reset()
 
@@ -20,6 +20,14 @@ class RuntimeMeasurement(EventEmitter, Updateable):
             return 0
         return int(self._time_aggr / self._time_num)
     
+    @property 
+    def sum(self):
+        return self._time_aggr
+
+    @property 
+    def calls(self):
+        return self._time_num
+
     def update(self):
         current = get_current_millis()
         if self._last_output + self.interval_millis < current:
@@ -45,17 +53,19 @@ class RuntimeMeasurement(EventEmitter, Updateable):
 
     # Adds the current diff to the haystack
     def finish(self):
-        if self.start_time == 0:
+        start = self.start_time
+        if start == 0:
             return
         
-        self.end_time = get_current_millis()
+        now = get_current_millis()
+        self.end_time = now
         
-        diff = self.end_time - self.start_time
+        diff = now - start
         if diff > self.value:
             self.value = diff
 
         self._time_aggr = self._time_aggr + diff
-        self._time_num = self._time_num + 1
+        self._time_num += 1
 
 
 ################################################################################

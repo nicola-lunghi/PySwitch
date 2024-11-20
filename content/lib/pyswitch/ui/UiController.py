@@ -1,5 +1,6 @@
 from .ui import DisplayBounds
 from ..misc import Updateable, Updater
+#from ..stats import RuntimeStatistics
 
 
 class UiController(Updater, Updateable):
@@ -30,6 +31,7 @@ class UiController(Updater, Updateable):
     def parameter_changed(self, mapping):
         self.show()
 
+    #@RuntimeStatistics.measure
     def update(self):
         Updater.update(self)
 

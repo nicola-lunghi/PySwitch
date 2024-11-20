@@ -84,6 +84,7 @@ Switches = [
                         ),
                         "mode": PushButtonAction.LATCH,
                         "display": DISPLAY_HEADER_2,
+                        "useSwitchLeds": True
                     }),                    
 
                     # Set delay mix to 1:1 when enabled, remembering the old setting

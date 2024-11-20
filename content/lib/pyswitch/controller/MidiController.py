@@ -88,14 +88,15 @@ class MidiController:
     
     # Process all routings where APPLICATION is not involved (this processes one message of each source every time)
     def _process_external_routings(self):
-        if not self._routings_external:
+        routings = self._routings_external
+        if not routings:
             return
         
         # Get all sources messages
         sources = []
         results = []
 
-        for r in self._routings_external:
+        for r in routings:
             if r.source in sources:
                 continue
 
@@ -103,7 +104,7 @@ class MidiController:
             results.append(r.source.receive())
             
         # Distribute messages
-        for r in self._routings_external:
+        for r in routings:
             for i in range(len(sources)):
                 if sources[i] != r.source:
                     continue

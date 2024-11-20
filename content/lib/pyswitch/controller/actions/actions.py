@@ -2,7 +2,7 @@ from micropython import const
 
 from .Action import Action
 from ...misc import PeriodCounter, get_option, Updater
-
+#from ...stats import RuntimeStatistics
 
 # Implements an abstraction layer for on/off parameters. Covers latch/momentary modes etc.
 class PushButtonAction(Action):
@@ -59,69 +59,69 @@ class PushButtonAction(Action):
 
         self.update_displays()
 
-    # Set functionality on or off (bool).
-    #def set(self, state):
-    #    pass                                                         # pragma: no cover
-
     # Update the state without functional changes. This is used to react to
     # parameters that have to be requested first. When the answer comes in, the state 
     # is set here again, but no functional update is done.
     def feedback_state(self, state):
         self._state = state
 
-        self.update_displays()
-
     # Button pushed
     def push(self):
-        if self._mode == self.ENABLE:
+        mode = self._mode
+
+        if mode == self.ENABLE:
             # Enable
             self.state = True
 
-        elif self._mode == self.DISABLE:
+        elif smode == self.DISABLE:
             # Disable
             self.state = False
 
-        elif self._mode == self.LATCH:
+        elif mode == self.LATCH:
             # Latch mode: Simply toggle states
             self.state = not self.state
 
-        elif self._mode == self.MOMENTARY:
+        elif mode == self.MOMENTARY:
             # Momentary mode: Enable on push
             self.state = True
 
-        elif self._mode == self.MOMENTARY_INVERSE:
+        elif mode == self.MOMENTARY_INVERSE:
             # Momentary mode: Enable on push
             self.state = False
 
-        elif self._mode == self.HOLD_MOMENTARY:
+        elif mode == self.HOLD_MOMENTARY:
             # Hold Momentary: Toggle like latch, and remember the current timestamp
             self._period.reset()
             self.state = not self.state
 
-        elif self._mode == self.ONE_SHOT:
+        elif mode == self.ONE_SHOT:
             self._state = False    # Triggers that set() is called by the state property in the next line
             self.state = True
 
     # Button released
     def release(self):
-        if self._mode == self.MOMENTARY:
+        mode = self._mode
+
+        if mode == self.MOMENTARY:
             self.state = False
         
-        elif self._mode == self.MOMENTARY_INVERSE:
+        elif mode == self.MOMENTARY_INVERSE:
             self.state = True
         
-        elif self._mode == self.HOLD_MOMENTARY:
+        elif mode == self.HOLD_MOMENTARY:
             if self._period.exceeded:
                 # Momentary if the period exceeded
                 self.state = not self.state
 
-        elif self._mode == self.ONE_SHOT:
+        elif mode == self.ONE_SHOT:
             # Do not use the child classes set() method: We do not want an "off" message to be sent here.
-            self.feedback_state(False)
+            self._state = False
+            self.update_displays()
 
     # Reset the action: Set False state without sending anything
     def reset(self):
-        self.feedback_state(False)
+        self._state = False
+        self.update_displays()
 
 
 ################################################################################################################################
@@ -163,9 +163,12 @@ class HoldAction(Action, Updater):
             action.init(appl, switch)        
             self.add_updateable(action)    
 
+    #@RuntimeStatistics.measure
     def update(self):
-        Action.update(self)
         Updater.update(self)
+
+        if self._active and self.enabled:
+            self._check_hold()
         
     # Can return child actions (used for LED addressing)
     def get_all_actions(self):
@@ -179,11 +182,6 @@ class HoldAction(Action, Updater):
 
         return ret
     
-    # Check if hold time exceeded
-    def do_update(self):
-        if self._active:
-            self._check_hold()
-
     # Checks hold time and triggers hold action if exceeded.
     def _check_hold(self):
         if self._period_hold.exceeded:
