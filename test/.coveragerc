@@ -3,6 +3,7 @@ branch = True
 source = /project
 omit = 
     /project/lib/pyswitch/hardware/*
+    /project/lib/functools.py
     /project/test/*
     
 [report]

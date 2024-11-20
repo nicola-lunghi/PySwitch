@@ -36,4 +36,3 @@ class MockMisc:
     Updateable = misc.Updateable
     EventEmitter = misc.EventEmitter
     PeriodCounter = misc.PeriodCounter
-    Callback = misc.Callback

@@ -30,6 +30,7 @@ class Action(Updateable):
         self.id = get_option(config, "id", None)
 
         self._enable_callback = get_option(config, "enableCallback", None)
+        self._last_enabled = -1
 
     # Must be called before usage
     def init(self, appl, switch):
@@ -51,7 +52,7 @@ class Action(Updateable):
 
         # Enable callback
         if self._enable_callback:            
-            self._enable_callback.init(appl, _CallbackListener())
+            self._enable_callback.init(appl) #, _CallbackListener())
 
         # Update display callback
         if self.callback:
@@ -117,14 +118,13 @@ class Action(Updateable):
 
     # Called regularly every update interval to update status of effects etc.
     def update(self):
-        if not self.enabled:
-            return
-                
-        self.do_update()
+        if self._last_enabled != self.enabled:
+            self._last_enabled = self.enabled
+            
+            if self.callback:
+                self.callback.reset()
 
-    # Perform updates (to be redefined)
-    def do_update(self):
-        pass                                      # pragma: no cover
+            self.update_displays()
 
     # Called when the switch is pushed down
     def push(self):
@@ -147,14 +147,6 @@ class Action(Updateable):
     # Reset the action
     def reset(self):
         pass                                      # pragma: no cover
-
-    # Must reset all action states so the instance is being updated
-    #def force_update(self):
-    #    pass                                      # pragma: no cover
-
-    # Must reset the displays
-    #def reset_display(self):
-    #    pass                                      # pragma: no cover
 
     # Returns the switch LED segments to use
     def _get_led_segments(self):

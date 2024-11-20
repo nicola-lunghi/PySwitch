@@ -1,6 +1,6 @@
 from lib.pyswitch.ui.elements import HierarchicalDisplayElement
 from lib.pyswitch.ui.ui import DisplayBounds, DisplayElement
-from lib.pyswitch.misc import Updateable, Callback
+from lib.pyswitch.misc import Updateable
 
 
 class MockUpdateableDisplayElement(DisplayElement, Updateable):
@@ -67,7 +67,7 @@ class MockUiController:
         pass
 
     def show(self):
-        self.shown_root = self.cb.get()
+        self.shown_root = self.cb.get_root()
     
 
 #class MockDisplaySplash:

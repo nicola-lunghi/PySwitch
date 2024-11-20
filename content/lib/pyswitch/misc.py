@@ -78,14 +78,6 @@ def stringify_midi_message(midi_message):
         # PC
         ret = repr(midi_message.patch)
 
-    #elif isinstance(midi_message, MidiClockMessage):    
-    #    # Clock
-    #    pass
-
-    #elif isinstance(midi_message, Start):    
-    #    # Clock Start
-    #    pass
-
     elif isinstance(midi_message, MIDIUnknownEvent):    
         # Unknown
         ret = repr(midi_message.status)

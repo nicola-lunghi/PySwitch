@@ -1,9 +1,11 @@
+from lib.pyswitch.misc import Updateable
 
-class MockRuntimeMeasurement:
-    # type is arbitrary and only used externally
-    def __init__(self, type = 0, interval_millis = 0):
-        self.type = type
+
+class MockRuntimeMeasurement(Updateable):
+
+    def __init__(self, interval_millis = 0, name = None):
         self.interval_millis = interval_millis
+        self.name = name
 
         self.num_update_calls = 0
         self.num_start_calls = 0
@@ -11,7 +13,7 @@ class MockRuntimeMeasurement:
         self.num_finish_calls = 0
 
         self.output_average = 0
-        self.output_value = 0
+        self.output_value = 0        
 
         self.listeners = []
 

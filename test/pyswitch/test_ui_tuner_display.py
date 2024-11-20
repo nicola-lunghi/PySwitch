@@ -130,7 +130,7 @@ class TestTunerDisplay(unittest.TestCase):
         ui = UiController(
             display_driver = MockDisplayDriver(init = True), 
             font_loader = MockFontLoader(), 
-            splash_callback = MockCallback(output = display)
+            splash_callback = MockSplashCallback(output = display)
         )
         
         protocol = MockBidirectionalProtocol()

@@ -14,7 +14,7 @@ class Callback(Updateable):
         return []
     
     # Must be called before usage
-    def init(self, appl, listener):
+    def init(self, appl, listener = None):
         if self._initialized: 
             return
         
@@ -27,6 +27,10 @@ class Callback(Updateable):
         self._appl.add_updateable(self)
 
         self._initialized = True
+
+    # Reset state
+    def reset(self):
+        pass
 
     #@RuntimeStatistics.measure
     def update(self):
@@ -43,7 +47,8 @@ class Callback(Updateable):
 
             m.value = mapping.value
 
-        self._listener.parameter_changed(mapping)
+        if self._listener:
+            self._listener.parameter_changed(mapping)
 
     def request_terminated(self, mapping):
         # Clear value before calling the listener
@@ -53,7 +58,8 @@ class Callback(Updateable):
 
             m.value = None
 
-        self._listener.request_terminated(mapping)
+        if self._listener:
+            self._listener.request_terminated(mapping)
 
 
 ###########################################################################################################
@@ -143,9 +149,7 @@ class BinaryParameterCallback(Callback):
         self._led_brightness_off = led_brightness_off
         self.color = color
 
-        self._current_display_state = -1
-        self._current_value = self       # Just some value which will never occur as a mapping value ;)
-        self._current_color = -1
+        self.reset()
 
         # Auto mode for value_disable
         self._update_value_disabled = False
@@ -154,7 +158,7 @@ class BinaryParameterCallback(Callback):
         else:
             self._update_value_disabled = [v == "auto" for v in self._value_disable]            
 
-    def init(self, appl, listener):
+    def init(self, appl, listener = None):
         super().init(appl, listener)
 
         self._appl = appl
@@ -188,6 +192,12 @@ class BinaryParameterCallback(Callback):
 
         # Request value
         self.update()
+
+    # Reset state
+    def reset(self):
+        self._current_display_state = -1
+        self._current_value = self       # Just some value which will never occur as a mapping value ;)
+        self._current_color = -1
 
     def update_displays(self, action):
         value = self._mapping.value

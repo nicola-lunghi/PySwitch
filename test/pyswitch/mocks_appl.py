@@ -208,8 +208,6 @@ class MockAction(Action):
         self.num_push_calls = 0
         self.num_release_calls = 0
         self.num_update_displays_calls = 0
-        self.num_force_update_calls = 0
-        self.num_reset_display_calls = 0
         
         self.state = False
 
@@ -220,6 +218,8 @@ class MockAction(Action):
         self.num_release_calls += 1
 
     def update(self):
+        super().update()
+
         self.num_update_calls_overall += 1
         
         if self.enabled:
@@ -229,13 +229,9 @@ class MockAction(Action):
         self.num_reset_calls += 1
 
     def update_displays(self):
+        super().update_displays()
+
         self.num_update_displays_calls += 1
-
-    def force_update(self): 
-        self.num_force_update_calls += 1
-
-    def reset_display(self): 
-        self.num_reset_display_calls += 1
 
 
 ##################################################################################################################################
@@ -322,35 +318,4 @@ class MockBidirectionalProtocol:
     # Must return a color representation for the current state
     def get_color(self):
         return self.output_color
-
-
-##################################################################################################################################
-
-
-class MockCategoryProvider:
-    def get_effect_category(self, value):
-        return value * 10
-    
-    # Must return the effect color for a mapping value
-    def get_effect_category_color(self, value):
-        return (value, value + 2, value * 4)
-    
-    # Must return the effect name for a mapping value
-    def get_effect_category_name(self, value):
-        return "name" + repr(value)
-    
-    # Must return the value interpreted as "not assigned"
-    def get_category_not_assigned(self):
-        return 0
-
-
-##################################################################################################################################
-
-
-class MockSlotInfoProvider:
-    def __init__(self):
-        self.output = "noname"
-
-    def get_name(self):
-        return self.output
 

@@ -114,7 +114,7 @@ class KemperActionDefinitions:
                       use_leds = True, 
                       enable_callback = None,
                       value_on = 1,
-                      value_off = 0
+                      value_off = 0,
         ):
         return PushButtonAction({
             "callback": BinaryParameterCallback(
@@ -123,7 +123,7 @@ class KemperActionDefinitions:
                 color = color,
                 value_enable = value_on,
                 value_disable = value_off,
-                comparison_mode = BinaryParameterCallback.EQUAL
+                comparison_mode = BinaryParameterCallback.GREATER_EQUAL
             ),
             "mode": mode,
             "display": display,
@@ -409,7 +409,7 @@ class KemperActionDefinitions:
                 rig = mapping.value % NUM_RIGS_PER_BANK
 
                 # Label text
-                action.label.text = "Rig " + repr(bank) + "-" + repr(rig + 1)
+                action.label.text = "Rig " + repr(bank + 1) + "-" + repr(rig + 1)
 
                 # Bank color
                 bank_color = self.BANK_COLORS[bank % len(self.BANK_COLORS)]
@@ -507,9 +507,18 @@ class KemperEffectEnableCallback(BinaryParameterCallback):
             yield m
         yield self.mapping_fxtype
     
-    def update_displays(self, action):    
+    def reset(self):
+        super().reset()
+        
+        self._current_category = -1
+
+    def update_displays(self, action):  
         self._effect_category = self._get_effect_category(self.mapping_fxtype.value) if self.mapping_fxtype.value != None else self.CATEGORY_NONE
         
+        if self._current_category == self._effect_category:
+            super().update_displays(action)
+            return
+
         if self._effect_category == self.CATEGORY_NONE:
             action.state = False
 

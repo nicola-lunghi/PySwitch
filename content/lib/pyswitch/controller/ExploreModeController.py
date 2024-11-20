@@ -1,8 +1,9 @@
 from .FootSwitchController import FootSwitchController
+from .actions.callbacks import Callback
 from .actions.Action import Action
 from ..ui.elements import DisplayLabel, DisplaySplitContainer
 from ..ui.ui import HierarchicalDisplayElement
-from ..misc import Updater, Colors, do_print, Callback
+from ..misc import Updater, Colors, do_print
 
 # Action to explore switch GPIO assignments (used internally only in explore mode!)
 # Also used to examine neopixel addressing.
@@ -74,6 +75,14 @@ class ExploreModeController(Updater):
         self._num_port_columns = num_port_columns
         self._board = board
 
+        class FakeClient:
+            def register(self, mapping, listener):
+                pass
+            def request(self, mapping, listener):
+                pass
+        
+        self.client = FakeClient()
+
         # Get list of available ports
         available_ports = self._get_available_ports()
 
@@ -127,7 +136,7 @@ class ExploreModeController(Updater):
         root.add(self._ports_display_rows)
 
         class EMCallback(Callback):
-            def get(self):
+            def get_root(self):
                 return root
 
         self.ui.set_callback(EMCallback())

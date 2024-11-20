@@ -174,7 +174,7 @@ class DisplayLabel(DisplayElement):
     @text.setter
     def text(self, text):
         # In case of low memory detected by the controller, we just show this information
-        if self._appl and self._appl.low_memory_warning:
+        if self._appl and hasattr(self._appl, "low_memory_warning") and self._appl.low_memory_warning:
             text = "Low Memory!"
         
         if self._layout.text == text:
@@ -282,86 +282,12 @@ class DisplaySplitContainer(HierarchicalDisplayElement):
 ###########################################################################################################################
 
 
-# DisplayLabel which is connected to a client parameter
-#class ParameterDisplayLabel(DisplayLabel, Updateable): #, ClientRequestListener):
-    
-    # parameter: {
-    #     "mapping":     A ClientParameterMapping instance whose values should be shown in the area
-    #     "depends":     Optional. If a ClientParameterMapping instance is passed, the display is only updated
-    #                    when this mapping's value has changed.
-    #     "textOffline": Text to show initially and when the client is offline (optional)
-    #     "textReset":   Text to show when a reset happened (on rig changes etc.). Optional.
-    # }
-#    def __init__(self, parameter, bounds = DisplayBounds(), layout = None, name = "", id = 0):
-#        DisplayLabel.__init__(self, bounds = bounds, layout = layout, name = name, id = id)
-
-#        self._mapping = parameter["mapping"]
-#        self._depends = get_option(parameter, "depends", None)
-
-#        self._last_value = None
-#        self._depends_last_value = None
-
-#        self._text_offline = get_option(parameter, "textOffline", "")
-#        self._text_reset = get_option(parameter, "textReset", "")        
-    
-#    # We need access to the client, so we store appl here
-#    def init(self, ui, appl):
-#        super().init(ui, appl)
-
-#        self.text = self._text_offline
-#        self._appl = appl
-
-#        self._appl.client.register(self._mapping, self)
-        
-#        if self._depends:
-#            self._appl.client.register(self._depends, self)
-        
-    # Called on every update tick
-#    def update(self):
-#        if not self._depends:
-#            self._appl.client.request(self._mapping, self)
-#        else:
-#            self._appl.client.request(self._depends, self)
-
-#    # Reset the parameter display
-#    def reset(self):
-#        self._last_value = None
-#        self._depends_last_value = None
-
-#        self.text = self._text_reset
-
-#    # Listen to client value returns (rig name and date)
-#    def parameter_changed(self, mapping):
-#        if mapping == self._mapping and mapping.value != self._last_value:
-#            # Main mapping changed
-#            self._last_value = mapping.value
-
-#            # Set value on display
-#            self.text = mapping.value
-
-#        if mapping == self._depends and mapping.value != self._depends_last_value:
-#            # Dependency has changed: Request update of main mapping
-#            self._depends_last_value = mapping.value        
-            
-#            self._appl.client.request(self._mapping, self)
-
-#    # Called when the client is offline (requests took too long)
-#    def request_terminated(self, mapping):
-#       self.text = self._text_offline
-
-#        self._last_value = None
-#        self._depends_last_value = None
-
-
-###########################################################################################################################
-
-
+# Defines what to show as "in tune" (green). Aligned to a PolyTune tuner.
 IN_TUNE_ABOVE = const(7935)  # = 7945 - 10;  109.9 Hz;
 IN_TUNE_BELOW = const(8444)  # = 8434 + 10;  110.1 Hz;
 
-class TunerDevianceDisplay(DisplayElement):
 
-    # Defines what to show as "in tune" (green). Aligned to a PolyTune tuner.
+class TunerDevianceDisplay(DisplayElement):
 
     def __init__(self, 
                  bounds, 
@@ -589,61 +515,6 @@ class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
 
         else:
             self._dot.fill = (255, 0, 0)
-        
-
-###########################################################################################################################
-
-
-# Label showing statistical info
-#class StatisticsDisplayLabel(DisplayLabel, Updateable):  #RuntimeMeasurementListener
-#    
-#    def __init__(self, measurements, bounds = DisplayBounds(), layout = None, name = "", id = 0):
-#        super().__init__(bounds = bounds, layout = layout, name = name, id = id)        
-#    
-#        for m in measurements:
-#            if not isinstance(m, RuntimeMeasurement):
-#                continue
-#            
-#            m.add_listener(self)
-#
-#        self._measurements = measurements
-#
-#        self._texts = ["" for m in measurements]
-#        self._current_texts = ["" for m in measurements]
-#
-#    # Add measurements to controller
-#    def init(self, ui, appl):
-#        super().init(ui, appl)
-#
-#        for m in self._measurements:
-#            appl.add_runtime_measurement(m)
-#
-#    def update(self):
-#        for i in range(len(self._texts)):
-#            if self._current_texts[i] != self._texts[i]:
-#                self._update_text()
-#                return
-#
-#    def _update_text(self):
-#        lines = []
-#        for i in range(len(self._measurements)):
-#            self._current_texts[i] = self._texts[i]
-#            
-#            lines.append(self._texts[i])
-#
-#        self.text = "\n".join(lines)    
-#
-#    def measurement_updated(self, measurement):
-#        for i in range(len(self._measurements)):
-#            m = self._measurements[i]
-#
-#            if not isinstance(m, RuntimeMeasurement):
-#                self._texts[i] = m.get_message()
-#            else:    
-#                if m != measurement:
-#                    continue
-#                
-#                self._texts[i] = m.get_message()
         
 
 ###########################################################################################################################

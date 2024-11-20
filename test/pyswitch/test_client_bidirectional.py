@@ -18,9 +18,10 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.actions.actions import EffectEnableAction
+    from lib.pyswitch.controller.actions.actions import PushButtonAction
+    from lib.pyswitch.controller.actions.callbacks import BinaryParameterCallback
     from lib.pyswitch.controller.Client import BidirectionalClient
-    from lib.pyswitch.misc import compare_midi_messages
+    #from lib.pyswitch.misc import compare_midi_messages
 
     from.mocks_appl import *
     
@@ -180,26 +181,37 @@ class TestBidirectionalClient(unittest.TestCase):
             )
         )
 
-        mapping_type_1 = MockParameterMapping(
+        mapping_2 = MockParameterMapping(
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x11, 0x20],
+                data = [0x01, 0x02, 0x03, 0x14]
+            ),
             request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x21],
-                data = [0x05, 0x07, 0x10]
+                manufacturer_id = [0x00, 0x20, 0x20],
+                data = [0x05, 0x07, 0x02]
             ),
             response = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x21],
-                data = [0x00, 0x00, 0x10]
+                manufacturer_id = [0x02, 0x10, 0x20],
+                data = [0x00, 0x00, 0x29]
             )
         )
 
-        cp = MockCategoryProvider()
+        action_1 = PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = mapping_1,
+                comparison_mode = BinaryParameterCallback.GREATER_EQUAL,
+                color = (10, 50, 100)
+            ),
+            "mode": PushButtonAction.LATCH
+        })
 
-        action_1 = EffectEnableAction({
-            "mode": PushButtonAction.LATCH,
-            "mapping": mapping_1,
-            "mappingType": mapping_type_1,
-            "categories": cp,
-            "slotInfo": MockSlotInfoProvider(),
-            "color": (10, 50, 100)
+        action_2 = PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = mapping_2,
+                comparison_mode = BinaryParameterCallback.GREATER_EQUAL,
+                color = (10, 50, 100)
+            ),
+            "mode": PushButtonAction.LATCH
         })
         
         period = MockPeriodCounter()
@@ -229,21 +241,22 @@ class TestBidirectionalClient(unittest.TestCase):
                         "model": switch_1
                     },
                     "actions": [
-                        action_1                        
+                        action_1,
+                        action_2                     
                     ]
                 }
             ],
             period_counter = period
         )
 
-        answer_msg_param = SystemExclusive(
+        answer_msg_1 = SystemExclusive(
             manufacturer_id = [0x00, 0x10, 0x20],
             data = [0x00, 0x00, 0x09, 0x44]
         )
 
-        answer_msg_type = SystemExclusive(
-            manufacturer_id = [0x00, 0x10, 0x20],
-            data = [0x00, 0x00, 0x07, 0x45]
+        answer_msg_2 = SystemExclusive(
+            manufacturer_id = [0x00, 0x12, 0x20],
+            data = [0x00, 0x01, 0x09, 0x44]
         )
 
         # Build scene:
@@ -253,18 +266,18 @@ class TestBidirectionalClient(unittest.TestCase):
 
         def eval1():
             self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertEqual(appl._midi.messages_sent[0], mapping_type_1.request)
+            self.assertEqual(appl._midi.messages_sent[0], mapping_2.request)
             
             return True
 
         # Receive type
         def prep2():
             appl._midi.next_receive_messages = [
-                answer_msg_type
+                answer_msg_2
             ]
-            mapping_type_1.outputs_parse = [
+            mapping_2.outputs_parse = [
                 {
-                    "message": answer_msg_type,
+                    "message": answer_msg_2,
                     "value": 1
                 }
             ]
@@ -274,22 +287,23 @@ class TestBidirectionalClient(unittest.TestCase):
 
             self.assertEqual(len(appl._midi.messages_sent), 1)
 
-            self.assertEqual(mapping_type_1.value, 1)
-            self.assertEqual(action_1._effect_category, 10)
-            self.assertEqual(action_1.state, False)
+            self.assertEqual(mapping_2.value, 1)
             
-            self.assertNotIn(answer_msg_type, protocol.receive_calls)
+            self.assertEqual(action_1.state, False)
+            self.assertEqual(action_2.state, True)
+            
+            self.assertNotIn(answer_msg_2, protocol.receive_calls)
 
             return True
 
         # Receive status (which is bidirectional)
         def prep3():
             appl._midi.next_receive_messages = [
-                answer_msg_param
+                answer_msg_1
             ]
             mapping_1.outputs_parse = [
                 {
-                    "message": answer_msg_param,
+                    "message": answer_msg_1,
                     "value": 1
                 }
             ]
@@ -301,9 +315,10 @@ class TestBidirectionalClient(unittest.TestCase):
             
             self.assertEqual(appl.client.requests[0].mapping.value, 1)
 
-            self.assertNotIn(answer_msg_param, protocol.receive_calls)
+            self.assertNotIn(answer_msg_1, protocol.receive_calls)
 
             self.assertEqual(action_1.state, True)
+            self.assertEqual(action_2.state, True)
 
             return True
         
@@ -312,8 +327,10 @@ class TestBidirectionalClient(unittest.TestCase):
             switch_1.shall_be_pushed = True
 
         def eval4():
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertEqual(appl._midi.messages_sent[1], mapping_1.set)
+            self.assertEqual(len(appl._midi.messages_sent), 4)
+            self.assertIn(mapping_1.set, appl._midi.messages_sent)
+            self.assertIn(mapping_2.set, appl._midi.messages_sent)
+            self.assertIn(mapping_2.request, appl._midi.messages_sent)
             self.assertEqual(action_1.state, False)
 
             return False

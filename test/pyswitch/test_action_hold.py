@@ -35,7 +35,6 @@ class MockFootSwitch:
 
 class TestActionHold(unittest.TestCase):
 
-
     def test(self):
         hold_period = MockPeriodCounter()
 
@@ -221,75 +220,3 @@ class TestActionHold(unittest.TestCase):
         self.assertEqual(action_3.num_update_displays_calls, 2)
 
 
-    def test_reset_display(self):
-        action_1 = MockAction()
-        action_2 = MockAction()
-        action_3 = MockAction()
-    
-        action_hold = HoldAction(
-            {
-                "actions": [
-                    action_1,
-                    action_2
-                ],
-                "actionsHold": [
-                    action_3
-                ]
-            }
-        )
-
-        appl = MockController()
-        action_hold.init(appl, MockFootSwitch())
-
-        action_1.num_reset_display_calls = 0
-        action_2.num_reset_display_calls = 0
-        action_3.num_reset_display_calls = 0
-
-        action_hold.reset_display()
-
-        self.assertEqual(action_1.num_reset_display_calls, 1)
-        self.assertEqual(action_2.num_reset_display_calls, 1)
-        self.assertEqual(action_3.num_reset_display_calls, 1)
-
-        action_hold.reset_display()
-
-        self.assertEqual(action_1.num_reset_display_calls, 2)
-        self.assertEqual(action_2.num_reset_display_calls, 2)
-        self.assertEqual(action_3.num_reset_display_calls, 2)
-
-
-    def test_force_update(self):
-        action_1 = MockAction()
-        action_2 = MockAction()
-        action_3 = MockAction()
-    
-        action_hold = HoldAction(
-            {
-                "actions": [
-                    action_1,
-                    action_2
-                ],
-                "actionsHold": [
-                    action_3
-                ]
-            }
-        )
-
-        appl = MockController()
-        action_hold.init(appl, MockFootSwitch())
-
-        action_1.num_force_update_calls = 0
-        action_2.num_force_update_calls = 0
-        action_3.num_force_update_calls = 0
-
-        action_hold.force_update()
-
-        self.assertEqual(action_1.num_force_update_calls, 1)
-        self.assertEqual(action_2.num_force_update_calls, 1)
-        self.assertEqual(action_3.num_force_update_calls, 1)
-
-        action_hold.force_update()
-
-        self.assertEqual(action_1.num_force_update_calls, 2)
-        self.assertEqual(action_2.num_force_update_calls, 2)
-        self.assertEqual(action_3.num_force_update_calls, 2)

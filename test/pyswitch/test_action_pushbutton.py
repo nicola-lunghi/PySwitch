@@ -19,40 +19,51 @@ with patch.dict(sys.modules, {
 
     #from lib.pyswitch.controller.actions.actions import PushButtonAction
     from .mocks_appl import *
+    from .mocks_callback import *
 
 
 class TestActionPushButton(unittest.TestCase):
 
     def test_set_reset(self):
+        cb = MockPushButtonActionCallback()
+
         action_1 = MockPushButtonAction({
-            "mode": PushButtonAction.LATCH
+            "mode": PushButtonAction.LATCH,
+            "callback": cb
         })
 
-        self.assertEqual(action_1.num_set_calls, 0)
+        self.assertEqual(len(cb.update_displays_calls), 0)
+        self.assertEqual(len(cb.state_changed_calls), 0)
         self.assertEqual(action_1.state, False)
 
         action_1.state = True
-        self.assertEqual(action_1.num_set_calls, 1)
+        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(len(cb.state_changed_calls), 1)
         self.assertEqual(action_1.state, True)
 
         action_1.feedback_state(False)
-        self.assertEqual(action_1.num_set_calls, 1)
+        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(len(cb.state_changed_calls), 1)
         self.assertEqual(action_1.state, False)
 
         action_1.feedback_state(True)
-        self.assertEqual(action_1.num_set_calls, 1)
+        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(len(cb.state_changed_calls), 1)
         self.assertEqual(action_1.state, True)
 
         action_1.state = False
-        self.assertEqual(action_1.num_set_calls, 2)
+        self.assertEqual(len(cb.update_displays_calls), 2)
+        self.assertEqual(len(cb.state_changed_calls), 2)
         self.assertEqual(action_1.state, False)
 
         action_1.state = True
-        self.assertEqual(action_1.num_set_calls, 3)
+        self.assertEqual(len(cb.update_displays_calls), 3)
+        self.assertEqual(len(cb.state_changed_calls), 3)
         self.assertEqual(action_1.state, True)
 
         action_1.reset()
-        self.assertEqual(action_1.num_set_calls, 3)
+        self.assertEqual(len(cb.update_displays_calls), 4)
+        self.assertEqual(len(cb.state_changed_calls), 3)
         self.assertEqual(action_1.state, False)
         
         
@@ -513,8 +524,10 @@ class TestActionPushButton(unittest.TestCase):
 
     def test_one_shot(self):
         switch_1 = MockSwitch()
+        cb = MockPushButtonActionCallback()
         action_1 = MockPushButtonAction({
-            "mode": PushButtonAction.ONE_SHOT
+            "mode": PushButtonAction.ONE_SHOT,
+            "callback": cb
         })
 
         appl = MockController(
@@ -536,37 +549,45 @@ class TestActionPushButton(unittest.TestCase):
         # Step 1: Button pushed
         def prep1():
             switch_1.shall_be_pushed = True
-            self.assertEqual(action_1.num_set_calls, 0)
+            cb.update_displays_calls = []
+            cb.state_changed_calls = []
 
         def eval1():
-            self.assertEqual(action_1.num_set_calls, 1)
+            self.assertEqual(len(cb.update_displays_calls), 1)
+            self.assertEqual(len(cb.state_changed_calls), 1)
             return True
 
         # Step 2: Button released
         def prep2():
             switch_1.shall_be_pushed = False
-            self.assertEqual(action_1.num_set_calls, 1)
+            self.assertEqual(len(cb.update_displays_calls), 1)
+            self.assertEqual(len(cb.state_changed_calls), 1)
 
         def eval2():
-            self.assertEqual(action_1.num_set_calls, 1)
+            self.assertEqual(len(cb.update_displays_calls), 2)
+            self.assertEqual(len(cb.state_changed_calls), 1)
             return True
         
         # Step 3: Button pushed
         def prep3():
             switch_1.shall_be_pushed = True
-            self.assertEqual(action_1.num_set_calls, 1)
+            self.assertEqual(len(cb.update_displays_calls), 2)
+            self.assertEqual(len(cb.state_changed_calls), 1)
 
         def eval3():
-            self.assertEqual(action_1.num_set_calls, 2)
+            self.assertEqual(len(cb.update_displays_calls), 3)
+            self.assertEqual(len(cb.state_changed_calls), 2)
             return True
         
         # Step 4: Button released
         def prep4():
             switch_1.shall_be_pushed = False
-            self.assertEqual(action_1.num_set_calls, 2)
+            self.assertEqual(len(cb.update_displays_calls), 3)
+            self.assertEqual(len(cb.state_changed_calls), 2)
 
         def eval4():
-            self.assertEqual(action_1.num_set_calls, 2)
+            self.assertEqual(len(cb.update_displays_calls), 4)
+            self.assertEqual(len(cb.state_changed_calls), 2)
             return False
 
         # Build scenes hierarchy

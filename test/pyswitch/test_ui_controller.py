@@ -55,7 +55,7 @@ class TestUiController(unittest.TestCase):
         font_loader = MockFontLoader()
 
         display = DisplayElement(id = 1)
-        ui = UiController(display_driver, font_loader, MockCallback(output = display))        
+        ui = UiController(display_driver, font_loader, MockSplashCallback(output = display))        
 
         appl = MockController2()
         ui.init(appl)
@@ -94,15 +94,15 @@ class TestUiController(unittest.TestCase):
             font_loader = font_loader
         )
 
-        ui.set_callback(
-            MockCallback(
-                output = display,
-                mappings = [
-                    mapping_1,
-                    mapping_2
-                ]
-            )
+        cb = MockSplashCallback(
+            output = display,
+            mappings = [
+                mapping_1,
+                mapping_2
+            ]
         )
+
+        ui.set_callback(cb)
 
         appl = MockController2()
         ui.init(appl)
@@ -119,11 +119,11 @@ class TestUiController(unittest.TestCase):
         self.assertEqual(appl.client.register_calls, [
             {
                 "mapping": mapping_1,
-                "listener": ui
+                "listener": cb
             },
             {
                 "mapping": mapping_2,
-                "listener": ui
+                "listener": cb
             }
         ])
 
@@ -132,11 +132,11 @@ class TestUiController(unittest.TestCase):
         self.assertEqual(appl.client.request_calls, [
             {
                 "mapping": mapping_1,
-                "listener": ui
+                "listener": cb
             },
             {
                 "mapping": mapping_2,
-                "listener": ui
+                "listener": cb
             }
         ])
 
@@ -163,7 +163,7 @@ class TestUiController(unittest.TestCase):
             ]
         )
 
-        ui = UiController(display_driver, MockFontLoader(), MockCallback(output = display))
+        ui = UiController(display_driver, MockFontLoader(), MockSplashCallback(output = display))
         appl = MockController2()
         appl.add_updateable(ui)
         ui.init(appl)
@@ -191,7 +191,7 @@ class TestUiController(unittest.TestCase):
 
         element_1 = DisplayElement(id = 1)
 
-        ui = UiController(display_driver, font_loader, MockCallback(output = element_1))
+        ui = UiController(display_driver, font_loader, MockSplashCallback(output = element_1))
 
         with self.assertRaises(Exception):
             ui.show()

@@ -20,7 +20,7 @@ with patch.dict(sys.modules, {
         "lib.pyswitch.misc": MockMisc
     }):
         
-        from lib.pyswitch.Memory import Memory
+        from lib.pyswitch.stats import Memory
 
 
 class TestMemory(unittest.TestCase):
