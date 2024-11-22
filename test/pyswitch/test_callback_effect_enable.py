@@ -18,16 +18,37 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from .mocks_appl import *
-    from.mocks_ui import *
+    from .mocks_ui import *
     from .mocks_callback import *
 
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.actions.actions import EffectEnableAction
-    
+    from lib.pyswitch.controller.actions.callbacks import EffectEnableCallback
+    from lib.pyswitch.controller.actions.actions import PushButtonAction
 
 
-class TestActionEffectEnable(unittest.TestCase):
+class MockEffectEnableCallback(EffectEnableCallback):
+    def __init__(self, mapping_state, mapping_type):
+        super().__init__(mapping_state, mapping_type)
+
+        self.output_effect_category = None
+        self.output_effect_category_color = None
+        self.output_effect_category_text = None
+
+    def get_effect_category(self, kpp_effect_type):
+        return self.output_effect_category
+
+    def get_effect_category_color(self, category):
+        return self.output_effect_category_color        
+
+    def get_effect_category_text(self, category):
+        return self.output_effect_category_text
+
+
+###############################################################################################
+
+
+class TestCallbackEffectEnable(unittest.TestCase):
 
     def test_requests(self):
         switch_1 = MockSwitch()
@@ -58,15 +79,14 @@ class TestActionEffectEnable(unittest.TestCase):
             )
         )
 
-        cp = MockCategoryProvider()
+        cb = MockEffectEnableCallback(
+            mapping_state = mapping_1,
+            mapping_type = mapping_type_1
+        )
 
-        action_1 = EffectEnableAction({
+        action_1 = PushButtonAction({
             "mode": PushButtonAction.MOMENTARY,
-            "mapping": mapping_1,
-            "mappingType": mapping_type_1,
-            "categories": cp,
-            "slotInfo": MockSlotInfoProvider(),
-            "color": (10, 50, 100)
+            "callback": cb
         })
         
         period = MockPeriodCounter()
@@ -255,12 +275,12 @@ class TestActionEffectEnable(unittest.TestCase):
                         "model": MockSwitch()
                     },
                     "actions": [
-                        EffectEnableAction({
+                        PushButtonAction({
                             "mode": PushButtonAction.MOMENTARY,
-                            "mapping": ClientParameterMapping(),
-                            "mappingType": ClientParameterMapping(),
-                            "categories": MockCategoryProvider(),
-                            "slotInfo": MockSlotInfoProvider()
+                            "callback":  MockEffectEnableCallback(
+                                mapping_state = ClientParameterMapping(),
+                                mapping_type = ClientParameterMapping()
+                            )
                         })                        
                     ]
                 }
@@ -303,17 +323,16 @@ class TestActionEffectEnable(unittest.TestCase):
             )
         )
 
-        cp = MockCategoryProvider()
+        cb = MockEffectEnableCallback(
+            mapping_state = mapping_1,
+            mapping_type = mapping_type_1
+        )
 
-        action_1 = EffectEnableAction({
+        action_1 = PushButtonAction({
             "mode": PushButtonAction.MOMENTARY,
-            "mapping": mapping_1,
-            "mappingType": mapping_type_1,
-            "categories": cp,
-            "slotInfo": MockSlotInfoProvider(),
-            "color": (10, 50, 100)
+            "callback": cb
         })
-        
+
         period = MockPeriodCounter()
         led_driver = MockNeoPixelDriver()
 
@@ -526,174 +545,6 @@ class TestActionEffectEnable(unittest.TestCase):
         appl.process()
 
 
-###########################################################################################################
-
-
-    def test_show_effect_slot_names(self):
-        switch_1 = MockSwitch()
-
-        mapping_1 = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x01, 0x02, 0x03, 0x04]
-            ),
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            ),
-            response = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x00, 0x09]
-            )
-        )
-
-        mapping_type_1 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x10]
-            ),
-            response = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x00, 0x10]
-            )
-        )
-
-        cp = MockCategoryProvider()
-        slotinfo = MockSlotInfoProvider()
-        slotinfo.output = "foo"
-
-        action_1 = EffectEnableAction({
-            "mode": PushButtonAction.MOMENTARY,
-            "mapping": mapping_1,
-            "mappingType": mapping_type_1,
-            "categories": cp,
-            "slotInfo": slotinfo,
-            "color": (10, 50, 100)
-        })
-        
-        period = MockPeriodCounter()
-        led_driver = MockNeoPixelDriver()
-
-        appl = MockController(
-            led_driver = led_driver,
-            midi = MockMidiController(),
-            switches = [
-                {
-                    "assignment": {
-                        "model": switch_1,
-                        "pixels": [0]
-                    },
-                    "actions": [
-                        action_1                        
-                    ]
-                }
-            ],
-            period_counter = period,
-            config = {
-                "showEffectSlotNames": True
-            }
-        )
-
-        action_1.label = MockDisplayLabel()
-
-        answer_msg_param = SystemExclusive(
-            manufacturer_id = [0x00, 0x10, 0x20],
-            data = [0x00, 0x00, 0x09, 0x44]
-        )
-
-        answer_msg_type = SystemExclusive(
-            manufacturer_id = [0x00, 0x10, 0x20],
-            data = [0x00, 0x00, 0x07, 0x45]
-        )
-
-        # Build scene:
-        # Send update request
-        def prep1():
-            period.exceed_next_time = True
-
-        def eval1():
-            self.assertEqual(len(appl._midi.messages_sent), 1)            
-            self.assertEqual(appl._midi.messages_sent[0], mapping_type_1.request)
-            
-            return True
-
-        # Receive type
-        def prep2():
-            appl._midi.next_receive_messages = [
-                answer_msg_type
-            ]
-            mapping_type_1.outputs_parse = [
-                {
-                    "message": answer_msg_type,
-                    "value": 0
-                }
-            ]
-
-        def eval2():
-            return True
-
-        # Receive status
-        def prep3():
-            appl._midi.next_receive_messages = [
-                answer_msg_param
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg_param,
-                    "value": 1
-                }
-            ]
-
-        def eval3():
-            return True
-        
-        # Receive other value 
-        def prep4():
-            period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
-                answer_msg_type
-            ]
-            mapping_type_1.outputs_parse = [
-                {
-                    "message": answer_msg_type,
-                    "value": 1
-                }
-            ]
-
-        def eval4():
-            self.assertEqual(action_1.label.text, "foo: name10")
-            return False
-        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2,
-
-                next = SceneStep(
-                    num_pass_ticks = 5,
-                    prepare = prep3,
-                    evaluate = eval3,
-
-                    next = SceneStep(
-                        num_pass_ticks = 5,
-                        prepare = prep4,
-                        evaluate = eval4
-                    )
-                )
-            )
-        )
-
-        # Run process
-        appl.process()
-
-
 ###############################################################################################
 
 
@@ -726,17 +577,18 @@ class TestActionEffectEnable(unittest.TestCase):
             )
         )
 
-        cp = MockCategoryProvider()
-        cb = MockCallback(output = True)
+        cb_enable = MockCallback(output = True)
 
-        action_1 = EffectEnableAction({
+        cb = MockEffectEnableCallback(
+            mapping_state = mapping_1,
+            mapping_type = mapping_type_1
+        )
+
+        action_1 = PushButtonAction({
             "mode": PushButtonAction.MOMENTARY,
-            "mapping": mapping_1,
-            "mappingType": mapping_type_1,
-            "categories": cp,
-            "slotInfo": MockSlotInfoProvider(),
-            "color": (10, 50, 100)
-        })
+            "callback": cb,
+            "enableCallback": cb_enable
+        })                
         
         period = MockPeriodCounter()
         led_driver = MockNeoPixelDriver()
@@ -786,7 +638,7 @@ class TestActionEffectEnable(unittest.TestCase):
                 }
             ]
 
-            cb.output_get = False
+            cb_enable.output_get = False
 
         def eval2():
             self.assertEqual(len(appl._midi.next_receive_messages), 0)
@@ -845,17 +697,16 @@ class TestActionEffectEnable(unittest.TestCase):
             )
         )
 
-        cp = MockCategoryProvider()
+        cb = MockEffectEnableCallback(
+            mapping_state = mapping_1,
+            mapping_type = mapping_type_1
+        )
 
-        action_1 = EffectEnableAction({
+        action_1 = PushButtonAction({
             "mode": PushButtonAction.MOMENTARY,
-            "mapping": mapping_1,
-            "mappingType": mapping_type_1,
-            "categories": cp,
-            "slotInfo": MockSlotInfoProvider(),
-            "color": (10, 50, 100)
-        })
-        
+            "callback": cb
+        })   
+       
         period = MockPeriodCounter()
         led_driver = MockNeoPixelDriver()
 
@@ -954,17 +805,16 @@ class TestActionEffectEnable(unittest.TestCase):
             )
         )
 
-        cp = MockCategoryProvider()
+        cb = MockEffectEnableCallback(
+            mapping_state = mapping_1,
+            mapping_type = mapping_type_1
+        )
 
-        action_1 = EffectEnableAction({
+        action_1 = PushButtonAction({
             "mode": PushButtonAction.MOMENTARY,
-            "mapping": mapping_1,
-            "mappingType": mapping_type_1,
-            "categories": cp,
-            "slotInfo": MockSlotInfoProvider(),
-            "color": (10, 50, 100)
-        })
-        
+            "callback": cb
+        })   
+
         period = MockPeriodCounter()
         led_driver = MockNeoPixelDriver()
 

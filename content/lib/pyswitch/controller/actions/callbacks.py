@@ -246,7 +246,7 @@ class BinaryParameterCallback(Callback):
                     state = True        
 
             elif mode == self.NO_STATE_CHANGE:
-                state = self.state
+                state = action.state
 
             else:
                 raise Exception() #"Invalid comparison mode: " + repr(self._comparison_mode))        
@@ -327,7 +327,7 @@ class BinaryParameterCallback(Callback):
 ###########################################################################################################
 
 
-# Used for effect enable/disable
+# Used for effect enable/disable. Abstract, must implement some methods (see end of class)
 class EffectEnableCallback(BinaryParameterCallback):
 
     # The "None" Type is defined here, all others in derived classes
