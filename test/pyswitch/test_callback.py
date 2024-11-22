@@ -139,3 +139,35 @@ class TestCallback(unittest.TestCase):
         self.assertEqual(listener.request_terminated_calls, [mapping_2])
 
         
+    def test_no_listener(self):
+        mapping_1 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        cb = MockCallback(mappings = [
+            mapping_1
+        ])
+
+        appl = MockController2()
+
+        cb.init(appl)
+
+        mapping_value_1 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+        mapping_value_1.value = 654
+
+        cb.parameter_changed(mapping_value_1)
+
+        self.assertEqual(mapping_1.value, 654)
+
+        cb.request_terminated(mapping_value_1)
+
+        self.assertEqual(mapping_1.value, None)
+
