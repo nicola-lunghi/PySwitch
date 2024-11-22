@@ -55,19 +55,33 @@ class TestUiController(unittest.TestCase):
         font_loader = MockFontLoader()
 
         display = DisplayElement(id = 1)
-        ui = UiController(display_driver, font_loader, MockSplashCallback(output = display))        
+        cb = MockSplashCallback(output = display)
+
+        ui = UiController(display_driver, font_loader, cb)        
 
         appl = MockController2()
+        display.init(display, appl)
         ui.init(appl)
 
         ui.show()
 
-        self.assertEqual(ui._current_splash_element.font_loader, font_loader)
         self.assertEqual(ui._current_splash_element, display)
+        self.assertEqual(display.font_loader, font_loader)
         self.assertEqual(ui.bounds, DisplayBounds(0, 0, 300, 400))
 
-        self.assertEqual(ui._current_splash_element._initialized, True)
-        self.assertEqual(display_driver.tft.show_calls, [ui._current_splash_element.splash])
+        self.assertEqual(display._initialized, True)
+        self.assertEqual(display_driver.tft.show_calls, [display.splash])
+
+        display_2 = DisplayElement(id = 2)
+        cb.output = display_2
+
+        ui.show()
+
+        self.assertEqual(ui._current_splash_element, display_2)
+        self.assertEqual(display_2.font_loader, font_loader)
+
+        self.assertEqual(display_2._initialized, True)
+        self.assertEqual(display_driver.tft.show_calls, [display.splash, display_2.splash])
 
 
     def test_mappings(self):
@@ -151,15 +165,18 @@ class TestUiController(unittest.TestCase):
         display_driver = MockDisplayDriver(w = 300, h = 400, init = True)
 
         element_1 = DisplayElement(id = 1)
-        element_2 = DisplayElement(id = 2)
+        element_2 = HierarchicalDisplayElement(id = 2)
+
         element_3 = MockUpdateableDisplayElement(id = 3)
+        element_2.add(element_3)
 
         display = HierarchicalDisplayElement(
             children = [
-                element_1,
-                element_2,
                 None,
-                element_3
+                element_1,
+                None,
+                element_2,
+                None
             ]
         )
 

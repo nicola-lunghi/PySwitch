@@ -61,3 +61,16 @@ class MockEnabledCallback(MockCallback):
         self.enabled_calls.append(action)
         return self.output
         
+
+class MockDisplayLabelCallback(MockCallback):
+    def __init__(self, mappings = None):
+        super().__init__(mappings)
+
+        self.update_label_calls = []
+        self.label_text = None
+
+    def update_label(self, label):
+        self.update_label_calls.append(label)
+        
+        if self.label_text:
+            label.text = self.label_text

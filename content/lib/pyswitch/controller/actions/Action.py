@@ -37,24 +37,21 @@ class Action(Updateable):
         self.appl = appl
         self.switch = switch
 
+        # Enable callback
+        if self._enable_callback:            
+            self._enable_callback.init(appl) 
+
+        # Update display callback
         that = self
         class _CallbackListener:
-            #@RuntimeStatistics.measure
             def parameter_changed(self, mapping):
                 if that.enabled:
-                    #that.force_update()
                     that.update_displays()
 
-            #@RuntimeStatistics.measure
             def request_terminated(self, mapping):
                 if that.enabled:
                     that.update_displays()
 
-        # Enable callback
-        if self._enable_callback:            
-            self._enable_callback.init(appl) #, _CallbackListener())
-
-        # Update display callback
         if self.callback:
             self.callback.init(appl, _CallbackListener())
 

@@ -19,7 +19,7 @@ class SceneStep:
 
 
 class MockController(Controller):
-    def __init__(self, led_driver, midi, protocol = None, config = {}, switches = [],  ui = None, period_counter = None):
+    def __init__(self, led_driver, midi, protocol = None, config = {}, switches = [],  ui = None, period_counter = None, no_tick = False):
         super().__init__(
             led_driver = led_driver, 
             protocol = protocol,
@@ -32,8 +32,12 @@ class MockController(Controller):
 
         self._next_step = None
         self._cnt = 0
+        self._no_tick = no_tick
 
     def tick(self):
+        if self._no_tick:
+            return False
+        
         if not self._next_step: 
             return super().tick()
         
@@ -202,6 +206,9 @@ class MockAction(Action):
     def __init__(self, config = {}):
         super().__init__(config = config)
 
+        self.reset_mock()
+
+    def reset_mock(self):
         self.num_update_calls_overall = 0
         self.num_update_calls_enabled = 0
         self.num_reset_calls = 0

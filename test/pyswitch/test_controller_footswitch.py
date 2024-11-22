@@ -16,6 +16,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from .mocks_misc import MockMisc
+    from .mocks_callback import *
 
     with patch.dict(sys.modules, {
         "lib.pyswitch.misc": MockMisc
@@ -39,6 +40,114 @@ class MockControllerReplacement(Updater):
 
 
 class TestControllerFootswitch(unittest.TestCase):
+
+    def test_actions(self):
+        appl = MockControllerReplacement()
+        switch_1 = MockSwitch()
+
+        cb_1 = MockEnabledCallback(output = True)
+        cb_2 = MockEnabledCallback(output = True)
+
+        action_1 = MockAction({ "enableCallback": cb_1 })
+        action_2 = MockAction({ "enableCallback": cb_2 })
+
+        fs = FootSwitchController(appl, {
+            "assignment": {
+                "model": switch_1
+            },
+            "actions": [
+                action_1,
+                action_2,
+            ]
+        })
+
+        # Both enabled
+        switch_1.shall_be_pushed = True
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_2.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+        switch_1.shall_be_pushed = False
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_2.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 1)
+        self.assertEqual(action_2.num_release_calls, 1)
+
+        # Only 1 enabled 
+        action_1.reset_mock()
+        action_2.reset_mock()
+
+        cb_2.output = False
+
+        switch_1.shall_be_pushed = True
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_2.num_push_calls, 0)
+        self.assertEqual(action_1.num_release_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+        switch_1.shall_be_pushed = False
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_2.num_push_calls, 0)
+        self.assertEqual(action_1.num_release_calls, 1)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+        # Only 2 enabled 
+        action_1.reset_mock()
+        action_2.reset_mock()
+
+        cb_1.output = False
+        cb_2.output = True
+
+        switch_1.shall_be_pushed = True
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 0)
+        self.assertEqual(action_2.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+        switch_1.shall_be_pushed = False
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 0)
+        self.assertEqual(action_2.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 1)
+
+        # All disabled
+        action_1.reset_mock()
+        action_2.reset_mock()
+
+        cb_1.output = False
+        cb_2.output = False
+
+        switch_1.shall_be_pushed = True
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 0)
+        self.assertEqual(action_2.num_push_calls, 0)
+        self.assertEqual(action_1.num_release_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+        switch_1.shall_be_pushed = False
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 0)
+        self.assertEqual(action_2.num_push_calls, 0)
+        self.assertEqual(action_1.num_release_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+
+    ##############################################################################
 
     def test_minimal(self):
         appl = MockControllerReplacement()

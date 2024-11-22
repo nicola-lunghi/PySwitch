@@ -118,14 +118,132 @@ class TestAction(unittest.TestCase):
         self.assertEqual(appl.client.register_calls[1]["listener"], listener_1)
         
         cb.output = False
-        listener_1.parameter_changed(None)
 
         self.assertEqual(action_1.num_update_displays_calls, 0)  # Is updated in update()!
 
         action_1.update()
 
         self.assertEqual(action_1.num_update_displays_calls, 1)
+
+
+    #######################################################################################################
+
+
+    def test_callback(self):
+        cb = MockActionCallback()
+
+        action_1 = MockAction(config = {
+            "callback": cb
+        })
+
+        self.assertEqual(len(cb.update_displays_calls), 0)
+
+        action_1.update_displays()
+
+        self.assertEqual(len(cb.update_displays_calls), 1)
         
+
+    def test_callback_mappings(self):
+        mapping_1 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        mapping_2 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x22],
+                data = [0x00, 0x00, 0xe9]
+            )
+        )
+
+        cb = MockActionCallback(
+            mappings = [
+                mapping_1,
+                mapping_2
+            ]
+        )
+
+        action_1 = MockAction(
+            config = {
+                "callback": cb
+            }
+        )
+
+        appl = MockController()
+
+        action_1.init(appl, MockFootSwitch())
+
+        self.assertEqual([x["mapping"] for x in appl.client.register_calls], [mapping_1, mapping_2])
+        
+        listener_1 = appl.client.register_calls[0]["listener"]
+        self.assertEqual(appl.client.register_calls[1]["listener"], listener_1)
+
+        listener_1.parameter_changed(mapping_1)
+
+        self.assertEqual(action_1.num_update_displays_calls, 1)
+        self.assertEqual(len(cb.update_displays_calls), 1)
+
+        listener_1.parameter_changed(mapping_1)
+
+        self.assertEqual(action_1.num_update_displays_calls, 2)
+        self.assertEqual(len(cb.update_displays_calls), 2)
+
+        listener_1.request_terminated(mapping_1)
+
+        self.assertEqual(action_1.num_update_displays_calls, 3)
+        self.assertEqual(len(cb.update_displays_calls), 3)
+
+
+    def test_callback_mappings_disabled(self):
+        mapping_1 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        cb_enabled = MockEnabledCallback(
+            output = True
+        )
+
+        cb = MockActionCallback(
+            mappings = [mapping_1]
+        )
+
+        action_1 = MockAction(
+            config = {
+                "callback": cb,
+                "enableCallback": cb_enabled
+            }
+        )
+
+        appl = MockController()
+
+        action_1.init(appl, MockFootSwitch())
+
+        listener_1 = appl.client.register_calls[0]["listener"]
+        
+        listener_1.parameter_changed(mapping_1)
+
+        self.assertEqual(action_1.num_update_displays_calls, 1)
+        self.assertEqual(len(cb.update_displays_calls), 1)
+
+        cb_enabled.output = False
+
+        listener_1.parameter_changed(mapping_1)
+
+        self.assertEqual(action_1.num_update_displays_calls, 1)
+        self.assertEqual(len(cb.update_displays_calls), 1)
+
+        listener_1.request_terminated(mapping_1)
+
+        self.assertEqual(action_1.num_update_displays_calls, 1)
+        self.assertEqual(len(cb.update_displays_calls), 1)
+
+
+    #######################################################################################################
 
     def test_led_segments_one_action(self):
         appl = MockController()

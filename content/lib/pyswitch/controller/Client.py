@@ -127,12 +127,12 @@ class Client: #(ClientRequestListener):
                 if not m:
                     continue
 
-                if self._debug_sent_messages:
+                if self._debug_sent_messages:   # pragma: no cover
                     self.print_message(m)
 
                 self.midi.send(m)
         else:
-            if self._debug_sent_messages:
+            if self._debug_sent_messages:       # pragma: no cover
                 self.print_message(mapping.set)
                 
             self.midi.send(mapping.set)

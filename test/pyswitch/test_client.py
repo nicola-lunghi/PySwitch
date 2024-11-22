@@ -182,6 +182,65 @@ class TestClient(unittest.TestCase):
 ##############################################################################################
 
 
+    def test_request_add_listeners(self):        
+        midi = MockAdafruitMIDI.MIDI()
+
+        client = Client(
+            midi = midi,
+            config = {},
+        )
+
+        mapping_1 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        mapping_2 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x01, 0x10, 0x20],
+                data = [0x00, 0x02, 0x09]
+            )
+        )
+
+        listener = MockClientRequestListener()
+
+        client.register(mapping_1, listener)
+
+        self.assertEqual(len(midi.messages_sent), 0)
+        
+        self.assertEqual(len(client._requests), 1)
+        req = client._requests[0]
+
+        self.assertEqual(req.listeners, [listener])
+
+        # Add same listener again
+        client.register(mapping_1, listener)
+
+        self.assertEqual(len(client._requests), 1)
+        self.assertEqual(req.listeners, [listener])
+
+        # Add other listener 
+        listener_2 = MockClientRequestListener()
+        client.register(mapping_1, listener_2)
+
+        self.assertEqual(len(client._requests), 1)
+        self.assertEqual(req.listeners, [listener, listener_2])
+
+        # Add other mapping
+        client.register(mapping_2, listener_2)
+
+        self.assertEqual(len(client._requests), 2)
+        req_2 = client._requests[1]
+
+        self.assertEqual(req.listeners, [listener, listener_2])
+        self.assertEqual(req_2.listeners, [listener_2])
+
+
+##############################################################################################
+
+
     def test_request_list(self):        
         midi = MockAdafruitMIDI.MIDI()
 
@@ -411,7 +470,14 @@ class TestClient(unittest.TestCase):
 ##############################################################################################
 
 
-    def test_mapping_eq_different_types(self):
+    def test_request_timeout(self):        
+        midi = MockAdafruitMIDI.MIDI()
+
+        client = Client(
+            midi = midi,
+            config = {}
+        )
+
         mapping_1 = MockParameterMapping(
             request = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
@@ -423,394 +489,24 @@ class TestClient(unittest.TestCase):
             )
         )
 
-        mapping_2 = MockParameterMapping2(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            ),
-            response = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x00, 0x09]
-            )
-        )
+        listener = MockClientRequestListener()
 
-        self.assertFalse(mapping_1 == None)
-        self.assertFalse(None == mapping_2)
+        client.request(mapping_1, listener)
 
-        self.assertTrue(mapping_1 != mapping_2)
+        self.assertEqual(len(midi.messages_sent), 1)
+        self.assertEqual(midi.messages_sent[0], mapping_1.request)
         
+        req = client.requests[0]        
+        req.lifetime = MockPeriodCounter()
+        client._cleanup_terminated_period = MockPeriodCounter()
         
-##############################################################################################
-
-
-    def test_mapping_eq_response(self):
-        mapping_1 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            ),
-            response = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x00, 0x09]
-            )
-        )
-
-        mapping_2 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x10]
-            ),
-            response = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x00, 0x09]
-            )
-        )
-
-        self.assertFalse(mapping_1 == None)
-        self.assertFalse(None == mapping_2)
-
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_2.response.data[1] = 0x01
-        self.assertTrue(mapping_1 != mapping_2)
-
-        mapping_2.response.data[1] = 0x00
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_1.response.manufacturer_id[1] = 0x01
-        self.assertTrue(mapping_1 != mapping_2)
-
-
-##############################################################################################
-
-
-    def test_mapping_eq_response_list(self):
-        mapping_1 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            ),
-            response = [
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x20],
-                    data = [0x00, 0x00, 0x09]
-                ),
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x30],
-                    data = [0x77, 0x00, 0x09]
-                )
-            ]
-        )
-
-        mapping_2 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x10]
-            ),
-            response = [
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x20],
-                    data = [0x00, 0x00, 0x09]
-                ),
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x30],
-                    data = [0x77, 0x00, 0x09]
-                )
-            ]
-        )
-
-        self.assertFalse(mapping_1 == None)
-        self.assertFalse(None == mapping_2)
-
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_2.response[0].data[1] = 0x01
-        self.assertTrue(mapping_1 != mapping_2)
-
-        mapping_2.response[0].data[1] = 0x00
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_1.response[1].manufacturer_id[1] = 0x01
-        self.assertTrue(mapping_1 != mapping_2)
-
-        mapping_1.response[1].manufacturer_id[1] = 0x10
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_1.response = SystemExclusive(
-            manufacturer_id = [0x00, 0x10, 0x20],
-            data = [0x00, 0x00, 0x09]
-        )
-
-        self.assertTrue(mapping_1 != mapping_2)
-
-        mapping_1.response = [
-            SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x00, 0x09]
-            ),
-            SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x30],
-                data = [0x77, 0x00, 0x09]
-            ),
-            SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x30],
-                data = [0x77, 0x00, 0x09]
-            )
-        ]
-
-        self.assertTrue(mapping_1 != mapping_2)
-
-
-##############################################################################################
-
-
-    def test_mapping_eq_response_none(self):
-        mapping_1 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            ),
-            response = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x00, 0x09]
-            )
-        )
-
-        mapping_2 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            )
-        )
-
-        self.assertTrue(mapping_1 != mapping_2)
-
-
-##############################################################################################
-
-
-    def test_mapping_eq_request(self):
-        mapping_1 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            )
-        )
-
-        mapping_2 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            )
-        )
-
-        self.assertFalse(mapping_1 == None)
-        self.assertFalse(None == mapping_2)
-
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_2.request.data[1] = 0x01
-        self.assertTrue(mapping_1 != mapping_2)
-
-        mapping_2.request.data[1] = 0x07
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_1.request.manufacturer_id[1] = 0x01
-        self.assertTrue(mapping_1 != mapping_2)
-
-
-##############################################################################################
-
-
-    def test_mapping_eq_request_list(self):
-        mapping_1 = MockParameterMapping(
-            request = [
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x20],
-                    data = [0x05, 0x07, 0x09]
-                ),
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x23],
-                    data = [0x05, 0x77, 0x09]
-                )
-            ]
-        )
-
-        mapping_2 = MockParameterMapping(
-            request = [
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x20],
-                    data = [0x05, 0x07, 0x09]
-                ),
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x23],
-                    data = [0x05, 0x77, 0x09]
-                )
-            ]
-        )
-
-        self.assertFalse(mapping_1 == None)
-        self.assertFalse(None == mapping_2)
-
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_2.request[0].data[1] = 0x01
-        self.assertTrue(mapping_1 != mapping_2)
-
-        mapping_2.request[0].data[1] = 0x07
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_1.request[1].manufacturer_id[1] = 0x01
-        self.assertTrue(mapping_1 != mapping_2)
-
-        mapping_1.request[1].manufacturer_id[1] = 0x10
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_1.request = SystemExclusive(
-            manufacturer_id = [0x00, 0x10, 0x23],
-            data = [0x05, 0x77, 0x09]
-        )        
-        self.assertTrue(mapping_1 != mapping_2)
-
-        mapping_1.request = [
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x20],
-                    data = [0x05, 0x07, 0x09]
-                ),
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x23],
-                    data = [0x05, 0x77, 0x09]
-                ),
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x23],
-                    data = [0x05, 0x77, 0x09]
-                )
-            ]
-        self.assertTrue(mapping_1 != mapping_2)
-
-
-##############################################################################################
-
-
-    def test_mapping_eq_request_none(self):
-        mapping_1 = MockParameterMapping(
-            request = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            )        )
-
-        mapping_2 = MockParameterMapping()
-
-        self.assertTrue(mapping_1 != mapping_2)
-
-
-##############################################################################################
-
-
-    def test_mapping_eq_set(self):
-        mapping_1 = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            )
-        )
-
-        mapping_2 = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            )
-        )
-
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_2.set.data[1] = 0x03
-        self.assertTrue(mapping_1 != mapping_2)
-
-
-##############################################################################################
-
-
-    def test_mapping_eq_set_list(self):
-        mapping_1 = MockParameterMapping(
-            set = [
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x20],
-                    data = [0x05, 0x07, 0x09]
-                ),
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x24],
-                    data = [0x05, 0x67, 0x09]
-                )
-            ]
-        )
-
-        mapping_2 = MockParameterMapping(
-            set = [
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x20],
-                    data = [0x05, 0x07, 0x09]
-                ),
-                SystemExclusive(
-                    manufacturer_id = [0x00, 0x10, 0x24],
-                    data = [0x05, 0x67, 0x09]
-                )
-            ]
-        )
-
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_2.set[1].data[1] = 0x03
-        self.assertTrue(mapping_1 != mapping_2)
-
-        mapping_2.set[1].data[1] = 0x67
-        self.assertTrue(mapping_1 == mapping_2)
-
-        mapping_2.set = SystemExclusive(
-            manufacturer_id = [0x00, 0x10, 0x24],
-            data = [0x05, 0x67, 0x09]
-        )
-        self.assertTrue(mapping_1 != mapping_2)
-
-        mapping_2.et = [
-            SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            ),
-            SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x24],
-                data = [0x05, 0x67, 0x09]
-            ),
-            SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x24],
-                data = [0x05, 0x67, 0x09]
-            )
-        ]
-        self.assertTrue(mapping_1 != mapping_2)
-
-
-##############################################################################################
-
-
-    def test_mapping_eq_set_none(self):
-        mapping_1 = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            )
-        )
-
-        mapping_2 = MockParameterMapping()
-
-        self.assertTrue(mapping_1 != mapping_2)
-
-
-##############################################################################################
-
-
-    def test_mapping_eq_all_none(self):
-        mapping_1 = MockParameterMapping()
-        mapping_2 = MockParameterMapping()
-
-        self.assertTrue(mapping_1 != mapping_2)
-
+        client.receive(None)
+        
+        self.assertEqual(req.finished, False)
+
+        req.lifetime.exceed_next_time = True
+        client._cleanup_terminated_period.exceed_next_time = True
+        client.receive(None)
+
+        self.assertEqual(req.finished, True)
+        

@@ -235,6 +235,11 @@ class TestMiscUpdater(unittest.TestCase):
         self.assertEqual(u2.num_update_calls, 1)
         self.assertEqual(u3.num_update_calls, 1)
 
+        # Try to add same updateables again
+        updater.add_updateable(u1)
+        updater.add_updateable(u3)
+        self.assertEqual(updater.updateables, [u1, u2, u3])
+
 
     def test_reset(self):
         u1 = MockUpdateable()

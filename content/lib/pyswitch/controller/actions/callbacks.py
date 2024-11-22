@@ -30,7 +30,7 @@ class Callback(Updateable):
 
     # Reset state
     def reset(self):
-        pass
+        pass                   # pragma: no cover
 
     #@RuntimeStatistics.measure
     def update(self):

@@ -47,6 +47,7 @@ class TestMeasurementRuntime(unittest.TestCase):
 
         self.assertEqual(m.average, 500)
         self.assertEqual(m.value, 500)
+        self.assertEqual(m.sum, 500)
 
         # Tick with 300ms
         MockTime.mock["monotonicReturn"] = 2
@@ -56,6 +57,7 @@ class TestMeasurementRuntime(unittest.TestCase):
 
         self.assertEqual(m.average, 400)
         self.assertEqual(m.value, 500)
+        self.assertEqual(m.sum, 800)
 
         # Tick with 1000ms
         MockTime.mock["monotonicReturn"] = 3
@@ -65,10 +67,12 @@ class TestMeasurementRuntime(unittest.TestCase):
 
         self.assertEqual(m.average, 600)
         self.assertEqual(m.value, 1000)
+        self.assertEqual(m.sum, 1800)
 
         m.reset()
         self.assertEqual(m.average, 0)
         self.assertEqual(m.value, 0)
+        self.assertEqual(m.sum, 0)
 
 
     def test_update(self):

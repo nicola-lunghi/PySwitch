@@ -17,18 +17,21 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
+    from adafruit_midi.system_exclusive import SystemExclusive
+
     from lib.pyswitch.ui.ui import DisplayBounds
     from lib.pyswitch.ui.elements import DisplayLabel, DisplayLabelLayout    
     from lib.pyswitch.misc import Updater
 
     from .mocks_appl import *
     from .mocks_ui import *
+    from .mocks_callback import *
 
 
 class TestDisplayLabel(unittest.TestCase):
 
     def test_layout_no_font(self):
-        with self.assertRaises(Exception):            
+        with self.assertRaises(Exception):
             DisplayLabel(
                 layout = {},
                 bounds = DisplayBounds(20, 21, 200, 210)
@@ -76,19 +79,19 @@ class TestDisplayLabel(unittest.TestCase):
 ###############################################################################################
 
 
-    def test_label(self):
+    def test(self):
         self._test_label(20, 21, 200, 210, None, 0, "hey", (255, 255, 255), None)
-        self._test_label(20, 21, 200, 210, None, 0, "hey", (200, 255, 255), (200, 255, 255))
+        self._test_label(20, 221, 20, 210, None, 0, "hey", (200, 255, 255), (200, 255, 255))
 
-        self._test_label(20, 21, 200, 210, (3, 4, 5), 0, "hey", (255, 200, 255), (255, 200, 255))
+        self._test_label(20, 21, 100, 210, (3, 4, 5), 0, "hey", (255, 200, 255), (255, 200, 255))
         self._test_label(20, 21, 200, 210, (3, 4, 5), 0, "", (255, 255, 255), None)
-        self._test_label(20, 21, 200, 210, (3, 4, 5), 2, "bar", (255, 255, 200), (255, 255, 200))
-        self._test_label(20, 21, 200, 210, (3, 4, 5), 3, "foo", (255, 255, 255), None)
+        self._test_label(20, 21, 300, 210, (3, 4, 5), 2, "bar", (255, 255, 200), (255, 255, 200))
+        self._test_label(20, 21, 400, 210, (3, 4, 5), 3, "foo", (255, 255, 255), None)
 
-        self._test_label(20, 21, 200, 210, (200, 240, 250), 3, "foo", (0, 0, 0), None)
-        self._test_label(20, 21, 200, 210, (200, 140, 250), 3, "foo", (0, 0, 0), None)
-        self._test_label(20, 21, 200, 210, (0, 0, 0), 3, "foo", (255, 255, 255), None)
-        self._test_label(20, 21, 200, 210, (30, 50, 100), 3, "foo", (255, 255, 255), None)
+        self._test_label(20, 23, 200, 210, (200, 240, 250), 3, "foo", (0, 0, 0), None)
+        self._test_label(20, 25, 200, 210, (200, 140, 250), 3, "foo", (0, 0, 0), None)
+        self._test_label(20, 28, 200, 210, (0, 0, 0), 3, "foo", (255, 255, 255), None)
+        self._test_label(20, 31, 10000, 210, (30, 50, 100), 3, "foo", (255, 255, 255), None)
 
 
     def _test_label(self, x, y, w, h, fill, stroke, text, text_color_exp, text_color_set):
@@ -146,34 +149,46 @@ class TestDisplayLabel(unittest.TestCase):
 ###############################################################################################
 
 
-    def test_properties_uninitialized(self):
-        label = DisplayLabel(
-            layout = {
-                "font": "foo",
-                "maxTextWidth": 222,
-                "lineSpacing": 0.6,
-                "text": "footext",
-                "textColor": (2, 3, 4),
-                "backColor": (20, 30, 40),
-                "stroke": 4
-            },
-            bounds = DisplayBounds(20, 21, 200, 210)
+    def test_callback(self):
+        mapping_1 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
         )
 
-        # Must not throw without init being called before
-        label.layout = DisplayLabelLayout({
-            "font": "foo2",
-            "maxTextWidth": 212,
-            "lineSpacing": 0.5,
-            "text": "footext2",
-            "textColor": (1, 3, 4),
-            "backColor": (21, 30, 40),
-            "stroke": 5
-        })
+        cb = MockDisplayLabelCallback(
+            mappings = [mapping_1]
+        )
+        label = DisplayLabel(
+            layout = {
+                "font": "foo"            
+            },
+            bounds = DisplayBounds(20, 30, 400, 777),
+            callback = cb
+        )
+
+        ui = DisplayElement()
+        ui.make_splash(MockFontLoader())
+
+        u = Updater()
+        u.client = MockClient()
+        u.low_memory_warning = False
+
+        label.init(ui, u)
+
+        cb.label_text = "foobar"
+        cb.parameter_changed(mapping_1)
+
+        self.assertEqual(label.text, "foobar")
+
+        cb.label_text = "terminated"
+        cb.request_terminated(mapping_1)
+        self.assertEqual(label.text, "terminated")
 
 
 ###############################################################################################
-
+ 
 
     def test_back_color(self):
         label = DisplayLabel(
@@ -200,10 +215,41 @@ class TestDisplayLabel(unittest.TestCase):
         
         self.assertEqual(ui.splash.mock_content[0].fill, (200, 230, 240))
 
-        label.back_color = (200, 230, 240)
-        self.assertEqual(label.back_color, (200, 230, 240))
+        label.back_color = (200, 220, 250)
+        self.assertEqual(label.back_color, (200, 220, 250))
 
-        self.assertEqual(ui.splash.mock_content[0].fill, (200, 230, 240))
+        self.assertEqual(ui.splash.mock_content[0].fill, (200, 220, 250))
+
+
+###############################################################################################
+
+
+    def test_back_color_error_back2none(self):
+        label = DisplayLabel(
+            layout = {
+                "font": "foo",
+                "backColor": (3, 4, 6)
+            },
+            bounds = DisplayBounds(20, 21, 200, 210)
+        )
+
+        with self.assertRaises(Exception):        
+            label.back_color = None
+
+
+###############################################################################################
+
+
+    def test_back_color_error_none2back(self):
+        label = DisplayLabel(
+            layout = {
+                "font": "foo"
+            },
+            bounds = DisplayBounds(20, 21, 200, 210)
+        )
+
+        with self.assertRaises(Exception):        
+            label.back_color = (3, 4, 6)
 
 
 ###############################################################################################

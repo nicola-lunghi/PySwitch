@@ -16,7 +16,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from lib.pyswitch.ui.ui import DisplayElement, DisplayBounds, HierarchicalDisplayElement
-    from.mocks_ui import MockHierarchicalDisplayElement
+    from .mocks_ui import MockHierarchicalDisplayElement, MockFontLoader
 
 
 class MockDisplayElement(DisplayElement):
@@ -66,6 +66,25 @@ class TestDisplayElement(unittest.TestCase):
         el.init(None, None)
 
         self.assertEqual(el.initialized(), True)
+
+
+    def test_make_splash(self):
+        el = DisplayElement(
+            id = "foo"
+        )
+
+        f = MockFontLoader()
+        el.make_splash(f)
+
+        self.assertEqual(el.font_loader, f)
+        self.assertIsInstance(el.splash, MockDisplayIO.Group)
+
+        spl = el.splash
+        f2 = MockFontLoader()
+        el.make_splash(f2)
+
+        self.assertEqual(el.font_loader, f)
+        self.assertEqual(spl, el.splash)
 
 
 ###############################################################################################
