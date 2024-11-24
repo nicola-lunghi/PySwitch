@@ -366,9 +366,12 @@ class TestCallbackEffectEnable(unittest.TestCase):
             self.assertEqual(appl.switches[0].brightness, 0.02)
             self.assertEqual(led_driver.leds[0], (0, 0, 0))
             
+            self.assertEqual(action_1.label.text, "name0")
+            self.assertEqual(action_1.label.back_color, (5, 5, 5))
+
             return True
 
-        # Receive status
+        # Receive status (must show as off when not assigned)
         def prep3():
             appl._midi.next_receive_messages = [
                 answer_msg_param
@@ -387,9 +390,12 @@ class TestCallbackEffectEnable(unittest.TestCase):
             
             self.assertEqual(mapping_1.value, 1)
 
-            self.assertEqual(appl.switches[0].color, (0, 0, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.3)
+            self.assertEqual(appl.switches[0].color, (0, 2, 0))
+            self.assertEqual(appl.switches[0].brightness, 0.02)
             self.assertEqual(led_driver.leds[0], (0, 0, 0))
+
+            self.assertEqual(action_1.label.text, "name0")
+            self.assertEqual(action_1.label.back_color, (5, 5, 5))
 
             return True
         
