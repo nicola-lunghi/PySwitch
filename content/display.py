@@ -39,15 +39,16 @@ _SLOT_HEIGHT = const(40)                 # Slot height on the display
 # The DisplayBounds class is used to easily layout the default display in a subtractive way. Initialize it with all available space:
 _display_bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT)
 
-_bounds = _display_bounds.clone()
+# Default display
+_bounds_default = _display_bounds.clone()
 
 Splashes = TunerDisplayCallback(
     splash_default = HierarchicalDisplayElement(
-        bounds = _display_bounds,
+        bounds = _bounds_default,
         children = [
             # Header area (referenced by ID in the action configurations)
             DisplaySplitContainer(
-                bounds = _bounds.remove_from_top(_SLOT_HEIGHT),
+                bounds = _bounds_default.remove_from_top(_SLOT_HEIGHT),
                 children = [
                     DISPLAY_HEADER_1,
                     DISPLAY_HEADER_2
@@ -56,7 +57,7 @@ Splashes = TunerDisplayCallback(
 
             # Footer area (referenced by ID in the action configurations)
             DisplaySplitContainer(
-                bounds = _bounds.remove_from_bottom(_SLOT_HEIGHT),
+                bounds = _bounds_default.remove_from_bottom(_SLOT_HEIGHT),
                 children = [
                     DISPLAY_FOOTER_1,
                     DISPLAY_FOOTER_2
@@ -65,7 +66,7 @@ Splashes = TunerDisplayCallback(
 
             # Rig name
             DisplayLabel(
-                bounds = _bounds,   # Takes what is left over
+                bounds = _bounds_default,   # Takes what is left over
 
                 layout = {
                     "font": "/fonts/PTSans-NarrowBold-40.pcf",
@@ -78,10 +79,10 @@ Splashes = TunerDisplayCallback(
             ),
 
             # Bidirectional protocol state indicator (dot)
-            BIDIRECTIONAL_PROTOCOL_STATE_DOT(_bounds),
+            BIDIRECTIONAL_PROTOCOL_STATE_DOT(_bounds_default),
 
             # Performance indicator (dot)
-            PERFORMANCE_DOT(_bounds.translated(0, 7)),
+            PERFORMANCE_DOT(_bounds_default.translated(0, 7)),
         ]
     )
 )

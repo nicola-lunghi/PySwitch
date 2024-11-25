@@ -1,5 +1,5 @@
 from .FootSwitchController import FootSwitchController
-from .actions.callbacks import Callback
+from .callbacks import Callback
 from .actions.Action import Action
 from ..ui.elements import DisplayLabel, DisplaySplitContainer
 from ..ui.ui import HierarchicalDisplayElement

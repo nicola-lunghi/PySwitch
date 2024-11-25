@@ -1,5 +1,5 @@
 from micropython import const
-from ...misc import DEFAULT_SWITCH_COLOR, Updateable 
+from ..misc import DEFAULT_SWITCH_COLOR, Updateable 
 #from ...stats import RuntimeStatistics
 
 

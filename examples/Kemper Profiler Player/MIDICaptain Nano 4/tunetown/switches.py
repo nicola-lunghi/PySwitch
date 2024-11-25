@@ -8,7 +8,7 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
 from pyswitch.controller.actions.actions import HoldAction, PushButtonAction
-from pyswitch.controller.actions.callbacks import BinaryParameterCallback
+from pyswitch.controller.callbacks import BinaryParameterCallback
 
 from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, NRPN_VALUE
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
@@ -22,7 +22,6 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.TUNER_MODE(
-                id = 10,
                 display = DISPLAY_HEADER_1
             )            
         ]
@@ -59,11 +58,11 @@ Switches = [
                         "useSwitchLeds": True
                     }),                    
 
-                    # Set delay mix to 1:1 when enabled, remembering the old setting
+                    # Set delay mix to a fix value when enabled, remembering the old setting
                     PushButtonAction({
                         "callback": BinaryParameterCallback(
                             mapping = KemperMappings.EFFECT_MIX(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY),
-                            value_enable = NRPN_VALUE(0.5),
+                            value_enable = NRPN_VALUE(0.5),  # 100%
                             value_disable = "auto",
                             comparison_mode = BinaryParameterCallback.EQUAL,
                         ),

@@ -6,9 +6,7 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-#from pyswitch.misc import Colors
-#from pyswitch.controller.actions.actions import HoldAction, PushButtonAction
-from pyswitch.controller.actions.callbacks import Callback, BinaryParameterCallback
+from pyswitch.controller.callbacks import Callback
 
 from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, NRPN_VALUE
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
@@ -17,10 +15,9 @@ from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLA
 class _EnableCallback(Callback):
     def __init__(self):
         Callback.__init__(self)
+        
         self.mapping = KemperMappings.RIG_VOLUME()
-
-    def get_mappings(self):
-        yield self.mapping
+        self.mappings = [self.mapping]
 
     def enabled(self, action):  
         if self.mapping.value == None:

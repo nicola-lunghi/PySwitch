@@ -363,7 +363,7 @@ Also see the examples if you get problems, there are some with HoldAction includ
 Besides the general pushbutton or hold mechanisms, all functionality of the actions is implemented in callbacks. This works similar to the Enable callbacks described above (the mapping definition is the same), but these callbacks have to provide different member functions. The basis of this is the PushButtonAction:
 
 ```python
-from pyswitch.controller.actions.callbacks import Callback
+from pyswitch.controller.callbacks import Callback
 
 class CustomCallback(Callback):
     def __init__(self):
@@ -444,7 +444,7 @@ Switches = [
 The file **display.py** must provide a callback instance which returns the screen content to show, possibly depending on mappings or other criteria. The callback must provide a get_root() method which must return the DisplayElement to show:
 
 ```python
-from pyswitch.controller.actions.callbacks import Callback
+from pyswitch.controller.callbacks import Callback
 
 # Layout used for the action labels (only used here locally)
 _ACTION_LABEL_LAYOUT = {
@@ -637,6 +637,10 @@ example_layout = {
     "text": "Initial Text"      
 }
 ```
+
+#### Display Label Callbacks
+
+For example if you want to show some custom text or a parameter value in a display label independent of an action or switch, this can be used by passing a callback to DisplayLabel. See example "Freeze and Tap Tempo" for the PaintAudio MIDICaptain NANO 4 which includes a custom callback for showing the current amp name.
 
 ## Development
 

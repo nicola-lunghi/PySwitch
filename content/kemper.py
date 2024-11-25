@@ -7,7 +7,7 @@ from adafruit_midi.program_change import ProgramChange
 
 from pyswitch.misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print, PYSWITCH_VERSION
 from pyswitch.controller.actions.actions import ResetDisplaysAction, PushButtonAction
-from pyswitch.controller.actions.callbacks import BinaryParameterCallback, DEFAULT_LED_BRIGHTNESS_OFF, Callback, EffectEnableCallback
+from pyswitch.controller.callbacks import BinaryParameterCallback, DEFAULT_LED_BRIGHTNESS_OFF, Callback, EffectEnableCallback
 from pyswitch.controller.Client import ClientParameterMapping
 from pyswitch.ui.elements import TunerDisplay
 
@@ -96,6 +96,14 @@ NRPN_PARAMETER_ON = const(1)
 def NRPN_VALUE(value):
     return int(16383 * value)
 
+# Bank colors
+BANK_COLORS = [
+    Colors.BLUE,
+    Colors.YELLOW,
+    Colors.RED,
+    Colors.TURQUOISE,
+    Colors.PURPLE
+]
 
 ####################################################################################################################
 
@@ -295,38 +303,69 @@ class KemperActionDefinitions:
 
     # Next bank (keeps rig index)
     @staticmethod
-    def BANK_UP(display = None, color = Colors.WHITE, text = "Bank up", id = False, use_leds = True, enable_callback = None):
-        return PushButtonAction({
-            "callback": BinaryParameterCallback(
-                mapping = KemperMappings.NEXT_BANK(),
-                text = text,
-                color = color,
-                value_enable = CC_VALUE_BANK_CHANGE
-            ),
-            "mode": PushButtonAction.ONE_SHOT,
-            "display": display,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
-        })
-    
+    def BANK_UP(display = None, text = "Bank up", id = False, use_leds = True, enable_callback = None):
+        return KemperActionDefinitions._BANK_CHANGE(
+            mapping = KemperMappings.NEXT_BANK(),
+            display = display,
+            text = text,
+            id = id,
+            use_leds = use_leds,
+            enable_callback = enable_callback
+        )
+
     # Previous bank (keeps rig index)
     @staticmethod
-    def BANK_DOWN(display = None, color = Colors.WHITE, text = "Bank dn", id = False, use_leds = True, enable_callback = None):
+    def BANK_DOWN(display = None, text = "Bank dn", id = False, use_leds = True, enable_callback = None):
+        return KemperActionDefinitions._BANK_CHANGE(
+            mapping = KemperMappings.PREVIOUS_BANK(),
+            display = display,
+            text = text,
+            id = id,
+            use_leds = use_leds,
+            enable_callback = enable_callback
+        )
+
+    # Internal use: Bank up or down
+    @staticmethod
+    def _BANK_CHANGE(mapping, display, text, id, use_leds, enable_callback):
+        # Custom callback showing current bank color
+        class BankChangeCallback(BinaryParameterCallback):
+            def __init__(self):
+                super().__init__(
+                    mapping = mapping,
+                    color = Colors.WHITE,
+                    value_enable = 1,
+                    value_disable = 1,
+                    comparison_mode = self.NO_STATE_CHANGE
+                )
+
+            def update_displays(self, action):
+                if mapping.value == None:
+                    # Fallback to default behaviour
+                    super().update_displays(action)
+                    return
+                
+                # Calculate bank and rig numbers in range [0...]
+                bank = int(mapping.value / NUM_RIGS_PER_BANK)
+                bank_color = BANK_COLORS[bank % len(BANK_COLORS)]
+                
+                # Label text
+                if action.label:
+                    action.label.text = text
+                    action.label.back_color = bank_color
+
+                action.switch_color = bank_color
+                action.switch_brightness = DEFAULT_LED_BRIGHTNESS_OFF
+
         return PushButtonAction({
-            "callback": BinaryParameterCallback(
-                mapping = KemperMappings.PREVIOUS_BANK(),
-                text = text,
-                color = color,
-                value_enable = CC_VALUE_BANK_CHANGE
-            ),
+            "callback": BankChangeCallback(),
             "mode": PushButtonAction.ONE_SHOT,
             "display": display,
             "id": id,
             "useSwitchLeds": use_leds,
             "enableCallback": enable_callback
         })
-    
+       
     # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
     # the current bank. Rigs are indexed starting from one, range: [1..5].
     # Optionally, banks can be switched too in the same logic using bank and bank_off.
@@ -373,15 +412,6 @@ class KemperActionDefinitions:
 
         # Callback implementation for Rig Select, showing bank colors and rig/bank info
         class RigSelectDisplayCallback(BinaryParameterCallback):
-            # Bank colors
-            BANK_COLORS = [
-                Colors.BLUE,
-                Colors.YELLOW,
-                Colors.RED,
-                Colors.TURQUOISE,
-                Colors.PURPLE
-            ]
-
             def __init__(self):
                 super().__init__(
                     mapping = mapping,
@@ -401,13 +431,12 @@ class KemperActionDefinitions:
                 # Calculate bank and rig numbers in range [0...]
                 bank = int(mapping.value / NUM_RIGS_PER_BANK)
                 rig = mapping.value % NUM_RIGS_PER_BANK
+                bank_color = BANK_COLORS[bank % len(BANK_COLORS)]
 
                 # Label text
-                action.label.text = "Rig " + repr(bank + 1) + "-" + repr(rig + 1)
-
-                # Bank color
-                bank_color = self.BANK_COLORS[bank % len(self.BANK_COLORS)]
-                action.label.back_color = bank_color
+                if action.label:
+                    action.label.text = "Rig " + repr(bank + 1) + "-" + repr(rig + 1)
+                    action.label.back_color = bank_color
 
                 action.switch_color = bank_color
                 action.switch_brightness = DEFAULT_LED_BRIGHTNESS_OFF
@@ -1167,7 +1196,16 @@ class KemperMappings:
             set = ControlChange(
                 CC_BANK_INCREASE,
                 0    # Dummy value, will be overridden
-            )
+            ),
+            response = [
+                ControlChange(
+                    CC_RIG_INDEX_PART_1,
+                    0    # Dummy value, will be ignored
+                ),
+                ProgramChange(
+                    0    # Dummy value, will be ignored
+                )
+            ]
         )
 
     def PREVIOUS_BANK():
@@ -1176,7 +1214,16 @@ class KemperMappings:
             set = ControlChange(
                 CC_BANK_DECREASE,
                 0    # Dummy value, will be overridden
-            )
+            ),
+            response = [
+                ControlChange(
+                    CC_RIG_INDEX_PART_1,
+                    0    # Dummy value, will be ignored
+                ),
+                ProgramChange(
+                    0    # Dummy value, will be ignored
+                )
+            ]
         )
 
     # Selects a rig of the current bank. Rig index must be in range [0..4]
