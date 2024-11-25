@@ -4,52 +4,6 @@ from .misc import do_print, format_size, fill_up_to #, PeriodCounter, get_curren
 
 #from functools import wraps
 
-# Runtime measurement tool, which can be attached to functions as decorator
-#class RuntimeStatistics:
-
-#    STATS = {}
-
-#    OUTPUT_INTERVAL_MILLIS = 5000
-#    OUTPUT_PERIOD = None
-
-#    # Decorator function for measuring run time of a function.
-#    def measure(func):
-#        @wraps(func)
-#        def wrapper(*args, **kwargs):
-#            start_time = get_current_millis()
-#            result = func(*args, **kwargs)
-#            end_time = get_current_millis()
-#            total_time = end_time - start_time
-#            #print(f'{repr(func)}{args} {kwargs} Took {total_time:.4f}s')
-
-#            if not repr(func) in RuntimeStatistics.STATS:
-#                RuntimeStatistics.STATS[repr(func)] = {
-#                    "sum": 0,
-#                    "max": 0,
-#                    "cnt": 0
-#                }
-
-#            if not RuntimeStatistics.OUTPUT_PERIOD:
-#                RuntimeStatistics.OUTPUT_PERIOD = PeriodCounter(RuntimeStatistics.OUTPUT_INTERVAL_MILLIS)
-
-#            RuntimeStatistics.STATS[repr(func)]["sum"] += total_time
-#            RuntimeStatistics.STATS[repr(func)]["cnt"] += 1
-#            if total_time > RuntimeStatistics.STATS[repr(func)]["max"]:
-#                RuntimeStatistics.STATS[repr(func)]["max"] = total_time
-
-#            if RuntimeStatistics.OUTPUT_PERIOD.exceeded:
-#                for key in RuntimeStatistics.STATS:
-#                    entry = RuntimeStatistics.STATS[key]
-#                    entry["avg"] = int(entry["sum"] / entry["cnt"])
-
-#                    do_print(fill_up_to(key, 60) + ": " + repr(entry))
-
-#                RuntimeStatistics.STATS = {}
-
-#            return result
-#        return wrapper
-
-
 # Size for visualizations (num of characters. Best is an odd number)
 #_VISUALIZATION_SIZE = const(15)
 
@@ -142,3 +96,51 @@ class Memory:
     #
     #    return "".join([ret[i] if i != zero_char else "|" for i in range(size)])
 
+
+#############################################################################################################################
+
+
+# Runtime measurement tool, which can be attached to functions as decorator
+#class RuntimeStatistics:
+
+#    STATS = {}
+
+#    OUTPUT_INTERVAL_MILLIS = 5000
+#    OUTPUT_PERIOD = None
+
+#    # Decorator function for measuring run time of a function.
+#    def measure(func):
+#        @wraps(func)
+#        def wrapper(*args, **kwargs):
+#            start_time = get_current_millis()
+#            result = func(*args, **kwargs)
+#            end_time = get_current_millis()
+#            total_time = end_time - start_time
+#            #print(f'{repr(func)}{args} {kwargs} Took {total_time:.4f}s')
+
+#            if not repr(func) in RuntimeStatistics.STATS:
+#                RuntimeStatistics.STATS[repr(func)] = {
+#                    "sum": 0,
+#                    "max": 0,
+#                    "cnt": 0
+#                }
+
+#            if not RuntimeStatistics.OUTPUT_PERIOD:
+#                RuntimeStatistics.OUTPUT_PERIOD = PeriodCounter(RuntimeStatistics.OUTPUT_INTERVAL_MILLIS)
+
+#            RuntimeStatistics.STATS[repr(func)]["sum"] += total_time
+#            RuntimeStatistics.STATS[repr(func)]["cnt"] += 1
+#            if total_time > RuntimeStatistics.STATS[repr(func)]["max"]:
+#                RuntimeStatistics.STATS[repr(func)]["max"] = total_time
+
+#            if RuntimeStatistics.OUTPUT_PERIOD.exceeded:
+#                for key in RuntimeStatistics.STATS:
+#                    entry = RuntimeStatistics.STATS[key]
+#                    entry["avg"] = int(entry["sum"] / entry["cnt"])
+
+#                    do_print(fill_up_to(key, 60) + ": " + repr(entry))
+
+#                RuntimeStatistics.STATS = {}
+
+#            return result
+#        return wrapper

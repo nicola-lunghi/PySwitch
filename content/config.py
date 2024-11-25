@@ -14,8 +14,8 @@ Config = {
     # A good value is the maximum amount of switches. Default is 10.
     #"maxConsecutiveMidiMessages": 10,
 
-    # Clear MIDI buffer beofre starting processing.
-    "clearBuffers": True,                 
+    # Clear MIDI buffer before starting processing. Default is True.
+    #"clearBuffers": True,                 
 
     # Max. milliseconds until a request is being terminated and it is
     # assumed that the Kemper device is offline. Optional, default is 2 seconds.

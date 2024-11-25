@@ -224,14 +224,6 @@ class KemperActionDefinitions:
             "display": display,
             "id": id,
             "useSwitchLeds": use_leds,
-            #"ledBrightness": {
-            #    "on": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF,               # Set equal brightness (we do not need status display here)
-            #    "off": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
-            #},
-            #"displayDimFactor": {
-            #    "on": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF,              # Set equal dim factor (we do not need status display here)
-            #    "off": ParameterAction.DEFAULT_SLOT_DIM_FACTOR_OFF
-            #},
             "enableCallback": enable_callback
         })
     
@@ -379,6 +371,7 @@ class KemperActionDefinitions:
             mapping_disable = KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1)
             value_disable = [bank_off - 1, 1]
 
+        # Callback implementation for Rig Select, showing bank colors and rig/bank info
         class RigSelectDisplayCallback(BinaryParameterCallback):
             # Bank colors
             BANK_COLORS = [
@@ -422,10 +415,6 @@ class KemperActionDefinitions:
         # Finally we can create the action definition ;)
         return PushButtonAction({
             "display": display,
-            #"ledBrightness": {                                                  # Only necessary if rig id is still None
-            #    "on": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF,               # Set equal brightness (we do not need status display here)
-            #    "off": ParameterAction.DEFAULT_LED_BRIGHTNESS_OFF
-            #},
             "mode": PushButtonAction.LATCH,
             "id": id,
             "useSwitchLeds": use_leds,
@@ -547,6 +536,7 @@ class KemperEffectEnableCallback(EffectEnableCallback):
 ####################################################################################################################
 
 
+# Callback for DisplayLabel to show the rig name
 class KemperRigNameCallback(Callback):
     DEFAULT_TEXT = "Kemper Control " + PYSWITCH_VERSION
 
@@ -562,7 +552,9 @@ class KemperRigNameCallback(Callback):
 ####################################################################################################################
 
 
-# Callback for on-demand Tuner display
+# Splash Callback for on-demand Tuner display. Pass your default display root element as default splash,
+# and a genuine tuner display will be used when the tuner is activated. You can also define your own tuner
+# display optionally.
 class TunerDisplayCallback(Callback):
     def __init__(self, splash_default, splash_tuner = None):
         Callback.__init__(self)

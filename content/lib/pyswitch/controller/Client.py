@@ -1,6 +1,7 @@
 from ..misc import EventEmitter, PeriodCounter, Updateable, get_option, compare_midi_messages, stringify_midi_message, do_print
 #from ..stats import RuntimeStatistics
 
+
 # Midi mapping for a client command. Contains commands to set or request a parameter
 class ClientParameterMapping:
     # Takes MIDI messages as argument (ControlChange or SystemExclusive)

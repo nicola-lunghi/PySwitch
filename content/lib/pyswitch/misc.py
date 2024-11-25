@@ -119,22 +119,6 @@ def compare_midi_messages(a, b):
     else:
         return a == b
 
-#def hash_midi_message(midi_message):
-#    if isinstance(midi_message, SystemExclusive):
-#        return hash(midi_message.manufacturer_id + midi_message.data)
-#
-#    elif isinstance(midi_message, ControlChange):
-#        return hash(midi_message.control + 1024)
-#   
-#    elif isinstance(midi_message, ProgramChange):
-#        return 500
-#
-#    elif isinstance(midi_message, MIDIUnknownEvent):
-#        return midi_message.status
-#
-#    else:
-#        return id(midi_message)
-
 # Size (bytes) output formatting 
 # Taken from https://stackoverflow.com/questions/1094841/get-a-human-readable-version-of-a-file-size 
 def format_size(num, fill_up_to_num = 0, suffix = "B"):

@@ -64,7 +64,7 @@ class Controller(Updater): #ClientRequestListener
         self._debug_stats = get_option(config, "debugStats", False)        
 
         # Clear MIDI buffers on startup
-        self._clear_buffer = get_option(config, "clearBuffers", False)
+        self._clear_buffer = get_option(config, "clearBuffers", True)
 
         # NeoPixel driver 
         self.led_driver = led_driver
@@ -238,8 +238,6 @@ class Controller(Updater): #ClientRequestListener
     def reset_display_areas(self):   # pragma: no cover
         pass
 
-        #self._info_parameters.reset()
-
     # Statistical measurement for tick time (always active)
     def _init_measurement(self, interval_millis):
         self._measurement_tick_time = RuntimeMeasurement(interval_millis = interval_millis, name = "Tick")
@@ -267,32 +265,3 @@ class Controller(Updater): #ClientRequestListener
         collect()
         do_print(fill_up_to(str(measurement.name), 30, '.') + ": Max " + repr(measurement.value) + "ms, Avg " + repr(measurement.average) + "ms, Calls: " + repr(measurement.calls) + ", Free: " + format_size(mem_free()))
 
-    #@RuntimeStatistics.measure
-    #def update(self):
-    #    for u in self.updateables:
-    #        if not repr(u) in self._tmp:
-    #            class _Listener:
-    #                def __init__(self, u2):
-    #                    self.u = u2
-
-    #                def measurement_updated(self, measurement):
-    #                    do_print(fill_up_to(repr(self.u), 50, '.') + ": Max " + str(measurement.value) + "ms, Avg " + str(measurement.average) + "ms, Sum " + repr(measurement.sum) + ", Calls: " + repr(measurement.calls))
-
-    #            m = RuntimeMeasurement(5000)
-    #            m.add_listener(_Listener(u))
-    #            #self.add_updateable(m)
-
-    #            self._tmp[repr(u)] = m                
-
-    #    #print(repr(len(self.updateables)))
-        
-    #    for u in self.updateables:
-    #        m = self._tmp[repr(u)]
-    #        m.start()
-    #        u.update()
-    #        m.finish()
-
-    #    for m in self._tmp:
-    #        self._tmp[m].update()
-
-    #    #Updater.update(self)
