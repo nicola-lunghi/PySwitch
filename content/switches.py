@@ -22,7 +22,6 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.TUNER_MODE(
-                id = 10,
                 display = DISPLAY_HEADER_1
             )            
         ]
