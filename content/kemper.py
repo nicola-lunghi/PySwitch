@@ -552,13 +552,11 @@ class KemperRigNameCallback(Callback):
 
     def __init__(self):
         Callback.__init__(self)
-        self.mapping = KemperMappings.RIG_NAME()
-
-    def get_mappings(self):
-        yield self.mapping
+        self._mapping = KemperMappings.RIG_NAME()
+        self.mappings = [self._mapping]
 
     def update_label(self, label):
-        label.text = self.mapping.value if self.mapping.value else self.DEFAULT_TEXT
+        label.text = self._mapping.value if self._mapping.value else self.DEFAULT_TEXT
 
 
 ####################################################################################################################
@@ -569,7 +567,8 @@ class TunerDisplayCallback(Callback):
     def __init__(self, splash_default, splash_tuner = None):
         Callback.__init__(self)
 
-        self.mapping = KemperMappings.TUNER_MODE_STATE()
+        self._mapping = KemperMappings.TUNER_MODE_STATE()
+        self.mappings = [self._mapping]
         
         self._splash_tuner = splash_tuner
         self._splash_default = splash_default
@@ -587,11 +586,8 @@ class TunerDisplayCallback(Callback):
                 }
             )
 
-    def get_mappings(self):
-        yield self.mapping
-
     def get_root(self):
-        if self.mapping.value != 1:
+        if self._mapping.value != 1:
             return self._splash_default
         else:
             return self._splash_tuner

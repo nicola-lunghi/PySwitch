@@ -4,15 +4,12 @@ from ...misc import DEFAULT_SWITCH_COLOR, Updateable #, Colors, DEFAULT_LABEL_CO
 
 
 class Callback(Updateable):
-    def __init__(self):
+    def __init__(self, mappings = []):
         super().__init__()
         
+        self.mappings = mappings
         self._initialized = False
 
-    # Can optionally return mappings which will be listened to.
-    def get_mappings(self):
-        return []
-    
     # Must be called before usage
     def init(self, appl, listener = None):
         if self._initialized: 
@@ -21,7 +18,7 @@ class Callback(Updateable):
         self._appl = appl
         self._listener = listener
 
-        for m in self.get_mappings():
+        for m in self.mappings:
             self._appl.client.register(m, self)
 
         self._appl.add_updateable(self)
@@ -36,12 +33,12 @@ class Callback(Updateable):
     def update(self):
         cl = self._appl.client
 
-        for m in self.get_mappings():
+        for m in self.mappings:
             cl.request(m, self)
 
     def parameter_changed(self, mapping):
         # Take over value before calling the listener
-        for m in self.get_mappings():
+        for m in self.mappings:
             if m != mapping:
                 continue
 
@@ -52,7 +49,7 @@ class Callback(Updateable):
 
     def request_terminated(self, mapping):
         # Clear value before calling the listener
-        for m in self.get_mappings():
+        for m in self.mappings:
             if m != mapping:
                 continue
 
@@ -132,7 +129,7 @@ class BinaryParameterCallback(Callback):
                  # LED brightness [0..1] for off state (Switch LEDs) Optional.
                  led_brightness_off = DEFAULT_LED_BRIGHTNESS_OFF
         ):
-        super().__init__()
+        super().__init__(mappings = [mapping])
 
         self._mapping = mapping
         self._mapping_disable = mapping_disable
@@ -162,9 +159,6 @@ class BinaryParameterCallback(Callback):
         super().init(appl, listener)
 
         self._appl = appl
-
-    def get_mappings(self):
-        yield self._mapping  # Only listen to the main mapping (mapping_disable is just used for sending stuff)
 
     def state_changed_by_user(self, action):
         if action.state:
@@ -340,17 +334,13 @@ class EffectEnableCallback(BinaryParameterCallback):
         super().__init__(mapping = mapping_state)
 
         self.mapping_fxtype = mapping_type
+        self.mappings.append(mapping_type)
 
         self._effect_category = self.CATEGORY_NONE  
         self._current_category = self.CATEGORY_INITIAL
 
         self.color = self.get_effect_category_color(self._effect_category)
-    
-    def get_mappings(self):
-        for m in super().get_mappings():
-            yield m
-        yield self.mapping_fxtype
-    
+        
     def reset(self):
         super().reset()
         

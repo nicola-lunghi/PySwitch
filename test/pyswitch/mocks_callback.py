@@ -2,26 +2,17 @@ from lib.pyswitch.controller.actions.callbacks import Callback
 
 
 class MockCallback(Callback):
-    def __init__(self, mappings = None):
-        super().__init__()
+    def __init__(self, mappings = []):
+        super().__init__(mappings)
 
-        self.mappings = mappings
         self.num_reset_calls = 0
-
-    def get_mappings(self):
-        if self.mappings:
-            for m in self.mappings:
-                yield m
-        else:
-            for m in super().get_mappings():
-                yield m
     
     def reset(self):
         self.num_reset_calls += 1
 
 
 class MockActionCallback(MockCallback):
-    def __init__(self, mappings = None):
+    def __init__(self, mappings = []):
         super().__init__(mappings)
 
         self.update_displays_calls = []
@@ -31,7 +22,7 @@ class MockActionCallback(MockCallback):
 
 
 class MockPushButtonActionCallback(MockActionCallback):
-    def __init__(self, mappings = None):
+    def __init__(self, mappings = []):
         super().__init__(mappings)
 
         self.state_changed_calls = []
@@ -41,7 +32,7 @@ class MockPushButtonActionCallback(MockActionCallback):
 
 
 class MockSplashCallback(MockCallback):
-    def __init__(self, mappings = None, output = None):
+    def __init__(self, mappings = [], output = None):
         super().__init__(mappings)
 
         self.output = output
@@ -51,7 +42,7 @@ class MockSplashCallback(MockCallback):
     
 
 class MockEnabledCallback(MockCallback):
-    def __init__(self, mappings = None, output = None):
+    def __init__(self, mappings = [], output = None):
         super().__init__(mappings)
 
         self.output = output
@@ -63,7 +54,7 @@ class MockEnabledCallback(MockCallback):
         
 
 class MockDisplayLabelCallback(MockCallback):
-    def __init__(self, mappings = None):
+    def __init__(self, mappings = []):
         super().__init__(mappings)
 
         self.update_label_calls = []
