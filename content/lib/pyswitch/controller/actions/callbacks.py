@@ -343,6 +343,8 @@ class EffectEnableCallback(BinaryParameterCallback):
 
         self._effect_category = self.CATEGORY_NONE  
         self._current_category = self.CATEGORY_INITIAL
+
+        self.color = self.get_effect_category_color(self._effect_category)
     
     def get_mappings(self):
         for m in super().get_mappings():
@@ -357,12 +359,12 @@ class EffectEnableCallback(BinaryParameterCallback):
     def update_displays(self, action):  
         self._effect_category = self.get_effect_category(self.mapping_fxtype.value) if self.mapping_fxtype.value != None else self.CATEGORY_NONE
         
+        if self._effect_category == self.CATEGORY_NONE:
+            action.feedback_state(False)
+
         if self._current_category == self._effect_category:
             super().update_displays(action)
             return
-
-        if self._effect_category == self.CATEGORY_NONE:
-            action.state = False
 
         self._current_category = self._effect_category
 
