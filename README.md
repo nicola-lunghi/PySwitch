@@ -6,20 +6,19 @@ generic configuration script. Features are:
 - Program (Foot)switches to send MIDI messages. Each switch can do multiple actions.
 - Request parameters via NRPN MIDI from the controlled device and evaluate them on a TFT screen or using NeoPixel LEDs (for example the rig/amp/IR names can be displayed)
 - Establish a bidirectional communication with the client device (implemented for the Kemper Profiler Player, but can be used for anything with similar protocol)
-- Use conditions in the configuration to make functions depending on MIDI parameters of the device
-- Define the device to be controlled via a custom python library, implementing base classes from the firmware
+- Use callbacks in the configuration to make functions depending on MIDI parameters of the device, or program any other custom behaviour
+- Ready-to-go Device implementation for the Kemper Profiler Player (R), others can be added
+- MIDI routing capatbilities
 
 ![Overview Image](https://github.com/user-attachments/assets/c48903b2-a5f7-4d78-b7eb-9fca98dbfbe0)
 
 ## Motivation
 
-The firmware has been developed to interface the PaintAudio MIDI Captain series of MIDI controller pedals to the Kemper Profiler Player, which can be controlled
-very deeply via MIDI. It is based on the great work of @gstrotmann who did the hardware reverse engineering and provided the initial script this project is based on (https://github.com/gstrotmann/MidiCaptain4Kemper).
+The firmware has been developed to interface the PaintAudio MIDI Captain series of MIDI controller pedals to the Kemper Profiler Player, which can be controlled very deeply via MIDI. It is based on the great explorational work of @gstrotmann who did the hardware reverse engineering and provided the initial script this project is based on (https://github.com/gstrotmann/MidiCaptain4Kemper).
 
 The manufacturer PaintAudio also provides a Kemper Player related firmware (<a href="https://cdn.shopify.com/s/files/1/0656/8312/8548/files/FW_MINI6_KPP_V3.51.zip?v=1711205983" target="_blank">PaintAudio firmware 3.5</a>) but this is hard wired all along, so it can only control few functions of the Player like enabling/disabling effect slots. 
 
-This project is developed generically, so it can basically be run on any board which runs CircuitPy, using the Adafruit libraries to run a TFT display and LEDs, to control basically any device which is controlled in a similar way as the Kemper devices (it can also be used to control all other Kemper Profiler products, however his has not been tested and might need slight changes in the pyswitch_kemper module) and address
-any parameter or other information the controlled device provides.
+This project is developed generically, so it can basically be run on any board which runs CircuitPy, using the Adafruit libraries to run a TFT display and LEDs, to control basically any device which is controlled in a similar way as the Kemper devices (it can also be used to control all other Kemper Profiler products, however his has not been tested and might need slight changes in the pyswitch_kemper module) and address any parameter or other information the controlled device provides. You just have to provide the apropriate adapter classes and mappings!
 
 ## Installation
 
@@ -46,7 +45,7 @@ The whole configuration is done in some files in the root directory (of the devi
 - **display.py**: Defines the layout of the TFT display and which data to show
 - **communication.py**: Defines the communication with the client, as well as generic MIDI routing between available MIDI ports
 
-These files can make use of the objects contained in **kemper.py** which provide all necessary mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change).
+These files can make use of the objects contained in **kemper.py** which provide all necessary mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change). Contributors welcome!
 
 ### Global configuration
 
@@ -98,6 +97,8 @@ This example will, in addition to normal operation as in the last example, also 
 
 ```python
 
+# Pre-define all needed MIDI devices here in advance 
+# (multiple creation would waste memory)
 _DIN_MIDI = MidiDevices.PA_MIDICAPTAIN_DIN_MIDI(
     in_channel = None,  # All channels will be received
     out_channel = 0     # Send on channel 1
@@ -143,32 +144,27 @@ The examples also contains samples for setting up MIDICaptain USB and DIN commun
 - ControlChange
 - ProgramChange
 - SystemExclusive
-- MtcQuarterFrame (MIDI Clock)
 
-There are several other types defined in the <a href="https://docs.circuitpython.org/projects/midi/en/latest/" target="_blank">>adafruit_midi library</a>. If you need them to be processed, see file lib/pyswitch/hardware/adafruit.py and add the message types you need in the import section at the top (importing the type is sufficient, no further code changes needed).
+There are several other types defined in the <a href="https://docs.circuitpython.org/projects/midi/en/latest/" target="_blank">>adafruit_midi library</a>. If you need them to be processed, see file lib/pyswitch/hardware/adafruit.py and add the message types you need in the import section at the top (importing the types is sufficient, no further code changes needed). For types not listed (like MIDI Clock) these can be defined manually, see comments.
 
 #### Bidirectional Communication
 
-Some clients like the Kemper devices support a bidirectional communication mode. This wording is a bit misleading because the application will react to changes of the client also if this mode is not enabled. However, bidirectional mode will greatly reduce MIDI traffic and improve reaction delays, and for example the Tuner note and deviation infos necessary for the tuner display (see below) are just sent in bidirectional mode, so this is the preferred mode.
+Some clients like the Kemper devices support a bidirectional communication mode. This wording is a bit misleading because the PySwitch application can react to changes of the client also if this mode is not enabled. However, bidirectional mode will greatly reduce MIDI traffic and improve reaction delays, and for example the Tuner note and deviation infos necessary for the tuner display (see below) are just sent in bidirectional mode, so this is the preferred mode of operation and enabled by default in all examples.
 
 See this chart for some differences between the operation modes:
 
 |                                             | **Non-Bidirectional** | **Bidirectional**    |
 |---------------------------------------------|-----------------------|----------------------|
 | Reflect changes on the client               | Yes                   | Yes                  |
-| Parameter values are requested periodically | Yes                   | No (\*)               |
+| Parameter values are requested periodically | Yes                   | No (\*)              |
 | Tuner information available                 | No                    | Yes (Note and dev.)  |
+| Tempo Messages (for synced blinking LEDs)   | No                    | Yes                  |
 
 *(\*) Bidirectional mode is not available for all parameters. However, you do not need to specify this, the **kemper.py** file contains the definitions looked up by the application.*
 
 To enable bidirectional communication, you have to provide a suitable protocol implementation (instance of BidirectionalProtocol) to the Communication object like follows, using the Kemper specific implementation from **kemper.py**:
 
 ```python
-_USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
-    in_channel = None,  # All channels will be received
-    out_channel = 0     # Send on channel 1
-)
-
 Communication = {
 
     # Optional: Protocol to use. If not specified, the standard Client protocol is used which requests all
@@ -179,23 +175,7 @@ Communication = {
                                               # half of this value. 
     ),
 
-    # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 
-    # the MidiController.PYSWITCH source/target or the application will not be able to communicate!
-    "midi": {
-        "routings": [
-            # Application: Receive MIDI messages from USB
-            MidiRouting(
-                source = _USB_MIDI,
-                target = MidiController.APPLICATION
-            ),
-
-            # Application: Send MIDI messages to USB
-            MidiRouting(
-                source = MidiController.APPLICATION,
-                target = _USB_MIDI
-            ),
-        ]
-    }
+    # ...
 }
 ```
 
@@ -266,127 +246,76 @@ Switches = [
 ]
 ```
 
-##### Conditional Actions
+##### Enable/Disable Actions by Callback
 
-Actions can also be defined depending on a parameter for example: Instead of a list of Action instances, "actions" can also be a Condition, for example the switch could be assigned to tapping tempo if the rig name contains the token "TAP", and control effect slot A if not:
+Actions can also be defined depending on a parameter or other stuff: For example the switch could be assigned to tapping tempo if the rig name contains the token "TAP", and control effect slot A if not. This is accomplished by defining a custom callback class to enable/disable actions:
 
 ```python
+# Custom callback function
+class _RigNameCallback(Callback):
+    def __init__(self):
+        Callback.__init__(self)
+
+        # You have to define the attribute .mappings as a list of mappings on
+        # which your callback depends. This is optional, if you do not need further
+        # mappings, just leave that out. If specified, the callback is updated 
+        # automatically whenever the parameter of the mapping changes.
+        self.mappings = [KemperMappings.RIG_NAME()]
+
+        self._mapping = self.mappings[0]  # Just for internal reference
+
+    # For Action enable/disable callbacks, there must be a enabled(action) method. This has to
+    # return True or False for the action passed. For finding your actions, the id is used,
+    # as set below.
+    def enabled(self, action):  
+        rig_name = self._mapping.value
+
+        if action.id == 10:
+            # Show Tap when TAP is contained
+            return "TAP" in rig_name
+        elif action.id == 20:
+            # Show Effect Enable for slot A when TAP is not contained
+            return "TAP" not in rig_name
+        
+# Create an instance of the callback here and use it for all actions involved. 
+# It is also possible to use multiple instances but this saves some memory.
+_enable_callback = _EnableCallback()
+
+# Both actions now get the same callback which switches their states.
 Switches = [
 	{
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            ParameterCondition(
-                mapping = KemperMappings.RIG_NAME,
-                mode = ParameterCondition.STRING_CONTAINS,
-                ref_value = "TAP",
-
-                yes = [
-                    KemperActionDefinitions.TAP_TEMPO()
-                ],
-
-                no = [
-                    KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
-                    )
-                ]
-
-            # ... Define further actions for switch 1 here
-        ]
-    },
-
-    # ... Define further switches here
-]
-```
-
-Note that conditions can be deeply nested: Any action in the yes or no branches can be a Condition itself! This example only assigns the tap tempo action if both the TAP token is contained in the rig name and slot DLY has a delay effect loaded:
-
-```python
-Switches = [
-    {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
-        "actions": [
-            ParameterCondition(
-                mapping = KemperMappings.RIG_NAME,
-                mode = ParameterCondition.STRING_CONTAINS,
-                ref_value = "TAP",
-
-                yes = [
-                    ParameterCondition(
-                        mapping = KemperMappings.EFFECT_STATE(
-                            KemperEffectSlot.EFFECT_SLOT_ID_DLY
-                        ),
-                        mode = ParameterConditionModes.EQUAL,
-                        ref_value = 1,
-						
-                        yes = [
-                            KemperActionDefinitions.TAP_TEMPO(
-                                display = {
-                                    "id": 123, 
-                                    "index": 0,
-                                    "layout": ACTION_LABEL_LAYOUT
-                                }
-                            )
-                        ],
-
-                        no = [
-                            KemperActionDefinitions.EFFECT_STATE(
-                                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                                display = {
-                                    "id": 123, 
-                                    "index": 0,
-                                    "layout": ACTION_LABEL_LAYOUT
-                                }
-                            )
-                        ]
-                    )
-                ],
-
-                no = [
-                    KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                        display = {
-                            "id": 123, 
-                            "index": 0,
-                            "layout": ACTION_LABEL_LAYOUT
-                        }
-                    )
-                ]
+            KemperActionDefinitions.TAP_TEMPO(
+                id = 10,
+                callback = _enable_callback
             ),
-
-            # ... Define further actions for switch 1 here
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+                id = 10,
+                callback = _enable_callback
+            )
         ]
     },
 
     # ... Define further switches here
 ]
 ```
-
-Available condition types (see lib/pyswitch/controller/ConditionTree.py):
-- **ParameterCondition**: Depends on a parameter. See implementation for available comparison modes.
-- **PushButtonCondition**: Depends on the state of another switch
 
 ##### Display Labels for Actions
 
-The last example only uses the switch LEDs to indicate the effect status (brightness) and type (color). You can also connect a display area (defined in **display.py**) to the action, so the effect type (color and name) and state (brightness) are also visualized on screen:
+The last example only uses the switch LEDs to indicate the effect status (brightness) and type (color). You can also connect a display area (defined in **display.py**) to the action, so the effect type (color and name) and state (brightness) are also visualized on screen. This works by importing labels defined in **display.py** and pass them to the display attribute of the action(s):
 
 ```python
+from display import DISPLAY_LABEL_X
+
 Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                display = {
-                    # Some arbitrary ID defined in display.py
-                    "id": 123,
-
-                    # Only used when the display element is a split container, to 
-                    # address the part of the display used  for this switch
-					"index": 0,
-
-                    # Mandatory: DisplayLabel Layout definition (see below)      
-                    "layout": ACTION_LABEL_LAYOUT
-                },
+                display = DISPLAY_LABEL_X,
             )
         ]
     },
@@ -394,6 +323,8 @@ Switches = [
     #... Define further switches here
 ]
 ```
+
+See below how the labels are defined.
 
 #### Actions on Long Press (Hold)
 
@@ -407,10 +338,7 @@ Switches = [
             HoldAction({
                 "actions": [
                     KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                        display = {
-                            # ...
-                        },
+                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
                     )
                 ],
                 "actionsHold": KemperActionDefinitions.BANK_UP(
@@ -424,121 +352,39 @@ Switches = [
 ]
 ```
 
-Also see the examples if you get problems, there are some working ones with HoldAction included.
+Also see the examples if you get problems, there are some with HoldAction included.
 
 *NOTE: The LEDs of the switch will be shared among the actions participated. If you want just one action to use all LEDs of a switch, you can switch the usage off for an action using the use_leds parameter, for example with the hold action, so only the normal action will use the LEDs.*
 
 *NOTE: Do not assign the same display label to the actions, this does not make sense and will result in erratic output.*
 
-#### Manually creating Parameter Actions
+#### Custom Callbacks for Actions
 
-The actions used in the examples above are all defined in the class KemperMappings, which is a pure wrapper class providing easier access to the functionality. If you do not find the action you need, in most cases you can also directly specify the underlying Action. Either you take existing code from KemperMappings and modify it, or you create a ParameterAction (for example) from scratch, which is explained here:
-
-```python
-Switches = [
-    {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
-        "actions": [
-            ParameterAction({
-                "mapping": KemperMappings.MAPPING_TO_PARAMETER_XY,
-                "display": {
-                    # ...
-                },
-                "text": "My Text",
-                "textDisabled": "Off Text",
-                "color": (255, 180, 0),   # Orange                
-            })                        
-        ]
-    }
-```
-
-This will switch the given Parameter on/off using default values (1/0). Please refer to the comments in lib/pyswitch/controller/actions/actions.py at the beginning of the ParameterAction class for details on all available options.
-
-We used a mapping which exists in KemperMappings here, however there are not all parameters already mapped for easy use. To control every parameter available, you can define the mapping yourself, too (here, controling the amp section state on/off):
+Besides the general pushbutton or hold mechanisms, all functionality of the actions is implemented in callbacks. This works similar to the Enable callbacks described above (the mapping definition is the same), but these callbacks have to provide different member functions. The basis of this is the PushButtonAction:
 
 ```python
-Switches = [
-    {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
-        "actions": [
-            ParameterAction({
-                "mapping": ClientParameterMapping(
-                    set = KemperNRPNMessage(
-                        0x01,    # Function code for "change single parameter" 
-                        0x0a,    # Address page of the amp section
-                        0x02,    # Parameter address: Amp state (on/off)
-                    ),
-                    request = KemperNRPNMessage(
-                        0x41,    # Function code for "request single parameter" 
-                        0x0a,    # Address page of the amp section
-                        0x02,    # Parameter address: Amp state (on/off)
-                    ),
-                    response = KemperNRPNMessage(
-                        0x01,    # Function code for "receive single parameter" 
-                        0x0a,    # Address page of the amp section
-                        0x02,    # Parameter address: Amp state (on/off)
-                    )
-                ),
-                "display": {
-                    # ...
-                },
-                "text": "My Text",
-                "textDisabled": "Off Text",
-                "color": (255, 180, 0),   # Orange                
-            })                        
-        ]
-    }
-```
+from pyswitch.controller.actions.callbacks import Callback
 
-This still uses a wrapper class called KemperNRPNMessage. This just wraps the standard MIDI SysEx type and fills the manufacturer ID etc. for the Kemper automatically. However you can also fully specify the messages yourself. The following is equivalent to the last one:
+class CustomCallback(Callback):
+    def __init__(self):
+        Callback.__init__(self)
 
-```python
-Switches = [
-    {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
-        "actions": [
-            ParameterAction({
-                "mapping": ClientParameterMapping(
-                    set = SystemExclusive(
-                        manufacturer_id = [0x00, 0x20, 0x33],
-                        data = [0x02, 0x7f, 0x01, 0x00, 0x0a, 0x02]
-                    ),
-                    request = SystemExclusive(
-                        manufacturer_id = [0x00, 0x20, 0x33],
-                        data = [0x02, 0x7f, 0x41, 0x00, 0x0a, 0x02]
-                    ),
-                    response = SystemExclusive(
-                        manufacturer_id = [0x00, 0x20, 0x33],
-                        data = [0x02, 0x7f, 0x01, 0x00, 0x0a, 0x02]
-                    )
-                ),
-                "display": {
-                    # ...
-                },
-                "text": "My Text",
-                "textDisabled": "Off Text",
-                "color": (255, 180, 0),   # Orange                
-            })                        
-        ]
-    }
-```
+        self.mappings = [] # DAdd your needed mappings here or remove line
+        
+    # This is called then the state changed (on/off, according to the pushbutton and
+    # eventually hold modes involved around the action).
+    def state_changed_by_user(self, action):
+        if action.state == True:
+            # ... do something
+        else:
+            # ... do something
 
-Of course the messages sometimes can also be ControlChange messages (especially for setting stuff), but you get the idea.
-
-#### Callback based ParameterAction
-
-To be more flexible, the display update mechanisms of ParameterAction can be replaced completely by a custom callback. This can take over the control of the display and switch LEDs assigned to the action. Usage is as follows:
-
-```python
-
-# Define the callback function in your script
-def updateDisplays(action, mapping):
-    # You can access the current parameter value by 
-    # using mapping.value. The values are integers or 
-    # strings or None.
-    if mapping.value == 234:
+    # This is called to update the visual feedback (display and LEDs)
+    # whenever state changed or a mapping has been updated with a new value
+    def update_displays(self, action):
         # You can set the display label's properties.
-        # Beware that the label can be None.
+        # Beware that the label can be None if no display
+        # has been passed to the action!
         if action.label:
             action.label.back_color = Colors.RED
             action.label.text = "foo"
@@ -554,71 +400,105 @@ def updateDisplays(action, mapping):
         # brightness is already set).        
         action.switch_color = (255, 255, 255) # (r, g, b), [0..255]
         action.switch_brightness = 0.8        # [0..1]
-        
-        return True
 
-    # If nothing of False is returned, the default 
-    # behaviour of ParameterAction is processed.
-    return False
 
 Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            ParameterAction({
-                "mapping": KemperMappings.MAPPING_TO_PARAMETER_XY,
-                "display": {
-                    # ...
-                },
-                "text": "My Text",
-                "textDisabled": "Off Text",
-                "color": (255, 180, 0),   # Orange
-                "updateDisplays": updateDisplays    # Dont use brackets!
+            PushButtonAction({
+                "callback": CustomCallback(),
+                "display": # ...
             })                        
         ]
     }
 ```
 
-*NOTE: The options text, textDisabled, displayDimFactor, ledBrightness and color only control the default behaviour and are not relevant when the callback returns True.*
+#### Binary Parameter Actions
+
+To simply switch a parameter in an on/off fashion with values for on and off etc., the BinaryParameterAction is provided (which itself is a callback like in the last chapter). This is used by most of the predefined Kemper action definitions internally. Here an example which switches the rotary speed fast/slow:
+
+```python
+Switches = [
+    {
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            PushButtonAction({
+                "callback": BinaryParameterCallback(
+                    mapping = KemperMappings.ROTARY_SPEED(
+                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
+                    ),
+                    text = "Fast",
+                    color = Colors.BLUE
+                ),
+                "useSwitchLeds": True,   # Must be set to enable the LEDs!
+                "display": #....
+            })
+        ]
+    }
+]
+```
 
 ### TFT Display Layout Definition
 
-The file **display.py** must provide a root DisplayElement to be shown. Normally, this is a HierarchicalDisplayElement which can hold multiple other elements, however it can also be just one DisplayElement. Here we use the first option:
+The file **display.py** must provide a callback instance which returns the screen content to show, possibly depending on mappings or other criteria. The callback must provide a get_root() method which must return the DisplayElement to show:
 
 ```python
-Display = HierarchicalDisplayElement(
-    bounds = DisplayBounds(0, 0, 240, 240),
-    children = [        
-        # Header area
-        DisplaySplitContainer(
-            id = 123,
-            bounds = DisplayBounds(0, 0, 240, 40)  # x, y, width, height
-        ),
+from pyswitch.controller.actions.callbacks import Callback
 
-        # Footer area
-        DisplaySplitContainer(
-            id = 456,
-            bounds = DisplayBounds(0, 200, 240, 40)  # x, y, width, height
-        ),
+# Layout used for the action labels (only used here locally)
+_ACTION_LABEL_LAYOUT = {
+    "font": "/fonts/H20.pcf",
+    "backColor": DEFAULT_LABEL_COLOR,
+    "stroke": 1
+}
 
-        # Rig name
-        ParameterDisplayLabel(
-            bounds = DisplayBounds(0, 40, 160, 40)  # x, y, width, height
-            layout = {
-                "font": "/fonts/PTSans-NarrowBold-40.pcf",
-                "lineSpacing": 0.8,
-                "maxTextWidth": 220,
-            },
-            parameter = {
-                "mapping": KemperMappings.AMP_NAME,
-                "depends": KemperMappings.RIG_DATE   # Only update this when the 
-                                                    # rig date changed (optional)
-            }        
-        ),
+# Labels to be used by **switches.py**
+DISPLAY_HEADER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
+DISPLAY_HEADER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
+DISPLAY_FOOTER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
+DISPLAY_FOOTER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
 
-        # ... Define further elements here
-    ]
-)
+
+class _SplashCallback(Callback):
+    def get_root(self):
+        return HierarchicalDisplayElement(
+            bounds = DisplayBounds(0, 0, 240, 240),
+            children = [        
+                # Header area
+                DisplaySplitContainer(
+                    bounds = DisplayBounds(0, 0, 240, 40),  # x, y, width, height
+                    children = [
+                        DISPLAY_HEADER_1,
+                        DISPLAY_HEADER_2
+                    ]
+                ),
+
+                # Footer area
+                DisplaySplitContainer(
+                    bounds = DisplayBounds(0, 200, 240, 40),  # x, y, width, height
+                    children = [
+                        DISPLAY_FOOTER_1,
+                        DISPLAY_FOOTER_2
+                    ]
+                ),
+
+                # Rig name
+                DisplayLabel(
+                    bounds = DisplayBounds(0, 40, 160, 40)  # x, y, width, height
+                    layout = {
+                        "font": "/fonts/PTSans-NarrowBold-40.pcf",
+                        "lineSpacing": 0.8,
+                        "maxTextWidth": 220,
+                    },
+                    callback = KemperRigNameCallback()    
+                ),
+
+                # ... Define further elements here
+            ]
+        )
+
+Splashes = _SplashCallback()
 ```
 
 The areas are stacked in the defined order, elements defined down the list will overlap the upper ones. 
@@ -627,15 +507,33 @@ This example defines three display areas:
 
 - A header and a footer, which are split elements: This means they can hold any amound of sub-elements to be used by actions by specifying the "index" parameter in their "display" configuration. Note that the layout definition in this case also comes from the "display" definition.
 
-- A rig name display, which is a ParameterDisplay instance: This is a display label which shows a MIDI parameter, in this case the rig name. In this special case the "depends" entry specifies that the rig name shall be updated anytime the rig date changes.
+- A rig name display
 
 All available area types are defined in lib/pyswitch/ui/elements/elements.py, see there for more details on parameters for the available types:
 
 - **DisplayLabel**: Just a label showing text over a background. 
-- **ParameterDisplayLabel**: DisplayLabel tied to a device parameter, which is shown and constantly updated (used for string parameter display)
-- **DisplaySplitContainer**: Container element which can hold any amount of labels. The amount of labels is automatically determined by their usages in the switches.py file for example. 
+- **DisplaySplitContainer**: Container element which can hold any amount of labels, with the dimensions of the children being automatically set.
 - **PerformanceIndicator**: A small black dot getting red when the processing starts to lag (which can occur when too much stuff is configured)
 - **BidirectionalProtocolState**: A small black dot showing the state of the bidirectional communication protocol (green/red)
+
+Display of values (like rig name) is done via callbacks, see below chapters about DisplayLabel.
+
+##### Tuner Display
+
+For the most popular case of showing a tuner display when the device goes into tuner mode, there is a ready made callback:
+
+```python
+Splashes = TunerDisplayCallback(
+    splash_default = HierarchicalDisplayElement(
+        bounds = _display_bounds,
+        children = [
+            # ... Display elements for normal display go here
+        ]
+    )
+)
+```
+
+![image](https://github.com/user-attachments/assets/f4ba454f-b8a2-403c-b6b0-962a80dc9137)
 
 #### Subtractive Layouting
 
@@ -644,7 +542,7 @@ You can specify the dimensions and positions of all display elements manually li
 The following snippets demonstrate this: The next two examples do exactly the same thing on a 240x240 screen (other parameters omitted for clarity):
 
 ```python
-Display = HierarchicalDisplayElement(
+HierarchicalDisplayElement(
     bounds = DisplayBounds(0, 0, 240, 240),
     children = [        
         # Header (top 40 pixels)
@@ -667,7 +565,7 @@ Display = HierarchicalDisplayElement(
 # Create instance with all available space
 bounds = DisplayBounds(0, 0, 240, 240)
 
-Display = HierarchicalDisplayElement(
+HierarchicalDisplayElement(
     bounds = bounds,
     children = [        
         # Header (remove top 40 pixels from bounds and 
@@ -690,57 +588,14 @@ Display = HierarchicalDisplayElement(
 )
 ```
 
-See the DisplayBounds class in /lib/pyswitch/ui/elements/DisplayElement.py for more available methods.
-
-#### Conditional layouts
-
-The layout parameter for some types can also be a Condition (depending on a rig parameter for example) holding several layouts (also deeply, analog to the action conditions described above), for example to show some rig names with a different background or text color, like in this example:
-
-```python
-Display = ParameterDisplayLabel(
-    name = "Rig Name",
-    bounds = DisplayBounds(0, 0, 240, 240),   
-
-    layout = ParameterCondition(
-        mapping = KemperMappings.RIG_NAME,
-        mode = ParameterCondition.STRING_CONTAINS,
-        ref_value = "ORANGE",
-
-        yes = {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf",
-            "lineSpacing": 0.8,
-            "maxTextWidth": 220,
-            "backColor": Colors.BLACK
-        },
-
-        no =  {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf",
-            "lineSpacing": 0.8,
-            "maxTextWidth": 220,
-            "backColor": Colors.ORANGE
-        }
-    ),
-
-    parameter = {
-        "mapping": KemperMappings.RIG_NAME,
-        #"depends": KemperMappings.RIG_DATE,  #Rig name is automatically updated in bidirectional mode
-        "textOffline": "Kemper Profiler (offline)",
-        "textReset": "Loading Rig..."
-    }
-)
-```
-
-The rig name display will have an orange background when the rig name contains the word "ORANGE".
-
-**NOTE**: Not all layout parameters can be changed freely. Due to resource issues on the microcontroller it is currently not possible to:
-- Background color must be set either not at all for all possible condition branches, or set for all of them (use Colors.BLACK or (0, 0, 0) instead of no background).
+See the DisplayBounds class in /lib/pyswitch/ui/ui.py for more available methods.
 
 ### Mappings
 
-The MIDI messages to set/request parameters from the device are bundled in Mappings. A mapping (see class ClientParameterMapping) can contain the following:
-- **set**: MIDI message to be used to set the parameter (value will be overridden with the real value before sending)
-- **request**: MIDI message to request the parameter from the device. Only used for non-bidirectional mappings.
-- **response**: MIDI message template to be used to compare incoming MIDI messages to. Defines how the device receives the parameter value.
+The MIDI messages to set/request parameters from the device are bundled in Mappings. A mapping (see class ClientParameterMapping) can contain the following (each can be one instance or a list of instances):
+- **set**: MIDI message(s) to be used to set the parameter (value will be overridden with the real value before sending)
+- **request**: MIDI message(s) to request the parameter from the device. Only used for non-bidirectional mappings.
+- **response**: MIDI message(s) template to be used to compare incoming MIDI messages to. Defines how the device receives the parameter value.
 
 See the ClientParameterMapping class for deeper details.
 
@@ -783,43 +638,6 @@ example_layout = {
 }
 ```
 
-#### Conditional displays
-
-If you need for example a big Tuner visualization display which is completely replacing the normal display when the client is in tuner mode, you need to make the Display a condition. Here is the described example (for which there is a specialized tuner element already):
-
-```python
-Display = ParameterCondition(
-    mapping = KemperMappings.TUNER_MODE_STATE,
-    ref_value = 1,
-    mode = ParameterCondition.NOT_EQUAL,
-
-    # Show normal display
-    yes = HierarchicalDisplayElement(
-        bounds = bounds,
-        children = [
-            # ... Define normal display elements
-        ]
-    ),
-
-    # Show tuner display (only useful if bidirectional communication is enabled)
-    no = TunerDisplay(
-        mapping_note = KemperMappings.TUNER_NOTE,
-        mapping_deviance = KemperMappings.TUNER_DEVIANCE,
-        
-        bounds = bounds,
-        
-        scale = 3,     # Show note name bigger
-        layout = {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf"
-        }
-    )
-)
-```
-
-This shows the tuner display when the client sends a message corresponding to the KemperMappings.TUNER_MODE_STATE mapping with value 1, every other value switches back to normal display.
-
-![image](https://github.com/user-attachments/assets/f4ba454f-b8a2-403c-b6b0-962a80dc9137)
-
 ## Development
 
 The sources are all contained in the lib/pyswitch module, which has the following basic structure:
@@ -857,7 +675,7 @@ led_driver = AdafruitNeoPixelDriver()
 font_loader = AdafruitFontLoader()
 
 # Load configuration files
-from display import Display
+from display import Splashes
 from switches import Switches
 from communication import Communication
 
@@ -866,14 +684,14 @@ appl = Controller(
     led_driver = led_driver, 
     communication = Communication, 
     midi = MidiController(
-        config = Communication["midi"]
+        routings = Communication["midi"]["routings"]
     ),
     config = Config, 
     switches = Switches, 
     ui = UiController(
         display_driver = display_driver,
         font_loader = font_loader,
-        root = Display
+        splash_callback = Splashes
     )
 )
 
@@ -884,7 +702,7 @@ For each switch definition, an instance of FootSwitchController is created, whic
 
 ### Processing Loop
 
-The main processing loop runs as follows (see Controller.process()):
+The main processing loop runs as follows (only rough overview, there is more to it in Controller.process(), see source):
 
 ```python
 while True:
@@ -916,7 +734,7 @@ All things which need to be updated regularily like Actions (to get current stat
 
 ### Actions
 
-All actions inherit from the Action bas class. This class provides functionality used by all actions:
+All actions inherit from the Action base class. This class provides functionality used by all actions:
 
 - Setting color and brightness of the switch LED(s): If a switch contains multiple actions which want to use the LEDs of the switch (self._use_switch_leds is set to True), the LEDs are assigned to each action. The rules are:
     - If only one action wants to set the LED(s), all three LEDs are used for that action.
@@ -925,38 +743,6 @@ All actions inherit from the Action bas class. This class provides functionality
 	- If more than three actions exist, only the first three can use LEDs, the others will not show any LED status.
 
 	*NOTE: This describes the behaviour for three LEDs per Switch, however also other amounts can be addressed. This depends on the "pixels" definitions in the port assignments.*
-
-- Creates the display labels if the action has a display configuration
-
-To create new, custom actions, just inherit Actions and implement the base methods as you wish:
-
-- **init(self, appl, switch)**: Called before the processing loop ist started, and gives us references to the Controller (appl) and the switch (FootSwitchController). In the constructor of actions, no access to hardware (LEDs, display) is possible, so implement everything related to these thing in init() instead. **NOTE: Don't forget to call super().init()!**
-
-- **do_update(self)**: This is called in the update intervals (see Processing Loop). Normally used to request parameter values from the Kemper to keep states up to date. *NOTE: Do NOT override update() directly!*
-
-- **push(self)**: Called when the switch has been pushed down
-
-- **release(self)**: Called when the switch has been released again
-
-- **update_displays(self)**: Called after the enabled state of the action has been changed, to reflect that in the display/LEDs
-
-- **force_update(self)**: Must reset all action states so the instance is being updated
-
-- **reset_display(self)**: Must reset the displays and LEDs
-
-Action provides the following properties to be used in child classes:
-
-- **uses_switch_leds**: Boolean. Set this to true in your constructor if the action intends to use the LEDs.
-
-- **enabled**: Boolean. Represents if the action is enabled or disabled (per Condition for example)
-
-These properties can be used everywhere except in the constructor:
-
-- **appl**: Reference to the Controller instance
-
-- **switch**: Reference to the switch controller instance
-
-- **label**: DisplayLabel instance bound to the action, if a display definition has been passed when creating it. If no display is set, this is None. Can be directly used to set the label text/color(s) etc.
 
 #### PushButtonAction
 
