@@ -6,20 +6,12 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-from pyswitch.misc import Colors, DEFAULT_LABEL_COLOR
-from pyswitch.controller.ConditionTree import ParameterCondition
-from pyswitch.controller.actions.actions import PushButtonAction, ParameterAction, HoldAction
+from pyswitch.misc import Colors
+from pyswitch.controller.actions.actions import PushButtonAction, HoldAction
 
-from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
-from display import DISPLAY_ID_HEADER, DISPLAY_ID_FOOTER
+from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
+from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
-
-# Layout used for the action labels (only used here locally)
-_ACTION_LABEL_LAYOUT = {
-    "font": "/fonts/H20.pcf",
-    "backColor": DEFAULT_LABEL_COLOR,
-    "stroke": 1
-}
 
 # Defines the switch assignments
 Switches = [
@@ -29,11 +21,7 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.TUNER_MODE(
-                display = {
-                    "id": DISPLAY_ID_HEADER,
-                    "index": 0,
-                    "layout": _ACTION_LABEL_LAYOUT
-                }
+                display = DISPLAY_HEADER_1
             )                   
         ]
     },
@@ -44,11 +32,7 @@ Switches = [
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
-                display = {
-                    "id": DISPLAY_ID_HEADER,
-                    "index": 1,
-                    "layout": _ACTION_LABEL_LAYOUT
-                }
+                display = DISPLAY_HEADER_2
             )
         ]
     },
@@ -57,13 +41,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            KemperActionDefinitions.ROTARY_SPEED(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                display = {
-                    "id": DISPLAY_ID_FOOTER,
-                    "index": 0,
-                    "layout": _ACTION_LABEL_LAYOUT
-                }
+            KemperActionDefinitions.BINARY_SWITCH(
+                mapping = KemperMappings.ROTARY_SPEED(
+                    slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
+                ),
+                display = DISPLAY_FOOTER_1,
+                color = Colors.DARK_BLUE,
+                text = "A: Fast"
             )
         ]
     },
@@ -72,14 +56,11 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.AMP_STATE(
-                display = {
-                    "id": DISPLAY_ID_FOOTER,
-                    "index": 1,
-                    "layout": _ACTION_LABEL_LAYOUT
-                },
-
-                color = Colors.GRAY
+            KemperActionDefinitions.BINARY_SWITCH(
+                mapping = KemperMappings.AMP_STATE(),
+                display = DISPLAY_FOOTER_2,
+                color = Colors.GRAY,
+                text = "Amp"
             )
         ]
     }

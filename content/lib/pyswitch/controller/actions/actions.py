@@ -190,6 +190,9 @@ class HoldAction(Action, Updater):
 
             # Hold click
             for action in self._actions_hold:
+                if not action.enabled:
+                    continue
+
                 action.push()        
                 action.release()
 
@@ -213,6 +216,9 @@ class HoldAction(Action, Updater):
 
         # Normal click
         for action in self._actions:
+            if not action.enabled:
+                continue
+            
             action.push()        
             action.release()
 

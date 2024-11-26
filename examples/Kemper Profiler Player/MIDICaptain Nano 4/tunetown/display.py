@@ -11,7 +11,7 @@ from pyswitch.ui.elements import DisplaySplitContainer, DisplayBounds
 from pyswitch.ui.elements import DisplayLabel, BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
 from pyswitch.ui.ui import HierarchicalDisplayElement
 
-from kemper import KemperRigNameCallback, TunerDisplayCallback
+from pyswitch.clients.kemper import KemperRigNameCallback, TunerDisplayCallback
 
 #############################################################################################################################################
 

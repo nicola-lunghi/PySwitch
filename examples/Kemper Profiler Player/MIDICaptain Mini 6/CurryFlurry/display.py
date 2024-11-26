@@ -5,14 +5,11 @@
 ##############################################################################################################################################
 
 from micropython import const
-from pyswitch.misc import Colors, PYSWITCH_VERSION
-from pyswitch.controller.ConditionTree import ParameterCondition
-
-from pyswitch.ui.elements import ParameterDisplayLabel, DisplaySplitContainer, DisplayBounds, DisplayLabel, TunerDisplay
+from pyswitch.ui.elements import DisplaySplitContainer, DisplayBounds
+from pyswitch.ui.elements import DisplayLabel, BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
 from pyswitch.ui.ui import HierarchicalDisplayElement
-from pyswitch.ui.statistical import BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
 
-from kemper import KemperMappings
+from pyswitch.clients.kemper import KemperRigNameCallback, TunerDisplayCallback, KemperMappings
 
 #############################################################################################################################################
 
@@ -22,33 +19,27 @@ _DISPLAY_HEIGHT = const(240)
 
 #############################################################################################################################################
 
-# The DisplayBounds class is used to easily layout the display in a subtractive way. Initialize it with all available space:
-_bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT)
- 
-# Defines the areas to be shown on the TFT display, and which values to show there.
-Display = ParameterCondition(
-    mapping = KemperMappings.TUNER_MODE_STATE(),
-    ref_value = 1,
-    mode = ParameterCondition.NOT_EQUAL,
+# The DisplayBounds class is used to easily layout the default display in a subtractive way. Initialize it with all available space:
+_display_bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT)
 
-    # Show normal display
-    yes = HierarchicalDisplayElement(
+_bounds = _display_bounds.clone()
+
+Splashes = TunerDisplayCallback(
+    splash_default = HierarchicalDisplayElement(
+        bounds = _display_bounds,
         children = [
             # Rig name
-            ParameterDisplayLabel(
+            DisplayLabel(
                 bounds = _bounds,   # Takes what is left over
 
                 layout = {
                     "font": "/fonts/PTSans-NarrowBold-40.pcf",
                     "lineSpacing": 0.8,
-                    "maxTextWidth": 220
+                    "maxTextWidth": 220,
+                    "text": KemperRigNameCallback.DEFAULT_TEXT,
                 },
 
-                parameter = {
-                    "mapping": KemperMappings.RIG_NAME(),
-                    "textOffline": "Kemper Control " + PYSWITCH_VERSION,
-                    "textReset": "Loading Rig..."
-                }
+                callback = KemperRigNameCallback()
             ),
 
             # Bidirectional protocol state indicator (dot)
@@ -57,18 +48,5 @@ Display = ParameterCondition(
             # Performance indicator (dot)
             PERFORMANCE_DOT(_bounds.translated(0, 7)),
         ]
-    ),
-
-    # Show tuner display (only useful if bidirectional communication is enabled)
-    no = TunerDisplay(
-        mapping_note = KemperMappings.TUNER_NOTE(),
-        mapping_deviance = KemperMappings.TUNER_DEVIANCE(),
-        
-        bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
-        
-        scale = 3,
-        layout = {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf"
-        }
     )
 )

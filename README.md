@@ -45,7 +45,7 @@ The whole configuration is done in some files in the root directory (of the devi
 - **display.py**: Defines the layout of the TFT display and which data to show
 - **communication.py**: Defines the communication with the client, as well as generic MIDI routing between available MIDI ports
 
-These files can make use of the objects contained in **kemper.py** which provide all necessary mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change). Contributors welcome!
+These files can make use of the objects contained in **lib/pyswitch/clients/kemper.py** which provide all necessary mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change). Contributors welcome!
 
 ### Global configuration
 
@@ -160,9 +160,9 @@ See this chart for some differences between the operation modes:
 | Tuner information available                 | No                    | Yes (Note and dev.)  |
 | Tempo Messages (for synced blinking LEDs)   | No                    | Yes                  |
 
-*(\*) Bidirectional mode is not available for all parameters. However, you do not need to specify this, the **kemper.py** file contains the definitions looked up by the application.*
+*(\*) Bidirectional mode is not available for all parameters. However, you do not need to specify this, the **lib/pyswitch/clients/kemper.py** file contains the definitions looked up by the application.*
 
-To enable bidirectional communication, you have to provide a suitable protocol implementation (instance of BidirectionalProtocol) to the Communication object like follows, using the Kemper specific implementation from **kemper.py**:
+To enable bidirectional communication, you have to provide a suitable protocol implementation (instance of BidirectionalProtocol) to the Communication object like follows, using the Kemper specific implementation from **lib/pyswitch/clients/kemper.py**:
 
 ```python
 Communication = {
@@ -226,7 +226,7 @@ Most actions feature a "mode" parameter. This parameter controls the behaviour o
 - **PushButtonModes.HOLD_MOMENTARY**: Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is used (inverse or not: This depends on the current state of the functionality. When it is on, it will momentarily be switched off and vice versa). This is the default for most of the actions.
 - **PushButtonModes.ONE_SHOT**: Fire the SET command on every push (show as disabled)
 
-Each switch can be assigned to any number of actions, which are implementing the functionality for the switch. Actions are instances based on the lib/pyswitch/controller/actions/Action base class. Normally you would use predefined actions as provided by kemper.py (class KemperActionDefinitions as used in the example above), however you could also directly use the classes defined in lib/pyswitch/controller/actions/actions.py and provide all the MIDI mapping manually.
+Each switch can be assigned to any number of actions, which are implementing the functionality for the switch. Actions are instances based on the lib/pyswitch/controller/actions/Action base class. Normally you would use predefined actions as provided by lib/pyswitch/clients/kemper.py (class KemperActionDefinitions as used in the example above), however you could also directly use the classes defined in lib/pyswitch/controller/actions/actions.py and provide all the MIDI mapping manually.
 
 ##### Action Colors
 
@@ -601,7 +601,7 @@ See the ClientParameterMapping class for deeper details.
 
 #### Kemper Mappings
 
-The file **kemper.py** contains predefined mappings to be used in the switches and displays configurations. These include the most usual parameters already, if you need more than that you can either define them manually or add new mappings to kemper.py (recommended).
+The file **lib/pyswitch/clients/kemper.py** contains predefined mappings to be used in the switches and displays configurations. These include the most usual parameters already, if you need more than that you can either define them manually or add new mappings to kemper.py (recommended).
 
 #### DisplayLabel Layout Definition
 
@@ -648,6 +648,7 @@ The sources are all contained in the lib/pyswitch module, which has the followin
 
 ```
 /lib/pyswitch/
+    clients/
     controller/
     hardware/
     ui/
@@ -656,8 +657,9 @@ The sources are all contained in the lib/pyswitch module, which has the followin
 - **controller** contains the main application logic
 - **hardware** provides access to the adafruit hardware
 - **ui** contains the uiser interface shown on the TFT display
+- **clients** provides code specific to clients (like the Kemper devices). This code is not used in the library itself, but in your config files in the drive root. Further client implementations (for Helix or Quad Cortex devices maybe) can be added here. If you want to contribute an implementation, just create it in the drive root, make it work from there, then share it to others by either putting it into the clients folder and creating a pull request, or just send the file over to me and i will integrate it.
 
-the Controller class in the **controller** folder represents the main application controller class which initiates the processing loop. It is used in the code.py file as follows (irrelevant things omitted for clarity):
+The Controller class in the **controller** folder represents the main application controller class which initiates the processing loop. It is used in the code.py file as follows (irrelevant things omitted for clarity):
 
 ```python
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader
@@ -678,7 +680,7 @@ led_driver = AdafruitNeoPixelDriver()
 # Buffered font loader
 font_loader = AdafruitFontLoader()
 
-# Load configuration files
+# Load configuration files (this is where the clients specific code is used)
 from display import Splashes
 from switches import Switches
 from communication import Communication

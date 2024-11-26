@@ -31,6 +31,9 @@ class UiController(Updater, Updateable):
     def parameter_changed(self, mapping):
         self.show()
 
+    def request_terminated(self, mapping):
+        pass
+
     #@RuntimeStatistics.measure
     def update(self):
         Updater.update(self)

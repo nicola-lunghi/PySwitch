@@ -8,7 +8,7 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
 
-from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
+from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
 from display import DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_HEADER_1, DISPLAY_HEADER_2
 
 # Defines the switch assignments

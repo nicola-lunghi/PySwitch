@@ -293,12 +293,23 @@ class TunerDevianceDisplay(DisplayElement):
                  bounds, 
                  zoom,
                  width, 
+                 color_in_tune,
+                 color_out_of_tune,
+                 color_neutral,
+                 calibration_high,
+                 calibration_low,
                  id = 0
         ):
         DisplayElement.__init__(self, bounds = bounds, id = id)
 
         self.width = width
         self._zoom = zoom
+
+        self._color_in_tune = color_in_tune
+        self._color_out_of_tune = color_out_of_tune
+        self._color_neutral = color_neutral
+        self._calibration_high = calibration_high
+        self._calibration_low = calibration_low
 
         self._current_color = None
         self.in_tune = False
@@ -311,7 +322,7 @@ class TunerDevianceDisplay(DisplayElement):
             y = self.bounds.y,
             width = self.width,
             height = self.bounds.height,
-            fill = TunerDisplay.COLOR_NEUTRAL
+            fill = self._color_neutral
         )
 
         ui.splash.append(self._marker_intune)
@@ -321,7 +332,7 @@ class TunerDevianceDisplay(DisplayElement):
             y = self.bounds.y,
             width = self.width,
             height = self.bounds.height,
-            fill = TunerDisplay.COLOR_IN_TUNE
+            fill = self._color_in_tune
         )
         self._current_color = self._marker.fill
 
@@ -335,12 +346,12 @@ class TunerDevianceDisplay(DisplayElement):
 
         self._marker.x = int((self.bounds.width - self.width) * value_scaled / 16384)
 
-        if value >= IN_TUNE_ABOVE and value <= IN_TUNE_BELOW:
+        if value >= self._calibration_low and value <= self._calibration_high:
             self.in_tune = True
-            self.set_color(TunerDisplay.COLOR_IN_TUNE)
+            self.set_color(self._color_in_tune)
         else:
             self.in_tune = False
-            self.set_color(TunerDisplay.COLOR_OUT_OF_TUNE)
+            self.set_color(self._color_out_of_tune)
 
     # Sets the color
     def set_color(self, color):
@@ -356,14 +367,6 @@ class TunerDevianceDisplay(DisplayElement):
 
 class TunerDisplay(HierarchicalDisplayElement):
 
-    # Note names 
-    _TUNER_NOTE_NAMES = ('C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B')     # (jazz man's variant)
-    #_TUNER_NOTE_NAMES = ('C','C#','D','D#','E','F','F#','G','G#','A','A#','B')     # (sharp variant)
-
-    COLOR_OUT_OF_TUNE = Colors.ORANGE
-    COLOR_IN_TUNE = Colors.LIGHT_GREEN
-    COLOR_NEUTRAL = Colors.WHITE
-
     def __init__(self, 
                  mapping_note, 
                  mapping_deviance = None, 
@@ -373,11 +376,22 @@ class TunerDisplay(HierarchicalDisplayElement):
                  deviance_height = 40,                     # Height of the deviance display
                  deviance_width = 5,                       # Width of the deviance display pointer line and "in tune" marker
                  deviance_zoom = 2.4,                      # Scaling of values. Set to > 1 to make the tuner display more sensitive.
+                 color_in_tune = Colors.LIGHT_GREEN,
+                 color_out_of_tune = Colors.ORANGE,
+                 color_neutral = Colors.WHITE,
+                 calibration_high = 8192 + 350,            # Threshold value above which the note is out of tune
+                 calibration_low = 8192 - 350,             # Threshold value above which the note is out of tune
+                 note_names = None                         # If set, this must be a tuple or list of 12 note name strings starting at C.
         ):
         HierarchicalDisplayElement.__init__(self, bounds = bounds)
 
         self._mapping_note = mapping_note
         self._mapping_deviance = mapping_deviance
+
+        self._color_in_tune = color_in_tune
+        self._color_out_of_tune = color_out_of_tune
+        self._color_neutral = color_neutral
+        self._note_names = note_names if note_names else ('C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B')
 
         self.label_note = DisplayLabel(
             bounds = bounds,
@@ -393,7 +407,12 @@ class TunerDisplay(HierarchicalDisplayElement):
             self.deviance = TunerDevianceDisplay(
                 bounds = bounds.bottom(deviance_height),
                 width = deviance_width,
-                zoom = deviance_zoom
+                zoom = deviance_zoom,
+                color_in_tune = color_in_tune,
+                color_out_of_tune = color_out_of_tune,
+                color_neutral = color_neutral,
+                calibration_high = calibration_high,
+                calibration_low = calibration_low
             )            
             self.add(self.deviance)
 
@@ -417,7 +436,7 @@ class TunerDisplay(HierarchicalDisplayElement):
         self._last_deviance = 8192
         
         self.label_note.text = "-"
-        self.label_note.text_color = self.COLOR_NEUTRAL
+        self.label_note.text_color = self._color_neutral
 
     # Listen to client value returns
     def parameter_changed(self, mapping):
@@ -426,7 +445,7 @@ class TunerDisplay(HierarchicalDisplayElement):
         if mapping == self._mapping_note and value != self._last_note:
             self._last_note = mapping.value
 
-            self.label_note.text = self._TUNER_NOTE_NAMES[value % 12]            
+            self.label_note.text = self._note_names[value % 12]            
 
         if mapping == self._mapping_deviance and value != self._last_deviance:
             self._last_deviance = value        
@@ -437,9 +456,9 @@ class TunerDisplay(HierarchicalDisplayElement):
             #self._debug_calibration(mapping.value)            
 
             if self.deviance.in_tune:
-                self.label_note.text_color = self.COLOR_IN_TUNE
+                self.label_note.text_color = self._color_in_tune
             else:
-                self.label_note.text_color = self.COLOR_OUT_OF_TUNE
+                self.label_note.text_color = self._color_out_of_tune
 
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):

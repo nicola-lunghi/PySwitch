@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
 
-#from kemper import KemperMappings, KemperEffectSlot
+#from pyswitch.clients.kemper import KemperMappings, KemperEffectSlot
 
 Config = {
     

@@ -8,7 +8,7 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.controller.callbacks import Callback
 
-from kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, NRPN_VALUE
+from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, NRPN_VALUE
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
 
@@ -73,6 +73,7 @@ Switches = [
             ),
             KemperActionDefinitions.SHOW_TEMPO(
                 id = 20,
+                display = DISPLAY_HEADER_2,
                 enable_callback = _enable_callback
             ),
 
@@ -128,7 +129,15 @@ Switches = [
                 id = 20,
                 display = DISPLAY_FOOTER_2,
                 enable_callback = _enable_callback
-            )            
+            ),
+
+            # Just to fill up
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
+                id = 30,
+                display = DISPLAY_FOOTER_2,
+                enable_callback = _enable_callback
+            ),       
         ]
     },
 ]

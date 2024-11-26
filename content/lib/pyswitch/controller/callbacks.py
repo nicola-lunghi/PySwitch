@@ -277,9 +277,9 @@ class BinaryParameterCallback(Callback):
             return
             
         if action.state == True and self._mapping.response:
-            action.label.back_color = self._dim_color(color, self._display_dim_factor_on)
+            action.label.back_color = self.dim_color(color, self._display_dim_factor_on)
         else:
-            action.label.back_color = self._dim_color(color, self._display_dim_factor_off)
+            action.label.back_color = self.dim_color(color, self._display_dim_factor_off)
 
     # Update text if set
     def _update_label_text(self, action):
@@ -298,7 +298,7 @@ class BinaryParameterCallback(Callback):
                 action.label.text = self._text
 
     # Dims a passed color for display of disabled state
-    def _dim_color(self, color, factor):
+    def dim_color(self, color, factor):
         if isinstance(color[0], tuple):
             # Multi color
             ret = []
