@@ -214,3 +214,17 @@ class TestUiController(unittest.TestCase):
             ui.show()
 
 
+    def test_terminated_request(self):
+        display_driver = MockDisplayDriver(300, 400)
+        display_driver.init()
+
+        font_loader = MockFontLoader()
+
+        element_1 = DisplayElement(id = 1)
+
+        ui = UiController(display_driver, font_loader, MockSplashCallback(output = element_1))
+
+        # Method must exist
+        ui.request_terminated(None)
+
+

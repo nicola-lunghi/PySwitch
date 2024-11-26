@@ -18,7 +18,9 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.controller.actions.actions import HoldAction
     from lib.pyswitch.misc import Updater
+
     from .mocks_appl import MockAction, MockPeriodCounter
+    from .mocks_callback import *
 
 
 class MockController(Updater):
@@ -136,6 +138,100 @@ class TestActionHold(unittest.TestCase):
 
         self.assertEqual(action_3.num_push_calls, 2)
         self.assertEqual(action_3.num_release_calls, 2)
+
+
+    def test_disabled_actions(self):
+        hold_period = MockPeriodCounter()
+
+        cb = MockEnabledCallback(output = False)
+
+        action_1 = MockAction()
+        action_2 = MockAction({ "enableCallback": cb })
+        action_3 = MockAction({ "enableCallback": cb })
+    
+        action_hold = HoldAction(
+            {
+                "actions": [
+                    action_1,
+                    action_2
+                ],
+                "actionsHold": [
+                    action_3
+                ]
+            },
+            hold_period
+        )
+
+        appl = MockController()
+
+        action_hold.init(appl, MockFootSwitch())
+
+        # Short press
+        action_hold.push()
+        action_hold.release()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 1)
+        
+        self.assertEqual(action_2.num_push_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+        self.assertEqual(action_3.num_push_calls, 0)
+        self.assertEqual(action_3.num_release_calls, 0)
+        
+        # Long press (no update in between)
+        action_hold.push()        
+        hold_period.exceed_next_time = True
+        action_hold.release()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 1)
+        
+        self.assertEqual(action_2.num_push_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+        self.assertEqual(action_3.num_push_calls, 0)
+        self.assertEqual(action_3.num_release_calls, 0)
+
+        # Long press (updates in between)
+        action_hold.push()        
+        hold_period.exceed_next_time = True
+        action_hold.update()
+        action_hold.update()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 1)
+        
+        self.assertEqual(action_2.num_push_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+        self.assertEqual(action_3.num_push_calls, 0)
+        self.assertEqual(action_3.num_release_calls, 0)
+
+        action_hold.release()
+        action_hold.update()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 1)
+        
+        self.assertEqual(action_2.num_push_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+        self.assertEqual(action_3.num_push_calls, 0)
+        self.assertEqual(action_3.num_release_calls, 0)
+
+        # Short press again
+        action_hold.push()
+        action_hold.release()
+
+        self.assertEqual(action_1.num_push_calls, 2)
+        self.assertEqual(action_1.num_release_calls, 2)
+        
+        self.assertEqual(action_2.num_push_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+        self.assertEqual(action_3.num_push_calls, 0)
+        self.assertEqual(action_3.num_release_calls, 0)
 
 
     def test_minimal(self):

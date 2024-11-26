@@ -30,21 +30,10 @@ with patch.dict(sys.modules, {
 
 
 
-TUNER_NOTE_NAMES = TunerDisplay._TUNER_NOTE_NAMES
+TUNER_NOTE_NAMES = ('C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B')
 
 
 class TestTunerDisplay(unittest.TestCase):
-
-    def test_note_name_definition(self):
-        # We do not check the half steps because there are different definitions possible for that.
-        # At least the notes of C major shoulb be the same (since the H is abandoned in germany, too!)
-        self.assertEqual(TUNER_NOTE_NAMES[0], "C")
-        self.assertEqual(TUNER_NOTE_NAMES[2], "D")
-        self.assertEqual(TUNER_NOTE_NAMES[4], "E")
-        self.assertEqual(TUNER_NOTE_NAMES[5], "F")
-        self.assertEqual(TUNER_NOTE_NAMES[7], "G")
-        self.assertEqual(TUNER_NOTE_NAMES[9], "A")
-        self.assertEqual(TUNER_NOTE_NAMES[11], "B")
 
 
     def test_note_only(self):
@@ -52,11 +41,11 @@ class TestTunerDisplay(unittest.TestCase):
 
 
     def test_with_deviance(self):
-        self._do_test(0, -1, TunerDisplay.COLOR_OUT_OF_TUNE)
-        self._do_test(4096, -0.5, TunerDisplay.COLOR_OUT_OF_TUNE)
-        self._do_test(8193, 0, TunerDisplay.COLOR_IN_TUNE)
-        self._do_test(12288, 0.5, TunerDisplay.COLOR_OUT_OF_TUNE)
-        self._do_test(16383, 1, TunerDisplay.COLOR_OUT_OF_TUNE)
+        self._do_test(0, -1, Colors.ORANGE)
+        self._do_test(4096, -0.5, Colors.ORANGE)
+        self._do_test(8193, 0, Colors.LIGHT_GREEN)
+        self._do_test(12288, 0.5, Colors.ORANGE)
+        self._do_test(16383, 1, Colors.ORANGE)
 
 
     ##################################################################################################################

@@ -1,4 +1,4 @@
-from lib.pyswitch.controller.actions.callbacks import Callback
+from lib.pyswitch.controller.callbacks import Callback
 
 
 class MockCallback(Callback):
