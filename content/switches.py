@@ -61,7 +61,7 @@ Switches = [
                     # Set delay mix to a fix value when enabled, remembering the old setting
                     PushButtonAction({
                         "callback": BinaryParameterCallback(
-                            mapping = KemperMappings.EFFECT_MIX(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+                            mapping = KemperMappings.DELAY_MIX(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY),
                             value_enable = NRPN_VALUE(0.5),  # 100%
                             value_disable = "auto",
                             comparison_mode = BinaryParameterCallback.EQUAL,

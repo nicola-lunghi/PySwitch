@@ -477,7 +477,7 @@ class KemperActionDefinitions:
                     if morph_mode == RIG_SELECT_MORPH_NONE:
                         # If no toggle (off) rig is specified, the Kemper will trigger morphing at the second time
                         # it receives the rig change command. If morphing shall be disabled, we suppress that
-                        # by sending a morph command any time the rig is selected again.                    
+                        # by sending a morph command any time the rig is selected after that.                    
                         curr_rig = mapping.value % NUM_RIGS_PER_BANK
 
                         if curr_rig == rig - 1:
@@ -495,6 +495,9 @@ class KemperActionDefinitions:
                                 self._same_rig_cnt += 1
                         else:
                             self._same_rig_cnt = 0
+
+                    else:
+                        raise Exception("Invalid morph mode: " + repr(morph_mode))
 
             def update_displays(self, action):
                 if mapping.value == None:
@@ -525,6 +528,8 @@ class KemperActionDefinitions:
                         else:
                             action.label.text = text_callback(curr_bank, rig - 1)
                             action.label.back_color = bank_color if is_current else self.dim_color(bank_color, DEFAULT_SLOT_DIM_FACTOR_OFF)                    
+                    else:
+                        raise Exception("Invalid display mode: " + repr(display_mode))
                         
                 action.switch_color = bank_color
                 if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and is_current and rig_off == None:
@@ -631,12 +636,14 @@ class KemperActionDefinitions:
                         else:
                             self._same_rig_cnt = 0
                             
+                    else:
+                        raise Exception("Invalid morph mode: " + repr(morph_mode))
 
             def update_displays(self, action):
                 if mapping.value == None:
                     if action.label:
                         action.label.text = ""
-                        action.label.back_color = self.dim_color(color, DEFAULT_LED_BRIGHTNESS_OFF)
+                        action.label.back_color = self.dim_color(color, DEFAULT_SLOT_DIM_FACTOR_OFF)
 
                     action.switch_color = color
                     action.switch_brightness = DEFAULT_LED_BRIGHTNESS_OFF
@@ -648,10 +655,10 @@ class KemperActionDefinitions:
                 curr_bank_color = BANK_COLORS[curr_bank % len(BANK_COLORS)]                
                 is_current = (curr_rig == (rig - 1) and curr_bank == (bank - 1))
 
-                if rig_off != None:
-                    target_bank_color = BANK_COLORS[bank_off % len(BANK_COLORS)]
+                if rig_off != None and is_current:
+                    target_bank_color = BANK_COLORS[(bank_off - 1) % len(BANK_COLORS)]
                 else:
-                    target_bank_color = BANK_COLORS[bank % len(BANK_COLORS)]
+                    target_bank_color = BANK_COLORS[(bank - 1) % len(BANK_COLORS)]
 
                 # Label text
                 if action.label:
@@ -666,6 +673,8 @@ class KemperActionDefinitions:
                         else:
                             action.label.text = text_callback(bank - 1, rig - 1)
                             action.label.back_color = target_bank_color if is_current else self.dim_color(target_bank_color, DEFAULT_SLOT_DIM_FACTOR_OFF)                                                
+                    else:
+                        raise Exception("Invalid display mode: " + repr(display_mode))
 
                 # LEDs
                 if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
@@ -1078,6 +1087,9 @@ class KemperParameterMapping(ClientParameterMapping):
             self._set_value(self.set, value)
 
     def _set_value(self, midi_message, value):
+        if self.type == self.PARAMETER_TYPE_STRING:
+            raise Exception() # Setting strings is not implemented yet
+
         if isinstance(midi_message, ControlChange):
             # Set value directly (CC takes int values)            
             midi_message.value = value
@@ -1093,6 +1105,10 @@ class KemperParameterMapping(ClientParameterMapping):
             data[7] = int(value % 128)
 
             midi_message.data = bytes(data)
+
+        elif isinstance(midi_message, ProgramChange):
+            # Set patch
+            midi_message.patch = value
         
 
 ####################################################################################################################
@@ -1141,7 +1157,7 @@ class KemperMappings:
     @staticmethod
     def EFFECT_STATE(slot_id):
         return KemperParameterMapping(
-            name = "Effect Status " + str(slot_id),
+            name = "Slot State " + str(slot_id),
             set = ControlChange(
                 KemperEffectSlot.CC_EFFECT_SLOT_ENABLE[slot_id], 
                 0    # Dummy value, will be overridden
@@ -1162,7 +1178,7 @@ class KemperMappings:
     @staticmethod
     def EFFECT_TYPE(slot_id):
         return KemperParameterMapping(
-            name = "Effect Type " + str(slot_id),
+            name = "Slot Type " + str(slot_id),
             request = KemperNRPNMessage(               
                 NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
@@ -1219,7 +1235,7 @@ class KemperMappings:
             )
         )
     
-    def EFFECT_MIX(slot_id):
+    def DELAY_MIX(slot_id):
         return KemperParameterMapping(
             name = "Mix " + str(slot_id),
             set = KemperNRPNMessage(
@@ -1332,6 +1348,7 @@ class KemperMappings:
 
     def MORPH_BUTTON(): 
         return KemperParameterMapping(
+            name = "Morph Button",
             set = [
                 ControlChange(CC_MORPH_BUTTON, 0),
                 ControlChange(CC_MORPH_BUTTON, 1)
@@ -1340,6 +1357,7 @@ class KemperMappings:
 
     def MORPH_PEDAL(): 
         return KemperParameterMapping(
+            name = "Morph Pedal",
             set = ControlChange(CC_MORPH_PEDAL, 0)
         )
 
@@ -1384,7 +1402,7 @@ class KemperMappings:
     # Amp on/off
     def AMP_STATE(): 
         return KemperParameterMapping(
-            name = "Amp Status",
+            name = "Amp State",
             set = KemperNRPNMessage(
                 NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
                 NRPN_ADDRESS_PAGE_AMP,
@@ -1422,7 +1440,7 @@ class KemperMappings:
     # Cab on/off
     def CABINET_STATE(): 
         return KemperParameterMapping(
-            name = "Cab Status",
+            name = "Cab State",
             set = KemperNRPNMessage(
                 NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
                 NRPN_ADDRESS_PAGE_CABINET,
@@ -1643,7 +1661,7 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
     def update(self):
         if self.state == self._STATE_OFFLINE:
             if self.init_period.exceeded:
-                if self.debug:
+                if self.debug:                     # pragma: no cover
                     self._print("Initialize")
 
                 if self._has_been_running:
@@ -1657,11 +1675,11 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
             if self.sensing_period.exceeded:
                 self.state = self._STATE_OFFLINE
 
-                if self.debug:
+                if self.debug:                     # pragma: no cover
                     self._print("Lost connection")                
 
             elif self.resend_period.exceeded:
-                if self.debug:
+                if self.debug:                     # pragma: no cover
                     self._print("Send keep-alive message")
 
                 self._send_beacon()
@@ -1675,7 +1693,7 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         if midi_message.manufacturer_id != self._mapping_sense.response.manufacturer_id:
             return False
         
-        if self.debug:
+        if self.debug:                     # pragma: no cover
             self._count_relevant_messages += 1
 
         # Check if the message belongs to the status sense mapping. The following have to match:
@@ -1691,7 +1709,7 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         if self.state != self._STATE_RUNNING:
             self.resend_period.reset()
             
-            if self.debug:
+            if self.debug:                     # pragma: no cover
                self._print("Connection established")
 
             self._has_been_running = True
@@ -1733,6 +1751,6 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
 
         return 0x00 | (i << 0) | (s << 1) | (e << 2) | (n << 3) | (c << 4) | (t << 5)
 
-    def _print(self, msg):
+    def _print(self, msg):                     # pragma: no cover
         do_print("Bidirectional (" + formatted_timestamp() + "): " + msg + " (Received " + repr(self._count_relevant_messages) + ")")
         self._count_relevant_messages = 0

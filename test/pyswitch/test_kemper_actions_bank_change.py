@@ -111,15 +111,15 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
 
     def _test_bank_colors(self, up, mapping_value, exp_color, display_mode):
         # Without text callback and label
-        self._test_bank_colors_with_label(
+        self._do_test_bank_colors_with_label(
             up = up,
             mapping_value = mapping_value,
             exp_color = exp_color,
             display_mode = display_mode
         )
 
-        # With label but no text callback (which makes no sens there anyway)
-        self._test_bank_colors_without_label(
+        # With label but no text callback (which makes no sense there anyway)
+        self._do_test_bank_colors_without_label(
             up = up,
             mapping_value = mapping_value,
             exp_color = exp_color,
@@ -128,7 +128,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
 
         # With text callback and label
         if mapping_value != None:
-            self._test_bank_colors_with_label_and_cb(
+            self._do_test_bank_colors_with_label_and_cb(
                 up = up,
                 mapping_value = mapping_value,
                 display_mode = display_mode,
@@ -136,7 +136,38 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
             )
 
 
-    def _test_bank_colors_with_label(self, up, mapping_value, display_mode, exp_color):
+    def _do_test_bank_colors_without_label(self, up, mapping_value, display_mode, exp_color):    
+        ecb = MockEnabledCallback(output = True)
+
+        if up:
+            action = KemperActionDefinitions.BANK_UP(
+                display_mode = display_mode, 
+                id = 45, 
+                use_leds = True, 
+                enable_callback = ecb
+            )
+        else:
+            action = KemperActionDefinitions.BANK_DOWN(
+                display_mode = display_mode, 
+                id = 45, 
+                use_leds = True, 
+                enable_callback = ecb
+            )
+
+        appl = MockController2()
+        switch = MockFootswitch(actions = [action])
+        action.init(appl, switch)
+
+        mapping = appl.client.register_calls[0]["mapping"]
+        mapping.value = mapping_value
+
+        action.update_displays()
+
+        self.assertEqual(switch.color, exp_color)
+        self.assertEqual(switch.brightness, 0.02)
+
+
+    def _do_test_bank_colors_with_label(self, up, mapping_value, display_mode, exp_color):
         display = DisplayLabel(layout = {
             "font": "foo",
             "backColor": (0, 0, 0)
@@ -184,7 +215,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         self.assertEqual(display.text, "foo")        
 
 
-    def _test_bank_colors_with_label_and_cb(self, up, mapping_value, display_mode, exp_color):
+    def _do_test_bank_colors_with_label_and_cb(self, up, mapping_value, display_mode, exp_color):
         display = DisplayLabel(layout = {
             "font": "foo",
             "backColor": (0, 0, 0)
@@ -255,37 +286,6 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         ))
 
         self.assertEqual(display.text, repr(exp_bank) + "|" + repr(exp_rig))
-
-        
-    def _test_bank_colors_without_label(self, up, mapping_value, display_mode, exp_color):    
-        ecb = MockEnabledCallback(output = True)
-
-        if up:
-            action = KemperActionDefinitions.BANK_UP(
-                display_mode = display_mode, 
-                id = 45, 
-                use_leds = True, 
-                enable_callback = ecb
-            )
-        else:
-            action = KemperActionDefinitions.BANK_DOWN(
-                display_mode = display_mode, 
-                id = 45, 
-                use_leds = True, 
-                enable_callback = ecb
-            )
-
-        appl = MockController2()
-        switch = MockFootswitch(actions = [action])
-        action.init(appl, switch)
-
-        mapping = appl.client.register_calls[0]["mapping"]
-        mapping.value = mapping_value
-
-        action.update_displays()
-
-        self.assertEqual(switch.color, exp_color)
-        self.assertEqual(switch.brightness, 0.02)
 
 
     def test_invalid_display_mode(self):

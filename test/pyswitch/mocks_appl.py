@@ -248,6 +248,14 @@ class MockClient:
     def __init__(self):
         self.register_calls = []
         self.request_calls = []
+        self.set_calls = []
+        self.num_notify_connection_lost_calls = 0
+
+    def set(self, mapping, value):
+        self.set_calls.append({
+            "mapping": mapping,
+            "value": value
+        })
 
     def register(self, mapping, listener):
         self.register_calls.append({
@@ -260,6 +268,9 @@ class MockClient:
             "mapping": mapping,
             "listener": listener
         })
+
+    def notify_connection_lost(self):
+        self.num_notify_connection_lost_calls += 1
 
 ##################################################################################################################################
 

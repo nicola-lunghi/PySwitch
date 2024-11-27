@@ -52,7 +52,6 @@ class PushButtonAction(Action):
             return
         
         self._state = state
-        #self.set(self._state)
         
         if self.callback:
             self.callback.state_changed_by_user(self)
