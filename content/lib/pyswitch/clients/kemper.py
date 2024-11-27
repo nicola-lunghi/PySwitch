@@ -134,6 +134,8 @@ class KemperActionDefinitions:
                       enable_callback = None,
                       value_on = 1,
                       value_off = 0,
+                      reference_value = None,
+                      comparison_mode = BinaryParameterCallback.GREATER_EQUAL
         ):
         return PushButtonAction({
             "callback": BinaryParameterCallback(
@@ -142,7 +144,8 @@ class KemperActionDefinitions:
                 color = color,
                 value_enable = value_on,
                 value_disable = value_off,
-                comparison_mode = BinaryParameterCallback.GREATER_EQUAL
+                reference_value = reference_value,
+                comparison_mode = comparison_mode
             ),
             "mode": mode,
             "display": display,
@@ -299,15 +302,15 @@ class KemperActionDefinitions:
 
     # Used to reset the screen areas which show rig info details directly after rig changes (if you dont use this, 
     # you get no visual feedback on the device that a new rig is coming up)
-    @staticmethod
-    def RESET_RIG_INFO_DISPLAYS(id = False, enable_callback = None):
-        return ResetDisplaysAction({
-            "resetSwitches": True,
-            "ignoreOwnSwitch": True,
-            "resetDisplayAreas": True,
-            "id": id,
-            "enableCallback": enable_callback
-        })
+    #@staticmethod
+    #def RESET_RIG_INFO_DISPLAYS(id = False, enable_callback = None):
+    #    return ResetDisplaysAction({
+    #        "resetSwitches": True,
+    #        "ignoreOwnSwitch": True,
+    #        "resetDisplayAreas": True,
+    #        "id": id,
+    #        "enableCallback": enable_callback
+    #    })
 
     ## Change Rig/Bank ############################################################################################################
 
@@ -401,6 +404,8 @@ class KemperActionDefinitions:
                                 target_bank += NUM_BANKS
 
                             action.label.text = text_callback(target_bank, rig)
+                        else:
+                            raise Exception("Invalid display mode: " + repr(display_mode))
                     else:
                         action.label.text = text
 
