@@ -1,6 +1,6 @@
 ## Exampe Description
 
-This is the personal preset for my MIDICaptain Nano 4. 
+This is the personal preset for my MIDICaptain Nano 4 which i mainly use on sessions. 
 
 |            | Short Press              | Long Press                                       |  
 |------------|--------------------------|--------------------------------------------------|

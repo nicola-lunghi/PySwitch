@@ -99,17 +99,6 @@ Splashes = TunerDisplayCallback(
                 callback = KemperRigNameCallback()
             ),
 
-            # Amp name
-            DisplayLabel(
-                bounds = _bounds.bottom(20),
-
-                layout = {
-                    "font": "/fonts/A12.pcf"
-                },
-
-                callback = _AmpNameCallback()
-            ),
-
             # Bidirectional protocol state indicator (dot)
             BIDIRECTIONAL_PROTOCOL_STATE_DOT(_bounds),
 
