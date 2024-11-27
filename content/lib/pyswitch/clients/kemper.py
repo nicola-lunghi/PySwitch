@@ -462,7 +462,7 @@ class KemperActionDefinitions:
                 )
 
                 self._mapping_morph = KemperMappings.MORPH_BUTTON() if morph_mode == RIG_SELECT_MORPH_TOGGLE else KemperMappings.MORPH_PEDAL()
-                self.mappings.append(self._mapping_morph)
+                self.register_mapping(self._mapping_morph)
 
                 self._same_rig_cnt = 0
 
@@ -600,7 +600,7 @@ class KemperActionDefinitions:
                 )
 
                 self._mapping_morph = KemperMappings.MORPH_BUTTON() if morph_mode == RIG_SELECT_MORPH_TOGGLE else KemperMappings.MORPH_PEDAL()
-                self.mappings.append(self._mapping_morph)
+                self.register_mapping(self._mapping_morph)
 
                 self._same_rig_cnt = 0
 
@@ -818,7 +818,7 @@ class KemperRigNameCallback(Callback):
     def __init__(self):
         Callback.__init__(self)
         self._mapping = KemperMappings.RIG_NAME()
-        self.mappings = [self._mapping]
+        self.register_mapping(self._mapping)
 
     def update_label(self, label):
         label.text = self._mapping.value if self._mapping.value else self.DEFAULT_TEXT
@@ -844,7 +844,7 @@ class TunerDisplayCallback(Callback):
         Callback.__init__(self)
 
         self._mapping = KemperMappings.TUNER_MODE_STATE()
-        self.mappings = [self._mapping]
+        self.register_mapping(self._mapping)
         
         self._splash_tuner = splash_tuner
         self._splash_default = splash_default

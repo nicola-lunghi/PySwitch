@@ -7,8 +7,18 @@ class Callback(Updateable):
     def __init__(self, mappings = []):
         super().__init__()
         
-        self.mappings = mappings
         self._initialized = False
+        self._mappings = []
+
+        for m in mappings:
+            self.register_mapping(m)
+
+    # Must be used to register all mappings needed by the callback
+    def register_mapping(self, mapping):
+        if self._initialized:
+            raise Exception() # TODO
+        
+        self._mappings.append(mapping)
 
     # Must be called before usage
     def init(self, appl, listener = None):
@@ -18,7 +28,7 @@ class Callback(Updateable):
         self._appl = appl
         self._listener = listener
 
-        for m in self.mappings:
+        for m in self._mappings:
             self._appl.client.register(m, self)
 
         self._appl.add_updateable(self)
@@ -33,12 +43,12 @@ class Callback(Updateable):
     def update(self):
         cl = self._appl.client
 
-        for m in self.mappings:
+        for m in self._mappings:
             cl.request(m, self)
 
     def parameter_changed(self, mapping):
         # Take over value before calling the listener
-        for m in self.mappings:
+        for m in self._mappings:
             if m != mapping:
                 continue
 
@@ -49,7 +59,7 @@ class Callback(Updateable):
 
     def request_terminated(self, mapping):
         # Clear value before calling the listener
-        for m in self.mappings:
+        for m in self._mappings:
             if m != mapping:
                 continue
 
@@ -333,9 +343,10 @@ class EffectEnableCallback(BinaryParameterCallback):
     def __init__(self, mapping_state, mapping_type):
         super().__init__(mapping = mapping_state)
 
-        self.mapping_fxtype = mapping_type
-        self.mappings.append(mapping_type)
+        self.register_mapping(mapping_type)
 
+        self.mapping_fxtype = mapping_type
+        
         self._effect_category = self.CATEGORY_NONE  
         self._current_category = self.CATEGORY_INITIAL
 
