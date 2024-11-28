@@ -898,13 +898,13 @@ NOTE: This mode is currently hard wired for three LEDs per footswitch. However, 
 
 The MIDICaptain Nano 4 only has about 200kB of available RAM. This is not much, especially because the display elements take much space. When creating more advanced display layouts, you might run into an error telling that no more memory can be allocated. 
 
-The program provides some rudimentary memory monitoring. Enable this by uncommenting a line in code.py:
+The program provides some rudimentary memory monitoring. Enable this by uncommenting some lines in code.py:
 
 ```python
 ...
 
-from pyswitch.misc import Tools, Memory
-Memory.start(zoom = 10)                  # <-- Uncomment this line
+from pyswitch.misc import Tools, Memory   # <-- Uncomment this line
+Memory.start()                            # <-- Uncomment this line
 
 ...
 ```

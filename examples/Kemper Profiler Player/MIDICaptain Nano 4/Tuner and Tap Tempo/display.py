@@ -10,6 +10,7 @@ from pyswitch.misc import DEFAULT_LABEL_COLOR #, Colors
 from pyswitch.ui.elements import DisplaySplitContainer, DisplayBounds
 from pyswitch.ui.elements import DisplayLabel, BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
 from pyswitch.ui.ui import HierarchicalDisplayElement
+from pyswitch.controller.callbacks import Callback
 
 from pyswitch.clients.kemper import KemperRigNameCallback, TunerDisplayCallback, KemperMappings
 
@@ -33,6 +34,27 @@ DISPLAY_FOOTER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
 _DISPLAY_WIDTH = const(240)
 _DISPLAY_HEIGHT = const(240)
 _SLOT_HEIGHT = const(40)                 # Slot height on the display
+
+#############################################################################################################################################
+
+# Custom callback for amp name
+class _AmpNameCallback(Callback):
+    def __init__(self):
+        Callback.__init__(self)
+        
+        # This defines that the following mappings have to be listened to
+        self._mapping = KemperMappings.AMP_NAME()
+        self.register_mapping(self._mapping)        
+
+    # This will be called for updating the label whenever the mappings defined above
+    # have changed.
+    def update_label(self, label):
+        amp_name = self._mapping.value
+
+        if amp_name:
+            label.text = amp_name
+        else:
+            label.text = ""
 
 #############################################################################################################################################
 
