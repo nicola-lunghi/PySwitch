@@ -1,13 +1,14 @@
 ## Exampe Description
 
-This is the personal preset for my MIDICaptain Nano 4, which i am using mainly with my band <a target="_blank" href="https://kbdn.info">"Krem Brülle & Die Nachbarn"</a>. The three buttons on the Player are set to select Rigs 1, 2 and 3.
+This is the personal preset for my MIDICaptain Nano 4, which i am using mainly with one of my bands <a target="_blank" href="https://kbdn.info">"Krem Brülle & Die Nachbarn"</a>. 
 
-|            | Short Press                  | Long Press  |  
-|------------|------------------------------|-------------|
-| Switch 1   | Effect Slot X                | Tuner Mode  |
-| Switch 2   | Effect Slot C                |             |
-| Switch A   | Select Rig 4 of current bank |             |
-| Switch B   | Effect Slot D                |             |
+|            |                                 |
+|------------|---------------------------------|
+| Switch 1   | Tuner Mode                      |
+| Switch 2   | Effect Slot X                   |
+| Switch A   | Toggle Rigs 3/1 of current bank |
+| Switch B   | Toggle Rigs 2/1 of current bank |
+
 
 
 

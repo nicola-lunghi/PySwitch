@@ -140,7 +140,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
             rig_off = mapping_value % 5 + 2 if mapping_value != None else None,
             bank = int(mapping_value / 5) + 1 if mapping_value != None else 0,
             bank_off = int(mapping_value / 5) + 2 if mapping_value != None else 0,
-            exp_enlightened = False
+            exp_enlightened = (mapping_value != None) and (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
         )
 
         # Without text callback and label 
@@ -171,12 +171,12 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
             rig_off = mapping_value % 5 + 2 if mapping_value != None else None,
             bank = int(mapping_value / 5) + 1 if mapping_value != None else 0,
             bank_off = int(mapping_value / 5) + 2 if mapping_value != None else 0,
-            exp_enlightened = False
+            exp_enlightened = (mapping_value != None) and (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
         )
 
         # With text callback and label
         if mapping_value != None:
-            self._do_test_bank_colors_with_label_and_cb(
+            self._test_bank_colors_with_label_and_cbs(
                 mapping_value = mapping_value,
                 display_mode = display_mode,
                 rig = mapping_value % 5 + 2 if mapping_value != None else 0,
@@ -186,7 +186,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
                 exp_enlightened = False
             )
 
-            self._do_test_bank_colors_with_label_and_cb(
+            self._test_bank_colors_with_label_and_cbs(
                 mapping_value = mapping_value,
                 display_mode = display_mode,
                 rig = mapping_value % 5 + 1 if mapping_value != None else 0,
@@ -196,7 +196,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
                 exp_enlightened = (mapping_value != None) and (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
             )
 
-            self._do_test_bank_colors_with_label_and_cb(
+            self._test_bank_colors_with_label_and_cbs(
                 mapping_value = mapping_value,
                 display_mode = display_mode,
                 rig = mapping_value % 5 + 1 if mapping_value != None else 0,
@@ -204,6 +204,16 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
                 bank = int(mapping_value / 5) + 2 if mapping_value != None else 0,
                 bank_off = int(mapping_value / 5) + 3 if mapping_value != None else 0,
                 exp_enlightened = False
+            )
+
+            self._test_bank_colors_with_label_and_cbs(
+                mapping_value = mapping_value,
+                display_mode = display_mode,
+                rig = mapping_value % 5 + 1 if mapping_value != None else 0,
+                rig_off = mapping_value % 5 + 2 if mapping_value != None else None,
+                bank = int(mapping_value / 5) + 1 if mapping_value != None else 0,
+                bank_off = int(mapping_value / 5) + 2 if mapping_value != None else 0,
+                exp_enlightened = (mapping_value != None) and (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
             )
 
 
@@ -240,7 +250,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = appl.client.register_calls[0]["mapping"]
+        mapping = action.callback._mapping
         mapping.value = mapping_value
 
         action.update_displays()
@@ -275,7 +285,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = appl.client.register_calls[0]["mapping"]
+        mapping = action.callback._mapping
         mapping.value = mapping_value
 
         action.update_displays()
@@ -301,7 +311,29 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
                     self.assertEqual(display.text, "Rig " + repr(bank) + "-" + repr(rig))                
 
 
-    def _do_test_bank_colors_with_label_and_cb(self, mapping_value, rig, bank, rig_off, bank_off, display_mode, exp_enlightened):
+    def _test_bank_colors_with_label_and_cbs(self, mapping_value, rig, bank, rig_off, bank_off, display_mode, exp_enlightened):
+        self._do_test_bank_colors_with_label_and_text_cb(
+            mapping_value = mapping_value,
+            rig = rig,
+            bank = bank,
+            rig_off = rig_off,
+            bank_off = bank_off,
+            display_mode = display_mode,
+            exp_enlightened = exp_enlightened
+        )
+
+        self._do_test_bank_colors_with_label_and_color_cb(
+            mapping_value = mapping_value,
+            rig = rig,
+            bank = bank,
+            rig_off = rig_off,
+            bank_off = bank_off,
+            display_mode = display_mode,
+            exp_enlightened = exp_enlightened
+        )
+
+
+    def _do_test_bank_colors_with_label_and_text_cb(self, mapping_value, rig, bank, rig_off, bank_off, display_mode, exp_enlightened):
         display = DisplayLabel(layout = {
             "font": "foo",
             "backColor": (0, 0, 0)
@@ -311,7 +343,9 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        def text_cb(bank, rig):
+        def text_cb(action_parameter, bank, rig):
+            self.assertEqual(action, action_parameter)
+
             return repr(bank) + "|" + repr(rig)
 
         action = KemperActionDefinitions.RIG_AND_BANK_SELECT(
@@ -331,7 +365,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = appl.client.register_calls[0]["mapping"]
+        mapping = action.callback._mapping
         mapping.value = mapping_value
 
         action.update_displays()
@@ -357,6 +391,57 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
                     self.assertEqual(display.text, repr(bank - 1) + "|" + repr(rig - 1))    
  
 
+    def _do_test_bank_colors_with_label_and_color_cb(self, mapping_value, rig, bank, rig_off, bank_off, display_mode, exp_enlightened):
+        display = DisplayLabel(layout = {
+            "font": "foo",
+            "backColor": (0, 0, 0)
+        })
+
+        exp_color = (4, 5, 6)
+
+        ecb = MockEnabledCallback(output = True)
+
+        def color_cb(action_parameter, bank, rig):
+            self.assertEqual(action, action_parameter)
+            self.assertEqual(bank, int(mapping_value / 5))
+            self.assertEqual(rig, mapping_value % 5)
+
+            return exp_color
+
+        action = KemperActionDefinitions.RIG_AND_BANK_SELECT(
+            display = display,
+            rig = rig, 
+            rig_off = rig_off,
+            bank = bank,
+            bank_off = bank_off,
+            display_mode = display_mode, 
+            id = 45, 
+            use_leds = True, 
+            enable_callback = ecb,
+            color_callback = color_cb
+        )
+
+        appl = MockController2()
+        switch = MockFootswitch(actions = [action])
+        action.init(appl, switch)
+
+        mapping = action.callback._mapping
+        mapping.value = mapping_value
+
+        action.update_displays()
+
+        self.assertEqual(switch.color, exp_color)
+        self.assertEqual(switch.brightness, 0.3 if exp_enlightened else 0.02)
+
+        factor = 1 if exp_enlightened else 0.2
+
+        self.assertEqual(display.back_color, (
+            int(exp_color[0] * factor),
+            int(exp_color[1] * factor),
+            int(exp_color[2] * factor)
+        ))
+
+
     def test_invalid_display_mode(self):
         display = DisplayLabel(layout = {
             "font": "foo",
@@ -378,7 +463,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = appl.client.register_calls[0]["mapping"]
+        mapping = action.callback._mapping
         mapping.value = 0
 
         with self.assertRaises(Exception):            
@@ -388,261 +473,215 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 ###################################################################################################################
 
 
-    def test_messages_toggle_morph(self):
-        self._test_messages_toggle_morph(0)
-        self._test_messages_toggle_morph(1)
-        self._test_messages_toggle_morph(2)
-        self._test_messages_toggle_morph(3)
-        self._test_messages_toggle_morph(4)
+    def test_overrides(self):
+        display = DisplayLabel(layout = {
+            "font": "foo",
+            "backColor": (0, 0, 0)
+        })
 
+        ecb = MockEnabledCallback(output = True)
 
-    def _test_messages_toggle_morph(self, rig):
         action = KemperActionDefinitions.RIG_AND_BANK_SELECT(
-            rig = rig + 1,
+            display = display,
+            rig = 1, 
             bank = 2,
-            morph_mode = RIG_SELECT_MORPH_TOGGLE
+            id = 45, 
+            use_leds = True, 
+            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+            enable_callback = ecb,
+            color = (7, 8, 9),
+            text = "foobar"
         )
 
         appl = MockController2()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        self.assertEqual(action.callback._mapping_morph, KemperMappings.MORPH_BUTTON())
+        mapping = action.callback._mapping
+        
+        # On rig
+        mapping.value = 5  
+        action.update_displays()
+        self.assertEqual(action.state, True)
 
-        mapping = appl.client.register_calls[0]["mapping"]        
+        self.assertEqual(switch.color, (7, 8, 9))
+        self.assertEqual(switch.brightness, 0.3)
 
-        cnt = 0
-        while True:
-            mapping.value = rig + 1
-            appl.client.set_calls = []
-            
-            # Select rig the first time (no morph message)
-            action.push()
-            action.release()
+        self.assertEqual(display.back_color, (7, 8, 9))
 
-            self.assertEqual(len(appl.client.set_calls), 1)
-            self.assertEqual(appl.client.set_calls[0], {
-                "mapping": mapping,
-                "value": [1, 1]
-            })
+        self.assertEqual(display.text, "foobar")
 
-            # Select rig again (no morph message because the kemper would morph by its own)
-            mapping.value = rig + 5
-            action.push()
-            action.release()
+        # Off rig
+        mapping.value = 6  
+        action.update_displays()
+        self.assertEqual(action.state, False)
 
-            self.assertEqual(len(appl.client.set_calls), 2)
-            self.assertEqual(appl.client.set_calls[1], {
-                "mapping": mapping,
-                "value": [1, 1]
-            })
+        self.assertEqual(switch.color, (7, 8, 9))
+        self.assertEqual(switch.brightness, 0.02)
 
-            # Select rig again (this time, a morph message must have been issued)
-            action.push()
-            action.release()
+        self.assertEqual(display.back_color, (
+            int((7, 8, 9)[0] * 0.2),
+            int((7, 8, 9)[1] * 0.2),
+            int((7, 8, 9)[2] * 0.2)
+        ))
 
-            self.assertEqual(len(appl.client.set_calls), 4)
-            self.assertEqual(appl.client.set_calls[2], {
-                "mapping": mapping,
-                "value": [1, 1]
-            })
-            self.assertEqual(appl.client.set_calls[3], {
-                "mapping": action.callback._mapping_morph,
-                "value": [0, 1]
-            })
-
-            # Select rig again (second morph message)
-            action.push()
-            action.release()
-
-            self.assertEqual(len(appl.client.set_calls), 6)
-            self.assertEqual(appl.client.set_calls[4], {
-                "mapping": mapping,
-                "value": [1, 1]
-            })
-            self.assertEqual(appl.client.set_calls[5], {
-                "mapping": action.callback._mapping_morph,
-                "value": [0, 1]
-            })
-
-            if cnt >= 3:
-                break
-            
-            cnt += 1
+        self.assertEqual(display.text, "foobar")
 
 
 ###################################################################################################################
 
 
-    def test_messages_no_morph(self):
-        self._test_messages_no_morph(0)
-        self._test_messages_no_morph(1)
-        self._test_messages_no_morph(2)
-        self._test_messages_no_morph(3)
-        self._test_messages_no_morph(4)
+    def test_messages(self):
+        self._test_messages(0)
+        self._test_messages(1)
+        self._test_messages(2)
+        self._test_messages(3)
+        self._test_messages(4)
 
 
-    def _test_messages_no_morph(self, rig):
+    def _test_messages(self, rig):
         action = KemperActionDefinitions.RIG_AND_BANK_SELECT(
             rig = rig + 1,
-            bank = 3,
-            morph_mode = RIG_SELECT_MORPH_NONE
+            bank = 3
         )
 
         appl = MockController2()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        self.assertEqual(action.callback._mapping_morph, KemperMappings.MORPH_PEDAL())
+        mapping = action.callback._mapping        
 
-        mapping = appl.client.register_calls[0]["mapping"]        
+        mapping.value = rig + 1  # Not matching
+        action.update_displays()
+        self.assertEqual(action.state, False)
 
-        cnt = 0
-        while True:
-            mapping.value = rig + 1
-            appl.client.set_calls = []
-            
-            # Select rig the first time (no morph message)
-            action.push()
-            action.release()
+        # Select rig the first time 
+        action.push()
+        action.release()
 
-            self.assertEqual(len(appl.client.set_calls), 1)
-            self.assertEqual(appl.client.set_calls[0], {
-                "mapping": mapping,
-                "value": [2, 1]
-            })
+        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(appl.client.set_calls[0], {
+            "mapping": mapping,
+            "value": [2, 1, 0]
+        })
 
-            # Select rig again (issue morph message to suppress kempers default behaviour)
-            mapping.value = rig + 10
-            action.push()
-            action.release()
+        mapping.value = rig + 10  # On rig
+        action.update_displays()
+        self.assertEqual(action.state, True)
 
-            self.assertEqual(len(appl.client.set_calls), 3)
-            self.assertEqual(appl.client.set_calls[1], {
-                "mapping": mapping,
-                "value": [2, 1]
-            })
-            self.assertEqual(appl.client.set_calls[2], {
-                "mapping": action.callback._mapping_morph,
-                "value": 0
-            })
+        # Select rig again        
+        action.push()
+        action.release()
 
-            # Select rig again (issue morph message to suppress kempers default behaviour)
-            action.push()
-            action.release()
+        self.assertEqual(len(appl.client.set_calls), 2)
+        self.assertEqual(appl.client.set_calls[1], {
+            "mapping": mapping,
+            "value": [2, 1, 0]
+        })
 
-            self.assertEqual(len(appl.client.set_calls), 5)
-            self.assertEqual(appl.client.set_calls[3], {
-                "mapping": mapping,
-                "value": [2, 1]
-            })
-            self.assertEqual(appl.client.set_calls[4], {
-                "mapping": action.callback._mapping_morph,
-                "value": 0
-            })            
+        action.update_displays()
+        self.assertEqual(action.state, True)
 
-            if cnt >= 3:
-                break
-            
-            cnt += 1
+        # Receive other rig
+        mapping.value = rig + 11  # Not matching
+        action.update_displays()
+
+        self.assertEqual(action.state, False)
+
+        self.assertEqual(len(appl.client.set_calls), 2)
 
 
 ###################################################################################################################
 
 
     def test_messages_rig_off(self):
-        self._test_messages_rig_off(RIG_SELECT_MORPH_NONE)
-        self._test_messages_rig_off(RIG_SELECT_MORPH_TOGGLE)
-
-
-    def _test_messages_rig_off(self, morph_mode):
         action = KemperActionDefinitions.RIG_AND_BANK_SELECT(
             rig = 1,
             bank = 2,
             rig_off = 2,
-            bank_off = 4,
-            morph_mode = morph_mode
+            bank_off = 4
         )
 
         appl = MockController2()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = appl.client.register_calls[0]["mapping"]        
+        mapping = action.callback._mapping
+        mapping_disable = action.callback._mapping_disable
 
-        cnt = 0
-        while True:
-            mapping.value = 3
-            appl.client.set_calls = []
-            
-            # Select rig the first time (no morph message)
-            action.push()
-            action.release()
+        mapping.value = 33   # Not matching
+        action.update_displays()
+        self.assertEqual(action.state, False)            
 
-            self.assertEqual(len(appl.client.set_calls), 1)
-            self.assertEqual(appl.client.set_calls[0], {
-                "mapping": mapping,
-                "value": [1, 1]
-            })
+        # Select rig the first time
+        action.push()
+        action.release()
 
-            # Select rig again (no morph message)
-            mapping.value = 5
-            action.push()
-            action.release()
+        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(appl.client.set_calls[0], {
+            "mapping": mapping,
+            "value": [1, 1, 0]
+        })
 
-            self.assertEqual(len(appl.client.set_calls), 2)
-            self.assertEqual(appl.client.set_calls[1], {
-                "mapping": mapping,
-                "value": [3, 1]
-            })
+        mapping.value = 5  # On rig
+        action.update_displays()
 
-            # Select rig again (no morph message)
-            mapping.value = 16
-            action.push()
-            action.release()
+        self.assertEqual(action.state, True)
 
-            self.assertEqual(len(appl.client.set_calls), 3)
-            self.assertEqual(appl.client.set_calls[2], {
-                "mapping": mapping,
-                "value": [1, 1]
-            })
+        # Select off rig
+        action.push()
+        action.release()
 
-            # Select rig again (no morph message)
-            mapping.value = 5
-            action.push()
-            action.release()
+        self.assertEqual(len(appl.client.set_calls), 2)
+        self.assertEqual(appl.client.set_calls[1], {
+            "mapping": mapping_disable,
+            "value": [3, 1, 0]
+        })
 
-            self.assertEqual(len(appl.client.set_calls), 4)
-            self.assertEqual(appl.client.set_calls[3], {
-                "mapping": mapping,
-                "value": [3, 1]
-            })
+        mapping.value = 16  # Off rig
+        action.update_displays()
 
-            if cnt >= 3:
-                break
-            
-            cnt += 1
+        self.assertEqual(action.state, False)
+
+        # Select rig again
+        action.push()
+        action.release()
+
+        self.assertEqual(len(appl.client.set_calls), 3)
+        self.assertEqual(appl.client.set_calls[2], {
+            "mapping": mapping,
+            "value": [1, 1, 0]
+        })
+
+        mapping.value = 5  # On rig
+        action.update_displays()
+
+        self.assertEqual(action.state, True)
+
+        # Select off rig again
+        action.push()
+        action.release()
+
+        self.assertEqual(len(appl.client.set_calls), 4)
+        self.assertEqual(appl.client.set_calls[3], {
+            "mapping": mapping_disable,
+            "value": [3, 1, 0]
+        })
+
+        action.update_displays()
+
+        self.assertEqual(action.state, True)
+
+        # Other rig selected
+        mapping.value = 172  # Not matching
+        action.update_displays()
+
+        self.assertEqual(action.state, False)
+
+        self.assertEqual(len(appl.client.set_calls), 4)
 
 
 ###################################################################################################################
-
-
-    def test_invalid_morph_mode(self):
-        action = KemperActionDefinitions.RIG_AND_BANK_SELECT(
-            rig = 1,
-            bank = 3,
-            morph_mode = self    # Invalid value ;)
-        )
-
-        appl = MockController2()
-        switch = MockFootswitch(actions = [action])
-        action.init(appl, switch)
-
-        mapping = appl.client.register_calls[0]["mapping"]                
-        mapping.value = 3
-
-        with self.assertRaises(Exception):                        
-            action.push()
 
 
     def test_invalid_display_mode(self):
@@ -662,7 +701,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = appl.client.register_calls[0]["mapping"]                
+        mapping = action.callback._mapping                
         mapping.value = 3
 
         with self.assertRaises(Exception):                        

@@ -2,14 +2,14 @@
 - Tempo-synced blinking switch LEDs (all examples using TAP_TEMPO now include this feature) or labels
 - Show current bank colors for RIG_SELECT (...) and bank up/down action definitions
 - RIG_SELECT (and the new RIG_AND_BANK_SELECT): 
-    - These now support two modes how to handle the morph "feauture" of the kemper which by default is triggered. Modes include:
-        - Totally suppressing the behaviour (no morphing also when the same rig is selected again)
-        - Toggle between morph states when the same rig is selected again. Note that morph state cannot be requested from the Kemper devices, so this does not feature visual feedback of the morph state!
+    - Correct call sequence to also support the Kemper "Rig Btn Morph" option correctly. If you activate the option on the Kemper (System Menu), the actions will toggle morph state just like the internal Kemper switches.
     - Two display modes are supported:
         - Show the current rig and bank
         - Show the rig and bank which will be switched to when the switch is pushed.
-    - Text of the display label can be set via a custom callback function. (This is for easy overriding the text only, if you need more specific customizations like colors etc., you can implement your own child class of Callback and control everything)
+    - Text of the display label can be set via a custom callback function.
+    - Color of the display label can be set via a custom callback function.
 - RIG_VOLUME_BOOST now remembers the current rig volume before turning the boost on, and restores this volume when disabled again.
+- Added morph button support (sadly there is no feedback from kemper about the current state, so the action does not show any states)
 - Fixed calibration of TunerDisplay (this now can also be customized in display.py as well as tuner colors and note names)
 - Changes to configuration and general concept:
     - Conceptual changes:

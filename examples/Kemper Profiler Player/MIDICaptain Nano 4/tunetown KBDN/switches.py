@@ -10,7 +10,7 @@ from pyswitch.misc import Colors
 from pyswitch.controller.actions.actions import PushButtonAction, HoldAction
 
 from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, 
-from pyswitch.clients.kemper import RIG_SELECT_DISPLAY_TARGET_RIG, RIG_SELECT_MORPH_NONE, RIG_SELECT_DISPLAY_CURRENT_RIG
+from pyswitch.clients.kemper import RIG_SELECT_DISPLAY_TARGET_RIG, RIG_SELECT_DISPLAY_CURRENT_RIG
 
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
@@ -45,9 +45,11 @@ Switches = [
         "actions": [
             KemperActionDefinitions.RIG_SELECT(
                 rig = 3,
+                rig_off = 1,
                 display = DISPLAY_FOOTER_1,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                morph_mode = RIG_SELECT_MORPH_NONE
+                color = Colors.PINK,
+                text = "Synth-3"
             )            
         ]
     },
@@ -60,8 +62,8 @@ Switches = [
                 rig = 2,
                 rig_off = 1,
                 display = DISPLAY_FOOTER_2,
-                display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,
-                morph_mode = RIG_SELECT_MORPH_NONE
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+                text = "Lead-2"
             )
         ]
     }

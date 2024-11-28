@@ -17,7 +17,7 @@ class _EnableCallback(Callback):
         Callback.__init__(self)
         
         self.mapping = KemperMappings.RIG_VOLUME()
-        self.mappings = [self.mapping]
+        self.register_mapping(self.mapping)
 
     def enabled(self, action):  
         if self.mapping.value == None:
@@ -104,9 +104,7 @@ Switches = [
 
             KemperActionDefinitions.RIG_SELECT(
                 rig = 3,
-                bank = 4,
                 rig_off = 1,
-                bank_off = 1,
                 id = 30,
                 display = DISPLAY_FOOTER_1,
                 enable_callback = _enable_callback
@@ -131,13 +129,15 @@ Switches = [
                 enable_callback = _enable_callback
             ),
 
-            # Just to fill up
-            KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
+            KemperActionDefinitions.RIG_AND_BANK_SELECT(
+                rig = 4,
+                bank = 5,
+                rig_off = 3,
+                bank_off = 4,
                 id = 30,
                 display = DISPLAY_FOOTER_2,
                 enable_callback = _enable_callback
-            ),       
+            )              
         ]
     },
 ]

@@ -13,7 +13,7 @@ from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, K
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
 # Custom callback to get label text. Bank and rig come with values starting at zero (rig is in range [0..4] and bank in range [0..x] depending on your player level)
-def get_custom_text(bank, rig):
+def get_custom_text(action, bank, rig):
     if bank == 0:
         return "Homer " + repr(rig + 1)
     elif bank == 1:

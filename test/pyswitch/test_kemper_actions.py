@@ -256,14 +256,15 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         self.assertEqual(cb._mapping, KemperMappings.MORPH_BUTTON())
         self.assertEqual(cb._text, "foo")
-        self.assertEqual(cb._value_enable, [0, 1])
+        self.assertEqual(cb._value_enable, 1)
+        self.assertEqual(cb._value_disable, 0)
         self.assertEqual(cb.color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
         self.assertEqual(action.uses_switch_leds, True)
         self.assertEqual(action._enable_callback, ecb)
-        self.assertEqual(action._mode, PushButtonAction.ONE_SHOT)
+        self.assertEqual(action._mode, PushButtonAction.MOMENTARY)
 
 
     def test_rig_volume_boost(self):
