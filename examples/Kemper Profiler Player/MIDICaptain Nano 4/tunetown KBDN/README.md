@@ -4,7 +4,7 @@ This is the personal preset for my MIDICaptain Nano 4, which i am using mainly w
 
 |            | Short Press                  | Long Press  |  
 |------------|------------------------------|-------------|
-| Switch 1   | Effect Slot B                | Tuner Mode  |
+| Switch 1   | Effect Slot X                | Tuner Mode  |
 | Switch 2   | Effect Slot C                |             |
 | Switch A   | Select Rig 4 of current bank |             |
 | Switch B   | Effect Slot D                |             |

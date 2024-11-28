@@ -9,7 +9,9 @@ from pyswitch.hardware.Hardware import Hardware
 from pyswitch.misc import Colors
 from pyswitch.controller.actions.actions import PushButtonAction, HoldAction
 
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG, RIG_SELECT_MORPH_NONE
+from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, 
+from pyswitch.clients.kemper import RIG_SELECT_DISPLAY_TARGET_RIG, RIG_SELECT_MORPH_NONE, RIG_SELECT_DISPLAY_CURRENT_RIG
+
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
 
@@ -20,17 +22,9 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            HoldAction({
-                "actions": [
-                    KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
-                        display = DISPLAY_HEADER_1
-                    )
-                ],
-                "actionsHold": [
-                    KemperActionDefinitions.TUNER_MODE()
-                ]
-            })            
+            KemperActionDefinitions.TUNER_MODE(
+                display = DISPLAY_HEADER_1
+            )         
         ]
     },
 
@@ -39,7 +33,7 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_X,
                 display = DISPLAY_HEADER_2
             )        
         ]
@@ -50,10 +44,10 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             KemperActionDefinitions.RIG_SELECT(
-                rig = 4,
+                rig = 3,
                 display = DISPLAY_FOOTER_1,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                #morph_mode = RIG_SELECT_MORPH_NONE
+                morph_mode = RIG_SELECT_MORPH_NONE
             )            
         ]
     },
@@ -62,9 +56,12 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_D,
-                display = DISPLAY_FOOTER_2
+            KemperActionDefinitions.RIG_SELECT(
+                rig = 2,
+                rig_off = 1,
+                display = DISPLAY_FOOTER_2,
+                display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,
+                morph_mode = RIG_SELECT_MORPH_NONE
             )
         ]
     }
