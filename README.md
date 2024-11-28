@@ -983,3 +983,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+## Donate
+
+If you use and like the application, please consider donating to support open source development: <a href="https://www.paypal.com/webapps/mpp/page-not-found?cmd=_s-xclick&hosted_button_id=6WHW7WRXSGQXY" target="_blank">Donate</a> Thanks a lot for appreciating the big efforts to create a fully tested framework free of charge. If you want me to create custom configurations, you can also pm me at the <a href="https://forum.kemper-amps.com/forum/" target="_blank">Kemper forum</a>, my ID is @tunetown
