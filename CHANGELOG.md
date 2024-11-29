@@ -1,3 +1,6 @@
+# PySwitch v2.2.1
+- Added first experimental hardware assignments and example for MIDICaptain 10
+
 # PySwitch v2.2.0
 - Tempo-synced blinking switch LEDs (all examples using TAP_TEMPO now include this feature) or labels
 - Show current bank colors for RIG_SELECT (...) and bank up/down action definitions

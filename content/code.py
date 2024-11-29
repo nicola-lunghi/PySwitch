@@ -7,8 +7,8 @@
 #
 #################################################################################################################################
 
-from pyswitch.stats import Memory # type: ignore
-Memory.start()
+#from pyswitch.stats import Memory # type: ignore
+#Memory.start()
 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader, AdafruitSwitch
 from pyswitch.misc import get_option

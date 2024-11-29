@@ -245,17 +245,17 @@ class KemperActionDefinitions:
             "enableCallback": enable_callback
         })
     
-    # Morph button (faded change of morph state) No state feedback possible!
-    #
-    # NOTE: The Kemper MIDI Documentation differs from real behaviour here: The 
-    # device changes state on every 0/1 value sequence instead of accepting 0/1 for on/off!
-    # Even if you just send 1, it does not work: You have to send 0, then 1 to have the state change.
+    # Morph button (faded change of morph state) No state feedback possible currently!
     def MORPH_BUTTON(display = None, color = Colors.LIGHT_GREEN, text = "Morph", id = False, use_leds = True, enable_callback = None):
         return PushButtonAction({
             "callback": BinaryParameterCallback(
                 mapping = KemperMappings.MORPH_BUTTON(),
                 text = text,
-                color = color
+                color = color,
+                #value_enable = 127,
+                #value_disable = 0,
+                #reference_value = 63,
+                #comparison_mode = BinaryParameterCallback.GREATER_EQUAL
             ),
             "mode": PushButtonAction.MOMENTARY,
             "useSwitchLeds": use_leds,
@@ -1339,7 +1339,14 @@ class KemperMappings:
     def MORPH_BUTTON(): 
         return KemperParameterMapping(
             name = "Morph Button",
-            set = ControlChange(CC_MORPH_BUTTON, 0)
+            set = ControlChange(
+                CC_MORPH_BUTTON, 
+                0
+            ),
+            #response = ControlChange(
+            #    CC_MORPH_PEDAL, 
+            #    0
+            #)
         )
 
     def MORPH_PEDAL(): 

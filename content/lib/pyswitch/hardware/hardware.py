@@ -65,6 +65,42 @@ class Hardware:
     PA_MIDICAPTAIN_MINI_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (12, 13, 14), "name": "B"  }
     PA_MIDICAPTAIN_MINI_SWITCH_C = { "model": AdafruitSwitch(board.GP11), "pixels": (15, 16, 17), "name": "C"  }
 
+    # PaintAudio MIDI Captain (10 Switches) EXPERIMENTAL/UNTESTED! 
+    # Thanks to @Erikcb on the Kemper Forums!
+    # Board Infos
+    # Raspberry Pi Pico (RP2040)
+    #
+    # GP1  - FootSwitch 1
+    # GP4  bat_chg_led
+    # GP6  charging
+    # GP7  NeoPixel
+    # GP8  asyncio PWMOut frequency
+    # GP9  - FootSwitch A
+    # GP10 - FootSwitch B
+    # GP11 - FootSwitch C
+    # GP12 tft_dc   (SPI1 RX)
+    # GP13 tft_cs   (Chip Select)
+    # GP14 spi_clk  (SPI1SCK)
+    # GP15 spi_mosi (SPI1 TX)
+    # GP16 Midi GP16GP17 baudrate
+    # GP17 Midi GP16GP17 baudrate
+    # GP18 - Footswitch D
+    # GP19 - Footswitch down
+    # GP20 - FootSwitch up
+    # GP23 - FootSwitch 4
+    # GP24 - FootSwitch 3
+    # GP25 - FootSwitch 2
+    PA_MIDICAPTAIN_10_SWITCH_1    = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1"  }
+    PA_MIDICAPTAIN_10_SWITCH_2    = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2"  }
+    PA_MIDICAPTAIN_10_SWITCH_3    = { "model": AdafruitSwitch(board.GP24), "pixels": (6, 7, 8), "name": "3"  }
+    PA_MIDICAPTAIN_10_SWITCH_4    = { "model": AdafruitSwitch(board.GP23), "pixels": (9, 10, 11), "name": "4"  }
+    PA_MIDICAPTAIN_10_SWITCH_UP   = { "model": AdafruitSwitch(board.GP20), "pixels": (12, 13, 14), "name": "Up"  }
+    PA_MIDICAPTAIN_10_SWITCH_A    = { "model": AdafruitSwitch(board.GP9),  "pixels": (15, 16, 17), "name": "A"  }
+    PA_MIDICAPTAIN_10_SWITCH_B    = { "model": AdafruitSwitch(board.GP10), "pixels": (18, 19, 20), "name": "B"  }
+    PA_MIDICAPTAIN_10_SWITCH_C    = { "model": AdafruitSwitch(board.GP11), "pixels": (21, 22, 23), "name": "C"  }
+    PA_MIDICAPTAIN_10_SWITCH_D    = { "model": AdafruitSwitch(board.GP18), "pixels": (24, 25, 26), "name": "D"  }
+    PA_MIDICAPTAIN_10_SWITCH_DOWN = { "model": AdafruitSwitch(board.GP19), "pixels": (27, 28, 29), "name": "Dn"  }
+
 ###########################################################################################################################
 
     # USB Midi in/out for PA MIDICaptain devices. No UART, so ports have to be adafruit MIDI ports from 
