@@ -282,9 +282,6 @@ class PyMidiBridge:
         # Path to write to
         write_file_path = self._bytes_2_string(payload[_PMB_CHUNK_INDEX_SIZE_HALFBYTES:])
                                 
-        # Clear file if exists            
-        self._storage.clear(write_file_path)
-
         # Open file for appending
         self._write_handle = self._storage.open(write_file_path, "a")
 
@@ -468,10 +465,6 @@ class PyMidiBridge:
 #     def size(self, path):
 #         return 0
 # 
-#     # Must clear the contents of the file if exists
-#     def clear(self, path):
-#         pass
-#
 #     # Must return an opened file handle. See StorageFileHandle class.
 #     def open(self, path, mode):
 #         return None
