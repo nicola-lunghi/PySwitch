@@ -227,3 +227,30 @@ class MockDisplayShapes:
     #            self.fill = fill 
     #            self.r = r
 
+
+class MockMidiBridge:
+    class PyMidiBridge:
+        def __init__(self, midi, storage, event_handler = None, read_chunk_size = 1024):
+            self.messages_received = []
+
+        def receive(self, msg):
+            self.messages_received.append(msg)
+
+
+class MockOs:
+        
+    RENAME_CALLS = []
+    STAT_SIZE_OUTPUTS = {}
+
+    def rename(source, target):
+        MockOs.RENAME_CALLS.append({
+            "source": source,
+            "target": target
+        })
+
+    class _StatMock:
+        def __init__(self, output):
+            self.st_size = output
+
+    def stat(path):
+        return MockOs._StatMock(MockOs.STAT_SIZE_OUTPUTS[path] if path in MockOs.STAT_SIZE_OUTPUTS else -1)

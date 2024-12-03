@@ -337,3 +337,13 @@ class MockBidirectionalProtocol:
     def get_color(self):
         return self.output_color
 
+
+##################################################################################################################################
+
+
+class MockWriter:
+    def __init__(self):
+        self.contents = ""
+
+    def write(self, data):
+        self.contents += data

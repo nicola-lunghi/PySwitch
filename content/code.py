@@ -7,8 +7,8 @@
 #
 #################################################################################################################################
 
-#from pyswitch.stats import Memory # type: ignore
-#Memory.start()
+from pyswitch.stats import Memory # type: ignore
+Memory.start()
 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader, AdafruitSwitch
 from pyswitch.misc import get_option
@@ -30,20 +30,35 @@ if not get_option(Config, "exploreMode"):
     # Normal operation
     from pyswitch.controller.Controller import Controller
     from pyswitch.controller.MidiController import MidiController
-    from pyswitch.ui.UiController import UiController
+    from pyswitch.ui.UiController import UiController    
 
     # Load configuration files
     from display import Splashes
     from switches import Switches
     from communication import Communication
 
+    # MIDI controller (does the routing)
+    midi_ctr = MidiController(
+        routings = Communication["midi"]["routings"]
+    )
+
+    # Optional Wrapper to include the PyMidiBridge for transfering files.
+    # Disable this to save memory.
+    if get_option(Config, "enableMidiBridge"):
+        from pyswitch.controller.MidiBridgeWrapper import MidiBridgeWrapper
+
+        midi = MidiBridgeWrapper(
+            midi = midi_ctr,
+            temp_file_path = '/.bridge_tmp'
+        )
+    else:
+        midi = midi_ctr
+
     # Controller instance (runs the processing loop and keeps everything together)
     _appl = Controller(
         led_driver = _led_driver, 
         protocol = get_option(Communication, "protocol", None),
-        midi = MidiController(
-            routings = Communication["midi"]["routings"]
-        ),
+        midi = midi,
         config = Config, 
         switches = Switches, 
         ui = UiController(

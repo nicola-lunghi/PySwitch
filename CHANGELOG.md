@@ -1,3 +1,6 @@
+# PySwitch v2.2.2
+- Added support for PyMidiBridge (https://github.com/Tunetown/PyMidiBridge) to transfer files from and to to device via MIDI SysEx. Currently no client for this is implemented, but the functionality is already integrated in PySwitch (deactivated by default)
+
 # PySwitch v2.2.1
 - Added first experimental hardware assignments and example for MIDICaptain 10
 

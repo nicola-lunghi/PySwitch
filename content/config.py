@@ -29,6 +29,10 @@ Config = {
     # 10kB for character loading etc., default threshold for the warning is 15kB).
     #"memoryWarnLimitBytes": 1024 * 15,
 
+    # Enables file transfer via MIDI from and to the device using PyMidiBridge (https://github.com/Tunetown/PyMidiBridge).
+    # This costs about 8kB of RAM, so if you run into memory issues, disable this.
+    #"enableMidiBridge": True,
+
     ## Development Options ###################################################################################################################
 
     # Optional, shows the effect slot names in the display labels for EffectEnableAction
