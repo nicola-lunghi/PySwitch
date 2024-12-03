@@ -7,7 +7,7 @@ from adafruit_midi.program_change import ProgramChange
 
 from ..misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print, PYSWITCH_VERSION
 from ..controller.actions.actions import ResetDisplaysAction, PushButtonAction
-from ..controller.callbacks import BinaryParameterCallback, DEFAULT_LED_BRIGHTNESS_OFF, DEFAULT_LED_BRIGHTNESS_ON, DEFAULT_SLOT_DIM_FACTOR_OFF, Callback, EffectEnableCallback
+from ..controller.callbacks import BinaryParameterCallback, DEFAULT_LED_BRIGHTNESS_OFF, DEFAULT_LED_BRIGHTNESS_ON, DEFAULT_SLOT_DIM_FACTOR_OFF, DEFAULT_SLOT_DIM_FACTOR_ON, Callback, EffectEnableCallback
 from ..controller.Client import ClientParameterMapping
 from ..ui.elements import TunerDisplay
 
@@ -56,6 +56,7 @@ NRPN_ADDRESS_PAGE_RIG_PARAMETERS = const(0x04)
 NRPN_ADDRESS_PAGE_FREEZE = const(0x7d)
 NRPN_ADDRESS_PAGE_AMP = const(0x0a)
 NRPN_ADDRESS_PAGE_CABINET = const(0x0c)
+NRPN_ADDRESS_PAGE_ZERO = const(0x00)            # As of the notes of sumsar
 
 # NRPN Function codes
 NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER = const(0x41)
@@ -245,17 +246,15 @@ class KemperActionDefinitions:
             "enableCallback": enable_callback
         })
     
-    # Morph button (faded change of morph state) No state feedback possible currently!
-    def MORPH_BUTTON(display = None, color = Colors.LIGHT_GREEN, text = "Morph", id = False, use_leds = True, enable_callback = None):
+    # Morph button (faded change of morph state) with colors representing morph state
+    def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
         return PushButtonAction({
-            "callback": BinaryParameterCallback(
+            "callback": KemperMorphCallback(
                 mapping = KemperMappings.MORPH_BUTTON(),
                 text = text,
-                color = color,
-                #value_enable = 127,
-                #value_disable = 0,
-                #reference_value = 63,
-                #comparison_mode = BinaryParameterCallback.GREATER_EQUAL
+                comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+                led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
+                display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON                
             ),
             "mode": PushButtonAction.MOMENTARY,
             "useSwitchLeds": use_leds,
@@ -263,7 +262,24 @@ class KemperActionDefinitions:
             "id": id,
             "enableCallback": enable_callback
         })
-
+    
+    # Morph display only
+    def MORPH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
+        return PushButtonAction({
+            "callback": KemperMorphCallback(
+                mapping = KemperMappings.MORPH_PEDAL(),
+                text = text,
+                comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+                led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
+                display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON,
+                suppress_send = True
+            ),
+            "useSwitchLeds": use_leds,
+            "display": display,
+            "id": id,
+            "enableCallback": enable_callback
+        })
+    
     ## Rig specific ##########################################################################################################
 
     # Volume boost function, based on setting rig volume to a certain boost value. To 
@@ -439,6 +455,77 @@ class KemperActionDefinitions:
             "enableCallback": enable_callback
         })
        
+    # Adds morph state display on one LED to the rig select action. Returns a list of actions! So dont forget to unfold it with *
+    @staticmethod
+    def RIG_SELECT_AND_MORPH_STATE(rig, 
+                                   rig_off = None, 
+                                   display = None, 
+                                   id = False, 
+                                   use_leds = True, 
+                                   enable_callback = None,
+                                   color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+                                   color = None,                                   # Color override (if no text callback is passed)
+                                   text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+                                   text = None,                                    # Text override (if no text callback is passed)
+                                   morph_display = None,                           # Optional DisplayLabel to show morph color
+                                   morph_use_leds = True,                          # Use the LEDs to show morph state?
+                                   morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
+
+    ):
+        rig_select = KemperActionDefinitions.RIG_SELECT(
+            rig = rig,
+            rig_off = rig_off,
+            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+            display = display,
+            id = id,
+            use_leds = use_leds,
+            enable_callback = enable_callback,
+            color_callback = color_callback,
+            color = color,
+            text_callback = text_callback,
+            text = text
+        )
+
+        morph_mapping = KemperMappings.MORPH_PEDAL()
+
+        # Callback to enable the morph state display only when the rig is selected
+        class MorphDisplayEnableCallback(Callback):
+            def __init__(self):
+                Callback.__init__(self)
+                
+                self.mapping = KemperMappings.RIG_SELECT(rig - 1)
+                self.register_mapping(self.mapping)
+
+                #self._last_rig_id = self.mapping.value
+
+            def enabled(self, action): 
+                # if self._last_rig_id != self.mapping.value:
+                #     # Reset morph mapping, too on rig changes
+                #     morph_mapping.value = 0
+                #     self._last_rig_id = self.mapping.value
+                
+                return rig_select.state and rig_select.enabled
+        
+        return [
+            # Rig select action
+            rig_select,
+
+            # Use a separate action to show morph state
+            PushButtonAction({
+                "callback": KemperMorphCallback(
+                    mapping = morph_mapping,
+                    comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+                    led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
+                    display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON,
+                    suppress_send = True
+                ),
+                "useSwitchLeds": morph_use_leds,
+                "display": morph_display,
+                "id": morph_id if morph_id != None else id,
+                "enableCallback": MorphDisplayEnableCallback()
+            })            
+        ]
+
     # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
     # the current bank. Rigs are indexed starting from one, range: [1..5].
     @staticmethod
@@ -812,6 +899,68 @@ class KemperRigNameCallback(Callback):
 
     def update_label(self, label):
         label.text = self._mapping.value if self._mapping.value else self.DEFAULT_TEXT
+
+
+####################################################################################################################
+
+
+# BinaryParameterCallback for morph pedal mapping, with colors reflecting the morph state
+class KemperMorphCallback(BinaryParameterCallback):
+
+    COLOR_BASE = Colors.RED
+    COLOR_MORPH = Colors.BLUE
+
+    def __init__(self, 
+                 mapping,
+                 text = "Morph", 
+                 value_enable = 1, 
+                 value_disable = 0, 
+                 reference_value = None, 
+                 comparison_mode = BinaryParameterCallback.GREATER_EQUAL, 
+                 display_dim_factor_on = DEFAULT_SLOT_DIM_FACTOR_ON,
+                 display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_OFF,
+                 led_brightness_on = DEFAULT_LED_BRIGHTNESS_ON,
+                 led_brightness_off = DEFAULT_LED_BRIGHTNESS_OFF,
+                 suppress_send = False
+        ):
+
+        def get_color(action, value):
+            if value == None:
+                return Colors.WHITE
+            
+            r_diff = self.COLOR_MORPH[0] - self.COLOR_BASE[0]
+            g_diff = self.COLOR_MORPH[1] - self.COLOR_BASE[1]
+            b_diff = self.COLOR_MORPH[2] - self.COLOR_BASE[2]
+
+            v = value / 16383
+
+            return (
+                self.COLOR_BASE[0] + int(r_diff * v),
+                self.COLOR_BASE[1] + int(g_diff * v),
+                self.COLOR_BASE[2] + int(b_diff * v),
+            )
+        
+        super().__init__(
+            mapping = mapping, 
+            color_callback = get_color,
+            text = text, 
+            value_enable = value_enable, 
+            value_disable = value_disable, 
+            reference_value = reference_value, 
+            comparison_mode = comparison_mode, 
+            display_dim_factor_on = display_dim_factor_on, 
+            display_dim_factor_off = display_dim_factor_off, 
+            led_brightness_on = led_brightness_on, 
+            led_brightness_off = led_brightness_off
+        )
+
+        self._suppress_send = suppress_send
+
+    def state_changed_by_user(self, action):
+        if self._suppress_send:
+            return
+        
+        super().state_changed_by_user(action)
 
 
 ####################################################################################################################
@@ -1343,16 +1492,35 @@ class KemperMappings:
                 CC_MORPH_BUTTON, 
                 0
             ),
-            #response = ControlChange(
-            #    CC_MORPH_PEDAL, 
-            #    0
-            #)
+            request = KemperNRPNMessage(
+                NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
+                NRPN_ADDRESS_PAGE_ZERO,
+                0x0b
+            ),
+            response = KemperNRPNMessage(
+                NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+                NRPN_ADDRESS_PAGE_ZERO,
+                0x0b
+            )
         )
-
+    
     def MORPH_PEDAL(): 
         return KemperParameterMapping(
             name = "Morph Pedal",
-            set = ControlChange(CC_MORPH_PEDAL, 0)
+            set = ControlChange(
+                CC_MORPH_PEDAL, 
+                0
+            ),
+            request = KemperNRPNMessage(
+                NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER,
+                NRPN_ADDRESS_PAGE_ZERO,
+                0x0b
+            ),
+            response = KemperNRPNMessage(
+                NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER,
+                NRPN_ADDRESS_PAGE_ZERO,
+                0x0b
+            )
         )
 
     # Rig volume

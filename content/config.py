@@ -44,13 +44,13 @@ Config = {
     #"debugStats": True,                              # Show info about runtime and memory usage periodically every update interval
     #"debugStatsInterval": 5000,                      # Update interval for runtime statistics (also affects the performance dot, default is 
                                                       # the "updateInterval" option)
-    #"debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
+    "debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
     #"debugUnparsedMessages": True,                   # Shows all incoming MIDI messages which have not been parsed by the application.
     #"debugSentMessages": True,                       # Shows all sent messages
     #"excludeMessageTypes": [ "SystemExclusive" ],    # Types to excude from "debugUnparsedMessage"
 
     # When a ClientParameterMapping instance is set here, incoming messages for this mapping will be shown.
-    #"debugMapping": KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_B),
+    #"debugMapping": KemperMappings.MORPH_BUTTON(),
 
     # Explore Mode: Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 

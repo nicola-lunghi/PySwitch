@@ -104,6 +104,9 @@ class BinaryParameterCallback(Callback):
                  # Color to be used
                  color = DEFAULT_SWITCH_COLOR,
 
+                # Color callback (optional, called in update_displays, footprint: get_color())
+                 color_callback = None,
+
                  # Text (optional)
                  text = None,
 
@@ -154,7 +157,8 @@ class BinaryParameterCallback(Callback):
         self._display_dim_factor_off = display_dim_factor_off
         self._led_brightness_on = led_brightness_on
         self._led_brightness_off = led_brightness_off
-        self.color = color
+        self._color = color
+        self._color_callback = color_callback
 
         self.reset()
 
@@ -211,7 +215,7 @@ class BinaryParameterCallback(Callback):
             self.evaluate_value(action, value)
 
         state = action.state
-        color = self.color
+        color = self._color_callback(action, value) if self._color_callback else self._color
 
         # Set color, if new, or state have been changed
         if color != self._current_color or self._current_display_state != state:
@@ -221,7 +225,7 @@ class BinaryParameterCallback(Callback):
             self.set_switch_color(action, color)
             self.set_label_color(action, color)
             self._update_label_text(action)            
-            
+
     # Evaluate a new value
     def evaluate_value(self, action, value):
         state = False
@@ -341,16 +345,20 @@ class EffectEnableCallback(BinaryParameterCallback):
     CATEGORY_INITIAL = const(-1)
     
     def __init__(self, mapping_state, mapping_type):
-        super().__init__(mapping = mapping_state)
+        def color_callback(action, value):
+            return self.get_effect_category_color(self._effect_category)
+
+        super().__init__(
+            mapping = mapping_state, 
+            color_callback = color_callback
+        )
 
         self.register_mapping(mapping_type)
 
         self.mapping_fxtype = mapping_type
         
         self._effect_category = self.CATEGORY_NONE  
-        self._current_category = self.CATEGORY_INITIAL
-
-        self.color = self.get_effect_category_color(self._effect_category)
+        self._current_category = self.CATEGORY_INITIAL        
         
     def reset(self):
         super().reset()
@@ -368,9 +376,6 @@ class EffectEnableCallback(BinaryParameterCallback):
             return
 
         self._current_category = self._effect_category
-
-        # Effect category color
-        self.color = self.get_effect_category_color(self._effect_category)
 
         # Effect category text
         if action.label:
