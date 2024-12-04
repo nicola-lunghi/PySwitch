@@ -22,30 +22,22 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            # KemperActionDefinitions.TUNER_MODE(
-            #     display = DISPLAY_HEADER_1
-            # ) 
-            KemperActionDefinitions.MORPH_BUTTON(
+            KemperActionDefinitions.TUNER_MODE(
                 display = DISPLAY_HEADER_1
-            )        
+            ),
+            KemperActionDefinitions.MORPH_DISPLAY()        
         ]
     },
 
     # Switch 2
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
-        "actions": 
-            # Note that here the [] brackets are omitted because RIG_SELECT_AND_MORPH_STATE returns a list!
-            KemperActionDefinitions.RIG_SELECT_AND_MORPH_STATE(
-                rig = 1,
-                rig_off = 3,
+        "actions": [   
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_X,
                 display = DISPLAY_HEADER_2
             )
-            # KemperActionDefinitions.EFFECT_STATE(
-            #     slot_id = KemperEffectSlot.EFFECT_SLOT_ID_X,
-            #     display = DISPLAY_HEADER_2
-            # )        
-        
+        ]               
     },
 
     # Switch A

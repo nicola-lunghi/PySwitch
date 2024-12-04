@@ -439,7 +439,7 @@ class KemperActionDefinitions:
 
                             action.label.text = text_callback(action, target_bank, rig)
                         else:
-                            raise Exception("Invalid display mode: " + repr(display_mode))
+                            raise Exception() #"Invalid display mode: " + repr(display_mode))
                     else:
                         action.label.text = text
 
@@ -455,76 +455,6 @@ class KemperActionDefinitions:
             "enableCallback": enable_callback
         })
        
-    # Adds morph state display on one LED to the rig select action. Returns a list of actions! So dont forget to unfold it with *
-    @staticmethod
-    def RIG_SELECT_AND_MORPH_STATE(rig, 
-                                   rig_off = None, 
-                                   display = None, 
-                                   id = False, 
-                                   use_leds = True, 
-                                   enable_callback = None,
-                                   color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                                   color = None,                                   # Color override (if no text callback is passed)
-                                   text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                                   text = None,                                    # Text override (if no text callback is passed)
-                                   morph_display = None,                           # Optional DisplayLabel to show morph color
-                                   morph_use_leds = True,                          # Use the LEDs to show morph state?
-                                   morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
-
-    ):
-        rig_select = KemperActionDefinitions.RIG_SELECT(
-            rig = rig,
-            rig_off = rig_off,
-            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-            display = display,
-            id = id,
-            use_leds = use_leds,
-            enable_callback = enable_callback,
-            color_callback = color_callback,
-            color = color,
-            text_callback = text_callback,
-            text = text
-        )
-
-        morph_mapping = KemperMappings.MORPH_PEDAL()
-
-        # Callback to enable the morph state display only when the rig is selected
-        class MorphDisplayEnableCallback(Callback):
-            def __init__(self):
-                Callback.__init__(self)
-                
-                self.mapping = KemperMappings.RIG_SELECT(rig - 1)
-                self.register_mapping(self.mapping)
-
-                #self._last_rig_id = self.mapping.value
-
-            def enabled(self, action): 
-                # if self._last_rig_id != self.mapping.value:
-                #     # Reset morph mapping, too on rig changes
-                #     morph_mapping.value = 0
-                #     self._last_rig_id = self.mapping.value
-                
-                return rig_select.state and rig_select.enabled
-        
-        return [
-            # Rig select action
-            rig_select,
-
-            # Use a separate action to show morph state
-            PushButtonAction({
-                "callback": KemperMorphCallback(
-                    mapping = morph_mapping,
-                    comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                    led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
-                    display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON,
-                    suppress_send = True
-                ),
-                "useSwitchLeds": morph_use_leds,
-                "display": morph_display,
-                "id": morph_id if morph_id != None else id,
-                "enableCallback": MorphDisplayEnableCallback()
-            })            
-        ]
 
     # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
     # the current bank. Rigs are indexed starting from one, range: [1..5].
@@ -618,7 +548,7 @@ class KemperActionDefinitions:
                         else:
                             action.label.text = text_callback(action, curr_bank, rig - 1)
                     else:
-                        raise Exception("Invalid display mode: " + repr(display_mode))
+                        raise Exception() #"Invalid display mode: " + repr(display_mode))
                         
                 action.switch_color = bank_color
                 if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state: 
@@ -689,14 +619,14 @@ class KemperActionDefinitions:
                     return BANK_COLORS[curr_bank % len(BANK_COLORS)]
 
                 else:
-                    raise Exception("Invalid display mode: " + repr(display_mode))
+                    raise Exception() #"Invalid display mode: " + repr(display_mode))
                 
             color_callback = get_color
 
         # Alternate rig (the rig selected when the switch state is False)
         if rig_off != None:
             if bank_off == None:
-                raise Exception("Also provide bank_off")
+                raise Exception() #"Also provide bank_off")
 
             # Use a different mapping for disabling
             mapping_disable = KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1)
@@ -754,7 +684,7 @@ class KemperActionDefinitions:
                             action.label.text = text_callback(action, bank - 1, rig - 1)
 
                     else:
-                        raise Exception("Invalid display mode: " + repr(display_mode))
+                        raise Exception()  #"Invalid display mode: " + repr(display_mode))
 
                 # LEDs
                 action.switch_color = bank_color
@@ -774,6 +704,144 @@ class KemperActionDefinitions:
             "enableCallback": enable_callback
         })
 
+
+    # Adds morph state display on one LED to the rig select action. Returns a list of actions!
+    @staticmethod
+    def RIG_SELECT_AND_MORPH_STATE(rig, 
+                                   rig_off = None, 
+                                   display = None, 
+                                   id = False, 
+                                   use_leds = True, 
+                                   enable_callback = None,
+                                   color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+                                   color = None,                                   # Color override (if no text callback is passed)
+                                   text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+                                   text = None,                                    # Text override (if no text callback is passed)
+                                   morph_display = None,                           # Optional DisplayLabel to show morph color
+                                   morph_use_leds = True,                          # Use the LEDs to show morph state?
+                                   morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
+                                   morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
+
+    ):
+        rig_select = KemperActionDefinitions.RIG_SELECT(
+            rig = rig,
+            rig_off = rig_off,
+            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+            display = display,
+            id = id,
+            use_leds = use_leds,
+            enable_callback = enable_callback,
+            color_callback = color_callback,
+            color = color,
+            text_callback = text_callback,
+            text = text
+        )
+
+        # Callback to enable the morph state display only when the rig is selected
+        class MorphDisplayEnableCallback(Callback):
+            def __init__(self):
+                Callback.__init__(self)
+                
+                self.mapping = KemperMappings.RIG_SELECT(rig - 1)
+                self.register_mapping(self.mapping)
+
+            def enabled(self, action):
+                if morph_only_when_enabled:
+                    return rig_select.state and rig_select.enabled
+                else:
+                    return rig_select.enabled
+        
+        return [
+            # Rig select action
+            rig_select,
+
+            # Use a separate action to show morph state
+            PushButtonAction({
+                "callback": KemperMorphCallback(
+                    mapping = KemperMappings.MORPH_PEDAL(),
+                    comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+                    led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
+                    display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON,
+                    suppress_send = True
+                ),
+                "useSwitchLeds": morph_use_leds,
+                "display": morph_display,
+                "id": morph_id if morph_id != None else id,
+                "enableCallback": MorphDisplayEnableCallback()
+            })            
+        ]
+    
+
+    # Adds morph state display on one LED to the rig and bank select action. Returns a list of actions!
+    @staticmethod
+    def RIG_AND_BANK_SELECT_AND_MORPH_STATE(rig, 
+                                            bank,
+                                            rig_off = None, 
+                                            bank_off = None,
+                                            display = None, 
+                                            id = False, 
+                                            use_leds = True, 
+                                            enable_callback = None,
+                                            color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+                                            color = None,                                   # Color override (if no text callback is passed)
+                                            text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+                                            text = None,                                    # Text override (if no text callback is passed)
+                                            morph_display = None,                           # Optional DisplayLabel to show morph color
+                                            morph_use_leds = True,                          # Use the LEDs to show morph state?
+                                            morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
+                                            morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
+
+    ):
+        rig_and_bank_select = KemperActionDefinitions.RIG_AND_BANK_SELECT(
+            rig = rig,
+            bank = bank,
+            rig_off = rig_off,
+            bank_off = bank_off,
+            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+            display = display,
+            id = id,
+            use_leds = use_leds,
+            enable_callback = enable_callback,
+            color_callback = color_callback,
+            color = color,
+            text_callback = text_callback,
+            text = text
+        )
+
+        # Callback to enable the morph state display only when the rig is selected
+        class MorphDisplayEnableCallback(Callback):
+            def __init__(self):
+                Callback.__init__(self)
+                
+                self.mapping = KemperMappings.BANK_AND_RIG_SELECT(rig - 1)
+                self.register_mapping(self.mapping)
+
+            def enabled(self, action): 
+                if morph_only_when_enabled:
+                    return rig_and_bank_select.state and rig_and_bank_select.enabled
+                else:
+                    return rig_and_bank_select.enabled
+        
+        return [
+            # Rig and bank select action
+            rig_and_bank_select,
+
+            # Use a separate action to show morph state
+            PushButtonAction({
+                "callback": KemperMorphCallback(
+                    mapping = KemperMappings.MORPH_PEDAL(),
+                    comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+                    led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
+                    display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON,
+                    suppress_send = True
+                ),
+                "useSwitchLeds": morph_use_leds,
+                "display": morph_display,
+                "id": morph_id if morph_id != None else id,
+                "enableCallback": MorphDisplayEnableCallback()
+            })            
+        ]
+    
 
 ####################################################################################################################
 

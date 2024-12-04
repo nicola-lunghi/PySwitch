@@ -715,3 +715,68 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
                 bank = 3,
                 rig_off = 5
             )
+
+
+############################################################################################################
+
+
+    def test_rig_select_and_morph_enabled(self):
+        self._test_rig_select_and_morph_enabled(False)
+        self._test_rig_select_and_morph_enabled(True)
+
+
+    def _test_rig_select_and_morph_enabled(self, morph_only_when_enabled):
+        ecb = MockEnabledCallback()
+
+        action_select, action_morph = KemperActionDefinitions.RIG_AND_BANK_SELECT_AND_MORPH_STATE(
+            rig = 1,
+            bank = 2,
+            rig_off = 2,
+            bank_off = 1,
+            use_leds = True, 
+            enable_callback = ecb,     
+            color = (2, 4, 6),
+            morph_only_when_enabled = morph_only_when_enabled        
+        )
+
+        appl = MockController2()
+        switch = MockFootswitch(actions = [action_select])
+        action_select.init(appl, switch)
+
+        mapping_rig = action_select.callback._mapping 
+        
+        mapping_rig.value = 4  # off value
+        ecb.output = False
+        action_select.push()
+        action_select.release()
+
+        self.assertEqual(action_select.enabled, False)
+        self.assertEqual(action_morph.enabled, False)
+
+        ecb.output = True
+        action_select.push()
+        action_select.release()
+
+        self.assertEqual(action_select.enabled, True)
+        self.assertEqual(action_morph.enabled, False if morph_only_when_enabled else True)
+
+        mapping_rig.value = 5  # on value
+        action_select.push()
+        action_select.release()
+
+        self.assertEqual(action_select.enabled, True)
+        self.assertEqual(action_morph.enabled, True)
+
+        mapping_rig.value = 4  # off value
+        action_select.push()
+        action_select.release()
+        
+        self.assertEqual(action_select.enabled, True)
+        self.assertEqual(action_morph.enabled, False if morph_only_when_enabled else True)
+
+        ecb.output = False
+        action_select.push()
+        action_select.release()
+
+        self.assertEqual(action_select.enabled, False)
+        self.assertEqual(action_morph.enabled, False)

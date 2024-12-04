@@ -135,6 +135,115 @@ class TestBinaryParameterCallback(unittest.TestCase):
 ###############################################################################################
 
 
+    def test_set_parameter_color_callback(self):
+        switch_1 = MockSwitch()
+        
+        mapping_1 = MockParameterMapping(
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x01, 0x02, 0x03, 0x04]
+            ),
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x01, 0x02, 0x03, 0x05]
+            )
+        )
+
+        mock_data = {
+            "color": [0, 0, 0],
+            "expValue": None
+        }
+
+        def get_color(action, value):
+            self.assertEqual(action, action_1)
+            self.assertEqual(value, mock_data["expValue"])
+            return mock_data["color"]
+
+        cb = BinaryParameterCallback(
+            mapping = mapping_1,
+            value_enable = 10,
+            value_disable = 3,
+            color = (200, 100, 0),
+            color_callback = get_color,
+            led_brightness_on = 0.5,
+            led_brightness_off = 0.1
+        )
+
+        action_1 = PushButtonAction({
+            "mode": PushButtonAction.MOMENTARY,
+            "callback": cb,
+            "useSwitchLeds": True          
+        })
+        
+        led_driver = MockNeoPixelDriver()
+
+        appl = MockController(
+            led_driver = led_driver,
+            midi = MockMidiController(),
+            switches = [
+                {
+                    "assignment": {
+                        "model": switch_1,
+                        "pixels": [0]
+                    },
+                    "actions": [
+                        action_1                        
+                    ]
+                }
+            ]
+        )
+
+        # Build scene:
+        # Step 1: Enable
+        def prep1():
+            switch_1.shall_be_pushed = True        
+            
+            mock_data["color"] = (100, 100, 50)            
+            mock_data["expValue"] = 10
+            mapping_1.value = 10
+
+        def eval1():
+            self.assertEqual(appl.switches[0].color, (100, 100, 50))
+            self.assertEqual(appl.switches[0].brightness, 0.5)
+            self.assertEqual(led_driver.leds[0], (50, 50, 25))
+            
+            return True        
+        
+        # Step 2: Disable
+        def prep2():
+            switch_1.shall_be_pushed = False
+
+            mock_data["color"] = (100, 200, 50)
+            mock_data["expValue"] = 3
+            mapping_1.value = 3
+
+        def eval2():
+            self.assertEqual(appl.switches[0].color, (100, 200, 50))
+            self.assertEqual(appl.switches[0].brightness, 0.1)
+            self.assertEqual(led_driver.leds[0], (10, 20, 5))
+                        
+            return False        
+
+        # Build scenes hierarchy
+        appl.next_step = SceneStep(
+            num_pass_ticks = 5,
+            prepare = prep1,
+            evaluate = eval1,
+
+            next = SceneStep(
+                num_pass_ticks = 5,
+                prepare = prep2,
+                evaluate = eval2
+            )
+        )
+
+        # Run process
+        appl.process()
+
+
+###############################################################################################
+ 
+
     def test_set_parameter_no_response(self):
         switch_1 = MockSwitch()
         

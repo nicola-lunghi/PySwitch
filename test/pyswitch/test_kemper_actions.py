@@ -18,9 +18,9 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     
-    from lib.pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectEnableCallback, KemperEffectSlot, KemperMappings
+    from lib.pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectEnableCallback, KemperEffectSlot, KemperMappings, KemperMorphCallback
     from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.controller.callbacks import BinaryParameterCallback
+    from lib.pyswitch.controller.callbacks import BinaryParameterCallback, DEFAULT_LED_BRIGHTNESS_ON, DEFAULT_SLOT_DIM_FACTOR_ON
     
     from .mocks_appl import *
     from .mocks_callback import *
@@ -66,7 +66,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(cb._value_disable, 5)
         self.assertEqual(cb._reference_value, 6)
         self.assertEqual(cb._text, "foo")
-        self.assertEqual(cb.color, (2, 3, 4))
+        self.assertEqual(cb._color, (2, 3, 4))
         self.assertEqual(cb._comparison_mode, BinaryParameterCallback.LESS)
 
         self.assertEqual(action.label, display)
@@ -126,7 +126,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         self.assertEqual(cb._mapping, KemperMappings.TUNER_MODE_STATE())
         self.assertEqual(cb._text, "Tuner")
-        self.assertEqual(cb.color, (4, 5, 6))
+        self.assertEqual(cb._color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -155,7 +155,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         self.assertEqual(cb._mapping, KemperMappings.TAP_TEMPO())
         self.assertEqual(cb._text, "Tap")
-        self.assertEqual(cb.color, (4, 5, 6))
+        self.assertEqual(cb._color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -185,7 +185,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         self.assertEqual(cb._mapping, KemperMappings.TEMPO_DISPLAY())
         self.assertEqual(cb._text, "foo")
-        self.assertEqual(cb.color, (4, 5, 6))
+        self.assertEqual(cb._color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -226,7 +226,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         self.assertEqual(cb._mapping, KemperMappings.EFFECT_BUTTON(num))
         self.assertEqual(cb._text, exp_text)
-        self.assertEqual(cb.color, (4, 5, 6))
+        self.assertEqual(cb._color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -243,7 +243,6 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         action = KemperActionDefinitions.MORPH_BUTTON(
             display = display, 
-            color = (4, 5, 6), 
             text = "foo",
             id = 67, 
             use_leds = True, 
@@ -251,20 +250,52 @@ class TestKemperActionDefinitions(unittest.TestCase):
         )
 
         cb = action.callback
-        self.assertIsInstance(cb, BinaryParameterCallback)
+        self.assertIsInstance(cb, KemperMorphCallback)
         self.assertIsInstance(action, PushButtonAction)
 
         self.assertEqual(cb._mapping, KemperMappings.MORPH_BUTTON())
         self.assertEqual(cb._text, "foo")
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
-        self.assertEqual(cb.color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
         self.assertEqual(action.uses_switch_leds, True)
         self.assertEqual(action._enable_callback, ecb)
         self.assertEqual(action._mode, PushButtonAction.MOMENTARY)
+
+
+    def test_morph_display(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action = KemperActionDefinitions.MORPH_DISPLAY(
+            display = display, 
+            text = "foo",
+            id = 67, 
+            use_leds = True, 
+            enable_callback = ecb
+        )
+
+        cb = action.callback
+        self.assertIsInstance(cb, KemperMorphCallback)
+        self.assertIsInstance(action, PushButtonAction)
+
+        self.assertEqual(cb._mapping, KemperMappings.MORPH_PEDAL())
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
+        self.assertEqual(cb._led_brightness_off, DEFAULT_LED_BRIGHTNESS_ON)
+
+        self.assertEqual(cb._display_dim_factor_off, DEFAULT_SLOT_DIM_FACTOR_ON)
+        self.assertEqual(cb._suppress_send, True)
+        
+        self.assertEqual(action.label, display)
+        self.assertEqual(action.id, 67)
+        self.assertEqual(action.uses_switch_leds, True)
+        self.assertEqual(action._enable_callback, ecb)
 
 
     def test_rig_volume_boost(self):
@@ -298,7 +329,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(cb._text, "foo")
         self.assertEqual(cb._value_enable, exp_value_enable)
         self.assertEqual(cb._value_disable, exp_value_disable)
-        self.assertEqual(cb.color, (4, 5, 6))
+        self.assertEqual(cb._color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -307,4 +338,105 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(action._mode, PushButtonAction.LATCH)
 
 
-    
+    def test_rig_select_and_morph(self):
+        display_select = DisplayLabel(layout = {
+            "font": "foo"
+        })
+        display_morph = DisplayLabel(layout = {
+            "font": "foo2"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action_select, action_morph = KemperActionDefinitions.RIG_SELECT_AND_MORPH_STATE(
+            rig = 1,
+            rig_off = 2,
+            display = display_select, 
+            text = "foo",
+            id = 67, 
+            use_leds = True, 
+            enable_callback = ecb,     
+            #color_callback
+            color = (2, 4, 6),
+            #text_callback,
+            morph_display = display_morph,
+            morph_use_leds = False,
+            morph_id = 68,
+            morph_only_when_enabled = False
+        )
+
+        cb_select = action_select.callback
+        cb_morph = action_morph.callback
+
+        self.assertIsInstance(cb_select, BinaryParameterCallback)
+        self.assertEqual(cb_select._mapping, KemperMappings.RIG_SELECT(0))
+
+        self.assertIsInstance(cb_morph, KemperMorphCallback)
+        self.assertEqual(cb_morph._mapping, KemperMappings.MORPH_PEDAL())
+        self.assertEqual(cb_morph._comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
+        self.assertEqual(cb_morph._led_brightness_off, DEFAULT_LED_BRIGHTNESS_ON)
+        self.assertEqual(cb_morph._display_dim_factor_off, DEFAULT_SLOT_DIM_FACTOR_ON)
+        self.assertEqual(cb_morph._suppress_send, True)
+        
+        self.assertEqual(action_select.label, display_select)
+        self.assertEqual(action_select.id, 67)
+        self.assertEqual(action_select.uses_switch_leds, True)
+        self.assertEqual(action_select._enable_callback, ecb)
+
+        self.assertEqual(action_morph.label, display_morph)
+        self.assertEqual(action_morph.id, 68)
+        self.assertEqual(action_morph.uses_switch_leds, False)
+        self.assertNotEqual(action_morph._enable_callback, ecb)
+
+
+    def test_rig_and_bank_select_and_morph(self):
+        display_select = DisplayLabel(layout = {
+            "font": "foo"
+        })
+        display_morph = DisplayLabel(layout = {
+            "font": "foo2"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action_select, action_morph = KemperActionDefinitions.RIG_AND_BANK_SELECT_AND_MORPH_STATE(
+            rig = 1,
+            bank = 5, 
+            rig_off = 2,
+            bank_off = 9,
+            display = display_select, 
+            text = "foo",
+            id = 67, 
+            use_leds = True, 
+            enable_callback = ecb,     
+            #color_callback
+            color = (2, 4, 6),
+            #text_callback,
+            morph_display = display_morph,
+            morph_use_leds = False,
+            morph_id = 68,
+            morph_only_when_enabled = False
+        )
+
+        cb_select = action_select.callback
+        cb_morph = action_morph.callback
+
+        self.assertIsInstance(cb_select, BinaryParameterCallback)
+        self.assertEqual(cb_select._mapping, KemperMappings.BANK_AND_RIG_SELECT(0))
+
+        self.assertIsInstance(cb_morph, KemperMorphCallback)
+        self.assertEqual(cb_morph._mapping, KemperMappings.MORPH_PEDAL())
+        self.assertEqual(cb_morph._comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
+        self.assertEqual(cb_morph._led_brightness_off, DEFAULT_LED_BRIGHTNESS_ON)
+        self.assertEqual(cb_morph._display_dim_factor_off, DEFAULT_SLOT_DIM_FACTOR_ON)
+        self.assertEqual(cb_morph._suppress_send, True)
+        
+        self.assertEqual(action_select.label, display_select)
+        self.assertEqual(action_select.id, 67)
+        self.assertEqual(action_select.uses_switch_leds, True)
+        self.assertEqual(action_select._enable_callback, ecb)
+
+        self.assertEqual(action_morph.label, display_morph)
+        self.assertEqual(action_morph.id, 68)
+        self.assertEqual(action_morph.uses_switch_leds, False)
+        self.assertNotEqual(action_morph._enable_callback, ecb)

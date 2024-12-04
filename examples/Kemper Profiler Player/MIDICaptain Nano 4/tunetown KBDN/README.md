@@ -2,12 +2,13 @@
 
 This is the personal preset for my MIDICaptain Nano 4, which i am using mainly with one of my bands <a target="_blank" href="https://kbdn.info">"Krem Brülle & Die Nachbarn"</a>. 
 
-|            |                                 |
-|------------|---------------------------------|
-| Switch 1   | Tuner Mode                      |
-| Switch 2   | Effect Slot X                   |
-| Switch A   | Toggle Rigs 3/1 of current bank |
-| Switch B   | Toggle Rigs 2/1 of current bank |
+|            |                                    |
+|------------|------------------------------------|
+| Switch 1   | Tuner Mode + Morph State (one LED) |
+| Switch 2   | Effect Slot X on/off               |
+| Switch A   | Toggle Rigs 3/1 of current bank    |
+| Switch B   | Toggle Rigs 2/1 of current bank    |
+
 
 
 

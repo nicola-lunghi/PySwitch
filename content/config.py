@@ -44,7 +44,7 @@ Config = {
     #"debugStats": True,                              # Show info about runtime and memory usage periodically every update interval
     #"debugStatsInterval": 5000,                      # Update interval for runtime statistics (also affects the performance dot, default is 
                                                       # the "updateInterval" option)
-    "debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
+    #"debugBidirectionalProtocol": True,              # Debug the bidirectional protocol, if any
     #"debugUnparsedMessages": True,                   # Shows all incoming MIDI messages which have not been parsed by the application.
     #"debugSentMessages": True,                       # Shows all sent messages
     #"excludeMessageTypes": [ "SystemExclusive" ],    # Types to excude from "debugUnparsedMessage"

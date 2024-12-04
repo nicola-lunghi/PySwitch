@@ -9,7 +9,7 @@ from pyswitch.hardware.Hardware import Hardware
 from pyswitch.misc import Colors
 from pyswitch.controller.actions.actions import PushButtonAction, HoldAction
 
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, 
+from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
 from pyswitch.clients.kemper import RIG_SELECT_DISPLAY_TARGET_RIG, RIG_SELECT_DISPLAY_CURRENT_RIG
 
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
@@ -24,19 +24,20 @@ Switches = [
         "actions": [
             KemperActionDefinitions.TUNER_MODE(
                 display = DISPLAY_HEADER_1
-            )         
+            ),
+            KemperActionDefinitions.MORPH_DISPLAY()        
         ]
     },
 
     # Switch 2
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
-        "actions": [
+        "actions": [   
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_X,
                 display = DISPLAY_HEADER_2
-            )        
-        ]
+            )
+        ]               
     },
 
     # Switch A
