@@ -246,8 +246,26 @@ class KemperActionDefinitions:
             "enableCallback": enable_callback
         })
     
+    # Morph button (faded change of morph state) with fixed color.
+    def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None, color = Colors.WHITE):
+        return PushButtonAction({
+            "callback": BinaryParameterCallback(
+                mapping = KemperMappings.MORPH_BUTTON(),
+                text = text,
+                color = color,
+                comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+                led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
+                display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON                
+            ),
+            "mode": PushButtonAction.MOMENTARY,
+            "useSwitchLeds": use_leds,
+            "display": display,
+            "id": id,
+            "enableCallback": enable_callback
+        })
+    
     # Morph button (faded change of morph state) with colors representing morph state
-    def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
+    def MORPH_BUTTON_WITH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
         return PushButtonAction({
             "callback": KemperMorphCallback(
                 mapping = KemperMappings.MORPH_BUTTON(),

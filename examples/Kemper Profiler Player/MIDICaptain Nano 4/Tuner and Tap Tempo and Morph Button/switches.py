@@ -52,8 +52,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
+            KemperActionDefinitions.MORPH_BUTTON(
                 display = DISPLAY_FOOTER_2
             )
         ]
