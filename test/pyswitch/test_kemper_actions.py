@@ -245,6 +245,39 @@ class TestKemperActionDefinitions(unittest.TestCase):
             display = display, 
             text = "foo",
             id = 67, 
+            color = (3, 4, 5),
+            use_leds = True, 
+            enable_callback = ecb
+        )
+
+        cb = action.callback
+        self.assertIsInstance(cb, BinaryParameterCallback)
+        self.assertIsInstance(action, PushButtonAction)
+
+        self.assertEqual(cb._mapping, KemperMappings.MORPH_BUTTON())
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._color, (3, 4, 5))
+        self.assertEqual(cb._value_enable, 1)
+        self.assertEqual(cb._value_disable, 0)
+
+        self.assertEqual(action.label, display)
+        self.assertEqual(action.id, 67)
+        self.assertEqual(action.uses_switch_leds, True)
+        self.assertEqual(action._enable_callback, ecb)
+        self.assertEqual(action._mode, PushButtonAction.MOMENTARY)
+
+
+    def test_morph_button_with_display(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action = KemperActionDefinitions.MORPH_BUTTON_WITH_DISPLAY(
+            display = display, 
+            text = "foo",
+            id = 67, 
             use_leds = True, 
             enable_callback = ecb
         )
