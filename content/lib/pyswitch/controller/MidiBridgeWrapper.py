@@ -113,7 +113,7 @@ class _StorageProvider:
         
     # Must return file size
     def size(self, path):
-        return stat(path)[7]
+        return stat(path)[6]
     
     # Must return an opened file handle
     def open(self, path, mode):
