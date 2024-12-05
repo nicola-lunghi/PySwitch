@@ -59,22 +59,21 @@ class MidiBridgeWrapper:
 # if the write functionality should work, else an exception is raised.
 class _StorageProvider:
 
-    # File handle
-    class _FileHandle:
-        def __init__(self, temp_path, final_path, mode):
+    # File handle for writing
+    class _FileHandleWrite:
+        def __init__(self, temp_path, final_path):
             self._temp_path = temp_path
             self._final_path = final_path
-
-            # Data is first stored into a temporary file path, then copied to the destination when finished.
-            if mode == "a":
-                # Clear before appending
-                open(self._temp_path, "w").close()
             
-            self._handle = open(self._temp_path, mode)
+            # Clear before appending
+            open(self._temp_path, "w").close()
+            
+            # Data is first stored into a temporary file path, then copied to the destination when finished.
+            self._handle = open(self._temp_path, "a")
 
         # Must read from the file handle
         def read(self, amount_bytes):
-            return self._handle.read(amount_bytes)
+            raise Exception()
 
         # Must append data to the passed file handle
         def write(self, data):
@@ -90,18 +89,40 @@ class _StorageProvider:
 
             do_print("Successfully saved " + self._final_path)
 
+    # File handle for reading
+    class _FileHandleRead:
+        def __init__(self, path):
+            self._handle = open(path, "r")
+
+        # Must read from the file handle
+        def read(self, amount_bytes):
+            return self._handle.read(amount_bytes)
+
+        # Must append data to the passed file handle
+        def write(self, data):
+            raise Exception()
+
+        # Must close the file handle
+        def close(self):
+            self._handle.close()
+            self._handle = None
+
     # You have to provide a path for a temporary file, used to buffer contents.
     def __init__(self, temp_file_path):
         self._temp_file_path = temp_file_path
         
     # Must return file size
     def size(self, path):
-        return stat(path).st_size
+        return stat(path)[7]
     
     # Must return an opened file handle
     def open(self, path, mode):
-        return self._FileHandle(
-            temp_path = self._temp_file_path,
-            final_path = path,
-            mode = mode
-        )
+        if mode == "a":
+            return self._FileHandleWrite(
+                temp_path = self._temp_file_path,
+                final_path = path
+            )
+        elif mode == "r":
+            return self._FileHandleRead(
+                path = path
+            )

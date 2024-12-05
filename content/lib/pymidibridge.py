@@ -1,6 +1,6 @@
 ###################################################################################################################
 # 
-# This script can transfer file data from/to a MIDI connection on CircuitPy boards.
+# This script can transfer file (or other) data from/to a MIDI connection on CircuitPy boards.
 #
 ###################################################################################################################
 
@@ -13,7 +13,7 @@ from math import ceil
 PMB_VERSION = "0.2.0"
 
 # Manufacturer ID of PyMidiBridge
-PMB_MANUFACTURER_ID = b'\x00\xac\xdc' 
+PMB_MANUFACTURER_ID = b'\x00\x7c\x7d' 
 
 # Command prefix to request a file to be transfered.
 # Syntax: [
@@ -29,7 +29,7 @@ PMB_REQUEST_MESSAGE = b'\x01'
 # Syntax: [
 #     *PMB_START_MESSAGE,
 #     <CRC-16, 3 half-bytes (only first 16 bits used, calculated over the rest of the message)>,
-#     <File id, 2 half-bytes>,
+#     <Transmission id, 2 half-bytes>,
 #     <Amount of chunks to be expected, 4 half-bytes>
 #     <Path name as null terminated string>
 # ]
@@ -39,7 +39,7 @@ PMB_START_MESSAGE = b'\x02'
 # Syntax: [
 #     *PMB_DATA_MESSAGE,
 #     <CRC-16, 3 half-bytes (only first 16 bits used, calculated over the rest of the message)>,
-#     <File id, 2 half-bytes>,
+#     <Transmission id, 2 half-bytes>,
 #     <Chunk index, 4 half-bytes>,
 #     <Payload, variable length>
 # ]
@@ -74,9 +74,10 @@ _PMB_PREFIXES_LENGTH_HALFBYTES = 1
 _PMB_CHUNK_INDEX_SIZE_FULLBYTES = 3
 _PMB_CHUNK_INDEX_SIZE_HALFBYTES = 4
 
-# Length of the random file id (BEFORE packing! Therefore, 3 bytes will use 4 bytes in the end.)
-_PMB_FILE_ID_LENGTH_FULLBYTES = 3
-_PMB_FILE_ID_LENGTH_HALFBYTES = 4
+# Length of the transmission id. This ID will be counted up to distinguish between transmissions. 
+# (BEFORE packing! Therefore, 3 bytes will use 4 bytes in the end.)
+_PMB_TRANSMISSION_ID_LENGTH_FULLBYTES = 3
+_PMB_TRANSMISSION_ID_LENGTH_HALFBYTES = 4
 
 # Length of the checksum in the message. Must fit for 16 bits, so we need at least 3 MIDI half-bytes.
 _PMB_CHECKSUM_LENGTH_FULLBYTES = 2
@@ -85,6 +86,8 @@ _PMB_CHECKSUM_LENGTH_HALFBYTES = 3
 # Endianess for conversion of numbers (not for the data itself!)
 _PMB_NUMBER_ENC_ENDIANESS = "big"
 
+# Encoding for strings during transfer
+_PMB_STRING_ENCODING = "utf-8"
 
 ####################################################################################################################
     
@@ -92,25 +95,25 @@ _PMB_NUMBER_ENC_ENDIANESS = "big"
 # Use an instance of this to use the functionality.
 class PyMidiBridge:
 
-    # Next file ID
+    # Next transmission ID
     _NEXT_ID = 1   
 
     # midi_send:        Object to send SystemExclusive messages. See MidiSender.
     # storage:          Object to interact with storage. See StorageProvider.
     # event_handler:    Optional event handler, used to handle incoming errors as well as other stuff. 
     #                   See EventHaldler definition below. 
-    # read_chunk_size:  Chunk size to read files (bytes)
+    # send_chunk_size:  Chunk size to read files (bytes)
     #
-    def __init__(self, midi, storage, event_handler = None, read_chunk_size = 1024):
+    def __init__(self, midi, storage, event_handler = None, send_chunk_size = 1024):
         self._midi = midi
         self._storage = storage
         self._event_handler = event_handler
-        self._read_chunk_size = read_chunk_size
+        self._send_chunk_size = send_chunk_size
 
-        self._write_file_id = None       # Internal file ID currently received.
-        self._write_handle = None        # Write file handle (as returned by storage.open())
-        self._write_amount_chunks = -1   # Amount of chunks to be received
-        self._write_last_chunk = -1      # Counts received chunks
+        self._receive_transmission_id = None       # Internal file ID currently received.
+        self._receive_handle = None        # Write file handle (as returned by storage.open())
+        self._receive_amount_chunks = -1   # Amount of chunks to be received
+        self._receive_last_chunk = -1      # Counts received chunks
 
 
     ## Send Messages ##########################################################################################################
@@ -122,17 +125,17 @@ class PyMidiBridge:
             raise Exception("No path")
 
         # Generate new file ID (internally used)
-        file_id_bytes = self._generate_file_id()                  
+        transmission_id_bytes = self._generate_transmission_id()                  
 
         # Check if file exists and see how many chunks we will need
-        file_size = self._storage.size(path)
-        if file_size < 0:
+        data_size = self._storage.size(path)
+        if data_size < 0:
             raise Exception(repr(path) + " not found")
         
-        if file_size == 0:
+        if data_size == 0:
             raise Exception(repr(path) + " is empty")
         
-        amount_chunks = ceil(file_size / self._read_chunk_size)
+        amount_chunks = ceil(data_size / self._send_chunk_size)
 
         # Open file for reading
         handle = self._storage.open(path, "r")
@@ -140,18 +143,18 @@ class PyMidiBridge:
         # Send start message
         self._send_start_message(
             path = path, 
-            file_id_bytes = file_id_bytes,
+            transmission_id_bytes = transmission_id_bytes,
             amount_chunks = amount_chunks
         )
 
         # Transfer in chunks
         chunk_index = 0
         while(True):
-            chunk = handle.read(self._read_chunk_size)
+            chunk = handle.read(self._send_chunk_size)
             if not chunk:
                 break
 
-            self._send_chunk(file_id_bytes, chunk, chunk_index)
+            self._send_chunk(transmission_id_bytes, chunk, chunk_index)
             chunk_index += 1
 
         handle.close()
@@ -172,10 +175,10 @@ class PyMidiBridge:
 
 
     # Send the "Start of transmission" message
-    def _send_start_message(self, path, file_id_bytes, amount_chunks):     
+    def _send_start_message(self, path, transmission_id_bytes, amount_chunks):     
         amount_chunks_bytes = self._number_2_bytes(amount_chunks, _PMB_CHUNK_INDEX_SIZE_FULLBYTES)   
         
-        payload = file_id_bytes + amount_chunks_bytes + self._string_2_bytes(path)
+        payload = transmission_id_bytes + amount_chunks_bytes + self._string_2_bytes(path)
         checksum = self._get_checksum(payload)
         
         self._midi.send_system_exclusive(
@@ -185,11 +188,11 @@ class PyMidiBridge:
 
 
     # Sends one chunk of data
-    def _send_chunk(self, file_id_bytes, chunk, chunk_index):
+    def _send_chunk(self, transmission_id_bytes, chunk, chunk_index):
         data_bytes = self._string_2_bytes(chunk)
         chunk_index_bytes = self._number_2_bytes(chunk_index, _PMB_CHUNK_INDEX_SIZE_FULLBYTES)
         
-        payload = file_id_bytes + chunk_index_bytes + data_bytes
+        payload = transmission_id_bytes + chunk_index_bytes + data_bytes
         checksum = self._get_checksum(payload)
         
         self._midi.send_system_exclusive(
@@ -198,9 +201,9 @@ class PyMidiBridge:
         )
 
 
-    # Generate a random file ID (4 bytes)
-    def _generate_file_id(self):
-        result = self._number_2_bytes(self._NEXT_ID, _PMB_FILE_ID_LENGTH_FULLBYTES)        
+    # Generate a file ID (4 bytes)
+    def _generate_transmission_id(self):
+        result = self._number_2_bytes(self._NEXT_ID, _PMB_TRANSMISSION_ID_LENGTH_FULLBYTES)        
         self._NEXT_ID += 1        
         return result
     
@@ -249,41 +252,41 @@ class PyMidiBridge:
                 return
 
             # All other messages have a file ID coming next, so we split that off the payload
-            file_id_bytes = payload[:_PMB_FILE_ID_LENGTH_HALFBYTES]
-            payload = payload[_PMB_FILE_ID_LENGTH_HALFBYTES:]
+            transmission_id_bytes = payload[:_PMB_TRANSMISSION_ID_LENGTH_HALFBYTES]
+            payload = payload[_PMB_TRANSMISSION_ID_LENGTH_HALFBYTES:]
 
             # Receive: Start of transmission
             if command_id == PMB_START_MESSAGE:
-                self._receive_start(file_id_bytes, payload)
+                self._receive_start(transmission_id_bytes, payload)
 
             # Receive: Data
             elif command_id == PMB_DATA_MESSAGE:            
-                if file_id_bytes == self._write_file_id:
+                if transmission_id_bytes == self._receive_transmission_id:
                     self._receive_data(payload)
 
             # Ack message
             elif command_id == PMB_ACK_MESSAGE:
                 if self._event_handler:
-                    self._event_handler.transfer_finished(file_id_bytes)
+                    self._event_handler.transfer_finished(transmission_id_bytes)
 
         except Exception as e:
             self._send_error_message(repr(e))
 
 
     # Start receiving file data
-    def _receive_start(self, file_id_bytes, payload):
+    def _receive_start(self, transmission_id_bytes, payload):
         # Reset state
-        self._write_last_chunk = -1
-        self._write_file_id = file_id_bytes
+        self._receive_last_chunk = -1
+        self._receive_transmission_id = transmission_id_bytes
         
         # Amount of chunks overall
-        self._write_amount_chunks = self._bytes_2_number(payload[:_PMB_CHUNK_INDEX_SIZE_HALFBYTES])
+        self._receive_amount_chunks = self._bytes_2_number(payload[:_PMB_CHUNK_INDEX_SIZE_HALFBYTES])
 
         # Path to write to
-        write_file_path = self._bytes_2_string(payload[_PMB_CHUNK_INDEX_SIZE_HALFBYTES:])
+        write_path = self._bytes_2_string(payload[_PMB_CHUNK_INDEX_SIZE_HALFBYTES:])
                                 
         # Open file for appending
-        self._write_handle = self._storage.open(write_file_path, "a")
+        self._receive_handle = self._storage.open(write_path, "a")
 
 
     # Receive file data
@@ -295,32 +298,32 @@ class PyMidiBridge:
         str_data = self._bytes_2_string(payload[_PMB_CHUNK_INDEX_SIZE_HALFBYTES:])
     
         # Only accept if the chunk index is the one expected
-        if index != self._write_last_chunk + 1:
-            raise Exception("Invalid chunk") #"Invalid chunk " + repr(index) + ", expected " + repr(self._write_last_chunk + 1))
+        if index != self._receive_last_chunk + 1:
+            raise Exception("Invalid chunk") #"Invalid chunk " + repr(index) + ", expected " + repr(self._receive_last_chunk + 1))
         
-        self._write_last_chunk = index
+        self._receive_last_chunk = index
 
         # Append to file
-        self._write_handle.write(str_data)
+        self._receive_handle.write(str_data)
 
         # If this has been the last chunk, close the file handle and send ack message
-        if index == self._write_amount_chunks - 1:
+        if index == self._receive_amount_chunks - 1:
             self._receive_finish()
 
 
     # Finish receiving and send acknowledge message
     def _receive_finish(self):
         # Finished (last chunk received)
-        self._write_handle.close()
-        self._write_handle = None
+        self._receive_handle.close()
+        self._receive_handle = None
         
-        self._send_ack_message(self._write_file_id)
-        self._write_file_id = None
+        self._send_ack_message(self._receive_transmission_id)
+        self._receive_transmission_id = None
 
 
     # Sends the "acknowledge successful transfer" message
-    def _send_ack_message(self, file_id_bytes):
-        payload = file_id_bytes
+    def _send_ack_message(self, transmission_id_bytes):
+        payload = transmission_id_bytes
         checksum = self._get_checksum(payload)
         
         self._midi.send_system_exclusive(
@@ -374,19 +377,16 @@ class PyMidiBridge:
 
 
     # String to bytearray conversion (only returns MIDI half-bytes)
-    def _string_2_bytes(self, str):
-        return self._pack_bytes(bytes([ord(c) for c in str]) + b'\x00')
-
+    def _string_2_bytes(self, str):        
+        return self._pack_bytes(str.encode(_PMB_STRING_ENCODING))
 
     # Bytearray to string conversion 
     def _bytes_2_string(self, data):
-        return ''.join(chr(int(c)) for c in list(self._unpack_bytes(data[:-1])))
-    
+        return ''.join(self._unpack_bytes(data).decode(_PMB_STRING_ENCODING))    
 
     # Number to bytearray conversion (only returns MIDI half-bytes)
     def _number_2_bytes(self, num, num_bytes):
         return self._pack_bytes(num.to_bytes(num_bytes, _PMB_NUMBER_ENC_ENDIANESS))
-
 
     # Bytes to number conversion
     def _bytes_2_number(self, data):
@@ -449,7 +449,7 @@ class PyMidiBridge:
 #         pass
 #
 #     # Called when the bridge received notice about a finished transfer on the other side
-#     def transfer_finished(self, file_id_bytes):
+#     def transfer_finished(self, transmission_id_bytes):
 #         pass
 
 
