@@ -1,4 +1,5 @@
-from os import stat, rename
+import json
+from os import stat, rename, listdir
 from adafruit_midi.system_exclusive import SystemExclusive
 from pymidibridge import PyMidiBridge
 from ..misc import do_print
@@ -45,7 +46,7 @@ class MidiBridgeWrapper:
 
     # Called when the bridge received an error message
     def handle(self, message):
-        do_print(message)
+        do_print("MIDI Bridge error: " + repr(message))
 
     # Called when the bridge received notice about a finished transfer on the other side
     def transfer_finished(self, file_id_bytes):
@@ -107,12 +108,34 @@ class _StorageProvider:
             self._handle.close()
             self._handle = None
 
+    # File handle for reading folder listing
+    class _FileHandleListDir:
+        def __init__(self, path):
+            self._listing = json.dumps(listdir(path))
+
+        # Must read from the file handle
+        def read(self, amount_bytes):
+            ret = self._listing[:amount_bytes]
+            self._listing = self._listing[amount_bytes:]
+            return ret
+
+        # Must append data to the passed file handle
+        def write(self, data):
+            raise Exception()
+
+        # Must close the file handle
+        def close(self):
+            pass
+
     # You have to provide a path for a temporary file, used to buffer contents.
     def __init__(self, temp_file_path):
         self._temp_file_path = temp_file_path
         
     # Must return file size
     def size(self, path):
+        if self._is_dir(path):
+            return len(json.dumps(listdir(path)))
+        
         return stat(path)[6]
     
     # Must return an opened file handle
@@ -123,6 +146,15 @@ class _StorageProvider:
                 final_path = path
             )
         elif mode == "r":
-            return self._FileHandleRead(
-                path = path
-            )
+            if self._is_dir(path):
+                return self._FileHandleListDir(
+                    path = path
+                )
+            else:
+                return self._FileHandleRead(
+                    path = path
+                )
+
+    # Is path a folder?
+    def _is_dir(self, path):
+        return stat(path)[0] > 0
