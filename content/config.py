@@ -31,7 +31,7 @@ Config = {
 
     # Enables file transfer via MIDI from and to the device using PyMidiBridge (https://github.com/Tunetown/PyMidiBridge).
     # This costs about 8kB of RAM, so if you run into memory issues, disable this.
-    #"enableMidiBridge": True,
+    "enableMidiBridge": True,
 
     ## Development Options ###################################################################################################################
 

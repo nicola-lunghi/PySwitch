@@ -31,9 +31,24 @@ class MidiBridgeWrapper:
 
         return msg
     
+    # Sends the passed error message to clients and keeps receiving messages forever
+    def error(self, message):
+        # Print error
+        do_print(message)        
+
+        # Send error message
+        self._bridge.error(message)
+
+        # Initiate a simple transmission loop to enable receiving files
+        do_print("Listening to bridge messages...")
+
+        while True:
+            msg = self._midi.receive()
+        
+            if msg:
+                self._bridge.receive(msg)                
 
     ## Callbacks ###################################################################################
-
 
     # Must send the passed data as MIDI system exclusive message (used by the bridge)
     def send_system_exclusive(self, manufacturer_id, data):

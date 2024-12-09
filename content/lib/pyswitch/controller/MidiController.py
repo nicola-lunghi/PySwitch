@@ -65,7 +65,7 @@ class MidiController:
 
     def send(self, midi_message):
         # Send to all routings which have APPLICATION as source
-        for r in self._routings_from_appl:        
+        for r in self._routings_from_appl:    
             r.target.send(midi_message)
 
     def receive(self):
