@@ -47,6 +47,18 @@ The whole configuration is done in some files in the root directory (of the devi
 
 These files can make use of the objects contained in **lib/pyswitch/clients/kemper.py** which provide all necessary mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change). Contributors welcome!
 
+## Editing via the Browser
+
+PySwitch now already has <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a> integrated. This makes all files editable via your Web Browser! <a href="https://demo.midibridge.tunetown.de">Click here</a> with your device connected to the computer via USB (no switches pressed!) and it will automatically connect. This needs no USB mounting/unmounting and is useful for quick experimenting. Also, it should serve as proof-of-concept for building a visual editor in the future.
+
+The editor is by no means fully developed:
+    - You can just browse the files, read/write them, no delete/create etc.
+    - The syntax checking is pretty basic and reports much false errors
+
+However, it is way faster editing your switches.py file this way than having to mount/unmount every time. Even syntax errors are reported back to the browser ;) check it out.
+
+In the rare case you run out of memory with your very large patch for example, this can be disabled in config.py with option "enableMidiBridge" set to False. The library needs about 10k of memory. Under normal circumstances, every configuration should run with it enabled.
+
 ### Global configuration
 
 The file **config.py** only defines one dict named Config, which by default is empty. Please refer to the comments in the file for details on the possible options, which are all optional.

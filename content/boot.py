@@ -1,6 +1,6 @@
 import board
 
-from storage import disable_usb_drive
+from storage import disable_usb_drive, remount
 from digitalio import DigitalInOut, Direction, Pull
 from time import sleep
 from supervisor import disable_autoreload
@@ -27,46 +27,14 @@ switch_mount_usb = init_switch(board.GP1)
 # When this switch is pressed during boot, the autoreload feature will be enabled (rebooting on every drive change)
 switch_autoreload = init_switch(board.GP25)     
 
-# No USB drive in normal operation
-if is_switch_pressed(switch_mount_usb) == False:
-    disable_usb_drive()
-
-# No autoreload in normal operation
-if is_switch_pressed(switch_autoreload) == False:
-	disable_autoreload()
-
 ############################################################################################
 
+# No USB drive in normal operation, but we need to write on the drive via MIDI bridge.
+if not is_switch_pressed(switch_mount_usb):	
+    disable_usb_drive()
+    remount("/", readonly = False)
 
-# Board Infos
-# Raspberry Pi Pico (RP2040)
-#
-# GP0
-# GP1  - FootSwitch 1
-# GP2
-# GP3
-# GP4  bat_chg_led
-# GP5
-# GP6  charging
-# GP7  NeoPixel
-# GP8  asyncio PWMOut frequency
-# GP9  - FootSwitch 3
-# GP10 - FootSwitch 4
-# GP11 
-# GP12 tft_dc   (SPI1 RX)
-# GP13 tft_cs   (Chip Select)
-# GP14 spi_clk  (SPI1SCK)
-# GP15 spi_mosi (SPI1 TX)
-# GP16 Midi GP16GP17 baudrate
-# GP17 Midi GP16GP17 baudrate
-# GP18
-# GP19
-# GP20
-# GP21
-# GP22
-# GP23
-# GP24 
-# GP25 - FootSwitch 2
-# GP26
-# GP27
-# GP28
+
+# No autoreload in normal operation
+if not is_switch_pressed(switch_autoreload):
+	disable_autoreload()

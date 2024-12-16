@@ -1,1 +1,3 @@
 import pyswitch
+
+pyswitch.init()

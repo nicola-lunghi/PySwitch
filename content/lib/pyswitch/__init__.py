@@ -7,98 +7,104 @@
 #
 #################################################################################################################################
 
-from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader, AdafruitSwitch
-from pyswitch.misc import get_option
 
-# Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)
-_display_driver = AdafruitST7789DisplayDriver()
-_display_driver.init()
+def init():
+    from pyswitch.stats import Memory
+    Memory.start()
 
-# Load global config
-from config import Config
+    from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader, AdafruitSwitch
+    from pyswitch.misc import get_option
 
-# NeoPixel driver 
-_led_driver = AdafruitNeoPixelDriver()
+    # Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)
+    _display_driver = AdafruitST7789DisplayDriver()
+    _display_driver.init()
 
-# Buffered font loader
-_font_loader = AdafruitFontLoader()
+    # Load global config
+    from config import Config
 
-if not get_option(Config, "exploreMode"):
-    # Normal operation
-    from pyswitch.controller.Controller import Controller
-    from pyswitch.controller.MidiController import MidiController
-    from pyswitch.ui.UiController import UiController    
+    # NeoPixel driver 
+    _led_driver = AdafruitNeoPixelDriver()
 
-    # Load communication configuration
-    from communication import Communication        
+    # Buffered font loader
+    _font_loader = AdafruitFontLoader()
 
-    # MIDI controller (does the routing)
-    midi_ctr = MidiController(
-        routings = Communication["midi"]["routings"]
-    )
+    if not get_option(Config, "exploreMode"):
+        # Normal operation
+        from pyswitch.controller.Controller import Controller
+        from pyswitch.controller.MidiController import MidiController
+        from pyswitch.ui.UiController import UiController    
 
-    # Optional Wrapper to include the PyMidiBridge for transfering files.
-    # Disable this to save memory.
-    if get_option(Config, "enableMidiBridge"):
-        from pyswitch.controller.MidiBridgeWrapper import MidiBridgeWrapper
+        # Load communication configuration
+        from communication import Communication        
 
-        midi = MidiBridgeWrapper(
-            midi = midi_ctr,
-            temp_file_path = '/.bridge_tmp'
+        # MIDI controller (does the routing)
+        midi_ctr = MidiController(
+            routings = Communication["midi"]["routings"]
         )
+
+        # Optional Wrapper to include the PyMidiBridge for transfering files.
+        # Disable this to save memory.
+        if get_option(Config, "enableMidiBridge"):
+            from pymidibridge.MidiBridgeWrapper import MidiBridgeWrapper
+
+            midi = MidiBridgeWrapper(
+                midi = midi_ctr,
+                temp_file_path = '/.bridge_tmp',
+                # debug = True
+            )
+        else:
+            midi = midi_ctr
+
+        try:
+            # Load configuration files
+            from display import Splashes
+            from switches import Switches
+
+            # Controller instance (runs the processing loop and keeps everything together)
+            _appl = Controller(
+                led_driver = _led_driver, 
+                protocol = get_option(Communication, "protocol", None),
+                midi = midi,
+                config = Config, 
+                switches = Switches, 
+                ui = UiController(
+                    display_driver = _display_driver,
+                    font_loader = _font_loader,
+                    splash_callback = Splashes
+                )
+            )
+            
+            _appl.process()
+
+        except Exception as e:
+            if get_option(Config, "enableMidiBridge"):
+                import traceback
+                message = traceback.format_exception(None, e, e.__traceback__)
+                midi.error(message)
+            else:
+                raise e
+
     else:
-        midi = midi_ctr
+        # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
+        # on unknown devices, to create layouts for the configuration.
+        from pyswitch.controller.ExploreModeController import ExploreModeController
+        from pyswitch.ui.UiController import UiController
+        import board
 
-    try:
-        # Load configuration files
-        from display import Splashes
-        from switches import Switches
+        # Switch factory
+        class _SwitchFactory:
+            def create_switch(self, port):
+                return AdafruitSwitch(port)
 
-        # Controller instance (runs the processing loop and keeps everything together)
-        _appl = Controller(
+        _appl = ExploreModeController(
+            board = board, 
+            switch_factory = _SwitchFactory(), 
             led_driver = _led_driver, 
-            protocol = get_option(Communication, "protocol", None),
-            midi = midi,
-            config = Config, 
-            switches = Switches, 
             ui = UiController(
                 display_driver = _display_driver,
-                font_loader = _font_loader,
-                splash_callback = Splashes
+                font_loader = _font_loader
             )
         )
-        
+
         _appl.process()
-
-    except Exception as e:
-        if get_option(Config, "enableMidiBridge"):
-            import traceback
-            message = traceback.format_exception(None, e, e.__traceback__)
-            midi.error(message)
-        else:
-            raise e
-
-else:
-    # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
-    # on unknown devices, to create layouts for the configuration.
-    from pyswitch.controller.ExploreModeController import ExploreModeController
-    from pyswitch.ui.UiController import UiController
-    import board
-
-    # Switch factory
-    class _SwitchFactory:
-        def create_switch(self, port):
-            return AdafruitSwitch(port)
-
-    _appl = ExploreModeController(
-        board = board, 
-        switch_factory = _SwitchFactory(), 
-        led_driver = _led_driver, 
-        ui = UiController(
-            display_driver = _display_driver,
-            font_loader = _font_loader
-        )
-    )
-
-    _appl.process()
-    
+        
