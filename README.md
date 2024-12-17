@@ -56,7 +56,7 @@ The whole configuration is done in some files in the root directory (of the devi
 
 These files can make use of the objects contained in **lib/pyswitch/clients/kemper.py** which provide all necessary mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change). Contributors welcome!
 
-## Editing via the Browser
+## Editing Configuration via the Browser
 
 PySwitch now has <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a> integrated. This makes all files editable in the Web Browser ;) With your device connected via USB, visit this web site (which contains the demo from the MidiBridge Project): <a href="https://demo.midibridge.tunetown.de">https://demo.midibridge.tunetown.de</a>. It will automatically connect to the first found connected device running a MidiBridge. This needs no USB mounting/unmounting (do NOT press switches on startup like you normally do to change files). 
 
@@ -79,7 +79,29 @@ However, it is sometimes way faster editing your switches.py file this way than 
 
 ### Global configuration
 
-The file **config.py** contains the global device configuration, and only defines one dictionary named "Config", which by default is empty. Please refer to the comments in the file for details on the possible options, which are all optional.
+The file **config.py** contains the global device configuration, and only defines one dictionary named "Config". Here is just a minimal example, for all available options, please refer to the comments in the delivered config.py file.
+
+```python
+Config = {
+    # Enables file transfer via MIDI from and to the device using 
+    # PyMidiBridge (https://github.com/Tunetown/PyMidiBridge).
+    # This costs about 8kB of RAM, so if you run into memory issues, 
+    # disable this.
+    "enableMidiBridge": True,
+
+    # Globally used dim factors for the DisplayLabels. Much actions can 
+    # override this via parameters, but the global default must be
+    # specified here.
+    "displayDimFactorOn": 1,
+    "displayDimFactorOff": 0.2,
+
+    # Globally used brightness values for the LEDs. Much actions can 
+    # override this via parameters, but the global default must be 
+    # specified here.
+    "ledBrightnessOn": 0.3,
+    "ledBrightnessOff": 0.02
+}
+```
 
 ### Switch Assignment
 

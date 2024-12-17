@@ -9,8 +9,9 @@
 
 
 def init():
-    from pyswitch.stats import Memory
-    Memory.start()
+    # Uncomment these two lines to enable memory monitoring
+    #from pyswitch.stats import Memory
+    #Memory.start()
 
     from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader, AdafruitSwitch
     from pyswitch.misc import get_option
@@ -49,8 +50,7 @@ def init():
 
             midi = MidiBridgeWrapper(
                 midi = midi_ctr,
-                temp_file_path = '/.bridge_tmp',
-                # debug = True
+                temp_file_path = '/.bridge_tmp'
             )
         else:
             midi = midi_ctr
@@ -78,9 +78,7 @@ def init():
 
         except Exception as e:
             if get_option(Config, "enableMidiBridge"):
-                import traceback
-                message = traceback.format_exception(None, e, e.__traceback__)
-                midi.error(message)
+                midi.error(e)
             else:
                 raise e
 

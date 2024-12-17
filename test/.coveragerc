@@ -3,7 +3,7 @@ branch = True
 source = /project
 omit = 
     /project/lib/pyswitch/hardware/*
-    /project/lib/pymidibridge.py
+    /project/lib/pymidibridge/*
     /project/lib/functools.py
     /project/test/*
     
