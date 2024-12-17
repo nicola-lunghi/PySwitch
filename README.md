@@ -60,6 +60,8 @@ These files can make use of the objects contained in **lib/pyswitch/clients/kemp
 
 PySwitch now has <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a> integrated. This makes all files editable in the Web Browser ;) With your device connected via USB, visit this web site (which contains the demo from the MidiBridge Project): <a href="https://demo.midibridge.tunetown.de">https://demo.midibridge.tunetown.de</a>. It will automatically connect to the first found connected device running a MidiBridge. This needs no USB mounting/unmounting (do NOT press switches on startup like you normally do to change files). 
 
+![image](https://github.com/user-attachments/assets/af22457f-58da-4c72-9478-05eecde106a7)
+
 This should serve as proof-of-concept for building a visual editor in the future.
 
 The editor is only a demo application, by no means fully developed:
