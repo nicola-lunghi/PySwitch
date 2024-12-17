@@ -1,6 +1,7 @@
 # PySwitch v2.3.0
+- Default global brightness factors for LEDs and DisplayLabels can now be set optionally in config.py, see comments there.
 - Now supporting file editing from the browser via MIDI using the <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a> library. <a href="https://demo.midibridge.tunetown.de">Click here</a> with your device connected to the computer via USB (no switches pressed!) and it will automatically connect. This needs no USB mounting/unmounting and is useful for quick experimenting. Should also serve as proof-of-concept for building a visual editor in the future.
-- The code from code.py now is moved to a function in the __init__.py of the module, so multi-boot scenarios (different firmwares on button presses on boot, like @gstrotmanns version does) are also possible. Unit tests added for the init script.
+- The code from code.py now is moved to a function inside the init script of the module, so multi-boot scenarios (different firmwares on button presses on boot, like @gstrotmanns version does) are also possible. Unit tests added for the init script.
 
 # PySwitch v2.2.2
 - Morph pedal position can now be requested from the Kemper. The position can be visualized with colors (faded between red and blue). See tehguitarist's example. Thanks to @sumsar for the NRPN mapping info.

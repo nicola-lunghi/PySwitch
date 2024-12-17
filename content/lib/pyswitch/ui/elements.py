@@ -50,66 +50,67 @@ class DisplayLabel(DisplayElement):
     def __init__(self, layout = None, bounds = DisplayBounds(), name = "", id = 0, scale = 1, callback = None):
         super().__init__(bounds = bounds, name = name, id = id)
 
-        self._layout = DisplayLabelLayout(layout if layout else {})
-        self._layout.check(self.id)
-        self._initial_text_color = self._layout.text_color        
+        self.__layout = DisplayLabelLayout(layout if layout else {})
+        self.__layout.check(self.id)
+        self.__initial_text_color = self.__layout.text_color        
 
-        self._scale = scale
-        self._callback = callback
+        self.__scale = scale
+        self.__callback = callback
 
-        self._ui = None    
-        self._appl = None
-        self._background = None 
-        self._label = None
+        self.__ui = None    
+        self.__appl = None
+        self.__background = None 
+        self.__label = None
         
     # Adds the slot to the splash
     def init(self, ui, appl):
-        self._ui = ui
-        self._appl = appl
+        self.__ui = ui
+        self.__appl = appl
 
-        self._update_font()
+        self.__update_font()
 
-        if self._callback:
+        if self.__callback:
+            cb = self.__callback
             that = self
 
             class _CallbackMappingListener:
                 def parameter_changed(self, mapping):
-                    that._callback.update_label(that)
+                    cb.update_label(that)
 
                 def request_terminated(self, mapping):
-                    that._callback.update_label(that)       
+                    cb.update_label(that)       
 
-            self._callback.init(appl, _CallbackMappingListener())
+            self.__callback.init(appl, _CallbackMappingListener())
 
         # Append background, if any
-        if self._layout.back_color:
-            self._background = Rect(
-                x = self.bounds.x + self._layout.stroke, 
-                y = self.bounds.y + self._layout.stroke,
-                width = self.bounds.width - self._layout.stroke * 2, 
-                height = self.bounds.height - self._layout.stroke * 2, 
-                fill = self._layout.back_color
+        if self.__layout.back_color:
+            self.__background = Rect(
+                x = self.bounds.x + self.__layout.stroke, 
+                y = self.bounds.y + self.__layout.stroke,
+                width = self.bounds.width - self.__layout.stroke * 2, 
+                height = self.bounds.height - self.__layout.stroke * 2, 
+                fill = self.__layout.back_color
             )
-            ui.splash.append(self._background)
+            ui.splash.append(self.__background)
 
         # Trigger automatic text color determination
-        self.text_color = self._layout.text_color
+        self.text_color = self.__layout.text_color
 
         # Trigger text wrapping
-        self.text = self._layout.text
+        self.text = self.__layout.text
 
         # Append text area
-        self._label = label.Label(
-            self._font,
+        self.__label = label.Label(
+            self.__font,
             anchor_point = (0.5, 0.5), 
             anchored_position = (
                 int(self.bounds.width / 2), 
                 int(self.bounds.height / 2)
             ),
-            text = self._wrap_text(self._layout.text),
-            color = self._layout.text_color,
-            line_spacing = self._layout.line_spacing,
-            scale = self._scale
+            text = self.__wrap_text(self.__layout.text),
+            color = self.__layout.text_color,
+            line_spacing = self.__layout.line_spacing,
+            scale = self.__scale
         )
         
         group = Group(
@@ -117,85 +118,85 @@ class DisplayLabel(DisplayElement):
             x = self.bounds.x, 
             y = self.bounds.y
         )
-        group.append(self._label)
+        group.append(self.__label)
         ui.splash.append(group)
 
         super().init(ui, appl)
 
     # Update font according to layout
-    def _update_font(self):
-        self._font = self._ui.font_loader.get(self._layout.font_path)
+    def __update_font(self):
+        self.__font = self.__ui.font_loader.get(self.__layout.font_path)
 
     @property
     def back_color(self):
-        return self._layout.back_color
+        return self.__layout.back_color
 
     @back_color.setter
     def back_color(self, color):
-        if self._layout.back_color and not color:            
+        if self.__layout.back_color and not color:            
             raise Exception() #"You can not remove a background (set color to black instead)")            
 
-        if not self._layout.back_color and color:
+        if not self.__layout.back_color and color:
             raise Exception() #"You can only change the background color if an initial background color has been passed")
         
-        if self._layout.back_color == color:
+        if self.__layout.back_color == color:
             return
 
-        self._layout.back_color = color
+        self.__layout.back_color = color
 
-        if self._background:
-            self._background.fill = color
+        if self.__background:
+            self.__background.fill = color
 
         # Update text color, too (might change when no initial color has been set)
-        self.text_color = self._initial_text_color
+        self.text_color = self.__initial_text_color
 
     @property
     def text_color(self):
-        return self._layout.text_color
+        return self.__layout.text_color
 
     @text_color.setter
     def text_color(self, color):
         text_color = color        
         if not text_color:
-            text_color = self._determine_text_color()
+            text_color = self.__determine_text_color()
 
-        if self._layout.text_color == text_color:
+        if self.__layout.text_color == text_color:
             return
         
-        self._layout.text_color = text_color
+        self.__layout.text_color = text_color
 
-        if self._label:
-            self._label.color = text_color
+        if self.__label:
+            self.__label.color = text_color
 
     @property
     def text(self):
-        return self._layout.text
+        return self.__layout.text
 
     @text.setter
     def text(self, text):
         # In case of low memory detected by the controller, we just show this information
-        if self._appl and hasattr(self._appl, "low_memory_warning") and self._appl.low_memory_warning:
+        if self.__appl and hasattr(self.__appl, "low_memory_warning") and self.__appl.low_memory_warning:
             text = "Low Memory!"
         
-        if self._layout.text == text:
+        if self.__layout.text == text:
             return
         
-        self._layout.text = text
+        self.__layout.text = text
 
-        if self._label:
-            self._label.text = self._wrap_text(text)
+        if self.__label:
+            self.__label.text = self.__wrap_text(text)
 
     # Wrap text if requested
-    def _wrap_text(self, text):
+    def __wrap_text(self, text):
         if not text:
             return ""
         
-        if self._layout.max_text_width:
+        if self.__layout.max_text_width:
             return DisplayLabel.LINE_FEED.join(
                 wrap_text_to_pixels(
                     text, 
-                    self._layout.max_text_width,
-                    self._font
+                    self.__layout.max_text_width,
+                    self.__font
                 )
             )
         else:
@@ -203,7 +204,7 @@ class DisplayLabel(DisplayElement):
 
     # Determines a matching text color to the current background color.
     # Algorithm adapted from https://nemecek.be/blog/172/how-to-calculate-contrast-color-in-python
-    def _determine_text_color(self):
+    def __determine_text_color(self):
         if not self.back_color:
             return Colors.WHITE
         
@@ -303,63 +304,63 @@ class TunerDevianceDisplay(DisplayElement):
         DisplayElement.__init__(self, bounds = bounds, id = id)
 
         self.width = width
-        self._zoom = zoom
+        self.__zoom = zoom
 
-        self._color_in_tune = color_in_tune
-        self._color_out_of_tune = color_out_of_tune
-        self._color_neutral = color_neutral
-        self._calibration_high = calibration_high
-        self._calibration_low = calibration_low
+        self.__color_in_tune = color_in_tune
+        self.__color_out_of_tune = color_out_of_tune
+        self.__color_neutral = color_neutral
+        self.__calibration_high = calibration_high
+        self.__calibration_low = calibration_low
 
-        self._current_color = None
+        self.__current_color = None
         self.in_tune = False
 
     def init(self, ui, appl):
         DisplayElement.init(self, ui, appl)
         
-        self._marker_intune = Rect(
+        self.__marker_intune = Rect(
             x = int((self.bounds.width - self.width) * 0.5),
             y = self.bounds.y,
             width = self.width,
             height = self.bounds.height,
-            fill = self._color_neutral
+            fill = self.__color_neutral
         )
 
-        ui.splash.append(self._marker_intune)
+        ui.splash.append(self.__marker_intune)
 
-        self._marker = Rect(
+        self.__marker = Rect(
             x = int((self.bounds.width - self.width) * 0.5),
             y = self.bounds.y,
             width = self.width,
             height = self.bounds.height,
-            fill = self._color_in_tune
+            fill = self.__color_in_tune
         )
-        self._current_color = self._marker.fill
+        self.__current_color = self.__marker.fill
 
-        ui.splash.append(self._marker)
+        ui.splash.append(self.__marker)
 
     # Sets deviance value in range [0..16383]
     def set(self, value):
         value_scaled = value
-        if self._zoom != 1:
-            value_scaled = max(-8192, min(int((value - 8192) * self._zoom), 8192)) + 8191
+        if self.__zoom != 1:
+            value_scaled = max(-8192, min(int((value - 8192) * self.__zoom), 8192)) + 8191
 
-        self._marker.x = int((self.bounds.width - self.width) * value_scaled / 16384)
+        self.__marker.x = int((self.bounds.width - self.width) * value_scaled / 16384)
 
-        if value >= self._calibration_low and value <= self._calibration_high:
+        if value >= self.__calibration_low and value <= self.__calibration_high:
             self.in_tune = True
-            self.set_color(self._color_in_tune)
+            self.set_color(self.__color_in_tune)
         else:
             self.in_tune = False
-            self.set_color(self._color_out_of_tune)
+            self.set_color(self.__color_out_of_tune)
 
     # Sets the color
     def set_color(self, color):
-        if self._current_color == color:
+        if self.__current_color == color:
             return
         
-        self._current_color = color
-        self._marker.fill = color
+        self.__current_color = color
+        self.__marker.fill = color
 
 
 ###########################################################################################################################
@@ -385,13 +386,13 @@ class TunerDisplay(HierarchicalDisplayElement):
         ):
         HierarchicalDisplayElement.__init__(self, bounds = bounds)
 
-        self._mapping_note = mapping_note
-        self._mapping_deviance = mapping_deviance
+        self.__mapping_note = mapping_note
+        self.__mapping_deviance = mapping_deviance
 
-        self._color_in_tune = color_in_tune
-        self._color_out_of_tune = color_out_of_tune
-        self._color_neutral = color_neutral
-        self._note_names = note_names if note_names else ('C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B')
+        self.__color_in_tune = color_in_tune
+        self.__color_out_of_tune = color_out_of_tune
+        self.__color_neutral = color_neutral
+        self.__note_names = note_names if note_names else ('C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B')
 
         self.label_note = DisplayLabel(
             bounds = bounds,
@@ -400,10 +401,7 @@ class TunerDisplay(HierarchicalDisplayElement):
         )
         self.add(self.label_note)
 
-        self._label_left = None
-        self._label_right = None
-
-        if self._mapping_deviance:
+        if self.__mapping_deviance:
             self.deviance = TunerDevianceDisplay(
                 bounds = bounds.bottom(deviance_height),
                 width = deviance_width,
@@ -416,49 +414,49 @@ class TunerDisplay(HierarchicalDisplayElement):
             )            
             self.add(self.deviance)
 
-        self._last_note = None
-        self._last_deviance = 8192
+        self.__last_note = None
+        self.__last_deviance = 8192
 
     # We need access to the client, so we store appl here
     def init(self, ui, appl):
         HierarchicalDisplayElement.init(self, ui, appl)
 
-        self._appl = appl
+        self.__appl = appl
         
-        self._appl.client.register(self._mapping_note, self)
+        self.__appl.client.register(self.__mapping_note, self)
         
-        if self._mapping_deviance:
-            self._appl.client.register(self._mapping_deviance, self)
+        if self.__mapping_deviance:
+            self.__appl.client.register(self.__mapping_deviance, self)
 
     # Reset the display
     def reset(self):
-        self._last_note = None
-        self._last_deviance = 8192
+        self.__last_note = None
+        self.__last_deviance = 8192
         
         self.label_note.text = "-"
-        self.label_note.text_color = self._color_neutral
+        self.label_note.text_color = self.__color_neutral
 
     # Listen to client value returns
     def parameter_changed(self, mapping):
         value = mapping.value
 
-        if mapping == self._mapping_note and value != self._last_note:
-            self._last_note = mapping.value
+        if mapping == self.__mapping_note and value != self.__last_note:
+            self.__last_note = mapping.value
 
-            self.label_note.text = self._note_names[value % 12]            
+            self.label_note.text = self.__note_names[value % 12]            
 
-        if mapping == self._mapping_deviance and value != self._last_deviance:
-            self._last_deviance = value        
+        if mapping == self.__mapping_deviance and value != self.__last_deviance:
+            self.__last_deviance = value        
             
-            self.deviance.set(self._last_deviance)            
+            self.deviance.set(self.__last_deviance)            
 
             # Uncomment this for calibration.
             #self._debug_calibration(mapping.value)            
 
             if self.deviance.in_tune:
-                self.label_note.text_color = self._color_in_tune
+                self.label_note.text_color = self.__color_in_tune
             else:
-                self.label_note.text_color = self._color_out_of_tune
+                self.label_note.text_color = self.__color_out_of_tune
 
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
@@ -503,7 +501,7 @@ class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
     def __init__(self, measurement_id, bounds = DisplayBounds(), name = "", id = 0):
         super().__init__(bounds = bounds, name = name, id = id)
 
-        self._measurement_id = measurement_id        
+        self.__measurement_id = measurement_id        
 
     # Add measurements to controller
     def init(self, ui, appl):
@@ -511,29 +509,29 @@ class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
 
         r = int(self.bounds.width / 2) if self.bounds.width > self.bounds.height else int(self.bounds.height / 2)
         
-        self._dot = Rect(
+        self.__dot = Rect(
             x = self.bounds.x, 
             y = self.bounds.y,
             width = 2 * r,
             height = 2 * r,
             fill = (0, 0, 0)
         )
-        ui.splash.append(self._dot)
+        ui.splash.append(self.__dot)
 
-        self._measurement = appl.get_measurement(self._measurement_id)
-        self._measurement.add_listener(self)
+        self.__measurement = appl.get_measurement(self.__measurement_id)
+        self.__measurement.add_listener(self)
 
     def measurement_updated(self, measurement):
-        tick_percentage = self._measurement.value / self._measurement.interval_millis
+        tick_percentage = self.__measurement.value / self.__measurement.interval_millis
         
         if tick_percentage <= 1.0:
-            self._dot.fill = (0, 0, 0)
+            self.__dot.fill = (0, 0, 0)
 
         elif tick_percentage <= 2.0:
-            self._dot.fill = (120, 120, 0) 
+            self.__dot.fill = (120, 120, 0) 
 
         else:
-            self._dot.fill = (255, 0, 0)
+            self.__dot.fill = (255, 0, 0)
         
 
 ###########################################################################################################################
@@ -546,37 +544,37 @@ class BidirectionalProtocolState(DisplayElement, Updateable):
     def __init__(self, bounds = DisplayBounds(), name = "", id = 0):
         DisplayElement.__init__(self, bounds = bounds, name = name, id = id)
 
-        self._current_color = None
+        self.__current_color = None
 
     def init(self, ui, appl):
         DisplayElement.init(self, ui, appl)
-        self._appl = appl
+        self.__appl = appl
 
-        if not isinstance(self._appl.client, BidirectionalClient):
+        if not isinstance(self.__appl.client, BidirectionalClient):
             return
 
         r = int(self.bounds.width / 2) if self.bounds.width > self.bounds.height else int(self.bounds.height / 2)
         
-        self._dot = Rect(
+        self.__dot = Rect(
             x = self.bounds.x, 
             y = self.bounds.y,
             width = 2 * r,
             height = 2 * r,
             fill = (0, 0, 0)
         )
-        ui.splash.append(self._dot)
+        ui.splash.append(self.__dot)
 
     def update(self):
-        if not isinstance(self._appl.client, BidirectionalClient):
+        if not isinstance(self.__appl.client, BidirectionalClient):
             return
 
-        new_color = self._appl.client.protocol.get_color()
+        new_color = self.__appl.client.protocol.get_color()
 
-        if self._current_color == new_color:
+        if self.__current_color == new_color:
             return
 
-        self._current_color = new_color
-        self._dot.fill = self._current_color
+        self.__current_color = new_color
+        self.__dot.fill = self.__current_color
             
 
 ###########################################################################################################################

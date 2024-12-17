@@ -1,39 +1,38 @@
 from micropython import const
-from ..misc import DEFAULT_SWITCH_COLOR, Updateable 
+from ..misc import DEFAULT_SWITCH_COLOR, Updateable, get_option
 #from ...stats import RuntimeStatistics
-
 
 class Callback(Updateable):
     def __init__(self, mappings = []):
         super().__init__()
         
-        self._initialized = False
-        self._mappings = []
+        self.__initialized = False
+        self.__mappings = []
 
         for m in mappings:
             self.register_mapping(m)
 
     # Must be used to register all mappings needed by the callback
     def register_mapping(self, mapping):
-        if self._initialized:
+        if self.__initialized:
             raise Exception() # TODO
         
-        self._mappings.append(mapping)
+        self.__mappings.append(mapping)
 
     # Must be called before usage
     def init(self, appl, listener = None):
-        if self._initialized: 
+        if self.__initialized: 
             return
         
-        self._appl = appl
-        self._listener = listener
+        self.__appl = appl
+        self.__listener = listener
 
-        for m in self._mappings:
-            self._appl.client.register(m, self)
+        for m in self.__mappings:
+            self.__appl.client.register(m, self)
 
-        self._appl.add_updateable(self)
+        self.__appl.add_updateable(self)
 
-        self._initialized = True
+        self.__initialized = True
 
     # Reset state
     def reset(self):
@@ -41,44 +40,36 @@ class Callback(Updateable):
 
     #@RuntimeStatistics.measure
     def update(self):
-        cl = self._appl.client
+        cl = self.__appl.client
 
-        for m in self._mappings:
+        for m in self.__mappings:
             cl.request(m, self)
 
     def parameter_changed(self, mapping):
         # Take over value before calling the listener
-        for m in self._mappings:
+        for m in self.__mappings:
             if m != mapping:
                 continue
 
             m.value = mapping.value
 
-        if self._listener:
-            self._listener.parameter_changed(mapping)
+        if self.__listener:
+            self.__listener.parameter_changed(mapping)
 
     def request_terminated(self, mapping):
         # Clear value before calling the listener
-        for m in self._mappings:
+        for m in self.__mappings:
             if m != mapping:
                 continue
 
             m.value = None
 
-        if self._listener:
-            self._listener.request_terminated(mapping)
+        if self.__listener:
+            self.__listener.request_terminated(mapping)
 
 
 ###########################################################################################################
 
-
-# Brightness values 
-DEFAULT_LED_BRIGHTNESS_ON = 0.3
-DEFAULT_LED_BRIGHTNESS_OFF = 0.02
-
-# Dim factor for disabled effect slots (TFT display only)
-DEFAULT_SLOT_DIM_FACTOR_ON = 1
-DEFAULT_SLOT_DIM_FACTOR_OFF = 0.2
 
 class BinaryParameterCallback(Callback):
 
@@ -131,72 +122,101 @@ class BinaryParameterCallback(Callback):
                  comparison_mode = 20,
 
                  # Dim factor in range [0..1] for on state (display label) Optional.
-                 display_dim_factor_on = DEFAULT_SLOT_DIM_FACTOR_ON,
+                 # If None, the global config value will be used
+                 # If "off", the global off config value will be used.
+                 display_dim_factor_on = None,
 
                  # Dim factor in range [0..1] for off state (display label) Optional.
-                 display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_OFF,
+                 # If None, the global config value will be used
+                 # If "on", the global on config value will be used.
+                 display_dim_factor_off = None,
                  
                  # LED brightness [0..1] for on state (Switch LEDs) Optional.
-                 led_brightness_on = DEFAULT_LED_BRIGHTNESS_ON,
+                 # If None, the global config value will be used
+                 # If "off", the global off config value will be used.
+                 led_brightness_on = None,
 
                  # LED brightness [0..1] for off state (Switch LEDs) Optional.
-                 led_brightness_off = DEFAULT_LED_BRIGHTNESS_OFF
+                 # If None, the global config value will be used
+                 # If "on", the global on config value will be used.
+                 led_brightness_off = None
         ):
         super().__init__(mappings = [mapping])
 
-        self._mapping = mapping
-        self._mapping_disable = mapping_disable
+        self.__mapping = mapping
+        self.__mapping_disable = mapping_disable
 
-        self._value_enable = value_enable
-        self._value_disable = value_disable
-        self._reference_value = reference_value if reference_value != None else ( self._value_enable if not isinstance(self._value_enable, list) else self._value_enable[0] )
-        self._text = text
-        self._text_disabled = text_disabled
-        self._comparison_mode = comparison_mode
-        self._display_dim_factor_on = display_dim_factor_on
-        self._display_dim_factor_off = display_dim_factor_off
-        self._led_brightness_on = led_brightness_on
-        self._led_brightness_off = led_brightness_off
-        self._color = color
-        self._color_callback = color_callback
+        self.__value_enable = value_enable
+        self.__value_disable = value_disable
+        self.__reference_value = reference_value if reference_value != None else ( self.__value_enable if not isinstance(self.__value_enable, list) else self.__value_enable[0] )
+        self.__text = text
+        self.__text_disabled = text_disabled
+        self.__comparison_mode = comparison_mode
+        self.__display_dim_factor_on = display_dim_factor_on
+        self.__display_dim_factor_off = display_dim_factor_off
+        self.__led_brightness_on = led_brightness_on
+        self.__led_brightness_off = led_brightness_off
+        self.__color = color
+        self.__color_callback = color_callback
 
         self.reset()
 
         # Auto mode for value_disable
-        self._update_value_disabled = False
-        if not isinstance(self._value_disable, list):
-            self._update_value_disabled = (self._value_disable == "auto")
+        self.__update_value_disabled = False
+        if not isinstance(self.__value_disable, list):
+            self.__update_value_disabled = (self.__value_disable == "auto")
         else:
-            self._update_value_disabled = [v == "auto" for v in self._value_disable]            
+            self.__update_value_disabled = [v == "auto" for v in self.__value_disable]            
 
     def init(self, appl, listener = None):
         super().init(appl, listener)
 
-        self._appl = appl
+        self.__appl = appl
+
+        # Initialize dim factors and brightness settings. 
+        if self.__display_dim_factor_on == None:
+            self.__display_dim_factor_on = get_option(appl.config, "displayDimFactorOn", 1)
+        elif self.__display_dim_factor_on == "off":
+            self.__display_dim_factor_on = get_option(appl.config, "displayDimFactorOff", 0.2)
+        
+        if self.__display_dim_factor_off == None:
+            self.__display_dim_factor_off = get_option(appl.config, "displayDimFactorOff", 0.2)
+        elif self.__display_dim_factor_off == "on":
+            self.__display_dim_factor_off = get_option(appl.config, "displayDimFactorOn", 1)
+
+        if self.__led_brightness_on == None:
+            self.__led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
+        elif self.__led_brightness_on == "off":
+            self.__led_brightness_on = get_option(appl.config, "ledBrightnessOff", 0.02)
+
+        if self.__led_brightness_off == None:
+            self.__led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
+        elif self.__led_brightness_off == "on":
+            self.__led_brightness_off = get_option(appl.config, "ledBrightnessOn", 0.3)
 
     def state_changed_by_user(self, action):
         if action.state:
-            set_mapping = self._mapping
-            value = self._value_enable
+            set_mapping = self.__mapping
+            value = self.__value_enable
         else:
-            if self._mapping_disable:
-                set_mapping = self._mapping_disable
+            if self.__mapping_disable:
+                set_mapping = self.__mapping_disable
             else:
-                set_mapping = self._mapping
+                set_mapping = self.__mapping
 
-            value = self._value_disable
+            value = self.__value_disable
 
-        if not isinstance(self._value_disable, list):
+        if not isinstance(self.__value_disable, list):
             if value != "auto":
-                self._appl.client.set(set_mapping, value)
+                self.__appl.client.set(set_mapping, value)
         else:
             auto_contained = False
-            for v in self._value_disable:
+            for v in self.__value_disable:
                 if v == "auto":
                     auto_contained = True
                     break
             if not auto_contained:
-                self._appl.client.set(set_mapping, value)
+                self.__appl.client.set(set_mapping, value)
 
         # Request value
         self.update()
@@ -208,14 +228,14 @@ class BinaryParameterCallback(Callback):
         self._current_color = -1
 
     def update_displays(self, action):
-        value = self._mapping.value
+        value = self.__mapping.value
 
         if value != self._current_value:
             self._current_value = value
             self.evaluate_value(action, value)
 
         state = action.state
-        color = self._color_callback(action, value) if self._color_callback else self._color
+        color = self.__color_callback(action, value) if self.__color_callback else self.__color
 
         # Set color, if new, or state have been changed
         if color != self._current_color or self._current_display_state != state:
@@ -224,53 +244,53 @@ class BinaryParameterCallback(Callback):
         
             self.set_switch_color(action, color)
             self.set_label_color(action, color)
-            self._update_label_text(action)            
+            self.__update_label_text(action)            
 
     # Evaluate a new value
     def evaluate_value(self, action, value):
         state = False
 
         if value != None:
-            mode = self._comparison_mode
+            mode = self.__comparison_mode
 
             if mode == self.EQUAL:
-                if value == self._reference_value:
+                if value == self.__reference_value:
                     state = True
 
             elif mode == self.GREATER_EQUAL:
-                if value >= self._reference_value:
+                if value >= self.__reference_value:
                     state = True
 
             elif mode == self.GREATER:
-                if value > self._reference_value: 
+                if value > self.__reference_value: 
                     state = True
 
             elif mode == self.LESS_EQUAL:
-                if value <= self._reference_value:
+                if value <= self.__reference_value:
                     state = True
 
             elif mode == self.LESS:
-                if value < self._reference_value: 
+                if value < self.__reference_value: 
                     state = True        
 
             elif mode == self.NO_STATE_CHANGE:
                 state = action.state
 
             else:
-                raise Exception() #"Invalid comparison mode: " + repr(self._comparison_mode))        
+                raise Exception() #"Invalid comparison mode: " + repr(self.__comparison_mode))        
 
         action.feedback_state(state)        
 
         # If enabled, remember the value for later when disabled
-        if state == True or not self._update_value_disabled or value == None:
+        if state == True or not self.__update_value_disabled or value == None:
             return
         
-        if not isinstance(self._value_disable, list):
-            self._value_disable = value
+        if not isinstance(self.__value_disable, list):
+            self.__value_disable = value
         else:
-            vd = self._value_disable
+            vd = self.__value_disable
             for i in range(len(vd)):
-                if self._update_value_disabled[i]:
+                if self.__update_value_disabled[i]:
                     vd[i] = value
 
     # Update switch brightness
@@ -278,38 +298,38 @@ class BinaryParameterCallback(Callback):
         # Update switch LED color 
         action.switch_color = color
 
-        if action.state == True and self._mapping.response:
+        if action.state == True and self.__mapping.response:
             # Switched on
-            action.switch_brightness = self._led_brightness_on
+            action.switch_brightness = self.__led_brightness_on
         else:
             # Switched off
-            action.switch_brightness = self._led_brightness_off
+            action.switch_brightness = self.__led_brightness_off
 
    # Update label color, if any
     def set_label_color(self, action, color):
         if not action.label:
             return
             
-        if action.state == True and self._mapping.response:
-            action.label.back_color = self.dim_color(color, self._display_dim_factor_on)
+        if action.state == True and self.__mapping.response:
+            action.label.back_color = self.dim_color(color, self.__display_dim_factor_on)
         else:
-            action.label.back_color = self.dim_color(color, self._display_dim_factor_off)
+            action.label.back_color = self.dim_color(color, self.__display_dim_factor_off)
 
     # Update text if set
-    def _update_label_text(self, action):
+    def __update_label_text(self, action):
         if not action.label:
             return
             
-        if not self._text:
+        if not self.__text:
             return
         
-        if action.state == True or not self._mapping.response:
-            action.label.text = self._text
+        if action.state == True or not self.__mapping.response:
+            action.label.text = self.__text
         else:
-            if self._text_disabled:
-                action.label.text = self._text_disabled
+            if self.__text_disabled:
+                action.label.text = self.__text_disabled
             else:
-                action.label.text = self._text
+                action.label.text = self.__text
 
     # Dims a passed color for display of disabled state
     def dim_color(self, color, factor):
@@ -346,7 +366,7 @@ class EffectEnableCallback(BinaryParameterCallback):
     
     def __init__(self, mapping_state, mapping_type):
         def color_callback(action, value):
-            return self.get_effect_category_color(self._effect_category)
+            return self.get_effect_category_color(self.__effect_category)
 
         super().__init__(
             mapping = mapping_state, 
@@ -357,29 +377,29 @@ class EffectEnableCallback(BinaryParameterCallback):
 
         self.mapping_fxtype = mapping_type
         
-        self._effect_category = self.CATEGORY_NONE  
-        self._current_category = self.CATEGORY_INITIAL        
+        self.__effect_category = self.CATEGORY_NONE  
+        self.__current_category = self.CATEGORY_INITIAL        
         
     def reset(self):
         super().reset()
         
-        self._current_category = self.CATEGORY_INITIAL
+        self.__current_category = self.CATEGORY_INITIAL
 
     def update_displays(self, action):  
-        self._effect_category = self.get_effect_category(self.mapping_fxtype.value) if self.mapping_fxtype.value != None else self.CATEGORY_NONE
+        self.__effect_category = self.get_effect_category(self.mapping_fxtype.value) if self.mapping_fxtype.value != None else self.CATEGORY_NONE
         
-        if self._effect_category == self.CATEGORY_NONE:
+        if self.__effect_category == self.CATEGORY_NONE:
             action.feedback_state(False)
 
-        if self._current_category == self._effect_category:
+        if self.__current_category == self.__effect_category:
             super().update_displays(action)
             return
 
-        self._current_category = self._effect_category
+        self.__current_category = self.__effect_category
 
         # Effect category text
         if action.label:
-            action.label.text = self.get_effect_category_text(self._effect_category)
+            action.label.text = self.get_effect_category_text(self.__effect_category)
 
         super().update_displays(action)
 

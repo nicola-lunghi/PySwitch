@@ -65,11 +65,11 @@ class TestUiController(unittest.TestCase):
 
         ui.show()
 
-        self.assertEqual(ui._current_splash_element, display)
+        self.assertEqual(ui._UiController__current_splash_element, display)
         self.assertEqual(display.font_loader, font_loader)
         self.assertEqual(ui.bounds, DisplayBounds(0, 0, 300, 400))
 
-        self.assertEqual(display._initialized, True)
+        self.assertEqual(display.initialized(), True)
         self.assertEqual(display_driver.tft.show_calls, [display.splash])
 
         display_2 = DisplayElement(id = 2)
@@ -77,10 +77,10 @@ class TestUiController(unittest.TestCase):
 
         ui.show()
 
-        self.assertEqual(ui._current_splash_element, display_2)
+        self.assertEqual(ui._UiController__current_splash_element, display_2)
         self.assertEqual(display_2.font_loader, font_loader)
 
-        self.assertEqual(display_2._initialized, True)
+        self.assertEqual(display_2.initialized(), True)
         self.assertEqual(display_driver.tft.show_calls, [display.splash, display_2.splash])
 
 
@@ -123,12 +123,12 @@ class TestUiController(unittest.TestCase):
 
         ui.show()
 
-        self.assertEqual(ui._current_splash_element.font_loader, font_loader)
-        self.assertEqual(ui._current_splash_element, display)
+        self.assertEqual(ui._UiController__current_splash_element.font_loader, font_loader)
+        self.assertEqual(ui._UiController__current_splash_element, display)
         self.assertEqual(ui.bounds, DisplayBounds(0, 0, 300, 400))
 
-        self.assertEqual(ui._current_splash_element._initialized, True)
-        self.assertEqual(display_driver.tft.show_calls, [ui._current_splash_element.splash])
+        self.assertEqual(ui._UiController__current_splash_element.initialized(), True)
+        self.assertEqual(display_driver.tft.show_calls, [ui._UiController__current_splash_element.splash])
 
         self.assertEqual(appl.client.register_calls, [
             {
@@ -185,15 +185,15 @@ class TestUiController(unittest.TestCase):
         appl.add_updateable(ui)
         ui.init(appl)
         
-        self.assertEqual(element_1._initialized, False)
-        self.assertEqual(element_2._initialized, False)
-        self.assertEqual(element_3._initialized, False)
+        self.assertEqual(element_1.initialized(), False)
+        self.assertEqual(element_2.initialized(), False)
+        self.assertEqual(element_3.initialized(), False)
 
         ui.show()
 
-        self.assertEqual(element_1._initialized, True)
-        self.assertEqual(element_2._initialized, True)
-        self.assertEqual(element_3._initialized, True)
+        self.assertEqual(element_1.initialized(), True)
+        self.assertEqual(element_2.initialized(), True)
+        self.assertEqual(element_3.initialized(), True)
 
         appl.update()
 

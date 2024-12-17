@@ -28,6 +28,7 @@ class MockController2(Updater):
    def __init__(self):
        Updater.__init__(self)
        self.client = MockClient()
+       self.config = {}
 
 
 class MockFootswitch:

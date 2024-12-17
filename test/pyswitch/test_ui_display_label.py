@@ -48,7 +48,7 @@ class TestDisplayLabel(unittest.TestCase):
 
         self.assertTrue(
             self._compare_layouts(
-                label._layout,
+                label._DisplayLabel__layout,
                 DisplayLabelLayout({
                     "font": "foo",
                     "maxTextWidth": False,

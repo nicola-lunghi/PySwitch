@@ -28,6 +28,7 @@ class MockController2(Updater):
    def __init__(self):
        Updater.__init__(self)
        self.client = MockClient()
+       self.config = {}
 
 
 class MockFootswitch:
@@ -250,7 +251,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._mapping
+        mapping = action.callback._BinaryParameterCallback__mapping
         mapping.value = mapping_value
 
         action.update_displays()
@@ -285,7 +286,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._mapping
+        mapping = action.callback._BinaryParameterCallback__mapping
         mapping.value = mapping_value
 
         action.update_displays()
@@ -365,7 +366,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._mapping
+        mapping = action.callback._BinaryParameterCallback__mapping
         mapping.value = mapping_value
 
         action.update_displays()
@@ -425,7 +426,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._mapping
+        mapping = action.callback._BinaryParameterCallback__mapping
         mapping.value = mapping_value
 
         action.update_displays()
@@ -463,7 +464,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._mapping
+        mapping = action.callback._BinaryParameterCallback__mapping
         mapping.value = 0
 
         with self.assertRaises(Exception):            
@@ -497,7 +498,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._mapping
+        mapping = action.callback._BinaryParameterCallback__mapping
         
         # On rig
         mapping.value = 5  
@@ -549,7 +550,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._mapping        
+        mapping = action.callback._BinaryParameterCallback__mapping        
 
         mapping.value = rig + 1  # Not matching
         action.update_displays()
@@ -606,8 +607,8 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._mapping
-        mapping_disable = action.callback._mapping_disable
+        mapping = action.callback._BinaryParameterCallback__mapping
+        mapping_disable = action.callback._BinaryParameterCallback__mapping_disable
 
         mapping.value = 33   # Not matching
         action.update_displays()
@@ -701,7 +702,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._mapping                
+        mapping = action.callback._BinaryParameterCallback__mapping                
         mapping.value = 3
 
         with self.assertRaises(Exception):                        
@@ -743,7 +744,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action_select])
         action_select.init(appl, switch)
 
-        mapping_rig = action_select.callback._mapping 
+        mapping_rig = action_select.callback._BinaryParameterCallback__mapping 
         
         mapping_rig.value = 4  # off value
         ecb.output = False

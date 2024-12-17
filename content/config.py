@@ -1,6 +1,6 @@
 ##############################################################################################################################################
 # 
-# Firmware processing configuration. Most options are optional.x
+# Firmware processing configuration. Most options are optional.
 #
 ##############################################################################################################################################
 
@@ -30,18 +30,18 @@ Config = {
     #"memoryWarnLimitBytes": 1024 * 15,
 
     # Enables file transfer via MIDI from and to the device using PyMidiBridge (https://github.com/Tunetown/PyMidiBridge).
-    # This costs about 8kB of RAM, so if you run into memory issues, disable this.
+    # This costs about 11kB of RAM, so if you run into memory issues, disable this.
     "enableMidiBridge": True,
 
-    # Globally used dim factors for the DisplayLabels. Much actions can override this via parameters, but the global default
-    # must be specified here.
-    "displayDimFactorOn": 1,
-    "displayDimFactorOff": 0.2,
+    # Globally used dim factors for the DisplayLabels. 
+    #"displayDimFactorOn": 1,
+    #"displayDimFactorOff": 0.2,
 
-    # Globally used brightness values for the LEDs. Much actions can override this via parameters, but the global default
-    # must be specified here.
-    "ledBrightnessOn": 0.3,
-    "ledBrightnessOff": 0.02,
+    # Globally used brightness values for the LEDs. 
+    # Note that not all action definitions in kemper.py or other client implementations have to regard this! See the
+    # parameters of the action definitions in question.
+    #"ledBrightnessOn": 0.3,
+    #"ledBrightnessOff": 0.02,
 
     ## Development Options ###################################################################################################################
 

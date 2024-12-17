@@ -138,16 +138,16 @@ class DisplayBounds:
 class DisplayElement:
 
     def __init__(self, bounds = DisplayBounds(), name = "", id = 0):
-        self._bounds = bounds.clone()
+        self.__bounds = bounds.clone()
         self.name = name
         self.id = id
         self.splash = None
 
-        self._initialized = False
+        self.__initialized = False
 
     # Adds the element to the splash
     def init(self, ui, appl):
-        self._initialized = True
+        self.__initialized = True
         
     # Makes this element the splash holder which is passed as ui to init() later
     def make_splash(self, font_loader):
@@ -158,7 +158,7 @@ class DisplayElement:
         self.splash = Group()
 
     def initialized(self):
-        return self._initialized
+        return self.__initialized
 
     # Returns a list of all contained DisplayElements.
     def contents_flat(self):
@@ -167,14 +167,14 @@ class DisplayElement:
     # Returns a clone (changes on the returned object shall not reflect to this instance)
     @property
     def bounds(self):
-        return self._bounds.clone()
+        return self.__bounds.clone()
     
     @bounds.setter
     def bounds(self, bounds):
-        if self._initialized:
+        if self.__initialized:
             raise Exception(repr(self.id) + ": Bounds of Display Elements cannot be changed after init()")
         
-        self._bounds = bounds
+        self.__bounds = bounds
         self.bounds_changed()
 
     # Called when the bounds have been changed.
@@ -199,17 +199,17 @@ class HierarchicalDisplayElement(DisplayElement):
     def __init__(self, bounds = DisplayBounds(), children = None, name = "", id = 0):
         super().__init__(bounds = bounds, name = name, id = id)
         
-        self._children = children if children else []
+        self.__children = children if children else []
         
     @property
     def children(self):        
-        return self._children
+        return self.__children
 
     # Initialize the element and all children
     def init(self, ui, appl):
         super().init(ui, appl)
 
-        for child in self._children:
+        for child in self.__children:
             if child == None:
                 continue
             
@@ -223,7 +223,7 @@ class HierarchicalDisplayElement(DisplayElement):
         if not super().initialized():
             return False
 
-        for child in self._children:
+        for child in self.__children:
             if child == None:
                 continue
             
@@ -236,7 +236,7 @@ class HierarchicalDisplayElement(DisplayElement):
     def bounds_changed(self):
         super().bounds_changed()
 
-        for child in self._children:
+        for child in self.__children:
             if not child:
                 continue
 
@@ -244,13 +244,13 @@ class HierarchicalDisplayElement(DisplayElement):
 
     # Adds a child to the element. 
     def add(self, child):
-        self._children.append(child)
+        self.__children.append(child)
 
     # Returns a list of all contained DisplayElements.
     def contents_flat(self):
         ret = [self]
 
-        for child in self._children:
+        for child in self.__children:
             if not child:
                 continue
 
@@ -262,7 +262,7 @@ class HierarchicalDisplayElement(DisplayElement):
     #def print_debug_info(self, indentation = 0):   # pragma: no cover
     #    super().print_debug_info(indentation)
     #
-    #    for child in self._children:
+    #    for child in self.__children:
     #        if not child:
     #            continue
     #

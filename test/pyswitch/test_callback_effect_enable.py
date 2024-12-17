@@ -120,15 +120,15 @@ class TestCallbackEffectEnable(unittest.TestCase):
             period.exceed_next_time = True
 
         def eval1():
-            self.assertEqual(len(appl._midi.messages_sent), 2)            
-            self.assertEqual(appl._midi.messages_sent[0], mapping_1.request)
-            self.assertEqual(appl._midi.messages_sent[1], mapping_type_1.request)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)            
+            self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request)
+            self.assertEqual(appl._Controller__midi.messages_sent[1], mapping_type_1.request)
             
             return True
 
         # Receive type
         def prep2():
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_type
             ]
             mapping_type_1.outputs_parse = [
@@ -139,12 +139,12 @@ class TestCallbackEffectEnable(unittest.TestCase):
             ]            
 
         def eval2():
-            self.assertEqual(len(appl._midi.next_receive_messages), 0)
+            self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
 
-            #self.assertEqual(len(appl._midi.messages_sent), 2)
+            #self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
 
             self.assertEqual(mapping_type_1.value, 0)
-            self.assertEqual(cb._effect_category, 0)
+            self.assertEqual(cb._EffectEnableCallback__effect_category, 0)
             self.assertEqual(action_1.state, False)
 
             self.assertEqual(appl.switches[0].color, (0, 2, 0))
@@ -158,9 +158,9 @@ class TestCallbackEffectEnable(unittest.TestCase):
             switch_1.shall_be_pushed = True
 
         def eval3():
-            self.assertEqual(len(appl._midi.next_receive_messages), 0)
+            self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
 
-            #self.assertEqual(len(appl._midi.messages_sent), 2)
+            #self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
             
             self.assertEqual(action_1.state, False)
 
@@ -175,7 +175,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
             switch_1.shall_be_pushed = False
 
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_type
             ]
             mapping_type_1.outputs_parse = [
@@ -187,7 +187,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
             
         def eval4():
             self.assertEqual(mapping_type_1.value, 1)
-            self.assertEqual(cb._effect_category, 10)
+            self.assertEqual(cb._EffectEnableCallback__effect_category, 10)
             self.assertEqual(action_1.state, False)
 
             self.assertEqual(appl.switches[0].color, (10, 12, 40))
@@ -198,7 +198,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
         
         # Receive status enabled
         def prep5():
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_param
             ]
             mapping_1.outputs_parse = [
@@ -209,7 +209,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
             ]
 
         def eval5():
-            self.assertEqual(len(appl._midi.next_receive_messages), 0)
+            self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
 
             self.assertEqual(mapping_1.value, 1)
             self.assertEqual(action_1.state, True)
@@ -223,7 +223,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
         # Receive non-assigned type again
         def prep6():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_type
             ]
             mapping_type_1.outputs_parse = [
@@ -366,15 +366,15 @@ class TestCallbackEffectEnable(unittest.TestCase):
             period.exceed_next_time = True
 
         def eval1():
-            self.assertEqual(len(appl._midi.messages_sent), 2)            
-            self.assertEqual(appl._midi.messages_sent[0], mapping_1.request)
-            self.assertEqual(appl._midi.messages_sent[1], mapping_type_1.request)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)            
+            self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request)
+            self.assertEqual(appl._Controller__midi.messages_sent[1], mapping_type_1.request)
             
             return True
 
         # Receive type (not assigned)
         def prep2():
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_type
             ]
             mapping_type_1.outputs_parse = [
@@ -385,12 +385,12 @@ class TestCallbackEffectEnable(unittest.TestCase):
             ]
 
         def eval2():
-            self.assertEqual(len(appl._midi.next_receive_messages), 0)
+            self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
 
-            self.assertEqual(len(appl._midi.messages_sent), 2)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
 
             self.assertEqual(mapping_type_1.value, 0)
-            self.assertEqual(cb._effect_category, 0)
+            self.assertEqual(cb._EffectEnableCallback__effect_category, 0)
 
             self.assertEqual(action_1.state, False)
 
@@ -408,9 +408,9 @@ class TestCallbackEffectEnable(unittest.TestCase):
             switch_1.shall_be_pushed = True
 
         def eval3():
-            self.assertEqual(len(appl._midi.next_receive_messages), 0)
+            self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
 
-            self.assertEqual(len(appl._midi.messages_sent), 4)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 4)
             
             self.assertEqual(action_1.state, False)
 
@@ -428,7 +428,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
             switch_1.shall_be_pushed = False
 
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_type
             ]
             mapping_type_1.outputs_parse = [
@@ -440,7 +440,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
 
         def eval4():
             self.assertEqual(mapping_type_1.value, 1)
-            self.assertEqual(cb._effect_category, 10)
+            self.assertEqual(cb._EffectEnableCallback__effect_category, 10)
 
             self.assertEqual(appl.switches[0].color, (10, 12, 40))
             self.assertEqual(appl.switches[0].brightness, 0.02)
@@ -456,7 +456,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
         # Receive other value 
         def prep5():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_type
             ]
             mapping_type_1.outputs_parse = [
@@ -467,7 +467,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
             ]
 
         def eval5():
-            self.assertEqual(cb._effect_category, 20)
+            self.assertEqual(cb._EffectEnableCallback__effect_category, 20)
 
             self.assertEqual(appl.switches[0].color, (20, 22, 80))
             self.assertEqual(appl.switches[0].brightness, 0.02)
@@ -483,7 +483,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
         # Receive enabled status
         def prep6():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_param
             ]
             mapping_type_1.outputs_parse = []
@@ -495,7 +495,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
             ]
 
         def eval6():
-            self.assertEqual(cb._effect_category, 20)
+            self.assertEqual(cb._EffectEnableCallback__effect_category, 20)
 
             self.assertEqual(action_1.state, True)
 
@@ -625,15 +625,15 @@ class TestCallbackEffectEnable(unittest.TestCase):
             period.exceed_next_time = True
 
         def eval1():
-            self.assertEqual(len(appl._midi.messages_sent), 2)            
-            self.assertEqual(appl._midi.messages_sent[0], mapping_1.request)
-            self.assertEqual(appl._midi.messages_sent[1], mapping_type_1.request)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)            
+            self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request)
+            self.assertEqual(appl._Controller__midi.messages_sent[1], mapping_type_1.request)
             
             return True
 
         # Receive type
         def prep2():
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_type
             ]
             mapping_type_1.outputs_parse = [
@@ -646,10 +646,10 @@ class TestCallbackEffectEnable(unittest.TestCase):
             cb_enable.output_get = False
 
         def eval2():
-            self.assertEqual(len(appl._midi.next_receive_messages), 0)
+            self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
 
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertEqual(cb._effect_category, 10)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+            self.assertEqual(cb._EffectEnableCallback__effect_category, 10)
             
             return False
 
@@ -748,14 +748,14 @@ class TestCallbackEffectEnable(unittest.TestCase):
     #         period.exceed_next_time = True
 
     #     def eval1():
-    #         self.assertEqual(len(appl._midi.messages_sent), 1)            
-    #         self.assertEqual(appl._midi.messages_sent[0], mapping_type_1.request)
+    #         self.assertEqual(len(appl._Controller__midi.messages_sent), 1)            
+    #         self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_type_1.request)
             
     #         return True
 
     #     # Receive type
     #     def prep2():
-    #         appl._midi.next_receive_messages = [
+    #         appl._Controller__midi.next_receive_messages = [
     #             answer_msg_type
     #         ]
     #         mapping_type_1.outputs_parse = [
@@ -766,9 +766,9 @@ class TestCallbackEffectEnable(unittest.TestCase):
     #         ]
 
     #     def eval2():
-    #         self.assertEqual(len(appl._midi.next_receive_messages), 0)
+    #         self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
 
-    #         self.assertEqual(len(appl._midi.messages_sent), 2)
+    #         self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
 
     #         self.assertEqual(mapping_type_1.value, 0)
     #         self.assertEqual(cb._effect_category, 0)
@@ -781,7 +781,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
 
     #     # Receive status
     #     def prep3():
-    #         appl._midi.next_receive_messages = [
+    #         appl._Controller__midi.next_receive_messages = [
     #             answer_msg_param
     #         ]
     #         mapping_1.outputs_parse = [
@@ -792,9 +792,9 @@ class TestCallbackEffectEnable(unittest.TestCase):
     #         ]
 
     #     def eval3():
-    #         self.assertEqual(len(appl._midi.next_receive_messages), 0)
+    #         self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
 
-    #         self.assertEqual(len(appl._midi.messages_sent), 2)
+    #         self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
             
     #         self.assertEqual(mapping_1.value, 1)
 
@@ -809,7 +809,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
     #     # Receive other value 
     #     def prep4():
     #         period.exceed_next_time = True
-    #         appl._midi.next_receive_messages = [
+    #         appl._Controller__midi.next_receive_messages = [
     #             answer_msg_type
     #         ]
     #         mapping_type_1.outputs_parse = [

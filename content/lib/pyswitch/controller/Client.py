@@ -25,7 +25,7 @@ class ClientParameterMapping:
             other_response = other.response
 
             if other_response != None:
-                return self._compare(response, other_response)
+                return self.__compare(response, other_response)
             else:
                 return False
 
@@ -34,7 +34,7 @@ class ClientParameterMapping:
             other_set = other.set
 
             if other_set != None:
-                return self._compare(set, other_set)
+                return self.__compare(set, other_set)
             else:
                 return False
 
@@ -43,14 +43,14 @@ class ClientParameterMapping:
             other_request = other.request
 
             if other_request != None:
-                return self._compare(request, other_request)
+                return self.__compare(request, other_request)
             else:
                 return False
             
         return False
 
     # Compare message or list of messages
-    def _compare(self, a, b):
+    def __compare(self, a, b):
         if isinstance(a, list):
             if isinstance(b, list):
                 if len(a) != len(b):
@@ -94,27 +94,27 @@ class Client: #(ClientRequestListener):
         self.midi = midi
         
         self.debug_unparsed_messages = get_option(config, "debugUnparsedMessages", False)
-        self._debug_sent_messages = get_option(config, "debugSentMessages", False)
+        self.__debug_sent_messages = get_option(config, "debugSentMessages", False)
         self.debug_exclude_types = get_option(config, "excludeMessageTypes", None)
-        self._debug_mapping = get_option(config, "debugMapping", None)
+        self.debug_mapping = get_option(config, "debugMapping", None)
         
         # List of ClientRequest objects    
-        self._requests = []
+        self.__requests = []
 
-        self._max_request_lifetime = get_option(config, "maxRequestLifetimeMillis", 2000)
+        self.__max_request_lifetime = get_option(config, "maxRequestLifetimeMillis", 2000)
 
         # Helper to only clean up hanging requests from time to time as this is not urgent at all
-        self._cleanup_terminated_period = PeriodCounter(self._max_request_lifetime / 2)    
+        self.__cleanup_terminated_period = PeriodCounter(self.__max_request_lifetime / 2)    
 
     @property
     def requests(self):
-        return self._requests
+        return self.__requests
 
     # Register the mapping and listener in advance (only plays a role for bidirectional parameters,
     # here this is redundant)
     def register(self, mapping, listener):
         if not mapping.request and mapping.response:
-            self._register_mapping(mapping, listener, False)
+            self.__register_mapping(mapping, listener, False)
 
     # Sends the SET message of a mapping. Value has to be a list if the mapping's set field is a list, too!
     def set(self, mapping, value):
@@ -128,12 +128,12 @@ class Client: #(ClientRequestListener):
                 if not m:
                     continue
 
-                if self._debug_sent_messages:   # pragma: no cover
+                if self.__debug_sent_messages:   # pragma: no cover
                     self.print_message(m)
 
                 self.midi.send(m)
         else:
-            if self._debug_sent_messages:       # pragma: no cover
+            if self.__debug_sent_messages:       # pragma: no cover
                 self.print_message(mapping.set)
                 
             self.midi.send(mapping.set)
@@ -144,21 +144,21 @@ class Client: #(ClientRequestListener):
         if not mapping.request or not mapping.response:
             return            
         
-        self._register_mapping(mapping, listener, True)
+        self.__register_mapping(mapping, listener, True)
         
     # Registers a mapping request or adds the listener to an existing one. Optionally sends the
     # request message. Internal use only.
-    def _register_mapping(self, mapping, listener, send):
+    def __register_mapping(self, mapping, listener, send):
         # Add request to the list
         req = self.get_matching_request(mapping)
         if not req:
             # New request
-            req = self._create_request(mapping)
+            req = self.__create_request(mapping)
             
             req.add_listener(listener)
 
             # Add to list
-            self._requests.append(req)
+            self.__requests.append(req)
             
             # Send 
             if send:           
@@ -169,18 +169,18 @@ class Client: #(ClientRequestListener):
             req.add_listener(listener)
 
     # Create a new request
-    def _create_request(self, mapping):
+    def __create_request(self, mapping):
         return ClientRequest(              
             self,
             mapping,
-            self._max_request_lifetime if mapping.request else 0
+            self.__max_request_lifetime if mapping.request else 0
         )
 
     # Receive MIDI messages
     #@RuntimeStatistics.measure
     def receive(self, midi_message):
-        if self._cleanup_terminated_period.exceeded:
-            self._cleanup_hanging_requests()
+        if self.__cleanup_terminated_period.exceeded:
+            self.__cleanup_hanging_requests()
 
         if not midi_message:
             return False
@@ -189,7 +189,7 @@ class Client: #(ClientRequestListener):
         do_cleanup = False
 
         parsed = False
-        for request in self._requests:
+        for request in self.__requests:
             if request.parse(midi_message):
                 parsed = True
 
@@ -198,7 +198,7 @@ class Client: #(ClientRequestListener):
 
         # Check for finished requests
         if do_cleanup:
-            self._cleanup_requests()
+            self.__cleanup_requests()
 
         # Debug unparsed messages
         if not parsed and self.debug_unparsed_messages:           # pragma: no cover
@@ -210,24 +210,24 @@ class Client: #(ClientRequestListener):
     # request has been found.
     #@RuntimeStatistics.measure
     def get_matching_request(self, mapping):
-        for request in self._requests:
+        for request in self.__requests:
             if request.mapping == mapping:
                 return request
             
         return None
 
     # Remove all finished requests, and terminate the ones which took too long already
-    def _cleanup_requests(self):
-        self._requests = [i for i in self._requests if not i.finished]
+    def __cleanup_requests(self):
+        self.__requests = [i for i in self.__requests if not i.finished]
             
     # Terminate any requests which took too long from time to time
-    def _cleanup_hanging_requests(self):
+    def __cleanup_hanging_requests(self):
         # Terminate requests if they waited too long
-        for request in self._requests:
+        for request in self.__requests:
             if request.lifetime and request.lifetime.exceeded:
                 request.terminate()
 
-        self._cleanup_requests()
+        self.__cleanup_requests()
 
     # Print info about the passed message
     def print_message(self, midi_message):  # pragma: no cover
@@ -249,10 +249,10 @@ class ClientRequest(EventEmitter):
         self.client = client
         self.mapping = mapping
         
-        self.lifetime = self._init_lifetime(max_request_lifetime)
+        self.lifetime = self.__init_lifetime(max_request_lifetime)
 
     # Sets up the lifetime for mappings not belonging to a bidirectional protocol
-    def _init_lifetime(self, max_request_lifetime):
+    def __init_lifetime(self, max_request_lifetime):
         if not max_request_lifetime > 0:            
             return None
             
@@ -307,7 +307,7 @@ class ClientRequest(EventEmitter):
         if not mapping.result_finished():
             return
 
-        if self.client._debug_mapping == mapping:    # pragma: no cover
+        if self.client.debug_mapping == mapping:    # pragma: no cover
             do_print(mapping.name + ": Received value '" + repr(mapping.value) + "' from " + stringify_midi_message(midi_message))
 
         # Call the listeners (the mapping has the values set already)

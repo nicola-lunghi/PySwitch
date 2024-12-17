@@ -40,35 +40,35 @@ class AdafruitST7789DisplayDriver:
         self.width = width
         self.height = height
 
-        self._tft_cs = tft_cs
-        self._tft_dc = tft_dc
-        self._spi_mosi = spi_mosi
-        self._spi_clk = spi_clk
+        self.__tft_cs = tft_cs
+        self.__tft_dc = tft_dc
+        self.__spi_mosi = spi_mosi
+        self.__spi_clk = spi_clk
 
-        self._row_start = row_start
-        self._rotation = rotation
-        self._baudrate = baudrate
+        self.__row_start = row_start
+        self.__rotation = rotation
+        self.__baudrate = baudrate
 
     # Initialize the display
     def init(self):        
         release_displays()
         
         spi = SPI(
-            self._spi_clk, 
-            MOSI = self._spi_mosi
+            self.__spi_clk, 
+            MOSI = self.__spi_mosi
         )
         while not spi.try_lock():
             pass
         
         spi.configure(
-            baudrate = self._baudrate
+            baudrate = self.__baudrate
         )
         spi.unlock()
 
         display_bus = FourWire(
             spi, 
-            command = self._tft_dc, 
-            chip_select = self._tft_cs, 
+            command = self.__tft_dc, 
+            chip_select = self.__tft_cs, 
             reset = None
         )
 
@@ -76,8 +76,8 @@ class AdafruitST7789DisplayDriver:
             display_bus,
             width = self.width, 
             height = self.height,
-            rowstart = self._row_start,
-            rotation = self._rotation
+            rowstart = self.__row_start,
+            rotation = self.__rotation
         )
 
 
@@ -86,15 +86,15 @@ class AdafruitST7789DisplayDriver:
 
 # Buffered font loader
 class AdafruitFontLoader:
-    _fonts = {}
+    __fonts = {}
 
     # Returns a font (buffered)
     def get(self, path):
-        if path in self._fonts:
-            return self._fonts[path]
+        if path in self.__fonts:
+            return self.__fonts[path]
         
         font = bitmap_font.load_font(path)
-        self._fonts[path] = font
+        self.__fonts[path] = font
 
         return font
 
@@ -106,14 +106,14 @@ class AdafruitFontLoader:
 class AdafruitNeoPixelDriver:
 
     def __init__(self, port = board.GP7):
-        self._port = port
+        self.__port = port
         self.leds = None
         
     # Initialize NeoPixel array. Neopixel documentation:
     # https://docs.circuitpython.org/projects/neopixel/en/latest/
     # https://learn.adafruit.com/adafruit-neopixel-uberguide/python-circuitpython
     def init(self, num_leds):
-        self.leds = NeoPixel(self._port, num_leds)
+        self.leds = NeoPixel(self.__port, num_leds)
 
 
 ##################################################################################################
@@ -124,27 +124,27 @@ class AdafruitSwitch: #(SwitchDriver):
     
     # port: The board GPIO pin definition to be used for this switch (for example board.GP1)
     def __init__(self, port):
-        self._port = port
-        self._switch = None
+        self.__port = port
+        self.__switch = None
 
     # Initializes the switch to the GPIO port
     def init(self):
-        self._switch = DigitalInOut(self._port)
+        self.__switch = DigitalInOut(self.__port)
         
-        self._switch.direction = Direction.INPUT
-        self._switch.pull = Pull.UP
+        self.__switch.direction = Direction.INPUT
+        self.__switch.pull = Pull.UP
 
     # Representational string for debug output (optional)
     def __repr__(self):
-        return repr(self._port)
+        return repr(self.__port)
 
     # Return if the switch is currently pushed
     @property
     def pushed(self):
-        if not self._switch:
+        if not self.__switch:
             return False
         
-        return self._switch.value == False  # Inverse logic!
+        return self.__switch.value == False  # Inverse logic!
 
 
 ##################################################################################################
@@ -160,7 +160,7 @@ class AdfruitUsbMidiDevice:
                  out_channel = 0,                 
         ):
 
-        self._midi = MIDI(
+        self.__midi = MIDI(
             midi_out = port_out,
             out_channel = out_channel,
             midi_in = port_in,
@@ -175,10 +175,10 @@ class AdfruitUsbMidiDevice:
         if isinstance(midi_message, MIDIUnknownEvent):
             return
         
-        self._midi.send(midi_message)
+        self.__midi.send(midi_message)
 
     def receive(self):
-        return self._midi.receive()
+        return self.__midi.receive()
 
     
 ##################################################################################################
@@ -203,7 +203,7 @@ class AdfruitDinMidiDevice:
             timeout = timeout
         ) 
 
-        self._midi = MIDI(
+        self.__midi = MIDI(
             midi_out = midi_uart, 
             out_channel = out_channel,
             midi_in = midi_uart, 
@@ -218,7 +218,7 @@ class AdfruitDinMidiDevice:
         if isinstance(midi_message, MIDIUnknownEvent):
             return
         
-        self._midi.send(midi_message)
+        self.__midi.send(midi_message)
 
     def receive(self):
-        return self._midi.receive()
+        return self.__midi.receive()

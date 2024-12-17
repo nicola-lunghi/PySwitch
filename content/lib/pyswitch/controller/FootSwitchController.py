@@ -22,29 +22,29 @@ class FootSwitchController: #ConditionListener
     def __init__(self, appl, config):
         self.pixels = get_option(config["assignment"], "pixels", [])
         
-        self._switch = config["assignment"]["model"]
-        self._switch.init()
+        self.__switch = config["assignment"]["model"]
+        self.__switch.init()
 
-        self.id = get_option(config["assignment"], "name", repr(self._switch))
+        self.id = get_option(config["assignment"], "name", repr(self.__switch))
 
-        self._appl = appl
-        self._pushed_state = False
+        self.__appl = appl
+        self.__pushed_state = False
 
-        self._colors = [(0, 0, 0) for i in range(len(self.pixels))]
-        self._brightnesses = [0 for i in range(len(self.pixels))]        
+        self.__colors = [(0, 0, 0) for i in range(len(self.pixels))]
+        self.__brightnesses = [0 for i in range(len(self.pixels))]        
 
         self.color = Colors.WHITE
         self.brightness = 0.5
 
         self.actions = get_option(config, "actions", [])
-        self._init_actions()
+        self.__init_actions()
         
     # Set up action instances
-    def _init_actions(self):
+    def __init_actions(self):
         for action in self.actions:
-            action.init(self._appl, self)
+            action.init(self.__appl, self)
             
-            self._appl.add_updateable(action)
+            self.__appl.add_updateable(action)
             
             action.update_displays()
         
@@ -52,8 +52,8 @@ class FootSwitchController: #ConditionListener
     def process(self):
         # Is the switch currently pushed? If not, return false.
         if not self.pushed:
-            if self._pushed_state:
-                self._pushed_state = False
+            if self.__pushed_state:
+                self.__pushed_state = False
 
                 # Process all release actions assigned to the switch 
                 for action in self.actions:
@@ -65,11 +65,11 @@ class FootSwitchController: #ConditionListener
             return
 
         # Switch is pushed: Has it been pushed before already? 
-        if self._pushed_state:
+        if self.__pushed_state:
             return 
         
         # Mark as pushed (prevents redundant messages in the following ticks, when the switch can still be down)
-        self._pushed_state = True
+        self.__pushed_state = True
 
         # Process all push actions assigned to the switch     
         for action in self.actions:
@@ -81,12 +81,12 @@ class FootSwitchController: #ConditionListener
     # Return if the (hardware) switch is currently pushed
     @property
     def pushed(self):
-        return self._switch.pushed
+        return self.__switch.pushed
                     
     # Colors of the switch (array)
     @property
     def colors(self):
-        return self._colors
+        return self.__colors
 
     # Set switch colors (each of the LEDs individually). Does not take any effect until
     # set_brightness is called!
@@ -98,7 +98,7 @@ class FootSwitchController: #ConditionListener
         if not isinstance(colors, list):
             raise Exception(repr(colors)) #"Invalid type for colors, must be a list: " + repr(colors))
         
-        self._colors = colors        
+        self.__colors = colors        
 
     # Color (this just uses the first one)
     @property
@@ -106,14 +106,14 @@ class FootSwitchController: #ConditionListener
         if not self.pixels:
             return None
         
-        return self._colors[0]
+        return self.__colors[0]
 
     # Set switch color (all three LEDs equally). Does not take any effect until
     # set_brightness is called!
     @color.setter
     def color(self, color):
         for i in range(len(self.pixels)):
-            self._colors[i] = color
+            self.__colors[i] = color
 
     # Returns current brightness (this just uses the first one)
     @property
@@ -121,7 +121,7 @@ class FootSwitchController: #ConditionListener
         if not self.pixels:
             return None
         
-        return self._brightnesses[0]
+        return self.__brightnesses[0]
 
     # Set brightness equally of all LEDs
     @brightness.setter
@@ -135,7 +135,7 @@ class FootSwitchController: #ConditionListener
     # Returns current brightnesses of all LEDs
     @property
     def brightnesses(self):
-        return self._brightnesses
+        return self.__brightnesses
 
     # Set brightnesses of all LEDs
     @brightnesses.setter
@@ -148,13 +148,13 @@ class FootSwitchController: #ConditionListener
         
         for i in range(len(self.pixels)):
             pixel = self.pixels[i]
-            self._appl.led_driver.leds[pixel] = (
-                int(self._colors[i][0] * brightnesses[i]),   # R
-                int(self._colors[i][1] * brightnesses[i]),   # G
-                int(self._colors[i][2] * brightnesses[i])    # B
+            self.__appl.led_driver.leds[pixel] = (
+                int(self.__colors[i][0] * brightnesses[i]),   # R
+                int(self.__colors[i][1] * brightnesses[i]),   # G
+                int(self.__colors[i][2] * brightnesses[i])    # B
             )
 
-        self._brightnesses = brightnesses
+        self.__brightnesses = brightnesses
 
 
 ################################################################################################

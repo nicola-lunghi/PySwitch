@@ -57,7 +57,7 @@ class TestKemperMorphCallback(unittest.TestCase):
         )
 
         self.assertIsInstance(cb, BinaryParameterCallback)
-        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
 
         action_1 = PushButtonAction({
             "mode": PushButtonAction.MOMENTARY,
@@ -232,13 +232,13 @@ class TestKemperMorphCallback(unittest.TestCase):
         def eval1():
             if suppress_send:
                 self.assertEqual(len(mapping_1.set_value_calls), 0)    
-                self.assertEqual(len(appl._midi.messages_sent), 0)
+                self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
             else:
                 self.assertEqual(len(mapping_1.set_value_calls), 1)
                 self.assertEqual(mapping_1.set_value_calls[0], 127)
 
-                self.assertEqual(len(appl._midi.messages_sent), 1)
-                self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+                self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+                self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
                 
             return True        
         
@@ -250,13 +250,13 @@ class TestKemperMorphCallback(unittest.TestCase):
         def eval2():
             if suppress_send:
                 self.assertEqual(len(mapping_1.set_value_calls), 0)    
-                self.assertEqual(len(appl._midi.messages_sent), 0)
+                self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
             else:
                 self.assertEqual(len(mapping_1.set_value_calls), 2)
                 self.assertEqual(mapping_1.set_value_calls[1], 0)
 
-                self.assertEqual(len(appl._midi.messages_sent), 2)
-                self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+                self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+                self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
             return False        
 

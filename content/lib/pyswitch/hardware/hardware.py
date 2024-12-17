@@ -106,7 +106,7 @@ class Hardware:
     # USB Midi in/out for PA MIDICaptain devices. No UART, so ports have to be adafruit MIDI ports from 
     # the usb_midi module.
     @staticmethod
-    def PA_MIDICAPTAIN_USB_MIDI(in_channel = None, out_channel = 0, in_buf_size = 2500):
+    def PA_MIDICAPTAIN_USB_MIDI(in_channel = None, out_channel = 0, in_buf_size = 100):
         return AdfruitUsbMidiDevice(
             port_in = ports[0],
             port_out = ports[1],
@@ -117,7 +117,7 @@ class Hardware:
 
     # DIN Midi in/out for PA MIDICaptain devices. Uses UART mode so the ports must be board GPIO pins.
     @staticmethod
-    def PA_MIDICAPTAIN_DIN_MIDI(in_channel = None, out_channel = 0, in_buf_size = 2500):
+    def PA_MIDICAPTAIN_DIN_MIDI(in_channel = None, out_channel = 0, in_buf_size = 100):
         return AdfruitDinMidiDevice(
             gpio_in = board.GP16,
             gpio_out = board.GP17,

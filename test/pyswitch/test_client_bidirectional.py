@@ -265,14 +265,14 @@ class TestBidirectionalClient(unittest.TestCase):
             period.exceed_next_time = True
 
         def eval1():
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertEqual(appl._midi.messages_sent[0], mapping_2.request)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+            self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_2.request)
             
             return True
 
         # Receive type
         def prep2():
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_2
             ]
             mapping_2.outputs_parse = [
@@ -283,9 +283,9 @@ class TestBidirectionalClient(unittest.TestCase):
             ]
 
         def eval2():
-            self.assertEqual(len(appl._midi.next_receive_messages), 0)
+            self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
 
-            self.assertEqual(len(appl._midi.messages_sent), 1)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
 
             self.assertEqual(mapping_2.value, 1)
             
@@ -298,7 +298,7 @@ class TestBidirectionalClient(unittest.TestCase):
 
         # Receive status (which is bidirectional)
         def prep3():
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_1
             ]
             mapping_1.outputs_parse = [
@@ -309,9 +309,9 @@ class TestBidirectionalClient(unittest.TestCase):
             ]
 
         def eval3():
-            self.assertEqual(len(appl._midi.next_receive_messages), 0)
+            self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
 
-            self.assertEqual(len(appl._midi.messages_sent), 1)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
             
             self.assertEqual(appl.client.requests[0].mapping.value, 1)
 
@@ -327,10 +327,10 @@ class TestBidirectionalClient(unittest.TestCase):
             switch_1.shall_be_pushed = True
 
         def eval4():
-            self.assertEqual(len(appl._midi.messages_sent), 4)
-            self.assertIn(mapping_1.set, appl._midi.messages_sent)
-            self.assertIn(mapping_2.set, appl._midi.messages_sent)
-            self.assertIn(mapping_2.request, appl._midi.messages_sent)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 4)
+            self.assertIn(mapping_1.set, appl._Controller__midi.messages_sent)
+            self.assertIn(mapping_2.set, appl._Controller__midi.messages_sent)
+            self.assertIn(mapping_2.request, appl._Controller__midi.messages_sent)
             self.assertEqual(action_1.state, False)
 
             return False

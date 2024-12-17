@@ -40,7 +40,7 @@ class Controller(Updater): #ClientRequestListener
         self.low_memory_warning = False
 
         # MIDI handler
-        self._midi = midi
+        self.__midi = midi
 
         # User interface
         self.ui = ui        
@@ -50,25 +50,25 @@ class Controller(Updater): #ClientRequestListener
         update_interval = get_option(config, "updateInterval", 200)
 
         # Max. number of MIDI messages being parsed before the next switch state evaluation
-        self._max_consecutive_midi_msgs = get_option(config, "maxConsecutiveMidiMessages", 10)   
+        self.__max_consecutive_midi_msgs = get_option(config, "maxConsecutiveMidiMessages", 10)   
 
         # Statistical measurement for tick time (always active)
-        self._init_measurement(get_option(config, "debugStatsInterval", update_interval))
+        self.__init_measurement(get_option(config, "debugStatsInterval", update_interval))
 
         # Limit of minimum free memory before low_memory_warning is set to True (the check is done before ticks
         # are running so this should be enough to operate all configurations imaginable. Normally you need about 
-        # 10k from there, so 15k is enough headroom)
-        self._memory_warn_limit = get_option(config, "memoryWarnLimitBytes", 1024 * 15)  # 15kB
+        # 10-15k from there, so 25k is enough headroom)
+        self.__memory_warn_limit = get_option(config, "memoryWarnLimitBytes", 1024 * 15)  # 15kB
 
         # Print debug info        
-        self._debug_stats = get_option(config, "debugStats", False)        
+        self.__debug_stats = get_option(config, "debugStats", False)        
 
         # Clear MIDI buffers on startup
-        self._clear_buffer = get_option(config, "clearBuffers", True)
+        self.__clear_buffer = get_option(config, "clearBuffers", True)
 
         # NeoPixel driver 
         self.led_driver = led_driver
-        self.led_driver.init(self._get_num_pixels(switches))
+        self.led_driver.init(self.__get_num_pixels(switches))
         
         # Periodic update handler (the client is only asked when a certain time has passed)
         self.period = period_counter
@@ -76,7 +76,7 @@ class Controller(Updater): #ClientRequestListener
             self.period = PeriodCounter(update_interval)        
 
         # Initialize client access.
-        self._init_client(config, protocol)
+        self.__init_client(config, protocol)
 
         # Set up the screen elements
         if self.ui:
@@ -84,19 +84,19 @@ class Controller(Updater): #ClientRequestListener
             self.add_updateable(ui)
 
         # Set up switches
-        self._init_switches(switches)
+        self.__init_switches(switches)
 
     # Client access. When no protocol is passed, every value will be requested periodically. If a protocol
     # is passed, bidirectional communication is used according to the protocol.
-    def _init_client(self, config, protocol):
+    def __init_client(self, config, protocol):
         if protocol:
-            self.client = BidirectionalClient(self._midi, config, protocol)
+            self.client = BidirectionalClient(self.__midi, config, protocol)
             self.add_updateable(self.client)
         else:
-            self.client = Client(self._midi, config)
+            self.client = Client(self.__midi, config)
 
     # Initialize switches
-    def _init_switches(self, switches):
+    def __init_switches(self, switches):
         self.switches = []
 
         for sw_def in switches:
@@ -124,8 +124,8 @@ class Controller(Updater): #ClientRequestListener
 
         # Consume all MIDI messages which might be still in some buffers, 
         # and start when the queue is empty.
-        if self._clear_buffer:
-            self._clear_midi_buffer()
+        if self.__clear_buffer:
+            self.__clear_midi_buffer()
 
         # Start processing loop
         while self.tick():
@@ -134,7 +134,7 @@ class Controller(Updater): #ClientRequestListener
     # Single tick in the processing loop. Must return True to keep the loop alive.
     def tick(self):
         # If enabled, remember the tick starting time for statistics
-        self._measurement_tick_time.start()       
+        self.__measurement_tick_time.start()       
 
         # Update all Updateables in periodic intervals, less frequently than every tick.        
         if self.period.exceeded:
@@ -143,10 +143,10 @@ class Controller(Updater): #ClientRequestListener
             Memory.watch("Controller: update", only_if_changed = True)
 
         # Receive all available MIDI messages
-        self._receive_midi_messages()
+        self.__receive_midi_messages()
 
         # Output statistical info if enabled
-        self._measurement_tick_time.finish()        
+        self.__measurement_tick_time.finish()        
 
         return True
 
@@ -154,22 +154,23 @@ class Controller(Updater): #ClientRequestListener
     def update(self):
         for u in self.updateables:
             # Receive MIDI messages in between updates, too
-            self._receive_midi_messages()
+            self.__receive_midi_messages()
 
             u.update()
 
     # Receive MIDI messages, and in between check for switch state changes
-    def _receive_midi_messages(self):
+    def __receive_midi_messages(self):
         #self._measurement_midi_jitter.finish()
         cnt = 0
         client = self.client
-        max_msgs = self._max_consecutive_midi_msgs
+        max_msgs = self.__max_consecutive_midi_msgs
 
         while True:
             # Detect switch state changes
-            self._process_switches()
+            self.__process_switches()
 
-            midimsg = self._midi.receive()
+            #collect()
+            midimsg = self.__midi.receive()
 
             # Process the midi message
             client.receive(midimsg)
@@ -182,17 +183,17 @@ class Controller(Updater): #ClientRequestListener
 
     # Detects switch changes
     #@RuntimeStatistics.measure
-    def _process_switches(self):
-        #self._measurement_switch_jitter.finish()
+    def __process_switches(self):
+        #self.__measurement_switch_jitter.finish()
 
         # Update switch states
         for switch in self.switches:
             switch.process()
 
-        #self._measurement_switch_jitter.start()
+        #self.__measurement_switch_jitter.start()
 
     # Returns how many NeoPixels are needed overall
-    def _get_num_pixels(self, switches):
+    def __get_num_pixels(self, switches):
         ret = 0
         for sw_def in switches:
             pixels = get_option(sw_def["assignment"], "pixels", [])
@@ -203,10 +204,10 @@ class Controller(Updater): #ClientRequestListener
         return ret
 
     # Consume all MIDI messages which might be still in some buffers.
-    def _clear_midi_buffer(self):
+    def __clear_midi_buffer(self):
         #cnt = 0
         while True:
-            midimsg = self._midi.receive()
+            midimsg = self.__midi.receive()
             if not midimsg:
                 #do_print("Cleared MIDI Buffer (" + repr(cnt) + " messages)")
                 break
@@ -218,7 +219,7 @@ class Controller(Updater): #ClientRequestListener
         collect()
         free_bytes = mem_free()
         
-        if free_bytes < self._memory_warn_limit:
+        if free_bytes < self.__memory_warn_limit:
             do_print("WARNING: Low Memory: " + format_size(free_bytes))
             
             self.low_memory_warning = True
@@ -239,27 +240,27 @@ class Controller(Updater): #ClientRequestListener
         pass
 
     # Statistical measurement for tick time (always active)
-    def _init_measurement(self, interval_millis):
-        self._measurement_tick_time = RuntimeMeasurement(interval_millis = interval_millis, name = "Tick")
-        self._measurement_tick_time.add_listener(self)
-        self.add_updateable(self._measurement_tick_time)
+    def __init_measurement(self, interval_millis):
+        self.__measurement_tick_time = RuntimeMeasurement(interval_millis = interval_millis, name = "Tick")
+        self.__measurement_tick_time.add_listener(self)
+        self.add_updateable(self.__measurement_tick_time)
 
-        #self._measurement_midi_jitter = RuntimeMeasurement(interval_millis = interval_millis, name = "MIDI Jitter")
-        #self._measurement_midi_jitter.add_listener(self)
-        #self.add_updateable(self._measurement_midi_jitter)
+        #self.__measurement_midi_jitter = RuntimeMeasurement(interval_millis = interval_millis, name = "MIDI Jitter")
+        #self.__measurement_midi_jitter.add_listener(self)
+        #self.add_updateable(self.__measurement_midi_jitter)
 
-        #self._measurement_switch_jitter = RuntimeMeasurement(interval_millis = interval_millis, name = "Switch Jitter")
-        #self._measurement_switch_jitter.add_listener(self)
-        #self.add_updateable(self._measurement_switch_jitter)
+        #self.__measurement_switch_jitter = RuntimeMeasurement(interval_millis = interval_millis, name = "Switch Jitter")
+        #self.__measurement_switch_jitter.add_listener(self)
+        #self.add_updateable(self.__measurement_switch_jitter)
 
     # Returns a measurement by ID (currently we only support the tick time measurement)
     def get_measurement(self, id):
         if id == self.STAT_ID_TICK_TIME:
-            return self._measurement_tick_time
+            return self.__measurement_tick_time
 
     # Callback called when the measurement wants to show something
     def measurement_updated(self, measurement):
-        if not self._debug_stats: 
+        if not self.__debug_stats: 
             return
         
         collect()

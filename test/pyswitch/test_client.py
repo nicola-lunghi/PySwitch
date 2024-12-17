@@ -210,29 +210,29 @@ class TestClient(unittest.TestCase):
 
         self.assertEqual(len(midi.messages_sent), 0)
         
-        self.assertEqual(len(client._requests), 1)
-        req = client._requests[0]
+        self.assertEqual(len(client.requests), 1)
+        req = client.requests[0]
 
         self.assertEqual(req.listeners, [listener])
 
         # Add same listener again
         client.register(mapping_1, listener)
 
-        self.assertEqual(len(client._requests), 1)
+        self.assertEqual(len(client.requests), 1)
         self.assertEqual(req.listeners, [listener])
 
         # Add other listener 
         listener_2 = MockClientRequestListener()
         client.register(mapping_1, listener_2)
 
-        self.assertEqual(len(client._requests), 1)
+        self.assertEqual(len(client.requests), 1)
         self.assertEqual(req.listeners, [listener, listener_2])
 
         # Add other mapping
         client.register(mapping_2, listener_2)
 
-        self.assertEqual(len(client._requests), 2)
-        req_2 = client._requests[1]
+        self.assertEqual(len(client.requests), 2)
+        req_2 = client.requests[1]
 
         self.assertEqual(req.listeners, [listener, listener_2])
         self.assertEqual(req_2.listeners, [listener_2])
@@ -498,14 +498,14 @@ class TestClient(unittest.TestCase):
         
         req = client.requests[0]        
         req.lifetime = MockPeriodCounter()
-        client._cleanup_terminated_period = MockPeriodCounter()
+        client._Client__cleanup_terminated_period = MockPeriodCounter()
         
         client.receive(None)
         
         self.assertEqual(req.finished, False)
 
         req.lifetime.exceed_next_time = True
-        client._cleanup_terminated_period.exceed_next_time = True
+        client._Client__cleanup_terminated_period.exceed_next_time = True
         client.receive(None)
 
         self.assertEqual(req.finished, True)

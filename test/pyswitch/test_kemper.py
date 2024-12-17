@@ -38,7 +38,7 @@ class TestKemper(unittest.TestCase):
     def test_rig_name_callback(self):
         cb = KemperRigNameCallback()
 
-        self.assertIn(KemperMappings.RIG_NAME(), cb._mappings)
+        self.assertIn(KemperMappings.RIG_NAME(), cb._Callback__mappings)
 
         label = DisplayLabel(
             layout = {
@@ -47,7 +47,7 @@ class TestKemper(unittest.TestCase):
             callback = cb
         )
 
-        mapping = cb._mappings[0]
+        mapping = cb._Callback__mappings[0]
         mapping.value = "foo"
 
         cb.update_label(label)
@@ -65,13 +65,13 @@ class TestKemper(unittest.TestCase):
             splash_default = element
         )
 
-        self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._mappings)
+        self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._Callback__mappings)
         
-        splash_tuner = cb._splash_tuner
+        splash_tuner = cb._TunerDisplayCallback__splash_tuner
 
         self.assertIsInstance(splash_tuner, TunerDisplay)
 
-        mapping = cb._mappings[0]
+        mapping = cb._Callback__mappings[0]
 
         mapping.value = 0
         self.assertEqual(cb.get_root(), element)
@@ -89,9 +89,9 @@ class TestKemper(unittest.TestCase):
             splash_tuner = element_2
         )
 
-        self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._mappings)
+        self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._Callback__mappings)
         
-        mapping = cb._mappings[0]
+        mapping = cb._Callback__mappings[0]
 
         mapping.value = 0
         self.assertEqual(cb.get_root(), element)

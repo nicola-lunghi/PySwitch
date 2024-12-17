@@ -239,7 +239,7 @@ class TestActionHold(unittest.TestCase):
         action_hold = HoldAction()
         action_hold.init(MockController(), MockFootSwitch())
 
-        self.assertEqual(action_hold._period_hold.interval, 600)
+        self.assertEqual(action_hold._HoldAction__period_hold.interval, 600)
 
 
     def test_reset(self):

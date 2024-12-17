@@ -89,8 +89,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 1)
             self.assertEqual(mapping_1.set_value_calls[0], 10)
 
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.5)
@@ -106,8 +106,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 2)
             self.assertEqual(mapping_1.set_value_calls[1], 3)
 
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.1)
@@ -296,8 +296,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 1)
             self.assertEqual(mapping_1.set_value_calls[0], 10)
 
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.1)
@@ -313,8 +313,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 2)
             self.assertEqual(mapping_1.set_value_calls[1], 3)
 
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.1)
@@ -408,8 +408,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 1)
             self.assertEqual(mapping_1.set_value_calls[0], 11)
 
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
             
             self.assertEqual(action_1.state, True)
 
@@ -418,12 +418,12 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         def prep2():
             switch_1.shall_be_pushed = False
-            self.assertEqual(cb._value_disable, "auto")
+            self.assertEqual(cb._BinaryParameterCallback__value_disable, "auto")
 
         def eval2():
             # Nothing must have been sent because we still have no disabling value
             self.assertEqual(len(mapping_1.set_value_calls), 1)
-            self.assertEqual(len(appl._midi.messages_sent), 1)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
             
             self.assertEqual(action_1.state, False)
 
@@ -432,7 +432,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         # Receive a value
         def prep3():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_1,
                 answer_msg_2
             ]
@@ -447,7 +447,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         def eval3():            
             self.assertEqual(action_1.state, False)
-            self.assertEqual(cb._value_disable, 6)
+            self.assertEqual(cb._BinaryParameterCallback__value_disable, 6)
 
             return True     
         
@@ -459,8 +459,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 2)
             self.assertEqual(mapping_1.set_value_calls[1], 11)
 
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
             
             self.assertEqual(action_1.state, True)
 
@@ -469,7 +469,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         # Receive a value when state is True (must not override the remembered value)
         def prep5():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_1
             ]
             mapping_1.outputs_parse = [
@@ -483,7 +483,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         def eval5():            
             self.assertEqual(action_1.state, True)
-            self.assertEqual(cb._value_disable, 6)
+            self.assertEqual(cb._BinaryParameterCallback__value_disable, 6)
 
             return True  
                 
@@ -495,8 +495,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 3)
             self.assertEqual(mapping_1.set_value_calls[2], 6)
 
-            self.assertEqual(len(appl._midi.messages_sent), 3)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[2], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 3)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[2], mapping_1.set))
                         
             self.assertEqual(action_1.state, False)
 
@@ -609,12 +609,12 @@ class TestBinaryParameterCallback(unittest.TestCase):
         def prep1():
             switch_1.shall_be_pushed = True
 
-            self.assertEqual(cb._update_value_disabled, [False, True])
+            self.assertEqual(cb._BinaryParameterCallback__update_value_disabled, [False, True])
 
         def eval1():
             self.assertEqual(len(mapping_1.set_value_calls), 0)            
                         
-            self.assertEqual(len(appl._midi.messages_sent), 0)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
             
             self.assertEqual(action_1.state, True)
 
@@ -623,12 +623,12 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         def prep2():
             switch_1.shall_be_pushed = False
-            self.assertEqual(cb._value_disable, [4, "auto"])
+            self.assertEqual(cb._BinaryParameterCallback__value_disable, [4, "auto"])
 
         def eval2():
             self.assertEqual(len(mapping_1.set_value_calls), 0)
 
-            self.assertEqual(len(appl._midi.messages_sent), 0)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
             
             self.assertEqual(action_1.state, False)
 
@@ -637,7 +637,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         # Receive a value
         def prep3():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_1
             ]
             mapping_1.outputs_parse = [
@@ -651,7 +651,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         def eval3():            
             self.assertEqual(action_1.state, False)
-            self.assertEqual(cb._value_disable, [4, 7])
+            self.assertEqual(cb._BinaryParameterCallback__value_disable, [4, 7])
 
             return True     
         
@@ -663,9 +663,9 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 1)
             self.assertEqual(mapping_1.set_value_calls[0], [11, 12])
 
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set[0]))
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set[1]))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set[0]))
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set[1]))
             
             self.assertEqual(action_1.state, True)
 
@@ -674,7 +674,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         # Receive a value when state is True (must not override the remembered value)
         def prep5():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_1
             ]
             mapping_1.outputs_parse = [
@@ -688,7 +688,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         def eval5():            
             self.assertEqual(action_1.state, True)
-            self.assertEqual(cb._value_disable, [4, 7])
+            self.assertEqual(cb._BinaryParameterCallback__value_disable, [4, 7])
 
             return True     
         
@@ -700,9 +700,9 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 2)
             self.assertEqual(mapping_1.set_value_calls[1], [4, 7])
 
-            self.assertEqual(len(appl._midi.messages_sent), 4)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[2], mapping_1.set[0]))
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[3], mapping_1.set[1]))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 4)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[2], mapping_1.set[0]))
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[3], mapping_1.set[1]))
                         
             self.assertEqual(action_1.state, False)
 
@@ -817,8 +817,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 1)
             self.assertEqual(mapping_1.set_value_calls[0], 10)
 
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.5)
@@ -834,8 +834,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_disable_1.set_value_calls), 1)
             self.assertEqual(mapping_disable_1.set_value_calls[0], 3)
 
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_disable_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_disable_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.1)
@@ -935,10 +935,10 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 1)
             self.assertEqual(mapping_1.set_value_calls[0], [1, 2, 3])
 
-            self.assertEqual(len(appl._midi.messages_sent), 3)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set[0]))
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set[1]))
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[2], mapping_1.set[2]))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 3)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set[0]))
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set[1]))
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[2], mapping_1.set[2]))
 
             return True        
         
@@ -950,9 +950,9 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_disable_1.set_value_calls), 1)
             self.assertEqual(mapping_disable_1.set_value_calls[0], [0, -1])
 
-            self.assertEqual(len(appl._midi.messages_sent), 5)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[3], mapping_disable_1.set[0]))
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[4], mapping_disable_1.set[1]))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 5)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[3], mapping_disable_1.set[0]))
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[4], mapping_disable_1.set[1]))
 
             return False        
 
@@ -1037,8 +1037,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 1)
             self.assertEqual(mapping_1.set_value_calls[0], 10)
 
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.5)
@@ -1057,8 +1057,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 2)
             self.assertEqual(mapping_1.set_value_calls[1], 3)
 
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.1)
@@ -1151,8 +1151,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 1)
             self.assertEqual(mapping_1.set_value_calls[0], 10)
 
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.5)
@@ -1171,8 +1171,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 2)
             self.assertEqual(mapping_1.set_value_calls[1], 3)
 
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
             self.assertEqual(appl.switches[0].brightness, 0.1)
@@ -1262,8 +1262,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 1)
             self.assertEqual(mapping_1.set_value_calls[0], 10)
 
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[0], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].colors, [(200, 100, 0), (10, 20, 30)])
             self.assertEqual(appl.switches[0].brightnesses, [0.5, 0.5])
@@ -1283,8 +1283,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertEqual(len(mapping_1.set_value_calls), 2)
             self.assertEqual(mapping_1.set_value_calls[1], 3)
 
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._midi.messages_sent[1], mapping_1.set))
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].colors, [(200, 100, 0), (10, 20, 30)])
             self.assertEqual(appl.switches[0].brightnesses, [0.1, 0.1])
@@ -1412,19 +1412,19 @@ class TestBinaryParameterCallback(unittest.TestCase):
             period.exceed_next_time = True
 
         def eval1():
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertEqual(appl._midi.messages_sent[0], mapping_1.request)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+            self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request)
             return True
 
         # Step without update
         def eval2():
-            self.assertEqual(len(appl._midi.messages_sent), 1)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
             return True
 
         # Receive value 
         def prep3():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_1,
                 answer_msg_2
             ]
@@ -1444,7 +1444,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         # Receive value 
         def prep4():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_1
             ]
             mapping_1.outputs_parse = [
@@ -1563,20 +1563,20 @@ class TestBinaryParameterCallback(unittest.TestCase):
             period.exceed_next_time = True
 
         def eval1():
-            self.assertEqual(len(appl._midi.messages_sent), 2)
-            self.assertEqual(appl._midi.messages_sent[0], mapping_1.request[0])
-            self.assertEqual(appl._midi.messages_sent[1], mapping_1.request[1])
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+            self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request[0])
+            self.assertEqual(appl._Controller__midi.messages_sent[1], mapping_1.request[1])
             return True
 
         # Step without update
         def eval2():
-            self.assertEqual(len(appl._midi.messages_sent), 2)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
             return True
 
         # Receive value 
         def prep3():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_1,
                 answer_msg_2
             ]
@@ -1595,7 +1595,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         # Receive value 
         def prep4():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_1
             ]
             mapping_1.outputs_parse = [
@@ -1695,19 +1695,19 @@ class TestBinaryParameterCallback(unittest.TestCase):
             period.exceed_next_time = True
 
         def eval1():
-            self.assertEqual(len(appl._midi.messages_sent), 1)
-            self.assertEqual(appl._midi.messages_sent[0], mapping_1.request)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+            self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request)
             return True
 
         # Step without update
         def eval2():
-            self.assertEqual(len(appl._midi.messages_sent), 1)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
             return True
 
         # Receive value 
         def prep3():
             period.exceed_next_time = True
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_1
             ]
             mapping_1.outputs_parse = [

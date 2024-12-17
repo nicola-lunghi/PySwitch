@@ -59,21 +59,21 @@ class MidiController:
 
     # routings must be a list of MidiRouting instances
     def __init__(self, routings):
-        self._routings_from_appl = [x for x in routings if x.source == MidiController.APPLICATION]
-        self._routings_to_appl = [x for x in routings if x.target == MidiController.APPLICATION]
-        self._routings_external = [x for x in routings if x.source != MidiController.APPLICATION and x.target != MidiController.APPLICATION]
+        self.__routings_from_appl = [x for x in routings if x.source == MidiController.APPLICATION]
+        self.__routings_to_appl = [x for x in routings if x.target == MidiController.APPLICATION]
+        self.__routings_external = [x for x in routings if x.source != MidiController.APPLICATION and x.target != MidiController.APPLICATION]
 
     def send(self, midi_message):
         # Send to all routings which have APPLICATION as source
-        for r in self._routings_from_appl:    
+        for r in self.__routings_from_appl:    
             r.target.send(midi_message)
 
     def receive(self):
         # Process routings without APPLICATION involved 
-        self._process_external_routings()
+        self.__process_external_routings()
 
         # Process routings targeting APPLICATION
-        for r in self._routings_to_appl:
+        for r in self.__routings_to_appl:
             msg = r.source.receive()
 
             if msg:
@@ -81,8 +81,8 @@ class MidiController:
                 return msg                
     
     # Process all routings where APPLICATION is not involved (this processes one message of each source every time)
-    def _process_external_routings(self):
-        routings = self._routings_external
+    def __process_external_routings(self):
+        routings = self.__routings_external
         if not routings:
             return
         

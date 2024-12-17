@@ -165,18 +165,18 @@ class TestTunerDisplay(unittest.TestCase):
         # Build scene:
         # Step 1: Not exceeded
         def prep1():
-            self.assertEqual(display.label_note._label.scale, 2.33)
+            self.assertEqual(display.label_note._DisplayLabel__label.scale, 2.33)
             period.exceed_next_time = True
             
         def eval1():
-            self.assertEqual(len(appl._midi.messages_sent), 0)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
             return True
 
         # Step 2: Exceeded the first time
         def prep2():
             period.exceed_next_time = True
 
-            appl._midi.next_receive_messages = [
+            appl._Controller__midi.next_receive_messages = [
                 answer_msg_1,
                 answer_msg_2
             ]
@@ -195,16 +195,16 @@ class TestTunerDisplay(unittest.TestCase):
                 ]
 
         def eval2():
-            self.assertEqual(len(appl._midi.messages_sent), 0)
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
             self.assertEqual(display.label_note.text, note_text)
 
             if deviance_value != None:
-                act_pos = display.deviance._marker.x / ((444 - deviance_width) / 2) - 1
+                act_pos = display.deviance._TunerDevianceDisplay__marker.x / ((444 - deviance_width) / 2) - 1
                 self.assertAlmostEqual(act_pos, max(-1, min(deviance_pos * deviance_zoom, 1)), delta = deviance_tolerance)
 
                 self.assertEqual(display.label_note.text_color, exp_color)
-                self.assertEqual(display.deviance._marker.fill, exp_color)
-                self.assertEqual(display.deviance._marker.width, deviance_width)
+                self.assertEqual(display.deviance._TunerDevianceDisplay__marker.fill, exp_color)
+                self.assertEqual(display.deviance._TunerDevianceDisplay__marker.width, deviance_width)
 
             display.reset()
 

@@ -57,14 +57,15 @@ class TestProtocolState(unittest.TestCase):
 
         protocol.output_color = (2, 5, 6)
         display.update()
-        self.assertEqual(display._dot.fill, (2, 5, 6))
+        self.assertEqual(display._BidirectionalProtocolState__dot.fill, (2, 5, 6))
 
         protocol.output_color = (11, 45, 66)
         display.update()
-        self.assertEqual(display._dot.fill, (11, 45, 66))
+        self.assertEqual(display._BidirectionalProtocolState__dot.fill, (11, 45, 66))
 
         display.update()
-        self.assertEqual(display._dot.fill, (11, 45, 66))
+        self.assertEqual(display._BidirectionalProtocolState__dot.fill, (11, 45, 66))
+    
     
     def test_no_protocol(self):
         display = BidirectionalProtocolState(

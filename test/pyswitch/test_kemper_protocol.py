@@ -16,6 +16,8 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
+    from adafruit_midi.system_exclusive import SystemExclusive
+    from adafruit_midi.control_change import ControlChange
     from lib.pyswitch.clients.kemper import *
     from lib.pyswitch.misc import Colors, compare_midi_messages
 

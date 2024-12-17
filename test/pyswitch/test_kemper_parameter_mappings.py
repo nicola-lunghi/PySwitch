@@ -16,6 +16,10 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
+    from adafruit_midi.system_exclusive import SystemExclusive
+    from adafruit_midi.control_change import ControlChange
+    from adafruit_midi.program_change import ProgramChange
+
     from lib.pyswitch.clients.kemper import *
 
 

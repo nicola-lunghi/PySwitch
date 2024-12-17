@@ -204,19 +204,19 @@ class PeriodCounter:
     def __init__(self, interval_millis):
         self.interval = int(interval_millis)
 
-        self._last_reset = 0
+        self.__last_reset = 0
 
     # Resets the period counter to the current time
     def reset(self):
-        self._last_reset = get_current_millis()
+        self.__last_reset = get_current_millis()
 
     # Returns if the period has been exceeded. If yes, it lso resets
     # the period to the current time.
     @property
     def exceeded(self):
         current_time = get_current_millis()
-        if self._last_reset + self.interval < current_time:
-            self._last_reset = current_time
+        if self.__last_reset + self.interval < current_time:
+            self.__last_reset = current_time
             return True
         return False
             

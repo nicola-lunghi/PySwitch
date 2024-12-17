@@ -47,7 +47,7 @@ contents have been changed (which is the default behaviour for CircuitPy boards)
 
 The whole configuration is done in some files in the root directory (of the device drive). These are all python scripts and follow the corresponding syntax rules. 
 
-*Technical note: The pyswitch module does not import any of the files in the root folder directly. The code.py script (which is the CircuitPy entry point) loads all configuration.*
+*Technical note: The pyswitch module does not import any of the files in the root folder directly. The code.py script (which is the CircuitPy entry point) loads all configuration by importing pyswitch/process.py*
 
 - **config.py**: Global configuration (MIDI channel, processing control, debug switches)
 - **switches.py**: Defines which action(s) are triggered when a switch is pushed
@@ -79,29 +79,7 @@ However, it is sometimes way faster editing your switches.py file this way than 
 
 ### Global configuration
 
-The file **config.py** contains the global device configuration, and only defines one dictionary named "Config". Here is just a minimal example, for all available options, please refer to the comments in the delivered config.py file.
-
-```python
-Config = {
-    # Enables file transfer via MIDI from and to the device using 
-    # PyMidiBridge (https://github.com/Tunetown/PyMidiBridge).
-    # This costs about 8kB of RAM, so if you run into memory issues, 
-    # disable this.
-    "enableMidiBridge": True,
-
-    # Globally used dim factors for the DisplayLabels. Much actions can 
-    # override this via parameters, but the global default must be
-    # specified here.
-    "displayDimFactorOn": 1,
-    "displayDimFactorOff": 0.2,
-
-    # Globally used brightness values for the LEDs. Much actions can 
-    # override this via parameters, but the global default must be 
-    # specified here.
-    "ledBrightnessOn": 0.3,
-    "ledBrightnessOff": 0.02
-}
-```
+The file **config.py** contains the global device configuration, and only defines one dictionary named "Config", which is empty by default. Please refer to the comments in the delivered config.py file for all available options and their defaults.
 
 ### Switch Assignment
 
@@ -712,7 +690,7 @@ The sources are all contained in the lib/pyswitch module, which has the followin
 - **ui** contains the uiser interface shown on the TFT display
 - **clients** provides code specific to clients (like the Kemper devices). This code is not used in the library itself, but in your config files in the drive root. Further client implementations (for Helix or Quad Cortex devices maybe) can be added here. If you want to contribute an implementation, just create it in the drive root, make it work from there, then share it to others by either putting it into the clients folder and creating a pull request, or just send the file over to me and i will integrate it.
 
-The Controller class in the **controller** folder represents the main application controller class which initiates the processing loop. It is used in the code.py file as follows (irrelevant things omitted for clarity):
+The Controller class in the **controller** folder represents the main application controller class which initiates the processing loop. It is used in the process.py file as follows (irrelevant things omitted for clarity):
 
 ```python
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader
@@ -951,7 +929,7 @@ NOTE: This mode is currently hard wired for three LEDs per footswitch. However, 
 
 The MIDICaptain Nano 4 only has about 200kB of available RAM. This is not much, especially because the display elements take much space. When creating more advanced display layouts, you might run into an error telling that no more memory can be allocated. 
 
-The program provides some rudimentary memory monitoring. Enable this by uncommenting some lines in code.py:
+The program provides some rudimentary memory monitoring. Enable this by uncommenting some lines in process.py:
 
 ```python
 ...

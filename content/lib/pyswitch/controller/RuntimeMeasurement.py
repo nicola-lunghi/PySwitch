@@ -8,7 +8,7 @@ class RuntimeMeasurement(EventEmitter, Updateable):
         EventEmitter.__init__(self) #, RuntimeMeasurementListener)
 
         self.interval_millis = interval_millis
-        self._last_output = 0
+        self.__last_output = 0
         self.name = name
 
         self.reset()
@@ -16,22 +16,22 @@ class RuntimeMeasurement(EventEmitter, Updateable):
     # Average runtime
     @property
     def average(self):
-        if self._time_num == 0:
+        if self.__time_num == 0:
             return 0
-        return int(self._time_aggr / self._time_num)
+        return int(self.__time_aggr / self.__time_num)
     
     @property 
     def sum(self):
-        return self._time_aggr
+        return self.__time_aggr
 
     @property 
     def calls(self):
-        return self._time_num
+        return self.__time_num
 
     def update(self):
         current = get_current_millis()
-        if self._last_output + self.interval_millis < current:
-            self._last_output = current
+        if self.__last_output + self.interval_millis < current:
+            self.__last_output = current
 
             for l in self.listeners:
                 l.measurement_updated(self)
@@ -44,8 +44,8 @@ class RuntimeMeasurement(EventEmitter, Updateable):
         self.start_time = 0  # Start time
         self.end_time = 0    # End time
 
-        self._time_aggr = 0  # Times added up
-        self._time_num = 0   # Number of times added up
+        self.__time_aggr = 0  # Times added up
+        self.__time_num = 0   # Number of times added up
 
     # Start the measurement
     def start(self):
@@ -64,8 +64,8 @@ class RuntimeMeasurement(EventEmitter, Updateable):
         if diff > self.value:
             self.value = diff
 
-        self._time_aggr = self._time_aggr + diff
-        self._time_num += 1
+        self.__time_aggr = self.__time_aggr + diff
+        self.__time_num += 1
 
 
 ################################################################################

@@ -7,8 +7,9 @@ from adafruit_midi.program_change import ProgramChange
 
 from ..misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print, PYSWITCH_VERSION
 from ..controller.actions.actions import ResetDisplaysAction, PushButtonAction
-from ..controller.callbacks import BinaryParameterCallback, DEFAULT_LED_BRIGHTNESS_OFF, DEFAULT_LED_BRIGHTNESS_ON, DEFAULT_SLOT_DIM_FACTOR_OFF, DEFAULT_SLOT_DIM_FACTOR_ON, Callback, EffectEnableCallback
+from ..controller.callbacks import BinaryParameterCallback, Callback, EffectEnableCallback
 from ..controller.Client import ClientParameterMapping
+from ..misc import get_option
 from ..ui.elements import TunerDisplay
 
 
@@ -254,8 +255,8 @@ class KemperActionDefinitions:
                 text = text,
                 color = color,
                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
-                display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON                
+                led_brightness_off = "on",
+                display_dim_factor_off = "on",
             ),
             "mode": PushButtonAction.MOMENTARY,
             "useSwitchLeds": use_leds,
@@ -271,8 +272,8 @@ class KemperActionDefinitions:
                 mapping = KemperMappings.MORPH_BUTTON(),
                 text = text,
                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
-                display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON                
+                led_brightness_off = "on",
+                display_dim_factor_off = "on",
             ),
             "mode": PushButtonAction.MOMENTARY,
             "useSwitchLeds": use_leds,
@@ -288,8 +289,8 @@ class KemperActionDefinitions:
                 mapping = KemperMappings.MORPH_PEDAL(),
                 text = text,
                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
-                display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON,
+                led_brightness_off = "on",
+                display_dim_factor_off = "on",
                 suppress_send = True
             ),
             "useSwitchLeds": use_leds,
@@ -350,15 +351,15 @@ class KemperActionDefinitions:
                 id = False, 
                 use_leds = True, 
                 enable_callback = None,
-                dim_factor = DEFAULT_SLOT_DIM_FACTOR_OFF,
-                led_brightness = DEFAULT_LED_BRIGHTNESS_OFF,
+                dim_factor = "off",                               # Can be "off", "on" or a value in range [0..1]
+                led_brightness = "off",                           # Can be "off", "on" or a value in range [0..1]
                 text = "Bank up",
                 text_callback = None,                             # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
                 color = None,                                     # Override color (if no color_callback is passed)
                 color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
                 display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
         ):
-        return KemperActionDefinitions._BANK_CHANGE(
+        return KemperActionDefinitions.__BANK_CHANGE(
             mapping = KemperMappings.NEXT_BANK(),
             offset = 1,
             display = display,
@@ -380,15 +381,15 @@ class KemperActionDefinitions:
                   id = False, 
                   use_leds = True, 
                   enable_callback = None,
-                  dim_factor = DEFAULT_SLOT_DIM_FACTOR_OFF,
-                  led_brightness = DEFAULT_LED_BRIGHTNESS_OFF,
+                  dim_factor = "off",                               # Can be "off", "on" or a value in range [0..1]
+                  led_brightness = "off",                           # Can be "off", "on" or a value in range [0..1]
                   text = "Bank dn", 
                   text_callback = None,                             # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
                   color = None,                                     # Override color (if no color_callback is passed)
                   color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
                   display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
         ):
-        return KemperActionDefinitions._BANK_CHANGE(
+        return KemperActionDefinitions.__BANK_CHANGE(
             mapping = KemperMappings.PREVIOUS_BANK(),
             offset = -1,
             display = display,
@@ -406,7 +407,21 @@ class KemperActionDefinitions:
 
     # Internal use: Bank up or down
     @staticmethod
-    def _BANK_CHANGE(mapping, offset, display, text, id, use_leds, enable_callback, text_callback, display_mode, color, color_callback, dim_factor, led_brightness):            
+    def __BANK_CHANGE(mapping, 
+                     offset, 
+                     display, 
+                     text, 
+                     id, 
+                     use_leds, 
+                     enable_callback, 
+                     text_callback, 
+                     display_mode, 
+                     color, 
+                     color_callback, 
+                     dim_factor, 
+                     led_brightness
+        ):
+
         # Custom callback showing current bank color
         class BankChangeCallback(BinaryParameterCallback):
             def __init__(self):
@@ -417,15 +432,32 @@ class KemperActionDefinitions:
                     comparison_mode = self.NO_STATE_CHANGE
                 )
 
+            def init(self, appl, listener = None):
+                super().init(appl, listener)
+
+                if dim_factor == "off":
+                    self.__dim_factor = get_option(appl.config, "displayDimFactorOff", 0.2)
+                elif display_mode == "on":
+                    self.__dim_factor = get_option(appl.config, "displayDimFactorOn", 1)
+                else:
+                    self.__dim_factor = dim_factor
+
+                if led_brightness == "off":
+                    self.__led_brightness = get_option(appl.config, "ledBrightnessOff", 0.02)
+                elif led_brightness == "on":
+                    self.__led_brightness = get_option(appl.config, "ledBrightnessOn", 0.3)
+                else:
+                    self.__led_brightness = led_brightness
+
             def update_displays(self, action):
                 if mapping.value == None:
                     # Fallback to default behaviour
                     if action.label:
                         action.label.text = text
-                        action.label.back_color = self.dim_color(Colors.WHITE, dim_factor)
+                        action.label.back_color = self.dim_color(Colors.WHITE, self.__dim_factor)
 
                     action.switch_color = Colors.WHITE
-                    action.switch_brightness = led_brightness
+                    action.switch_brightness = self.__led_brightness
                     return
                 
                 # Calculate bank and rig numbers in range [0...]
@@ -441,7 +473,7 @@ class KemperActionDefinitions:
 
                 # Label text
                 if action.label:
-                    action.label.back_color = self.dim_color(bank_color, dim_factor)
+                    action.label.back_color = self.dim_color(bank_color, self.__dim_factor)
 
                     if text_callback:
                         if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
@@ -462,7 +494,7 @@ class KemperActionDefinitions:
                         action.label.text = text
 
                 action.switch_color = bank_color
-                action.switch_brightness = led_brightness
+                action.switch_brightness = self.__led_brightness
 
         return PushButtonAction({
             "callback": BankChangeCallback(),
@@ -523,27 +555,34 @@ class KemperActionDefinitions:
                     value_disable = [1, 0]
                 )
 
-                self._current_value = -1
-                self._current_state = -1
+                self.__current_value = -1
+                self.__current_state = -1
+
+            def init(self, appl, listener = None):
+                super().init(appl, listener)
+
+                self.__default_dim_factor_off = get_option(appl.config, "displayDimFactorOff", 0.2)
+                self.__default_led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
+                self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
 
             def update_displays(self, action):
-                if mapping.value != self._current_value or action.state != self._current_state:
+                if mapping.value != self.__current_value or action.state != self.__current_state:
                     if mapping.value != None:
                         curr_rig = mapping.value % NUM_RIGS_PER_BANK
                         action.feedback_state(curr_rig == rig - 1) 
                     else:
                         action.feedback_state(False) 
                                     
-                    self._current_value = mapping.value
-                    self._current_state = action.state
+                    self.__current_value = mapping.value
+                    self.__current_state = action.state
 
                 if mapping.value == None:
                     if action.label:
                         action.label.text = ""
-                        action.label.back_color = self.dim_color(Colors.WHITE, DEFAULT_SLOT_DIM_FACTOR_OFF)
+                        action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
 
                     action.switch_color = Colors.WHITE
-                    action.switch_brightness = DEFAULT_LED_BRIGHTNESS_OFF
+                    action.switch_brightness = self.__default_led_brightness_off
                     return
                 
                 # Calculate bank and rig numbers in range [0...]
@@ -556,10 +595,10 @@ class KemperActionDefinitions:
                 if action.label:
                     if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
                         action.label.text = text_callback(action, curr_bank, curr_rig)
-                        action.label.back_color = self.dim_color(bank_color, DEFAULT_SLOT_DIM_FACTOR_OFF)
+                        action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
                     
                     elif display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                        action.label.back_color = bank_color if action.state else self.dim_color(bank_color, DEFAULT_SLOT_DIM_FACTOR_OFF)
+                        action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off)
 
                         if is_current and rig_off != None:                    
                             action.label.text = text_callback(action, curr_bank, rig_off - 1) 
@@ -570,9 +609,9 @@ class KemperActionDefinitions:
                         
                 action.switch_color = bank_color
                 if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state: 
-                    action.switch_brightness = DEFAULT_LED_BRIGHTNESS_ON
+                    action.switch_brightness = self.__default_led_brightness_on
                 else:
-                    action.switch_brightness = DEFAULT_LED_BRIGHTNESS_OFF
+                    action.switch_brightness = self.__default_led_brightness_off
 
         # Finally we can create the action definition ;)
         return PushButtonAction({
@@ -662,23 +701,30 @@ class KemperActionDefinitions:
                     comparison_mode = self.EQUAL 
                 )
 
-                self._current_value = -1
-                self._current_state = -1
+                self.__current_value = -1
+                self.__current_state = -1
+
+            def init(self, appl, listener = None):
+                super().init(appl, listener)
+
+                self.__default_dim_factor_off = get_option(appl.config, "displayDimFactorOff", 0.2)
+                self.__default_led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
+                self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
 
             def update_displays(self, action):
-                if mapping.value != self._current_value or action.state != self._current_state:
+                if mapping.value != self.__current_value or action.state != self.__current_state:
                     self.evaluate_value(action, mapping.value)
                                     
-                    self._current_value = mapping.value
-                    self._current_state = action.state
+                    self.__current_value = mapping.value
+                    self.__current_state = action.state
 
                 if mapping.value == None:
                     if action.label:
                         action.label.text = ""
-                        action.label.back_color = self.dim_color(Colors.WHITE, DEFAULT_SLOT_DIM_FACTOR_OFF)
+                        action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
 
                     action.switch_color = Colors.WHITE
-                    action.switch_brightness = DEFAULT_LED_BRIGHTNESS_OFF
+                    action.switch_brightness = self.__default_led_brightness_off
                     return
                 
                 # Calculate bank and rig numbers in range [0...]
@@ -691,12 +737,12 @@ class KemperActionDefinitions:
                 if action.label:
                     if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
                         action.label.text = text_callback(action, curr_bank, curr_rig) 
-                        action.label.back_color = self.dim_color(bank_color, DEFAULT_SLOT_DIM_FACTOR_OFF)
+                        action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
 
                     elif display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                        action.label.back_color = bank_color if action.state else self.dim_color(bank_color, DEFAULT_SLOT_DIM_FACTOR_OFF) 
+                        action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
 
-                        if is_current and rig_off != None and rig_off != None:
+                        if is_current and rig_off != None and bank_off != None:
                             action.label.text = text_callback(action, bank_off - 1, rig_off - 1)
                         else:
                             action.label.text = text_callback(action, bank - 1, rig - 1)
@@ -708,9 +754,9 @@ class KemperActionDefinitions:
                 action.switch_color = bank_color
 
                 if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state:
-                    action.switch_brightness = DEFAULT_LED_BRIGHTNESS_ON
+                    action.switch_brightness = self.__default_led_brightness_on
                 else:
-                    action.switch_brightness = DEFAULT_LED_BRIGHTNESS_OFF
+                    action.switch_brightness = self.__default_led_brightness_off
     
         # Finally we can create the action definition ;)
         return PushButtonAction({
@@ -721,7 +767,163 @@ class KemperActionDefinitions:
             "callback": RigAndBankSelectCallback(),
             "enableCallback": enable_callback
         })
+    
 
+    # Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). 
+    # Banks are indexed starting from one, range: [1..126].
+    @staticmethod
+    def BANK_SELECT(bank, 
+                    bank_off = None,
+                    display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
+                    display = None, 
+                    id = False, 
+                    use_leds = True, 
+                    enable_callback = None,
+                    color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+                    color = None,                                   # Color override (if no color callback is passed)
+                    text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+                    text = None                                     # Text override (if no text callback is passed)
+        ):
+        
+        # Mappings and values: Start with a configuration bank(_off) = None. Use a dummy rig
+        # here, as this mapping is just used for receiving current rig/bank.
+        mapping = KemperMappings.BANK_AND_RIG_SELECT(0)
+
+        value_enable = [bank - 1, 1, 0]
+        value_disable = value_enable
+
+        if not text_callback:
+            # Default callback for text
+            def get_text(action, bank, rig):
+                if not text:
+                    return "Bank " + repr(bank + 1)
+                else:
+                    return text
+            
+            text_callback = get_text
+            
+        # Alternate rig (the rig selected when the switch state is False)
+        if bank_off != None:
+            value_disable = [bank_off - 1, 1, 0]
+
+        # Callback implementation for Rig Select, showing bank colors and rig/bank info
+        class BankSelectCallback(BinaryParameterCallback):
+            def __init__(self):
+                super().__init__(
+                    mapping = mapping,
+                    value_enable = value_enable,
+                    value_disable = value_disable
+                )
+
+                self.__current_value = -1
+                self.__current_state = -1
+
+            def init(self, appl, listener = None):
+                super().init(appl, listener)
+
+                self.__default_dim_factor_off = get_option(appl.config, "displayDimFactorOff", 0.2)
+                self.__default_led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
+                self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
+                self.__appl = appl
+
+            def state_changed_by_user(self, action):
+                if mapping.value == None:
+                    return
+                
+                curr_bank = int(mapping.value / NUM_RIGS_PER_BANK)
+                curr_rig = mapping.value % NUM_RIGS_PER_BANK                  
+                set_mapping = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
+
+                if action.state:
+                    if curr_bank != bank - 1:                        
+                        self.__appl.client.set(set_mapping, value_enable)
+                else:
+                    if bank_off == None or curr_bank == bank_off - 1:
+                        self.__appl.client.set(set_mapping, value_disable)
+
+                # Request value
+                self.update()
+
+            def update_displays(self, action):
+                if mapping.value == None:
+                    if action.label:
+                        action.label.text = ""
+                        action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
+
+                    action.switch_color = Colors.WHITE
+                    action.switch_brightness = self.__default_led_brightness_off
+                    return
+                
+                # Calculate bank and rig numbers in range [0...]
+                curr_bank = int(mapping.value / NUM_RIGS_PER_BANK)
+                curr_rig = mapping.value % NUM_RIGS_PER_BANK                
+                
+                if mapping.value != self.__current_value or action.state != self.__current_state:
+                    action.feedback_state(curr_bank == (bank - 1))
+                                    
+                    self.__current_value = mapping.value
+                    self.__current_state = action.state
+
+                is_current = (curr_bank == (bank - 1))
+
+                if color != None:
+                    bank_color = color
+                elif color_callback:
+                    bank_color = color_callback(action, curr_bank, curr_rig)
+                else:
+                    bank_color = KemperActionDefinitions.__get_bank_color(action, curr_bank, bank, bank_off, display_mode)
+                    
+                # Label text
+                if action.label:
+                    if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
+                        action.label.text = text_callback(action, curr_bank, curr_rig) 
+                        action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
+
+                    elif display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+                        action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
+
+                        if is_current and bank_off != None:
+                            action.label.text = text_callback(action, bank_off - 1, curr_rig)
+                        else:
+                            action.label.text = text_callback(action, bank - 1, curr_rig)
+
+                    else:
+                        raise Exception()  #"Invalid display mode: " + repr(display_mode))
+
+                # LEDs
+                action.switch_color = bank_color
+
+                if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state:
+                    action.switch_brightness = self.__default_led_brightness_on
+                else:
+                    action.switch_brightness = self.__default_led_brightness_off
+    
+        # Finally we can create the action definition ;)
+        return PushButtonAction({
+            "display": display,
+            "mode": PushButtonAction.LATCH,
+            "id": id,
+            "useSwitchLeds": use_leds,
+            "callback": BankSelectCallback(),
+            "enableCallback": enable_callback
+        })
+
+    # Default color callback for bank color
+    def __get_bank_color(action, curr_bank, bank, bank_off, display_mode):
+        is_current = (curr_bank == (bank - 1))
+
+        if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+            if is_current and bank_off != None:
+                return BANK_COLORS[(bank_off - 1) % len(BANK_COLORS)]
+            else:
+                return BANK_COLORS[(bank - 1) % len(BANK_COLORS)]
+
+        elif display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
+            return BANK_COLORS[curr_bank % len(BANK_COLORS)]
+
+        else:
+            raise Exception() #"Invalid display mode: " + repr(display_mode))
+                
 
     # Adds morph state display on one LED to the rig select action. Returns a list of actions!
     @staticmethod
@@ -778,8 +980,8 @@ class KemperActionDefinitions:
                 "callback": KemperMorphCallback(
                     mapping = KemperMappings.MORPH_PEDAL(),
                     comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                    led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
-                    display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON,
+                    led_brightness_off = "on",
+                    display_dim_factor_off = "on",
                     suppress_send = True
                 ),
                 "useSwitchLeds": morph_use_leds,
@@ -849,8 +1051,8 @@ class KemperActionDefinitions:
                 "callback": KemperMorphCallback(
                     mapping = KemperMappings.MORPH_PEDAL(),
                     comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                    led_brightness_off = DEFAULT_LED_BRIGHTNESS_ON,
-                    display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_ON,
+                    led_brightness_off = "on",
+                    display_dim_factor_off = "on",
                     suppress_send = True
                 ),
                 "useSwitchLeds": morph_use_leds,
@@ -980,11 +1182,11 @@ class KemperRigNameCallback(Callback):
 
     def __init__(self):
         Callback.__init__(self)
-        self._mapping = KemperMappings.RIG_NAME()
-        self.register_mapping(self._mapping)
+        self.__mapping = KemperMappings.RIG_NAME()
+        self.register_mapping(self.__mapping)
 
     def update_label(self, label):
-        label.text = self._mapping.value if self._mapping.value else self.DEFAULT_TEXT
+        label.text = self.__mapping.value if self.__mapping.value else self.DEFAULT_TEXT
 
 
 ####################################################################################################################
@@ -1003,10 +1205,10 @@ class KemperMorphCallback(BinaryParameterCallback):
                  value_disable = 0, 
                  reference_value = None, 
                  comparison_mode = BinaryParameterCallback.GREATER_EQUAL, 
-                 display_dim_factor_on = DEFAULT_SLOT_DIM_FACTOR_ON,
-                 display_dim_factor_off = DEFAULT_SLOT_DIM_FACTOR_OFF,
-                 led_brightness_on = DEFAULT_LED_BRIGHTNESS_ON,
-                 led_brightness_off = DEFAULT_LED_BRIGHTNESS_OFF,
+                 display_dim_factor_on = None,
+                 display_dim_factor_off = None,
+                 led_brightness_on = None,
+                 led_brightness_off = None,
                  suppress_send = False
         ):
 
@@ -1040,10 +1242,10 @@ class KemperMorphCallback(BinaryParameterCallback):
             led_brightness_off = led_brightness_off
         )
 
-        self._suppress_send = suppress_send
+        self.__suppress_send = suppress_send
 
     def state_changed_by_user(self, action):
-        if self._suppress_send:
+        if self.__suppress_send:
             return
         
         super().state_changed_by_user(action)
@@ -1068,17 +1270,17 @@ class TunerDisplayCallback(Callback):
         ):
         Callback.__init__(self)
 
-        self._mapping = KemperMappings.TUNER_MODE_STATE()
-        self.register_mapping(self._mapping)
+        self.__mapping = KemperMappings.TUNER_MODE_STATE()
+        self.register_mapping(self.__mapping)
         
-        self._splash_tuner = splash_tuner
-        self._splash_default = splash_default
+        self.__splash_tuner = splash_tuner
+        self.__splash_default = splash_default
 
-        if not self._splash_tuner:
-            self._splash_tuner = TunerDisplay(
+        if not self.__splash_tuner:
+            self.__splash_tuner = TunerDisplay(
                 mapping_note = KemperMappings.TUNER_NOTE(),
                 mapping_deviance = KemperMappings.TUNER_DEVIANCE(),                
-                bounds = self._splash_default.bounds,                
+                bounds = self.__splash_default.bounds,                
                 scale = 3,
                 layout = {
                     "font": "/fonts/PTSans-NarrowBold-40.pcf"
@@ -1092,10 +1294,10 @@ class TunerDisplayCallback(Callback):
             )
 
     def get_root(self):
-        if self._mapping.value != 1:
-            return self._splash_default
+        if self.__mapping.value != 1:
+            return self.__splash_default
         else:
-            return self._splash_tuner
+            return self.__splash_tuner
 
 
 ####################################################################################################################
@@ -1307,11 +1509,11 @@ class KemperParameterMapping(ClientParameterMapping):
     def set_value(self, value):
         if isinstance(self.set, list):
             for i in range(len(self.set)):
-                self._set_value(self.set[i], value[i])
+                self.__set_value(self.set[i], value[i])
         else:
-            self._set_value(self.set, value)
+            self.__set_value(self.set, value)
 
-    def _set_value(self, midi_message, value):
+    def __set_value(self, midi_message, value):
         if self.type == self.PARAMETER_TYPE_STRING:
             raise Exception() # Setting strings is not implemented yet
 
@@ -1346,7 +1548,7 @@ class KemperTwoPartParameterMapping(KemperParameterMapping):
     def __init__(self, name = "", set = None, request = None, response = None, value = None, type = 0):
         super().__init__(name = name, set = set, request = request, response = response, value = value, type = type)
 
-        self._value_1 = None
+        self.__value_1 = None
     
     # Must parse the incoming MIDI message and set its value on the mapping.
     # If the response template does not match, must return False, and
@@ -1354,14 +1556,14 @@ class KemperTwoPartParameterMapping(KemperParameterMapping):
     def parse(self, midi_message): 
         value_1 = self.parse_against(midi_message, self.response[0])
         if value_1 != None:
-            self._value_1 = value_1
+            self.__value_1 = value_1
             return True
         
         value_2 = self.parse_against(midi_message, self.response[1])
 
-        if value_2 != None and self._value_1 != None:
-            self.value = 128 * self._value_1 + value_2
-            self._value_1 = None
+        if value_2 != None and self.__value_1 != None:
+            self.value = 128 * self.__value_1 + value_2
+            self.__value_1 = None
             return True
         
         return False
@@ -1369,7 +1571,7 @@ class KemperTwoPartParameterMapping(KemperParameterMapping):
     # Returns if the mapping has finished receiving a result. Per default,
     # this returns True which is valid for mappings with one response.
     def result_finished(self):
-        return (self._value_1 == None)
+        return (self.__value_1 == None)
 
 
 ####################################################################################################################
@@ -1879,11 +2081,11 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
 
     def __init__(self, time_lease_seconds):
         self.state = self._STATE_OFFLINE
-        self._time_lease_encoded = self._encode_time_lease(time_lease_seconds)
+        self.__time_lease_encoded = self.__encode_time_lease(time_lease_seconds)
 
         # This is the reponse template for the status sensing message the Profiler sends every
         # about 500ms.
-        self._mapping_sense = KemperMappings.BIDIRECTIONAL_SENSING()
+        self.__mapping_sense = KemperMappings.BIDIRECTIONAL_SENSING()
 
         # Re-send the beacon after half of the lease time have passed
         self.resend_period = PeriodCounter(time_lease_seconds * 1000 * 0.5)
@@ -1897,13 +2099,13 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         self.sensing_period.reset()
 
         self.debug = False   # This is set by the BidirectionalClient constructor
-        self._count_relevant_messages = 0
-        self._has_been_running = False
+        self.__count_relevant_messages = 0
+        self.__has_been_running = False
         
     # Called before usage, with a midi handler.
     def init(self, midi, client):
-        self._midi = midi  
-        self._client = client
+        self.__midi = midi  
+        self.__client = client
 
     # Must return (boolean) if the passed mapping is handled in the bidirectional protocol
     def is_bidirectional(self, mapping):
@@ -1923,12 +2125,12 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         if self.state == self._STATE_OFFLINE:
             if self.init_period.exceeded:
                 if self.debug:                     # pragma: no cover
-                    self._print("Initialize")
+                    self.__print("Initialize")
 
-                if self._has_been_running:
-                    self._client.notify_connection_lost()                    
+                if self.__has_been_running:
+                    self.__client.notify_connection_lost()                    
 
-                self._send_beacon(
+                self.__send_beacon(
                     init = True
                 )
 
@@ -1937,13 +2139,13 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
                 self.state = self._STATE_OFFLINE
 
                 if self.debug:                     # pragma: no cover
-                    self._print("Lost connection")                
+                    self.__print("Lost connection")                
 
             elif self.resend_period.exceeded:
                 if self.debug:                     # pragma: no cover
-                    self._print("Send keep-alive message")
+                    self.__print("Send keep-alive message")
 
-                self._send_beacon()
+                self.__send_beacon()
 
     # Receive sensing messages and re-init (with init = 1 again) when they stop appearing for longer then 1 second
     def receive(self, midi_message):
@@ -1951,11 +2153,11 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
             return False
                
         # Compare manufacturer IDs
-        if midi_message.manufacturer_id != self._mapping_sense.response.manufacturer_id:
+        if midi_message.manufacturer_id != self.__mapping_sense.response.manufacturer_id:
             return False
         
         if self.debug:                     # pragma: no cover
-            self._count_relevant_messages += 1
+            self.__count_relevant_messages += 1
 
         # Check if the message belongs to the status sense mapping. The following have to match:
         #   2: function code, (0x7e)
@@ -1964,16 +2166,16 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         #
         # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
         # and device ID as for the request, however the device just sends two zeroes)
-        if midi_message.data[2:5] != self._mapping_sense.response.data[2:5]:
+        if midi_message.data[2:5] != self.__mapping_sense.response.data[2:5]:
             return False
         
         if self.state != self._STATE_RUNNING:
             self.resend_period.reset()
             
             if self.debug:                     # pragma: no cover
-               self._print("Connection established")
+               self.__print("Connection established")
 
-            self._has_been_running = True
+            self.__has_been_running = True
             self.state = self._STATE_RUNNING
 
         self.sensing_period.reset()
@@ -1981,28 +2183,28 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         return True
 
     # Send beacon for bidirection communication
-    def _send_beacon(self, init = False):
-        self._midi.send(
+    def __send_beacon(self, init = False):
+        self.__midi.send(
             KemperNRPNExtendedMessage(
                 0x7e,
                 [
                     0x40,
                     _SELECTED_PARAMETER_SET_ID,
-                    self._get_flags(
+                    self.__get_flags(
                         init = init,
                         tunemode = True
                     ),
-                    self._time_lease_encoded
+                    self.__time_lease_encoded
                 ]
             )
         )
 
     # Encode time lease (this is done in 2 second steps for the Kemper)
-    def _encode_time_lease(self, time_lease_seconds):
+    def __encode_time_lease(self, time_lease_seconds):
         return int(time_lease_seconds / 2)
 
     # Generates the flags byte.
-    def _get_flags(self, init = False, sysex = True, echo = False, nofe = False, noctr = False, tunemode = False):
+    def __get_flags(self, init = False, sysex = True, echo = False, nofe = False, noctr = False, tunemode = False):
         i = 1 if init else 0
         s = 1 if sysex else 0
         e = 1 if echo else 0
@@ -2012,6 +2214,6 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
 
         return 0x00 | (i << 0) | (s << 1) | (e << 2) | (n << 3) | (c << 4) | (t << 5)
 
-    def _print(self, msg):                     # pragma: no cover
-        do_print("Bidirectional (" + formatted_timestamp() + "): " + msg + " (Received " + repr(self._count_relevant_messages) + ")")
-        self._count_relevant_messages = 0
+    def __print(self, msg):                     # pragma: no cover
+        do_print("Bidirectional (" + formatted_timestamp() + "): " + msg + " (Received " + repr(self.__count_relevant_messages) + ")")
+        self.__count_relevant_messages = 0

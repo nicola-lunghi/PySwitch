@@ -46,7 +46,7 @@ class TestControllerMeasurementsCalls(unittest.TestCase):
             period_counter = period
         )
 
-        m = appl._measurement_tick_time
+        m = appl._Controller__measurement_tick_time
 
         # Build scene
         def prep1():            

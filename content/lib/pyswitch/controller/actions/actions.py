@@ -30,28 +30,28 @@ class PushButtonAction(Action):
     def __init__(self, config = {}, period_counter = None):
         super().__init__(config)
 
-        self._mode = get_option(config, "mode", self.HOLD_MOMENTARY)
+        self.__mode = get_option(config, "mode", self.HOLD_MOMENTARY)
         
-        self._period = period_counter
-        if not self._period:
+        self.__period = period_counter
+        if not self.__period:
             hold_time_ms = get_option(config, "holdTimeMillis", self.DEFAULT_LATCH_MOMENTARY_HOLD_TIME)
-            self._period = PeriodCounter(hold_time_ms)
+            self.__period = PeriodCounter(hold_time_ms)
         
-        self._state = False
+        self.__state = False
 
     @property
     def state(self):
-        return self._state
+        return self.__state
     
     # Sets the state, also triggering the child class functionality. If you just 
     # want to set the state internally after feedback from the controlled device,
     # use feedback_state().
     @state.setter
     def state(self, state):
-        if state == self._state:
+        if state == self.__state:
             return
         
-        self._state = state
+        self.__state = state
         
         if self.callback:
             self.callback.state_changed_by_user(self)
@@ -62,11 +62,11 @@ class PushButtonAction(Action):
     # parameters that have to be requested first. When the answer comes in, the state 
     # is set here again, but no functional update is done.
     def feedback_state(self, state):
-        self._state = state
+        self.__state = state
 
     # Button pushed
     def push(self):
-        mode = self._mode
+        mode = self.__mode
 
         if mode == self.ENABLE:
             # Enable
@@ -90,16 +90,16 @@ class PushButtonAction(Action):
 
         elif mode == self.HOLD_MOMENTARY:
             # Hold Momentary: Toggle like latch, and remember the current timestamp
-            self._period.reset()
+            self.__period.reset()
             self.state = not self.state
 
         elif mode == self.ONE_SHOT:
-            self._state = False    # Triggers that set() is called by the state property in the next line
+            self.__state = False    # Triggers that set() is called by the state property in the next line
             self.state = True
 
     # Button released
     def release(self):
-        mode = self._mode
+        mode = self.__mode
 
         if mode == self.MOMENTARY:
             self.state = False
@@ -108,18 +108,18 @@ class PushButtonAction(Action):
             self.state = True
         
         elif mode == self.HOLD_MOMENTARY:
-            if self._period.exceeded:
+            if self.__period.exceeded:
                 # Momentary if the period exceeded
                 self.state = not self.state
 
         elif mode == self.ONE_SHOT:
             # Do not use the child classes set() method: We do not want an "off" message to be sent here.
-            self._state = False
+            self.__state = False
             self.update_displays()
 
     # Reset the action: Set False state without sending anything
     def reset(self):
-        self._state = False
+        self.__state = False
         self.update_displays()
 
 
@@ -143,22 +143,22 @@ class HoldAction(Action, Updater):
         Action.__init__(self, config)
         Updater.__init__(self)
         
-        self._active = False
+        self.__active = False
 
-        self._actions = get_option(config, "actions", [])
-        self._actions_hold = get_option(config, "actionsHold", [])
+        self.__actions = get_option(config, "actions", [])
+        self.__actions_hold = get_option(config, "actionsHold", [])
 
         # Hold period counter
-        self._period_hold = period_counter_hold
-        if not self._period_hold:
+        self.__period_hold = period_counter_hold
+        if not self.__period_hold:
             hold_time_ms = get_option(config, "holdTimeMillis", self.DEFAULT_HOLD_TIME_MILLIS)
-            self._period_hold = PeriodCounter(hold_time_ms)
+            self.__period_hold = PeriodCounter(hold_time_ms)
         
     # Set up action instances
     def init(self, appl, switch):
         super().init(appl, switch)
 
-        for action in self._actions + self._actions_hold:
+        for action in self.__actions + self.__actions_hold:
             action.init(appl, switch)        
             self.add_updateable(action)    
 
@@ -167,28 +167,28 @@ class HoldAction(Action, Updater):
         Action.update(self)
         Updater.update(self)
 
-        if self._active and self.enabled:
-            self._check_hold()
+        if self.__active and self.enabled:
+            self.__check_hold()
         
     # Can return child actions (used for LED addressing)
     def get_all_actions(self):
         ret = [self]
 
-        for a in self._actions:
+        for a in self.__actions:
             ret = ret + a.get_all_actions()
 
-        for a in self._actions_hold:
+        for a in self.__actions_hold:
             ret = ret + a.get_all_actions()
 
         return ret
     
     # Checks hold time and triggers hold action if exceeded.
-    def _check_hold(self):
-        if self._period_hold.exceeded:
-            self._active = False
+    def __check_hold(self):
+        if self.__period_hold.exceeded:
+            self.__active = False
 
             # Hold click
-            for action in self._actions_hold:
+            for action in self.__actions_hold:
                 if not action.enabled:
                     continue
 
@@ -202,43 +202,43 @@ class HoldAction(Action, Updater):
     # Button pushed: Here, we just reset the period for hold, all processing takes 
     # place in the release() method
     def push(self):     
-        self._period_hold.reset()
-        self._active = True
+        self.__period_hold.reset()
+        self.__active = True
 
     # Button released
     def release(self):
-        if not self._active:
+        if not self.__active:
             return
         
-        if self._check_hold():
+        if self.__check_hold():
             return
 
         # Normal click
-        for action in self._actions:
+        for action in self.__actions:
             if not action.enabled:
                 continue
             
             action.push()        
             action.release()
 
-        self._active = False
+        self.__active = False
 
     # Applied to all sub-actions
     def update_displays(self):
         super().update_displays()
 
-        for action in self._actions:
+        for action in self.__actions:
             action.update_displays()
 
-        for action in self._actions_hold:
+        for action in self.__actions_hold:
             action.update_displays()
 
     # Applied to all sub-actions
     def reset(self):
-        for action in self._actions:
+        for action in self.__actions:
             action.reset()
 
-        for action in self._actions_hold:
+        for action in self.__actions_hold:
             action.reset()
 
 
@@ -258,17 +258,17 @@ class ResetDisplaysAction(Action):
     def __init__(self, config = {}):
         super().__init__(config)
                 
-        self._reset_switches = get_option(config, "resetSwitches")
-        self._ignore_own_switch = get_option(config, "ignoreOwnSwitch")
-        self._reset_display_areas = get_option(config, "resetDisplayAreas")
+        self.__reset_switches = get_option(config, "resetSwitches")
+        self.__ignore_own_switch = get_option(config, "ignoreOwnSwitch")
+        self.__reset_display_areas = get_option(config, "resetDisplayAreas")
 
     def push(self):
-        if self._reset_switches:
-            if self._ignore_own_switch:
+        if self.__reset_switches:
+            if self.__ignore_own_switch:
                 self.appl.reset_switches([self.switch])
             else:
                 self.appl.reset_switches()
 
-        if self._reset_display_areas:
+        if self.__reset_display_areas:
             self.appl.reset_display_areas()
 

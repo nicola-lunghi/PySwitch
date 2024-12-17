@@ -1,3 +1,1 @@
-import pyswitch
-
-pyswitch.init()
+import pyswitch.process

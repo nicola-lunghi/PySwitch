@@ -3,8 +3,6 @@ import unittest
 from unittest.mock import patch   # Necessary workaround! Needs to be separated.
 
 from .mocks_lib import *
-#from .mocks_appl import *
-#from .mocks_ui import *
 
 class MockFont:
     def __init__(self, path):
@@ -37,16 +35,9 @@ class MockImports:
 
         class AdafruitNeoPixelDriver:
             pass
-            # def __init__(self):
-            #     self.leds = None
-                
-            # def init(self, num_leds):
-            #     self.leds = [None for i in range(num_leds)]
 
         class AdafruitFontLoader:
             pass
-            # def get(self, path):
-            #     return MockFont(path)
 
         class AdafruitSwitch:
             def __init__(self, port):
@@ -178,11 +169,7 @@ class MockImports:
 #######################################################################################################################################################
 
 
-# Import init function
-from lib.pyswitch import init
-
-
-class TestInit(unittest.TestCase):
+class TestProcessScript(unittest.TestCase):
 
     def test(self):
         with patch.dict(sys.modules, {
@@ -197,7 +184,7 @@ class TestInit(unittest.TestCase):
             "pymidibridge.MidiBridgeWrapper": MockImports.MockMidiBridgeWrapper(),
             "display": MockImports.MockDisplay(),
             "switches": MockImports.MockSwitches()
-        }):
+        }):            
             MockImports.MockConfig.Config = { "some": "config" }
             MockImports.MockStats.Memory.start_calls = 0
             MockImports.MockHardwareAdafruit.AdafruitST7789DisplayDriver.init_calls = 0
@@ -205,7 +192,7 @@ class TestInit(unittest.TestCase):
             MockImports.MockExploreModeController.controllers = []
             MockImports.MockController.raise_on_init = None
 
-            init()
+            import lib.pyswitch.process
 
             self.assertEqual(MockImports.MockHardwareAdafruit.AdafruitST7789DisplayDriver.init_calls, 1)
             self.assertEqual(MockImports.MockStats.Memory.start_calls, 0)   # Ensure memory monitoring is off
@@ -255,7 +242,7 @@ class TestInit(unittest.TestCase):
             MockImports.MockExploreModeController.controllers = []
             MockImports.MockController.raise_on_process = None
 
-            init()
+            import lib.pyswitch.process
 
             self.assertEqual(MockImports.MockHardwareAdafruit.AdafruitST7789DisplayDriver.init_calls, 1)
             self.assertEqual(MockImports.MockStats.Memory.start_calls, 0)   # Ensure memory monitoring is off
@@ -305,7 +292,7 @@ class TestInit(unittest.TestCase):
             MockImports.MockController.raise_on_process = Exception()
 
             with self.assertRaises(Exception):
-                init()
+                import lib.pyswitch.process
 
 
     def test_error_handling_with_bridge(self):
@@ -329,7 +316,7 @@ class TestInit(unittest.TestCase):
             MockImports.MockExploreModeController.controllers = []
             MockImports.MockController.raise_on_process = Exception()
             
-            init()
+            import lib.pyswitch.process
 
             self.assertEqual(len(MockImports.MockController.controllers), 1)
             controller = MockImports.MockController.controllers[0]
@@ -359,7 +346,7 @@ class TestInit(unittest.TestCase):
             MockImports.MockController.controllers = []
             MockImports.MockController.raise_on_init = None
 
-            init()
+            import lib.pyswitch.process
 
             self.assertEqual(MockImports.MockHardwareAdafruit.AdafruitST7789DisplayDriver.init_calls, 1)
             self.assertEqual(MockImports.MockStats.Memory.start_calls, 0)   # Ensure memory monitoring is off

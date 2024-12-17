@@ -6,8 +6,6 @@ from ...misc import get_option, Updateable
 # inheriting from Action.
 class Action(Updateable):
     
-    _next_id = 0   # Global counted action ids (internal, just used for debugging!)
-
     # config: {
     #      "callback":             Callback instance to update the display and LEDs. Must contain an update_displays(action) function. Optional. 
     #
@@ -22,15 +20,14 @@ class Action(Updateable):
     # }
     def __init__(self, config = {}):
         self.uses_switch_leds = get_option(config, "useSwitchLeds", False)
-        self._initialized = False
 
         self.label = get_option(config, "display", None)
         self.callback = get_option(config, "callback", None)
 
         self.id = get_option(config, "id", None)
 
-        self._enable_callback = get_option(config, "enableCallback", None)
-        self._last_enabled = -1
+        self.__enable_callback = get_option(config, "enableCallback", None)
+        self.__last_enabled = -1
 
     # Must be called before usage
     def init(self, appl, switch):
@@ -38,8 +35,8 @@ class Action(Updateable):
         self.switch = switch
 
         # Enable callback
-        if self._enable_callback:            
-            self._enable_callback.init(appl) 
+        if self.__enable_callback:            
+            self.__enable_callback.init(appl) 
 
         # Update display callback
         that = self
@@ -55,11 +52,9 @@ class Action(Updateable):
         if self.callback:
             self.callback.init(appl, _CallbackListener())
 
-        self._initialized = True
-
     @property
     def enabled(self):
-        ec = self._enable_callback
+        ec = self.__enable_callback
         return ec.enabled(self) if ec else True
         
     # Color of the switch segment(s) for the action (Difficult to do with multicolor, 
@@ -71,7 +66,7 @@ class Action(Updateable):
     # color can also be a tuple!
     @switch_color.setter
     def switch_color(self, color):
-        segments = self._get_led_segments()
+        segments = self.__get_led_segments()
         if len(segments) == 0:
             return
         
@@ -96,14 +91,14 @@ class Action(Updateable):
     # Brightness of the switch segment(s) for the action
     @property
     def switch_brightness(self):
-        segments = self._get_led_segments()
+        segments = self.__get_led_segments()
         if len(segments) > 0:
             return self.switch.brightnesses[segments[0]]  # Return the first segment as they are all equal
         return None
 
     @switch_brightness.setter
     def switch_brightness(self, brightness):
-        segments = self._get_led_segments()
+        segments = self.__get_led_segments()
         if len(segments) == 0:
             return
                 
@@ -115,8 +110,8 @@ class Action(Updateable):
 
     # Called regularly every update interval to update status of effects etc.
     def update(self):
-        if self._last_enabled != self.enabled:
-            self._last_enabled = self.enabled
+        if self.__last_enabled != self.enabled:
+            self.__last_enabled = self.enabled
             
             if self.callback:
                 self.callback.reset()
@@ -146,15 +141,15 @@ class Action(Updateable):
         pass                                      # pragma: no cover
 
     # Returns the switch LED segments to use
-    def _get_led_segments(self):
+    def __get_led_segments(self):
         if not self.switch.pixels or not self.uses_switch_leds or not self.enabled:
             return []
         
-        actions_using_leds = self._get_actions_using_leds()
+        actions_using_leds = self.__get_actions_using_leds()
 
         ret = []
 
-        index = self._get_index_among_led_actions(actions_using_leds)
+        index = self.__get_index_among_led_actions(actions_using_leds)
         num_pixels = len(self.switch.pixels)
 
         if len(actions_using_leds) == 1:
@@ -175,7 +170,7 @@ class Action(Updateable):
         return ret
 
     # Returns the index of this action inside the LED-using actions of the switch.
-    def _get_index_among_led_actions(self, actions_using_leds):
+    def __get_index_among_led_actions(self, actions_using_leds):
         for i in range(len(actions_using_leds)):
             if actions_using_leds[i] == self:
                 return i
@@ -183,7 +178,7 @@ class Action(Updateable):
         raise Exception() #"Action " + repr(self.id) + " not found in LED-using actions of switch " + repr(self.switch.id))
 
     # Returns a list of the actions of the switch which are both enabled and use LEDs.
-    def _get_actions_using_leds(self):
+    def __get_actions_using_leds(self):
         ret = [] 
 
         for a in self.switch.actions:
