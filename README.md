@@ -65,14 +65,15 @@ PySwitch now has <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a>
 This should serve as proof-of-concept for building a visual editor in the future.
 
 The editor is only a demo application, by no means fully developed:
-    - You can just browse the files and read/write them, no delete/create/rename/move etc.
-    - The syntax checking is pretty basic and reports much falsy errors
+
+- You can just browse the files and read/write them, no delete/create/rename/move etc.
+- The syntax checking is pretty basic and reports much falsy errors
 
 However, it is sometimes way faster editing your switches.py file this way than having to mount/unmount every time, for example when you forget to change presets before a gig and only have 2 minutes ;) Other features:
 
-    - Syntax errors happening on the device are reported back to the browser. When you make an error in your config, the error will be shown in the bottom area on the web site. The MidiBridge will still be functional.
-    - The application is designed according to RESTful principles, so every file has its own path you can bookmark.
-    - Also multiple connected client devices can be controlled.
+- Syntax errors happening on the device are reported back to the browser. When you make an error in your config, the error will be shown in the bottom area on the web site. The MidiBridge will still be functional.
+- The application is designed according to RESTful principles, so every file has its own path you can bookmark.
+- Also multiple connected client devices can be controlled.
 
 *NOTE: If you ever run out of memory (with a very large patch for example), this can be disabled completely in config.py with option "enableMidiBridge" set to False. The library needs about 11k of RAM. Under normal circumstances, every configuration should run with enabled MIDI bridge, even the biggest test constellations still leave plenty of headroom.*
 
