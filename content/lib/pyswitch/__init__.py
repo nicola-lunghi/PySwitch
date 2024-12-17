@@ -17,17 +17,17 @@ def init():
     from pyswitch.misc import get_option
 
     # Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)
-    _display_driver = AdafruitST7789DisplayDriver()
-    _display_driver.init()
+    display_driver = AdafruitST7789DisplayDriver()
+    display_driver.init()
 
     # Load global config
     from config import Config
 
     # NeoPixel driver 
-    _led_driver = AdafruitNeoPixelDriver()
+    led_driver = AdafruitNeoPixelDriver()
 
     # Buffered font loader
-    _font_loader = AdafruitFontLoader()
+    font_loader = AdafruitFontLoader()
 
     if not get_option(Config, "exploreMode"):
         # Normal operation
@@ -61,20 +61,20 @@ def init():
             from switches import Switches
 
             # Controller instance (runs the processing loop and keeps everything together)
-            _appl = Controller(
-                led_driver = _led_driver, 
+            appl = Controller(
+                led_driver = led_driver, 
                 protocol = get_option(Communication, "protocol", None),
                 midi = midi,
                 config = Config, 
                 switches = Switches, 
                 ui = UiController(
-                    display_driver = _display_driver,
-                    font_loader = _font_loader,
+                    display_driver = display_driver,
+                    font_loader = font_loader,
                     splash_callback = Splashes
                 )
             )
             
-            _appl.process()
+            appl.process()
 
         except Exception as e:
             if get_option(Config, "enableMidiBridge"):
@@ -94,15 +94,15 @@ def init():
             def create_switch(self, port):
                 return AdafruitSwitch(port)
 
-        _appl = ExploreModeController(
+        appl = ExploreModeController(
             board = board, 
             switch_factory = _SwitchFactory(), 
-            led_driver = _led_driver, 
+            led_driver = led_driver, 
             ui = UiController(
-                display_driver = _display_driver,
-                font_loader = _font_loader
+                display_driver = display_driver,
+                font_loader = font_loader
             )
         )
 
-        _appl.process()
+        appl.process()
         
