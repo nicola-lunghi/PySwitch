@@ -66,12 +66,16 @@ class MidiBridgeWrapper:
     
     # Sends the passed error message via MIDI and keeps receiving messages forever 
     # This method will never terminate!
-    def error(self, message):
+    def error(self, messageOrException):
+        # If it is an exception, convert to string
+        if isinstance(messageOrException, Exception):
+            messageOrException = self.get_trace(messageOrException)
+        
         # Print error on console
-        print(message)        
+        print(messageOrException)        
 
         # Send error message
-        self._bridge.error(message)
+        self._bridge.error(messageOrException)
 
         # Initiate a simple transmission loop to enable receiving files
         while True:
@@ -112,6 +116,85 @@ class MidiBridgeWrapper:
 # if the write functionality should work, else an exception is raised.
 class MidiBridgeStorageProvider:
 
+    # File handle for writing
+    class _FileHandleWrite:
+        def __init__(self, temp_path, final_path):
+            self._temp_path = temp_path
+            self._final_path = final_path
+            
+            # Clear before appending
+            open(self._temp_path, "w").close()
+            
+            # Data is first stored into a temporary file path, then copied to the destination when finished.
+            self._handle = open(self._temp_path, "a")
+
+        # Must read from the file handle
+        def read(self, amount_bytes):
+            raise Exception()
+
+        # Must append data to the passed file handle
+        def write(self, data):
+            self._handle.write(data)
+
+        # Must close the file handle
+        def close(self):
+            self._handle.close()
+            self._handle = None
+
+            # Copy temp file to its destination
+            rename(self._temp_path, self._final_path)
+
+            #print("Successfully saved " + self._final_path)
+
+
+    #####################################################################################
+
+
+    # File handle for reading
+    class _FileHandleRead:
+        def __init__(self, path):
+            self._handle = open(path, "r")
+
+        # Must read from the file handle
+        def read(self, amount_bytes):
+            return self._handle.read(amount_bytes)
+
+        # Must append data to the passed file handle
+        def write(self, data):
+            raise Exception()
+
+        # Must close the file handle
+        def close(self):
+            self._handle.close()
+            self._handle = None
+
+
+    #####################################################################################
+
+
+    # File handle for folder listing (used whenever the path is a directory)
+    class _FileHandleListDir:
+        def __init__(self, content):
+            self._listing = content
+
+        # Must read from the file handle
+        def read(self, amount_bytes):
+            ret = self._listing[:amount_bytes]
+            self._listing = self._listing[amount_bytes:]
+            return ret
+
+        # Must append data to the passed file handle
+        def write(self, data):
+            raise Exception()
+
+        # Must close the file handle
+        def close(self):
+            pass
+
+
+    #####################################################################################
+
+
     # You have to provide a path for a temporary file, used to buffer contents before transmission finished.
     def __init__(self, temp_file_path):
         self._temp_file_path = temp_file_path
@@ -133,65 +216,23 @@ class MidiBridgeStorageProvider:
 
     # Must return an opened file handle
     def open(self, path, mode):
-        class _Handle:
-            pass
-
-        handle = _Handle()
-
         if mode == "a":
-            # Write a file:            
-            # Clear before appending
-            open(self._temp_file_path, "w").close()
-            
-            # Data is first stored into a temporary file path, then copied to the destination when finished.
-            file = open(self._temp_file_path, "a")
-
-            def write(data):
-                file.write(data)
-
-            # Must close the file handle
-            def close():
-                file.close()
-                
-                # Copy temp file to its destination
-                rename(self._temp_file_path, path)
-
-                #print("Successfully saved " + path)
-
-            handle.write = write
-            handle.close = close
-
-            return handle                        
-
+            # Write a file
+            return self._FileHandleWrite(
+                temp_path = self._temp_file_path,
+                final_path = path
+            )
         elif mode == "r":
             if self._is_dir(path):
-                handle.listing = self._get_folder_listing(path)
-                
-                def read(amount_bytes):
-                    ret = handle.listing[:amount_bytes]
-                    handle.listing = handle.listing[amount_bytes:]
-                    return ret
-                
-                def close():
-                    pass
-
-                handle.read = read
-                handle.close = close
-
-                return handle
+                # Return a folder listing
+                return self._FileHandleListDir(
+                    content = self._get_folder_listing(path)
+                )
             else:
-                file = open(path, "r")
-
-                def read(amount_bytes):
-                    return file.read(amount_bytes)
-
-                def close():
-                    file.close()
-
-                handle.read = read
-                handle.close = close
-
-                return handle
+                # Read a file
+                return self._FileHandleRead(
+                    path = path
+                )
 
 
     # Is path a folder?

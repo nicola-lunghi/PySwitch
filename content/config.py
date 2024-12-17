@@ -33,6 +33,16 @@ Config = {
     # This costs about 8kB of RAM, so if you run into memory issues, disable this.
     "enableMidiBridge": True,
 
+    # Globally used dim factors for the DisplayLabels. Much actions can override this via parameters, but the global default
+    # must be specified here.
+    "displayDimFactorOn": 1,
+    "displayDimFactorOff": 0.2,
+
+    # Globally used brightness values for the LEDs. Much actions can override this via parameters, but the global default
+    # must be specified here.
+    "ledBrightnessOn": 0.3,
+    "ledBrightnessOff": 0.02,
+
     ## Development Options ###################################################################################################################
 
     # Optional, shows the effect slot names in the display labels for EffectEnableAction

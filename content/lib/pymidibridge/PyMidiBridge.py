@@ -11,7 +11,7 @@ from random import randint
 ####################################################################################################################
  
 # Bridge version
-PMB_VERSION = "0.5.1"
+PMB_VERSION = "0.5.2"
 
 # Manufacturer ID of PyMidiBridge
 PMB_MANUFACTURER_ID = b'\x00\x7c\x7d' 
@@ -621,48 +621,4 @@ class PyMidiBridge:
         return bytes(result)
 
 
-# class EventHandler:
-#
-#     # Called when the bridge received an error message
-#     def handle(self, message):
-#         pass
-#
-#     # Called when the bridge received notice about a finished transfer on the other side
-#     def transfer_finished(self, transmission_id_bytes):
-#         pass
-#
-#     # Must return a trace from an exception
-#     def get_trace(self, exception):
-#         pass
 
-
-# class MidiSender:
-#     # Must send the passed data as MIDI system exclusive message
-#     def send_system_exclusive(self, manufacturer_id, data):
-#         pass
-
-
-# class StorageProvider:
-#
-#     # Must return file size, or any negative number if the file does not exist
-#     def size(self, path):
-#         return -1
-# 
-#     # Must return an opened file handle. See StorageFileHandle class.
-#     def open(self, path, mode):
-#         return StorageFileHandle()
-
-
-# class StorageFileHandle:
-#
-#     # Must write data to the file
-#     def write(self, data):
-#         pass
-#
-#     # Must read the specified amount of data from the file, return None if finished.
-#     def read(self, amount_bytes):
-#         return ""
-#
-#     # Must close the file handle
-#     def close(self):
-#         pass
