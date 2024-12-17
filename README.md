@@ -25,7 +25,16 @@ This project is developed generically, so it can basically be run on any board w
 1. Connect you device to your computer via USB and power it up. For PaintAudio MIDICaptain controllers, press and hold switch 1 while powering up to tell the controller to mount the USB drive.
 2. On your computer, you should now see the USB drive of the device (named MIDICAPTAIN for Paintaudio controllers, CIRCUITPY for generic boards)
 3. Delete the whole content of the USB drive. For PaintAudio devices, dont forget to save the contents on your hard drive (especially the license folder) if you perhaps want to restore the original manufacturer firmware later.
-4. Copy everything in the "content" folder of the project to the root folder on your device drive (named MIDICAPTAIN or CIRCUITPY).
+4. Copy everything inside the "content" folder of the project to the root folder on your device drive (named MIDICAPTAIN or CIRCUITPY).
+5. Unmount the USB drive (important: wait until the drive really is unmounted, or it will sometimes forget everything again).
+6. Reboot the device.
+
+PySwitch now runs with the default configuration, which most likely will be one of my own configurations ;) You will perhaps want to try one of the contained examples.
+1. Just copy all files of the example into the root folder of the device, overwriting the old files (you can omit the README file of course). More on the configuration files in one of the next chapters.
+2. Unmount the USB drive (important: wait until the drive really is unmounted, or it will sometimes forget everything again).
+3. Reboot the device.
+
+Optionally you can use your browser (if compatible) and use <a href="https://demo.midibridge.tunetown.de">https://demo.midibridge.tunetown.de</a> to maintain the files. See below.
 
 ## Startup Options
 
@@ -49,147 +58,25 @@ These files can make use of the objects contained in **lib/pyswitch/clients/kemp
 
 ## Editing via the Browser
 
-PySwitch now already has <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a> integrated. This makes all files editable via your Web Browser! <a href="https://demo.midibridge.tunetown.de">Click here</a> with your device connected to the computer via USB (no switches pressed!) and it will automatically connect. This needs no USB mounting/unmounting and is useful for quick experimenting. Also, it should serve as proof-of-concept for building a visual editor in the future.
+PySwitch now has <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a> integrated. This makes all files editable in the Web Browser ;) With your device connected via USB, visit this web site (which contains the demo from the MidiBridge Project): <a href="https://demo.midibridge.tunetown.de">https://demo.midibridge.tunetown.de</a>. It will automatically connect to the first found connected device running a MidiBridge. This needs no USB mounting/unmounting (do NOT press switches on startup like you normally do to change files). 
 
-The editor is by no means fully developed:
-    - You can just browse the files, read/write them, no delete/create etc.
-    - The syntax checking is pretty basic and reports much false errors
+This should serve as proof-of-concept for building a visual editor in the future.
 
-However, it is way faster editing your switches.py file this way than having to mount/unmount every time. Even syntax errors are reported back to the browser ;) check it out.
+The editor is only a demo application, by no means fully developed:
+    - You can just browse the files and read/write them, no delete/create/rename/move etc.
+    - The syntax checking is pretty basic and reports much falsy errors
 
-In the rare case you run out of memory with your very large patch for example, this can be disabled in config.py with option "enableMidiBridge" set to False. The library needs about 10k of memory. Under normal circumstances, every configuration should run with it enabled.
+However, it is sometimes way faster editing your switches.py file this way than having to mount/unmount every time, for example when you forget to change presets before a gig and only have 2 minutes ;) Other features:
+
+    - Syntax errors happening on the device are reported back to the browser. When you make an error in your config, the error will be shown in the bottom area on the web site. The MidiBridge will still be functional.
+    - The application is designed according to RESTful principles, so every file has its own path you can bookmark.
+    - Also multiple connected client devices can be controlled.
+
+*NOTE: If you ever run out of memory (with a very large patch for example), this can be disabled completely in config.py with option "enableMidiBridge" set to False. The library needs about 11k of RAM. Under normal circumstances, every configuration should run with enabled MIDI bridge, even the biggest test constellations still leave plenty of headroom.*
 
 ### Global configuration
 
-The file **config.py** only defines one dict named Config, which by default is empty. Please refer to the comments in the file for details on the possible options, which are all optional.
-
-### MIDI Communication Setup
-
-The **communication.py** file defines the handling of MIDI. This includes the MIDI routing. It must contain a Communication dictionary like follows:
-
-```python
-
-_USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
-    in_channel = None,  # All channels will be received
-    out_channel = 0     # Send on channel 1
-)
-
-Communication = {
-
-    # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 
-    # the MidiController.PYSWITCH source/target or the application will not be able to communicate!
-    "midi": {
-        "routings": [
-            # Application: Receive MIDI messages from USB
-            MidiRouting(
-                source = _USB_MIDI,
-                target = MidiController.APPLICATION
-            ),
-
-            # Application: Send MIDI messages to USB
-            MidiRouting(
-                source = MidiController.APPLICATION,
-                target = _USB_MIDI
-            ),
-        ]
-    }
-}
-```
-
-- "midi": Configuration for the MidiController. This is a flexible MIDI routing class which can be configured using a list of MidiRouting instances, each defining one route (in one direction only). The example above defines the minimal necessary routings to run the application. If you do not provide any routings, the application will not be able to communicate to the outer world. 
-
-##### MIDI Routings
-
-A routing has a source and a target, both of which must be instances being able to send and receive MIDI messages. You can use:
-- Adafruit's own MIDI handler (adafruit_midi.MIDI)
-- The wrappers AdfruitUsbMidiDevice (for USB MIDI) and AdfruitDinMidiDevice (for DIN MIDI) (recommended) which are also used in the example above (wrapped again by MidiDevices, see the source code there)
-- The constant MidiController.APPLICATION. This represents the application itself.
-
-This example will, in addition to normal operation as in the last example, also pass all data from DIN Input to USB output (MIDI Through):
-
-```python
-
-# Pre-define all needed MIDI devices here in advance 
-# (multiple creation would waste memory)
-_DIN_MIDI = MidiDevices.PA_MIDICAPTAIN_DIN_MIDI(
-    in_channel = None,  # All channels will be received
-    out_channel = 0     # Send on channel 1
-)
-
-_USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
-    in_channel = None,  # All channels will be received
-    out_channel = 0     # Send on channel 1
-)
-
-Communication = {
-
-    # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 
-    # the MidiController.PYSWITCH source/target or the application will not be able to communicate!
-    "midi": {
-        "routings": [
-            # MIDI Through from DIN to USB
-            MidiRouting(
-                source = _DIN_MIDI,
-                target = _USB_MIDI
-            ),
-
-            # Application: Receive MIDI messages from USB
-            MidiRouting(
-                source = _USB_MIDI,
-                target = MidiController.APPLICATION
-            ),
-
-            # Application: Send MIDI messages to USB
-            MidiRouting(
-                source = MidiController.APPLICATION,
-                target = _USB_MIDI
-            ),
-        ]
-    }
-}
-```
-
-It is also possible to either route multiple sources to one target or vice verse, to distribute or merge messages. 
-The examples also contains samples for setting up MIDICaptain USB and DIN communication as well as MIDI through, or connecting the application to DIN and/or USB MIDI.
-
-**NOTE**: Not all message types are forwarded by default to save memory, only the message types needed for the Kemper devices are enabled:
-- ControlChange
-- ProgramChange
-- SystemExclusive
-
-There are several other types defined in the <a href="https://docs.circuitpython.org/projects/midi/en/latest/" target="_blank">>adafruit_midi library</a>. If you need them to be processed, see file lib/pyswitch/hardware/adafruit.py and add the message types you need in the import section at the top (importing the types is sufficient, no further code changes needed). For types not listed (like MIDI Clock) these can be defined manually, see comments.
-
-#### Bidirectional Communication
-
-Some clients like the Kemper devices support a bidirectional communication mode. This wording is a bit misleading because the PySwitch application can react to changes of the client also if this mode is not enabled. However, bidirectional mode will greatly reduce MIDI traffic and improve reaction delays, and for example the Tuner note and deviation infos necessary for the tuner display (see below) are just sent in bidirectional mode, so this is the preferred mode of operation and enabled by default in all examples.
-
-See this chart for some differences between the operation modes:
-
-|                                             | **Non-Bidirectional** | **Bidirectional**    |
-|---------------------------------------------|-----------------------|----------------------|
-| Reflect changes on the client               | Yes                   | Yes                  |
-| Parameter values are requested periodically | Yes                   | No (\*)              |
-| Tuner information available                 | No                    | Yes (Note and dev.)  |
-| Tempo Messages (for synced blinking LEDs)   | No                    | Yes                  |
-
-*(\*) Bidirectional mode is not available for all parameters. However, you do not need to specify this, the **lib/pyswitch/clients/kemper.py** file contains the definitions looked up by the application.*
-
-To enable bidirectional communication, you have to provide a suitable protocol implementation (instance of BidirectionalProtocol) to the Communication object like follows, using the Kemper specific implementation from **lib/pyswitch/clients/kemper.py**:
-
-```python
-Communication = {
-
-    # Optional: Protocol to use. If not specified, the standard Client protocol is used which requests all
-    # parameters in each update cycle. Use this to implement bidirectional communication.
-    "protocol": KemperBidirectionalProtocol(
-        time_lease_seconds = 30               # When the controller is removed, the Profiler will stay in bidirectional
-                                              # mode for this amount of seconds. The communication is re-initiated every  
-                                              # half of this value. 
-    ),
-
-    # ...
-}
-```
+The file **config.py** contains the global device configuration, and only defines one dictionary named "Config", which by default is empty. Please refer to the comments in the file for details on the possible options, which are all optional.
 
 ### Switch Assignment
 
@@ -653,6 +540,135 @@ example_layout = {
 #### Display Label Callbacks
 
 For example if you want to show some custom text or a parameter value in a display label independent of an action or switch, this can be used by passing a callback to DisplayLabel. See example "Freeze and Tap Tempo" for the PaintAudio MIDICaptain NANO 4 which includes a custom callback for showing the current amp name.
+
+### MIDI Communication Setup
+
+The **communication.py** file defines the handling of MIDI data. This includes the MIDI routing. It must contain a "Communication" dictionary like follows:
+
+```python
+_USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
+    in_channel = None,  # All channels will be received
+    out_channel = 0     # Send on channel 1
+)
+
+Communication = {
+
+    # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 
+    # the MidiController.PYSWITCH source/target or the application will not be able to communicate!
+    "midi": {
+        "routings": [
+            # Application: Receive MIDI messages from USB
+            MidiRouting(
+                source = _USB_MIDI,
+                target = MidiController.APPLICATION
+            ),
+
+            # Application: Send MIDI messages to USB
+            MidiRouting(
+                source = MidiController.APPLICATION,
+                target = _USB_MIDI
+            )
+        ]
+    }
+}
+```
+
+"routings": Must define the routes which MIDI data can take in your scenario. The example above defines the minimal necessary routings to run the application. If you do not provide any routings, the application will not be able to communicate to the outer world. Every route must be a MisiRouting instance, and represents the route only in one direction.
+
+You can for example route MIDI data from/to DIN and/or USB ports to realize MIDI through. There is a separate folder with examples for routings, which can be used in combination with any of the other examples.
+
+##### MIDI Routings
+
+A routing has a source and a target, both of which must be instances being able to send and receive MIDI messages. You can use:
+- Adafruit's own MIDI handler (adafruit_midi.MIDI)
+- The wrappers AdfruitUsbMidiDevice (for USB MIDI) and AdfruitDinMidiDevice (for DIN MIDI) (recommended) which are also used in the example above (wrapped again by MidiDevices, see the source code there)
+- The constant MidiController.APPLICATION. This represents the application itself.
+
+This example will, in addition to normal operation as in the last example, also pass all data from DIN Input to USB output (MIDI Through):
+
+```python
+
+# Pre-define all needed MIDI devices here in advance 
+# (multiple creation would waste memory)
+_DIN_MIDI = MidiDevices.PA_MIDICAPTAIN_DIN_MIDI(
+    in_channel = None,  # All channels will be received
+    out_channel = 0     # Send on channel 1
+)
+
+_USB_MIDI = MidiDevices.PA_MIDICAPTAIN_USB_MIDI(
+    in_channel = None,  # All channels will be received
+    out_channel = 0     # Send on channel 1
+)
+
+Communication = {
+
+    # MIDI setup. This defines all MIDI routings. You at least have to define routings from and to 
+    # the MidiController.PYSWITCH source/target or the application will not be able to communicate!
+    "midi": {
+        "routings": [
+            # MIDI Through from DIN to USB
+            MidiRouting(
+                source = _DIN_MIDI,
+                target = _USB_MIDI
+            ),
+
+            # Application: Receive MIDI messages from USB
+            MidiRouting(
+                source = _USB_MIDI,
+                target = MidiController.APPLICATION
+            ),
+
+            # Application: Send MIDI messages to USB
+            MidiRouting(
+                source = MidiController.APPLICATION,
+                target = _USB_MIDI
+            ),
+        ]
+    }
+}
+```
+
+It is also possible to either route multiple sources to one target or vice verse, to distribute or merge messages. 
+The examples also contains samples for setting up MIDICaptain USB and DIN communication as well as MIDI through, or connecting the application to DIN and/or USB MIDI.
+
+**NOTE**: Not all message types are forwarded by default to save memory, only the message types needed for the Kemper devices are enabled:
+- ControlChange
+- ProgramChange
+- SystemExclusive
+
+There are several other types defined in the <a href="https://docs.circuitpython.org/projects/midi/en/latest/" target="_blank">>adafruit_midi library</a>. If you need them to be processed, see file lib/pyswitch/hardware/adafruit.py and add the message types you need in the import section at the top (importing the types is sufficient, no further code changes needed). For types not listed (like MIDI Clock) these can be defined manually, see comments.
+
+#### Bidirectional Communication
+
+Some clients like the Kemper devices support a bidirectional communication mode. This wording is a bit misleading because the PySwitch application can react to changes of the client also if this mode is not enabled. However, bidirectional mode will greatly reduce MIDI traffic and improve reaction delays, and for example the Tuner note and deviation infos necessary for the tuner display (see below) are just sent in bidirectional mode, so this is the preferred mode of operation and enabled by default in all examples.
+
+See this chart for some differences between the operation modes:
+
+|                                             | **Non-Bidirectional** | **Bidirectional**    |
+|---------------------------------------------|-----------------------|----------------------|
+| Reflect changes on the client               | Yes                   | Yes                  |
+| Parameter values are requested periodically | Yes                   | No (\*)              |
+| Tuner information available                 | No                    | Yes (Note and dev.)  |
+| Tempo Messages (for synced blinking LEDs)   | No                    | Yes                  |
+
+*(\*) Bidirectional mode is not available for all parameters. However, you do not need to specify this, the **lib/pyswitch/clients/kemper.py** file contains the definitions looked up by the application.*
+
+To enable bidirectional communication, you have to provide a suitable protocol implementation (instance of BidirectionalProtocol) to the Communication object like follows, using the Kemper specific implementation from **lib/pyswitch/clients/kemper.py**:
+
+```python
+Communication = {
+
+    # Optional: Protocol to use. If not specified, the standard Client protocol is used which requests all
+    # parameters in each update cycle. Use this to implement bidirectional communication.
+    "protocol": KemperBidirectionalProtocol(
+        time_lease_seconds = 30               # When the controller is removed, the Profiler will stay in bidirectional
+                                              # mode for this amount of seconds. The communication is re-initiated every  
+                                              # half of this value. 
+    ),
+
+    # ...
+}
+```
 
 ## Development
 
