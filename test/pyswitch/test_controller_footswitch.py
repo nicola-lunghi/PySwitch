@@ -215,16 +215,19 @@ class TestControllerFootswitch(unittest.TestCase):
         fs.color = (50, 100, 200)
         fs.brightness = 0.4
         
-        self.assertEqual(fs.brightness, 0.4)
-        self.assertEqual(fs.brightnesses, [0.4 for i in range(5)])
+        self.assertAlmostEqual(fs.brightness, 0.4)
+        for b in fs.brightnesses:
+            self.assertAlmostEqual(b, 0.4)
 
         self.assertEqual(appl.led_driver.leds, [(20, 40, 80) for i in range(5)])
 
         fs.brightnesses = [0, 0.1, 0.4, 1, 1]
 
         self.assertEqual(fs.brightness, 0)
-        self.assertEqual(fs.brightnesses, [0, 0.1, 0.4, 1, 1])
-
+        for i in range(len(fs.brightnesses)):
+            b = fs.brightnesses[i]
+            self.assertAlmostEqual(b, [0, 0.1, 0.4, 1, 1][i])
+        
         self.assertEqual(appl.led_driver.leds, [(0, 0, 0), (5, 10, 20), (20, 40, 80), (50, 100, 200), (50, 100, 200)])
 
 ##############################################################################

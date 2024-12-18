@@ -76,7 +76,7 @@ if not _get_option(_Config, "exploreMode"):
                 splash_callback = _Splashes
             )
         )
-        
+
         _appl.process()
 
     except Exception as e:

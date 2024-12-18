@@ -1,5 +1,4 @@
-from lib.pyswitch.controller.actions.Action import Action
-from lib.pyswitch.controller.actions.actions import PushButtonAction
+from lib.pyswitch.controller.actions import Action, PushButtonAction
 from lib.pyswitch.controller.Controller import Controller
 from lib.pyswitch.controller.Client import ClientParameterMapping
 

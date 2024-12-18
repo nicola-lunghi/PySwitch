@@ -106,7 +106,7 @@ class TestKemperMorphCallback(unittest.TestCase):
 
         def eval1():
             self.assertEqual(appl.switches[0].color, Colors.RED)
-            self.assertEqual(appl.switches[0].brightness, 0.1)            
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)            
             
             return True        
         

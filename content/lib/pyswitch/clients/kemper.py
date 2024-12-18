@@ -6,7 +6,7 @@ from adafruit_midi.system_exclusive import SystemExclusive
 from adafruit_midi.program_change import ProgramChange
 
 from ..misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print, PYSWITCH_VERSION
-from ..controller.actions.actions import ResetDisplaysAction, PushButtonAction
+from ..controller.actions import PushButtonAction
 from ..controller.callbacks import BinaryParameterCallback, Callback, EffectEnableCallback
 from ..controller.Client import ClientParameterMapping
 from ..misc import get_option
@@ -330,18 +330,6 @@ class KemperActionDefinitions:
             "useSwitchLeds": use_leds,
             "enableCallback": enable_callback
         })
-
-    # Used to reset the screen areas which show rig info details directly after rig changes (if you dont use this, 
-    # you get no visual feedback on the device that a new rig is coming up)
-    #@staticmethod
-    #def RESET_RIG_INFO_DISPLAYS(id = False, enable_callback = None):
-    #    return ResetDisplaysAction({
-    #        "resetSwitches": True,
-    #        "ignoreOwnSwitch": True,
-    #        "resetDisplayAreas": True,
-    #        "id": id,
-    #        "enableCallback": enable_callback
-    #    })
 
     ## Change Rig/Bank ############################################################################################################
 

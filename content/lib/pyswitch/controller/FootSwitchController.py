@@ -1,8 +1,10 @@
-from ..misc import Colors, get_option
-
+from ..misc import Colors, get_option, PeriodCounter
+from array import array
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
 class FootSwitchController: #ConditionListener
+
+    DEFAULT_HOLD_TIME_MILLIS = 600
 
     # config must be a dictionary holding the following attributes:
     # { 
@@ -18,8 +20,10 @@ class FootSwitchController: #ConditionListener
     #         }),
     #         ...
     #     ],
+    #     "actionsHold":        List of actions to perform on holding the switch. Optional.
+    #     "holdTimeMillis":     Optional hold time in milliseconds. Default is DEFAULT_HOLD_TIME_MILLIS.
     # }
-    def __init__(self, appl, config):
+    def __init__(self, appl, config, period_counter_hold = None):
         self.pixels = get_option(config["assignment"], "pixels", [])
         
         self.__switch = config["assignment"]["model"]
@@ -31,17 +35,26 @@ class FootSwitchController: #ConditionListener
         self.__pushed_state = False
 
         self.__colors = [(0, 0, 0) for i in range(len(self.pixels))]
-        self.__brightnesses = [0 for i in range(len(self.pixels))]        
+        self.__brightnesses = array('f', (0 for i in range(len(self.pixels))))
 
         self.color = Colors.WHITE
         self.brightness = 0.5
 
-        self.actions = get_option(config, "actions", [])
+        self.__hold_active = False
+
+        self.__actions = get_option(config, "actions", [])
+        self.__actions_hold = get_option(config, "actionsHold", [])
         self.__init_actions()
+
+        # Hold period counter
+        self.__period_hold = period_counter_hold
+        if not self.__period_hold:
+            hold_time_ms = get_option(config, "holdTimeMillis", self.DEFAULT_HOLD_TIME_MILLIS)
+            self.__period_hold = PeriodCounter(hold_time_ms)
         
     # Set up action instances
     def __init_actions(self):
-        for action in self.actions:
+        for action in self.__actions + self.__actions_hold:
             action.init(self.__appl, self)
             
             self.__appl.add_updateable(action)
@@ -56,11 +69,7 @@ class FootSwitchController: #ConditionListener
                 self.__pushed_state = False
 
                 # Process all release actions assigned to the switch 
-                for action in self.actions:
-                    if not action.enabled:
-                        continue
-
-                    action.release()
+                self.__release()
 
             return
 
@@ -72,12 +81,62 @@ class FootSwitchController: #ConditionListener
         self.__pushed_state = True
 
         # Process all push actions assigned to the switch     
-        for action in self.actions:
+        self.__push()
+        
+    # Push
+    def __push(self):
+        if self.__actions_hold:        
+            self.__period_hold.reset()
+            self.__hold_active = True
+            return
+        
+        for action in self.__actions:
             if not action.enabled:
                 continue
 
             action.push()
+
+    # Release
+    def __release(self):
+        if self.__actions_hold:    
+            if not self.__hold_active:
+                return
+            
+            if self.__check_hold():
+                return
+
+        for action in self.__actions:
+            if not action.enabled:
+                continue
+
+            if self.__actions_hold:
+                action.push()
+
+            action.release()
+
+        self.__hold_active = False
+
+    # Checks hold time and triggers hold action if exceeded.
+    def __check_hold(self):
+        if self.__period_hold.exceeded:
+            self.__hold_active = False
+
+            # Hold click
+            for action in self.__actions_hold:
+                if not action.enabled:
+                    continue
+
+                action.push()        
+                action.release()
+
+            return True
         
+        return False
+
+    @property 
+    def actions(self):
+        return self.__actions + self.__actions_hold
+
     # Return if the (hardware) switch is currently pushed
     @property
     def pushed(self):
@@ -135,7 +194,7 @@ class FootSwitchController: #ConditionListener
     # Returns current brightnesses of all LEDs
     @property
     def brightnesses(self):
-        return self.__brightnesses
+        return [b for b in self.__brightnesses]
 
     # Set brightnesses of all LEDs
     @brightnesses.setter
@@ -154,7 +213,7 @@ class FootSwitchController: #ConditionListener
                 int(self.__colors[i][2] * brightnesses[i])    # B
             )
 
-        self.__brightnesses = brightnesses
+        self.__brightnesses = array('f', brightnesses)
 
 
 ################################################################################################

@@ -18,7 +18,7 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.actions.actions import PushButtonAction
+    from lib.pyswitch.controller.actions import PushButtonAction
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
     from lib.pyswitch.controller.Client import BidirectionalClient
     #from lib.pyswitch.misc import compare_midi_messages

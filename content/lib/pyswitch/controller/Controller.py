@@ -2,7 +2,7 @@ from gc import collect, mem_free
 
 from .FootSwitchController import FootSwitchController
 from .RuntimeMeasurement import RuntimeMeasurement
-from .actions.Action import Action
+from .actions import Action
 from .Client import Client, BidirectionalClient
 from ..misc import Updater, PeriodCounter, get_option, do_print, format_size, fill_up_to
 from ..stats import Memory #, RuntimeStatistics

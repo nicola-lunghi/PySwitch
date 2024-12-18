@@ -25,7 +25,7 @@ with patch.dict(sys.modules, {
 
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.actions.actions import PushButtonAction
+    from lib.pyswitch.controller.actions import PushButtonAction
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
     from lib.pyswitch.misc import compare_midi_messages, DEFAULT_LABEL_COLOR
 
@@ -93,7 +93,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.5)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
             self.assertEqual(led_driver.leds[0], (100, 50, 0))
             
             return True        
@@ -110,7 +110,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.1)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
             self.assertEqual(led_driver.leds[0], (20, 10, 0))
                         
             return False        
@@ -204,7 +204,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         def eval1():
             self.assertEqual(appl.switches[0].color, (100, 100, 50))
-            self.assertEqual(appl.switches[0].brightness, 0.5)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
             self.assertEqual(led_driver.leds[0], (50, 50, 25))
             
             return True        
@@ -219,7 +219,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         def eval2():
             self.assertEqual(appl.switches[0].color, (100, 200, 50))
-            self.assertEqual(appl.switches[0].brightness, 0.1)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
             self.assertEqual(led_driver.leds[0], (10, 20, 5))
                         
             return False        
@@ -300,7 +300,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.1)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
             self.assertEqual(led_driver.leds[0], (20, 10, 0))
             
             return True        
@@ -317,7 +317,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.1)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
             self.assertEqual(led_driver.leds[0], (20, 10, 0))
                         
             return False        
@@ -821,7 +821,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.5)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
             self.assertEqual(led_driver.leds[0], (100, 50, 0))
             
             return True        
@@ -838,7 +838,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_disable_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.1)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
             self.assertEqual(led_driver.leds[0], (20, 10, 0))
                         
             return False        
@@ -1041,7 +1041,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.5)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
             self.assertEqual(led_driver.leds[0], (100, 50, 0))
 
             self.assertEqual(action_1.label.text, "foo")
@@ -1061,7 +1061,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.1)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
             self.assertEqual(led_driver.leds[0], (20, 10, 0))
 
             self.assertEqual(action_1.label.text, "foo")
@@ -1155,7 +1155,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.5)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
             self.assertEqual(led_driver.leds[0], (100, 50, 0))
 
             self.assertEqual(action_1.label.text, "foo")
@@ -1175,7 +1175,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.1)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
             self.assertEqual(led_driver.leds[0], (20, 10, 0))
 
             self.assertEqual(action_1.label.text, "bar")
@@ -1287,7 +1287,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
             self.assertEqual(appl.switches[0].colors, [(200, 100, 0), (10, 20, 30)])
-            self.assertEqual(appl.switches[0].brightnesses, [0.1, 0.1])
+            self.assertAlmostEqual(appl.switches[0].brightnesses[0], 0.1)
+            self.assertAlmostEqual(appl.switches[0].brightnesses[1], 0.1)
             self.assertEqual(led_driver.leds[0], (20, 10, 0))
             self.assertEqual(led_driver.leds[1], (1, 2, 3))
 

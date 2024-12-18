@@ -17,7 +17,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
-    from lib.pyswitch.controller.actions.Action import Action
+    from lib.pyswitch.controller.actions import Action
     from lib.pyswitch.misc import Updater
     
     from .mocks_ui import *
@@ -275,31 +275,31 @@ class TestAction(unittest.TestCase):
 
         # One pixel
         switch.pixels = [11]
-        self.assertEqual(action_4._Action__get_led_segments(), [0])
-        self.assertEqual(action_1._Action__get_led_segments(), [])
-        self.assertEqual(action_2._Action__get_led_segments(), [])
-        self.assertEqual(action_3._Action__get_led_segments(), [])
-        self.assertEqual(action_5._Action__get_led_segments(), [])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [0])
+        self.assertEqual(list(action_1._Action__get_led_segments()), [])
+        self.assertEqual(list(action_2._Action__get_led_segments()), [])
+        self.assertEqual(list(action_3._Action__get_led_segments()), [])
+        self.assertEqual(list(action_5._Action__get_led_segments()), [])
 
         # Two pixels
         switch.pixels = [11, 13]
-        self.assertEqual(action_4._Action__get_led_segments(), [0, 1])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [0, 1])
 
         # Three pixels
         switch.pixels = [11, 13, 15]
-        self.assertEqual(action_4._Action__get_led_segments(), [0, 1, 2])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [0, 1, 2])
 
         # Four pixels
         switch.pixels = [11, 13, 15, 19]
-        self.assertEqual(action_4._Action__get_led_segments(), [0, 1, 2, 3])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [0, 1, 2, 3])
 
         # Five pixels
         switch.pixels = [11, 13, 15, 19, 20]
-        self.assertEqual(action_4._Action__get_led_segments(), [0, 1, 2, 3, 4])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [0, 1, 2, 3, 4])
 
         # Six pixels
         switch.pixels = [11, 13, 15, 19, 20, 23]
-        self.assertEqual(action_4._Action__get_led_segments(), [0, 1, 2, 3, 4, 5])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [0, 1, 2, 3, 4, 5])
 
 
 #################################################################################
@@ -335,60 +335,60 @@ class TestAction(unittest.TestCase):
 
         # One pixel
         switch.pixels = [11]
-        self.assertEqual(action_1._Action__get_led_segments(), [0])
-        self.assertEqual(action_2._Action__get_led_segments(), [])
-        self.assertEqual(action_4._Action__get_led_segments(), [])
-        self.assertEqual(action_3._Action__get_led_segments(), [])
-        self.assertEqual(action_5._Action__get_led_segments(), [])
+        self.assertEqual(list(action_1._Action__get_led_segments()), [0])
+        self.assertEqual(list(action_2._Action__get_led_segments()), [])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [])
+        self.assertEqual(list(action_3._Action__get_led_segments()), [])
+        self.assertEqual(list(action_5._Action__get_led_segments()), [])
 
         # Two pixels
         switch.pixels = [11, 13]
-        self.assertEqual(action_1._Action__get_led_segments(), [0])
-        self.assertEqual(action_2._Action__get_led_segments(), [1])
-        self.assertEqual(action_4._Action__get_led_segments(), [])
+        self.assertEqual(list(action_1._Action__get_led_segments()), [0])
+        self.assertEqual(list(action_2._Action__get_led_segments()), [1])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [])
 
         # Three pixels
         switch.pixels = [11, 13, 15]
-        self.assertEqual(action_1._Action__get_led_segments(), [0])
-        self.assertEqual(action_2._Action__get_led_segments(), [1])
-        self.assertEqual(action_4._Action__get_led_segments(), [2])
+        self.assertEqual(list(action_1._Action__get_led_segments()), [0])
+        self.assertEqual(list(action_2._Action__get_led_segments()), [1])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [2])
 
         # Four pixels
         switch.pixels = [11, 13, 15, 19]
-        self.assertEqual(action_1._Action__get_led_segments(), [0, 1])
-        self.assertEqual(action_2._Action__get_led_segments(), [2])
-        self.assertEqual(action_4._Action__get_led_segments(), [3])
+        self.assertEqual(list(action_1._Action__get_led_segments()), [0, 1])
+        self.assertEqual(list(action_2._Action__get_led_segments()), [2])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [3])
 
         # Five pixels
         switch.pixels = [11, 13, 15, 19, 20]
-        self.assertEqual(action_1._Action__get_led_segments(), [0, 1, 2])
-        self.assertEqual(action_2._Action__get_led_segments(), [3])
-        self.assertEqual(action_4._Action__get_led_segments(), [4])
+        self.assertEqual(list(action_1._Action__get_led_segments()), [0, 1, 2])
+        self.assertEqual(list(action_2._Action__get_led_segments()), [3])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [4])
 
         # Six pixels
         switch.pixels = [11, 13, 15, 19, 20, 23]
-        self.assertEqual(action_1._Action__get_led_segments(), [0, 1, 2, 3])
-        self.assertEqual(action_2._Action__get_led_segments(), [4])
-        self.assertEqual(action_4._Action__get_led_segments(), [5])
+        self.assertEqual(list(action_1._Action__get_led_segments()), [0, 1, 2, 3])
+        self.assertEqual(list(action_2._Action__get_led_segments()), [4])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [5])
 
         # Disable action 1
         cb_1.output = False
-        self.assertEqual(action_1._Action__get_led_segments(), [])
-        self.assertEqual(action_2._Action__get_led_segments(), [0, 1, 2, 3, 4])
-        self.assertEqual(action_4._Action__get_led_segments(), [5])
+        self.assertEqual(list(action_1._Action__get_led_segments()), [])
+        self.assertEqual(list(action_2._Action__get_led_segments()), [0, 1, 2, 3, 4])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [5])
 
         # Disable action 2
         cb_1.output = True
         cb_2.output = False
-        self.assertEqual(action_1._Action__get_led_segments(), [0, 1, 2, 3, 4])
-        self.assertEqual(action_2._Action__get_led_segments(), [])
-        self.assertEqual(action_4._Action__get_led_segments(), [5])
+        self.assertEqual(list(action_1._Action__get_led_segments()), [0, 1, 2, 3, 4])
+        self.assertEqual(list(action_2._Action__get_led_segments()), [])
+        self.assertEqual(list(action_4._Action__get_led_segments()), [5])
 
         # No LED actions at all but action 1 but this is disabled        
         cb_1.output = False
         action_2.uses_switch_leds = False
         action_4.uses_switch_leds = False
-        self.assertEqual(action_1._Action__get_led_segments(), [])
+        self.assertEqual(list(action_1._Action__get_led_segments()), [])
         
 
 ########################################################################################

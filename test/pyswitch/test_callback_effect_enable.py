@@ -24,7 +24,7 @@ with patch.dict(sys.modules, {
     from adafruit_midi.system_exclusive import SystemExclusive
 
     from lib.pyswitch.controller.callbacks import EffectEnableCallback
-    from lib.pyswitch.controller.actions.actions import PushButtonAction
+    from lib.pyswitch.controller.actions import PushButtonAction
 
 
 class MockEffectEnableCallback(EffectEnableCallback):
@@ -148,7 +148,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
             self.assertEqual(action_1.state, False)
 
             self.assertEqual(appl.switches[0].color, (0, 2, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.02)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
             self.assertEqual(led_driver.leds[0], (0, 0, 0))
 
             return True
@@ -165,7 +165,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
             self.assertEqual(action_1.state, False)
 
             self.assertEqual(appl.switches[0].color, (0, 2, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.02)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
             self.assertEqual(led_driver.leds[0], (0, 0, 0))
             
             return True
@@ -191,8 +191,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
             self.assertEqual(action_1.state, False)
 
             self.assertEqual(appl.switches[0].color, (10, 12, 40))
-            self.assertEqual(appl.switches[0].brightness, 0.02)
-            self.assertEqual(led_driver.leds[0], (int(10*0.02), int(12*0.02), int(40*0.02)))
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
+            self.assertAlmostEqual(led_driver.leds[0], (int(10*0.02), int(12*0.02), int(40*0.02)))
 
             return True
         
@@ -215,8 +215,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
             self.assertEqual(action_1.state, True)
 
             self.assertEqual(appl.switches[0].color, (10, 12, 40))
-            self.assertEqual(appl.switches[0].brightness, 0.3)
-            self.assertEqual(led_driver.leds[0], (int(10*0.3), int(12*0.3), int(40*0.3)))
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.3)
+            self.assertAlmostEqual(led_driver.leds[0], (int(10*0.3), int(12*0.3), int(40*0.3)))
             
             return True
         
@@ -238,7 +238,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
             self.assertEqual(action_1.state, False)
 
             self.assertEqual(appl.switches[0].color, (0, 2, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.02)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
             self.assertEqual(led_driver.leds[0], (0, 0, 0))
 
             return False
@@ -395,7 +395,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
             self.assertEqual(action_1.state, False)
 
             self.assertEqual(appl.switches[0].color, (0, 2, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.02)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
             self.assertEqual(led_driver.leds[0], (0, 0, 0))
             
             self.assertEqual(action_1.label.text, "name0")
@@ -415,7 +415,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
             self.assertEqual(action_1.state, False)
 
             self.assertEqual(appl.switches[0].color, (0, 2, 0))
-            self.assertEqual(appl.switches[0].brightness, 0.02)
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
             self.assertEqual(led_driver.leds[0], (0, 0, 0))
 
             self.assertEqual(action_1.label.text, "name0")
@@ -443,8 +443,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
             self.assertEqual(cb._EffectEnableCallback__effect_category, 10)
 
             self.assertEqual(appl.switches[0].color, (10, 12, 40))
-            self.assertEqual(appl.switches[0].brightness, 0.02)
-            self.assertEqual(led_driver.leds[0], (int(10*0.02), int(12*0.02), int(40*0.02)))
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
+            self.assertAlmostEqual(led_driver.leds[0], (int(10*0.02), int(12*0.02), int(40*0.02)))
 
             self.assertEqual(action_1.state, False)
 
@@ -470,13 +470,13 @@ class TestCallbackEffectEnable(unittest.TestCase):
             self.assertEqual(cb._EffectEnableCallback__effect_category, 20)
 
             self.assertEqual(appl.switches[0].color, (20, 22, 80))
-            self.assertEqual(appl.switches[0].brightness, 0.02)
-            self.assertEqual(led_driver.leds[0], (int(20*0.02), int(22*0.02), int(80*0.02)))
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
+            self.assertAlmostEqual(led_driver.leds[0], (int(20*0.02), int(22*0.02), int(80*0.02)))
 
             self.assertEqual(action_1.state, False)
 
             self.assertEqual(action_1.label.text, "name20")
-            self.assertEqual(action_1.label.back_color, (int(20*0.2), int(22*0.2), int(80*0.2)))
+            self.assertAlmostEqual(action_1.label.back_color, (int(20*0.2), int(22*0.2), int(80*0.2)))
 
             return True
 
@@ -500,8 +500,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
             self.assertEqual(action_1.state, True)
 
             self.assertEqual(appl.switches[0].color, (20, 22, 80))
-            self.assertEqual(appl.switches[0].brightness, 0.3)
-            self.assertEqual(led_driver.leds[0], (int(20*0.3), int(22*0.3), int(80*0.3)))
+            self.assertAlmostEqual(appl.switches[0].brightness, 0.3)
+            self.assertAlmostEqual(led_driver.leds[0], (int(20*0.3), int(22*0.3), int(80*0.3)))
 
             self.assertEqual(action_1.label.text, "name20")
             self.assertEqual(action_1.label.back_color, (20, 22, 80))
@@ -669,212 +669,3 @@ class TestCallbackEffectEnable(unittest.TestCase):
         # Run process
         appl.process()
 
-
-###############################################################################################
-
-
-    # def test_reset(self):
-    #     switch_1 = MockSwitch()
-
-    #     mapping_1 = MockParameterMapping(
-    #         set = SystemExclusive(
-    #             manufacturer_id = [0x00, 0x10, 0x20],
-    #             data = [0x01, 0x02, 0x03, 0x04]
-    #         ),
-    #         request = SystemExclusive(
-    #             manufacturer_id = [0x00, 0x10, 0x20],
-    #             data = [0x05, 0x07, 0x09]
-    #         ),
-    #         response = SystemExclusive(
-    #             manufacturer_id = [0x00, 0x10, 0x20],
-    #             data = [0x00, 0x00, 0x09]
-    #         )
-    #     )
-
-    #     mapping_type_1 = MockParameterMapping(
-    #         request = SystemExclusive(
-    #             manufacturer_id = [0x00, 0x10, 0x20],
-    #             data = [0x05, 0x07, 0x10]
-    #         ),
-    #         response = SystemExclusive(
-    #             manufacturer_id = [0x00, 0x10, 0x20],
-    #             data = [0x00, 0x00, 0x10]
-    #         )
-    #     )
-
-    #     cb = MockEffectEnableCallback(
-    #         mapping_state = mapping_1,
-    #         mapping_type = mapping_type_1
-    #     )
-
-    #     action_1 = PushButtonAction({
-    #         "mode": PushButtonAction.MOMENTARY,
-    #         "callback": cb
-    #     })   
-
-    #     period = MockPeriodCounter()
-    #     led_driver = MockNeoPixelDriver()
-
-    #     appl = MockController(
-    #         led_driver = led_driver,
-    #         midi = MockMidiController(),
-    #         switches = [
-    #             {
-    #                 "assignment": {
-    #                     "model": switch_1,
-    #                     "pixels": [0]
-    #                 },
-    #                 "actions": [
-    #                     action_1                        
-    #                 ]
-    #             }
-    #         ],
-    #         period_counter = period
-    #     )
-
-    #     answer_msg_param = SystemExclusive(
-    #         manufacturer_id = [0x00, 0x10, 0x20],
-    #         data = [0x00, 0x00, 0x09, 0x44]
-    #     )
-
-    #     answer_msg_type = SystemExclusive(
-    #         manufacturer_id = [0x00, 0x10, 0x20],
-    #         data = [0x00, 0x00, 0x07, 0x45]
-    #     )
-
-    #     # Build scene:
-    #     # Send update request
-    #     def prep1():
-    #         period.exceed_next_time = True
-
-    #     def eval1():
-    #         self.assertEqual(len(appl._Controller__midi.messages_sent), 1)            
-    #         self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_type_1.request)
-            
-    #         return True
-
-    #     # Receive type
-    #     def prep2():
-    #         appl._Controller__midi.next_receive_messages = [
-    #             answer_msg_type
-    #         ]
-    #         mapping_type_1.outputs_parse = [
-    #             {
-    #                 "message": answer_msg_type,
-    #                 "value": 0
-    #             }
-    #         ]
-
-    #     def eval2():
-    #         self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
-
-    #         self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-
-    #         self.assertEqual(mapping_type_1.value, 0)
-    #         self.assertEqual(cb._effect_category, 0)
-
-    #         self.assertEqual(appl.switches[0].color, (0, 0, 0))
-    #         self.assertEqual(appl.switches[0].brightness, 0.02)
-    #         self.assertEqual(led_driver.leds[0], (0, 0, 0))
-
-    #         return True
-
-    #     # Receive status
-    #     def prep3():
-    #         appl._Controller__midi.next_receive_messages = [
-    #             answer_msg_param
-    #         ]
-    #         mapping_1.outputs_parse = [
-    #             {
-    #                 "message": answer_msg_param,
-    #                 "value": 1
-    #             }
-    #         ]
-
-    #     def eval3():
-    #         self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
-
-    #         self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-            
-    #         self.assertEqual(mapping_1.value, 1)
-
-    #         self.assertEqual(action_1.state, True)
-
-    #         self.assertEqual(appl.switches[0].color, (0, 0, 0))
-    #         self.assertEqual(appl.switches[0].brightness, 0.3)
-    #         self.assertEqual(led_driver.leds[0], (0, 0, 0))
-            
-    #         return True
-        
-    #     # Receive other value 
-    #     def prep4():
-    #         period.exceed_next_time = True
-    #         appl._Controller__midi.next_receive_messages = [
-    #             answer_msg_type
-    #         ]
-    #         mapping_type_1.outputs_parse = [
-    #             {
-    #                 "message": answer_msg_type,
-    #                 "value": 1
-    #             }
-    #         ]
-
-    #     def eval4():
-    #         self.assertEqual(mapping_type_1.value, 1)
-    #         self.assertEqual(cb._effect_category, 10)
-    #         self.assertEqual(action_1.state, True)
-
-    #         self.assertEqual(appl.switches[0].color, (10, 12, 40))
-    #         self.assertEqual(appl.switches[0].brightness, 0.3)
-    #         self.assertEqual(led_driver.leds[0], (int(10*0.3), int(12*0.3), int(40*0.3)))
-
-    #         return True
-        
-    #     # Receive non-assigned type again
-    #     def prep5():
-    #         action_1.reset()
-
-    #         self.assertEqual(cb._effect_category, 0)
-    #         self.assertEqual(action_1.state, False)
-
-    #         self.assertEqual(appl.switches[0].color, (0, 0, 0))
-    #         self.assertEqual(appl.switches[0].brightness, 0.02)
-    #         self.assertEqual(led_driver.leds[0], (0, 0, 0))
-
-    #     def eval5():
-    #         return False
-        
-
-    #     # Build scenes hierarchy
-    #     appl.next_step = SceneStep(
-    #         num_pass_ticks = 5,
-    #         prepare = prep1,
-    #         evaluate = eval1,
-
-    #         next = SceneStep(
-    #             num_pass_ticks = 5,
-    #             prepare = prep2,
-    #             evaluate = eval2,
-
-    #             next = SceneStep(
-    #                 num_pass_ticks = 5,
-    #                 prepare = prep3,
-    #                 evaluate = eval3,
-
-    #                 next = SceneStep(
-    #                     num_pass_ticks = 5,
-    #                     prepare = prep4,
-    #                     evaluate = eval4,
-
-    #                     next = SceneStep(
-    #                         num_pass_ticks = 5,
-    #                         prepare = prep5,
-    #                         evaluate = eval5
-    #                     )
-    #                 )
-    #             )
-    #         )
-    #     )
-
-    #     # Run process
-    #     appl.process()
