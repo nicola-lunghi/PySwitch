@@ -29,7 +29,7 @@ class FootSwitchController: #ConditionListener
         self.__switch = config["assignment"]["model"]
         self.__switch.init()
 
-        self.id = get_option(config["assignment"], "name", repr(self.__switch))
+        #self.id = get_option(config["assignment"], "name", repr(self.__switch))
 
         self.__appl = appl
         self.__pushed_state = False
@@ -44,22 +44,18 @@ class FootSwitchController: #ConditionListener
 
         self.__actions = get_option(config, "actions", [])
         self.__actions_hold = get_option(config, "actionsHold", [])
-        self.__init_actions()
+        
+        # Init actions
+        for action in self.__actions + self.__actions_hold:
+            action.init(self.__appl, self)
+            self.__appl.add_updateable(action)            
+            action.update_displays()
 
         # Hold period counter
         self.__period_hold = period_counter_hold
         if not self.__period_hold:
             hold_time_ms = get_option(config, "holdTimeMillis", self.DEFAULT_HOLD_TIME_MILLIS)
             self.__period_hold = PeriodCounter(hold_time_ms)
-        
-    # Set up action instances
-    def __init_actions(self):
-        for action in self.__actions + self.__actions_hold:
-            action.init(self.__appl, self)
-            
-            self.__appl.add_updateable(action)
-            
-            action.update_displays()
         
     # Process the switch: Check if it is currently pushed, set state accordingly
     def process(self):
@@ -69,7 +65,43 @@ class FootSwitchController: #ConditionListener
                 self.__pushed_state = False
 
                 # Process all release actions assigned to the switch 
-                self.__release()
+                def release():
+                    if self.__actions_hold:    
+                        if not self.__hold_active:
+                            return
+                        
+                        # Checks hold time and triggers hold action if exceeded.
+                        def check_hold():
+                            if self.__period_hold.exceeded:
+                                self.__hold_active = False
+
+                                # Hold click
+                                for action in self.__actions_hold:
+                                    if not action.enabled:
+                                        continue
+
+                                    action.push()        
+                                    action.release()
+
+                                return True
+                            
+                            return False
+                        
+                        if check_hold():
+                            return
+
+                    for action in self.__actions:
+                        if not action.enabled:
+                            continue
+
+                        if self.__actions_hold:
+                            action.push()
+
+                        action.release()
+
+                    self.__hold_active = False
+                    
+                release()
 
             return
 
@@ -81,10 +113,6 @@ class FootSwitchController: #ConditionListener
         self.__pushed_state = True
 
         # Process all push actions assigned to the switch     
-        self.__push()
-        
-    # Push
-    def __push(self):
         if self.__actions_hold:        
             self.__period_hold.reset()
             self.__hold_active = True
@@ -95,44 +123,7 @@ class FootSwitchController: #ConditionListener
                 continue
 
             action.push()
-
-    # Release
-    def __release(self):
-        if self.__actions_hold:    
-            if not self.__hold_active:
-                return
-            
-            if self.__check_hold():
-                return
-
-        for action in self.__actions:
-            if not action.enabled:
-                continue
-
-            if self.__actions_hold:
-                action.push()
-
-            action.release()
-
-        self.__hold_active = False
-
-    # Checks hold time and triggers hold action if exceeded.
-    def __check_hold(self):
-        if self.__period_hold.exceeded:
-            self.__hold_active = False
-
-            # Hold click
-            for action in self.__actions_hold:
-                if not action.enabled:
-                    continue
-
-                action.push()        
-                action.release()
-
-            return True
         
-        return False
-
     @property 
     def actions(self):
         return self.__actions + self.__actions_hold

@@ -148,11 +148,19 @@ class Action(Updateable):
         if not self.switch.pixels or not self.uses_switch_leds or not self.enabled:
             return array('i')
         
-        actions_using_leds = self.__get_actions_using_leds()
+        actions_using_leds = [a for a in self.switch.actions if a.uses_switch_leds and a.enabled]
 
         ret = array('i')
 
-        index = self.__get_index_among_led_actions(actions_using_leds)
+        # Returns the index of this action inside the LED-using actions of the switch.
+        def get_index_among_led_actions(actions_using_leds):
+            for i in range(len(actions_using_leds)):
+                if actions_using_leds[i] == self:
+                    return i
+            
+            raise Exception() #"Action " + repr(self.id) + " not found in LED-using actions of switch " + repr(self.switch.id))
+
+        index = get_index_among_led_actions(actions_using_leds)
         num_pixels = len(self.switch.pixels)
 
         if len(actions_using_leds) == 1:
@@ -172,18 +180,6 @@ class Action(Updateable):
             ret.append(index)
 
         return ret
-
-    # Returns the index of this action inside the LED-using actions of the switch.
-    def __get_index_among_led_actions(self, actions_using_leds):
-        for i in range(len(actions_using_leds)):
-            if actions_using_leds[i] == self:
-                return i
-        
-        raise Exception() #"Action " + repr(self.id) + " not found in LED-using actions of switch " + repr(self.switch.id))
-
-    # Returns a list of the actions of the switch which are both enabled and use LEDs.
-    def __get_actions_using_leds(self):
-        return [a for a in self.switch.actions if a.uses_switch_leds and a.enabled]
 
 
 ##########################################################################################################
