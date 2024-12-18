@@ -1,7 +1,6 @@
 from gc import collect, mem_free
 
 from .FootSwitchController import FootSwitchController
-from .actions import Action
 from .Client import Client, BidirectionalClient
 from ..misc import Updater, PeriodCounter, get_option, do_print, format_size, fill_up_to
 from ..stats import Memory #, RuntimeStatistics
@@ -72,15 +71,32 @@ class Controller(Updater): #ClientRequestListener
 
         # NeoPixel driver 
         self.led_driver = led_driver
-        self.led_driver.init(self.__get_num_pixels(switches))
+            
+        # Determine how many NeoPixels are needed overall
+        def get_num_pixels(switches):
+            ret = 0
+            for sw_def in switches:
+                pixels = get_option(sw_def["assignment"], "pixels", [])
+                for p in pixels:
+                    pp1 = p + 1
+                    if pp1 > ret:
+                        ret = pp1
+            return ret
+        
+        self.led_driver.init(get_num_pixels(switches))
         
         # Periodic update handler (the client is only asked when a certain time has passed)
         self.period = period_counter
         if not self.period:
             self.period = PeriodCounter(update_interval)        
 
-        # Initialize client access.
-        self.__init_client(config, protocol)
+        # Client access. When no protocol is passed, every value will be requested periodically. If a protocol
+        # is passed, bidirectional communication is used according to the protocol.
+        if protocol:
+            self.client = BidirectionalClient(self.__midi, config, protocol)
+            self.add_updateable(self.client)
+        else:
+            self.client = Client(self.__midi, config)
 
         # Set up the screen elements
         if self.ui:
@@ -88,27 +104,12 @@ class Controller(Updater): #ClientRequestListener
             self.add_updateable(ui)
 
         # Set up switches
-        self.__init_switches(switches)
-
-    # Client access. When no protocol is passed, every value will be requested periodically. If a protocol
-    # is passed, bidirectional communication is used according to the protocol.
-    def __init_client(self, config, protocol):
-        if protocol:
-            self.client = BidirectionalClient(self.__midi, config, protocol)
-            self.add_updateable(self.client)
-        else:
-            self.client = Client(self.__midi, config)
-
-    # Initialize switches
-    def __init_switches(self, switches):
         self.switches = []
-
         for sw_def in switches:
             switch = FootSwitchController(
                 self,
                 sw_def
             )
-
             self.switches.append(
                 switch
             )
@@ -124,12 +125,19 @@ class Controller(Updater): #ClientRequestListener
         Memory.watch("Application loaded")
 
         # Check memory usage and issue a warning if too high
-        self._check_memory()
+        collect()
+        free_bytes = mem_free()        
+        if free_bytes < self.__memory_warn_limit:
+            do_print("LOW MEMORY: " + format_size(free_bytes))            
+            self.low_memory_warning = True
 
         # Consume all MIDI messages which might be still in some buffers, 
         # and start when the queue is empty.
         if self.__clear_buffer:
-            self.__clear_midi_buffer()
+            while True:
+                midimsg = self.__midi.receive()
+                if not midimsg:
+                    break
 
         # Start processing loop
         while self.tick():
@@ -173,9 +181,11 @@ class Controller(Updater): #ClientRequestListener
 
         while True:
             # Detect switch state changes
-            self.__process_switches()
+            #self.__measurement_switch_jitter.finish()
+            for switch in self.switches:
+                switch.process()
+            #self.__measurement_switch_jitter.start()
 
-            #collect()
             midimsg = self.__midi.receive()
 
             # Process the midi message
@@ -186,60 +196,6 @@ class Controller(Updater): #ClientRequestListener
                 break  
 
         #self._measurement_midi_jitter.start()
-
-    # Detects switch changes
-    #@RuntimeStatistics.measure
-    def __process_switches(self):
-        #self.__measurement_switch_jitter.finish()
-
-        # Update switch states
-        for switch in self.switches:
-            switch.process()
-
-        #self.__measurement_switch_jitter.start()
-
-    # Returns how many NeoPixels are needed overall
-    def __get_num_pixels(self, switches):
-        ret = 0
-        for sw_def in switches:
-            pixels = get_option(sw_def["assignment"], "pixels", [])
-            for p in pixels:
-                pp1 = p + 1
-                if pp1 > ret:
-                    ret = pp1
-        return ret
-
-    # Consume all MIDI messages which might be still in some buffers.
-    def __clear_midi_buffer(self):
-        #cnt = 0
-        while True:
-            midimsg = self.__midi.receive()
-            if not midimsg:
-                #do_print("Cleared MIDI Buffer (" + repr(cnt) + " messages)")
-                break
-            #cnt += 1
-
-    # Check if enough memory is left and set the warning flag if not.
-    # This flag is used by display elements to warn the user.
-    def _check_memory(self):
-        collect()
-        free_bytes = mem_free()
-        
-        if free_bytes < self.__memory_warn_limit:
-            do_print("WARNING: Low Memory: " + format_size(free_bytes))
-            
-            self.low_memory_warning = True
-
-    # Resets all switches
-    def reset_switches(self, ignore_switches_list = []):
-        for action in self.updateables:
-            if not isinstance(action, Action):
-                continue
-
-            if action.switch in ignore_switches_list:
-                continue
-
-            action.reset()
 
     # Callback called when the measurement wants to show something
     def measurement_updated(self, measurement):

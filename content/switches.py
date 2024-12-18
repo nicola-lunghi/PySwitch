@@ -14,186 +14,19 @@ from display import DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_HEADER_1, DISPLA
 # Defines the switch assignments
 Switches = [
 
-    # # Switch 1
-    # {
-    #    "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_1,
-    #     "actions": [
-    #         HoldAction({
-    #             "actions": [
-    #                 KemperActionDefinitions.EFFECT_STATE(
-    #                     slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-    #                     display = DISPLAY_HEADER_1
-    #                 )
-    #             ],
-    #             "actionsHold": [
-    #                 KemperActionDefinitions.TUNER_MODE()
-    #             ]    
-    #         }) 
-    #     ]
-    # },
-
-    # # Switch 2
-    # {
-    #    "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_2,
-    #     "actions": [
-    #         HoldAction({
-    #             "actions": [
-    #                 KemperActionDefinitions.EFFECT_STATE(
-    #                     slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
-    #                     display = DISPLAY_HEADER_2
-    #                 )
-    #             ],
-    #             "actionsHold": [
-    #                 KemperActionDefinitions.TUNER_MODE()
-    #             ]    
-    #         }) 
-    #     ]
-    # },
-
-    # # Switch 3
-    # {
-    #     "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_3,
-    #     "actions": [
-    #         HoldAction({
-    #             "actions": [
-    #                 KemperActionDefinitions.EFFECT_STATE(
-    #                     slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
-    #                     display = DISPLAY_FOOTER_1
-    #                 )
-    #             ],
-    #             "actionsHold": [
-    #                 KemperActionDefinitions.TUNER_MODE()
-    #             ]    
-    #         }) 
-    #     ]
-    # },
-    
-    # # Switch 4
-    # {
-    #     "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_4,
-    #     "actions": [
-    #         HoldAction({
-    #             "actions": [
-    #                  KemperActionDefinitions.EFFECT_STATE(
-    #                     slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
-    #                     display = DISPLAY_FOOTER_2
-    #                 )
-    #             ],
-    #             "actionsHold": [
-    #                 KemperActionDefinitions.TUNER_MODE()
-    #             ]    
-    #         }) 
-    #     ]
-    # },
-
-    # # Switch up
-    # {
-    #     "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_UP,
-    #     "actions": [
-    #         HoldAction({
-    #             "actions": [
-    #                 KemperActionDefinitions.TUNER_MODE()
-    #             ],
-    #             "actionsHold": [
-    #                 KemperActionDefinitions.TUNER_MODE()
-    #             ]    
-    #         }) 
-    #     ]
-    # },
-
-    # ########################################################################################
-
-    # # Switch A
-    # {
-    #     "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_A,
-    #     "actions": [
-    #         HoldAction({
-    #             "actions": [
-    #                 KemperActionDefinitions.TUNER_MODE(),
-    #                 KemperActionDefinitions.MORPH_DISPLAY()
-    #             ],
-    #             "actionsHold": [
-    #                 KemperActionDefinitions.TUNER_MODE()
-    #             ]    
-    #         }) 
-    #     ]
-    # },
-
-    # # Switch B
-    # {
-    #     "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_B,
-    #     "actions": [
-    #         HoldAction({
-    #             "actions": [
-    #                 KemperActionDefinitions.TUNER_MODE(),
-    #                 KemperActionDefinitions.MORPH_DISPLAY()
-    #             ],
-    #             "actionsHold": [
-    #                 KemperActionDefinitions.TUNER_MODE(),
-    #             ]    
-    #         }) 
-    #     ]
-    # },
-
-    # # Switch C
-    # {
-    #     "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_C,
-    #     "actions": [
-    #         HoldAction({
-    #             "actions": [
-    #                 KemperActionDefinitions.TUNER_MODE(),
-    #                 KemperActionDefinitions.MORPH_DISPLAY()
-    #             ],
-    #             "actionsHold": [
-    #                 KemperActionDefinitions.TUNER_MODE(),
-    #             ]    
-    #         }) 
-    #     ]
-    # },
-
-    # # Switch D
-    # {
-    #     "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_D,
-    #     "actions": [
-    #         HoldAction({
-    #             "actions": [
-    #                 KemperActionDefinitions.TUNER_MODE(),
-    #                 KemperActionDefinitions.MORPH_DISPLAY()
-    #             ],
-    #             "actionsHold": [
-    #                 KemperActionDefinitions.TUNER_MODE(),
-    #             ]    
-    #         }) 
-    #     ]
-    # },
-
-    # # Switch down
-    # {
-    #     "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_DOWN,
-    #     "actions": [
-    #         HoldAction({
-    #             "actions": [
-    #                 KemperActionDefinitions.TUNER_MODE(),
-    #                 KemperActionDefinitions.MORPH_DISPLAY()
-    #             ],
-    #             "actionsHold": [
-    #                 KemperActionDefinitions.TUNER_MODE(),
-    #             ]    
-    #         }) 
-    #     ]
-    # },
     # Switch 1
     {
        "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_1,
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                display = DISPLAY_HEADER_1
+                
             )
         ],
         "actionsHold": [
             KemperActionDefinitions.BANK_SELECT(
                 bank = 1,
+                display = DISPLAY_HEADER_1,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ]    
@@ -205,12 +38,14 @@ Switches = [
         "actions": [
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
-                display = DISPLAY_HEADER_2
+                
             )
         ],
         "actionsHold": [
             KemperActionDefinitions.BANK_SELECT(
                 bank = 2,
+                bank_off = 4,
+                display = DISPLAY_HEADER_2,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ]    

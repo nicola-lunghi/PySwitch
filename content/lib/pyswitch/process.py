@@ -9,8 +9,8 @@
 
 
 # Uncomment these two lines to enable memory monitoring
-from pyswitch.stats import Memory as _Memory
-_Memory.start()
+#from pyswitch.stats import Memory as _Memory
+#_Memory.start()
 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver as _DisplayDriver, AdafruitNeoPixelDriver as _NeoPixelDriver, AdafruitFontLoader as _FontLoader, AdafruitSwitch as _Switch
 from pyswitch.misc import get_option as _get_option
@@ -56,12 +56,12 @@ if not _get_option(_Config, "exploreMode"):
 
     try:
         # Load configuration files
-        _Memory.watch("Start loading config")
+        #_Memory.watch("Start loading config")
         
         from display import Splashes as _Splashes
         from switches import Switches as _Switches
 
-        _Memory.watch("Loaded config")
+        #_Memory.watch("Loaded config")
 
         # Controller instance (runs the processing loop and keeps everything together)
         _appl = _Controller(

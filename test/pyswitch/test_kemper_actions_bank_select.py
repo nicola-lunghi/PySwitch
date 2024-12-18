@@ -20,7 +20,6 @@ with patch.dict(sys.modules, {
     from .mocks_callback import *
 
     from lib.pyswitch.clients.kemper import *
-    #from lib.pyswitch.controller.callbacks import BinaryParameterCallback, DEFAULT_LED_BRIGHTNESS_ON, DEFAULT_SLOT_DIM_FACTOR_ON
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.misc import Updater, Colors
 
@@ -61,102 +60,96 @@ class MockFootswitch:
 ####################################################################################################
 
 
-class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
+class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
     def test_bank_colors(self):
         # Current
-        self._test_bank_colors(mapping_value = None,  exp_color = Colors.WHITE, display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = None,  display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
         
-        self._test_bank_colors(mapping_value = 0,     exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
-        self._test_bank_colors(mapping_value = 1,     exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
-        self._test_bank_colors(mapping_value = 2,     exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
-        self._test_bank_colors(mapping_value = 3,     exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
-        self._test_bank_colors(mapping_value = 4,     exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = 0,     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = 1,     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = 2,     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = 3,     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = 4,     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
         
-        self._test_bank_colors(mapping_value = 5,     exp_color = BANK_COLORS[1], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
-        self._test_bank_colors(mapping_value = 6,     exp_color = BANK_COLORS[1], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
-        self._test_bank_colors(mapping_value = 7,     exp_color = BANK_COLORS[1], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
-        self._test_bank_colors(mapping_value = 8,     exp_color = BANK_COLORS[1], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
-        self._test_bank_colors(mapping_value = 9,     exp_color = BANK_COLORS[1], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = 5,     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = 6,     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = 7,     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = 8,     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = 9,     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
 
-        self._test_bank_colors(mapping_value = 10,    exp_color = BANK_COLORS[2], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = 10,    display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
 
-        self._test_bank_colors(mapping_value = NUM_BANKS * NUM_RIGS_PER_BANK - 1,  exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(mapping_value = NUM_BANKS * NUM_RIGS_PER_BANK - 1,  display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
 
         # Target
-        self._test_bank_colors(mapping_value = None,  exp_color = Colors.WHITE, display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = None,  display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
         
-        self._test_bank_colors(mapping_value = 0,     exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
-        self._test_bank_colors(mapping_value = 1,     exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
-        self._test_bank_colors(mapping_value = 2,     exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
-        self._test_bank_colors(mapping_value = 3,     exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
-        self._test_bank_colors(mapping_value = 4,     exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = 0,     display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = 1,     display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = 2,     display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = 3,     display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = 4,     display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
         
-        self._test_bank_colors(mapping_value = 5,     exp_color = BANK_COLORS[1], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
-        self._test_bank_colors(mapping_value = 6,     exp_color = BANK_COLORS[1], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
-        self._test_bank_colors(mapping_value = 7,     exp_color = BANK_COLORS[1], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
-        self._test_bank_colors(mapping_value = 8,     exp_color = BANK_COLORS[1], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
-        self._test_bank_colors(mapping_value = 9,     exp_color = BANK_COLORS[1], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = 5,     display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = 6,     display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = 7,     display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = 8,     display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = 9,     display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
 
-        self._test_bank_colors(mapping_value = 10,    exp_color = BANK_COLORS[2], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = 10,    display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
 
-        self._test_bank_colors(mapping_value = NUM_BANKS * NUM_RIGS_PER_BANK - 1,    exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(mapping_value = NUM_BANKS * NUM_RIGS_PER_BANK - 1,    display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
 
 
-    def _test_bank_colors(self, mapping_value, exp_color, display_mode):
+    def _test_bank_colors(self, mapping_value, display_mode):
         # With label but no text callback 
         self._do_test_bank_colors_with_label(
             mapping_value = mapping_value,
-            exp_color = exp_color,
             display_mode = display_mode,
-            rig = mapping_value % 5 + 2 if mapping_value != None else 0,
-            rig_off = None,
+            bank = mapping_value // 5 + 2 if mapping_value != None else 0,
+            bank_off = None,
             exp_enlightened = False
         )
 
         self._do_test_bank_colors_with_label(
             mapping_value = mapping_value,
-            exp_color = exp_color,
             display_mode = display_mode,
-            rig = mapping_value % 5 + 1 if mapping_value != None else 0,
-            rig_off = None,
+            bank = mapping_value // 5 + 1 if mapping_value != None else 0,
+            bank_off = None,
             exp_enlightened = (mapping_value != None) and (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
         )
 
         self._do_test_bank_colors_with_label(
             mapping_value = mapping_value,
-            exp_color = exp_color,
             display_mode = display_mode,
-            rig = mapping_value % 5 + 1 if mapping_value != None else 0,
-            rig_off = mapping_value % 5 + 2 if mapping_value != None else None,
+            bank = mapping_value // 5 + 1 if mapping_value != None else 0,
+            bank_off = mapping_value // 5 + 2 if mapping_value != None else None,
             exp_enlightened = (mapping_value != None) and (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
         )
 
         # Without text callback and label
         self._do_test_bank_colors_without_label(
             mapping_value = mapping_value,
-            exp_color = exp_color,
             display_mode = display_mode,
-            rig = mapping_value % 5 + 2 if mapping_value != None else 0,
-            rig_off = None,
+            bank = mapping_value // 5 + 2 if mapping_value != None else 0,
+            bank_off = None,
             exp_enlightened = False
         )
 
         self._do_test_bank_colors_without_label(
             mapping_value = mapping_value,
-            exp_color = exp_color,
             display_mode = display_mode,
-            rig = mapping_value % 5 + 1 if mapping_value != None else 0,
-            rig_off = None,
+            bank = mapping_value // 5 + 1 if mapping_value != None else 0,
+            bank_off = None,
             exp_enlightened = (mapping_value != None) and (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
         )
 
         self._do_test_bank_colors_without_label(
             mapping_value = mapping_value,
-            exp_color = exp_color,
             display_mode = display_mode,
-            rig = mapping_value % 5 + 1 if mapping_value != None else 0,
-            rig_off = mapping_value % 5 + 2 if mapping_value != None else None,
+            bank = mapping_value // 5 + 1 if mapping_value != None else 0,
+            bank_off = mapping_value // 5 + 2 if mapping_value != None else None,
             exp_enlightened = (mapping_value != None) and (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
         )
 
@@ -164,38 +157,50 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         if mapping_value != None:
             self._test_bank_colors_with_label_and_cb(
                 mapping_value = mapping_value,
-                exp_color = exp_color,
                 display_mode = display_mode,
-                rig = mapping_value % 5 + 2 if mapping_value != None else 0,
-                rig_off = None,
+                bank = mapping_value // 5 + 2 if mapping_value != None else 0,
+                bank_off = None,
                 exp_enlightened = False
             )
 
             self._test_bank_colors_with_label_and_cb(
                 mapping_value = mapping_value,
-                exp_color = exp_color,
                 display_mode = display_mode,
-                rig = mapping_value % 5 + 1 if mapping_value != None else 0,
-                rig_off = None,
+                bank = mapping_value // 5 + 1 if mapping_value != None else 0,
+                bank_off = None,
                 exp_enlightened = (mapping_value != None) and (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
             )
 
             self._test_bank_colors_with_label_and_cb(
                 mapping_value = mapping_value,
-                exp_color = exp_color,
                 display_mode = display_mode,
-                rig = mapping_value % 5 + 1 if mapping_value != None else 0,
-                rig_off = mapping_value % 5 + 2 if mapping_value != None else None,
+                bank = mapping_value // 5 + 1 if mapping_value != None else 0,
+                bank_off = mapping_value // 5 + 2 if mapping_value != None else None,
                 exp_enlightened = (mapping_value != None) and (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
             )
 
 
-    def _do_test_bank_colors_without_label(self, mapping_value, rig, rig_off, display_mode, exp_color, exp_enlightened):    
+    def _get_exp_color(self, mapping_value, display_mode, bank, bank_off):
+        if mapping_value == None:
+            return Colors.WHITE
+        
+        if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+            if bank_off != None and (int(mapping_value / 5) == bank - 1):
+                return BANK_COLORS[(bank_off - 1) % 5]
+            else:
+                return BANK_COLORS[(bank - 1) % 5]
+        
+        return BANK_COLORS[int(mapping_value / 5) % 5]
+    
+        
+    def _do_test_bank_colors_without_label(self, mapping_value, bank, bank_off, display_mode, exp_enlightened):    
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
-            rig = rig, 
-            rig_off = rig_off,
+        exp_color = self._get_exp_color(mapping_value, display_mode, bank, bank_off)
+
+        action = KemperActionDefinitions.BANK_SELECT(
+            bank = bank, 
+            bank_off = bank_off,
             display_mode = display_mode, 
             id = 45, 
             use_leds = True, 
@@ -215,18 +220,20 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         self.assertEqual(switch.brightness, 0.3 if exp_enlightened else 0.02)
         
 
-    def _do_test_bank_colors_with_label(self, mapping_value, rig, rig_off, display_mode, exp_color, exp_enlightened):
+    def _do_test_bank_colors_with_label(self, mapping_value, bank, bank_off, display_mode, exp_enlightened):
         display = DisplayLabel(layout = {
             "font": "foo",
             "backColor": (0, 0, 0)
         })
 
+        exp_color = self._get_exp_color(mapping_value, display_mode, bank, bank_off)
+
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = KemperActionDefinitions.BANK_SELECT(
             display = display,
-            rig = rig, 
-            rig_off = rig_off,
+            bank = bank, 
+            bank_off = bank_off,
             display_mode = display_mode, 
             id = 45, 
             use_leds = True, 
@@ -255,38 +262,39 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
         if mapping_value != None:
             if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                self.assertEqual(display.text, "Rig " + repr(int(mapping_value / 5) + 1) + "-" + repr(mapping_value % 5 + 1))
+                self.assertEqual(display.text, "Bank " + repr(int(mapping_value / 5) + 1))
             else:
-                if rig_off != None and mapping_value % 5 + 1 != rig_off:                
-                    self.assertEqual(display.text, "Rig " + repr(int(mapping_value / 5) + 1) + "-" + repr(rig_off))
+                if bank_off != None and mapping_value // 5 + 1 != bank_off:                
+                    self.assertEqual(display.text, "Bank " + repr(bank_off))
                 else:
-                    self.assertEqual(display.text, "Rig " + repr(int(mapping_value / 5) + 1) + "-" + repr(rig))                
+                    self.assertEqual(display.text, "Bank " + repr(bank))             
 
 
-    def _test_bank_colors_with_label_and_cb(self, mapping_value, rig, rig_off, display_mode, exp_color, exp_enlightened):
+    def _test_bank_colors_with_label_and_cb(self, mapping_value, bank, bank_off, display_mode, exp_enlightened):
         self._do_test_bank_colors_with_label_and_text_cb(
             mapping_value = mapping_value,
-            rig = rig,
-            rig_off = rig_off,
+            bank = bank, 
+            bank_off = bank_off,
             display_mode = display_mode,
-            exp_color = exp_color,
             exp_enlightened = exp_enlightened
         )
 
         self._do_test_bank_colors_with_label_and_color_cb(
             mapping_value = mapping_value,
-            rig = rig,
-            rig_off = rig_off,
+            bank = bank, 
+            bank_off = bank_off,
             display_mode = display_mode,
             exp_enlightened = exp_enlightened
         )
 
 
-    def _do_test_bank_colors_with_label_and_text_cb(self, mapping_value, rig, rig_off, display_mode, exp_color, exp_enlightened):
+    def _do_test_bank_colors_with_label_and_text_cb(self, mapping_value, bank, bank_off, display_mode, exp_enlightened):
         display = DisplayLabel(layout = {
             "font": "foo",
             "backColor": (0, 0, 0)
         })
+
+        exp_color = self._get_exp_color(mapping_value, display_mode, bank, bank_off)
 
         ecb = MockEnabledCallback(output = True)
 
@@ -294,10 +302,10 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             self.assertEqual(action, action_paramater)
             return repr(bank) + "|" + repr(rig)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = KemperActionDefinitions.BANK_SELECT(
             display = display,
-            rig = rig, 
-            rig_off = rig_off,
+            bank = bank, 
+            bank_off = bank_off,
             display_mode = display_mode, 
             id = 45, 
             use_leds = True, 
@@ -329,13 +337,13 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
                 self.assertEqual(display.text, repr(int(mapping_value / 5)) + "|" + repr(mapping_value % 5))
             else:
-                if rig_off != None and mapping_value % 5 + 1 != rig_off:                
-                    self.assertEqual(display.text, repr(int(mapping_value / 5)) + "|" + repr(rig_off - 1))
+                if bank_off != None and mapping_value // 5 + 1 != bank_off:                
+                    self.assertEqual(display.text, repr(int(bank_off - 1)) + "|" + repr(mapping_value % 5))
                 else:
-                    self.assertEqual(display.text, repr(int(mapping_value / 5)) + "|" + repr(rig - 1))    
+                    self.assertEqual(display.text, repr(int(bank - 1)) + "|" + repr(mapping_value % 5))    
  
 
-    def _do_test_bank_colors_with_label_and_color_cb(self, mapping_value, rig, rig_off, display_mode, exp_enlightened):
+    def _do_test_bank_colors_with_label_and_color_cb(self, mapping_value, bank, bank_off, display_mode, exp_enlightened):
         display = DisplayLabel(layout = {
             "font": "foo",
             "backColor": (0, 0, 0)
@@ -350,10 +358,10 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
             return (3, 4, 5)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = KemperActionDefinitions.BANK_SELECT(
             display = display,
-            rig = rig, 
-            rig_off = rig_off,
+            bank = bank, 
+            bank_off = bank_off,
             display_mode = display_mode, 
             id = 45, 
             use_leds = True, 
@@ -393,9 +401,9 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = KemperActionDefinitions.BANK_SELECT(
             display = display,
-            rig = 1, 
+            bank = 1, 
             id = 45, 
             use_leds = True, 
             display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
@@ -411,7 +419,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         mapping = mapping = action.callback._BinaryParameterCallback__mapping 
         
         # On state
-        mapping.value = NUM_RIGS_PER_BANK * 2
+        mapping.value = 3
         action.update_displays()
         self.assertEqual(action.state, True)
 
@@ -423,7 +431,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         self.assertEqual(display.text, "foo")
 
         # Off state
-        mapping.value = 2
+        mapping.value = 22
         action.update_displays()
         self.assertEqual(action.state, False)
 
@@ -450,9 +458,9 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = KemperActionDefinitions.BANK_SELECT(
             display = display,
-            rig = 1,
+            bank = 1,
             display_mode = self,                   # Invalid value ;)
             id = 45, 
             use_leds = True, 
@@ -482,8 +490,8 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
 
     def _test_messages(self, rig):
-        action = KemperActionDefinitions.RIG_SELECT(
-            rig = rig + 1
+        action = KemperActionDefinitions.BANK_SELECT(
+            bank = 1            
         )
 
         appl = MockController2()
@@ -492,7 +500,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         
         mapping = action.callback._BinaryParameterCallback__mapping 
         
-        mapping.value = rig + 1   # Not matching
+        mapping.value = 10 + rig   # Not matching
         action.update_displays()
         self.assertEqual(action.state, False)
         
@@ -502,8 +510,8 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
-            "mapping": mapping,
-            "value": [1, 0]
+            "mapping": KemperMappings.BANK_AND_RIG_SELECT(rig),
+            "value": [0, 1, 0]
         })
 
         mapping.value = rig   # On rig
@@ -514,58 +522,86 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         action.push()
         action.release()
 
-        self.assertEqual(len(appl.client.set_calls), 2)
-        self.assertEqual(appl.client.set_calls[1], {
-            "mapping": mapping,
-            "value": [1, 0]
-        })
+        self.assertEqual(len(appl.client.set_calls), 1)
+
+        # self.assertEqual(len(appl.client.set_calls), 2)
+        # self.assertEqual(appl.client.set_calls[1], {
+        #     "mapping": KemperMappings.BANK_AND_RIG_SELECT(rig),
+        #     "value": [0, 1, 0]
+        # })
 
         action.update_displays()
         self.assertEqual(action.state, True)
 
         # Receive other rig
-        mapping.value = rig + 11  # Not matching
+        mapping.value = rig + 20  # Not matching
         action.update_displays()
 
         self.assertEqual(action.state, False)
 
-        self.assertEqual(len(appl.client.set_calls), 2)
+        self.assertEqual(len(appl.client.set_calls), 1)
 
 
 ###################################################################################################################
 
-    def test_messages_rig_off(self):
-        for bank in range(NUM_BANKS):
-            self._test_messages_rig_off(bank)
 
-    def _test_messages_rig_off(self, bank):
-        action = KemperActionDefinitions.RIG_SELECT(
-            rig = 1,   
-            rig_off = 3
+    def test_messages_bank_off(self):
+        self._test_messages_bank_off(0)
+        self._test_messages_bank_off(1)
+        self._test_messages_bank_off(2)
+        self._test_messages_bank_off(3)
+        self._test_messages_bank_off(4)
+
+
+    def _test_messages_bank_off(self, rig):
+        action = KemperActionDefinitions.BANK_SELECT(
+            bank = 2,
+            bank_off = 4           
         )
 
         appl = MockController2()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
-
-        mapping = action.callback._BinaryParameterCallback__mapping   
-        mapping_disable = action.callback._BinaryParameterCallback__mapping_disable
-
-        mapping.value = bank * NUM_RIGS_PER_BANK + 3   # Not matching (Rig 3)
+        
+        mapping = action.callback._BinaryParameterCallback__mapping 
+        
+        mapping.value = 10 + rig   # Not matching
         action.update_displays()
         self.assertEqual(action.state, False)
         
-        # Select on rig
+        # Select rig the first time
         action.push()
         action.release()
 
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
-            "mapping": mapping,
-            "value": [1, 0]
+            "mapping": KemperMappings.BANK_AND_RIG_SELECT(rig),
+            "value": [1, 1, 0]
         })
 
-        mapping.value = bank * NUM_RIGS_PER_BANK   # On rig
+        mapping.value = 5 + rig   # On rig
+        action.update_displays()
+        self.assertEqual(action.state, True)
+
+        # Receive other rig
+        mapping.value = rig + 20  # Not matching
+        action.update_displays()
+
+        self.assertEqual(action.state, False)
+
+        self.assertEqual(len(appl.client.set_calls), 1)
+
+        # Select rig again 
+        action.push()
+        action.release()
+
+        self.assertEqual(len(appl.client.set_calls), 2)
+        self.assertEqual(appl.client.set_calls[1], {
+            "mapping": KemperMappings.BANK_AND_RIG_SELECT(rig),
+            "value": [1, 1, 0]
+        })
+
+        mapping.value = 5 + rig   # On rig
         action.update_displays()
         self.assertEqual(action.state, True)
 
@@ -573,100 +609,19 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         action.push()
         action.release()
 
-        self.assertEqual(len(appl.client.set_calls), 2)
-        self.assertEqual(appl.client.set_calls[1], {
-            "mapping": mapping_disable,
-            "value": [1, 0]
-        })
-
-        mapping.value = bank * NUM_RIGS_PER_BANK + 2  # Off rig
-        action.update_displays()
-        self.assertEqual(action.state, False)
-
-        # Select on rig
-        action.push()
-        action.release()
-
         self.assertEqual(len(appl.client.set_calls), 3)
         self.assertEqual(appl.client.set_calls[2], {
-            "mapping": mapping,
-            "value": [1, 0]
+            "mapping": KemperMappings.BANK_AND_RIG_SELECT(rig),
+            "value": [3, 1, 0]
         })
 
-        mapping.value = bank * NUM_RIGS_PER_BANK  # On rig
-        action.update_displays()
-        self.assertEqual(action.state, True)
-
-        # Receive any other rigs
-        mapping.value = bank * NUM_RIGS_PER_BANK + 1
+        mapping.value = 15 + rig   # Off rig
         action.update_displays()
         self.assertEqual(action.state, False)
 
-        mapping.value = 1
         action.update_displays()
         self.assertEqual(action.state, False)
 
         self.assertEqual(len(appl.client.set_calls), 3)
 
 
-############################################################################################################
-
-
-    def test_rig_select_and_morph_enabled(self):
-        self._test_rig_select_and_morph_enabled(False)
-        self._test_rig_select_and_morph_enabled(True)
-
-
-    def _test_rig_select_and_morph_enabled(self, morph_only_when_enabled):
-        ecb = MockEnabledCallback()
-
-        action_select, action_morph = KemperActionDefinitions.RIG_SELECT_AND_MORPH_STATE(
-            rig = 1,
-            rig_off = 2,
-            use_leds = True, 
-            enable_callback = ecb,     
-            color = (2, 4, 6),
-            morph_only_when_enabled = morph_only_when_enabled        
-        )
-
-        appl = MockController2()
-        switch = MockFootswitch(actions = [action_select])
-        action_select.init(appl, switch)
-
-        mapping_rig = action_select.callback._BinaryParameterCallback__mapping 
-        
-        mapping_rig.value = 4  # off value
-        ecb.output = False
-        action_select.push()
-        action_select.release()
-
-        self.assertEqual(action_select.enabled, False)
-        self.assertEqual(action_morph.enabled, False)
-
-        ecb.output = True
-        action_select.push()
-        action_select.release()
-
-        self.assertEqual(action_select.enabled, True)
-        self.assertEqual(action_morph.enabled, False if morph_only_when_enabled else True)
-
-        mapping_rig.value = 0  # on value
-        action_select.push()
-        action_select.release()
-
-        self.assertEqual(action_select.enabled, True)
-        self.assertEqual(action_morph.enabled, True)
-
-        mapping_rig.value = 4  # off value
-        action_select.push()
-        action_select.release()
-        
-        self.assertEqual(action_select.enabled, True)
-        self.assertEqual(action_morph.enabled, False if morph_only_when_enabled else True)
-
-        ecb.output = False
-        action_select.push()
-        action_select.release()
-
-        self.assertEqual(action_select.enabled, False)
-        self.assertEqual(action_morph.enabled, False)

@@ -451,9 +451,9 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = KemperActionDefinitions.RIG_AND_BANK_SELECT(
             display = display,
-            rig = 0,
+            rig = 1,
             display_mode = self,                   # Invalid value ;)
             id = 45, 
             use_leds = True, 

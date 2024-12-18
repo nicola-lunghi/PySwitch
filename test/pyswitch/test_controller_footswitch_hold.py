@@ -138,6 +138,31 @@ class TestFootswitchControllerHold(unittest.TestCase):
         self.assertEqual(action_3.num_push_calls, 1)
         self.assertEqual(action_3.num_release_calls, 1)
 
+        # Long press with running out of time before release
+        switch.shall_be_pushed = True
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 2)
+        self.assertEqual(action_1.num_release_calls, 2)
+        
+        self.assertEqual(action_2.num_push_calls, 2)
+        self.assertEqual(action_2.num_release_calls, 2)
+
+        self.assertEqual(action_3.num_push_calls, 1)
+        self.assertEqual(action_3.num_release_calls, 1)
+
+        hold_period.exceed_next_time = True        
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 2)
+        self.assertEqual(action_1.num_release_calls, 2)
+        
+        self.assertEqual(action_2.num_push_calls, 2)
+        self.assertEqual(action_2.num_release_calls, 2)
+
+        self.assertEqual(action_3.num_push_calls, 2)
+        self.assertEqual(action_3.num_release_calls, 2)
+
 
     def test_no_hold(self):
         hold_period = MockPeriodCounter()

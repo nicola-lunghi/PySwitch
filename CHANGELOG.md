@@ -1,7 +1,13 @@
 # PySwitch v2.3.0
+- Added BANK_SELECT action definition for changing/toggling banks but stay at the same rig
 - Default global brightness factors for LEDs and DisplayLabels can now be set optionally in config.py, see comments there.
 - Now supporting file editing from the browser via MIDI using the <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a> library. <a href="https://demo.midibridge.tunetown.de">Click here</a> with your device connected to the computer via USB (no switches pressed!) and it will automatically connect. This needs no USB mounting/unmounting and is useful for quick experimenting. Should also serve as proof-of-concept for building a visual editor in the future.
 - The code from code.py now is moved to a function inside the init script of the module, so multi-boot scenarios (different firmwares on button presses on boot, like @gstrotmanns version does) are also possible. Unit tests added for the init script.
+- Further performance optimizations, the following ones need config file adjustments:
+    - Merged HoldAction into Footswitch controller (put "actionsHold" into the switch definition directly instead)
+    - Removed performance dot coding (remove this from display.py if exists)
+    - Merged HierarchicalDisplayElement into DisplayElement (replace HierarchicalDisplayElement with DisplayElement in display.py)
+    - Removed DisplaySplitContainer and subtractive layouting (manually set display areas instead in display.py, see examples)
 
 # PySwitch v2.2.2
 - Morph pedal position can now be requested from the Kemper. The position can be visualized with colors (faded between red and blue). See tehguitarist's example. Thanks to @sumsar for the NRPN mapping info.

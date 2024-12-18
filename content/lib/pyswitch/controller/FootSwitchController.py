@@ -69,25 +69,8 @@ class FootSwitchController: #ConditionListener
                     if self.__actions_hold:    
                         if not self.__hold_active:
                             return
-                        
-                        # Checks hold time and triggers hold action if exceeded.
-                        def check_hold():
-                            if self.__period_hold.exceeded:
-                                self.__hold_active = False
-
-                                # Hold click
-                                for action in self.__actions_hold:
-                                    if not action.enabled:
-                                        continue
-
-                                    action.push()        
-                                    action.release()
-
-                                return True
-                            
-                            return False
-                        
-                        if check_hold():
+                                                
+                        if self.__check_hold():
                             return
 
                     for action in self.__actions:
@@ -104,8 +87,10 @@ class FootSwitchController: #ConditionListener
                 release()
 
             return
+        else:
+            if self.__hold_active and self.__check_hold():
+                return
 
-        # Switch is pushed: Has it been pushed before already? 
         if self.__pushed_state:
             return 
         
@@ -123,7 +108,24 @@ class FootSwitchController: #ConditionListener
                 continue
 
             action.push()
+
+    # Checks hold time and triggers hold action if exceeded.
+    def __check_hold(self):
+        if self.__period_hold.exceeded:
+            self.__hold_active = False
+
+            # Hold click
+            for action in self.__actions_hold:
+                if not action.enabled:
+                    continue
+
+                action.push()        
+                action.release()
+
+            return True
         
+        return False        # Switch is pushed: Has it been pushed before already? 
+            
     @property 
     def actions(self):
         return self.__actions + self.__actions_hold

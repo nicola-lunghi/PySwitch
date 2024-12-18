@@ -1,6 +1,7 @@
 from .FootSwitchController import FootSwitchController
 from .callbacks import Callback
 from .actions import Action
+from ..ui.layout import remove_from_bottom
 from ..ui.elements import DisplayLabel, DisplayElement
 from ..ui.DisplaySplitContainer import DisplaySplitContainer
 from ..misc import Updater, Colors, do_print
@@ -120,7 +121,7 @@ class ExploreModeController(Updater):
 
         # Display for currently enlightened pixels
         self.pixel_display = DisplayLabel(
-            bounds = bounds.remove_from_bottom(40),
+            bounds = remove_from_bottom(bounds, 40),
             layout = {
                 "font": "/fonts/A12.pcf",
                 "backColor": Colors.DARK_GREEN

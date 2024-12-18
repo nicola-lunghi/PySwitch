@@ -24,6 +24,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.controller.Client import BidirectionalClient
     
     from .mocks_appl import MockBidirectionalProtocol, MockMidiController, MockClient
+    from .mocks_ui import *
     
 
 class MockController:
@@ -35,10 +36,10 @@ class TestProtocolState(unittest.TestCase):
 
     def test(self):
         display = BidirectionalProtocolState(
-            bounds = DisplayBounds(22, 33, 44, 55)
+            bounds = DisplayBounds(200, 200, 400, 500)
         )
 
-        self.assertEqual(display.bounds, DisplayBounds(22, 33, 44, 55))
+        self.assertEqual(display.bounds, DisplayBounds(600 - 4 - 2, 200 + 2, 4, 4))
 
         protocol = MockBidirectionalProtocol()        
 

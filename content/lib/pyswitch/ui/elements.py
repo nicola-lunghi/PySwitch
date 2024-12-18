@@ -447,7 +447,7 @@ class BidirectionalProtocolState(DisplayElement, Updateable):
         DisplayElement.__init__(
             self, 
             bounds = DisplayBounds(
-                x = bounds.width - bounds.x - _PERFORMANCE_INDICATOR_SIZE - _PERFORMANCE_INDICATOR_MARGIN,
+                x = bounds.x + bounds.width - _PERFORMANCE_INDICATOR_SIZE - _PERFORMANCE_INDICATOR_MARGIN,
                 y = bounds.y + _PERFORMANCE_INDICATOR_MARGIN,
                 w = int(_PERFORMANCE_INDICATOR_SIZE),
                 h = int(_PERFORMANCE_INDICATOR_SIZE)
