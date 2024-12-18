@@ -17,7 +17,7 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.elements import PERFORMANCE_DOT, BIDIRECTIONAL_PROTOCOL_STATE_DOT
+    from lib.pyswitch.ui.elements import BIDIRECTIONAL_PROTOCOL_STATE_DOT
     from lib.pyswitch.ui.ui import DisplayBounds
 
 
@@ -29,9 +29,9 @@ class TestStatisticalDisplays(unittest.TestCase):
     #    STATS_DISPLAY(DisplayBounds(20, 30, 40, 50))
 
 
-    def test_performance_dot(self):
-        # Must not throw
-        PERFORMANCE_DOT(DisplayBounds(20, 30, 40, 50))
+    # def test_performance_dot(self):
+    #     # Must not throw
+    #     PERFORMANCE_DOT(DisplayBounds(20, 30, 40, 50))
 
 
     def test_protocol_dot(self):

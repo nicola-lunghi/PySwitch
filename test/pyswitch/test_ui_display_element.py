@@ -15,21 +15,9 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.ui import DisplayElement, DisplayBounds, HierarchicalDisplayElement
-    from .mocks_ui import MockHierarchicalDisplayElement, MockFontLoader
+    from lib.pyswitch.ui.ui import DisplayElement, DisplayBounds
+    from .mocks_ui import MockDisplayElement, MockFontLoader
 
-
-class MockDisplayElement(DisplayElement):
-    def __init__(self, bounds = DisplayBounds(), name = "", id = 0):
-        super().__init__(bounds = bounds, name = name, id = id)
-
-        self.num_bounds_changed_calls = 0
-
-    def bounds_changed(self):
-        self.num_bounds_changed_calls += 1
-
-
-###############################################################################################
 
 
 class TestDisplayElement(unittest.TestCase):
@@ -44,17 +32,12 @@ class TestDisplayElement(unittest.TestCase):
 
         b.x = 10
         self.assertNotEqual(el.bounds, b)
-        self.assertEqual(el.num_bounds_changed_calls, 0)
 
         el.bounds = b
         self.assertEqual(el.bounds, b)
-        self.assertEqual(el.num_bounds_changed_calls, 1)
 
         el.init(None, None)
 
-        with self.assertRaises(Exception):
-            el.bounds = DisplayBounds(0, 0, 20, 20)
-            
 
     def test_initialized(self):
         el = DisplayElement(
@@ -87,25 +70,20 @@ class TestDisplayElement(unittest.TestCase):
         self.assertEqual(spl, el.splash)
 
 
-###############################################################################################
-
-
-class TestHierarchicalDisplayElement(unittest.TestCase):
-
     def test_children(self):
-        el = HierarchicalDisplayElement(
+        el = DisplayElement(
             id = "foo"
         )
 
-        child_1 = HierarchicalDisplayElement(
+        child_1 = DisplayElement(
             id = "bar"
         )
 
-        child_2 = HierarchicalDisplayElement(
+        child_2 = DisplayElement(
             id = "bat"
         )
 
-        subchild_1 = HierarchicalDisplayElement(
+        subchild_1 = DisplayElement(
             id = "tar"
         )
 
@@ -119,8 +97,8 @@ class TestHierarchicalDisplayElement(unittest.TestCase):
         # children
         self.assertEqual(el.children, [child_1, child_2])
         self.assertEqual(child_1.children, [None, subchild_1, None])
-        self.assertEqual(child_2.children, [])
-        self.assertEqual(subchild_1.children, [])
+        self.assertEqual(child_2.children, None)
+        self.assertEqual(subchild_1.children, None)
 
         # child(index)
         #self.assertEqual(el.child(0), child_1)
@@ -152,19 +130,19 @@ class TestHierarchicalDisplayElement(unittest.TestCase):
         appl = Object()
         ui = Object()
 
-        el = MockHierarchicalDisplayElement(
+        el = MockDisplayElement(
             id = "foo"
         )
 
-        child_1 = MockHierarchicalDisplayElement(
+        child_1 = MockDisplayElement(
             id = "bar"
         )
 
-        child_2 = MockHierarchicalDisplayElement(
+        child_2 = MockDisplayElement(
             id = "bat"
         )
 
-        subchild_1 = MockHierarchicalDisplayElement(
+        subchild_1 = MockDisplayElement(
             id = "tar"
         )
 
@@ -199,19 +177,19 @@ class TestHierarchicalDisplayElement(unittest.TestCase):
         appl = Object()
         ui = Object()
 
-        el = MockHierarchicalDisplayElement(
+        el = MockDisplayElement(
             id = "foo"
         )
 
-        child_1 = MockHierarchicalDisplayElement(
+        child_1 = MockDisplayElement(
             id = "bar"
         )
 
-        child_2 = MockHierarchicalDisplayElement(
+        child_2 = MockDisplayElement(
             id = "bat"
         )
 
-        subchild_1 = MockHierarchicalDisplayElement(
+        subchild_1 = MockDisplayElement(
             id = "tar"
         )
         
@@ -240,7 +218,7 @@ class TestHierarchicalDisplayElement(unittest.TestCase):
         self.assertEqual(child_2.num_init_calls, 1)
         self.assertEqual(subchild_1.num_init_calls, 1)
 
-        subchild_2 = MockHierarchicalDisplayElement(
+        subchild_2 = MockDisplayElement(
             id = "tar2"
         )
 
@@ -267,44 +245,3 @@ class TestHierarchicalDisplayElement(unittest.TestCase):
         self.assertEqual(subchild_2.num_init_calls, 1)
 
 
-    def test_bounds_changed(self):
-        class Object:
-            pass
-
-        appl = Object()
-        ui = Object()
-
-        el = MockHierarchicalDisplayElement(
-            id = "foo"
-        )
-
-        child_1 = MockHierarchicalDisplayElement(
-            id = "bar"
-        )
-
-        child_2 = MockHierarchicalDisplayElement(
-            id = "bat"
-        )
-
-        subchild_1 = MockHierarchicalDisplayElement(
-            id = "tar"
-        )
-
-        el.add(child_1)
-        el.add(child_2)
-
-        child_1.add(None)
-        child_1.add(subchild_1)
-
-        self.assertEqual(el.num_bounds_changed_calls, 0)
-        self.assertEqual(child_1.num_bounds_changed_calls, 0)
-        self.assertEqual(child_2.num_bounds_changed_calls, 0)
-        self.assertEqual(subchild_1.num_bounds_changed_calls, 0)
-
-        el.bounds_changed()
-
-        self.assertEqual(el.num_bounds_changed_calls, 1)
-        self.assertEqual(child_1.num_bounds_changed_calls, 1)
-        self.assertEqual(child_2.num_bounds_changed_calls, 1)
-        self.assertEqual(subchild_1.num_bounds_changed_calls, 1)
-        

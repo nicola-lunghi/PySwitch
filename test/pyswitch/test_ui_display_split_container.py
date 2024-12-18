@@ -18,7 +18,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from lib.pyswitch.ui.ui import DisplayBounds, DisplayElement
-    from lib.pyswitch.ui.elements import DisplaySplitContainer
+    from lib.pyswitch.ui.DisplaySplitContainer import DisplaySplitContainer
 
     from .mocks_appl import *
     from .mocks_ui import *
@@ -38,17 +38,18 @@ class TestDisplaySplitContainer(unittest.TestCase):
         el_1 = DisplayElement()
         el_2 = DisplayElement()
         el_3 = DisplayElement()
-        el_4 = DisplayElement()
-        el_5 = DisplayElement()
 
         cont.add(el_1)
+        cont.init(None, None)
         self.assertEqual(el_1.bounds, DisplayBounds(20, 30, 600, 500))
 
         cont.add(el_2)
+        cont.init(None, None)
         self.assertEqual(el_1.bounds, DisplayBounds(20, 30, 300, 500))        
         self.assertEqual(el_2.bounds, DisplayBounds(320, 30, 300, 500))        
 
         cont.add(el_3)
+        cont.init(None, None)
         self.assertEqual(el_1.bounds, DisplayBounds(20, 30, 200, 500))        
         self.assertEqual(el_2.bounds, DisplayBounds(220, 30, 200, 500))        
         self.assertEqual(el_3.bounds, DisplayBounds(420, 30, 200, 500))        
@@ -63,17 +64,18 @@ class TestDisplaySplitContainer(unittest.TestCase):
         el_1 = DisplayElement()
         el_2 = DisplayElement()
         el_3 = DisplayElement()
-        el_4 = DisplayElement()
-        el_5 = DisplayElement()
 
         cont.add(el_1)
+        cont.init(None, None)
         self.assertEqual(el_1.bounds, DisplayBounds(20, 30, 500, 600))
 
         cont.add(el_2)
+        cont.init(None, None)
         self.assertEqual(el_1.bounds, DisplayBounds(20, 30, 500, 300))        
         self.assertEqual(el_2.bounds, DisplayBounds(20, 330, 500, 300))        
 
         cont.add(el_3)
+        cont.init(None, None)
         self.assertEqual(el_1.bounds, DisplayBounds(20, 30, 500, 200))        
         self.assertEqual(el_2.bounds, DisplayBounds(20, 230, 500, 200))        
         self.assertEqual(el_3.bounds, DisplayBounds(20, 430, 500, 200))        

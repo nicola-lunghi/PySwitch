@@ -24,7 +24,7 @@ with patch.dict(sys.modules, {
         "lib.pyswitch.misc": MockMisc
     }):
        
-        from lib.pyswitch.ui.ui import DisplayElement, HierarchicalDisplayElement
+        from lib.pyswitch.ui.ui import DisplayElement
         from lib.pyswitch.ui.UiController import UiController
 
         from gc import gc_mock_data
@@ -62,7 +62,7 @@ class TestControllerUiSetup(unittest.TestCase):
 
         ui = MockUiController(
             splash_callback = MockSplashCallback(
-                output = HierarchicalDisplayElement(
+                output = DisplayElement(
                     children = [
                         element_1,
                         element_2,

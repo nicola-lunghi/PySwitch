@@ -1,6 +1,10 @@
-from lib.pyswitch.ui.elements import HierarchicalDisplayElement
 from lib.pyswitch.ui.ui import DisplayBounds, DisplayElement
 from lib.pyswitch.misc import Updateable
+
+def DisplayBoundsRepr(self):
+    return repr(self.x) + " " + repr(self.y) + " " + repr(self.width) + " " + repr(self.height)
+
+DisplayBounds.__repr__ = DisplayBoundsRepr
 
 
 class MockUpdateableDisplayElement(DisplayElement, Updateable):
@@ -13,26 +17,17 @@ class MockUpdateableDisplayElement(DisplayElement, Updateable):
         self.num_update_calls += 1
 
 
-class MockHierarchicalDisplayElement(HierarchicalDisplayElement):
+class MockDisplayElement(DisplayElement):
     def __init__(self, bounds = DisplayBounds(), name = "", id = 0, children = None):
         super().__init__(bounds = bounds, name = name, id = id, children = children)
 
         self.num_print_calls = 0
         self.num_init_calls = 0
-        self.num_bounds_changed_calls = 0
-
-    def print_debug_info(self, indentation = 0):
-        self.num_print_calls += 1
 
     def init(self, ui, appl):
         super().init(ui, appl)
 
         self.num_init_calls += 1
-
-    def bounds_changed(self):
-        super().bounds_changed()
-        
-        self.num_bounds_changed_calls += 1
 
 
 class MockST7789:

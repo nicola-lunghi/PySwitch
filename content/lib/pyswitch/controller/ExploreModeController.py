@@ -1,8 +1,8 @@
 from .FootSwitchController import FootSwitchController
 from .callbacks import Callback
 from .actions import Action
-from ..ui.elements import DisplayLabel, DisplaySplitContainer
-from ..ui.ui import HierarchicalDisplayElement
+from ..ui.elements import DisplayLabel, DisplayElement
+from ..ui.DisplaySplitContainer import DisplaySplitContainer
 from ..misc import Updater, Colors, do_print
 
 # Action to explore switch GPIO assignments (used internally only in explore mode!)
@@ -114,7 +114,7 @@ class ExploreModeController(Updater):
     def __setup_ui(self):
         bounds = self.ui.bounds.clone()
 
-        root = HierarchicalDisplayElement(
+        root = DisplayElement(
             bounds = bounds
         )
 
@@ -306,21 +306,3 @@ class ExploreModeController(Updater):
 
         return ret
     
-    # On a switch instance, set the color indicating whether it switches up or down
-    #def _indicate_action_color(self, switch):
-    #    for action in switch.config["actions"]:
-    #        step = action.config["step"]
-
-    #        if step > 0:
-    #            switch.color = Colors.GREEN
-    #            switch.brightness = 0.01
-
-    #        elif step < 0:
-    #            switch.color = Colors.ORANGE
-    #            switch.brightness = 0.01
-
-    #        else:
-    #            switch.brightness = 0
-
-    #        return
-

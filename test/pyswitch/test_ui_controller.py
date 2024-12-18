@@ -165,12 +165,12 @@ class TestUiController(unittest.TestCase):
         display_driver = MockDisplayDriver(w = 300, h = 400, init = True)
 
         element_1 = DisplayElement(id = 1)
-        element_2 = HierarchicalDisplayElement(id = 2)
+        element_2 = DisplayElement(id = 2)
 
         element_3 = MockUpdateableDisplayElement(id = 3)
         element_2.add(element_3)
 
-        display = HierarchicalDisplayElement(
+        display = DisplayElement(
             children = [
                 None,
                 element_1,

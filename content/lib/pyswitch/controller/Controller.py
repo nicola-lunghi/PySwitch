@@ -1,7 +1,6 @@
 from gc import collect, mem_free
 
 from .FootSwitchController import FootSwitchController
-from .RuntimeMeasurement import RuntimeMeasurement
 from .actions import Action
 from .Client import Client, BidirectionalClient
 from ..misc import Updater, PeriodCounter, get_option, do_print, format_size, fill_up_to
@@ -52,16 +51,21 @@ class Controller(Updater): #ClientRequestListener
         # Max. number of MIDI messages being parsed before the next switch state evaluation
         self.__max_consecutive_midi_msgs = get_option(config, "maxConsecutiveMidiMessages", 10)   
 
-        # Statistical measurement for tick time (always active)
-        self.__init_measurement(get_option(config, "debugStatsInterval", update_interval))
+        # Print debug info        
+        self.__debug_stats = get_option(config, "debugStats", False)        
+
+        # Statistical measurement for tick time
+        if self.__debug_stats:
+            from .RuntimeMeasurement import RuntimeMeasurement
+
+            self.__measurement_tick_time = RuntimeMeasurement(get_option(config, "debugStatsInterval", update_interval))
+            self.__measurement_tick_time.add_listener(self)
+            self.add_updateable(self.__measurement_tick_time)            
 
         # Limit of minimum free memory before low_memory_warning is set to True (the check is done before ticks
         # are running so this should be enough to operate all configurations imaginable. Normally you need about 
         # 10-15k from there, so 25k is enough headroom)
         self.__memory_warn_limit = get_option(config, "memoryWarnLimitBytes", 1024 * 15)  # 15kB
-
-        # Print debug info        
-        self.__debug_stats = get_option(config, "debugStats", False)        
 
         # Clear MIDI buffers on startup
         self.__clear_buffer = get_option(config, "clearBuffers", True)
@@ -134,7 +138,8 @@ class Controller(Updater): #ClientRequestListener
     # Single tick in the processing loop. Must return True to keep the loop alive.
     def tick(self):
         # If enabled, remember the tick starting time for statistics
-        self.__measurement_tick_time.start()       
+        if self.__debug_stats:
+            self.__measurement_tick_time.start()       
 
         # Update all Updateables in periodic intervals, less frequently than every tick.        
         if self.period.exceeded:
@@ -146,7 +151,8 @@ class Controller(Updater): #ClientRequestListener
         self.__receive_midi_messages()
 
         # Output statistical info if enabled
-        self.__measurement_tick_time.finish()        
+        if self.__debug_stats:
+            self.__measurement_tick_time.finish()        
 
         return True
 
@@ -235,34 +241,8 @@ class Controller(Updater): #ClientRequestListener
 
             action.reset()
 
-    # Resets all display areas
-    def reset_display_areas(self):   # pragma: no cover
-        pass
-
-    # Statistical measurement for tick time (always active)
-    def __init_measurement(self, interval_millis):
-        self.__measurement_tick_time = RuntimeMeasurement(interval_millis = interval_millis, name = "Tick")
-        self.__measurement_tick_time.add_listener(self)
-        self.add_updateable(self.__measurement_tick_time)
-
-        #self.__measurement_midi_jitter = RuntimeMeasurement(interval_millis = interval_millis, name = "MIDI Jitter")
-        #self.__measurement_midi_jitter.add_listener(self)
-        #self.add_updateable(self.__measurement_midi_jitter)
-
-        #self.__measurement_switch_jitter = RuntimeMeasurement(interval_millis = interval_millis, name = "Switch Jitter")
-        #self.__measurement_switch_jitter.add_listener(self)
-        #self.add_updateable(self.__measurement_switch_jitter)
-
-    # Returns a measurement by ID (currently we only support the tick time measurement)
-    def get_measurement(self, id):
-        if id == self.STAT_ID_TICK_TIME:
-            return self.__measurement_tick_time
-
     # Callback called when the measurement wants to show something
     def measurement_updated(self, measurement):
-        if not self.__debug_stats: 
-            return
-        
         collect()
         do_print(fill_up_to(str(measurement.name), 30, '.') + ": Max " + repr(measurement.value) + "ms, Avg " + repr(measurement.average) + "ms, Calls: " + repr(measurement.calls) + ", Free: " + format_size(mem_free()))
 

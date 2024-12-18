@@ -1,9 +1,10 @@
+from gc import collect
 from micropython import const
 from displayio import Group
 from adafruit_display_text import label, wrap_text_to_pixels
 from adafruit_display_shapes.rect import Rect
 
-from .ui import HierarchicalDisplayElement, DisplayBounds, DisplayElement
+from .ui import DisplayBounds, DisplayElement
 
 from ..controller.Client import BidirectionalClient
 from ..controller.Controller import Controller
@@ -84,6 +85,7 @@ class DisplayLabel(DisplayElement):
 
         # Append background, if any
         if self.__layout.back_color:
+            collect()
             self.__background = Rect(
                 x = self.bounds.x + self.__layout.stroke, 
                 y = self.bounds.y + self.__layout.stroke,
@@ -219,154 +221,88 @@ class DisplayLabel(DisplayElement):
 ###########################################################################################################################
 
 
-# Contains a list of display elements. If template_element is given, this element is
-# never used itself but cloned for creating 
-class DisplaySplitContainer(HierarchicalDisplayElement):
-    
-    HORIZONTAL = 0
-    VERTICAL = 1
+class TunerDisplay(DisplayElement):
 
-    def __init__(self, direction = 0, bounds = DisplayBounds(), name = "", id = 0, children = None):
-        super().__init__(bounds = bounds, name = name, id = id, children = children)
+    # DisplayElement for the deviance bar (made local to save memory)
+    class _TunerDevianceDisplay(DisplayElement):
 
-        self.direction = direction
-        
-        self.bounds_changed()
-    
-    # Add a child element
-    def add(self, child):
-        super().add(child)
-        self.bounds_changed()
+        def __init__(self, 
+                    bounds, 
+                    zoom,
+                    width, 
+                    color_in_tune,
+                    color_out_of_tune,
+                    color_neutral,
+                    calibration_high,
+                    calibration_low,
+                    id = 0
+            ):
+            DisplayElement.__init__(self, bounds = bounds, id = id)
 
-    # Sets a child element at the given index
-    #def set(self, element, index):
-    #    super().set(element, index)
-    #    self.bounds_changed()
+            self.width = width
+            self.__zoom = zoom
 
-    # Update dimensions of all contained elements
-    def bounds_changed(self):
-        super().bounds_changed()
-        
-        active_children = [x for x in self.children if x != None]
+            self.__color_in_tune = color_in_tune
+            self.__color_out_of_tune = color_out_of_tune
+            self.__color_neutral = color_neutral
+            self.__calibration_high = calibration_high
+            self.__calibration_low = calibration_low
 
-        if len(active_children) == 0:
-            return
-        
-        bounds = self.bounds
-
-        # Currently, only horizontally placed segments are possible. May be changed by adding
-        # a parameter.
-        if self.direction == DisplaySplitContainer.HORIZONTAL:
-            # Horizontal
-            slot_width = int(bounds.width / len(active_children))
-
-            for i in range(len(active_children)):
-                active_children[i].bounds = DisplayBounds(
-                    bounds.x + i * slot_width,
-                    bounds.y,
-                    slot_width,
-                    bounds.height
-                )
-        else:
-            # Vertical
-            slot_height = int(bounds.height / len(active_children))
-
-            for i in range(len(active_children)):
-                active_children[i].bounds = DisplayBounds(
-                    bounds.x,
-                    bounds.y + i * slot_height,
-                    bounds.width,
-                    slot_height
-                )
-
-
-###########################################################################################################################
-
-
-# Defines what to show as "in tune" (green). Aligned to a PolyTune tuner.
-IN_TUNE_ABOVE = const(7935)  # = 7945 - 10;  109.9 Hz;
-IN_TUNE_BELOW = const(8444)  # = 8434 + 10;  110.1 Hz;
-
-
-class TunerDevianceDisplay(DisplayElement):
-
-    def __init__(self, 
-                 bounds, 
-                 zoom,
-                 width, 
-                 color_in_tune,
-                 color_out_of_tune,
-                 color_neutral,
-                 calibration_high,
-                 calibration_low,
-                 id = 0
-        ):
-        DisplayElement.__init__(self, bounds = bounds, id = id)
-
-        self.width = width
-        self.__zoom = zoom
-
-        self.__color_in_tune = color_in_tune
-        self.__color_out_of_tune = color_out_of_tune
-        self.__color_neutral = color_neutral
-        self.__calibration_high = calibration_high
-        self.__calibration_low = calibration_low
-
-        self.__current_color = None
-        self.in_tune = False
-
-    def init(self, ui, appl):
-        DisplayElement.init(self, ui, appl)
-        
-        self.__marker_intune = Rect(
-            x = int((self.bounds.width - self.width) * 0.5),
-            y = self.bounds.y,
-            width = self.width,
-            height = self.bounds.height,
-            fill = self.__color_neutral
-        )
-
-        ui.splash.append(self.__marker_intune)
-
-        self.__marker = Rect(
-            x = int((self.bounds.width - self.width) * 0.5),
-            y = self.bounds.y,
-            width = self.width,
-            height = self.bounds.height,
-            fill = self.__color_in_tune
-        )
-        self.__current_color = self.__marker.fill
-
-        ui.splash.append(self.__marker)
-
-    # Sets deviance value in range [0..16383]
-    def set(self, value):
-        value_scaled = value
-        if self.__zoom != 1:
-            value_scaled = max(-8192, min(int((value - 8192) * self.__zoom), 8192)) + 8191
-
-        self.__marker.x = int((self.bounds.width - self.width) * value_scaled / 16384)
-
-        if value >= self.__calibration_low and value <= self.__calibration_high:
-            self.in_tune = True
-            self.set_color(self.__color_in_tune)
-        else:
+            self.__current_color = None
             self.in_tune = False
-            self.set_color(self.__color_out_of_tune)
 
-    # Sets the color
-    def set_color(self, color):
-        if self.__current_color == color:
-            return
-        
-        self.__current_color = color
-        self.__marker.fill = color
+        def init(self, ui, appl):
+            DisplayElement.init(self, ui, appl)
+            
+            collect()
+
+            self.__marker_intune = Rect(
+                x = int((self.bounds.width - self.width) * 0.5),
+                y = self.bounds.y,
+                width = self.width,
+                height = self.bounds.height,
+                fill = self.__color_neutral
+            )
+
+            ui.splash.append(self.__marker_intune)
+
+            self.__marker = Rect(
+                x = int((self.bounds.width - self.width) * 0.5),
+                y = self.bounds.y,
+                width = self.width,
+                height = self.bounds.height,
+                fill = self.__color_in_tune
+            )
+            self.__current_color = self.__marker.fill
+
+            ui.splash.append(self.__marker)
+
+        # Sets deviance value in range [0..16383]
+        def set(self, value):
+            value_scaled = value
+            if self.__zoom != 1:
+                value_scaled = max(-8192, min(int((value - 8192) * self.__zoom), 8192)) + 8191
+
+            self.__marker.x = int((self.bounds.width - self.width) * value_scaled / 16384)
+
+            if value >= self.__calibration_low and value <= self.__calibration_high:
+                self.in_tune = True
+                self.set_color(self.__color_in_tune)
+            else:
+                self.in_tune = False
+                self.set_color(self.__color_out_of_tune)
+
+        # Sets the color
+        def set_color(self, color):
+            if self.__current_color == color:
+                return
+            
+            self.__current_color = color
+            self.__marker.fill = color
 
 
-###########################################################################################################################
+    ##################################################################################################
 
-
-class TunerDisplay(HierarchicalDisplayElement):
 
     def __init__(self, 
                  mapping_note, 
@@ -384,7 +320,7 @@ class TunerDisplay(HierarchicalDisplayElement):
                  calibration_low = 8192 - 350,             # Threshold value above which the note is out of tune
                  note_names = None                         # If set, this must be a tuple or list of 12 note name strings starting at C.
         ):
-        HierarchicalDisplayElement.__init__(self, bounds = bounds)
+        DisplayElement.__init__(self, bounds = bounds)
 
         self.__mapping_note = mapping_note
         self.__mapping_deviance = mapping_deviance
@@ -402,8 +338,13 @@ class TunerDisplay(HierarchicalDisplayElement):
         self.add(self.label_note)
 
         if self.__mapping_deviance:
-            self.deviance = TunerDevianceDisplay(
-                bounds = bounds.bottom(deviance_height),
+            self.deviance = self._TunerDevianceDisplay(
+                bounds = DisplayBounds(
+                    bounds.x,
+                    bounds.y + bounds.height - int(deviance_height),
+                    bounds.width,
+                    int(deviance_height)
+                ),
                 width = deviance_width,
                 zoom = deviance_zoom,
                 color_in_tune = color_in_tune,
@@ -419,7 +360,7 @@ class TunerDisplay(HierarchicalDisplayElement):
 
     # We need access to the client, so we store appl here
     def init(self, ui, appl):
-        HierarchicalDisplayElement.init(self, ui, appl)
+        DisplayElement.init(self, ui, appl)
 
         self.__appl = appl
         
@@ -493,48 +434,9 @@ class TunerDisplay(HierarchicalDisplayElement):
 ###########################################################################################################################
 
 
-# Shows a small dot indicating loop processing time (not visible when max. tick time is way below the updateInterval, warning
-# the user when tick time gets higher and shows an alert when tick time is higher than the update interval, which means that
-# the device is running on full capacity. If tick time is more than double the update interval, an even more severe alert is shown)
-class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
-
-    def __init__(self, measurement_id, bounds = DisplayBounds(), name = "", id = 0):
-        super().__init__(bounds = bounds, name = name, id = id)
-
-        self.__measurement_id = measurement_id        
-
-    # Add measurements to controller
-    def init(self, ui, appl):
-        super().init(ui, appl)
-
-        r = int(self.bounds.width / 2) if self.bounds.width > self.bounds.height else int(self.bounds.height / 2)
-        
-        self.__dot = Rect(
-            x = self.bounds.x, 
-            y = self.bounds.y,
-            width = 2 * r,
-            height = 2 * r,
-            fill = (0, 0, 0)
-        )
-        ui.splash.append(self.__dot)
-
-        self.__measurement = appl.get_measurement(self.__measurement_id)
-        self.__measurement.add_listener(self)
-
-    def measurement_updated(self, measurement):
-        tick_percentage = self.__measurement.value / self.__measurement.interval_millis
-        
-        if tick_percentage <= 1.0:
-            self.__dot.fill = (0, 0, 0)
-
-        elif tick_percentage <= 2.0:
-            self.__dot.fill = (120, 120, 0) 
-
-        else:
-            self.__dot.fill = (255, 0, 0)
-        
-
-###########################################################################################################################
+# Properties for the indicator dots
+_PERFORMANCE_INDICATOR_SIZE = const(4)
+_PERFORMANCE_INDICATOR_MARGIN = const(2)
 
 
 # Shows a small dot indicating the bidirectional protocol state (does not show anything when bidirectional 
@@ -542,7 +444,17 @@ class PerformanceIndicator(DisplayElement): #, RuntimeMeasurementListener):
 class BidirectionalProtocolState(DisplayElement, Updateable):
 
     def __init__(self, bounds = DisplayBounds(), name = "", id = 0):
-        DisplayElement.__init__(self, bounds = bounds, name = name, id = id)
+        DisplayElement.__init__(
+            self, 
+            bounds = DisplayBounds(
+                x = bounds.width - bounds.x - _PERFORMANCE_INDICATOR_SIZE - _PERFORMANCE_INDICATOR_MARGIN,
+                y = bounds.y + _PERFORMANCE_INDICATOR_MARGIN,
+                w = int(_PERFORMANCE_INDICATOR_SIZE),
+                h = int(_PERFORMANCE_INDICATOR_SIZE)
+            ), 
+            name = name, 
+            id = id
+        )
 
         self.__current_color = None
 
@@ -554,6 +466,8 @@ class BidirectionalProtocolState(DisplayElement, Updateable):
             return
 
         r = int(self.bounds.width / 2) if self.bounds.width > self.bounds.height else int(self.bounds.height / 2)
+        
+        collect()
         
         self.__dot = Rect(
             x = self.bounds.x, 
@@ -576,41 +490,3 @@ class BidirectionalProtocolState(DisplayElement, Updateable):
         self.__current_color = new_color
         self.__dot.fill = self.__current_color
             
-
-###########################################################################################################################
-
-
-# Properties for the performance indicator (dot)
-_PERFORMANCE_INDICATOR_SIZE = const(5)
-_PERFORMANCE_INDICATOR_MARGIN = const(2)
-
-
-# Performance indicator (dot). Will be placed at the right upper corner of the passed bounds.
-def PERFORMANCE_DOT(parent_bounds):
-    return PerformanceIndicator(        
-        measurement_id = Controller.STAT_ID_TICK_TIME,
-        #name = "PerformanceDot",
-        bounds = parent_bounds.top(
-                _PERFORMANCE_INDICATOR_SIZE
-            ).right(
-                _PERFORMANCE_INDICATOR_SIZE
-            ).translated(
-                - _PERFORMANCE_INDICATOR_MARGIN, 
-                _PERFORMANCE_INDICATOR_MARGIN
-            )
-    )
-
-# Bidirectional protocol state indicator (dot). Will be placed at the right upper corner of the passed bounds.
-def BIDIRECTIONAL_PROTOCOL_STATE_DOT(parent_bounds):
-    return BidirectionalProtocolState(        
-        #name = "ProtocolDot",
-        bounds = parent_bounds.top(
-                _PERFORMANCE_INDICATOR_SIZE
-            ).right(
-                _PERFORMANCE_INDICATOR_SIZE
-            ).translated(
-                - _PERFORMANCE_INDICATOR_MARGIN, 
-                _PERFORMANCE_INDICATOR_MARGIN
-            )
-    )
-
