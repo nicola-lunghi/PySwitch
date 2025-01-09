@@ -7,10 +7,10 @@
 from micropython import const
 from pyswitch.misc import DEFAULT_LABEL_COLOR #, Colors
 
-from pyswitch.ui.elements import DisplaySplitContainer, DisplayBounds
-from pyswitch.ui.elements import DisplayLabel, BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
-from pyswitch.ui.ui import HierarchicalDisplayElement
+from pyswitch.ui.ui import DisplayElement, DisplayBounds
+from pyswitch.ui.elements import DisplayLabel, BidirectionalProtocolState
 from pyswitch.controller.callbacks import Callback
+
 from pyswitch.clients.kemper import KemperRigNameCallback, TunerDisplayCallback, KemperMappings
 
 #############################################################################################################################################
@@ -22,19 +22,48 @@ _ACTION_LABEL_LAYOUT = {
     "stroke": 1
 }
 
-DISPLAY_HEADER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_HEADER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_HEADER_3 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_FOOTER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_FOOTER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_FOOTER_3 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-
 #############################################################################################################################################
 
 # Some only locally used constants
 _DISPLAY_WIDTH = const(240)
 _DISPLAY_HEIGHT = const(240)
+_SLOT_WIDTH = const(80)                  # Slot width on the display
 _SLOT_HEIGHT = const(40)                 # Slot height on the display
+_FOOTER_Y = const(200)
+_RIG_NAME_HEIGHT = const(110)
+_BANK_NAME_HEIGHT = const(50)
+
+#############################################################################################################################################
+
+# Header
+DISPLAY_HEADER_1 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(0, 0, _SLOT_WIDTH, _SLOT_HEIGHT)
+)
+DISPLAY_HEADER_2 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(_SLOT_WIDTH, 0, _SLOT_WIDTH, _SLOT_HEIGHT)
+)
+DISPLAY_HEADER_3 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(_SLOT_WIDTH * 2, 0, _SLOT_WIDTH, _SLOT_HEIGHT)
+)
+
+# Footer
+DISPLAY_FOOTER_1 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(0, _FOOTER_Y, _SLOT_WIDTH, _SLOT_HEIGHT)
+)
+DISPLAY_FOOTER_2 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(_SLOT_WIDTH, _FOOTER_Y, _SLOT_WIDTH, _SLOT_HEIGHT)
+)
+DISPLAY_FOOTER_3 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(_SLOT_WIDTH * 2, _FOOTER_Y, _SLOT_WIDTH, _SLOT_HEIGHT)
+)
+
+#############################################################################################################################################
 
 class _BankNameCallback(Callback):
     def __init__(self):
@@ -84,39 +113,31 @@ class _BankNameCallback(Callback):
             return "Bank " + bank_display + " - " + amp_name_display
    
 
-############################################################################################################################################
-# The DisplayBounds class is used to easily layout the default display in a subtractive way. Initialize it with all available space:
-_display_bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT)
+##############################################################################################################################################
 
-_bounds = _display_bounds.clone()
 
 Splashes = TunerDisplayCallback(
-    splash_default = HierarchicalDisplayElement(
-        bounds = _display_bounds,
+    splash_default = DisplayElement(
+        bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
         children = [
-            # Header area (referenced by ID in the action configurations)
-            DisplaySplitContainer(
-                bounds = _bounds.remove_from_top(_SLOT_HEIGHT),
-                children = [
-                    DISPLAY_HEADER_1,
-                    DISPLAY_HEADER_2,
-                    DISPLAY_HEADER_3
-                ]
-            ),
+            # Header area 
+            DISPLAY_HEADER_1,
+            DISPLAY_HEADER_2,
+            DISPLAY_HEADER_3,
 
-            # Footer area (referenced by ID in the action configurations)
-            DisplaySplitContainer(
-                bounds = _bounds.remove_from_bottom(_SLOT_HEIGHT),
-                children = [
-                    DISPLAY_FOOTER_1,
-                    DISPLAY_FOOTER_2,
-                    DISPLAY_FOOTER_3
-                ]
-            ),
+            # Footer area 
+            DISPLAY_FOOTER_1,
+            DISPLAY_FOOTER_2,
+            DISPLAY_FOOTER_3,
 
-            # Bank/Amp name
+            # Bank name
             DisplayLabel(
-                bounds = _bounds.remove_from_bottom(50),
+                bounds = DisplayBounds(
+                    0, 
+                    _SLOT_HEIGHT + _RIG_NAME_HEIGHT,
+                    _DISPLAY_WIDTH,
+                    _BANK_NAME_HEIGHT
+                ),
                 layout = {
                     "font": "/fonts/H20.pcf",
                     "maxTextWidth": 230, 
@@ -126,22 +147,28 @@ Splashes = TunerDisplayCallback(
 
             # Rig name
             DisplayLabel(
-                bounds = _bounds,
+                bounds = DisplayBounds(
+                    0, 
+                    _SLOT_HEIGHT,
+                    _DISPLAY_WIDTH,
+                    _RIG_NAME_HEIGHT
+                ),
                 layout = {
                     "font": "/fonts/PTSans-NarrowBold-40.pcf",
                     "lineSpacing": 0.8,
-                    "maxTextWidth": 230,
+                    "maxTextWidth": 220,
                     "text": KemperRigNameCallback.DEFAULT_TEXT,
                 },
                 callback = KemperRigNameCallback()
             ),
 
-
             # Bidirectional protocol state indicator (dot)
-            BIDIRECTIONAL_PROTOCOL_STATE_DOT(_bounds.translated(0, -130)),
-
-            # Performance indicator (dot)
-            PERFORMANCE_DOT(_bounds.translated(0, -123)),
+            BidirectionalProtocolState(DisplayBounds(
+                0, 
+                _SLOT_HEIGHT,
+                _DISPLAY_WIDTH,
+                _RIG_NAME_HEIGHT
+            ))
         ]
     )
 )

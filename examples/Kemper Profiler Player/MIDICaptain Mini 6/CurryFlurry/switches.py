@@ -5,10 +5,6 @@
 ##############################################################################################################################################
  
 from pyswitch.hardware.Hardware import Hardware
-
-#from pyswitch.misc import Colors
-from pyswitch.controller.actions.actions import HoldAction
-
 from pyswitch.clients.kemper import KemperActionDefinitions, RIG_SELECT_DISPLAY_TARGET_RIG
 
 
@@ -41,17 +37,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_3,
         "actions": [
-            HoldAction({
-                "actions": [
-                    KemperActionDefinitions.EFFECT_BUTTON(
-                        num = 2
-                    )
-                ],
-                "actionsHold": [
-                    KemperActionDefinitions.BANK_UP()
-                ]
-            })  
-        ]          
+            KemperActionDefinitions.EFFECT_BUTTON(
+                num = 2
+            )
+        ],
+        "actionsHold": [
+            KemperActionDefinitions.BANK_UP()
+        ]
     },
 
     # Switch A
@@ -80,17 +72,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_C,
         "actions": [
-            HoldAction({
-                "actions": [
-                    KemperActionDefinitions.RIG_SELECT(
-                        rig = 3,
-                        display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
-                    )
-                ],
-                "actionsHold": [
-                    KemperActionDefinitions.BANK_DOWN()            
-                ]
-            })
+            KemperActionDefinitions.RIG_SELECT(
+                rig = 3,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ],
+        "actionsHold": [
+            KemperActionDefinitions.BANK_DOWN()            
         ]
     }
 ]

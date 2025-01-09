@@ -7,9 +7,8 @@
 from micropython import const
 from pyswitch.misc import DEFAULT_LABEL_COLOR #, Colors
 
-from pyswitch.ui.elements import DisplaySplitContainer, DisplayBounds
-from pyswitch.ui.elements import DisplayLabel, BIDIRECTIONAL_PROTOCOL_STATE_DOT, PERFORMANCE_DOT
-from pyswitch.ui.ui import HierarchicalDisplayElement
+from pyswitch.ui.ui import DisplayElement, DisplayBounds
+from pyswitch.ui.elements import DisplayLabel, BidirectionalProtocolState
 
 from pyswitch.clients.kemper import KemperRigNameCallback, TunerDisplayCallback
 
@@ -34,89 +33,82 @@ _ACTION_LABEL_LAYOUT_SMALL = {
 # Some only locally used constants
 _DISPLAY_WIDTH = const(240)
 _DISPLAY_HEIGHT = const(240)
+_SLOT_WIDTH = const(120)                 # Slot width on the display
 _SLOT_HEIGHT = const(40)                 # Slot height on the display
+_FOOTER_Y = const(200)
+_RIG_NAME_HEIGHT = const(160)
 
 #############################################################################################################################################
 
-# The DisplayBounds class is used to easily layout the default display in a subtractive way. Initialize it with all available space:
-_display_bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT)
-
-# Default display
-_bounds_default = _display_bounds.clone()
-
-_contents_default = []
-
-# Header area (referenced by ID in the action configurations)
-DISPLAY_HEADER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_HEADER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-
-_contents_default.append(
-    DisplaySplitContainer(
-        bounds = _bounds_default.remove_from_top(_SLOT_HEIGHT),
-        children = [
-            DISPLAY_HEADER_1,
-            DISPLAY_HEADER_2
-        ]
-    )
+# Header
+DISPLAY_HEADER_1 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(0, 0, _SLOT_WIDTH, _SLOT_HEIGHT)
 )
-
-# Footer area (referenced by ID in the action configurations)
-DISPLAY_FOOTER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_FOOTER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-
-_contents_default.append(
-    DisplaySplitContainer(
-        bounds = _bounds_default.remove_from_bottom(_SLOT_HEIGHT),
-        children = [
-            DISPLAY_FOOTER_1,
-            DISPLAY_FOOTER_2
-        ]
-    )
+DISPLAY_HEADER_2 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(_SLOT_WIDTH, 0, _SLOT_WIDTH, _SLOT_HEIGHT)
 )
-
-# Extra display labels for switches 3 and C
-_bounds_switch_c = _bounds_default.top(20).right(60)
-
-DISPLAY_SWITCH_3 = DisplayLabel(
+DISPLAY_HEADER_3 = DisplayLabel(
     layout = _ACTION_LABEL_LAYOUT_SMALL,
-    bounds = _bounds_switch_c
+    bounds = DisplayBounds(_DISPLAY_WIDTH - 60, _SLOT_HEIGHT, 60, 20)
 )
 
-_contents_default.append(DISPLAY_SWITCH_3)
-
-DISPLAY_SWITCH_C = DisplayLabel(
+# Footer
+DISPLAY_FOOTER_1 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(0, _FOOTER_Y, _SLOT_WIDTH, _SLOT_HEIGHT)
+)
+DISPLAY_FOOTER_2 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(_SLOT_WIDTH, _FOOTER_Y, _SLOT_WIDTH, _SLOT_HEIGHT)
+)
+DISPLAY_FOOTER_3 = DisplayLabel(
     layout = _ACTION_LABEL_LAYOUT_SMALL,
-    bounds = _bounds_default.bottom(20).right(60)
+    bounds = DisplayBounds(_DISPLAY_WIDTH - 60, _DISPLAY_HEIGHT - _SLOT_HEIGHT - 20, 60, 20)
 )
-
-_contents_default.append(DISPLAY_SWITCH_C)
-    
-# Rig name
-_contents_default.append(
-    DisplayLabel(
-        bounds = _bounds_default,   # Takes what is left over
-
-        layout = {
-            "font": "/fonts/PTSans-NarrowBold-40.pcf",
-            "lineSpacing": 0.8,
-            "maxTextWidth": 220,
-            "text": KemperRigNameCallback.DEFAULT_TEXT,
-        },
-
-        callback = KemperRigNameCallback()
-    )
-)
-
-# Bidirectional protocol state indicator (dot)
-_contents_default.append(BIDIRECTIONAL_PROTOCOL_STATE_DOT(_bounds_switch_c.translated(0, 20)))
-
-# Performance indicator (dot)
-_contents_default.append(PERFORMANCE_DOT(_bounds_switch_c.translated(0, 27)))
 
 
 Splashes = TunerDisplayCallback(
-    splash_default = HierarchicalDisplayElement(
-        bounds = _bounds_default,
-        children = _contents_default
+    splash_default = DisplayElement(
+        bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
+        children = [
+            # Header area (referenced by ID in the action configurations)
+            DISPLAY_HEADER_1,
+            DISPLAY_HEADER_2,
+            DISPLAY_HEADER_3,
+
+            # Footer area (referenced by ID in the action configurations)
+            DISPLAY_FOOTER_1,
+            DISPLAY_FOOTER_2,
+            DISPLAY_FOOTER_3,
+
+            # Rig name
+            DisplayLabel(
+                bounds = DisplayBounds(
+                    0, 
+                    _SLOT_HEIGHT,
+                    _DISPLAY_WIDTH,
+                    _RIG_NAME_HEIGHT
+                ),
+
+                layout = {
+                    "font": "/fonts/PTSans-NarrowBold-40.pcf",
+                    "lineSpacing": 0.8,
+                    "maxTextWidth": 220,
+                    "text": KemperRigNameCallback.DEFAULT_TEXT,
+                },
+
+                callback = KemperRigNameCallback()
+            ),
+
+            # Bidirectional protocol state indicator (dot)
+            BidirectionalProtocolState(DisplayBounds(
+                0, 
+                _SLOT_HEIGHT,
+                _DISPLAY_WIDTH - 60,
+                _RIG_NAME_HEIGHT
+            ))
+        ]
     )
 )

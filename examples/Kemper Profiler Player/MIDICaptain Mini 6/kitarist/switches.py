@@ -7,9 +7,8 @@
 from pyswitch.hardware.Hardware import Hardware
 
 #from pyswitch.misc import Colors
-from pyswitch.controller.actions.actions import PushButtonAction, HoldAction
 
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
+from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, RIG_SELECT_DISPLAY_TARGET_RIG #, KemperMappings
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
 
@@ -20,59 +19,47 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_1,
         "actions": [
-            HoldAction({
-                "actions": [
-                    KemperActionDefinitions.RIG_SELECT(
-                        rig = 1,
-                        display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
-                    )
-                ],
-                "actionsHold": [
-                    KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
-                        display = DISPLAY_HEADER_1
-                    )   
-                ]    
-            }) 
-        ]
+            KemperActionDefinitions.RIG_SELECT(
+                rig = 1,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ],
+        "actionsHold": [
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
+                display = DISPLAY_HEADER_1
+            )   
+        ]    
     },
 
     # Switch 2
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_2,
         "actions": [
-            HoldAction({
-                "actions": [
-                    KemperActionDefinitions.RIG_SELECT(
-                        rig = 2,
-                        display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
-                    )
-                ],
-                "actionsHold": [
-                    KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_D,
-                        display = DISPLAY_HEADER_2
-                    )
-                ]    
-            }) 
-        ]
+            KemperActionDefinitions.RIG_SELECT(
+                rig = 2,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ],
+        "actionsHold": [
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_D,
+                display = DISPLAY_HEADER_2
+            )
+        ]    
     },
 
     # Switch 3
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_3,
         "actions": [
-            HoldAction({
-                "actions": [
-                    KemperActionDefinitions.RIG_SELECT(
-                        rig = 3,
-                        display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
-                    )
-                ],
-                "actionsHold": [
-                    KemperActionDefinitions.TUNER_MODE()
-                ]
-            }) 
+            KemperActionDefinitions.RIG_SELECT(
+                rig = 3,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ],
+        "actionsHold": [
+            KemperActionDefinitions.TUNER_MODE()
         ]
     },
 
@@ -80,42 +67,34 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_A,
         "actions": [
-            HoldAction({
-                "actions": [
-                    KemperActionDefinitions.RIG_SELECT(
-                        rig = 4,
-                        display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
-                    )
-                ],
-                "actionsHold": [
-                    KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD,
-                        display = DISPLAY_FOOTER_1
-                    )
-                ]    
-            })
-        ]
+            KemperActionDefinitions.RIG_SELECT(
+                rig = 4,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ],
+        "actionsHold": [
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD,
+                display = DISPLAY_FOOTER_1
+            )
+        ]    
     },
     
     # Switch B
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_B,
         "actions": [
-            HoldAction({
-                "actions": [
-                    KemperActionDefinitions.RIG_SELECT(
-                        rig = 5,
-                        display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
-                    )
-                ],
-                "actionsHold": [
-                    KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
-                        display = DISPLAY_FOOTER_2
-                    )
-                ]    
-            }) 
-        ]
+            KemperActionDefinitions.RIG_SELECT(
+                rig = 5,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ],
+        "actionsHold": [
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
+                display = DISPLAY_FOOTER_2
+            )
+        ]    
     },
 
     # Switch C

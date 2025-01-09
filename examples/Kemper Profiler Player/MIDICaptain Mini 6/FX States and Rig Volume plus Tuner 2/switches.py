@@ -6,11 +6,9 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-from pyswitch.misc import Colors
-from pyswitch.controller.actions.actions import HoldAction
-
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
-from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_SWITCH_3, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_SWITCH_C
+#from pyswitch.misc import Colors
+from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot #, KemperMappings
+from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_HEADER_3, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_FOOTER_3
 
 
 # Defines the switch assignments
@@ -43,7 +41,7 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_3,
         "actions": [
             KemperActionDefinitions.TUNER_MODE(
-                display = DISPLAY_SWITCH_3
+                display = DISPLAY_HEADER_3
             )
         ]
     },
@@ -77,7 +75,7 @@ Switches = [
             KemperActionDefinitions.RIG_VOLUME_BOOST(
                 boost_volume = 0.75,    # Value im [0..1] representing the Rig Volume Knob. Examples: 0.5 = 0dB (no boost), 0.75 = +6dB, 1.0 = +12dB
                 text = "Boost",
-                display = DISPLAY_SWITCH_C
+                display = DISPLAY_FOOTER_3
             )        
         ]
     }

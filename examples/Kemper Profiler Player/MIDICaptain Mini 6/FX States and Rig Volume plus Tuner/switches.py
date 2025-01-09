@@ -6,10 +6,8 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-from pyswitch.misc import Colors
-from pyswitch.controller.actions.actions import HoldAction
-
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
+#from pyswitch.misc import Colors
+from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot #, KemperMappings
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_HEADER_3, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_FOOTER_3
 
 

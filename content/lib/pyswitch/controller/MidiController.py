@@ -36,6 +36,10 @@ from adafruit_midi.system_exclusive import SystemExclusive
 
 # Describes a routing from source to target, which must be MidiDevices definitions.
 class MidiRouting:
+
+    # Used as source/target for routings to/from the application itself
+    APPLICATION = 1
+
     def __init__(self, source, target):
         # Source MIDI device (can be either a AdafruitXXXMidiDevice or 
         # MidiController.PYSWITCH for the application itself)
@@ -54,14 +58,11 @@ class MidiRouting:
 # the application manually!
 class MidiController:
 
-    # Used as source/target for routings to/from the application itself
-    APPLICATION = 1
-
     # routings must be a list of MidiRouting instances
     def __init__(self, routings):
-        self.__routings_from_appl = [x for x in routings if x.source == MidiController.APPLICATION]
-        self.__routings_to_appl = [x for x in routings if x.target == MidiController.APPLICATION]
-        self.__routings_external = [x for x in routings if x.source != MidiController.APPLICATION and x.target != MidiController.APPLICATION]
+        self.__routings_from_appl = [x for x in routings if x.source == MidiRouting.APPLICATION]
+        self.__routings_to_appl = [x for x in routings if x.target == MidiRouting.APPLICATION]
+        self.__routings_external = [x for x in routings if x.source != MidiRouting.APPLICATION and x.target != MidiRouting.APPLICATION]
 
     def send(self, midi_message):
         # Send to all routings which have APPLICATION as source

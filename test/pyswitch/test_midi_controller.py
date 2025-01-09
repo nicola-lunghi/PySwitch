@@ -33,12 +33,12 @@ class TestMidiController(unittest.TestCase):
         midi = MidiController(
             routings = [
                 MidiRouting(
-                    source = MidiController.APPLICATION,
+                    source = MidiRouting.APPLICATION,
                     target = sub_midi_2
                 ),                    
                 MidiRouting(
                     source = sub_midi_1,
-                    target = MidiController.APPLICATION
+                    target = MidiRouting.APPLICATION
                 )
             ]
         )
@@ -84,11 +84,11 @@ class TestMidiController(unittest.TestCase):
         midi = MidiController(
             routings = [
                 MidiRouting(
-                    source = MidiController.APPLICATION,
+                    source = MidiRouting.APPLICATION,
                     target = sub_midi_1
                 ),                    
                 MidiRouting(
-                    source = MidiController.APPLICATION,
+                    source = MidiRouting.APPLICATION,
                     target = sub_midi_2
                 )
             ]
@@ -123,11 +123,11 @@ class TestMidiController(unittest.TestCase):
             routings = [
                 MidiRouting(
                     source = sub_midi_1,
-                    target = MidiController.APPLICATION
+                    target = MidiRouting.APPLICATION
                 ),                    
                 MidiRouting(
                     source = sub_midi_2,
-                    target = MidiController.APPLICATION
+                    target = MidiRouting.APPLICATION
                 )
             ]
         )

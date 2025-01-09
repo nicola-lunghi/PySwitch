@@ -5,7 +5,7 @@ This is the personal preset for my MIDICaptain Nano 4 which i mainly use on sess
 |            | Short Press              | Long Press                                       |  
 |------------|--------------------------|--------------------------------------------------|
 | Switch 1   | Tuner Mode               |                                                  |
-| Switch 2   | Tap Tempo                | DLY Slot: Freeze on/off, Enable, Set Mix to 100% |
+| Switch 2   | Tap Tempo                | DLY Slot: Enable slot and toggle Freeze on/off   |
 | Switch A   | Effect Slot B            | Less Reverb Mix (\*)                             |
 | Switch B   | Effect Slot C            | More Reverb Mix (\*)                             |
 

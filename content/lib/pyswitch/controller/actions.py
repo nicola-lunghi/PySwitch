@@ -187,8 +187,8 @@ class Action(Updateable):
 # Implements an abstraction layer for on/off parameters. Covers latch/momentary modes etc.
 class PushButtonAction(Action):
     
-    # ENABLE = const(0)                      # Switch the functionality on
-    # DISABLE = const(10)                    # Switch the functionality off
+    ENABLE = const(0)                      # Switch the functionality on
+    DISABLE = const(10)                    # Switch the functionality off
     LATCH = const(20)                      # Toggle state on every button push
     MOMENTARY = const(30)                  # Enable on push, disable on release
     # MOMENTARY_INVERSE = const(40)          # Disable on push, Enable on release
@@ -248,13 +248,13 @@ class PushButtonAction(Action):
     def push(self):
         mode = self.__mode
 
-        # if mode == self.ENABLE:
-        #     # Enable
-        #     self.state = True
+        if mode == self.ENABLE:
+            # Enable
+            self.state = True
 
-        # elif mode == self.DISABLE:
-        #     # Disable
-        #     self.state = False
+        elif mode == self.DISABLE:
+            # Disable
+            self.state = False
 
         if mode == self.LATCH:
             # Latch mode: Simply toggle states

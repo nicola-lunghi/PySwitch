@@ -6,10 +6,9 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-from pyswitch.misc import Colors
-from pyswitch.controller.actions.actions import HoldAction
+#from pyswitch.misc import Colors
 
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG, RIG_SELECT_DISPLAY_CURRENT_RIG
+from pyswitch.clients.kemper import KemperActionDefinitions, RIG_SELECT_DISPLAY_TARGET_RIG, RIG_SELECT_DISPLAY_CURRENT_RIG #, KemperEffectSlot, KemperMappings
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
 # Custom callback to get label text. Bank and rig come with values starting at zero (rig is in range [0..4] and bank in range [0..x] depending on your player level)

@@ -160,182 +160,182 @@ class TestActionPushButton(unittest.TestCase):
 ###################################################################################
 
 
-#     def test_enable(self):
-#         switch_1 = MockSwitch()
-#         action_1 = MockPushButtonAction({
-#             "mode": PushButtonAction.ENABLE
-#         })
+    def test_enable(self):
+        switch_1 = MockSwitch()
+        action_1 = MockPushButtonAction({
+            "mode": PushButtonAction.ENABLE
+        })
 
-#         appl = MockController(
-#             led_driver = MockNeoPixelDriver(),
-#             midi = MockMidiController(),
-#             switches = [
-#                 {
-#                     "assignment": {
-#                         "model": switch_1
-#                     },
-#                     "actions": [
-#                         action_1
-#                     ]
-#                 }
-#             ]
-#         )
+        appl = MockController(
+            led_driver = MockNeoPixelDriver(),
+            midi = MockMidiController(),
+            switches = [
+                {
+                    "assignment": {
+                        "model": switch_1
+                    },
+                    "actions": [
+                        action_1
+                    ]
+                }
+            ]
+        )
 
-#         # Build scene:
-#         # Step 1: Button pushed
-#         def prep1():
-#             switch_1.shall_be_pushed = True
-#             self.assertEqual(action_1.state, False)
+        # Build scene:
+        # Step 1: Button pushed
+        def prep1():
+            switch_1.shall_be_pushed = True
+            self.assertEqual(action_1.state, False)
 
-#         def eval1():
-#             self.assertEqual(action_1.state, True)
-#             return True
+        def eval1():
+            self.assertEqual(action_1.state, True)
+            return True
 
-#         # Step 2: Button released
-#         def prep2():
-#             switch_1.shall_be_pushed = False
-#             self.assertEqual(action_1.state, True)
+        # Step 2: Button released
+        def prep2():
+            switch_1.shall_be_pushed = False
+            self.assertEqual(action_1.state, True)
 
-#         def eval2():
-#             self.assertEqual(action_1.state, True)
-#             return True
+        def eval2():
+            self.assertEqual(action_1.state, True)
+            return True
         
-#         # Step 3: Button pushed
-#         def prep3():
-#             switch_1.shall_be_pushed = True
-#             self.assertEqual(action_1.state, True)
+        # Step 3: Button pushed
+        def prep3():
+            switch_1.shall_be_pushed = True
+            self.assertEqual(action_1.state, True)
 
-#         def eval3():
-#             self.assertEqual(action_1.state, True)
-#             return True
+        def eval3():
+            self.assertEqual(action_1.state, True)
+            return True
         
-#         # Step 4: Button released
-#         def prep4():
-#             switch_1.shall_be_pushed = False
-#             self.assertEqual(action_1.state, True)
+        # Step 4: Button released
+        def prep4():
+            switch_1.shall_be_pushed = False
+            self.assertEqual(action_1.state, True)
 
-#         def eval4():
-#             self.assertEqual(action_1.state, True)
-#             return False
+        def eval4():
+            self.assertEqual(action_1.state, True)
+            return False
 
-#         # Build scenes hierarchy
-#         appl.next_step = SceneStep(
-#             num_pass_ticks = 5,
-#             prepare = prep1,
-#             evaluate = eval1,
+        # Build scenes hierarchy
+        appl.next_step = SceneStep(
+            num_pass_ticks = 5,
+            prepare = prep1,
+            evaluate = eval1,
 
-#             next = SceneStep(
-#                 num_pass_ticks = 5,
-#                 prepare = prep2,
-#                 evaluate = eval2,
+            next = SceneStep(
+                num_pass_ticks = 5,
+                prepare = prep2,
+                evaluate = eval2,
             
-#                 next = SceneStep(
-#                     num_pass_ticks = 5,
-#                     prepare = prep3,
-#                     evaluate = eval3,
+                next = SceneStep(
+                    num_pass_ticks = 5,
+                    prepare = prep3,
+                    evaluate = eval3,
             
-#                     next = SceneStep(
-#                         num_pass_ticks = 5,
-#                         prepare = prep4,
-#                         evaluate = eval4
-#                     )
-#                 )
-#             )
-#         )
+                    next = SceneStep(
+                        num_pass_ticks = 5,
+                        prepare = prep4,
+                        evaluate = eval4
+                    )
+                )
+            )
+        )
 
-#         # Run process
-#         appl.process()
+        # Run process
+        appl.process()
 
         
-# ###################################################################################
+###################################################################################
 
 
-#     def test_disable(self):
-#         switch_1 = MockSwitch()
-#         action_1 = MockPushButtonAction({
-#             "mode": PushButtonAction.DISABLE
-#         })
-#         action_1.state = True
+    def test_disable(self):
+        switch_1 = MockSwitch()
+        action_1 = MockPushButtonAction({
+            "mode": PushButtonAction.DISABLE
+        })
+        action_1.state = True
 
-#         appl = MockController(
-#             led_driver = MockNeoPixelDriver(),
-#             midi = MockMidiController(),
-#             switches = [
-#                 {
-#                     "assignment": {
-#                         "model": switch_1
-#                     },
-#                     "actions": [
-#                         action_1
-#                     ]
-#                 }
-#             ]
-#         )
+        appl = MockController(
+            led_driver = MockNeoPixelDriver(),
+            midi = MockMidiController(),
+            switches = [
+                {
+                    "assignment": {
+                        "model": switch_1
+                    },
+                    "actions": [
+                        action_1
+                    ]
+                }
+            ]
+        )
 
-#         # Build scene:
-#         # Step 1: Button pushed
-#         def prep1():
-#             switch_1.shall_be_pushed = True
-#             self.assertEqual(action_1.state, True)
+        # Build scene:
+        # Step 1: Button pushed
+        def prep1():
+            switch_1.shall_be_pushed = True
+            self.assertEqual(action_1.state, True)
 
-#         def eval1():
-#             self.assertEqual(action_1.state, False)
-#             return True
+        def eval1():
+            self.assertEqual(action_1.state, False)
+            return True
 
-#         # Step 2: Button released
-#         def prep2():
-#             switch_1.shall_be_pushed = False
-#             self.assertEqual(action_1.state, False)
+        # Step 2: Button released
+        def prep2():
+            switch_1.shall_be_pushed = False
+            self.assertEqual(action_1.state, False)
 
-#         def eval2():
-#             self.assertEqual(action_1.state, False)
-#             return True
+        def eval2():
+            self.assertEqual(action_1.state, False)
+            return True
         
-#         # Step 3: Button pushed
-#         def prep3():
-#             switch_1.shall_be_pushed = True
-#             self.assertEqual(action_1.state, False)
+        # Step 3: Button pushed
+        def prep3():
+            switch_1.shall_be_pushed = True
+            self.assertEqual(action_1.state, False)
 
-#         def eval3():
-#             self.assertEqual(action_1.state, False)
-#             return True
+        def eval3():
+            self.assertEqual(action_1.state, False)
+            return True
         
-#         # Step 4: Button released
-#         def prep4():
-#             switch_1.shall_be_pushed = False
-#             self.assertEqual(action_1.state, False)
+        # Step 4: Button released
+        def prep4():
+            switch_1.shall_be_pushed = False
+            self.assertEqual(action_1.state, False)
 
-#         def eval4():
-#             self.assertEqual(action_1.state, False)
-#             return False
+        def eval4():
+            self.assertEqual(action_1.state, False)
+            return False
 
-#         # Build scenes hierarchy
-#         appl.next_step = SceneStep(
-#             num_pass_ticks = 5,
-#             prepare = prep1,
-#             evaluate = eval1,
+        # Build scenes hierarchy
+        appl.next_step = SceneStep(
+            num_pass_ticks = 5,
+            prepare = prep1,
+            evaluate = eval1,
 
-#             next = SceneStep(
-#                 num_pass_ticks = 5,
-#                 prepare = prep2,
-#                 evaluate = eval2,
+            next = SceneStep(
+                num_pass_ticks = 5,
+                prepare = prep2,
+                evaluate = eval2,
             
-#                 next = SceneStep(
-#                     num_pass_ticks = 5,
-#                     prepare = prep3,
-#                     evaluate = eval3,
+                next = SceneStep(
+                    num_pass_ticks = 5,
+                    prepare = prep3,
+                    evaluate = eval3,
             
-#                     next = SceneStep(
-#                         num_pass_ticks = 5,
-#                         prepare = prep4,
-#                         evaluate = eval4
-#                     )
-#                 )
-#             )
-#         )
+                    next = SceneStep(
+                        num_pass_ticks = 5,
+                        prepare = prep4,
+                        evaluate = eval4
+                    )
+                )
+            )
+        )
 
-#         # Run process
-#         appl.process()
+        # Run process
+        appl.process()
 
         
 ###################################################################################

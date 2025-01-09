@@ -11,8 +11,9 @@ from pyswitch.controller.callbacks import Callback
 from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_HEADER_3, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_FOOTER_3
 
+##############################################################################################################################################
 
-#Allow change of switch behaviour based on rig name
+# Allow change of switch behaviour based on rig name
 class _EnableCallback(Callback):
     def __init__(self):
         Callback.__init__(self)
@@ -27,8 +28,10 @@ class _EnableCallback(Callback):
         else:
             return (action.id == 10)
         
+# Create an instance of the class which can be shared by all actions which use the callback
 _enable_callback = _EnableCallback()
 
+##############################################################################################################################################
 
 # Defines the switch assignments
 Switches = [
