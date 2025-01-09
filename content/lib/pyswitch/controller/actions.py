@@ -9,6 +9,18 @@ from ..misc import get_option, Updateable, PeriodCounter
 # inheriting from Action.
 class Action(Updateable):
     
+    class _CallbackListener:
+        def __init__(self, cb):
+            self.__cb = cb
+
+        def parameter_changed(self, mapping):
+            if self.__cb.enabled:
+                self.__cb.update_displays()
+
+        def request_terminated(self, mapping):
+            if self.__cb.enabled:
+                self.__cb.update_displays()
+
     # config: {
     #      "callback":             Callback instance to update the display and LEDs. Must contain an update_displays(action) function. Optional. 
     #
@@ -42,23 +54,22 @@ class Action(Updateable):
             self.__enable_callback.init(appl) 
 
         # Update display callback
-        that = self
-        class _CallbackListener:
-            def parameter_changed(self, mapping):
-                if that.enabled:
-                    that.update_displays()
+        # that = self
+        # class _CallbackListener:
+        #     def parameter_changed(self, mapping):
+        #         if that.enabled:
+        #             that.update_displays()
 
-            def request_terminated(self, mapping):
-                if that.enabled:
-                    that.update_displays()
+        #     def request_terminated(self, mapping):
+        #         if that.enabled:
+        #             that.update_displays()
 
         if self.callback:
-            self.callback.init(appl, _CallbackListener())
+            self.callback.init(appl, self._CallbackListener(self))
 
     @property
     def enabled(self):
-        ec = self.__enable_callback
-        return ec.enabled(self) if ec else True
+        return self.__enable_callback.enabled(self) if self.__enable_callback else True
         
     # Color of the switch segment(s) for the action (Difficult to do with multicolor, 
     # but this property is just needed to have a setter so this is not callable)
@@ -135,9 +146,8 @@ class Action(Updateable):
         if not self.enabled:
             return
         
-        cb = self.callback
-        if cb:
-            cb.update_displays(self)
+        if self.callback:
+            self.callback.update_displays(self)
     
     # Reset the action
     def reset(self):

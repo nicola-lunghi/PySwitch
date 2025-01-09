@@ -126,17 +126,15 @@ class Controller(Updater): #ClientRequestListener
 
         # Check memory usage and issue a warning if too high
         collect()
-        free_bytes = mem_free()        
-        if free_bytes < self.__memory_warn_limit:
-            do_print("LOW MEMORY: " + format_size(free_bytes))            
+        if mem_free() < self.__memory_warn_limit:
+            do_print("LOW MEMORY: " + format_size(mem_free()))            
             self.low_memory_warning = True
 
         # Consume all MIDI messages which might be still in some buffers, 
         # and start when the queue is empty.
         if self.__clear_buffer:
             while True:
-                midimsg = self.__midi.receive()
-                if not midimsg:
+                if not self.__midi.receive():
                     break
 
         # Start processing loop
@@ -176,9 +174,6 @@ class Controller(Updater): #ClientRequestListener
     def __receive_midi_messages(self):
         #self._measurement_midi_jitter.finish()
         cnt = 0
-        client = self.client
-        max_msgs = self.__max_consecutive_midi_msgs
-
         while True:
             # Detect switch state changes
             #self.__measurement_switch_jitter.finish()
@@ -189,10 +184,10 @@ class Controller(Updater): #ClientRequestListener
             midimsg = self.__midi.receive()
 
             # Process the midi message
-            client.receive(midimsg)
+            self.client.receive(midimsg)
 
             cnt = cnt + 1
-            if not midimsg or cnt > max_msgs:
+            if not midimsg or cnt > self.__max_consecutive_midi_msgs:
                 break  
 
         #self._measurement_midi_jitter.start()

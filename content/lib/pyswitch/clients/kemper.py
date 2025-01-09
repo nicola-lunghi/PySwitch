@@ -347,21 +347,24 @@ class KemperActionDefinitions:
                 color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
                 display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
         ):
-        return KemperActionDefinitions.__BANK_CHANGE(
-            mapping = KemperMappings.NEXT_BANK(),
-            offset = 1,
-            display = display,
-            id = id,
-            use_leds = use_leds,
-            enable_callback = enable_callback,
-            text = text,
-            text_callback = text_callback,
-            color = color,
-            color_callback = color_callback,
-            display_mode = display_mode,
-            dim_factor = dim_factor,
-            led_brightness = led_brightness
-        )
+        return PushButtonAction({
+            "callback": KemperActionDefinitions._BankChangeCallback(
+                mapping = KemperMappings.NEXT_BANK(),
+                offset = 1,
+                dim_factor = dim_factor,
+                display_mode = display_mode,
+                led_brightness = led_brightness,
+                color = color,
+                color_callback = color_callback,
+                text = text,
+                text_callback = text_callback
+            ),
+            "mode": PushButtonAction.ONE_SHOT,
+            "display": display,
+            "id": id,
+            "useSwitchLeds": use_leds,
+            "enableCallback": enable_callback
+        })
 
     # Previous bank (keeps rig index)
     @staticmethod
@@ -377,115 +380,18 @@ class KemperActionDefinitions:
                   color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
                   display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
         ):
-        return KemperActionDefinitions.__BANK_CHANGE(
-            mapping = KemperMappings.PREVIOUS_BANK(),
-            offset = -1,
-            display = display,
-            id = id,
-            use_leds = use_leds,
-            enable_callback = enable_callback,
-            text = text,
-            text_callback = text_callback,
-            color = color,
-            color_callback = color_callback,
-            display_mode = display_mode,
-            dim_factor = dim_factor,
-            led_brightness = led_brightness
-        )
-
-    # Internal use: Bank up or down
-    @staticmethod
-    def __BANK_CHANGE(mapping, 
-                     offset, 
-                     display, 
-                     text, 
-                     id, 
-                     use_leds, 
-                     enable_callback, 
-                     text_callback, 
-                     display_mode, 
-                     color, 
-                     color_callback, 
-                     dim_factor, 
-                     led_brightness
-        ):
-
-        # Custom callback showing current bank color
-        class BankChangeCallback(BinaryParameterCallback):
-            def __init__(self):
-                super().__init__(
-                    mapping = mapping,
-                    value_enable = 0,
-                    value_disable = 0,
-                    comparison_mode = self.NO_STATE_CHANGE
-                )
-
-            def init(self, appl, listener = None):
-                super().init(appl, listener)
-
-                if dim_factor == "off":
-                    self.__dim_factor = get_option(appl.config, "displayDimFactorOff", 0.2)
-                elif display_mode == "on":
-                    self.__dim_factor = get_option(appl.config, "displayDimFactorOn", 1)
-                else:
-                    self.__dim_factor = dim_factor
-
-                if led_brightness == "off":
-                    self.__led_brightness = get_option(appl.config, "ledBrightnessOff", 0.02)
-                elif led_brightness == "on":
-                    self.__led_brightness = get_option(appl.config, "ledBrightnessOn", 0.3)
-                else:
-                    self.__led_brightness = led_brightness
-
-            def update_displays(self, action):
-                if mapping.value == None:
-                    # Fallback to default behaviour
-                    if action.label:
-                        action.label.text = text
-                        action.label.back_color = self.dim_color(Colors.WHITE, self.__dim_factor)
-
-                    action.switch_color = Colors.WHITE
-                    action.switch_brightness = self.__led_brightness
-                    return
-                
-                # Calculate bank and rig numbers in range [0...]
-                bank = int(mapping.value / NUM_RIGS_PER_BANK)
-                rig = mapping.value % NUM_RIGS_PER_BANK
-                
-                if color_callback:
-                    bank_color = color_callback(action, bank, rig)
-                elif color:
-                    bank_color = color
-                else:
-                    bank_color = BANK_COLORS[bank % len(BANK_COLORS)] if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[(len(BANK_COLORS) + bank + offset) % len(BANK_COLORS)]
-
-                # Label text
-                if action.label:
-                    action.label.back_color = self.dim_color(bank_color, self.__dim_factor)
-
-                    if text_callback:
-                        if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                            action.label.text = text_callback(action, bank, rig)
-                        elif display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                            target_bank = bank + offset
-                            
-                            while target_bank >= NUM_BANKS:
-                                target_bank -= NUM_BANKS
-                            
-                            while target_bank < 0:
-                                target_bank += NUM_BANKS
-
-                            action.label.text = text_callback(action, target_bank, rig)
-                        else:
-                            raise Exception() #"Invalid display mode: " + repr(display_mode))
-                    else:
-                        action.label.text = text
-
-                action.switch_color = bank_color
-                action.switch_brightness = self.__led_brightness
-
         return PushButtonAction({
-            "callback": BankChangeCallback(),
+            "callback": KemperActionDefinitions._BankChangeCallback(
+                mapping = KemperMappings.PREVIOUS_BANK(),
+                offset = -1,
+                dim_factor = dim_factor,
+                display_mode = display_mode,
+                led_brightness = led_brightness,
+                color = color,
+                color_callback = color_callback,
+                text = text,
+                text_callback = text_callback
+            ),
             "mode": PushButtonAction.ONE_SHOT,
             "display": display,
             "id": id,
@@ -493,6 +399,102 @@ class KemperActionDefinitions:
             "enableCallback": enable_callback
         })
        
+    # Custom callback showing current bank color
+    class _BankChangeCallback(BinaryParameterCallback):
+        def __init__(self, 
+                     mapping, 
+                     offset,
+                     dim_factor,
+                     display_mode,
+                     led_brightness,
+                     color,
+                     color_callback,
+                     text,
+                     text_callback
+            ):            
+            super().__init__(
+                mapping = mapping,
+                value_enable = 0,
+                value_disable = 0,
+                comparison_mode = self.NO_STATE_CHANGE
+            )
+
+            self.__mapping = mapping
+            self.__dim_factor_p = dim_factor
+            self.__led_brightness_p = led_brightness
+            self.__display_mode = display_mode
+
+            self.__color = color
+            self.__color_callback = color_callback
+            self.__offset = offset
+
+            self.__text = text
+            self.__text_callback = text_callback
+
+        def init(self, appl, listener = None):
+            super().init(appl, listener)
+
+            if self.__dim_factor_p == "off":
+                self.__dim_factor = get_option(appl.config, "displayDimFactorOff", 0.2)
+            elif self.__display_mode == "on":
+                self.__dim_factor = get_option(appl.config, "displayDimFactorOn", 1)
+            else:
+                self.__dim_factor = self.__dim_factor_p
+
+            if self.__led_brightness_p == "off":
+                self.__led_brightness = get_option(appl.config, "ledBrightnessOff", 0.02)
+            elif self.__led_brightness_p == "on":
+                self.__led_brightness = get_option(appl.config, "ledBrightnessOn", 0.3)
+            else:
+                self.__led_brightness = self.__led_brightness_p
+
+        def update_displays(self, action):
+            if self.__mapping.value == None:
+                # Fallback to default behaviour
+                if action.label:
+                    action.label.text = self.__text
+                    action.label.back_color = self.dim_color(Colors.WHITE, self.__dim_factor)
+
+                action.switch_color = Colors.WHITE
+                action.switch_brightness = self.__led_brightness
+                return
+            
+            # Calculate bank and rig numbers in range [0...]
+            bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
+            rig = self.__mapping.value % NUM_RIGS_PER_BANK
+            
+            if self.__color_callback:
+                bank_color = self.__color_callback(action, bank, rig)
+            elif self.__color:
+                bank_color = self.__color
+            else:
+                bank_color = BANK_COLORS[bank % len(BANK_COLORS)] if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[(len(BANK_COLORS) + bank + self.__offset) % len(BANK_COLORS)]
+
+            # Label text
+            if action.label:
+                action.label.back_color = self.dim_color(bank_color, self.__dim_factor)
+
+                if self.__text_callback:
+                    if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
+                        action.label.text = self.__text_callback(action, bank, rig)
+
+                    elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+                        target_bank = bank + self.__offset
+                        
+                        while target_bank >= NUM_BANKS:
+                            target_bank -= NUM_BANKS
+                        
+                        while target_bank < 0:
+                            target_bank += NUM_BANKS
+
+                        action.label.text = self.__text_callback(action, target_bank, rig)
+                    else:
+                        raise Exception() #"Invalid display mode: " + repr(display_mode))
+                else:
+                    action.label.text = self.__text
+
+            action.switch_color = bank_color
+            action.switch_brightness = self.__led_brightness
 
     # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
     # the current bank. Rigs are indexed starting from one, range: [1..5].
@@ -745,124 +747,145 @@ class KemperActionDefinitions:
                     text = None                                     # Text override (if no text callback is passed)
         ):
         
-        # Mappings and values: Start with a configuration bank(_off) = None. Use a dummy rig
-        # here, as this mapping is just used for receiving current rig/bank.
-        mapping = KemperMappings.BANK_AND_RIG_SELECT(0)
-
-        if not text_callback:
-            # Default callback for text
-            def get_text(action, bank, rig):
-                if not text:
-                    return "Bank " + repr(bank + 1)
-                else:
-                    return text
-            
-            text_callback = get_text
-            
-        # Callback implementation for Rig Select, showing bank colors and rig/bank info
-        class BankSelectCallback(BinaryParameterCallback):
-            def __init__(self):
-                super().__init__(
-                    mapping = mapping
-                )
-
-                self.__current_value = -1
-                self.__current_state = -1
-
-            def init(self, appl, listener = None):
-                super().init(appl, listener)
-
-                self.__default_dim_factor_off = get_option(appl.config, "displayDimFactorOff", 0.2)
-                self.__default_led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
-                self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
-                self.__appl = appl
-
-            def state_changed_by_user(self, action):
-                if mapping.value == None:
-                    return
-                
-                curr_bank = int(mapping.value / NUM_RIGS_PER_BANK)
-                curr_rig = mapping.value % NUM_RIGS_PER_BANK                  
-                set_mapping = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
-
-                if bank_off != None:
-                    if action.state:
-                        if curr_bank != bank - 1:
-                            self.__appl.client.set(set_mapping, [bank - 1, 1, 0])
-                    else:
-                        if curr_bank != bank_off - 1:
-                            self.__appl.client.set(set_mapping, [bank_off - 1, 1, 0])
-                else:
-                    if curr_bank != bank - 1:
-                        self.__appl.client.set(set_mapping, [bank - 1, 1, 0])                    
-
-                # Request value
-                self.update()
-
-            def update_displays(self, action):
-                if mapping.value == None:
-                    if action.label:
-                        action.label.text = ""
-                        action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
-
-                    action.switch_color = Colors.WHITE
-                    action.switch_brightness = self.__default_led_brightness_off
-                    return
-                
-                # Calculate bank and rig numbers in range [0...]
-                curr_bank = int(mapping.value / NUM_RIGS_PER_BANK)
-                curr_rig = mapping.value % NUM_RIGS_PER_BANK                
-                
-                if mapping.value != self.__current_value or action.state != self.__current_state:
-                    action.feedback_state(curr_bank == (bank - 1))
-                                    
-                    self.__current_value = mapping.value
-                    self.__current_state = action.state
-
-                is_current = (curr_bank == (bank - 1))
-
-                if color != None:
-                    bank_color = color
-                elif color_callback:
-                    bank_color = color_callback(action, curr_bank, curr_rig)
-                else:
-                    bank_color = KemperActionDefinitions._get_bank_color(action, curr_bank, bank, bank_off, display_mode)
-                    
-                # Label text
-                if action.label:
-                    if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                        action.label.text = text_callback(action, curr_bank, curr_rig) 
-                        action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
-
-                    elif display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                        action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
-
-                        if is_current and bank_off != None:
-                            action.label.text = text_callback(action, bank_off - 1, curr_rig)
-                        else:
-                            action.label.text = text_callback(action, bank - 1, curr_rig)
-
-                    else:
-                        raise Exception()  #"Invalid display mode: " + repr(display_mode))
-
-                # LEDs
-                action.switch_color = bank_color
-
-                if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state:
-                    action.switch_brightness = self.__default_led_brightness_on
-                else:
-                    action.switch_brightness = self.__default_led_brightness_off
-    
-        # Finally we can create the action definition ;)
         return PushButtonAction({
             "display": display,
             "mode": PushButtonAction.LATCH,
             "id": id,
             "useSwitchLeds": use_leds,
-            "callback": BankSelectCallback(),
+            "callback": KemperActionDefinitions._BankSelectCallback(
+                mapping = KemperMappings.BANK_AND_RIG_SELECT(0),
+                bank = bank,
+                bank_off = bank_off,
+                text = text,
+                text_callback = text_callback,
+                color = color,
+                color_callback = color_callback,
+                display_mode = display_mode
+            ),
             "enableCallback": enable_callback
         })
+    
+    # Callback implementation for Rig Select, showing bank colors and rig/bank info
+    class _BankSelectCallback(BinaryParameterCallback):
+        def __init__(self,
+                     mapping,
+                     bank,
+                     bank_off,
+                     text, 
+                     text_callback,
+                     color,
+                     color_callback,
+                     display_mode
+            ):
+            super().__init__(
+                mapping = mapping
+            )
 
+            self.__mapping = mapping
+            self.__bank = bank
+            self.__bank_off = bank_off
+            self.__text = text
+            self.__text_callback = text_callback
+            self.__color = color
+            self.__color_callback = color_callback
+            self.__display_mode = display_mode
+
+            self.__current_value = -1
+            self.__current_state = -1
+
+        def init(self, appl, listener = None):
+            super().init(appl, listener)
+
+            self.__default_dim_factor_off = get_option(appl.config, "displayDimFactorOff", 0.2)
+            self.__default_led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
+            self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
+            self.__appl = appl
+
+        def state_changed_by_user(self, action):
+            if self.__mapping.value == None:
+                return
+            
+            curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
+            curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK                  
+            set_mapping = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
+
+            if self.__bank_off != None:
+                if action.state:
+                    if curr_bank != self.__bank - 1:
+                        self.__appl.client.set(set_mapping, [self.__bank - 1, 1, 0])
+                else:
+                    if curr_bank != self.__bank_off - 1:
+                        self.__appl.client.set(set_mapping, [self.__bank_off - 1, 1, 0])
+            else:
+                if curr_bank != self.__bank - 1:
+                    self.__appl.client.set(set_mapping, [self.__bank - 1, 1, 0])                    
+
+            # Request value
+            self.update()
+
+        def update_displays(self, action):
+            if self.__mapping.value == None:
+                if action.label:
+                    action.label.text = ""
+                    action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
+
+                action.switch_color = Colors.WHITE
+                action.switch_brightness = self.__default_led_brightness_off
+                return
+            
+            # Calculate bank and rig numbers in range [0...]
+            curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
+            curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK                
+            
+            if self.__mapping.value != self.__current_value or action.state != self.__current_state:
+                action.feedback_state(curr_bank == (self.__bank - 1))
+                                
+                self.__current_value = self.__mapping.value
+                self.__current_state = action.state
+
+            is_current = (curr_bank == (self.__bank - 1))
+
+            if self.__color != None:
+                bank_color = self.__color
+            elif self.__color_callback:
+                bank_color = self.__color_callback(action, curr_bank, curr_rig)
+            else:
+                bank_color = KemperActionDefinitions._get_bank_color(action, curr_bank, self.__bank, self.__bank_off, self.__display_mode)
+                            
+            # Label text
+            if action.label:
+                if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
+                    action.label.text = self._get_text(action, curr_bank, curr_rig) 
+                    action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
+
+                elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+                    action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
+
+                    if is_current and self.__bank_off != None:
+                        action.label.text = self._get_text(action, self.__bank_off - 1, curr_rig)
+                    else:
+                        action.label.text = self._get_text(action, self.__bank - 1, curr_rig)
+
+                else:
+                    raise Exception()  #"Invalid display mode: " + repr(display_mode))
+
+            # LEDs
+            action.switch_color = bank_color
+
+            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state:
+                action.switch_brightness = self.__default_led_brightness_on
+            else:
+                action.switch_brightness = self.__default_led_brightness_off
+
+        # Get text for the label
+        def _get_text(self, action, bank, rig):
+            if self.__text:
+                return self.__text
+            elif self.__text_callback:
+                return self.__text_callback(action, bank, rig)
+            else:
+                return "Bank " + repr(bank + 1)
+            
     # Default color callback for bank color
     def _get_bank_color(action, curr_bank, bank, bank_off, display_mode):
         is_current = (curr_bank == (bank - 1))

@@ -22,12 +22,6 @@ _display_driver.init()
 # Load global config
 from config import Config as _Config
 
-# NeoPixel driver 
-_led_driver = _NeoPixelDriver()
-
-# Buffered font loader
-_font_loader = _FontLoader()
-
 if not _get_option(_Config, "exploreMode"):
     # Normal operation
     from pyswitch.controller.Controller import Controller as _Controller
@@ -37,47 +31,40 @@ if not _get_option(_Config, "exploreMode"):
     # Load communication configuration
     from communication import Communication as _Communication  
 
-    # MIDI controller (does the routing)
-    _midi_ctr = _MidiController(
-        routings = _Communication["midi"]["routings"]
-    )
-
     # Optional Wrapper to include the PyMidiBridge for transfering files.
     # Disable this to save memory.
     if _get_option(_Config, "enableMidiBridge"):
         from pymidibridge.MidiBridgeWrapper import MidiBridgeWrapper as _MidiBridgeWrapper
 
         _midi = _MidiBridgeWrapper(
-            midi = _midi_ctr,
+            midi = _MidiController(
+                routings = _Communication["midi"]["routings"]
+            ),
             temp_file_path = '/.bridge_tmp'
         )
     else:
-        _midi = _midi_ctr
+        _midi = _MidiController(
+            routings = _Communication["midi"]["routings"]
+        )
 
     try:
         # Load configuration files
-        #_Memory.watch("Start loading config")
-        
         from display import Splashes as _Splashes
         from switches import Switches as _Switches
 
-        #_Memory.watch("Loaded config")
-
         # Controller instance (runs the processing loop and keeps everything together)
-        _appl = _Controller(
-            led_driver = _led_driver, 
+        _Controller(
+            led_driver = _NeoPixelDriver(), 
             protocol = _get_option(_Communication, "protocol", None),
             midi = _midi,
             config = _Config, 
             switches = _Switches, 
             ui = _UiController(
                 display_driver = _display_driver,
-                font_loader = _font_loader,
+                font_loader = _FontLoader(),
                 splash_callback = _Splashes
             )
-        )
-
-        _appl.process()
+        ).process()
 
     except Exception as e:
         if _get_option(_Config, "enableMidiBridge"):
@@ -97,15 +84,13 @@ else:
         def create_switch(self, port):
             return _Switch(port)
 
-    _appl = _ExploreModeController(
+    _ExploreModeController(
         board = _board, 
         switch_factory = _SwitchFactory(), 
-        led_driver = _led_driver, 
+        led_driver = _NeoPixelDriver(), 
         ui = _UiController(
             display_driver = _display_driver,
-            font_loader = _font_loader
+            font_loader = _FontLoader()
         )
-    )
-
-    _appl.process()
+    ).process()
     
