@@ -53,17 +53,6 @@ class Action(Updateable):
         if self.__enable_callback:            
             self.__enable_callback.init(appl) 
 
-        # Update display callback
-        # that = self
-        # class _CallbackListener:
-        #     def parameter_changed(self, mapping):
-        #         if that.enabled:
-        #             that.update_displays()
-
-        #     def request_terminated(self, mapping):
-        #         if that.enabled:
-        #             that.update_displays()
-
         if self.callback:
             self.callback.init(appl, self._CallbackListener(self))
 

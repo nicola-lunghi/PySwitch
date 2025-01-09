@@ -20,30 +20,21 @@ class ClientParameterMapping:
         if self.__class__ != other.__class__:
             return False
         
-        response = self.response
-        if response != None:
-            other_response = other.response
-
-            if other_response != None:
-                return self.__compare(response, other_response)
+        if self.response != None:
+            if other.response != None:
+                return self.__compare(self.response, other.response)
             else:
                 return False
 
-        set = self.set            
-        if set != None: 
-            other_set = other.set
-
-            if other_set != None:
-                return self.__compare(set, other_set)
+        if self.set != None: 
+            if other.set != None:
+                return self.__compare(self.set, other.set)
             else:
                 return False
 
-        request = self.request    
-        if request != None:
-            other_request = other.request
-
-            if other_request != None:
-                return self.__compare(request, other_request)
+        if self.request != None:
+            if other.request != None:
+                return self.__compare(self.request, other.request)
             else:
                 return False
             
@@ -294,13 +285,14 @@ class ClientRequest(EventEmitter):
     # Parses an incoming MIDI message. If the message belongs to the mapping's request,
     # calls the listener with the received value. Returns if the message has been used.
     def parse(self, midi_message):
-        if not self.mapping.response:
+        mapping = self.mapping
+
+        if not mapping.response:
             return False
         
         if self.finished:
             return False
-
-        mapping = self.mapping
+        
         if not mapping.parse(midi_message):
             return False
 
@@ -390,9 +382,8 @@ class BidirectionalClient(Client, Updateable):
 
     # Calls request_terminated() on all listeners of requests with bidirectional mappings
     def notify_connection_lost(self):
-        protocol = self.protocol
         for r in self.requests:
-            if protocol.is_bidirectional(r.mapping):
+            if self.protocol.is_bidirectional(r.mapping):
                 r.notify_terminated()
         
 

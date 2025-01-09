@@ -40,10 +40,8 @@ class Callback(Updateable):
 
     #@RuntimeStatistics.measure
     def update(self):
-        cl = self.__appl.client
-
         for m in self.__mappings:
-            cl.request(m, self)
+            self.__appl.client.request(m, self)
 
     def parameter_changed(self, mapping):
         # Take over value before calling the listener
@@ -234,13 +232,12 @@ class BinaryParameterCallback(Callback):
             self._current_value = value
             self.evaluate_value(action, value)
 
-        state = action.state
         color = self.__color_callback(action, value) if self.__color_callback else self.__color
 
         # Set color, if new, or state have been changed
-        if color != self._current_color or self._current_display_state != state:
+        if color != self._current_color or self._current_display_state != action.state:
             self._current_color = color
-            self._current_display_state = state
+            self._current_display_state = action.state
         
             self.set_switch_color(action, color)
             self.set_label_color(action, color)
@@ -288,10 +285,9 @@ class BinaryParameterCallback(Callback):
         if not isinstance(self.__value_disable, list):
             self.__value_disable = value
         else:
-            vd = self.__value_disable
-            for i in range(len(vd)):
+            for i in range(len(self.__value_disable)):
                 if self.__update_value_disabled[i]:
-                    vd[i] = value
+                    self.__value_disable[i] = value
 
     # Update switch brightness
     def set_switch_color(self, action, color):
@@ -335,14 +331,11 @@ class BinaryParameterCallback(Callback):
     def dim_color(self, color, factor):
         if isinstance(color[0], tuple):
             # Multi color
-            ret = []
-            for c in color:
-                ret.append((
+            return [(
                     int(c[0] * factor),
                     int(c[1] * factor),
                     int(c[2] * factor)
-                ))
-            return ret
+                ) for c in color]            
         else:
             # Single color
             return (
