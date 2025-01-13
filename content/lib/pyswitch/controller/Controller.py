@@ -106,13 +106,7 @@ class Controller(Updater): #ClientRequestListener
         # Set up switches
         self.switches = []
         for sw_def in switches:
-            switch = FootSwitchController(
-                self,
-                sw_def
-            )
-            self.switches.append(
-                switch
-            )
+            self.switches.append(FootSwitchController(self, sw_def))
 
     # Runs the processing loop (which never ends)
     def process(self):

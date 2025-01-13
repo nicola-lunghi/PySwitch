@@ -140,7 +140,8 @@ class Action(Updateable):
     
     # Reset the action
     def reset(self):
-        pass                                      # pragma: no cover
+        if self.callback:
+            self.callback.reset()
 
     # Returns the switch LED segments to use
     def __get_led_segments(self):
@@ -299,6 +300,7 @@ class PushButtonAction(Action):
 
     # Reset the action: Set False state without sending anything
     def reset(self):
+        super().reset()
         self.__state = False
         self.update_displays()
 

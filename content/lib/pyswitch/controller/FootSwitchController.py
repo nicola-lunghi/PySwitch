@@ -56,6 +56,10 @@ class FootSwitchController: #ConditionListener
         if not self.__period_hold:
             hold_time_ms = get_option(config, "holdTimeMillis", self.DEFAULT_HOLD_TIME_MILLIS)
             self.__period_hold = PeriodCounter(hold_time_ms)
+
+        # This can be set to override any actions for this switch. Must be an Action instance 
+        # (or at least have push/release methods).
+        self.override_action = None
         
     # Process the switch: Check if it is currently pushed, set state accordingly
     def process(self):
@@ -84,7 +88,10 @@ class FootSwitchController: #ConditionListener
 
                     self.__hold_active = False
                     
-                release()
+                if self.override_action:
+                    self.override_action.release()
+                else:
+                    release()
 
             return
         else:
@@ -96,6 +103,10 @@ class FootSwitchController: #ConditionListener
         
         # Mark as pushed (prevents redundant messages in the following ticks, when the switch can still be down)
         self.__pushed_state = True
+
+        if self.override_action:
+            self.override_action.push()
+            return
 
         # Process all push actions assigned to the switch     
         if self.__actions_hold:        
@@ -125,7 +136,7 @@ class FootSwitchController: #ConditionListener
             return True
         
         return False        # Switch is pushed: Has it been pushed before already? 
-            
+
     @property 
     def actions(self):
         return self.__actions + self.__actions_hold

@@ -221,9 +221,9 @@ class DisplayLabel(DisplayElement):
 ###########################################################################################################################
 
 
-class TunerDisplay(DisplayElement):
+class TunerDisplay(DisplayElement, Updateable):
 
-    # DisplayElement for the deviance bar (made local to save memory)
+    # DisplayElement for the deviance bar
     class _TunerDevianceDisplay(DisplayElement):
 
         def __init__(self, 
@@ -357,6 +357,34 @@ class TunerDisplay(DisplayElement):
 
         self.__last_note = None
         self.__last_deviance = 8192
+
+        self.__strobe_pos = 0
+
+    def update(self):
+        self.__strobe_pos -= self.__last_deviance - 8191
+        
+        # Put to range [0..1]
+        pos = (self.__strobe_pos % 16000) / 16000
+
+        def b(p):
+            if p <= 0.5:
+                return p * 2
+            else:
+                return 2 - p * 2
+
+        for switch_num in range(len(self.__appl.switches)):
+            switch = self.__appl.switches[switch_num]
+            
+            p = pos + switch_num / 6
+
+            while p > 1:
+                p -= 1
+            while p < 0:
+                p += 1
+
+            brightness = 1 - b(p)
+            
+            switch.brightness = brightness
 
     # We need access to the client, so we store appl here
     def init(self, ui, appl):

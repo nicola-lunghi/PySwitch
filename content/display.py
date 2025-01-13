@@ -33,7 +33,7 @@ _RIG_NAME_HEIGHT = const(160)
 
 #############################################################################################################################################
 
-# Put away the header from _bounds
+# Header
 DISPLAY_HEADER_1 = DisplayLabel(
     layout = _ACTION_LABEL_LAYOUT,
     bounds = DisplayBounds(0, 0, _SLOT_WIDTH, _SLOT_HEIGHT)
@@ -43,7 +43,7 @@ DISPLAY_HEADER_2 = DisplayLabel(
     bounds = DisplayBounds(_SLOT_WIDTH, 0, _SLOT_WIDTH, _SLOT_HEIGHT)
 )
 
-# Put away the footer from _bounds
+# Footer
 DISPLAY_FOOTER_1 = DisplayLabel(
     layout = _ACTION_LABEL_LAYOUT,
     bounds = DisplayBounds(0, _FOOTER_Y, _SLOT_WIDTH, _SLOT_HEIGHT)
@@ -58,21 +58,13 @@ Splashes = TunerDisplayCallback(
     splash_default = DisplayElement(
         bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
         children = [
-            # Header area (referenced by ID in the action configurations)
-            DisplayElement(                
-                children = [
-                    DISPLAY_HEADER_1,
-                    DISPLAY_HEADER_2
-                ]
-            ),
+            # Header area 
+            DISPLAY_HEADER_1,
+            DISPLAY_HEADER_2,
 
-            # Footer area (referenced by ID in the action configurations)
-            DisplayElement(                
-                children = [
-                    DISPLAY_FOOTER_1,
-                    DISPLAY_FOOTER_2
-                ]
-            ),
+            # Footer area 
+            DISPLAY_FOOTER_1,
+            DISPLAY_FOOTER_2,
 
             # Rig name
             DisplayLabel(
@@ -99,10 +91,7 @@ Splashes = TunerDisplayCallback(
                 _SLOT_HEIGHT,
                 _DISPLAY_WIDTH,
                 _RIG_NAME_HEIGHT
-            )),
-
-            # # Performance indicator (dot)
-            # PERFORMANCE_DOT(_bounds.translated(0, 7)),
+            ))
         ]
     )
 )

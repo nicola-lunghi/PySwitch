@@ -175,13 +175,11 @@ class KemperActionDefinitions:
 
     # Switch tuner mode on / off
     @staticmethod
-    def TUNER_MODE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, id = False, use_leds = True, enable_callback = None):
+    def TUNER_MODE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, text = "Tuner", id = False, use_leds = True, enable_callback = None):
         return PushButtonAction({
-            "callback": BinaryParameterCallback(
-                mapping = KemperMappings.TUNER_MODE_STATE(),
-                text = "Tuner",
-                color = color,
-                comparison_mode = BinaryParameterCallback.EQUAL,
+            "callback": KemperActionDefinitions._TunerModeCallback(
+                text = text,
+                color = color
             ),
             "mode": mode,   
             "display": display,            
@@ -189,6 +187,61 @@ class KemperActionDefinitions:
             "useSwitchLeds": use_leds,
             "enableCallback": enable_callback
         })
+    
+    # Callback for tuner mode
+    class _TunerModeCallback(BinaryParameterCallback):
+        def __init__(self, color, text):
+            self.__mapping = KemperMappings.TUNER_MODE_STATE()
+            super().__init__(
+                mapping = self.__mapping,
+                comparison_mode = BinaryParameterCallback.EQUAL,
+                text = text,
+                color = color
+            )
+
+            self.__action = None
+
+        def init(self, appl, listener = None):
+            super().init(appl, listener)
+            self.__appl = appl
+
+        def parameter_changed(self, mapping):
+            super().parameter_changed(mapping)
+            
+            if mapping != self.__mapping:
+                return
+            
+            if self.__mapping.value == 1:
+                # Tuner on
+                def contains_action(switch, action):
+                    for a in switch.actions:
+                        if a == action:
+                            return True
+                                            
+                for switch in self.__appl.switches:
+                    if not contains_action(switch, self.__action):
+                        switch.override_action = self
+                    
+                    switch.color = Colors.WHITE
+                    switch.brightness = self._led_brightness_off
+            else:
+                # Tuner off
+                for switch in self.__appl.switches:
+                    switch.override_action = None
+
+                    for action in switch.actions:
+                        action.reset()
+
+        def update_displays(self, action):
+            self.__action = action
+            super().update_displays(action)
+
+        def push(self):
+            pass
+
+        def release(self):
+            self.__appl.client.set(self.__mapping, 0)  
+
 
     # Tap tempo 
     @staticmethod
@@ -218,8 +271,25 @@ class KemperActionDefinitions:
             "display": display,
             "id": id,
             "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
+            "enableCallback": KemperActionDefinitions._ShowTempoEnableCallback(enable_callback)
         })
+    
+    class _ShowTempoEnableCallback(Callback):
+        def __init__(self, enable_callback):
+            super().__init__()
+            self.__enable_callback = enable_callback
+
+            self.__tuner_mapping = KemperMappings.TUNER_MODE_STATE()
+            self.register_mapping(self.__tuner_mapping)
+
+        def enabled(self, action):
+            if self.__tuner_mapping.value == 1:
+                # Tuner enabled
+                return False
+            elif self.__enable_callback:
+                return self.__enable_callback.enabled(action)
+            else:
+                return True
     
     # Effect Button I-IIII (set only). num must be a number (1 to 4).
     @staticmethod
@@ -1042,7 +1112,7 @@ class KemperActionDefinitions:
             return BANK_COLORS[curr_bank % len(BANK_COLORS)]
 
         else:
-            raise Exception() #"Invalid display mode: " + repr(display_mode))
+            raise Exception() #"Invalid display mode: " + repr(display_mode))         
 
 
 ####################################################################################################################
@@ -1280,7 +1350,7 @@ class TunerDisplayCallback(Callback):
             return self.__splash_default
         else:
             return self.__splash_tuner
-
+        
 
 ####################################################################################################################
 

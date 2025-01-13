@@ -9,8 +9,8 @@
 
 
 # Uncomment these two lines to enable memory monitoring
-#from pyswitch.stats import Memory as _Memory
-#_Memory.start()
+from pyswitch.stats import Memory as _Memory
+_Memory.start()
 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver as _DisplayDriver, AdafruitNeoPixelDriver as _NeoPixelDriver, AdafruitFontLoader as _FontLoader, AdafruitSwitch as _Switch
 from pyswitch.misc import get_option as _get_option

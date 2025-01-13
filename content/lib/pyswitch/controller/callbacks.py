@@ -152,8 +152,8 @@ class BinaryParameterCallback(Callback):
         self.__comparison_mode = comparison_mode
         self.__display_dim_factor_on = display_dim_factor_on
         self.__display_dim_factor_off = display_dim_factor_off
-        self.__led_brightness_on = led_brightness_on
-        self.__led_brightness_off = led_brightness_off
+        self._led_brightness_on = led_brightness_on
+        self._led_brightness_off = led_brightness_off
         self.__color = color
         self.__color_callback = color_callback
 
@@ -182,15 +182,15 @@ class BinaryParameterCallback(Callback):
         elif self.__display_dim_factor_off == "on":
             self.__display_dim_factor_off = get_option(appl.config, "displayDimFactorOn", 1)
 
-        if self.__led_brightness_on == None:
-            self.__led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
-        elif self.__led_brightness_on == "off":
-            self.__led_brightness_on = get_option(appl.config, "ledBrightnessOff", 0.02)
+        if self._led_brightness_on == None:
+            self._led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
+        elif self._led_brightness_on == "off":
+            self._led_brightness_on = get_option(appl.config, "ledBrightnessOff", 0.02)
 
-        if self.__led_brightness_off == None:
-            self.__led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
-        elif self.__led_brightness_off == "on":
-            self.__led_brightness_off = get_option(appl.config, "ledBrightnessOn", 0.3)
+        if self._led_brightness_off == None:
+            self._led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
+        elif self._led_brightness_off == "on":
+            self._led_brightness_off = get_option(appl.config, "ledBrightnessOn", 0.3)
 
     def state_changed_by_user(self, action):
         if action.state:
@@ -296,10 +296,10 @@ class BinaryParameterCallback(Callback):
 
         if action.state == True and self.__mapping.response:
             # Switched on
-            action.switch_brightness = self.__led_brightness_on
+            action.switch_brightness = self._led_brightness_on
         else:
             # Switched off
-            action.switch_brightness = self.__led_brightness_off
+            action.switch_brightness = self._led_brightness_off
 
    # Update label color, if any
     def set_label_color(self, action, color):
