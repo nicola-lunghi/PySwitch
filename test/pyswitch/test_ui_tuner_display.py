@@ -273,10 +273,10 @@ class TestTunerDisplay(unittest.TestCase):
             },
             strobe = True,
             strobe_speed = speed,
-            strobe_width = 0.1,
+            strobe_width = 0.2,
             strobe_color = (100, 0, 0),
             strobe_dim = 0.5,
-            strobe_max_fps = 100
+            strobe_max_fps = 1000
         )
 
         switch_1 = MockFootSwitch(id = 1, order = 3)
