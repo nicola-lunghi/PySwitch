@@ -1318,7 +1318,14 @@ class TunerDisplayCallback(Callback):
                  color_neutral = Colors.WHITE,
                  calibration_high = 8192 + 350,            # Threshold value above which the note is out of tune
                  calibration_low = 8192 - 350,             # Threshold value above which the note is out of tune
-                 note_names = None                         # If set, this must be a tuple or list of 12 note name strings starting at C.
+                 note_names = None,                        # If set, this must be a tuple or list of 12 note name strings starting at C.
+                 strobe = True,                            # If set, all available switch LEDs will act as a strobe tuner.
+                 strobe_color = Colors.WHITE,              # LED color for strobe tuner
+                 strobe_dim = 0.5,                         # Dim factor for strobe tuner in range [0..1]
+                 strobe_speed = 1000,                      # Higher values make the strobe tuner go slower. 1000 is the recommended speed to start from.
+                 strobe_max_fps = 120                      # Maximum cumulative frame rate for update of strobe tuner LEDs. Reduce this to save processing power.
+                                                           # The number will be divided by the amount of available switches to get the real max. frame rate (that's
+                                                           # why it is called cumulative ;)
         ):
         Callback.__init__(self)
 
@@ -1342,7 +1349,12 @@ class TunerDisplayCallback(Callback):
                 color_neutral = color_neutral,
                 calibration_high = calibration_high,
                 calibration_low = calibration_low,
-                note_names = note_names
+                note_names = note_names,
+                strobe = strobe,
+                strobe_dim = strobe_dim,
+                strobe_speed = strobe_speed,
+                strobe_color = strobe_color,
+                strobe_max_fps = strobe_max_fps
             )
 
     def get_root(self):

@@ -60,6 +60,9 @@ class FootSwitchController: #ConditionListener
         # This can be set to override any actions for this switch. Must be an Action instance 
         # (or at least have push/release methods).
         self.override_action = None
+
+        # Sort order for the strobe tuner
+        self.strobe_order = get_option(config["assignment"], "strobeOrder", 0)
         
     # Process the switch: Check if it is currently pushed, set state accordingly
     def process(self):

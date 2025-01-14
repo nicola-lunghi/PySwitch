@@ -210,6 +210,10 @@ class PeriodCounter:
     def reset(self):
         self.__last_reset = get_current_millis()
 
+    @property
+    def passed(self):
+        return get_current_millis() - self.__last_reset
+
     # Returns if the period has been exceeded. If yes, it lso resets
     # the period to the current time.
     @property

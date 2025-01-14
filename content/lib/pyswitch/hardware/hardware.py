@@ -33,10 +33,10 @@ class Hardware:
     # GP16 Midi GP16GP17 baudrate
     # GP17 Midi GP16GP17 baudrate
     # GP25 - FootSwitch 2
-    PA_MIDICAPTAIN_NANO_SWITCH_1 = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1" }
-    PA_MIDICAPTAIN_NANO_SWITCH_2 = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2"  }
-    PA_MIDICAPTAIN_NANO_SWITCH_A = { "model": AdafruitSwitch(board.GP9),  "pixels": (6, 7, 8), "name": "A"  }
-    PA_MIDICAPTAIN_NANO_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (9, 10, 11), "name": "B"  }
+    PA_MIDICAPTAIN_NANO_SWITCH_1 = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1", "strobeOrder": 0 }
+    PA_MIDICAPTAIN_NANO_SWITCH_2 = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2", "strobeOrder": 1 }
+    PA_MIDICAPTAIN_NANO_SWITCH_A = { "model": AdafruitSwitch(board.GP9),  "pixels": (6, 7, 8), "name": "A", "strobeOrder": 3 }
+    PA_MIDICAPTAIN_NANO_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (9, 10, 11), "name": "B", "strobeOrder": 2 }
 
     # PaintAudio MIDI Captain Mini (6 Switches)
     # Board Infos
@@ -58,12 +58,12 @@ class Hardware:
     # GP17 Midi GP16GP17 baudrate
     # GP24 - FootSwitch 3
     # GP25 - FootSwitch 2
-    PA_MIDICAPTAIN_MINI_SWITCH_1 = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_2 = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_3 = { "model": AdafruitSwitch(board.GP24), "pixels": (6, 7, 8), "name": "3"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_A = { "model": AdafruitSwitch(board.GP9),  "pixels": (9, 10, 11), "name": "A"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (12, 13, 14), "name": "B"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_C = { "model": AdafruitSwitch(board.GP11), "pixels": (15, 16, 17), "name": "C"  }
+    PA_MIDICAPTAIN_MINI_SWITCH_1 = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1", "strobeOrder": 0 }
+    PA_MIDICAPTAIN_MINI_SWITCH_2 = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2", "strobeOrder": 1 }
+    PA_MIDICAPTAIN_MINI_SWITCH_3 = { "model": AdafruitSwitch(board.GP24), "pixels": (6, 7, 8), "name": "3", "strobeOrder": 2 }
+    PA_MIDICAPTAIN_MINI_SWITCH_A = { "model": AdafruitSwitch(board.GP9),  "pixels": (9, 10, 11), "name": "A", "strobeOrder": 5 }
+    PA_MIDICAPTAIN_MINI_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (12, 13, 14), "name": "B", "strobeOrder": 4 }
+    PA_MIDICAPTAIN_MINI_SWITCH_C = { "model": AdafruitSwitch(board.GP11), "pixels": (15, 16, 17), "name": "C", "strobeOrder": 3 }
 
     # PaintAudio MIDI Captain (10 Switches) EXPERIMENTAL/UNTESTED! 
     # Thanks to @Erikcb on the Kemper Forums!
@@ -90,16 +90,16 @@ class Hardware:
     # GP23 - FootSwitch 4
     # GP24 - FootSwitch 3
     # GP25 - FootSwitch 2
-    PA_MIDICAPTAIN_10_SWITCH_1    = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1"  }
-    PA_MIDICAPTAIN_10_SWITCH_2    = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2"  }
-    PA_MIDICAPTAIN_10_SWITCH_3    = { "model": AdafruitSwitch(board.GP24), "pixels": (6, 7, 8), "name": "3"  }
-    PA_MIDICAPTAIN_10_SWITCH_4    = { "model": AdafruitSwitch(board.GP23), "pixels": (9, 10, 11), "name": "4"  }
-    PA_MIDICAPTAIN_10_SWITCH_UP   = { "model": AdafruitSwitch(board.GP20), "pixels": (12, 13, 14), "name": "Up"  }
-    PA_MIDICAPTAIN_10_SWITCH_A    = { "model": AdafruitSwitch(board.GP9),  "pixels": (15, 16, 17), "name": "A"  }
-    PA_MIDICAPTAIN_10_SWITCH_B    = { "model": AdafruitSwitch(board.GP10), "pixels": (18, 19, 20), "name": "B"  }
-    PA_MIDICAPTAIN_10_SWITCH_C    = { "model": AdafruitSwitch(board.GP11), "pixels": (21, 22, 23), "name": "C"  }
-    PA_MIDICAPTAIN_10_SWITCH_D    = { "model": AdafruitSwitch(board.GP18), "pixels": (24, 25, 26), "name": "D"  }
-    PA_MIDICAPTAIN_10_SWITCH_DOWN = { "model": AdafruitSwitch(board.GP19), "pixels": (27, 28, 29), "name": "Dn"  }
+    PA_MIDICAPTAIN_10_SWITCH_1    = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1", "strobeOrder": 0 }
+    PA_MIDICAPTAIN_10_SWITCH_2    = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2", "strobeOrder": 1 }
+    PA_MIDICAPTAIN_10_SWITCH_3    = { "model": AdafruitSwitch(board.GP24), "pixels": (6, 7, 8), "name": "3", "strobeOrder": 2 }
+    PA_MIDICAPTAIN_10_SWITCH_4    = { "model": AdafruitSwitch(board.GP23), "pixels": (9, 10, 11), "name": "4", "strobeOrder": 3 }
+    PA_MIDICAPTAIN_10_SWITCH_UP   = { "model": AdafruitSwitch(board.GP20), "pixels": (12, 13, 14), "name": "Up", "strobeOrder": 4 }
+    PA_MIDICAPTAIN_10_SWITCH_A    = { "model": AdafruitSwitch(board.GP9),  "pixels": (15, 16, 17), "name": "A", "strobeOrder": 9 }
+    PA_MIDICAPTAIN_10_SWITCH_B    = { "model": AdafruitSwitch(board.GP10), "pixels": (18, 19, 20), "name": "B", "strobeOrder": 8 }
+    PA_MIDICAPTAIN_10_SWITCH_C    = { "model": AdafruitSwitch(board.GP11), "pixels": (21, 22, 23), "name": "C", "strobeOrder": 7 }
+    PA_MIDICAPTAIN_10_SWITCH_D    = { "model": AdafruitSwitch(board.GP18), "pixels": (24, 25, 26), "name": "D", "strobeOrder": 6 }
+    PA_MIDICAPTAIN_10_SWITCH_DOWN = { "model": AdafruitSwitch(board.GP19), "pixels": (27, 28, 29), "name": "Dn", "strobeOrder": 5 }
 
 ###########################################################################################################################
 

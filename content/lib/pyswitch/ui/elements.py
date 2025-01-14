@@ -8,7 +8,7 @@ from .ui import DisplayBounds, DisplayElement
 
 from ..controller.Client import BidirectionalClient
 from ..controller.Controller import Controller
-from ..misc import Updateable, Colors, get_option #, do_print
+from ..misc import Updateable, Colors, get_option, PeriodCounter #, do_print
 
 
 # Data class for layouts
@@ -221,7 +221,7 @@ class DisplayLabel(DisplayElement):
 ###########################################################################################################################
 
 
-class TunerDisplay(DisplayElement, Updateable):
+class TunerDisplay(DisplayElement):
 
     # DisplayElement for the deviance bar
     class _TunerDevianceDisplay(DisplayElement):
@@ -318,7 +318,15 @@ class TunerDisplay(DisplayElement, Updateable):
                  color_neutral = Colors.WHITE,
                  calibration_high = 8192 + 350,            # Threshold value above which the note is out of tune
                  calibration_low = 8192 - 350,             # Threshold value above which the note is out of tune
-                 note_names = None                         # If set, this must be a tuple or list of 12 note name strings starting at C.
+                 note_names = None,                        # If set, this must be a tuple or list of 12 note name strings starting at C.
+                 strobe = False,                           # If set, all available switch LEDs will act as a strobe tuner.
+                 strobe_speed = 1000,                      # Higher values make the strobe tuner go slower. 1000 is the recommended speed to start from.
+                 strobe_width = 0.3,                       # Width of the virtual moving highlight
+                 strobe_color = Colors.WHITE,              # LED color for strobe tuner
+                 strobe_dim = 0.5,                         # Dim factor for strobe tuner in range [0..1]
+                 strobe_max_fps = 120                      # Maximum cumulative frame rate for update of strobe tuner LEDs. Reduce this to save processing power.
+                                                           # The number will be divided by the amount of available switches to get the real max. frame rate (that's
+                                                           # why it is called cumulative ;)
         ):
         DisplayElement.__init__(self, bounds = bounds)
 
@@ -358,33 +366,15 @@ class TunerDisplay(DisplayElement, Updateable):
         self.__last_note = None
         self.__last_deviance = 8192
 
+        self.__enable_strobe = strobe
         self.__strobe_pos = 0
-
-    def update(self):
-        self.__strobe_pos -= self.__last_deviance - 8191
-        
-        # Put to range [0..1]
-        pos = (self.__strobe_pos % 16000) / 16000
-
-        def b(p):
-            if p <= 0.5:
-                return p * 2
-            else:
-                return 2 - p * 2
-
-        for switch_num in range(len(self.__appl.switches)):
-            switch = self.__appl.switches[switch_num]
-            
-            p = pos + switch_num / 6
-
-            while p > 1:
-                p -= 1
-            while p < 0:
-                p += 1
-
-            brightness = 1 - b(p)
-            
-            switch.brightness = brightness
+        self.__strobe_switches = None               # List of switches ordered for strobe
+        self.__strobe_speed = strobe_speed * 2000   # Determined empirically
+        self.__strobe_width = strobe_width
+        self.__strobe_color = strobe_color
+        self.__strobe_dim = strobe_dim
+        self.__strobe_max_fps = strobe_max_fps
+        self.__strobe_period = None
 
     # We need access to the client, so we store appl here
     def init(self, ui, appl):
@@ -392,10 +382,32 @@ class TunerDisplay(DisplayElement, Updateable):
 
         self.__appl = appl
         
+        # Register mappings
         self.__appl.client.register(self.__mapping_note, self)
-        
         if self.__mapping_deviance:
             self.__appl.client.register(self.__mapping_deviance, self)
+        
+        if self.__enable_strobe:
+            # Bring the switches into the correct order for strobe
+            self.__strobe_switches = [s for s in self.__appl.switches]
+            self.__current_strobe_brightnesses = [0 for s in self.__appl.switches]
+
+            # Period counter for saving LED updates (restricts the updates to a certain frame rate)
+            period = int(1000 / self.__strobe_max_fps * len(self.__strobe_switches))
+            self.__strobe_period = PeriodCounter(period)
+
+            def compare(sw):
+                return sw.strobe_order
+
+            self.__strobe_switches.sort(key = compare)
+
+            # Numer of switches: If this equals the amount of switches, you get one dot
+            # running in the circle. If this equals half the available switches, it will show
+            # two dots and so on. We use one dot for everything with 4 switches or less, and
+            # two dots for all others.
+            self.__num_switches = len(self.__strobe_switches)
+            if self.__num_switches > 4:
+                self.__num_switches = self.__num_switches / 2
 
     # Reset the display
     def reset(self):
@@ -427,10 +439,76 @@ class TunerDisplay(DisplayElement, Updateable):
             else:
                 self.label_note.text_color = self.__color_out_of_tune
 
+        if self.__enable_strobe:
+            self.update_strobe()
+
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
         pass                                       # pragma: no cover
 
+    # Update the strobe LEDs
+    def update_strobe(self):
+        passed = self.__strobe_period.passed
+        if not self.__strobe_period.exceeded:
+            return
+
+        speed = self.__strobe_speed
+        width = self.__strobe_width
+
+        # Accumulate deviances and restrict range
+        delta = (self.__last_deviance - 8191)
+
+        threshold = 100 * self.__strobe_period.interval
+        if delta > threshold:
+            delta = threshold
+        if delta < -threshold:
+            delta = -threshold
+        
+        self.__strobe_pos -= delta * passed
+
+        while self.__strobe_pos > speed:
+            self.__strobe_pos -= speed
+        while self.__strobe_pos < -speed:
+            self.__strobe_pos += speed
+        
+        # Put to range [0..1], regarding speed
+        pos = (self.__strobe_pos % speed) / speed
+
+        # Defines the period function in range [0..1] for inputs in range [0..1] 
+        # (starts with 1, goes to zero in the middle and goes up to 1 again at the end)
+        def b(p, width):
+            if p <= width:
+                return 1 - p * (1 / width)
+            elif p >= 1 - width:
+                return (p - 1 + width) * (1 / width)
+            else:
+                return 0
+
+        # Color each switch
+        for switch_num in range(len(self.__strobe_switches)):
+            switch = self.__strobe_switches[switch_num]
+            
+            # Position inside the period [0..1]
+            p = pos + switch_num / self.__num_switches
+
+            while p > 1:
+                p -= 1
+            while p < 0:
+                p += 1
+
+            # Brightness [0..1]
+            brightness = b(p, width)
+            brightness = int(brightness * 16) / 16
+            
+            # Use the square of the calculated brightness to accomodate for the non-linear NeoPixels
+            switch.color = self.__strobe_color
+            brightness_out = (brightness * brightness) * self.__strobe_dim
+
+            if self.__current_strobe_brightnesses[switch_num] != brightness_out:
+                self.__current_strobe_brightnesses[switch_num] = brightness_out
+
+                switch.brightness = brightness_out
+            
     # For calibration: Shows statistics on the tuner deviance over a period of 4 seconds.
     #def _debug_calibration(self, value):
     #    if not hasattr(self, "_calib_period"):
