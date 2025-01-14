@@ -54,6 +54,8 @@ class MockUiController:
     def __init__(self, width = 2000, height = 1000, splash_callback = None):
         self.bounds = DisplayBounds(0, 0, width, height)
         self.cb = splash_callback
+        self.font_loader = MockFontLoader()
+        self.splash = []
 
     def set_callback(self, splash_callback):
         self.cb = splash_callback

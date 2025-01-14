@@ -24,13 +24,26 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.ui.UiController import UiController
 
     from .mocks_appl import *
-    from .mocks_ui import MockDisplayDriver, MockFontLoader
+    from .mocks_ui import MockDisplayDriver, MockFontLoader, MockUiController
     from .mocks_callback import *
     from lib.pyswitch.misc import Colors
 
 
 
 TUNER_NOTE_NAMES = ('C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B')
+
+class MockController2:
+    def __init__(self, switches = []):
+        self.client = MockClient()
+        self.switches = switches
+
+
+class MockFootSwitch:
+    def __init__(self, id = "", order = 0):
+        self.id = id
+        self.color = (0, 0, 0)
+        self.brightness = 0
+        self.strobe_order = order
 
 
 class TestTunerDisplay(unittest.TestCase):
@@ -235,146 +248,114 @@ class TestTunerDisplay(unittest.TestCase):
 ##################################################################################################################
 
 
-    # def test_strobe(self):
-    #     period = MockPeriodCounter()
+    def test_strobe(self):
+        speed = 2000
 
-    #     mapping_1 = MockParameterMapping(
-    #         response = SystemExclusive(
-    #             manufacturer_id = [0x00, 0x10, 0x20],
-    #             data = [0x00, 0x00, 0x09]
-    #         )
-    #     )
+        mapping_1 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
 
-    #     # mapping_2 = None
-    #     # if deviance_value != None:
-    #     mapping_2 = MockParameterMapping(
-    #         response = SystemExclusive(
-    #             manufacturer_id = [0x00, 0x10, 0x20],
-    #             data = [0x00, 0x00, 0x10]
-    #         )
-    #     )
+        mapping_2 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x10]
+            )
+        )
 
-    #     display = TunerDisplay(
-    #         mapping_note = mapping_1,
-    #         mapping_deviance = mapping_2,
-    #         strobe = True,
-    #         strobe_speed = 2000,
-    #         strobe_width = 0.1,
-    #         strobe_color = (100, 0, 0),
-    #         strobe_dim = 0.5,
-    #         strobe_max_fps = 100
-    #     )
+        display = TunerDisplay(
+            mapping_note = mapping_1,
+            mapping_deviance = mapping_2,
+            layout = {
+                "font": "foo"
+            },
+            strobe = True,
+            strobe_speed = speed,
+            strobe_width = 0.1,
+            strobe_color = (100, 0, 0),
+            strobe_dim = 0.5,
+            strobe_max_fps = 100
+        )
 
-    #     ui = UiController(
-    #         display_driver = MockDisplayDriver(init = True), 
-    #         font_loader = MockFontLoader(), 
-    #         splash_callback = MockSplashCallback(output = display)
-    #     )
-        
-    #     protocol = MockBidirectionalProtocol()
-    #     protocol.outputs_is_bidirectional = [
-    #         {
-    #             "mapping": mapping_1,
-    #             "result": True
-    #         },
-    #         {
-    #             "mapping": mapping_2,
-    #             "result": True
-    #         }
-    #     ]
-    #     protocol.outputs_feedback_value = [
-    #         {
-    #             "mapping": mapping_1,
-    #             "result": True
-    #         },
-    #         {
-    #             "mapping": mapping_2,
-    #             "result": True
-    #         }
-    #     ]
+        switch_1 = MockFootSwitch(id = 1, order = 3)
+        switch_2 = MockFootSwitch(id = 2, order = 2)
+        switch_3 = MockFootSwitch(id = 3, order = 0)
+        switch_4 = MockFootSwitch(id = 4, order = 999)
 
-    #     appl = MockController(
-    #         led_driver = MockNeoPixelDriver(),
-    #         protocol = protocol,
-    #         midi = MockMidiController(),
-    #         period_counter = period,
-    #         ui = ui
-    #     )
+        switches_sorted = [
+            switch_3,
+            switch_2,
+            switch_1,
+            switch_4
+        ]
 
-    #     answer_msg_1 = SystemExclusive(
-    #         manufacturer_id = [0x00, 0x10, 0x20],
-    #         data = [0x00, 0x00, 0x09, 0x44]
-    #     )
+        ui = MockUiController()
+        appl = MockController2(
+            switches = [
+                switch_1,
+                switch_2,
+                switch_3,
+                switch_4,
+            ]
+        )
+        display.init(ui, appl)
 
-    #     answer_msg_2 = SystemExclusive(
-    #         manufacturer_id = [0x00, 0x10, 0x20],
-    #         data = [0x00, 0x00, 0x09, 0x45]
-    #     )
+        self.assertEqual(display._TunerDisplay__num_switches, 4)
 
-    #     # Build scene:
-    #     # Step 1: Not exceeded
-    #     def prep1():
-    #         self.assertEqual(display.label_note._DisplayLabel__label.scale, 2.33)
-    #         period.exceed_next_time = True
-            
-    #     def eval1():
-    #         self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
-    #         return True
+        def print_brightnesses():
+            str = ""
+            for switch in switches_sorted:
+                str += repr(switch.brightness) + ", "
+            print(str)
 
-    #     # Step 2: Exceeded the first time
-    #     def prep2():
-    #         period.exceed_next_time = True
 
-    #         appl._Controller__midi.next_receive_messages = [
-    #             answer_msg_1,
-    #             answer_msg_2
-    #         ]
-    #         mapping_1.outputs_parse = [
-    #             {
-    #                 "message": answer_msg_1,
-    #                 "value": note_value
-    #             }
-    #         ]
-    #         if mapping_2:
-    #             mapping_2.outputs_parse = [
-    #                 {
-    #                     "message": answer_msg_2,
-    #                     "value": deviance_value
-    #                 }
-    #             ]
+        mapping_2.value = 0
+        period = MockPeriodCounter()
+        period.interval = 10
+        display._TunerDisplay__strobe_period = period
 
-    #     def eval2():
-    #         self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
-    #         self.assertEqual(display.label_note.text, note_text)
+        # No update (period not exceeded)
+        display.parameter_changed(mapping_2)
 
-    #         if deviance_value != None:
-    #             act_pos = display.deviance._TunerDevianceDisplay__marker.x / ((444 - deviance_width) / 2) - 1
-    #             self.assertAlmostEqual(act_pos, max(-1, min(deviance_pos * deviance_zoom, 1)), delta = deviance_tolerance)
+        for switch in switches_sorted:
+            self.assertEqual(switch.color, (0, 0, 0))
 
-    #             self.assertEqual(display.label_note.text_color, exp_color)
-    #             self.assertEqual(display.deviance._TunerDevianceDisplay__marker.fill, exp_color)
-    #             self.assertEqual(display.deviance._TunerDevianceDisplay__marker.width, deviance_width)
+        for switch in switches_sorted:
+            self.assertEqual(switch.brightness, 0)
 
-    #         display.reset()
+        # Neutral value (this gives us a starting point)
+        mapping_2.value = 8191
+        period.passed = 20        
+        period.exceed_next_time = True
+        display.parameter_changed(mapping_2)
 
-    #         if deviance_value != None:
-    #             self.assertEqual(display.label_note.text_color, Colors.WHITE)
+        for switch in switches_sorted:
+            self.assertEqual(switch.color, (100, 0, 0))
 
-    #         return False
-                
-        
-    #     # Build scenes hierarchy
-    #     appl.next_step = SceneStep(
-    #         num_pass_ticks = 5,
-    #         prepare = prep1,
-    #         evaluate = eval1,
+        for switch_index in range(len(switches_sorted)):
+            switch = switches_sorted[switch_index]
 
-    #         next = SceneStep(
-    #             num_pass_ticks = 5,
-    #             prepare = prep2,
-    #             evaluate = eval2
-    #         )
-    #     )
+            # The peak must be at the first switch
+            if switch_index == 0:
+                self.assertEqual(switch.brightness, 0.5)  
+            else:
+                self.assertEqual(switch.brightness, 0)
 
-    #     # Run process
-    #     appl.process()
+        diff = 123
+        pos = 0
+        while pos < speed * 2 * 1000:
+            mapping_2.value = 8191 + diff
+            period.passed = 20
+
+            pos += diff * period.passed
+
+            period.exceed_next_time = True
+            display.parameter_changed(mapping_2)
+
+            for switch in switches_sorted:
+                self.assertEqual(switch.color, (100, 0, 0))
+
+            #print(display._TunerDisplay__strobe_pos)
+            print_brightnesses()

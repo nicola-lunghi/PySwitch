@@ -98,6 +98,9 @@ class MockPeriodCounter():
     def __init__(self):
         self.exceed_next_time = False
         self.num_reset_calls = 0
+        
+        self.passed = 0
+        self.interval = 0
 
     def reset(self):
         self.num_reset_calls += 1
