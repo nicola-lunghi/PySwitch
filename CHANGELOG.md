@@ -1,5 +1,8 @@
 # PySwitch v2.3.0
 - Added BANK_SELECT action for changing/toggling banks but stay at the same rig
+- Tuner mode:
+    - Disable tuner mode with any switch
+    - Added strobe tuner using all available LEDs when in tuner mode (active by default, can be disabled with parameter "strobe" in TunerDisplayCallback / display.py if you do not like to use it)
 - Default global brightness factors for LEDs and DisplayLabels can now be set optionally in config.py, see comments there.
 - Now supporting file editing from the browser via MIDI using the <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a> library. <a href="https://demo.midibridge.tunetown.de">Click here</a> with your device connected to the computer via USB (no switches pressed!) and it will automatically connect. This needs no USB mounting/unmounting and is useful for quick experimenting and changing settings. Should also serve as proof-of-concept for building a visual editor in the future (!)
 - The code from code.py now is moved to a function inside the init script of the module, so multi-boot scenarios (different firmwares on button presses on boot, like @gstrotmanns version does) are also possible. Unit tests added for the init script.

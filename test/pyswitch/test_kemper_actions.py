@@ -198,7 +198,6 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
         self.assertEqual(action.uses_switch_leds, True)
-        self.assertEqual(action._Action__enable_callback, ecb)
 
 
     def test_effect_button(self):
@@ -331,7 +330,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.MORPH_PEDAL())
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
         self.assertEqual(cb._BinaryParameterCallback__comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
-        self.assertEqual(cb._BinaryParameterCallback__led_brightness_off, 0.3)
+        self.assertEqual(cb._led_brightness_off, 0.3)
 
         self.assertEqual(cb._BinaryParameterCallback__display_dim_factor_off, 1)
         self.assertEqual(cb._KemperMorphCallback__suppress_send, True)
@@ -422,7 +421,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb_morph, KemperMorphCallback)
         self.assertEqual(cb_morph._BinaryParameterCallback__mapping, KemperMappings.MORPH_PEDAL())
         self.assertEqual(cb_morph._BinaryParameterCallback__comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
-        self.assertEqual(cb_morph._BinaryParameterCallback__led_brightness_off, 0.3)
+        self.assertEqual(cb_morph._led_brightness_off, 0.3)
         self.assertEqual(cb_morph._BinaryParameterCallback__display_dim_factor_off, 1)
         self.assertEqual(cb_morph._KemperMorphCallback__suppress_send, True)
         
@@ -479,7 +478,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb_morph, KemperMorphCallback)
         self.assertEqual(cb_morph._BinaryParameterCallback__mapping, KemperMappings.MORPH_PEDAL())
         self.assertEqual(cb_morph._BinaryParameterCallback__comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
-        self.assertEqual(cb_morph._BinaryParameterCallback__led_brightness_off, 0.3)
+        self.assertEqual(cb_morph._led_brightness_off, 0.3)
         self.assertEqual(cb_morph._BinaryParameterCallback__display_dim_factor_off, 1)
         self.assertEqual(cb_morph._KemperMorphCallback__suppress_send, True)
         

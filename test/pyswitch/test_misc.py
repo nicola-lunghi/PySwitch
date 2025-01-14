@@ -312,44 +312,58 @@ class TestMiscPeriodCounter(unittest.TestCase):
         MockTime.mock["monotonicReturn"] = 1
         p.reset()
         self.assertEqual(p.exceeded, False)
+        self.assertEqual(p.passed, 0)
 
         MockTime.mock["monotonicReturn"] = 1.2
         self.assertEqual(p.exceeded, False)
+        self.assertEqual(p.passed, 200)
 
         MockTime.mock["monotonicReturn"] = 1.5
         self.assertEqual(p.exceeded, False)
+        self.assertEqual(p.passed, 500)
 
         MockTime.mock["monotonicReturn"] = 1.501
         self.assertEqual(p.exceeded, True)
+        self.assertEqual(p.passed, 0)
 
         MockTime.mock["monotonicReturn"] = 1.7
         self.assertEqual(p.exceeded, False)
+        self.assertEqual(p.passed, 199)
 
         MockTime.mock["monotonicReturn"] = 1.9
         self.assertEqual(p.exceeded, False)
+        self.assertEqual(p.passed, 399)
 
         MockTime.mock["monotonicReturn"] = 2
         self.assertEqual(p.exceeded, False)
+        self.assertEqual(p.passed, 499)
 
         MockTime.mock["monotonicReturn"] = 2.003
         self.assertEqual(p.exceeded, True)
+        self.assertEqual(p.passed, 0)
 
         MockTime.mock["monotonicReturn"] = 2.004
         self.assertEqual(p.exceeded, False)
+        self.assertEqual(p.passed, 1)
 
         MockTime.mock["monotonicReturn"] = 2.2
         self.assertEqual(p.exceeded, False)
+        self.assertEqual(p.passed, 197)
 
         p.reset()
 
         MockTime.mock["monotonicReturn"] = 2.4
         self.assertEqual(p.exceeded, False)
+        self.assertEqual(p.passed, 200)
 
         MockTime.mock["monotonicReturn"] = 2.7
         self.assertEqual(p.exceeded, False)
+        self.assertEqual(p.passed, 500)
 
         MockTime.mock["monotonicReturn"] = 2.701
         self.assertEqual(p.exceeded, True)
+        self.assertEqual(p.passed, 0)
 
         MockTime.mock["monotonicReturn"] = 2.702
         self.assertEqual(p.exceeded, False)
+        self.assertEqual(p.passed, 1)

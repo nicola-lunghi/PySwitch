@@ -104,7 +104,8 @@ class TestTunerDisplay(unittest.TestCase):
             deviance_height = 44,
             deviance_width = deviance_width,
             deviance_zoom = deviance_zoom,
-            scale = 2.33
+            scale = 2.33,
+            strobe = False
         )
 
         self.assertIsInstance(display.label_note, DisplayLabel)
@@ -229,3 +230,151 @@ class TestTunerDisplay(unittest.TestCase):
 
         # Run process
         appl.process()
+
+
+##################################################################################################################
+
+
+    # def test_strobe(self):
+    #     period = MockPeriodCounter()
+
+    #     mapping_1 = MockParameterMapping(
+    #         response = SystemExclusive(
+    #             manufacturer_id = [0x00, 0x10, 0x20],
+    #             data = [0x00, 0x00, 0x09]
+    #         )
+    #     )
+
+    #     # mapping_2 = None
+    #     # if deviance_value != None:
+    #     mapping_2 = MockParameterMapping(
+    #         response = SystemExclusive(
+    #             manufacturer_id = [0x00, 0x10, 0x20],
+    #             data = [0x00, 0x00, 0x10]
+    #         )
+    #     )
+
+    #     display = TunerDisplay(
+    #         mapping_note = mapping_1,
+    #         mapping_deviance = mapping_2,
+    #         strobe = True,
+    #         strobe_speed = 2000,
+    #         strobe_width = 0.1,
+    #         strobe_color = (100, 0, 0),
+    #         strobe_dim = 0.5,
+    #         strobe_max_fps = 100
+    #     )
+
+    #     ui = UiController(
+    #         display_driver = MockDisplayDriver(init = True), 
+    #         font_loader = MockFontLoader(), 
+    #         splash_callback = MockSplashCallback(output = display)
+    #     )
+        
+    #     protocol = MockBidirectionalProtocol()
+    #     protocol.outputs_is_bidirectional = [
+    #         {
+    #             "mapping": mapping_1,
+    #             "result": True
+    #         },
+    #         {
+    #             "mapping": mapping_2,
+    #             "result": True
+    #         }
+    #     ]
+    #     protocol.outputs_feedback_value = [
+    #         {
+    #             "mapping": mapping_1,
+    #             "result": True
+    #         },
+    #         {
+    #             "mapping": mapping_2,
+    #             "result": True
+    #         }
+    #     ]
+
+    #     appl = MockController(
+    #         led_driver = MockNeoPixelDriver(),
+    #         protocol = protocol,
+    #         midi = MockMidiController(),
+    #         period_counter = period,
+    #         ui = ui
+    #     )
+
+    #     answer_msg_1 = SystemExclusive(
+    #         manufacturer_id = [0x00, 0x10, 0x20],
+    #         data = [0x00, 0x00, 0x09, 0x44]
+    #     )
+
+    #     answer_msg_2 = SystemExclusive(
+    #         manufacturer_id = [0x00, 0x10, 0x20],
+    #         data = [0x00, 0x00, 0x09, 0x45]
+    #     )
+
+    #     # Build scene:
+    #     # Step 1: Not exceeded
+    #     def prep1():
+    #         self.assertEqual(display.label_note._DisplayLabel__label.scale, 2.33)
+    #         period.exceed_next_time = True
+            
+    #     def eval1():
+    #         self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
+    #         return True
+
+    #     # Step 2: Exceeded the first time
+    #     def prep2():
+    #         period.exceed_next_time = True
+
+    #         appl._Controller__midi.next_receive_messages = [
+    #             answer_msg_1,
+    #             answer_msg_2
+    #         ]
+    #         mapping_1.outputs_parse = [
+    #             {
+    #                 "message": answer_msg_1,
+    #                 "value": note_value
+    #             }
+    #         ]
+    #         if mapping_2:
+    #             mapping_2.outputs_parse = [
+    #                 {
+    #                     "message": answer_msg_2,
+    #                     "value": deviance_value
+    #                 }
+    #             ]
+
+    #     def eval2():
+    #         self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
+    #         self.assertEqual(display.label_note.text, note_text)
+
+    #         if deviance_value != None:
+    #             act_pos = display.deviance._TunerDevianceDisplay__marker.x / ((444 - deviance_width) / 2) - 1
+    #             self.assertAlmostEqual(act_pos, max(-1, min(deviance_pos * deviance_zoom, 1)), delta = deviance_tolerance)
+
+    #             self.assertEqual(display.label_note.text_color, exp_color)
+    #             self.assertEqual(display.deviance._TunerDevianceDisplay__marker.fill, exp_color)
+    #             self.assertEqual(display.deviance._TunerDevianceDisplay__marker.width, deviance_width)
+
+    #         display.reset()
+
+    #         if deviance_value != None:
+    #             self.assertEqual(display.label_note.text_color, Colors.WHITE)
+
+    #         return False
+                
+        
+    #     # Build scenes hierarchy
+    #     appl.next_step = SceneStep(
+    #         num_pass_ticks = 5,
+    #         prepare = prep1,
+    #         evaluate = eval1,
+
+    #         next = SceneStep(
+    #             num_pass_ticks = 5,
+    #             prepare = prep2,
+    #             evaluate = eval2
+    #         )
+    #     )
+
+    #     # Run process
+    #     appl.process()

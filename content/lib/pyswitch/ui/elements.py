@@ -440,14 +440,14 @@ class TunerDisplay(DisplayElement):
                 self.label_note.text_color = self.__color_out_of_tune
 
         if self.__enable_strobe:
-            self.update_strobe()
+            self.__update_strobe()
 
     # Called when the client is offline (requests took too long)
     def request_terminated(self, mapping):
         pass                                       # pragma: no cover
 
     # Update the strobe LEDs
-    def update_strobe(self):
+    def __update_strobe(self):
         passed = self.__strobe_period.passed
         if not self.__strobe_period.exceeded:
             return
