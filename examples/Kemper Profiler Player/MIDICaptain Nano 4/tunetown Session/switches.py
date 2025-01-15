@@ -28,7 +28,8 @@ Switches = [
         ],
         "actionsHold": [
             KemperActionDefinitions.TUNER_MODE(
-                display = DISPLAY_HEADER_1
+                display = DISPLAY_HEADER_1,
+                text = "Tap|Tune"
             )            
         ]
     },
@@ -39,7 +40,7 @@ Switches = [
         "actions": [
             # Freeze on/off
             KemperActionDefinitions.BINARY_SWITCH(
-                mapping = KemperMappings.FREEZE_ALL_GLOBAL(),
+                mapping = KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
                 display = DISPLAY_HEADER_2,
                 text = "Freeze",
                 color = Colors.LIGHT_GREEN
