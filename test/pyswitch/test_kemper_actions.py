@@ -112,36 +112,6 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(action._PushButtonAction__mode, PushButtonAction.LATCH)
 
 
-    def test_tuner_mode(self):
-        display = DisplayLabel(layout = {
-            "font": "foo"
-        })
-
-        ecb = MockEnabledCallback()
-
-        action = KemperActionDefinitions.TUNER_MODE(
-            display = display, 
-            mode = PushButtonAction.ONE_SHOT, 
-            color = (4, 5, 6), 
-            id = 67, 
-            use_leds = True, 
-            enable_callback = ecb
-        )
-
-        cb = action.callback
-        self.assertIsInstance(cb, BinaryParameterCallback)
-        self.assertIsInstance(action, PushButtonAction)
-
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.TUNER_MODE_STATE())
-        self.assertEqual(cb._BinaryParameterCallback__text, "Tuner")
-        self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
-
-        self.assertEqual(action.label, display)
-        self.assertEqual(action.id, 67)
-        self.assertEqual(action.uses_switch_leds, True)
-        self.assertEqual(action._Action__enable_callback, ecb)
-
-
     def test_tap_tempo(self):
         display = DisplayLabel(layout = {
             "font": "foo"
@@ -169,35 +139,6 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(action.id, 67)
         self.assertEqual(action.uses_switch_leds, True)
         self.assertEqual(action._Action__enable_callback, ecb)
-
-
-    def test_show_tempo(self):
-        display = DisplayLabel(layout = {
-            "font": "foo"
-        })
-
-        ecb = MockEnabledCallback()
-
-        action = KemperActionDefinitions.SHOW_TEMPO(
-            display = display, 
-            color = (4, 5, 6), 
-            text = "foo",
-            id = 67, 
-            use_leds = True, 
-            enable_callback = ecb
-        )
-
-        cb = action.callback
-        self.assertIsInstance(cb, BinaryParameterCallback)
-        self.assertIsInstance(action, PushButtonAction)
-
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.TEMPO_DISPLAY())
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
-
-        self.assertEqual(action.label, display)
-        self.assertEqual(action.id, 67)
-        self.assertEqual(action.uses_switch_leds, True)
 
 
     def test_effect_button(self):

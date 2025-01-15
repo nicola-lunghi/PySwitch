@@ -42,6 +42,42 @@ class MockControllerReplacement(Updater):
 class TestControllerFootswitch(unittest.TestCase):
 
     def test_actions(self):
+        appl = MockControllerReplacement(num_leds=5)
+        switch_1 = MockSwitch()
+        
+        action_1 = MockAction()
+        action_2 = MockAction()
+
+        fs = FootSwitchController(appl, {
+            "assignment": {
+                "model": switch_1,
+                "pixels": (2, 4)                
+            },
+            "actions": [
+                action_1,
+                action_2,
+            ]
+        })
+
+        switch_1.shall_be_pushed = True
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_2.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+
+        switch_1.shall_be_pushed = False
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_2.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 1)
+        self.assertEqual(action_2.num_release_calls, 1)
+
+    ####################################################################
+
+    def test_actions_disabled(self):
         appl = MockControllerReplacement()
         switch_1 = MockSwitch()
 
@@ -230,7 +266,7 @@ class TestControllerFootswitch(unittest.TestCase):
         
         self.assertEqual(appl.led_driver.leds, [(0, 0, 0), (5, 10, 20), (20, 40, 80), (50, 100, 200), (50, 100, 200)])
 
-##############################################################################
+    ##############################################################################
 
     def test_invalid_colors_and_brightnesses(self):
         appl = MockControllerReplacement(num_leds=5)
@@ -252,8 +288,7 @@ class TestControllerFootswitch(unittest.TestCase):
         with self.assertRaises(Exception):            
             fs.brightnesses = [1]
 
-        
-##############################################################################
+    ##############################################################################
 
     def test_no_pixels(self):
         appl = MockControllerReplacement(num_leds=5)
@@ -268,3 +303,77 @@ class TestControllerFootswitch(unittest.TestCase):
         fs.brightnesses = [0, 1]
         self.assertEqual(fs.brightnesses, [])
 
+    ##############################################################################
+
+    def test_strobe_order(self):
+        appl = MockControllerReplacement(num_leds=5)
+        switch_1 = MockSwitch()
+
+        for order in range(0, 10):
+            fs = FootSwitchController(appl, {
+                "assignment": {
+                    "model": switch_1,
+                    "pixels": (2, 4),
+                    "strobeOrder": order
+                }
+            })
+
+            self.assertEqual(fs.strobe_order, order)
+
+    ##############################################################################
+
+    def test_default_strobe_order(self):
+        appl = MockControllerReplacement(num_leds=5)
+        switch_1 = MockSwitch()
+
+        fs = FootSwitchController(appl, {
+            "assignment": {
+                "model": switch_1,
+                "pixels": (2, 4)                
+            }
+        })
+
+        self.assertEqual(fs.strobe_order, 0)
+
+    ##############################################################################
+
+    def test_override_action(self):
+        appl = MockControllerReplacement(num_leds=5)
+        switch_1 = MockSwitch()
+        
+        action_1 = MockAction()
+        action_2 = MockAction()
+        action_o = MockAction()
+
+        fs = FootSwitchController(appl, {
+            "assignment": {
+                "model": switch_1,
+                "pixels": (2, 4)                
+            },
+            "actions": [
+                action_1,
+                action_2,
+            ]
+        })
+
+        fs.override_action = action_o
+
+        switch_1.shall_be_pushed = True
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 0)
+        self.assertEqual(action_2.num_push_calls, 0)
+        self.assertEqual(action_o.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+        self.assertEqual(action_o.num_release_calls, 0)
+
+        switch_1.shall_be_pushed = False
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 0)
+        self.assertEqual(action_2.num_push_calls, 0)
+        self.assertEqual(action_o.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+        self.assertEqual(action_o.num_release_calls, 1)

@@ -80,3 +80,23 @@ class TestDisplaySplitContainer(unittest.TestCase):
         self.assertEqual(el_2.bounds, DisplayBounds(20, 230, 500, 200))        
         self.assertEqual(el_3.bounds, DisplayBounds(20, 430, 500, 200))        
 
+
+    def test_no_active_children(self):
+        cont = DisplaySplitContainer(
+            bounds = DisplayBounds(20, 30, 500, 600)
+        )
+
+        cont.init(None, None)
+
+        # Must not throw
+        cont.add(None)
+
+        # Add an element for testing later lines
+        el_1 = DisplayElement()
+
+        cont.add(el_1)
+        cont.init(None, None)
+
+        
+
+        

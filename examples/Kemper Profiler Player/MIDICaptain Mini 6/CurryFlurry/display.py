@@ -20,7 +20,8 @@ _DISPLAY_HEIGHT = const(240)
 #############################################################################################################################################
 
 Splashes = TunerDisplayCallback(
-    splash_default = DisplayElement(
+    strobe = True,
+    plash_default = DisplayElement(
         bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
         children = [
             # Rig name

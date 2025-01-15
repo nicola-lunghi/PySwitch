@@ -7,12 +7,11 @@
 from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
-from pyswitch.controller.actions import PushButtonAction
-from pyswitch.controller.callbacks import BinaryParameterCallback
 
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings
+from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
+##############################################################################################################################################
 
 # Defines the switch assignments
 Switches = [
@@ -21,8 +20,16 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
+            KemperActionDefinitions.TAP_TEMPO(use_leds = False),
+            KemperActionDefinitions.SHOW_TEMPO(    # Shows beats with the LED(s)
+                led_brightness_on = 0.02,
+                led_brightness_off = 0
+            )
+        ],
+        "actionsHold": [
             KemperActionDefinitions.TUNER_MODE(
-                display = DISPLAY_HEADER_1
+                display = DISPLAY_HEADER_1,
+                text = "Tap|Tune"
             )            
         ]
     },
@@ -31,41 +38,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            # Tap tempo / Tempo display
-            KemperActionDefinitions.TAP_TEMPO(use_leds = False),
-            KemperActionDefinitions.SHOW_TEMPO()    # Shows beats with the LED(s)
-        ],
-        "actionsHold": [
-            # Enable delay (also on disable!)
-            PushButtonAction({
-                "callback": BinaryParameterCallback(
-                    mapping = KemperMappings.EFFECT_STATE(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY)                            
-                ),
-                "mode": PushButtonAction.ENABLE,
-            }),
-
             # Freeze on/off
-            PushButtonAction({
-                "callback": BinaryParameterCallback(
-                    mapping = KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
-                    text = "Tap|Frz",
-                    color = Colors.GREEN
-                ),
-                "mode": PushButtonAction.LATCH,
-                "display": DISPLAY_HEADER_2,
-                "useSwitchLeds": True
-            }),                    
-
-            # # Set delay mix to a fix value when enabled, remembering the old setting
-            # PushButtonAction({
-            #     "callback": BinaryParameterCallback(
-            #         mapping = KemperMappings.DELAY_MIX(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY),
-            #         value_enable = NRPN_VALUE(0.5),  # 100%
-            #         value_disable = "auto",
-            #         comparison_mode = BinaryParameterCallback.EQUAL,
-            #     ),
-            #     "mode": PushButtonAction.LATCH
-            # })
+            KemperActionDefinitions.BINARY_SWITCH(
+                mapping = KemperMappings.FREEZE_ALL_GLOBAL(),
+                display = DISPLAY_HEADER_2,
+                text = "Freeze",
+                color = Colors.LIGHT_GREEN
+            )
         ]
     },
 
@@ -73,10 +52,15 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
-                display = DISPLAY_FOOTER_1
-            )
+            KemperActionDefinitions.RIG_SELECT(
+                rig = 4,
+                rig_off = "auto",
+                auto_exclude_rigs = (4, 5),
+                display = DISPLAY_FOOTER_1,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+                color = Colors.PINK,
+                text = "Synth-4"
+            )   
         ]
     },
     
@@ -84,9 +68,14 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
-                display = DISPLAY_FOOTER_2
+            KemperActionDefinitions.RIG_SELECT(
+                rig = 5,
+                rig_off = "auto",
+                auto_exclude_rigs = (4, 5),
+                display = DISPLAY_FOOTER_2,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+                color = Colors.RED,
+                text = "Lead-5"
             )
         ]
     },

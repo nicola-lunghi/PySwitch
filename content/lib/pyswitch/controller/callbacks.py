@@ -142,7 +142,7 @@ class BinaryParameterCallback(Callback):
         super().__init__(mappings = [mapping])
 
         self.__mapping = mapping
-        self.__mapping_disable = mapping_disable
+        self.mapping_disable = mapping_disable   # Can be changed from outside!
 
         self.__value_enable = value_enable
         self.__value_disable = value_disable
@@ -197,8 +197,8 @@ class BinaryParameterCallback(Callback):
             set_mapping = self.__mapping
             value = self.__value_enable
         else:
-            if self.__mapping_disable:
-                set_mapping = self.__mapping_disable
+            if self.mapping_disable:
+                set_mapping = self.mapping_disable
             else:
                 set_mapping = self.__mapping
 

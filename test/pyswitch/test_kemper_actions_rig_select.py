@@ -549,7 +549,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         action.init(appl, switch)
 
         mapping = action.callback._BinaryParameterCallback__mapping   
-        mapping_disable = action.callback._BinaryParameterCallback__mapping_disable
+        mapping_disable = action.callback.mapping_disable
 
         mapping.value = bank * NUM_RIGS_PER_BANK + 3   # Not matching (Rig 3)
         action.update_displays()
@@ -670,3 +670,79 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
         self.assertEqual(action_select.enabled, False)
         self.assertEqual(action_morph.enabled, False)
+
+
+############################################################################################################
+
+    def test_auto_rig_off(self):
+        bank = 0
+        action = KemperActionDefinitions.RIG_SELECT(
+            rig = 3,
+            rig_off = "auto"
+        )
+
+        appl = MockController2()
+        switch = MockFootswitch(actions = [action])
+        action.init(appl, switch)
+
+        mapping = action.callback._BinaryParameterCallback__mapping   
+
+        mapping.value = bank * NUM_RIGS_PER_BANK + 1   # Not matching (Rig 1)
+        action.update_displays()
+        self.assertEqual(action.state, False)
+        
+        # Select on rig
+        action.push()
+        action.release()
+
+        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(appl.client.set_calls[0], {
+            "mapping": mapping,
+            "value": [1, 0]
+        })
+
+        mapping.value = bank * NUM_RIGS_PER_BANK + 2   # On rig
+        action.update_displays()
+        self.assertEqual(action.state, True)
+
+        # Select off rig
+        action.push()
+        action.release()
+
+        self.assertEqual(action.callback.mapping_disable, KemperMappings.RIG_SELECT(1))
+
+        self.assertEqual(len(appl.client.set_calls), 2)
+        self.assertEqual(appl.client.set_calls[1], {
+            "mapping": action.callback.mapping_disable,
+            "value": [1, 0]
+        })
+
+        mapping.value = bank * NUM_RIGS_PER_BANK + 4  # Off rig
+        action.update_displays()
+        self.assertEqual(action.state, False)
+
+        # Select on rig
+        action.push()
+        action.release()
+
+        self.assertEqual(len(appl.client.set_calls), 3)
+        self.assertEqual(appl.client.set_calls[2], {
+            "mapping": mapping,
+            "value": [1, 0]
+        })
+
+        mapping.value = bank * NUM_RIGS_PER_BANK + 2 # On rig
+        action.update_displays()
+        self.assertEqual(action.state, True)
+
+        # Select off rig
+        action.push()
+        action.release()
+
+        self.assertEqual(action.callback.mapping_disable, KemperMappings.RIG_SELECT(4))
+
+        self.assertEqual(len(appl.client.set_calls), 4)
+        self.assertEqual(appl.client.set_calls[3], {
+            "mapping": action.callback.mapping_disable,
+            "value": [1, 0]
+        })

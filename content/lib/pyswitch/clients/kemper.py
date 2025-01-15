@@ -41,6 +41,9 @@ CC_ROTARY_SPEED = const(33)     # 1 = Fast, 0 = Slow
 CC_MORPH_PEDAL = const(11)
 CC_MORPH_BUTTON = const(80)     # Also includes ride/fall times
 CC_RIG_INDEX_PART_1 = const(32) # The second part will be sent as program change.
+CC_ROTARY_SPEED_GLOBAL = const(33)
+CC_FREEZE_DELAYS_GLOBAL = const(34)
+CC_FREEZE_ALL_GLOBAL = const(35)
 
 CC_EFFECT_BUTTON_I = const(75)  # II to IV are consecutive from this: 76, 77, 78
 
@@ -90,6 +93,7 @@ NRPN_CABINET_PARAMETER_STATE = const(0x02)
 
 # NRPN String parameters
 NRPN_STRING_PARAMETER_ID_RIG_NAME = const(0x01)
+NRPN_STRING_PARAMETER_ID_RIG_COMMENT = const(0x04)
 NRPN_STRING_PARAMETER_ID_RIG_DATE = const(0x03)
 NRPN_STRING_PARAMETER_ID_AMP_NAME = const(0x10)
 NRPN_STRING_PARAMETER_ID_CABINET_NAME = const(0x20)
@@ -261,12 +265,14 @@ class KemperActionDefinitions:
     
     # Show tempo (visual feedback, will be enabled for short time every beat)
     @staticmethod
-    def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, text = "Tempo", id = False, use_leds = True, enable_callback = None):
+    def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, text = "Tempo", id = False, use_leds = True, enable_callback = None, led_brightness_on = None, led_brightness_off = None):
         return PushButtonAction({
             "callback": BinaryParameterCallback(
                 mapping = KemperMappings.TEMPO_DISPLAY(),
                 text = text,
-                color = color
+                color = color,
+                led_brightness_on = led_brightness_on,
+                led_brightness_off = led_brightness_off
             ),
             "display": display,
             "id": id,
@@ -473,7 +479,7 @@ class KemperActionDefinitions:
     # the current bank. Rigs are indexed starting from one, range: [1..5].
     @staticmethod
     def RIG_SELECT(rig, 
-                   rig_off = None, 
+                   rig_off = None,                                 # Set to "auto" to always remember the "off" rig
                    display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
                    display = None, 
                    id = False, 
@@ -482,7 +488,8 @@ class KemperActionDefinitions:
                    color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
                    color = None,                                   # Color override (if no text callback is passed)
                    text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                   text = None                                     # Text override (if no text callback is passed)
+                   text = None,                                    # Text override (if no text callback is passed)
+                   auto_exclude_rigs = None                        # If rig_off is "auto", this can be filled with a tuple or list of rigs to exclude from "remembering" when disabled
         ):
         
         # Finally we can create the action definition ;)
@@ -491,9 +498,9 @@ class KemperActionDefinitions:
             "mode": PushButtonAction.LATCH,
             "id": id,
             "useSwitchLeds": use_leds,
-            "callback": KemperActionDefinitions._RigAndBankSelectCallback(
+            "callback": KemperActionDefinitions._RigSelectCallback(
                 mapping = KemperMappings.RIG_SELECT(rig - 1),
-                mapping_disable = None if rig_off == None else KemperMappings.RIG_SELECT(rig_off - 1),
+                mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.RIG_SELECT(rig_off - 1),
                 value_enable = [1, 0],
                 value_disable = [1, 0],
                 rig = rig,
@@ -504,8 +511,8 @@ class KemperActionDefinitions:
                 color_callback = color_callback,
                 display_mode = display_mode,
                 text = text,
-                text_callback = text_callback
-
+                text_callback = text_callback,
+                auto_exclude_rigs = auto_exclude_rigs
             ),
             "enableCallback": enable_callback
         })
@@ -515,8 +522,8 @@ class KemperActionDefinitions:
     @staticmethod
     def RIG_AND_BANK_SELECT(rig, 
                             bank, 
-                            rig_off = None, 
-                            bank_off = None,
+                            rig_off = None,                                 # Set to "auto" to always remember the "off" rig
+                            bank_off = None,                                # Set to "auto" to always remember the "off" bank
                             display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
                             display = None, 
                             id = False, 
@@ -531,19 +538,19 @@ class KemperActionDefinitions:
         # Alternate rig (the rig selected when the switch state is False)
         if rig_off != None:
             if bank_off == None:
-                raise Exception() #"Also provide bank_off")
-        
+                raise Exception() #"Also provide bank_off")        
+
         # Finally we can create the action definition ;)
         return PushButtonAction({
             "display": display,
             "mode": PushButtonAction.LATCH,
             "id": id,
             "useSwitchLeds": use_leds,
-            "callback": KemperActionDefinitions._RigAndBankSelectCallback(
+            "callback": KemperActionDefinitions._RigSelectCallback(
                 mapping = KemperMappings.BANK_AND_RIG_SELECT(rig - 1),
-                mapping_disable = None if rig_off == None else KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1),
+                mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1),
                 value_enable = [bank - 1, 1, 0],
-                value_disable = [bank - 1, 1, 0] if bank_off == None else [bank_off - 1, 1, 0],
+                value_disable = [bank - 1, 1, 0] if (bank_off == None or bank_off == "auto") else [bank_off - 1, 1, 0],
                 rig = rig,
                 rig_off = rig_off,
                 bank = bank,
@@ -930,21 +937,22 @@ class KemperActionDefinitions:
                    
 
     # Callback implementation for Rig Select, showing bank colors and rig/bank info
-    class _RigAndBankSelectCallback(BinaryParameterCallback):
+    class _RigSelectCallback(BinaryParameterCallback):
         def __init__(self,
                      mapping,
                      mapping_disable,
                      value_enable,
                      value_disable,
                      rig,
-                     rig_off,
+                     rig_off,                     
                      bank,
                      bank_off,
                      color,
                      color_callback,
                      display_mode,
                      text,
-                     text_callback           
+                     text_callback,
+                     auto_exclude_rigs = None
             ):
             super().__init__(
                 mapping = mapping,
@@ -959,9 +967,12 @@ class KemperActionDefinitions:
             self.__current_state = -1
             self.__mapping = mapping
             self.__bank = bank
-            self.__bank_off = bank_off
+            self.__bank_off = bank_off if bank_off != "auto" else 1
             self.__rig = rig
-            self.__rig_off = rig_off
+            self.__rig_off = rig_off if rig_off != "auto" else 1
+
+            self.__rig_off_auto = True if rig_off == "auto" else False
+            self.__bank_off_auto = (bank != None) if bank_off == "auto" else False
 
             self.__color_callback = color_callback
             self.__color = color
@@ -971,6 +982,8 @@ class KemperActionDefinitions:
 
             self.__display_mode = display_mode
 
+            self.__auto_exclude_rigs = auto_exclude_rigs
+
         def init(self, appl, listener = None):
             super().init(appl, listener)
 
@@ -979,19 +992,6 @@ class KemperActionDefinitions:
             self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
 
         def update_displays(self, action):
-            if self.__mapping.value != self.__current_value or action.state != self.__current_state:
-                if self.__bank != None:
-                    self.evaluate_value(action, self.__mapping.value)
-                else:
-                    if self.__mapping.value != None:
-                        curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
-                        action.feedback_state(curr_rig == self.__rig - 1) 
-                    else:
-                        action.feedback_state(False)            
-
-                self.__current_value = self.__mapping.value
-                self.__current_state = action.state
-
             if self.__mapping.value == None:
                 if action.label:
                     action.label.text = ""
@@ -1003,7 +1003,31 @@ class KemperActionDefinitions:
             
             # Calculate bank and rig numbers in range [0...]
             curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
-            curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK                
+            curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
+
+            if self.__mapping.value != self.__current_value or action.state != self.__current_state:
+                if self.__bank != None:
+                    self.evaluate_value(action, self.__mapping.value)
+                else:
+                    if self.__mapping.value != None:                        
+                        action.feedback_state(curr_rig == self.__rig - 1) 
+                    else:
+                        action.feedback_state(False)            
+
+                self.__current_value = self.__mapping.value
+                self.__current_state = action.state
+
+                # Auto rig off: If we are not on the "on" rig, set the current rig as "off" rig
+                if (not self.__auto_exclude_rigs or (curr_rig + 1) not in self.__auto_exclude_rigs) and self.__rig_off_auto and curr_rig != self.__rig - 1:
+                    if self.__bank != None:
+                        self.mapping_disable = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
+                    else:
+                        self.mapping_disable = KemperMappings.RIG_SELECT(curr_rig)
+
+                if self.__bank_off_auto and curr_bank != self.__bank - 1:
+                    self.__bank_off = curr_bank + 1                    
+                    self.__value_disable[0] = curr_bank
+
             bank_color = self._get_color(action, curr_bank, curr_rig)                    
 
             if self.__bank != None:
@@ -1704,8 +1728,7 @@ class KemperMappings:
             )
         )
 
-    # Freeze for slot
-    @staticmethod
+    # Freeze for slots
     def FREEZE(slot_id):
         return KemperParameterMapping(
             name = "Freeze " + str(slot_id),
@@ -1726,6 +1749,20 @@ class KemperMappings:
             )
         )
     
+    # Freeze (global) for all reverb and delay modules (no feedback from kemper!)
+    def FREEZE_ALL_GLOBAL():
+        return KemperParameterMapping(
+            name = "Freeze All",
+            set = ControlChange(
+                CC_FREEZE_ALL_GLOBAL,
+                0
+            ),
+            response = ControlChange(  # Does not receive anything but is needed so that the callback shows the "fake state"
+                CC_FREEZE_ALL_GLOBAL,
+                0
+            )
+        )
+
     def DELAY_MIX(slot_id):
         return KemperParameterMapping(
             name = "Mix " + str(slot_id),
@@ -1769,6 +1806,23 @@ class KemperMappings:
                 NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
                 NRPN_ADDRESS_PAGE_STRINGS,
                 NRPN_STRING_PARAMETER_ID_RIG_NAME
+            ),
+            type = KemperParameterMapping.PARAMETER_TYPE_STRING
+        )
+
+    # Rig comment (request only)
+    def RIG_COMMENT(): 
+        return KemperParameterMapping(
+            name = "Rig Comment",
+            request = KemperNRPNMessage(               
+                NRPN_FUNCTION_REQUEST_STRING_PARAMETER,
+                NRPN_ADDRESS_PAGE_STRINGS,
+                NRPN_STRING_PARAMETER_ID_RIG_COMMENT
+            ),
+            response = KemperNRPNMessage(
+                NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
+                NRPN_ADDRESS_PAGE_STRINGS,
+                NRPN_STRING_PARAMETER_ID_RIG_COMMENT
             ),
             type = KemperParameterMapping.PARAMETER_TYPE_STRING
         )

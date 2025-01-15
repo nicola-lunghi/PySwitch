@@ -78,6 +78,7 @@ DISPLAY_FOOTER_2 = DisplayLabel(
 
 
 Splashes = TunerDisplayCallback(
+    strobe = True,
     splash_default = DisplayElement(
         bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
         children = [

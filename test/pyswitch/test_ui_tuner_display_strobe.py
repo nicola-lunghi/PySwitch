@@ -1,0 +1,370 @@
+import sys
+import unittest
+from unittest.mock import patch   # Necessary workaround! Needs to be separated.
+
+from .mocks_lib import *
+
+with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
+    "displayio": MockDisplayIO(),
+    "adafruit_display_text": MockAdafruitDisplayText(),
+    "usb_midi": MockUsbMidi(),
+    "adafruit_midi": MockAdafruitMIDI(),
+    "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+    "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
+    "gc": MockGC()
+}):
+    from adafruit_midi.system_exclusive import SystemExclusive
+
+    from lib.pyswitch.ui.elements import TunerDisplay
+
+    from .mocks_appl import *
+    from .mocks_ui import MockUiController
+
+
+class MockController2:
+    def __init__(self, switches = []):
+        self.client = MockClient()
+        self.switches = switches
+
+
+class MockFootSwitch:
+    def __init__(self, id = "", order = 0):
+        self.id = id
+        self.color = (0, 0, 0)
+        self.brightness = 0
+        self.strobe_order = order
+
+
+
+class TestTunerDisplayStrobe(unittest.TestCase):
+
+
+    def test_strobe(self):
+        self._test_strobe(2)
+        self._test_strobe(3)
+        self._test_strobe(4)
+        self._test_strobe(6)
+        self._test_strobe(8)
+        self._test_strobe(10)
+
+
+    def _test_strobe(self, num_switches):
+        self._test_strobe_directions(num_switches, interval = 10)
+        self._test_strobe_directions(num_switches, interval = 60)
+        self._test_strobe_directions(num_switches, interval = 330)
+        self._test_strobe_directions(num_switches, interval = 2, speed = 100)   # This runs the algorithm into the max. speed threshold
+
+
+    def _test_strobe_directions(self, num_switches, interval, speed = 2000, num_periods = 5):
+        # Upwards
+        self._test_strobe_direction(
+            num_switches = num_switches,
+            speed = speed,
+            num_periods = num_periods,
+            up = True,
+            interval = interval
+        )
+
+        # Downwards
+        self._test_strobe_direction(
+            num_switches = num_switches,
+            speed = speed,
+            num_periods = num_periods,
+            up = False,
+            interval = interval
+        )
+
+
+    def _test_strobe_direction(self, num_switches, speed, num_periods, up, interval):
+        mapping_1 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        mapping_2 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x10]
+            )
+        )
+
+        display = TunerDisplay(
+            mapping_note = mapping_1,
+            mapping_deviance = mapping_2,
+            layout = {
+                "font": "foo"
+            },
+            strobe = True,
+            strobe_speed = speed,
+            strobe_width = 0.2,
+            strobe_color = (100, 0, 0),
+            strobe_dim = 0.5,
+            strobe_max_fps = 12   # Not regarded because the period counter is overridden
+        )
+
+        switch_1 = MockFootSwitch(id = 1, order = 3)
+        switch_2 = MockFootSwitch(id = 2, order = 2)
+        switch_3 = MockFootSwitch(id = 3, order = 0)
+        switch_4 = MockFootSwitch(id = 4, order = 100)
+        switch_5 = MockFootSwitch(id = 5, order = 105)
+        switch_6 = MockFootSwitch(id = 6, order = 102)
+        switch_7 = MockFootSwitch(id = 7, order = 103)
+        switch_8 = MockFootSwitch(id = 8, order = 104)
+        switch_9 = MockFootSwitch(id = 9, order = 110)
+        switch_10 = MockFootSwitch(id = 10, order = 106)
+
+        switches_sorted = [
+            switch_3,
+            switch_2,
+            switch_1,
+            switch_4,
+            switch_6,
+            switch_7,
+            switch_8,
+            switch_5, 
+            switch_10,
+            switch_9,
+        ]
+        
+        # Reduce switch list according to the number of switches to be tested
+        while len(switches_sorted) > num_switches:
+            switches_sorted.pop()
+
+        # Create list sorted by id (for passing to the mock controller)
+        switches_unsorted = [s for s in switches_sorted]
+        def key_id(sw):
+            return sw.id
+        switches_unsorted.sort(key = key_id)
+
+        self.assertEqual(len(switches_sorted), num_switches)
+        self.assertEqual(len(switches_unsorted), num_switches)
+
+        # Create mock controller and init the Tuner display with it
+        ui = MockUiController()
+        appl = MockController2(
+            switches = switches_unsorted
+        )
+        display.init(ui, appl)
+
+        self.assertEqual(display._TunerDisplay__num_switches, (num_switches / 2) if num_switches > 4 else num_switches)
+        self.assertEqual(display._TunerDisplay__enable_strobe, True)
+        self.assertEqual(display._TunerDisplay__strobe_period.interval, int(1000 / 12 * num_switches))
+
+        def get_maxima(count):
+            return self._find_n_maxima([s.brightness for s in switches_sorted], count)
+
+        period = MockPeriodCounter()
+        display._TunerDisplay__strobe_period = period
+
+        # Start test ################################################
+
+        # No update (period not exceeded)
+        mapping_2.value = 0
+        period.interval = interval
+
+        display.parameter_changed(mapping_2)
+
+        for switch in switches_sorted:
+            self.assertEqual(switch.color, (0, 0, 0))
+
+        for switch in switches_sorted:
+            self.assertEqual(switch.brightness, 0)
+
+        # Neutral value (this gives us the starting point)
+        mapping_2.value = 8191
+        period.passed = 20        
+        period.exceed_next_time = True
+        
+        display.parameter_changed(mapping_2)
+
+        for switch in switches_sorted:
+            self.assertEqual(switch.color, (100, 0, 0))
+
+        # Check maxima (must be at initial position(s) here)
+        num_maxima = 2 if num_switches > 4 else 1
+        maxima = get_maxima(num_maxima)
+
+        for m in range(len(maxima)):
+            self.assertEqual(switches_sorted[maxima[m]].brightness, 0.5)  
+
+        # Step through the range until the period has finished
+        diff = 911  # This value must be uneven to prevent equally bright switches (these are not analysed correctly by the algorithm determining the local maxima)
+        last_maxima = [m for m in maxima]
+        start_maxima = -1
+        check_maxima_list = []
+
+        if num_switches <= 1:
+            return
+
+        while len(check_maxima_list) <= (num_periods * num_maxima) or maxima != start_maxima:
+            mapping_2.value = (8191 + diff) if up else (8191 - diff)
+            period.passed = 120           
+
+            period.exceed_next_time = True
+            display.parameter_changed(mapping_2)
+
+            for switch in switches_sorted:
+                self.assertEqual(switch.color, (100, 0, 0))
+
+            maxima = get_maxima(num_maxima)
+            
+            # Check if the maxima move into the right direction.            
+            if maxima != None:
+                maxima.sort()
+                
+                if up:
+                    next_maxima = [(m + 1) if m < (num_switches - 1) else 0 for m in last_maxima]
+                else:
+                    next_maxima = [(m - 1) if m > 0 else (num_switches - 1) for m in last_maxima]
+                next_maxima.sort()
+
+                #print(repr(maxima) + "  " + repr(next_maxima) + " " + repr(last_maxima))
+
+                # There are only two allowed maxima: The current or the next
+                if maxima == last_maxima:
+                    pass
+                elif maxima == next_maxima:
+                    pass
+                else:
+                    self.fail("Invalid maxima for " + repr(num_switches) + " switches: " + repr(maxima) + ", last: " + repr(last_maxima) + ", data: " + repr([s.brightness for s in switches_sorted]))
+
+                if last_maxima != maxima:
+                    check_maxima_list.append(maxima)
+
+                    if start_maxima == -1:
+                        start_maxima = [m for m in last_maxima]
+                
+                    last_maxima = [m for m in maxima]
+        
+        # Check if all iterations are contained
+        num_values = int(num_switches / num_maxima)
+        for i in range(num_values):
+            exp_maxima = [i + (n * num_values) for n in range(num_maxima)]
+            self.assertIn(exp_maxima, check_maxima_list)
+
+        self.assertGreater(len(check_maxima_list), num_periods)
+        #print(check_maxima_list)
+
+
+    ########################################################################################
+
+
+    def test_no_strobe(self):
+        self._test_no_strobe(0)
+        self._test_no_strobe(1)
+
+
+    def _test_no_strobe(self, num_switches):
+        mapping_1 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        mapping_2 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x10]
+            )
+        )
+
+        display = TunerDisplay(
+            mapping_note = mapping_1,
+            mapping_deviance = mapping_2,
+            layout = {
+                "font": "foo"
+            },
+            strobe = True
+        )
+
+        switch_1 = MockFootSwitch(id = 1, order = 3)
+        switches = []
+        if num_switches == 1:
+            switches.append(switch_1)
+
+        # Create mock controller and init the Tuner display with it
+        ui = MockUiController()
+        appl = MockController2(
+            switches = switches
+        )
+        display.init(ui, appl)
+
+        self.assertEqual(display._TunerDisplay__enable_strobe, False)
+
+
+    ############################################################################################
+
+
+    # Returns a list containing the indices of {count} peak values of the passed data. 
+    # Taken from https://stackoverflow.com/questions/3242910/algorithm-to-locate-local-maxima
+    def _find_n_maxima(self, data, count):
+        if len(data) == 1:
+            return [0]
+
+        low = 0
+        high = max(data) - min(data)
+
+        for iteration in range(100):
+            mid = low + (high - low) / 2.0
+            maxima = self._find_maxima(data, mid)
+
+            if len(maxima) == count:
+                return maxima
+            
+            elif len(maxima) < count: 
+                # Threshold too high
+                high = mid
+
+            else: 
+                # Threshold too low
+                low = mid
+
+        # Failed
+        return None 
+
+
+    # Internally used by _find_n_maxima()
+    def _find_maxima(self, data, threshold):
+        # Search for maximum
+        def search(data, threshold, index, forward):
+            max_index = index
+            max_value = data[index]
+
+            if forward:
+                path = range(index + 1, len(data))
+            else:
+                path = range(index - 1, -1, -1)
+            
+            for i in path:
+                if data[i] > max_value:
+                    max_index = i
+                    max_value = data[i]
+                elif max_value - data[i] > threshold:
+                    break
+
+            return max_index, i
+        
+        # Forward pass
+        forward = set()
+        index = 0
+        while index < len(data) - 1:
+            maximum, index = search(data, threshold, index, True)
+            forward.add(maximum)
+            index += 1
+        
+        # Reverse pass
+        reverse = set()
+        index = len(data) - 1
+        while index > 0:
+            maximum, index = search(data, threshold, index, False)
+            reverse.add(maximum)
+            index -= 1
+
+        return sorted(forward & reverse)

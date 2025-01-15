@@ -387,6 +387,10 @@ class TunerDisplay(DisplayElement):
         if self.__mapping_deviance:
             self.__appl.client.register(self.__mapping_deviance, self)
         
+        # Disable strobe if too few switches are defined
+        if len(self.__appl.switches) <= 1:
+            self.__enable_strobe = False
+
         if self.__enable_strobe:
             # Bring the switches into the correct order for strobe
             self.__strobe_switches = [s for s in self.__appl.switches]
