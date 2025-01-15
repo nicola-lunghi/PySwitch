@@ -144,9 +144,9 @@ class BinaryParameterCallback(Callback):
         self.__mapping = mapping
         self.mapping_disable = mapping_disable   # Can be changed from outside!
 
-        self.__value_enable = value_enable
-        self.__value_disable = value_disable
-        self.__reference_value = reference_value if reference_value != None else ( self.__value_enable if not isinstance(self.__value_enable, list) else self.__value_enable[0] )
+        self._value_enable = value_enable
+        self._value_disable = value_disable
+        self.__reference_value = reference_value if reference_value != None else ( self._value_enable if not isinstance(self._value_enable, list) else self._value_enable[0] )
         self.__text = text
         self.__text_disabled = text_disabled
         self.__comparison_mode = comparison_mode
@@ -161,10 +161,10 @@ class BinaryParameterCallback(Callback):
 
         # Auto mode for value_disable
         self.__update_value_disabled = False
-        if not isinstance(self.__value_disable, list):
-            self.__update_value_disabled = (self.__value_disable == "auto")
+        if not isinstance(self._value_disable, list):
+            self.__update_value_disabled = (self._value_disable == "auto")
         else:
-            self.__update_value_disabled = [v == "auto" for v in self.__value_disable]            
+            self.__update_value_disabled = [v == "auto" for v in self._value_disable]            
 
     def init(self, appl, listener = None):
         super().init(appl, listener)
@@ -195,21 +195,21 @@ class BinaryParameterCallback(Callback):
     def state_changed_by_user(self, action):
         if action.state:
             set_mapping = self.__mapping
-            value = self.__value_enable
+            value = self._value_enable
         else:
             if self.mapping_disable:
                 set_mapping = self.mapping_disable
             else:
                 set_mapping = self.__mapping
 
-            value = self.__value_disable
+            value = self._value_disable
 
-        if not isinstance(self.__value_disable, list):
+        if not isinstance(self._value_disable, list):
             if value != "auto":
                 self.__appl.client.set(set_mapping, value)
         else:
             auto_contained = False
-            for v in self.__value_disable:
+            for v in self._value_disable:
                 if v == "auto":
                     auto_contained = True
                     break
@@ -282,12 +282,12 @@ class BinaryParameterCallback(Callback):
         if state == True or not self.__update_value_disabled or value == None:
             return
         
-        if not isinstance(self.__value_disable, list):
-            self.__value_disable = value
+        if not isinstance(self._value_disable, list):
+            self._value_disable = value
         else:
-            for i in range(len(self.__value_disable)):
+            for i in range(len(self._value_disable)):
                 if self.__update_value_disabled[i]:
-                    self.__value_disable[i] = value
+                    self._value_disable[i] = value
 
     # Update switch brightness
     def set_switch_color(self, action, color):

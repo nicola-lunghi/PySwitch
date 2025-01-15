@@ -418,7 +418,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         def prep2():
             switch_1.shall_be_pushed = False
-            self.assertEqual(cb._BinaryParameterCallback__value_disable, "auto")
+            self.assertEqual(cb._value_disable, "auto")
 
         def eval2():
             # Nothing must have been sent because we still have no disabling value
@@ -447,7 +447,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         def eval3():            
             self.assertEqual(action_1.state, False)
-            self.assertEqual(cb._BinaryParameterCallback__value_disable, 6)
+            self.assertEqual(cb._value_disable, 6)
 
             return True     
         
@@ -483,7 +483,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         def eval5():            
             self.assertEqual(action_1.state, True)
-            self.assertEqual(cb._BinaryParameterCallback__value_disable, 6)
+            self.assertEqual(cb._value_disable, 6)
 
             return True  
                 
@@ -623,7 +623,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         def prep2():
             switch_1.shall_be_pushed = False
-            self.assertEqual(cb._BinaryParameterCallback__value_disable, [4, "auto"])
+            self.assertEqual(cb._value_disable, [4, "auto"])
 
         def eval2():
             self.assertEqual(len(mapping_1.set_value_calls), 0)
@@ -651,7 +651,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         def eval3():            
             self.assertEqual(action_1.state, False)
-            self.assertEqual(cb._BinaryParameterCallback__value_disable, [4, 7])
+            self.assertEqual(cb._value_disable, [4, 7])
 
             return True     
         
@@ -688,7 +688,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         def eval5():            
             self.assertEqual(action_1.state, True)
-            self.assertEqual(cb._BinaryParameterCallback__value_disable, [4, 7])
+            self.assertEqual(cb._value_disable, [4, 7])
 
             return True     
         

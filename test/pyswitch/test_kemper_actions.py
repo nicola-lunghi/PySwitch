@@ -70,8 +70,8 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(action, PushButtonAction)
 
         self.assertEqual(cb._BinaryParameterCallback__mapping, mapping_1)
-        self.assertEqual(cb._BinaryParameterCallback__value_enable, 3)
-        self.assertEqual(cb._BinaryParameterCallback__value_disable, 5)
+        self.assertEqual(cb._value_enable, 3)
+        self.assertEqual(cb._value_disable, 5)
         self.assertEqual(cb._BinaryParameterCallback__reference_value, 6)
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
         self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
@@ -205,8 +205,8 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.MORPH_BUTTON())
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
         self.assertEqual(cb._BinaryParameterCallback__color, (3, 4, 5))
-        self.assertEqual(cb._BinaryParameterCallback__value_enable, 1)
-        self.assertEqual(cb._BinaryParameterCallback__value_disable, 0)
+        self.assertEqual(cb._value_enable, 1)
+        self.assertEqual(cb._value_disable, 0)
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -236,8 +236,8 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.MORPH_BUTTON())
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__value_enable, 1)
-        self.assertEqual(cb._BinaryParameterCallback__value_disable, 0)
+        self.assertEqual(cb._value_enable, 1)
+        self.assertEqual(cb._value_disable, 0)
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -311,8 +311,8 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.RIG_VOLUME())
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__value_enable, exp_value_enable)
-        self.assertEqual(cb._BinaryParameterCallback__value_disable, exp_value_disable)
+        self.assertEqual(cb._value_enable, exp_value_enable)
+        self.assertEqual(cb._value_disable, exp_value_disable)
         self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
 
         self.assertEqual(action.label, display)

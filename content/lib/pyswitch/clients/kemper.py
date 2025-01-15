@@ -499,10 +499,6 @@ class KemperActionDefinitions:
             "id": id,
             "useSwitchLeds": use_leds,
             "callback": KemperActionDefinitions._RigSelectCallback(
-                mapping = KemperMappings.RIG_SELECT(rig - 1),
-                mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.RIG_SELECT(rig_off - 1),
-                value_enable = [1, 0],
-                value_disable = [1, 0],
                 rig = rig,
                 rig_off = rig_off,
                 bank = None,
@@ -535,11 +531,6 @@ class KemperActionDefinitions:
                             text = None                                     # Text override (if no text callback is passed)
         ):
 
-        # Alternate rig (the rig selected when the switch state is False)
-        if rig_off != None:
-            if bank_off == None:
-                raise Exception() #"Also provide bank_off")        
-
         # Finally we can create the action definition ;)
         return PushButtonAction({
             "display": display,
@@ -547,10 +538,6 @@ class KemperActionDefinitions:
             "id": id,
             "useSwitchLeds": use_leds,
             "callback": KemperActionDefinitions._RigSelectCallback(
-                mapping = KemperMappings.BANK_AND_RIG_SELECT(rig - 1),
-                mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1),
-                value_enable = [bank - 1, 1, 0],
-                value_disable = [bank - 1, 1, 0] if (bank_off == None or bank_off == "auto") else [bank_off - 1, 1, 0],
                 rig = rig,
                 rig_off = rig_off,
                 bank = bank,
@@ -939,10 +926,6 @@ class KemperActionDefinitions:
     # Callback implementation for Rig Select, showing bank colors and rig/bank info
     class _RigSelectCallback(BinaryParameterCallback):
         def __init__(self,
-                     mapping,
-                     mapping_disable,
-                     value_enable,
-                     value_disable,
                      rig,
                      rig_off,                     
                      bank,
@@ -954,6 +937,21 @@ class KemperActionDefinitions:
                      text_callback,
                      auto_exclude_rigs = None
             ):
+            
+            if rig_off != None and bank != None and bank_off == None:
+                raise Exception() #"Also provide bank_off")        
+
+            if bank == None:
+                mapping = KemperMappings.RIG_SELECT(rig - 1)
+                mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.RIG_SELECT(rig_off - 1)
+                value_enable = [1, 0]
+                value_disable = [1, 0]
+            else:
+                mapping = KemperMappings.BANK_AND_RIG_SELECT(rig - 1)
+                mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1)
+                value_enable = [bank - 1, 1, 0]
+                value_disable = [bank - 1, 1, 0] if (bank_off == None or bank_off == "auto") else [bank_off - 1, 1, 0]
+
             super().__init__(
                 mapping = mapping,
                 mapping_disable = mapping_disable,
@@ -1026,7 +1024,7 @@ class KemperActionDefinitions:
 
                 if self.__bank_off_auto and curr_bank != self.__bank - 1:
                     self.__bank_off = curr_bank + 1                    
-                    self.__value_disable[0] = curr_bank
+                    self._value_disable[0] = curr_bank
 
             bank_color = self._get_color(action, curr_bank, curr_rig)                    
 
