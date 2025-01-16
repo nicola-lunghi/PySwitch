@@ -19,10 +19,9 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.ui.elements import TunerDisplay
+    from lib.pyswitch.controller.strobe import StrobeController
 
     from .mocks_appl import *
-    from .mocks_ui import MockUiController
 
 
 class MockController2:
@@ -40,7 +39,7 @@ class MockFootSwitch:
 
 
 
-class TestTunerDisplayStrobe(unittest.TestCase):
+class TestStrobeController(unittest.TestCase):
 
 
     def test_strobe(self):
@@ -94,18 +93,14 @@ class TestTunerDisplayStrobe(unittest.TestCase):
             )
         )
 
-        display = TunerDisplay(
-            mapping_note = mapping_1,
+        strobe = StrobeController(
+            mapping_state = mapping_1,
             mapping_deviance = mapping_2,
-            layout = {
-                "font": "foo"
-            },
-            strobe = True,
-            strobe_speed = speed,
-            strobe_width = 0.2,
-            strobe_color = (100, 0, 0),
-            strobe_dim = 0.5,
-            strobe_max_fps = 12   # Not regarded because the period counter is overridden
+            speed = speed,
+            width = 0.2,
+            color = (100, 0, 0),
+            dim_factor = 0.5,
+            max_fps = 12   # Not regarded because the period counter is overridden
         )
 
         switch_1 = MockFootSwitch(id = 1, order = 3)
@@ -146,21 +141,20 @@ class TestTunerDisplayStrobe(unittest.TestCase):
         self.assertEqual(len(switches_unsorted), num_switches)
 
         # Create mock controller and init the Tuner display with it
-        ui = MockUiController()
         appl = MockController2(
             switches = switches_unsorted
         )
-        display.init(ui, appl)
+        strobe.init(appl)
 
-        self.assertEqual(display._TunerDisplay__num_switches, (num_switches / 2) if num_switches > 4 else num_switches)
-        self.assertEqual(display._TunerDisplay__enable_strobe, True)
-        self.assertEqual(display._TunerDisplay__strobe_period.interval, int(1000 / 12 * num_switches))
+        self.assertEqual(strobe._StrobeController__num_switches, (num_switches / 2) if num_switches > 4 else num_switches)
+        self.assertEqual(strobe._StrobeController__enabled, False)
+        self.assertEqual(strobe._StrobeController__period.interval, int(1000 / 12 * num_switches))
 
         def get_maxima(count):
             return self._find_n_maxima([s.brightness for s in switches_sorted], count)
 
         period = MockPeriodCounter()
-        display._TunerDisplay__strobe_period = period
+        strobe._StrobeController__period = period
 
         # Start test ################################################
 
@@ -168,7 +162,7 @@ class TestTunerDisplayStrobe(unittest.TestCase):
         mapping_2.value = 0
         period.interval = interval
 
-        display.parameter_changed(mapping_2)
+        strobe.parameter_changed(mapping_2)
 
         for switch in switches_sorted:
             self.assertEqual(switch.color, (0, 0, 0))
@@ -176,12 +170,33 @@ class TestTunerDisplayStrobe(unittest.TestCase):
         for switch in switches_sorted:
             self.assertEqual(switch.brightness, 0)
 
+        # Some value (tuner not active)
+        mapping_2.value = 8191 + 111
+        period.passed = 20        
+        period.exceed_next_time = True
+        
+        strobe.parameter_changed(mapping_2)
+
+        self.assertEqual(strobe._StrobeController__enabled, False)
+
+        for switch in switches_sorted:
+            self.assertEqual(switch.color, (0, 0, 0))
+
+        for switch in switches_sorted:
+            self.assertEqual(switch.brightness, 0)
+            
+        # Activate
+        mapping_1.value = 1
+        strobe.parameter_changed(mapping_1)
+
+        self.assertEqual(strobe._StrobeController__enabled, True)
+            
         # Neutral value (this gives us the starting point)
         mapping_2.value = 8191
         period.passed = 20        
         period.exceed_next_time = True
         
-        display.parameter_changed(mapping_2)
+        strobe.parameter_changed(mapping_2)
 
         for switch in switches_sorted:
             self.assertEqual(switch.color, (100, 0, 0))
@@ -207,7 +222,7 @@ class TestTunerDisplayStrobe(unittest.TestCase):
             period.passed = 120           
 
             period.exceed_next_time = True
-            display.parameter_changed(mapping_2)
+            strobe.parameter_changed(mapping_2)
 
             for switch in switches_sorted:
                 self.assertEqual(switch.color, (100, 0, 0))
@@ -275,13 +290,9 @@ class TestTunerDisplayStrobe(unittest.TestCase):
             )
         )
 
-        display = TunerDisplay(
-            mapping_note = mapping_1,
-            mapping_deviance = mapping_2,
-            layout = {
-                "font": "foo"
-            },
-            strobe = True
+        strobe = StrobeController(
+            mapping_state = mapping_1,
+            mapping_deviance = mapping_2
         )
 
         switch_1 = MockFootSwitch(id = 1, order = 3)
@@ -290,13 +301,18 @@ class TestTunerDisplayStrobe(unittest.TestCase):
             switches.append(switch_1)
 
         # Create mock controller and init the Tuner display with it
-        ui = MockUiController()
         appl = MockController2(
             switches = switches
         )
-        display.init(ui, appl)
+        strobe.init(appl)
 
-        self.assertEqual(display._TunerDisplay__enable_strobe, False)
+        self.assertEqual(strobe._StrobeController__enabled, False)
+
+        # Activate
+        mapping_1.value = 1
+        strobe.parameter_changed(mapping_1)
+
+        self.assertEqual(strobe._StrobeController__enabled, False)
 
 
     ############################################################################################

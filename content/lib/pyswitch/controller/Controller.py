@@ -98,15 +98,15 @@ class Controller(Updater): #ClientRequestListener
         else:
             self.client = Client(self.__midi, config)
 
-        # Set up the screen elements
-        if self.ui:
-            self.ui.init(self)
-            self.add_updateable(ui)
-
         # Set up switches
         self.switches = []
         for sw_def in switches:
             self.switches.append(FootSwitchController(self, sw_def))
+
+        # Set up the screen elements
+        if self.ui:
+            self.ui.init(self)
+            self.add_updateable(ui)
 
     # Runs the processing loop (which never ends)
     def process(self):
@@ -121,7 +121,7 @@ class Controller(Updater): #ClientRequestListener
         # Check memory usage and issue a warning if too high
         collect()
         if mem_free() < self.__memory_warn_limit:
-            do_print("LOW MEMORY: " + format_size(mem_free()))            
+            do_print(f"LOW MEMORY: { format_size(mem_free()) }")
             self.low_memory_warning = True
 
         # Consume all MIDI messages which might be still in some buffers, 
@@ -189,5 +189,5 @@ class Controller(Updater): #ClientRequestListener
     # Callback called when the measurement wants to show something
     def measurement_updated(self, measurement):
         collect()
-        do_print(fill_up_to(str(measurement.name), 30, '.') + ": Max " + repr(measurement.value) + "ms, Avg " + repr(measurement.average) + "ms, Calls: " + repr(measurement.calls) + ", Free: " + format_size(mem_free()))
+        do_print(f"{ fill_up_to(str(measurement.name), 30, '.') }: Max { repr(measurement.value) }ms, Avg { repr(measurement.average) }ms, Calls: { repr(measurement.calls) }, Free: { format_size(mem_free()) }")
 

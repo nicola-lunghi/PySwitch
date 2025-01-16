@@ -58,9 +58,10 @@ Config = {
     #"debugUnparsedMessages": True,                   # Shows all incoming MIDI messages which have not been parsed by the application.
     #"debugSentMessages": True,                       # Shows all sent messages
     #"excludeMessageTypes": [ "SystemExclusive" ],    # Types to excude from "debugUnparsedMessage"
+    #"debugClientStats": True,                        # Periodically shows client information (pending requests etc.). "debugStatsInterval" is used as period.
 
     # When a ClientParameterMapping instance is set here, incoming messages for this mapping will be shown.
-    #"debugMapping": KemperMappings.MORPH_BUTTON(),
+    #"debugMapping": KemperMappings.TUNER_MODE_STATE(),
 
     # Explore Mode: Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 

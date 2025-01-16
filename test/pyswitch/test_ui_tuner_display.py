@@ -104,8 +104,7 @@ class TestTunerDisplay(unittest.TestCase):
             deviance_height = 44,
             deviance_width = deviance_width,
             deviance_zoom = deviance_zoom,
-            scale = 2.33,
-            strobe = False
+            scale = 2.33
         )
 
         self.assertIsInstance(display.label_note, DisplayLabel)

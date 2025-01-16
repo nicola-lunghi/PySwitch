@@ -28,7 +28,7 @@ class ExploreAction(Action):
 
     def push(self):
         pixel_out = self.__trigger_pixel_search()
-        do_print("board." + self.__name + " " + pixel_out)
+        do_print(f"board.{ self.__name } { pixel_out }")
 
         if self.appl.ui:
             self.appl.pixel_display.text = pixel_out
@@ -46,7 +46,7 @@ class ExploreAction(Action):
         # Get output for pixel exploration
         num_switch_leds = len(self.appl.switches) * len(self.switch.pixels)
         pxstr = ", ".join([repr(current[i]) for i in range(self.appl.num_pixels_per_switch)])
-        return "Pixels: (" + pxstr + ") of " + repr(num_switch_leds)        
+        return f"Pixels: ({pxstr}) of {repr(num_switch_leds)}"
 
 
 ###########################################################################################################################
@@ -98,7 +98,7 @@ class ExploreModeController(Updater):
             # Try to initialize all available ports. This gets us the list of ports successfully assigned.
             ports_assigned = self.__init_switches(available_ports)
 
-            do_print("Explore mode: Assigned " + repr(len(ports_assigned)) + " ports")
+            do_print(f"Explore mode: Assigned { repr(len(ports_assigned)) } ports")
         else:
             # Try to initialize all available ports. This gets us the list of ports successfully assigned.
             ports_assigned = self.__init_switches(available_ports)
@@ -218,7 +218,7 @@ class ExploreModeController(Updater):
                 pass
 
             except Exception as ex:
-                do_print("Error assigning port " + port_def["name"] + ":")
+                do_print(f"Error assigning port { port_def["name"] }:")
                 raise ex 
 
         return ret

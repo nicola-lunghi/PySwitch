@@ -21,10 +21,7 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.TAP_TEMPO(use_leds = False),
-            KemperActionDefinitions.SHOW_TEMPO(    # Shows beats with the LED(s)
-                led_brightness_on = 0.02,
-                led_brightness_off = 0
-            )
+            KemperActionDefinitions.SHOW_TEMPO()    # Shows beats with the LED(s)
         ],
         "actionsHold": [
             KemperActionDefinitions.TUNER_MODE(
@@ -40,7 +37,7 @@ Switches = [
         "actions": [
             # Freeze on/off
             KemperActionDefinitions.BINARY_SWITCH(
-                mapping = KemperMappings.FREEZE_ALL_GLOBAL(),
+                mapping = KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
                 display = DISPLAY_HEADER_2,
                 text = "Freeze",
                 color = Colors.LIGHT_GREEN

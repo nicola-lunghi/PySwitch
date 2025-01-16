@@ -89,6 +89,10 @@ class Client: #(ClientRequestListener):
         self.debug_exclude_types = get_option(config, "excludeMessageTypes", None)
         self.debug_mapping = get_option(config, "debugMapping", None)
         
+        self.__debug_stats = get_option(config, "debugClientStats", False)
+        if self.__debug_stats:
+            self.__stats_period = PeriodCounter(get_option(config, "debugStatsInterval", 2000))
+
         # List of ClientRequest objects    
         self.__requests = []
 
@@ -172,6 +176,11 @@ class Client: #(ClientRequestListener):
     def receive(self, midi_message):
         if self.__cleanup_terminated_period.exceeded:
             self.__cleanup_hanging_requests()
+
+        if self.__debug_stats and self.__stats_period.exceeded:
+            do_print(f"    { len(self.__requests) } requests pending:")
+            for r in self.__requests:
+                do_print(f"{ r.mapping.name }: { repr([l.__class__.__name__ for l in r.listeners]) }")
 
         if not midi_message:
             return False
@@ -300,7 +309,7 @@ class ClientRequest(EventEmitter):
             return
 
         if self.client.debug_mapping == mapping:    # pragma: no cover
-            do_print(mapping.name + ": Received value '" + repr(mapping.value) + "' from " + stringify_midi_message(midi_message))
+            do_print(f"{ mapping.name }: Received value '{ repr(mapping.value) }' from { stringify_midi_message(midi_message) }")
 
         # Call the listeners (the mapping has the values set already)
         self.notify_listeners()

@@ -58,7 +58,7 @@ def get_current_millis():
 # Returns a readable string with the current timestamp (local time)
 def formatted_timestamp():
     ts = localtime()
-    return str(ts.tm_year) + "-" + "{:02d}".format(ts.tm_mon) + "-" + "{:02d}".format(ts.tm_mday) + " " + "{:02d}".format(ts.tm_hour) + ":" + "{:02d}".format(ts.tm_min) + ":" + "{:02d}".format(ts.tm_sec)
+    return f"{ str(ts.tm_year) }-{ "{:02d}".format(ts.tm_mon) }-{ "{:02d}".format(ts.tm_mday) } { "{:02d}".format(ts.tm_hour) }:{ "{:02d}".format(ts.tm_min) }:{ "{:02d}".format(ts.tm_sec) }"
 
 # Stringifies a MIDI message.
 def stringify_midi_message(midi_message):
@@ -68,7 +68,7 @@ def stringify_midi_message(midi_message):
     ret = ""
     if isinstance(midi_message, SystemExclusive):
         # SysEx
-        ret = _stringify_midi_message_part(midi_message.manufacturer_id) + _stringify_midi_message_part(midi_message.data) + " String: " + ''.join(chr(int(c)) for c in list(midi_message.data))
+        ret = f"{ _stringify_midi_message_part(midi_message.manufacturer_id) }{ _stringify_midi_message_part(midi_message.data) } String: { ''.join(chr(int(c)) for c in list(midi_message.data)) }"
 
     elif isinstance(midi_message, ControlChange):    
         # CC
@@ -87,7 +87,7 @@ def stringify_midi_message(midi_message):
         ret = repr(midi_message)
 
     # Add class name
-    return ret + " (" + midi_message.__class__.__name__ + ")"
+    return f"{ ret } ({ midi_message.__class__.__name__ })"
 
 # Internal helper for stringify_midi_message(): Creates a readable hex 
 # value list from the passed data.
@@ -100,7 +100,7 @@ def _stringify_midi_message_part(part):
             end = ""
         hexlist = hexlist + hex(intlist[i])[2:] + end
 
-    return "[" + hexlist + "]"
+    return f"[{ hexlist }]"
 
 # Compare two MIDI messages
 def compare_midi_messages(a, b):

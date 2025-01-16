@@ -203,11 +203,20 @@ class KemperActionDefinitions:
                 color = color
             )
 
-            self.__action = None
+            self.__just_clicked = False
 
         def init(self, appl, listener = None):
             super().init(appl, listener)
             self.__appl = appl
+
+        def state_changed_by_user(self, action):
+            # Code from BinaryParameterCallback.state_changed_by_user (implemented here directly to reduce stack size)
+            self.__appl.client.set(self.__mapping, self._value_enable if action.state else self._value_disable)
+            
+            # Request value
+            self.update()
+            
+            self.__just_clicked = True
 
         def parameter_changed(self, mapping):
             super().parameter_changed(mapping)
@@ -217,14 +226,8 @@ class KemperActionDefinitions:
             
             if self.__mapping.value == 1:
                 # Tuner on
-                def contains_action(switch, action):
-                    for a in switch.actions:
-                        if a == action:
-                            return True
-                                            
                 for switch in self.__appl.switches:
-                    if not contains_action(switch, self.__action):
-                        switch.override_action = self
+                    switch.override_action = self
                     
                     switch.color = Colors.WHITE
                     switch.brightness = self._led_brightness_off
@@ -236,14 +239,15 @@ class KemperActionDefinitions:
                     for action in switch.actions:
                         action.reset()
 
-        def update_displays(self, action):
-            self.__action = action
-            super().update_displays(action)
-
         def push(self):
             pass
 
         def release(self):
+            if self.__just_clicked:
+                # This prevents that the tuner button switches off the tuner immediately at releasing 
+                self.__just_clicked = False
+                return
+            
             self.__appl.client.set(self.__mapping, 0)  
 
 
@@ -265,7 +269,7 @@ class KemperActionDefinitions:
     
     # Show tempo (visual feedback, will be enabled for short time every beat)
     @staticmethod
-    def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, text = "Tempo", id = False, use_leds = True, enable_callback = None, led_brightness_on = None, led_brightness_off = None):
+    def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, text = "Tempo", id = False, use_leds = True, enable_callback = None, led_brightness_on = 0.02, led_brightness_off = 0):
         return PushButtonAction({
             "callback": BinaryParameterCallback(
                 mapping = KemperMappings.TEMPO_DISPLAY(),
@@ -324,16 +328,27 @@ class KemperActionDefinitions:
         })
     
     # Morph button (faded change of morph state) with fixed color.
-    def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None, color = Colors.WHITE):
-        return PushButtonAction({
-            "callback": BinaryParameterCallback(
+    def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None, color = "kemper"):
+        if color == "kemper":
+            cb = KemperMorphCallback(
+                mapping = KemperMappings.MORPH_BUTTON(),
+                text = text,
+                comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+                led_brightness_off = "on",
+                display_dim_factor_off = "on",
+            )
+        else:        
+            cb = BinaryParameterCallback(
                 mapping = KemperMappings.MORPH_BUTTON(),
                 text = text,
                 color = color,
                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
                 led_brightness_off = "on",
                 display_dim_factor_off = "on",
-            ),
+            )
+        
+        return PushButtonAction({
+            "callback": cb,
             "mode": PushButtonAction.MOMENTARY,
             "useSwitchLeds": use_leds,
             "display": display,
@@ -341,22 +356,22 @@ class KemperActionDefinitions:
             "enableCallback": enable_callback
         })
     
-    # Morph button (faded change of morph state) with colors representing morph state
-    def MORPH_BUTTON_WITH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
-        return PushButtonAction({
-            "callback": KemperMorphCallback(
-                mapping = KemperMappings.MORPH_BUTTON(),
-                text = text,
-                comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                led_brightness_off = "on",
-                display_dim_factor_off = "on",
-            ),
-            "mode": PushButtonAction.MOMENTARY,
-            "useSwitchLeds": use_leds,
-            "display": display,
-            "id": id,
-            "enableCallback": enable_callback
-        })
+    # # Morph button (faded change of morph state) with colors representing morph state
+    # def MORPH_BUTTON_WITH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
+    #     return PushButtonAction({
+    #         "callback": KemperMorphCallback(
+    #             mapping = KemperMappings.MORPH_BUTTON(),
+    #             text = text,
+    #             comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+    #             led_brightness_off = "on",
+    #             display_dim_factor_off = "on",
+    #         ),
+    #         "mode": PushButtonAction.MOMENTARY,
+    #         "useSwitchLeds": use_leds,
+    #         "display": display,
+    #         "id": id,
+    #         "enableCallback": enable_callback
+    #     })
     
     # Morph display only
     def MORPH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
@@ -479,7 +494,9 @@ class KemperActionDefinitions:
     # the current bank. Rigs are indexed starting from one, range: [1..5].
     @staticmethod
     def RIG_SELECT(rig, 
-                   rig_off = None,                                 # Set to "auto" to always remember the "off" rig
+                   rig_off = None,                                 # If set, this defines the "off" rig chosen when the action is disabled. Set to "auto" to always remember the current rig as "off" rig
+                   bank = None,                                    # If set, a specific bank is selected. If None, the current bank is kept
+                   bank_off = None,                                # If set, this defines the "off" bank to be chosen when the action is disabled. Set to "auto" to always remember the current bank as "off" bank
                    display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
                    display = None, 
                    id = False, 
@@ -501,8 +518,8 @@ class KemperActionDefinitions:
             "callback": KemperActionDefinitions._RigSelectCallback(
                 rig = rig,
                 rig_off = rig_off,
-                bank = None,
-                bank_off = None,
+                bank = bank,
+                bank_off = bank_off,
                 color = color,
                 color_callback = color_callback,
                 display_mode = display_mode,
@@ -511,45 +528,45 @@ class KemperActionDefinitions:
                 auto_exclude_rigs = auto_exclude_rigs
             ),
             "enableCallback": enable_callback
-        })
+        })   
     
-    # Selects a specific rig and bank, or toggles between two rigs (if rig_off is also provided). 
-    # Rigs are indexed starting from one, range: [1..5], as well as banks.
-    @staticmethod
-    def RIG_AND_BANK_SELECT(rig, 
-                            bank, 
-                            rig_off = None,                                 # Set to "auto" to always remember the "off" rig
-                            bank_off = None,                                # Set to "auto" to always remember the "off" bank
-                            display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
-                            display = None, 
-                            id = False, 
-                            use_leds = True, 
-                            enable_callback = None,
-                            color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                            color = None,                                   # Color override (if no color callback is passed)
-                            text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                            text = None                                     # Text override (if no text callback is passed)
-        ):
+    # # Selects a specific rig and bank, or toggles between two rigs (if rig_off is also provided). 
+    # # Rigs are indexed starting from one, range: [1..5], as well as banks.
+    # @staticmethod
+    # def RIG_AND_BANK_SELECT(rig, 
+    #                         bank, 
+    #                         rig_off = None,                                 # Set to "auto" to always remember the "off" rig
+    #                         bank_off = None,                                # Set to "auto" to always remember the "off" bank
+    #                         display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
+    #                         display = None, 
+    #                         id = False, 
+    #                         use_leds = True, 
+    #                         enable_callback = None,
+    #                         color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+    #                         color = None,                                   # Color override (if no color callback is passed)
+    #                         text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+    #                         text = None                                     # Text override (if no text callback is passed)
+    #     ):
 
-        # Finally we can create the action definition ;)
-        return PushButtonAction({
-            "display": display,
-            "mode": PushButtonAction.LATCH,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "callback": KemperActionDefinitions._RigSelectCallback(
-                rig = rig,
-                rig_off = rig_off,
-                bank = bank,
-                bank_off = bank_off,
-                color = color,
-                color_callback = color_callback,
-                text = text,
-                text_callback = text_callback,
-                display_mode = display_mode
-            ),
-            "enableCallback": enable_callback
-        })
+    #     # Finally we can create the action definition ;)
+    #     return PushButtonAction({
+    #         "display": display,
+    #         "mode": PushButtonAction.LATCH,
+    #         "id": id,
+    #         "useSwitchLeds": use_leds,
+    #         "callback": KemperActionDefinitions._RigSelectCallback(
+    #             rig = rig,
+    #             rig_off = rig_off,
+    #             bank = bank,
+    #             bank_off = bank_off,
+    #             color = color,
+    #             color_callback = color_callback,
+    #             text = text,
+    #             text_callback = text_callback,
+    #             display_mode = display_mode
+    #         ),
+    #         "enableCallback": enable_callback
+    #     })
     
     # Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). 
     # Banks are indexed starting from one, range: [1..126].
@@ -586,17 +603,21 @@ class KemperActionDefinitions:
         })
     
     # Adds morph state display on one LED to the rig select action. Returns a list of actions!
+    # For details on the parameters, see RIG_SELECT.
     @staticmethod
     def RIG_SELECT_AND_MORPH_STATE(rig, 
                                    rig_off = None, 
+                                   bank = None,
+                                   bank_off = None,
                                    display = None, 
                                    id = False, 
                                    use_leds = True, 
                                    enable_callback = None,
-                                   color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                                   color = None,                                   # Color override (if no text callback is passed)
-                                   text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                                   text = None,                                    # Text override (if no text callback is passed)
+                                   color_callback = None,
+                                   color = None,
+                                   text_callback = None,
+                                   text = None,
+                                   display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
                                    morph_display = None,                           # Optional DisplayLabel to show morph color
                                    morph_use_leds = True,                          # Use the LEDs to show morph state?
                                    morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
@@ -606,7 +627,9 @@ class KemperActionDefinitions:
         rig_select = KemperActionDefinitions.RIG_SELECT(
             rig = rig,
             rig_off = rig_off,
-            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+            bank = bank,
+            bank_off = bank_off,
+            display_mode = display_mode,
             display = display,
             id = id,
             use_leds = use_leds,
@@ -642,65 +665,65 @@ class KemperActionDefinitions:
         ]
     
 
-    # Adds morph state display on one LED to the rig and bank select action. Returns a list of actions!
-    @staticmethod
-    def RIG_AND_BANK_SELECT_AND_MORPH_STATE(rig, 
-                                            bank,
-                                            rig_off = None, 
-                                            bank_off = None,
-                                            display = None, 
-                                            id = False, 
-                                            use_leds = True, 
-                                            enable_callback = None,
-                                            color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                                            color = None,                                   # Color override (if no text callback is passed)
-                                            text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                                            text = None,                                    # Text override (if no text callback is passed)
-                                            morph_display = None,                           # Optional DisplayLabel to show morph color
-                                            morph_use_leds = True,                          # Use the LEDs to show morph state?
-                                            morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
-                                            morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
+    # # Adds morph state display on one LED to the rig and bank select action. Returns a list of actions!
+    # @staticmethod
+    # def RIG_AND_BANK_SELECT_AND_MORPH_STATE(rig, 
+    #                                         bank,
+    #                                         rig_off = None, 
+    #                                         bank_off = None,
+    #                                         display = None, 
+    #                                         id = False, 
+    #                                         use_leds = True, 
+    #                                         enable_callback = None,
+    #                                         color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+    #                                         color = None,                                   # Color override (if no text callback is passed)
+    #                                         text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+    #                                         text = None,                                    # Text override (if no text callback is passed)
+    #                                         morph_display = None,                           # Optional DisplayLabel to show morph color
+    #                                         morph_use_leds = True,                          # Use the LEDs to show morph state?
+    #                                         morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
+    #                                         morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
 
-    ):
-        rig_and_bank_select = KemperActionDefinitions.RIG_AND_BANK_SELECT(
-            rig = rig,
-            bank = bank,
-            rig_off = rig_off,
-            bank_off = bank_off,
-            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-            display = display,
-            id = id,
-            use_leds = use_leds,
-            enable_callback = enable_callback,
-            color_callback = color_callback,
-            color = color,
-            text_callback = text_callback,
-            text = text
-        )
+    # ):
+    #     rig_and_bank_select = KemperActionDefinitions.RIG_AND_BANK_SELECT(
+    #         rig = rig,
+    #         bank = bank,
+    #         rig_off = rig_off,
+    #         bank_off = bank_off,
+    #         display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+    #         display = display,
+    #         id = id,
+    #         use_leds = use_leds,
+    #         enable_callback = enable_callback,
+    #         color_callback = color_callback,
+    #         color = color,
+    #         text_callback = text_callback,
+    #         text = text
+    #     )
 
-        return [
-            # Rig and bank select action
-            rig_and_bank_select,
+    #     return [
+    #         # Rig and bank select action
+    #         rig_and_bank_select,
 
-            # Use a separate action to show morph state
-            PushButtonAction({
-                "callback": KemperMorphCallback(
-                    mapping = KemperMappings.MORPH_PEDAL(),
-                    comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                    led_brightness_off = "on",
-                    display_dim_factor_off = "on",
-                    suppress_send = True
-                ),
-                "useSwitchLeds": morph_use_leds,
-                "display": morph_display,
-                "id": morph_id if morph_id != None else id,
-                "enableCallback": KemperActionDefinitions._MorphDisplayEnableCallback(
-                    action_rig_select = rig_and_bank_select, 
-                    rig = rig, 
-                    morph_only_when_enabled = morph_only_when_enabled
-                )
-            })            
-        ]
+    #         # Use a separate action to show morph state
+    #         PushButtonAction({
+    #             "callback": KemperMorphCallback(
+    #                 mapping = KemperMappings.MORPH_PEDAL(),
+    #                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+    #                 led_brightness_off = "on",
+    #                 display_dim_factor_off = "on",
+    #                 suppress_send = True
+    #             ),
+    #             "useSwitchLeds": morph_use_leds,
+    #             "display": morph_display,
+    #             "id": morph_id if morph_id != None else id,
+    #             "enableCallback": KemperActionDefinitions._MorphDisplayEnableCallback(
+    #                 action_rig_select = rig_and_bank_select, 
+    #                 rig = rig, 
+    #                 morph_only_when_enabled = morph_only_when_enabled
+    #             )
+    #         })            
+    #     ]
     
     
     # Custom callback showing current bank color
@@ -1343,11 +1366,12 @@ class TunerDisplayCallback(Callback):
                  note_names = None,                        # If set, this must be a tuple or list of 12 note name strings starting at C.
                  strobe = True,                            # If set, all available switch LEDs will act as a strobe tuner.
                  strobe_color = Colors.WHITE,              # LED color for strobe tuner
-                 strobe_dim = 0.5,                         # Dim factor for strobe tuner in range [0..1]
+                 strobe_dim = 0.1,                         # Dim factor for strobe tuner in range [0..1]
                  strobe_speed = 1000,                      # Higher values make the strobe tuner go slower. 1000 is the recommended speed to start from.
-                 strobe_max_fps = 120                      # Maximum cumulative frame rate for update of strobe tuner LEDs. Reduce this to save processing power.
+                 strobe_max_fps = 120,                     # Maximum cumulative frame rate for update of strobe tuner LEDs. Reduce this to save processing power.
                                                            # The number will be divided by the amount of available switches to get the real max. frame rate (that's
                                                            # why it is called cumulative ;)
+                 strobe_reverse = True                     # If False, the strobe is rotating clockwise when too high / ccw when too low. If True, the other way round.
         ):
         Callback.__init__(self)
 
@@ -1371,13 +1395,29 @@ class TunerDisplayCallback(Callback):
                 color_neutral = color_neutral,
                 calibration_high = calibration_high,
                 calibration_low = calibration_low,
-                note_names = note_names,
-                strobe = strobe,
-                strobe_dim = strobe_dim,
-                strobe_speed = strobe_speed,
-                strobe_color = strobe_color,
-                strobe_max_fps = strobe_max_fps
+                note_names = note_names
             )
+
+        if strobe:
+            from ..controller.strobe import StrobeController
+
+            self.__strobe_controller = StrobeController(
+                mapping_state = KemperMappings.TUNER_MODE_STATE(),
+                mapping_deviance = KemperMappings.TUNER_DEVIANCE(),
+                dim_factor = strobe_dim,
+                speed = strobe_speed,
+                color = strobe_color,
+                max_fps = strobe_max_fps,
+                reverse = strobe_reverse
+            )
+        else:
+            self.__strobe_controller = None
+
+    def init(self, appl, listener = None):
+        Callback.init(self, appl, listener)
+
+        if self.__strobe_controller:
+            self.__strobe_controller.init(appl)
 
     def get_root(self):
         if self.__mapping.value != 1:
@@ -1670,7 +1710,7 @@ class KemperMappings:
     @staticmethod
     def EFFECT_STATE(slot_id):
         return KemperParameterMapping(
-            name = "Slot State " + str(slot_id),
+            name = f"Slot State { str(slot_id) }",
             set = ControlChange(
                 KemperEffectSlot.CC_EFFECT_SLOT_ENABLE[slot_id], 
                 0    # Dummy value, will be overridden
@@ -1691,7 +1731,7 @@ class KemperMappings:
     @staticmethod
     def EFFECT_TYPE(slot_id):
         return KemperParameterMapping(
-            name = "Slot Type " + str(slot_id),
+            name = f"Slot Type { str(slot_id) }",
             request = KemperNRPNMessage(               
                 NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
@@ -1708,7 +1748,7 @@ class KemperMappings:
     @staticmethod
     def ROTARY_SPEED(slot_id):
         return KemperParameterMapping(
-            name = "Rotary Speed " + str(slot_id),
+            name = f"Rot. Speed { str(slot_id) }",
             set = KemperNRPNMessage(
                 NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
@@ -1729,7 +1769,7 @@ class KemperMappings:
     # Freeze for slots
     def FREEZE(slot_id):
         return KemperParameterMapping(
-            name = "Freeze " + str(slot_id),
+            name = f"Freeze { str(slot_id) }",
             set = KemperNRPNMessage(
                 NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
                 NRPN_ADDRESS_PAGE_FREEZE,
@@ -1750,7 +1790,7 @@ class KemperMappings:
     # Freeze (global) for all reverb and delay modules (no feedback from kemper!)
     def FREEZE_ALL_GLOBAL():
         return KemperParameterMapping(
-            name = "Freeze All",
+            name = "Freeze",
             set = ControlChange(
                 CC_FREEZE_ALL_GLOBAL,
                 0
@@ -1763,7 +1803,7 @@ class KemperMappings:
 
     def DELAY_MIX(slot_id):
         return KemperParameterMapping(
-            name = "Mix " + str(slot_id),
+            name = f"Mix { str(slot_id) }",
             set = KemperNRPNMessage(
                 NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],
@@ -1784,7 +1824,7 @@ class KemperMappings:
     # Effect Button I-IIII (set only). num must be a number (1 to 4).
     def EFFECT_BUTTON(num): 
         return KemperParameterMapping(
-            name = "Effect Button " + repr(num),
+            name = f"Effect Button { repr(num) }",
             set = ControlChange(
                 CC_EFFECT_BUTTON_I + (num - 1),
                 0
@@ -2331,5 +2371,5 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         return 0x00 | (i << 0) | (s << 1) | (e << 2) | (n << 3) | (c << 4) | (t << 5)
 
     def __print(self, msg):                     # pragma: no cover
-        do_print("Bidirectional (" + formatted_timestamp() + "): " + msg + " (Received " + repr(self.__count_relevant_messages) + ")")
+        do_print(f"Bidirectional { formatted_timestamp() }): { msg } (Received { repr(self.__count_relevant_messages) })")
         self.__count_relevant_messages = 0

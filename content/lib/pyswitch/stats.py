@@ -34,7 +34,8 @@ class Memory:
 
         #Memory.ALLOCATED_BYTES_ZOOM = zoom
 
-        do_print(prefix_out + fill_up_to("Starting with " + format_size(free_bytes) + " of " + format_size(TOTAL_BYTES), 63)) # + Memory._visualize_free_bytes(free_bytes))
+        txt = fill_up_to(f"Starting with { format_size(free_bytes) } of { format_size(TOTAL_BYTES) }", 63)
+        do_print(f"{ prefix_out }{ txt }")
 
     # Prints the memory allocated since the last call
     @staticmethod
@@ -55,7 +56,7 @@ class Memory:
         alloc_out = "            " if allocated_bytes == 0 else format_size(allocated_bytes, fill_up_to_num = 12)
         free_out = format_size(free_bytes, fill_up_to_num = 15)
         free_vis = "" #Memory._visualize_free_bytes(free_bytes)
-        free_perc_out = fill_up_to(str(int(free_bytes / Memory.TOTAL_BYTES * 100)) + "%", 4)
+        free_perc_out = fill_up_to(f"{ str(int(free_bytes / Memory.TOTAL_BYTES * 100)) }%", 4)
 
         if allocated_bytes > 0:
             descr = "Allocated "
@@ -64,7 +65,7 @@ class Memory:
         else:
             descr = "          "
 
-        do_print(prefix_out + descr + alloc_out + " " + alloc_vis + " -> " + free_out + " " + free_perc_out + " " + free_vis)        
+        do_print(f"{ prefix_out }{ descr }{ alloc_out } { alloc_vis } -> { free_out } { free_perc_out } { free_vis }")
 
     # Returns free bytes of memory
     @staticmethod
@@ -75,7 +76,8 @@ class Memory:
     # Output formatting for the prefixes
     @staticmethod
     def _convert_prefix(prefix):
-        return fill_up_to(((prefix + " ") if prefix else ""), num_spaces_at_right = Memory.PREFIX_LENGTH, fill_char = ".") + " "
+        txt = fill_up_to((f"{ prefix } " if prefix else ""), num_spaces_at_right = Memory.PREFIX_LENGTH, fill_char = ".")
+        return f"{ txt } "
 
     # Returns a console visualization of free bytes
     #@staticmethod
