@@ -3,7 +3,7 @@
 This project provides an open source firmware for CircuitPy Microcontroller based MIDI controllers. It can control devices via MIDI based on a 
 generic configuration script. Features are:
 
-- Program (Foot)switches to send MIDI messages. Each switch can do multiple actions.
+- Program (Foot)switches to send MIDI messages. Each switch can do any amount of actions.
 - Request parameters via NRPN MIDI from the controlled device and evaluate them on a TFT screen or using NeoPixel LEDs (for example the rig/amp/IR names can be displayed)
 - Establish a bidirectional communication with the client device (implemented for the Kemper Profiler Player, but can be used for anything with similar protocol)
 - Use callbacks in the configuration to make functions depending on MIDI parameters of the device, or program any other custom behaviour
@@ -62,7 +62,7 @@ PySwitch now has <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a>
 
 ![image](https://github.com/user-attachments/assets/af22457f-58da-4c72-9478-05eecde106a7)
 
-This should serve as proof-of-concept for building a visual editor in the future.
+**This should serve as proof-of-concept for building a visual editor in the future.**
 
 The editor is only a demo application, by no means fully developed:
 
@@ -95,6 +95,8 @@ The file **switches.py** must provide a Switches list holding all switch assignm
 
 - **"actions"**: List of actions to be triggered by the switch, see below.
 
+- **"actionsHold"**: List of actions to be triggered by the switch on holding, see below.
+
 #### Switch Actions
 
 Example for assigning switch 1 of a MIDICaptain Nano 4 to switching the Kemper effect slot A on or off:
@@ -116,6 +118,33 @@ Switches = [
 ]
 ```
 
+##### Actions on Long Press (Hold)
+
+You can assign different actions to long pressing of switches. This is done by providing the "holdActions" parameter of the switch definitions:
+
+```python
+Switches = [
+    {
+        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            KemperActionDefinitions.EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
+            )
+        ],
+        "actionsHold": KemperActionDefinitions.BANK_UP(
+            #use_leds = False
+        )
+    },
+
+    #... Define further switches here
+]
+```
+
+*NOTE: The LEDs of the switch will be shared among the actions participated. If you want just one action to use all LEDs of a switch, you can switch the usage off for an action using the use_leds parameter, for example with the hold action, so only the normal action will use the LEDs.*
+
+*NOTE: Do not assign the same display label to the actions, this does not make sense and will result in erratic output.*
+
+
 ##### Pushbutton Modes
 
 Most actions feature a "mode" parameter. This parameter controls the behaviour of the switch as defined here:
@@ -124,11 +153,10 @@ Most actions feature a "mode" parameter. This parameter controls the behaviour o
 - **PushButtonModes.DISABLE**: Switch the functionality off (always, no switching on again)
 - **PushButtonModes.LATCH**: Toggle state on every button push
 - **PushButtonModes.MOMENTARY**: Enable on push, disable on release
-- **PushButtonModes.MOMENTARY_INVERSE**: Disable on push, Enable on release
 - **PushButtonModes.HOLD_MOMENTARY**: Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is used (inverse or not: This depends on the current state of the functionality. When it is on, it will momentarily be switched off and vice versa). This is the default for most of the actions.
 - **PushButtonModes.ONE_SHOT**: Fire the SET command on every push (show as disabled)
 
-Each switch can be assigned to any number of actions, which are implementing the functionality for the switch. Actions are instances based on the lib/pyswitch/controller/actions/Action base class. Normally you would use predefined actions as provided by lib/pyswitch/clients/kemper.py (class KemperActionDefinitions as used in the example above), however you could also directly use the classes defined in lib/pyswitch/controller/actions/actions.py and provide all the MIDI mapping manually.
+Each switch can be assigned to any number of actions, which are implementing the functionality for the switch. Actions are instances based on the lib/pyswitch/controller/actions/Action base class. Normally you would use predefined actions as provided by lib/pyswitch/clients/kemper.py (class KemperActionDefinitions as used in the example above), however you could also directly use the classes defined in lib/pyswitch/controller/actions.py and provide all the MIDI mapping manually.
 
 ##### Action Colors
 
@@ -194,7 +222,7 @@ Switches = [
             ),
             KemperActionDefinitions.EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
-                id = 10,
+                id = 20,
                 callback = _enable_callback
             )
         ]
@@ -227,38 +255,6 @@ Switches = [
 ```
 
 See below how the labels are defined.
-
-#### Actions on Long Press (Hold)
-
-You can assign different actions to long pressing of switches. This is done using the HoldAction class, which takes actions assigned to short press and long press separately:
-
-```python
-Switches = [
-    {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
-        "actions": [
-            HoldAction({
-                "actions": [
-                    KemperActionDefinitions.EFFECT_STATE(
-                        slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
-                    )
-                ],
-                "actionsHold": KemperActionDefinitions.BANK_UP(
-                    #use_leds = False    # See Note
-                )
-            })                        
-        ]
-    },
-
-    #... Define further switches here
-]
-```
-
-Also see the examples if you get problems, there are some with HoldAction included.
-
-*NOTE: The LEDs of the switch will be shared among the actions participated. If you want just one action to use all LEDs of a switch, you can switch the usage off for an action using the use_leds parameter, for example with the hold action, so only the normal action will use the LEDs.*
-
-*NOTE: Do not assign the same display label to the actions, this does not make sense and will result in erratic output.*
 
 #### Custom Callbacks for Actions
 
@@ -346,8 +342,6 @@ Switches = [
 The file **display.py** must provide a callback instance which returns the screen content to show, possibly depending on mappings or other criteria. The callback must provide a get_root() method which must return the DisplayElement to show:
 
 ```python
-from pyswitch.controller.callbacks import Callback
-
 # Layout used for the action labels (only used here locally)
 _ACTION_LABEL_LAYOUT = {
     "font": "/fonts/H20.pcf",
@@ -355,35 +349,38 @@ _ACTION_LABEL_LAYOUT = {
     "stroke": 1
 }
 
-# Labels to be used by **switches.py**
-DISPLAY_HEADER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_HEADER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_FOOTER_1 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
-DISPLAY_FOOTER_2 = DisplayLabel(layout = _ACTION_LABEL_LAYOUT)
+# Labels to be used by **switches.py**: Header
+DISPLAY_HEADER_1 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(0, 0, 120, 40)
+)
+DISPLAY_HEADER_2 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(120, 0, 120, 40)
+)
 
+# Footer
+DISPLAY_FOOTER_1 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(0, 200, 120, 40)
+)
+DISPLAY_FOOTER_2 = DisplayLabel(
+    layout = _ACTION_LABEL_LAYOUT,
+    bounds = DisplayBounds(120, 200, 120, 40)
+)
 
 class _SplashCallback(Callback):
     def get_root(self):
-        return HierarchicalDisplayElement(
+        return DisplayElement(
             bounds = DisplayBounds(0, 0, 240, 240),
             children = [        
                 # Header area
-                DisplaySplitContainer(
-                    bounds = DisplayBounds(0, 0, 240, 40),  # x, y, width, height
-                    children = [
-                        DISPLAY_HEADER_1,
-                        DISPLAY_HEADER_2
-                    ]
-                ),
+                DISPLAY_HEADER_1,
+                DISPLAY_HEADER_2,
 
                 # Footer area
-                DisplaySplitContainer(
-                    bounds = DisplayBounds(0, 200, 240, 40),  # x, y, width, height
-                    children = [
-                        DISPLAY_FOOTER_1,
-                        DISPLAY_FOOTER_2
-                    ]
-                ),
+                DISPLAY_FOOTER_1,
+                DISPLAY_FOOTER_2,
 
                 # Rig name
                 DisplayLabel(
@@ -407,15 +404,13 @@ The areas are stacked in the defined order, elements defined down the list will 
 
 This example defines three display areas:
 
-- A header and a footer, which are split elements: This means they can hold any amound of sub-elements to be used by actions by specifying the "index" parameter in their "display" configuration. Note that the layout definition in this case also comes from the "display" definition.
+- A header and a footer consisting of two labels each
 
 - A rig name display
 
 All available area types are defined in lib/pyswitch/ui/elements/elements.py, see there for more details on parameters for the available types:
 
 - **DisplayLabel**: Just a label showing text over a background. 
-- **DisplaySplitContainer**: Container element which can hold any amount of labels, with the dimensions of the children being automatically set.
-- **PerformanceIndicator**: A small black dot getting red when the processing starts to lag (which can occur when too much stuff is configured)
 - **BidirectionalProtocolState**: A small black dot showing the state of the bidirectional communication protocol (green/red)
 
 Display of values (like rig name) is done via callbacks, see below chapters about DisplayLabel.
@@ -426,8 +421,9 @@ For the most popular case of showing a tuner display when the device goes into t
 
 ```python
 Splashes = TunerDisplayCallback(
-    splash_default = HierarchicalDisplayElement(
-        bounds = _display_bounds,
+    strobe = True,
+    splash_default = DisplayElement(
+        bounds = ...,
         children = [
             # ... Display elements for normal display go here
         ]
@@ -435,62 +431,21 @@ Splashes = TunerDisplayCallback(
 )
 ```
 
+This shows a tuner display when tuner mode is enabled:
+
 ![image](https://github.com/user-attachments/assets/f4ba454f-b8a2-403c-b6b0-962a80dc9137)
 
-#### Subtractive Layouting
+###### Strobe Tuner
 
-You can specify the dimensions and positions of all display elements manually like in the example snippets above, but the DIsplayBounds class offers a far more elegant way to split up the available area. Just create an instance of it with all available space and then, in the Displays list, use it to "cut off" parts of it one after each other. 
+The strobe parameter (which defaults to True) will use all available LEDs of the device as strobe tuner. There are several parameters to TunerDisplayCallback controlling the strobe tuner:
 
-The following snippets demonstrate this: The next two examples do exactly the same thing on a 240x240 screen (other parameters omitted for clarity):
+- **"strobe_color":** Color to be used for the LEDs
+- **"strobe_dim":** Dim factor for the strobe LEDs in range [0..1]. Default is 0.1
+- **"strobe_speed":** Determines the speed. Higher values make the strobe tuner go slower. 1000 is the recommended speed to start from. 
+- **"strobe_max_fps":** Maximum cumulative frame rate for update of strobe tuner LEDs. Reduce this to save processing power. The number will be divided by the amount of available switches to get the real max. frame rate (that's why it is called cumulative).
+- **"strobe_reverse":** Determines the rotation direction. If False, the strobe is rotating clockwise when too high / ccw when too low. If True, the other way round (which is the default). 
 
-```python
-HierarchicalDisplayElement(
-    bounds = DisplayBounds(0, 0, 240, 240),
-    children = [        
-        # Header (top 40 pixels)
-        DisplayLabel(bounds = DisplayBounds(0, 0, 240, 40)),
-
-        # Footer (bottom 40 pixels)
-        DisplayLabel(bounds = DisplayBounds(0, 200, 240, 40)),
-
-        # Rig name (remaining space)
-        DisplayLabel(bounds = DisplayBounds(0, 40, 240, 160))
-
-        # Some other display (above footer, but overlapping 
-        # the rig name area)
-        DisplayLabel(bounds = DisplayBounds(0, 180, 240, 20))
-    ]
-)
-```
-
-```python
-# Create instance with all available space
-bounds = DisplayBounds(0, 0, 240, 240)
-
-HierarchicalDisplayElement(
-    bounds = bounds,
-    children = [        
-        # Header (remove top 40 pixels from bounds and 
-        # use that area)
-        DisplayLabel(bounds = bounds.remove_from_top(40)),
-
-        # Footer (remove bottom 40 pixels from bounds and 
-        # use that area)
-        DisplayLabel(bounds = bounds.remove_from_bottom(40)),
-
-        # Rig name (take remaining space (header and bottom 
-        # have been cut off))
-        DisplayLabel(bounds = bounds),
-
-        # Some other display (above footer, but overlapping 
-        # the rig name area, so we use bottom() which does 
-        # not change the bounds)
-        DisplayLabel(bounds = bounds.bottom(20)),
-    ]
-)
-```
-
-See the DisplayBounds class in /lib/pyswitch/ui/ui.py for more available methods.
+*NOTE: If you encounter memory problems, disable strobe as this will save you some kilobytes.*
 
 ### Mappings
 
@@ -653,6 +608,7 @@ See this chart for some differences between the operation modes:
 | Parameter values are requested periodically | Yes                   | No (\*)              |
 | Tuner information available                 | No                    | Yes (Note and dev.)  |
 | Tempo Messages (for synced blinking LEDs)   | No                    | Yes                  |
+
 
 *(\*) Bidirectional mode is not available for all parameters. However, you do not need to specify this, the **lib/pyswitch/clients/kemper.py** file contains the definitions looked up by the application.*
 
@@ -957,7 +913,7 @@ If you notify the device does not react immediately sometimes when a switch is p
 
 ### Unit Testing
 
-All code in the content/lib/pyswitch folder is unit tested to a coverage of > 90%, which is important because this is a tool used in performances, so stability is a must. The test code is organized in the test folder of the project:
+All code in the content/lib/pyswitch folder is unit tested to a coverage of > 90%, which is important because this is a tool used in live performances, so stability is a must. The test code is organized in the test folder of the project:
 
 ```
 /content
@@ -1000,7 +956,7 @@ You should find a coverage report in the test/report folder like this:
 
 ## License
 
-(C) Thomas Weber 2024 tom-vibrant@gmx.de
+(C) Thomas Weber 2025 tom-vibrant@gmx.de
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
