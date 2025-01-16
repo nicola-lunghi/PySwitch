@@ -69,6 +69,9 @@ class Controller(Updater): #ClientRequestListener
         # Clear MIDI buffers on startup
         self.__clear_buffer = get_option(config, "clearBuffers", True)
 
+        # Global shared data (some actions/callbacks use this)
+        self.shared = {}
+
         # NeoPixel driver 
         self.led_driver = led_driver
             
@@ -143,7 +146,11 @@ class Controller(Updater): #ClientRequestListener
 
         # Update all Updateables in periodic intervals, less frequently than every tick.        
         if self.period.exceeded:
-            self.update()
+            for u in self.updateables:
+                # Receive MIDI messages in between updates, too
+                self.__receive_midi_messages()
+
+                u.update()
 
             Memory.watch("Controller: update", only_if_changed = True)
 
@@ -155,14 +162,6 @@ class Controller(Updater): #ClientRequestListener
             self.__measurement_tick_time.finish()        
 
         return True
-
-    # We do not use the default Updater implementation to check for MIDI messages in between.
-    def update(self):
-        for u in self.updateables:
-            # Receive MIDI messages in between updates, too
-            self.__receive_midi_messages()
-
-            u.update()
 
     # Receive MIDI messages, and in between check for switch state changes
     def __receive_midi_messages(self):

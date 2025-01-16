@@ -311,8 +311,9 @@ class ClientRequest(EventEmitter):
         if self.client.debug_mapping == mapping:    # pragma: no cover
             do_print(f"{ mapping.name }: Received value '{ repr(mapping.value) }' from { stringify_midi_message(midi_message) }")
 
-        # Call the listeners (the mapping has the values set already)
-        self.notify_listeners()
+        # Call the listeners (the mapping has the values set already). Do not use notify_listeners() to keep the stack short.
+        for listener in self.listeners:
+            listener.parameter_changed(self.mapping)
 
         # Clear listeners (only if the request has a restricted life time)
         if self.lifetime:

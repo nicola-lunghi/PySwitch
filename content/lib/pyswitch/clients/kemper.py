@@ -569,10 +569,11 @@ class KemperActionDefinitions:
     #     })
     
     # Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). 
-    # Banks are indexed starting from one, range: [1..126].
+    # Banks are indexed starting from one, range: [1..126].    
     @staticmethod
     def BANK_SELECT(bank, 
                     bank_off = None,
+                    preselect = False,                              # If False, the bank is switched immediately (by sending a rig select command after bank preselect). If True, only the bank preselect is sent.
                     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
                     display = None, 
                     id = False, 
@@ -597,7 +598,8 @@ class KemperActionDefinitions:
                 text_callback = text_callback,
                 color = color,
                 color_callback = color_callback,
-                display_mode = display_mode
+                display_mode = display_mode,
+                preselect = preselect
             ),
             "enableCallback": enable_callback
         })
@@ -726,7 +728,7 @@ class KemperActionDefinitions:
     #     ]
     
     
-    # Custom callback showing current bank color
+    # Custom callback showing current bank color (only used by Bank up/down)
     class _BankChangeCallback(BinaryParameterCallback):
         def __init__(self, 
                      mapping, 
@@ -824,7 +826,7 @@ class KemperActionDefinitions:
             action.switch_brightness = self.__led_brightness
 
 
-    # Callback implementation for Rig Select, showing bank colors and rig/bank info
+    # Callback implementation for Bank Select, showing bank colors and rig/bank info
     class _BankSelectCallback(BinaryParameterCallback):
         def __init__(self,
                      mapping,
@@ -834,7 +836,8 @@ class KemperActionDefinitions:
                      text_callback,
                      color,
                      color_callback,
-                     display_mode
+                     display_mode,
+                     preselect
             ):
             super().__init__(
                 mapping = mapping
@@ -852,6 +855,8 @@ class KemperActionDefinitions:
             self.__current_value = -1
             self.__current_state = -1
 
+            self.__preselect = preselect
+
         def init(self, appl, listener = None):
             super().init(appl, listener)
 
@@ -861,23 +866,58 @@ class KemperActionDefinitions:
             self.__appl = appl
 
         def state_changed_by_user(self, action):
+            # Bank and rig select
             if self.__mapping.value == None:
                 return
             
-            curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
-            curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK                  
-            set_mapping = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
+            curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)            
+
+            if self.__preselect:
+                if "preselectedBank" in self.__appl.shared:
+                    # The kemper only accepts one bank preselect. All following bank preselects will be ignored.
+                    # So, we also do not accept any preselects when there is already one.
+                    return 
+                
+                set_mapping = KemperMappings.BANK_SELECT()
+
+                value_bank = [self.__bank - 1]
+                if self.__bank_off != None:
+                    value_bank_off = [self.__bank_off - 1]
+
+                    if action.state:
+                        self.__appl.shared["preselectedBank"] = self.__bank - 1
+                    else:
+                        self.__appl.shared["preselectedBank"] = self.__bank_off - 1
+                else:
+                    self.__appl.shared["preselectedBank"] = self.__bank - 1
+
+                print(self.__appl.shared)
+
+                for switch in self.__appl.switches:
+                    for a in switch.actions:
+                        a.update_displays()
+
+            else:
+                curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
+                set_mapping = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
+
+                value_bank = [self.__bank - 1, 1, 0]
+                if self.__bank_off:
+                    value_bank_off = [self.__bank_off - 1, 1, 0]
+
+                if "preselectedBank" in self.__appl.shared:
+                    del self.__appl.shared["preselectedBank"]
 
             if self.__bank_off != None:
                 if action.state:
                     if curr_bank != self.__bank - 1:
-                        self.__appl.client.set(set_mapping, [self.__bank - 1, 1, 0])
+                        self.__appl.client.set(set_mapping, value_bank)
                 else:
                     if curr_bank != self.__bank_off - 1:
-                        self.__appl.client.set(set_mapping, [self.__bank_off - 1, 1, 0])
+                        self.__appl.client.set(set_mapping, value_bank_off)
             else:
                 if curr_bank != self.__bank - 1:
-                    self.__appl.client.set(set_mapping, [self.__bank - 1, 1, 0])                    
+                    self.__appl.client.set(set_mapping, value_bank)
 
             # Request value
             self.update()
@@ -901,6 +941,9 @@ class KemperActionDefinitions:
                                 
                 self.__current_value = self.__mapping.value
                 self.__current_state = action.state
+
+                # if "preselectedBank" in self.__appl.shared:
+                #     del self.__appl.shared["preselectedBank"]
 
             is_current = (curr_bank == (self.__bank - 1))
 
@@ -1012,6 +1055,27 @@ class KemperActionDefinitions:
             self.__default_led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
             self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
 
+        def state_changed_by_user(self, action):
+            if "preselectedBank" in self.__appl.shared:
+                set_mapping = self.__mapping
+                value = self._value_enable
+            else:
+                if action.state:
+                    set_mapping = self.__mapping
+                    value = self._value_enable
+                else:
+                    if self.mapping_disable:
+                        set_mapping = self.mapping_disable
+                    else:
+                        set_mapping = self.__mapping
+
+                    value = self._value_disable
+
+            self.__appl.client.set(set_mapping, value)
+
+            # Request value
+            self.update()
+
         def update_displays(self, action):
             if self.__mapping.value == None:
                 if action.label:
@@ -1025,7 +1089,7 @@ class KemperActionDefinitions:
             # Calculate bank and rig numbers in range [0...]
             curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
             curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
-
+            
             if self.__mapping.value != self.__current_value or action.state != self.__current_state:
                 if self.__bank != None:
                     self.evaluate_value(action, self.__mapping.value)
@@ -1049,13 +1113,19 @@ class KemperActionDefinitions:
                     self.__bank_off = curr_bank + 1                    
                     self._value_disable[0] = curr_bank
 
-            bank_color = self._get_color(action, curr_bank, curr_rig)                    
-
+                if "preselectedBank" in self.__appl.shared:
+                    del self.__appl.shared["preselectedBank"]
+                
             if self.__bank != None:
                 is_current = (curr_rig == (self.__rig - 1) and curr_bank == (self.__bank - 1))
             else:
-                is_current = (curr_rig == self.__rig - 1)
+                if "preselectedBank" in self.__appl.shared:
+                    is_current = False
+                else:
+                    is_current = (curr_rig == self.__rig - 1)
                 
+            bank_color = self._get_color(action, curr_bank, curr_rig, is_current)                    
+
             # Label text
             if action.label:
                 if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
@@ -1063,18 +1133,22 @@ class KemperActionDefinitions:
                     action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
 
                 elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                    action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
-
-                    if self.__bank != None:
-                        if is_current and self.__rig_off != None and self.__bank_off != None:
-                            action.label.text = self._get_text(action, self.__bank_off - 1, self.__rig_off - 1)
-                        else:
-                            action.label.text = self._get_text(action, self.__bank - 1, self.__rig - 1)
+                    if "preselectedBank" in self.__appl.shared:
+                        action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off) 
+                        action.label.text = self._get_text(action, self.__appl.shared["preselectedBank"], self.__rig - 1)
                     else:
-                        if is_current and self.__rig_off != None:                    
-                            action.label.text = self._get_text(action, curr_bank, self.__rig_off - 1) 
+                        action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
+
+                        if self.__bank != None:
+                            if is_current and self.__rig_off != None and self.__bank_off != None:
+                                action.label.text = self._get_text(action, self.__bank_off - 1, self.__rig_off - 1)
+                            else:
+                                action.label.text = self._get_text(action, self.__bank - 1, self.__rig - 1)
                         else:
-                            action.label.text = self._get_text(action, curr_bank, self.__rig - 1)
+                            if is_current and self.__rig_off != None:                    
+                                action.label.text = self._get_text(action, curr_bank, self.__rig_off - 1) 
+                            else:
+                                action.label.text = self._get_text(action, curr_bank, self.__rig - 1)
 
                 else:
                     raise Exception()  #"Invalid display mode: " + repr(display_mode))
@@ -1082,22 +1156,25 @@ class KemperActionDefinitions:
             # LEDs
             action.switch_color = bank_color
 
-            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state:
+            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state and not "preselectedBank" in self.__appl.shared:
                 action.switch_brightness = self.__default_led_brightness_on
             else:
                 action.switch_brightness = self.__default_led_brightness_off
     
-        def _get_color(self, action, curr_bank, curr_rig):
+        def _get_color(self, action, curr_bank, curr_rig, is_current):
             if self.__color:
                 return self.__color
             
             if self.__color_callback:
                 return self.__color_callback(action, curr_bank, curr_rig)
 
+            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and "preselectedBank" in self.__appl.shared:
+                return BANK_COLORS[self.__appl.shared["preselectedBank"] % len(BANK_COLORS)]
+
             if self.__bank == None:
                 return BANK_COLORS[curr_bank % len(BANK_COLORS)]
 
-            is_current = (curr_rig == (self.__rig - 1) and curr_bank == (self.__bank - 1))
+            # is_current = (curr_rig == (self.__rig - 1) and curr_bank == (self.__bank - 1))
 
             if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
                 if self.__bank_off != None and is_current:
@@ -2129,6 +2206,28 @@ class KemperMappings:
             ]
         )
     
+    # Pre-selects a bank.
+    def BANK_SELECT():
+        return KemperTwoPartParameterMapping(
+            name = "Bank",
+            set = [
+                ControlChange(
+                    CC_BANK_PRESELECT,
+                    0    # Dummy value, will be overridden
+                )
+            ],
+
+            response = [
+                ControlChange(
+                    CC_RIG_INDEX_PART_1,
+                    0    # Dummy value, will be ignored
+                ),
+                ProgramChange(
+                    0    # Dummy value, will be ignored
+                )
+            ]
+        )
+
     # Selects a rig of a specific bank. Rig index must be in range [0..4]
     def BANK_AND_RIG_SELECT(rig):
         return KemperTwoPartParameterMapping(

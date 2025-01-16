@@ -20,14 +20,12 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.TAP_TEMPO(use_leds = False),
-            KemperActionDefinitions.SHOW_TEMPO()    # Shows beats with the LED(s)
-        ],
-        "actionsHold": [
-            KemperActionDefinitions.TUNER_MODE(
-                display = DISPLAY_HEADER_1,
-                text = "Tap|Tune"
-            )            
+            KemperActionDefinitions.BANK_SELECT(
+                bank = 1,
+                preselect = True,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+                display = DISPLAY_HEADER_1
+            )         
         ]
     },
 
@@ -35,13 +33,12 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            # Freeze on/off
-            KemperActionDefinitions.BINARY_SWITCH(
-                mapping = KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
-                display = DISPLAY_HEADER_2,
-                text = "Freeze",
-                color = Colors.LIGHT_GREEN
-            )
+            KemperActionDefinitions.BANK_SELECT(
+                bank = 2,
+                preselect = True,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+                display = DISPLAY_HEADER_2
+            )     
         ]
     },
 
@@ -50,13 +47,9 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             KemperActionDefinitions.RIG_SELECT(
-                rig = 4,
-                rig_off = "auto",
-                auto_exclude_rigs = (4, 5),
+                rig = 1,
                 display = DISPLAY_FOOTER_1,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                color = Colors.PINK,
-                text = "Synth-4"
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG                
             )   
         ]
     },
@@ -66,13 +59,10 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             KemperActionDefinitions.RIG_SELECT(
-                rig = 5,
-                rig_off = "auto",
-                auto_exclude_rigs = (4, 5),
+                rig = 2,
+                rig_off = 4,
                 display = DISPLAY_FOOTER_2,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                color = Colors.RED,
-                text = "Lead-5"
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ]
     },
