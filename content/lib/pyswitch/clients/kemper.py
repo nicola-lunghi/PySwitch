@@ -328,7 +328,7 @@ class KemperActionDefinitions:
         })
     
     # Morph button (faded change of morph state) with fixed color.
-    def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None, color = "kemper"):
+    def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None, color = Colors.WHITE):
         if color == "kemper":
             cb = KemperMorphCallback(
                 mapping = KemperMappings.MORPH_BUTTON(),

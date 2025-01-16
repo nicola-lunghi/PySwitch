@@ -47,7 +47,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            KemperActionDefinitions.RIG_AND_BANK_SELECT(
+            KemperActionDefinitions.RIG_SELECT(
                 rig = 2,               
                 bank = 3,
                 display = DISPLAY_HEADER_2,

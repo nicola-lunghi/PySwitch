@@ -53,7 +53,8 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             KemperActionDefinitions.MORPH_BUTTON(
-                display = DISPLAY_FOOTER_2
+                display = DISPLAY_FOOTER_2,
+                #color = "kemper"
             )
         ]
     }
