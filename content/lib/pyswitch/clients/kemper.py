@@ -1088,6 +1088,8 @@ class KemperActionDefinitions:
             self.__default_led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
             self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
 
+            self.__appl = appl
+
         def state_changed_by_user(self, action):
             if "preselectedBank" in self.__appl.shared:
                 set_mapping = self.__mapping
