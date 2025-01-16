@@ -172,9 +172,7 @@ class TestStrobeController(unittest.TestCase):
 
         # Some value (tuner not active)
         mapping_2.value = 8191 + 111
-        period.passed = 20        
-        period.exceed_next_time = True
-        
+
         strobe.parameter_changed(mapping_2)
 
         self.assertEqual(strobe._StrobeController__enabled, False)
@@ -191,6 +189,19 @@ class TestStrobeController(unittest.TestCase):
 
         self.assertEqual(strobe._StrobeController__enabled, True)
             
+        # Some value (period not exceeded)
+        mapping_2.value = 8191 - 117
+
+        strobe.parameter_changed(mapping_2)
+
+        self.assertEqual(strobe._StrobeController__enabled, True)
+
+        for switch in switches_sorted:
+            self.assertEqual(switch.color, (0, 0, 0))
+
+        for switch in switches_sorted:
+            self.assertEqual(switch.brightness, 0)
+        
         # Neutral value (this gives us the starting point)
         mapping_2.value = 8191
         period.passed = 20        
@@ -207,6 +218,26 @@ class TestStrobeController(unittest.TestCase):
 
         for m in range(len(maxima)):
             self.assertEqual(switches_sorted[maxima[m]].brightness, 0.5)  
+
+        # Deactivate again
+        tmp_brightnesses = [s.brightness for s in switches_sorted]
+        mapping_1.value = 3
+        strobe.parameter_changed(mapping_1)
+
+        # Some value (tuner not active again)
+        mapping_2.value = 8191 + 113
+        period.passed = 20        
+        period.exceed_next_time = True
+        
+        strobe.parameter_changed(mapping_2)
+
+        self.assertEqual(strobe._StrobeController__enabled, False)
+
+        self.assertEqual([s.brightness for s in switches_sorted], tmp_brightnesses)
+
+        # Activate again to perform the real test
+        mapping_1.value = 1
+        strobe.parameter_changed(mapping_1)
 
         # Step through the range until the period has finished
         diff = 911  # This value must be uneven to prevent equally bright switches (these are not analysed correctly by the algorithm determining the local maxima)

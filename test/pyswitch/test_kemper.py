@@ -21,7 +21,44 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.ui.ui import DisplayElement
     from lib.pyswitch.ui.elements import DisplayLabel, TunerDisplay
+    from lib.pyswitch.misc import Updater
 
+    from .mocks_appl import MockClient
+
+
+
+class MockStrobe:
+    class StrobeController:
+        def __init__(self,
+                     mapping_state, 
+                     mapping_deviance, 
+                     dim_factor = 0, 
+                     speed = 0, 
+                     color = None, 
+                     max_fps = 0, 
+                     reverse = None 
+            ):
+            self.init_calls = []
+
+            self.mapping_state = mapping_state
+            self.mapping_deviance = mapping_deviance
+            self.dim_factor = dim_factor
+            self.speed = speed
+            self.color = color 
+            self.max_fps = max_fps
+            self.reverse = reverse
+
+        def init(self, appl):
+            self.init_calls.append(appl)
+
+
+class MockController2(Updater):
+    def __init__(self):
+        Updater.__init__(self)
+
+        self.client = MockClient()
+        self.switches = []
+      
 
 class TestKemper(unittest.TestCase):
 
@@ -69,8 +106,12 @@ class TestKemper(unittest.TestCase):
             "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
         }):
             cb = TunerDisplayCallback(
-                splash_default = element
+                splash_default = element,
+                strobe = False
             )
+
+        appl = MockController2()
+        cb.init(appl)
 
         self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._Callback__mappings)
         
@@ -87,7 +128,7 @@ class TestKemper(unittest.TestCase):
         self.assertEqual(cb.get_root(), splash_tuner)
 
 
-    def test_tuner_display_callback_custom(self):
+    def test_tuner_display_callback_with_custom_element(self):
         element = DisplayElement()
         element_2 = DisplayElement()
 
@@ -102,6 +143,9 @@ class TestKemper(unittest.TestCase):
                 splash_tuner = element_2
             )
 
+        appl = MockController2()
+        cb.init(appl)
+
         self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._Callback__mappings)
         
         mapping = cb._Callback__mappings[0]
@@ -113,6 +157,42 @@ class TestKemper(unittest.TestCase):
         self.assertEqual(cb.get_root(), element_2)
 
 
+    def test_tuner_display_callback_with_strobe(self):
+        element = DisplayElement()
+
+        with patch.dict(sys.modules, {
+            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "lib.pyswitch.controller.strobe": MockStrobe(),
+        }):
+            cb = TunerDisplayCallback(
+                splash_default = element,
+                strobe = True,
+                strobe_color = (3, 4, 5),
+                strobe_dim = 0.75,
+                strobe_speed = 1111,
+                strobe_max_fps = 121,
+                strobe_reverse = False
+            )
+
+        appl = MockController2()
+        cb.init(appl)
+
+        strobe = cb._TunerDisplayCallback__strobe_controller
+        self.assertIsInstance(strobe, MockStrobe.StrobeController)
+        self.assertEqual(strobe.init_calls, [appl])
+        
+        self.assertEqual(strobe.mapping_state, KemperMappings.TUNER_MODE_STATE())
+        self.assertEqual(strobe.mapping_deviance, KemperMappings.TUNER_DEVIANCE())
+        self.assertEqual(strobe.dim_factor, 0.75)
+        self.assertEqual(strobe.speed, 1111)
+        self.assertEqual(strobe.color, (3, 4, 5))
+        self.assertEqual(strobe.max_fps, 121)
+        self.assertEqual(strobe.reverse, False)
+
+        
 ##########################################################################################################
 
 
@@ -218,3 +298,7 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Sense", KemperMappings.BIDIRECTIONAL_SENSING().name)
 
         self.assertIn("Tempo", KemperMappings.TEMPO_DISPLAY().name)
+
+        self.assertIn("Freeze", KemperMappings.FREEZE_ALL_GLOBAL().name)
+
+        self.assertIn("Comment", KemperMappings.RIG_COMMENT().name)

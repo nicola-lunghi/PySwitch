@@ -63,7 +63,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
         )
 
         cb = action.callback
-        self.assertIsInstance(cb, BinaryParameterCallback)
+        self.assertIsInstance(cb, KemperActionDefinitions._TunerModeCallback)
         self.assertIsInstance(action, PushButtonAction)
 
         self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.TUNER_MODE_STATE())
@@ -158,7 +158,89 @@ class TestKemperActionTunerMode(unittest.TestCase):
         self.assertEqual(switch_action_3.num_reset_calls, 2)
 
 
-    def test_override_action(self):
+    def test_state_change_by_user(self):
+        action = KemperActionDefinitions.TUNER_MODE()
+
+        switch = MockFootSwitch(
+            actions = [
+                action
+            ]
+        )
+
+        appl = MockController2()
+        action.init(appl, switch)
+
+        cb = action.callback
+        mapping = cb._BinaryParameterCallback__mapping
+        self.assertEqual(action.state, False)
+
+        mapping.value = 1
+        action.state = True
+        self.assertEqual(action.state, True)
+        
+        self.assertEqual(appl.client.set_calls, [
+            {
+                "mapping": cb._BinaryParameterCallback__mapping,
+                "value": 1
+            }
+        ])
+
+        appl.client.set_calls = []
+        mapping.value = 3
+        action.state = False
+        self.assertEqual(action.state, False)
+
+        self.assertEqual(appl.client.set_calls, [
+            {
+                "mapping": cb._BinaryParameterCallback__mapping,
+                "value": 0
+            }
+        ])
+
+
+    def test_override_action_self(self):
+        action = KemperActionDefinitions.TUNER_MODE(
+            mode = PushButtonAction.ONE_SHOT
+        )
+
+        cb = action.callback
+
+        switch = MockFootSwitch(
+            actions = [
+                action
+            ]
+        )
+        
+        appl = MockController2()
+        action.init(appl, switch)
+
+        # Simulate switching the tuner on by PySwitch
+        action.state = True
+
+        cb.push()
+        cb.release()
+
+        self.assertEqual(appl.client.set_calls, [
+            {
+                "mapping": cb._BinaryParameterCallback__mapping,
+                "value": 1
+            }
+        ])
+
+        appl.client.set_calls = []
+
+        cb.push()
+        cb.release()
+
+        self.assertEqual(appl.client.set_calls, [
+            {
+                "mapping": cb._BinaryParameterCallback__mapping,
+                "value": 0
+            }
+        ])
+
+
+    def test_override_action_others(self):
         action = KemperActionDefinitions.TUNER_MODE(
             mode = PushButtonAction.ONE_SHOT
         )

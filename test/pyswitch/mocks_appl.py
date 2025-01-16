@@ -349,3 +349,4 @@ class MockWriter:
 
     def write(self, data):
         self.contents += data
+
