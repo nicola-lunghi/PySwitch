@@ -9,9 +9,10 @@ with patch.dict(sys.modules, {
     "micropython": MockMicropython,
     "displayio": MockDisplayIO(),
     "adafruit_display_text": MockAdafruitDisplayText(),
+    #"adafruit_midi": MockAdafruitMIDI(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
-    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
@@ -61,9 +62,15 @@ class TestKemper(unittest.TestCase):
     def test_tuner_display_callback(self):
         element = DisplayElement()
 
-        cb = TunerDisplayCallback(
-            splash_default = element
-        )
+        with patch.dict(sys.modules, {
+            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+        }):
+            cb = TunerDisplayCallback(
+                splash_default = element
+            )
 
         self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._Callback__mappings)
         
@@ -84,10 +91,16 @@ class TestKemper(unittest.TestCase):
         element = DisplayElement()
         element_2 = DisplayElement()
 
-        cb = TunerDisplayCallback(
-            splash_default = element,
-            splash_tuner = element_2
-        )
+        with patch.dict(sys.modules, {
+            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+        }):
+            cb = TunerDisplayCallback(
+                splash_default = element,
+                splash_tuner = element_2
+            )
 
         self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._Callback__mappings)
         

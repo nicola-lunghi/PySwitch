@@ -90,7 +90,7 @@ class Client: #(ClientRequestListener):
         self.debug_mapping = get_option(config, "debugMapping", None)
         
         self.__debug_stats = get_option(config, "debugClientStats", False)
-        if self.__debug_stats:
+        if self.__debug_stats:   # pragma: no cover 
             self.__stats_period = PeriodCounter(get_option(config, "debugStatsInterval", 2000))
 
         # List of ClientRequest objects    
@@ -177,7 +177,7 @@ class Client: #(ClientRequestListener):
         if self.__cleanup_terminated_period.exceeded:
             self.__cleanup_hanging_requests()
 
-        if self.__debug_stats and self.__stats_period.exceeded:
+        if self.__debug_stats and self.__stats_period.exceeded:  # pragma: no cover 
             do_print(f"    { len(self.__requests) } requests pending:")
             for r in self.__requests:
                 do_print(f"{ r.mapping.name }: { repr([l.__class__.__name__ for l in r.listeners]) }")

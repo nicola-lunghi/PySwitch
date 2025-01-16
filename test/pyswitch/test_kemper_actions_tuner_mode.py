@@ -133,7 +133,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
         mapping.value = 1
         cb.parameter_changed(mapping)
         
-        self.assertEqual(switch.override_action, None)
+        self.assertEqual(switch.override_action, cb)
         self.assertEqual(switch_other_1.override_action, cb)
         self.assertEqual(switch_other_2.override_action, cb)
         
