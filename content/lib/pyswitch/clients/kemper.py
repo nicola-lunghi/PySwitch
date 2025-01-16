@@ -837,7 +837,8 @@ class KemperActionDefinitions:
                      color,
                      color_callback,
                      display_mode,
-                     preselect
+                     preselect,
+                     preselect_blink_interval = 400
             ):
             super().__init__(
                 mapping = mapping
@@ -856,6 +857,11 @@ class KemperActionDefinitions:
             self.__current_state = -1
 
             self.__preselect = preselect
+            if preselect:
+                self.__preselect_blink_period = PeriodCounter(preselect_blink_interval)
+                self.__blink_state = False
+
+            self.__action = None
 
         def init(self, appl, listener = None):
             super().init(appl, listener)
@@ -865,7 +871,17 @@ class KemperActionDefinitions:
             self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
             self.__appl = appl
 
+        def update(self):
+            BinaryParameterCallback.update(self)
+
+            if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1 and self.__preselect_blink_period.exceeded:
+                self.__blink_state = not self.__blink_state
+
+                self.update_displays(self.__action)
+
         def state_changed_by_user(self, action):
+            self.__action = action
+
             # Bank and rig select
             if self.__mapping.value == None:
                 return
@@ -919,10 +935,12 @@ class KemperActionDefinitions:
                 if curr_bank != self.__bank - 1:
                     self.__appl.client.set(set_mapping, value_bank)
 
-            # Request value
-            self.update()
+            # # Request value
+            # self.update()
 
         def update_displays(self, action):
+            self.__action = action
+
             if self.__mapping.value == None:
                 if action.label:
                     action.label.text = ""
@@ -945,7 +963,10 @@ class KemperActionDefinitions:
                 # if "preselectedBank" in self.__appl.shared:
                 #     del self.__appl.shared["preselectedBank"]
 
-            is_current = (curr_bank == (self.__bank - 1))
+            if "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1:
+                is_current = self.__blink_state
+            else:
+                is_current = (curr_bank == (self.__bank - 1))
 
             if self.__color != None:
                 bank_color = self.__color
@@ -961,7 +982,10 @@ class KemperActionDefinitions:
                     action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
 
                 elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                    action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
+                    if "preselectedBank" in self.__appl.shared:
+                        action.label.back_color = bank_color if is_current else self.dim_color(bank_color, self.__default_dim_factor_off) 
+                    else:
+                        action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
 
                     if is_current and self.__bank_off != None:
                         action.label.text = self._get_text(action, self.__bank_off - 1, curr_rig)
@@ -974,8 +998,17 @@ class KemperActionDefinitions:
             # LEDs
             action.switch_color = bank_color
 
-            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state:
-                action.switch_brightness = self.__default_led_brightness_on
+            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+                if "preselectedBank" in self.__appl.shared:
+                    if is_current:
+                        action.switch_brightness = self.__default_led_brightness_on
+                    else:
+                        action.switch_brightness = self.__default_led_brightness_off
+                else:
+                    if action.state:
+                        action.switch_brightness = self.__default_led_brightness_on
+                    else:
+                        action.switch_brightness = self.__default_led_brightness_off
             else:
                 action.switch_brightness = self.__default_led_brightness_off
 
@@ -1073,8 +1106,8 @@ class KemperActionDefinitions:
 
             self.__appl.client.set(set_mapping, value)
 
-            # Request value
-            self.update()
+            # # Request value
+            # self.update()
 
         def update_displays(self, action):
             if self.__mapping.value == None:
