@@ -21,10 +21,7 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             KemperActionDefinitions.TAP_TEMPO(use_leds = False),
-            KemperActionDefinitions.SHOW_TEMPO(    # Shows beats with the LED(s)
-                led_brightness_on = 0.02,
-                led_brightness_off = 0
-            )
+            KemperActionDefinitions.SHOW_TEMPO()    # Shows beats with the LED(s)
         ],
         "actionsHold": [
             KemperActionDefinitions.TUNER_MODE(
