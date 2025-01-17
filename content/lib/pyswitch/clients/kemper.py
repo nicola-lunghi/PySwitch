@@ -123,1153 +123,1153 @@ RIG_SELECT_DISPLAY_TARGET_RIG = 20   # Show the target rig ID
 # All defined actions here have one parameter in common: A display definition (see definitions.py)
 # which assigns a display label to the action (optional: If omitted, no visual feedback is given 
 # on the display).
-class KemperActionDefinitions: 
+# class KemperActionDefinitions: 
 
-    # Binary parameters (for all binary parameter mappings which support 0/1 values for on/off)
-    @staticmethod
-    def BINARY_SWITCH(mapping, 
-                      display = None, 
-                      text = "", 
-                      mode = PushButtonAction.HOLD_MOMENTARY, 
-                      color = Colors.WHITE, 
-                      id = False, 
-                      use_leds = True, 
-                      enable_callback = None,
-                      value_on = 1,
-                      value_off = 0,
-                      reference_value = None,
-                      comparison_mode = BinaryParameterCallback.GREATER_EQUAL
-        ):
-        return PushButtonAction({
-            "callback": BinaryParameterCallback(
-                mapping = mapping,
-                text = text,
-                color = color,
-                value_enable = value_on,
-                value_disable = value_off,
-                reference_value = reference_value,
-                comparison_mode = comparison_mode
-            ),
-            "mode": mode,
-            "display": display,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
-        })
+#     # Binary parameters (for all binary parameter mappings which support 0/1 values for on/off)
+#     @staticmethod
+#     def BINARY_SWITCH(mapping, 
+#                       display = None, 
+#                       text = "", 
+#                       mode = PushButtonAction.HOLD_MOMENTARY, 
+#                       color = Colors.WHITE, 
+#                       id = False, 
+#                       use_leds = True, 
+#                       enable_callback = None,
+#                       value_on = 1,
+#                       value_off = 0,
+#                       reference_value = None,
+#                       comparison_mode = BinaryParameterCallback.GREATER_EQUAL
+#         ):
+#         return PushButtonAction({
+#             "callback": BinaryParameterCallback(
+#                 mapping = mapping,
+#                 text = text,
+#                 color = color,
+#                 value_enable = value_on,
+#                 value_disable = value_off,
+#                 reference_value = reference_value,
+#                 comparison_mode = comparison_mode
+#             ),
+#             "mode": mode,
+#             "display": display,
+#             "id": id,
+#             "useSwitchLeds": use_leds,
+#             "enableCallback": enable_callback
+#         })
 
-    ## Special functions ####################################################################################################
+#     ## Special functions ####################################################################################################
 
-    # Switch an effect slot on / off
-    @staticmethod
-    def EFFECT_STATE(slot_id, 
-                     display = None, 
-                     mode = PushButtonAction.HOLD_MOMENTARY, 
-                     id = False, 
-                     use_leds = True, 
-                     enable_callback = None
-        ):
-        return PushButtonAction({
-            "callback": KemperEffectEnableCallback(slot_id),
-            "mode": mode,
-            "display": display,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback,
-        })
+#     # Switch an effect slot on / off
+#     @staticmethod
+#     def EFFECT_STATE(slot_id, 
+#                      display = None, 
+#                      mode = PushButtonAction.HOLD_MOMENTARY, 
+#                      id = False, 
+#                      use_leds = True, 
+#                      enable_callback = None
+#         ):
+#         return PushButtonAction({
+#             "callback": KemperEffectEnableCallback(slot_id),
+#             "mode": mode,
+#             "display": display,
+#             "id": id,
+#             "useSwitchLeds": use_leds,
+#             "enableCallback": enable_callback,
+#         })
 
-    # Switch tuner mode on / off
-    @staticmethod
-    def TUNER_MODE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, text = "Tuner", id = False, use_leds = True, enable_callback = None):
-        return PushButtonAction({
-            "callback": KemperActionDefinitions._TunerModeCallback(
-                text = text,
-                color = color
-            ),
-            "mode": mode,   
-            "display": display,            
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
-        })
+#     # Switch tuner mode on / off
+#     @staticmethod
+#     def TUNER_MODE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, text = "Tuner", id = False, use_leds = True, enable_callback = None):
+#         return PushButtonAction({
+#             "callback": KemperActionDefinitions._TunerModeCallback(
+#                 text = text,
+#                 color = color
+#             ),
+#             "mode": mode,   
+#             "display": display,            
+#             "id": id,
+#             "useSwitchLeds": use_leds,
+#             "enableCallback": enable_callback
+#         })
     
-    # Callback for tuner mode
-    class _TunerModeCallback(BinaryParameterCallback):
-        def __init__(self, color, text):
-            self.__mapping = KemperMappings.TUNER_MODE_STATE()
-            super().__init__(
-                mapping = self.__mapping,
-                comparison_mode = BinaryParameterCallback.EQUAL,
-                text = text,
-                color = color
-            )
+#     # Callback for tuner mode
+#     class _TunerModeCallback(BinaryParameterCallback):
+#         def __init__(self, color, text):
+#             self.__mapping = KemperMappings.TUNER_MODE_STATE()
+#             super().__init__(
+#                 mapping = self.__mapping,
+#                 comparison_mode = BinaryParameterCallback.EQUAL,
+#                 text = text,
+#                 color = color
+#             )
 
-            self.__just_clicked = False
+#             self.__just_clicked = False
 
-        def init(self, appl, listener = None):
-            super().init(appl, listener)
-            self.__appl = appl
+#         def init(self, appl, listener = None):
+#             super().init(appl, listener)
+#             self.__appl = appl
 
-        def state_changed_by_user(self, action):
-            # Code from BinaryParameterCallback.state_changed_by_user (implemented here directly to reduce stack size)
-            self.__appl.client.set(self.__mapping, self._value_enable if action.state else self._value_disable)
+#         def state_changed_by_user(self, action):
+#             # Code from BinaryParameterCallback.state_changed_by_user (implemented here directly to reduce stack size)
+#             self.__appl.client.set(self.__mapping, self._value_enable if action.state else self._value_disable)
             
-            # Request value
-            self.update()
+#             # Request value
+#             self.update()
             
-            self.__just_clicked = True
+#             self.__just_clicked = True
 
-        def parameter_changed(self, mapping):
-            super().parameter_changed(mapping)
+#         def parameter_changed(self, mapping):
+#             super().parameter_changed(mapping)
             
-            if mapping != self.__mapping:
-                return
+#             if mapping != self.__mapping:
+#                 return
             
-            if self.__mapping.value == 1:
-                # Tuner on
-                for switch in self.__appl.switches:
-                    switch.override_action = self
+#             if self.__mapping.value == 1:
+#                 # Tuner on
+#                 for switch in self.__appl.switches:
+#                     switch.override_action = self
                     
-                    switch.color = Colors.WHITE
-                    switch.brightness = self._led_brightness_off
-            else:
-                # Tuner off
-                for switch in self.__appl.switches:
-                    switch.override_action = None
+#                     switch.color = Colors.WHITE
+#                     switch.brightness = self._led_brightness_off
+#             else:
+#                 # Tuner off
+#                 for switch in self.__appl.switches:
+#                     switch.override_action = None
 
-                    for action in switch.actions:
-                        action.reset()
+#                     for action in switch.actions:
+#                         action.reset()
 
-        def push(self):
-            pass
+#         def push(self):
+#             pass
 
-        def release(self):
-            if self.__just_clicked:
-                # This prevents that the tuner button switches off the tuner immediately at releasing 
-                self.__just_clicked = False
-                return
+#         def release(self):
+#             if self.__just_clicked:
+#                 # This prevents that the tuner button switches off the tuner immediately at releasing 
+#                 self.__just_clicked = False
+#                 return
             
-            self.__appl.client.set(self.__mapping, 0)  
+#             self.__appl.client.set(self.__mapping, 0)  
 
 
-    # Tap tempo 
-    @staticmethod
-    def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = True, enable_callback = None):
-        return PushButtonAction({
-            "callback": BinaryParameterCallback(
-                mapping = KemperMappings.TAP_TEMPO(),
-                text = "Tap",
-                color = color
-            ),
-            "mode": PushButtonAction.MOMENTARY,
-            "display": display,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
-        })
+#     # Tap tempo 
+#     @staticmethod
+#     def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = True, enable_callback = None):
+#         return PushButtonAction({
+#             "callback": BinaryParameterCallback(
+#                 mapping = KemperMappings.TAP_TEMPO(),
+#                 text = "Tap",
+#                 color = color
+#             ),
+#             "mode": PushButtonAction.MOMENTARY,
+#             "display": display,
+#             "id": id,
+#             "useSwitchLeds": use_leds,
+#             "enableCallback": enable_callback
+#         })
     
-    # Show tempo (visual feedback, will be enabled for short time every beat)
-    @staticmethod
-    def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, text = "Tempo", id = False, use_leds = True, enable_callback = None, led_brightness_on = 0.02, led_brightness_off = 0):
-        return PushButtonAction({
-            "callback": BinaryParameterCallback(
-                mapping = KemperMappings.TEMPO_DISPLAY(),
-                text = text,
-                color = color,
-                led_brightness_on = led_brightness_on,
-                led_brightness_off = led_brightness_off
-            ),
-            "display": display,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": KemperActionDefinitions._ShowTempoEnableCallback(enable_callback)
-        })
+#     # Show tempo (visual feedback, will be enabled for short time every beat)
+#     @staticmethod
+#     def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, text = "Tempo", id = False, use_leds = True, enable_callback = None, led_brightness_on = 0.02, led_brightness_off = 0):
+#         return PushButtonAction({
+#             "callback": BinaryParameterCallback(
+#                 mapping = KemperMappings.TEMPO_DISPLAY(),
+#                 text = text,
+#                 color = color,
+#                 led_brightness_on = led_brightness_on,
+#                 led_brightness_off = led_brightness_off
+#             ),
+#             "display": display,
+#             "id": id,
+#             "useSwitchLeds": use_leds,
+#             "enableCallback": KemperActionDefinitions._ShowTempoEnableCallback(enable_callback)
+#         })
     
-    class _ShowTempoEnableCallback(Callback):
-        def __init__(self, enable_callback):
-            super().__init__()
-            self.__enable_callback = enable_callback
+#     class _ShowTempoEnableCallback(Callback):
+#         def __init__(self, enable_callback):
+#             super().__init__()
+#             self.__enable_callback = enable_callback
 
-            self.__tuner_mapping = KemperMappings.TUNER_MODE_STATE()
-            self.register_mapping(self.__tuner_mapping)
+#             self.__tuner_mapping = KemperMappings.TUNER_MODE_STATE()
+#             self.register_mapping(self.__tuner_mapping)
 
-        def enabled(self, action):
-            if self.__tuner_mapping.value == 1:
-                # Tuner enabled
-                return False
-            elif self.__enable_callback:
-                return self.__enable_callback.enabled(action)
-            else:
-                return True
+#         def enabled(self, action):
+#             if self.__tuner_mapping.value == 1:
+#                 # Tuner enabled
+#                 return False
+#             elif self.__enable_callback:
+#                 return self.__enable_callback.enabled(action)
+#             else:
+#                 return True
     
-    # Effect Button I-IIII (set only). num must be a number (1 to 4).
-    @staticmethod
-    def EFFECT_BUTTON(num, text = None, display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True, enable_callback = None):
-        if not text:
-            if num == 1:
-                text = "FX I"
-            elif num == 2:
-                text = "FX II"
-            elif num == 3:
-                text = "FX III"
-            elif num == 4:
-                text = "FX IIII"
+#     # Effect Button I-IIII (set only). num must be a number (1 to 4).
+#     @staticmethod
+#     def EFFECT_BUTTON(num, text = None, display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True, enable_callback = None):
+#         if not text:
+#             if num == 1:
+#                 text = "FX I"
+#             elif num == 2:
+#                 text = "FX II"
+#             elif num == 3:
+#                 text = "FX III"
+#             elif num == 4:
+#                 text = "FX IIII"
 
-        return PushButtonAction({
-            "callback": BinaryParameterCallback(
-                mapping = KemperMappings.EFFECT_BUTTON(num),
-                text = text,
-                color = color
-            ),
-            "mode": PushButtonAction.LATCH,
-            "display": display,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
-        })
+#         return PushButtonAction({
+#             "callback": BinaryParameterCallback(
+#                 mapping = KemperMappings.EFFECT_BUTTON(num),
+#                 text = text,
+#                 color = color
+#             ),
+#             "mode": PushButtonAction.LATCH,
+#             "display": display,
+#             "id": id,
+#             "useSwitchLeds": use_leds,
+#             "enableCallback": enable_callback
+#         })
     
-    # Morph button (faded change of morph state) with fixed color.
-    def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None, color = Colors.WHITE):
-        if color == "kemper":
-            cb = KemperMorphCallback(
-                mapping = KemperMappings.MORPH_BUTTON(),
-                text = text,
-                comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                led_brightness_off = "on",
-                display_dim_factor_off = "on",
-            )
-        else:        
-            cb = BinaryParameterCallback(
-                mapping = KemperMappings.MORPH_BUTTON(),
-                text = text,
-                color = color,
-                comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                led_brightness_off = "on",
-                display_dim_factor_off = "on",
-            )
+#     # Morph button (faded change of morph state) with fixed color.
+#     def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None, color = Colors.WHITE):
+#         if color == "kemper":
+#             cb = KemperMorphCallback(
+#                 mapping = KemperMappings.MORPH_BUTTON(),
+#                 text = text,
+#                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+#                 led_brightness_off = "on",
+#                 display_dim_factor_off = "on",
+#             )
+#         else:        
+#             cb = BinaryParameterCallback(
+#                 mapping = KemperMappings.MORPH_BUTTON(),
+#                 text = text,
+#                 color = color,
+#                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+#                 led_brightness_off = "on",
+#                 display_dim_factor_off = "on",
+#             )
         
-        return PushButtonAction({
-            "callback": cb,
-            "mode": PushButtonAction.MOMENTARY,
-            "useSwitchLeds": use_leds,
-            "display": display,
-            "id": id,
-            "enableCallback": enable_callback
-        })
+#         return PushButtonAction({
+#             "callback": cb,
+#             "mode": PushButtonAction.MOMENTARY,
+#             "useSwitchLeds": use_leds,
+#             "display": display,
+#             "id": id,
+#             "enableCallback": enable_callback
+#         })
     
-    # # Morph button (faded change of morph state) with colors representing morph state
-    # def MORPH_BUTTON_WITH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
-    #     return PushButtonAction({
-    #         "callback": KemperMorphCallback(
-    #             mapping = KemperMappings.MORPH_BUTTON(),
-    #             text = text,
-    #             comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-    #             led_brightness_off = "on",
-    #             display_dim_factor_off = "on",
-    #         ),
-    #         "mode": PushButtonAction.MOMENTARY,
-    #         "useSwitchLeds": use_leds,
-    #         "display": display,
-    #         "id": id,
-    #         "enableCallback": enable_callback
-    #     })
+#     # # Morph button (faded change of morph state) with colors representing morph state
+#     # def MORPH_BUTTON_WITH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
+#     #     return PushButtonAction({
+#     #         "callback": KemperMorphCallback(
+#     #             mapping = KemperMappings.MORPH_BUTTON(),
+#     #             text = text,
+#     #             comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+#     #             led_brightness_off = "on",
+#     #             display_dim_factor_off = "on",
+#     #         ),
+#     #         "mode": PushButtonAction.MOMENTARY,
+#     #         "useSwitchLeds": use_leds,
+#     #         "display": display,
+#     #         "id": id,
+#     #         "enableCallback": enable_callback
+#     #     })
     
-    # Morph display only
-    def MORPH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
-        return PushButtonAction({
-            "callback": KemperMorphCallback(
-                mapping = KemperMappings.MORPH_PEDAL(),
-                text = text,
-                comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                led_brightness_off = "on",
-                display_dim_factor_off = "on",
-                suppress_send = True
-            ),
-            "useSwitchLeds": use_leds,
-            "display": display,
-            "id": id,
-            "enableCallback": enable_callback
-        })
+#     # Morph display only
+#     def MORPH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
+#         return PushButtonAction({
+#             "callback": KemperMorphCallback(
+#                 mapping = KemperMappings.MORPH_PEDAL(),
+#                 text = text,
+#                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+#                 led_brightness_off = "on",
+#                 display_dim_factor_off = "on",
+#                 suppress_send = True
+#             ),
+#             "useSwitchLeds": use_leds,
+#             "display": display,
+#             "id": id,
+#             "enableCallback": enable_callback
+#         })
     
-    ## Rig specific ##########################################################################################################
+#     ## Rig specific ##########################################################################################################
 
-    # Volume boost function, based on setting rig volume to a certain boost value. To 
-    # make sense, all rig volumes have to be zero in your rigs! You can then set the
-    # boost rig volume by passing a value in range [0..1] (corresponding to the range of the
-    # rig volume paramneter: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB)
-    @staticmethod
-    def RIG_VOLUME_BOOST(boost_volume, 
-                         display = None, 
-                         mode = PushButtonAction.HOLD_MOMENTARY, 
-                         color = Colors.PINK, 
-                         id = False, 
-                         use_leds = True, 
-                         text = "RigBoost", 
-                         remember_off_value = True, 
-                         enable_callback = None
-        ):
-        return PushButtonAction({
-            "callback": BinaryParameterCallback(
-                mapping = KemperMappings.RIG_VOLUME(),
-                text = text,
-                color = color,
-                value_enable = NRPN_VALUE(boost_volume),
-                value_disable = NRPN_VALUE(0.5) if not remember_off_value else "auto",    # 0.5 = 0dB
-            ),
-            "mode": mode,
-            "display": display,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
-        })
+#     # Volume boost function, based on setting rig volume to a certain boost value. To 
+#     # make sense, all rig volumes have to be zero in your rigs! You can then set the
+#     # boost rig volume by passing a value in range [0..1] (corresponding to the range of the
+#     # rig volume paramneter: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB)
+#     @staticmethod
+#     def RIG_VOLUME_BOOST(boost_volume, 
+#                          display = None, 
+#                          mode = PushButtonAction.HOLD_MOMENTARY, 
+#                          color = Colors.PINK, 
+#                          id = False, 
+#                          use_leds = True, 
+#                          text = "RigBoost", 
+#                          remember_off_value = True, 
+#                          enable_callback = None
+#         ):
+#         return PushButtonAction({
+#             "callback": BinaryParameterCallback(
+#                 mapping = KemperMappings.RIG_VOLUME(),
+#                 text = text,
+#                 color = color,
+#                 value_enable = NRPN_VALUE(boost_volume),
+#                 value_disable = NRPN_VALUE(0.5) if not remember_off_value else "auto",    # 0.5 = 0dB
+#             ),
+#             "mode": mode,
+#             "display": display,
+#             "id": id,
+#             "useSwitchLeds": use_leds,
+#             "enableCallback": enable_callback
+#         })
 
-    ## Change Rig/Bank ############################################################################################################
+#     ## Change Rig/Bank ############################################################################################################
 
-    # Next bank (keeps rig index)
-    @staticmethod
-    def BANK_UP(display = None, 
-                id = False, 
-                use_leds = True, 
-                enable_callback = None,
-                dim_factor = "off",                               # Can be "off", "on" or a value in range [0..1]
-                led_brightness = "off",                           # Can be "off", "on" or a value in range [0..1]
-                text = "Bank up",
-                text_callback = None,                             # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                color = None,                                     # Override color (if no color_callback is passed)
-                color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
-        ):
-        return PushButtonAction({
-            "callback": KemperActionDefinitions._BankChangeCallback(
-                mapping = KemperMappings.NEXT_BANK(),
-                offset = 1,
-                dim_factor = dim_factor,
-                display_mode = display_mode,
-                led_brightness = led_brightness,
-                color = color,
-                color_callback = color_callback,
-                text = text,
-                text_callback = text_callback
-            ),
-            "mode": PushButtonAction.ONE_SHOT,
-            "display": display,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
-        })
+#     # Next bank (keeps rig index)
+#     @staticmethod
+#     def BANK_UP(display = None, 
+#                 id = False, 
+#                 use_leds = True, 
+#                 enable_callback = None,
+#                 dim_factor = "off",                               # Can be "off", "on" or a value in range [0..1]
+#                 led_brightness = "off",                           # Can be "off", "on" or a value in range [0..1]
+#                 text = "Bank up",
+#                 text_callback = None,                             # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+#                 color = None,                                     # Override color (if no color_callback is passed)
+#                 color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+#                 display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
+#         ):
+#         return PushButtonAction({
+#             "callback": KemperActionDefinitions._BankChangeCallback(
+#                 mapping = KemperMappings.NEXT_BANK(),
+#                 offset = 1,
+#                 dim_factor = dim_factor,
+#                 display_mode = display_mode,
+#                 led_brightness = led_brightness,
+#                 color = color,
+#                 color_callback = color_callback,
+#                 text = text,
+#                 text_callback = text_callback
+#             ),
+#             "mode": PushButtonAction.ONE_SHOT,
+#             "display": display,
+#             "id": id,
+#             "useSwitchLeds": use_leds,
+#             "enableCallback": enable_callback
+#         })
 
-    # Previous bank (keeps rig index)
-    @staticmethod
-    def BANK_DOWN(display = None, 
-                  id = False, 
-                  use_leds = True, 
-                  enable_callback = None,
-                  dim_factor = "off",                               # Can be "off", "on" or a value in range [0..1]
-                  led_brightness = "off",                           # Can be "off", "on" or a value in range [0..1]
-                  text = "Bank dn", 
-                  text_callback = None,                             # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                  color = None,                                     # Override color (if no color_callback is passed)
-                  color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                  display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
-        ):
-        return PushButtonAction({
-            "callback": KemperActionDefinitions._BankChangeCallback(
-                mapping = KemperMappings.PREVIOUS_BANK(),
-                offset = -1,
-                dim_factor = dim_factor,
-                display_mode = display_mode,
-                led_brightness = led_brightness,
-                color = color,
-                color_callback = color_callback,
-                text = text,
-                text_callback = text_callback
-            ),
-            "mode": PushButtonAction.ONE_SHOT,
-            "display": display,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "enableCallback": enable_callback
-        })
+#     # Previous bank (keeps rig index)
+#     @staticmethod
+#     def BANK_DOWN(display = None, 
+#                   id = False, 
+#                   use_leds = True, 
+#                   enable_callback = None,
+#                   dim_factor = "off",                               # Can be "off", "on" or a value in range [0..1]
+#                   led_brightness = "off",                           # Can be "off", "on" or a value in range [0..1]
+#                   text = "Bank dn", 
+#                   text_callback = None,                             # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+#                   color = None,                                     # Override color (if no color_callback is passed)
+#                   color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+#                   display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
+#         ):
+#         return PushButtonAction({
+#             "callback": KemperActionDefinitions._BankChangeCallback(
+#                 mapping = KemperMappings.PREVIOUS_BANK(),
+#                 offset = -1,
+#                 dim_factor = dim_factor,
+#                 display_mode = display_mode,
+#                 led_brightness = led_brightness,
+#                 color = color,
+#                 color_callback = color_callback,
+#                 text = text,
+#                 text_callback = text_callback
+#             ),
+#             "mode": PushButtonAction.ONE_SHOT,
+#             "display": display,
+#             "id": id,
+#             "useSwitchLeds": use_leds,
+#             "enableCallback": enable_callback
+#         })
        
-    # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
-    # the current bank. Rigs are indexed starting from one, range: [1..5].
-    @staticmethod
-    def RIG_SELECT(rig, 
-                   rig_off = None,                                 # If set, this defines the "off" rig chosen when the action is disabled. Set to "auto" to always remember the current rig as "off" rig
-                   bank = None,                                    # If set, a specific bank is selected. If None, the current bank is kept
-                   bank_off = None,                                # If set, this defines the "off" bank to be chosen when the action is disabled. Set to "auto" to always remember the current bank as "off" bank
-                   display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
-                   display = None, 
-                   id = False, 
-                   use_leds = True, 
-                   enable_callback = None,
-                   color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                   color = None,                                   # Color override (if no text callback is passed)
-                   text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                   text = None,                                    # Text override (if no text callback is passed)
-                   auto_exclude_rigs = None                        # If rig_off is "auto", this can be filled with a tuple or list of rigs to exclude from "remembering" when disabled
-        ):
+#     # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
+#     # the current bank. Rigs are indexed starting from one, range: [1..5].
+#     @staticmethod
+#     def RIG_SELECT(rig, 
+#                    rig_off = None,                                 # If set, this defines the "off" rig chosen when the action is disabled. Set to "auto" to always remember the current rig as "off" rig
+#                    bank = None,                                    # If set, a specific bank is selected. If None, the current bank is kept
+#                    bank_off = None,                                # If set, this defines the "off" bank to be chosen when the action is disabled. Set to "auto" to always remember the current bank as "off" bank
+#                    display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
+#                    display = None, 
+#                    id = False, 
+#                    use_leds = True, 
+#                    enable_callback = None,
+#                    color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+#                    color = None,                                   # Color override (if no text callback is passed)
+#                    text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+#                    text = None,                                    # Text override (if no text callback is passed)
+#                    auto_exclude_rigs = None                        # If rig_off is "auto", this can be filled with a tuple or list of rigs to exclude from "remembering" when disabled
+#         ):
         
-        # Finally we can create the action definition ;)
-        return PushButtonAction({
-            "display": display,
-            "mode": PushButtonAction.LATCH,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "callback": KemperActionDefinitions._RigSelectCallback(
-                rig = rig,
-                rig_off = rig_off,
-                bank = bank,
-                bank_off = bank_off,
-                color = color,
-                color_callback = color_callback,
-                display_mode = display_mode,
-                text = text,
-                text_callback = text_callback,
-                auto_exclude_rigs = auto_exclude_rigs
-            ),
-            "enableCallback": enable_callback
-        })   
+#         # Finally we can create the action definition ;)
+#         return PushButtonAction({
+#             "display": display,
+#             "mode": PushButtonAction.LATCH,
+#             "id": id,
+#             "useSwitchLeds": use_leds,
+#             "callback": KemperActionDefinitions._RigSelectCallback(
+#                 rig = rig,
+#                 rig_off = rig_off,
+#                 bank = bank,
+#                 bank_off = bank_off,
+#                 color = color,
+#                 color_callback = color_callback,
+#                 display_mode = display_mode,
+#                 text = text,
+#                 text_callback = text_callback,
+#                 auto_exclude_rigs = auto_exclude_rigs
+#             ),
+#             "enableCallback": enable_callback
+#         })   
     
-    # # Selects a specific rig and bank, or toggles between two rigs (if rig_off is also provided). 
-    # # Rigs are indexed starting from one, range: [1..5], as well as banks.
-    # @staticmethod
-    # def RIG_AND_BANK_SELECT(rig, 
-    #                         bank, 
-    #                         rig_off = None,                                 # Set to "auto" to always remember the "off" rig
-    #                         bank_off = None,                                # Set to "auto" to always remember the "off" bank
-    #                         display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
-    #                         display = None, 
-    #                         id = False, 
-    #                         use_leds = True, 
-    #                         enable_callback = None,
-    #                         color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-    #                         color = None,                                   # Color override (if no color callback is passed)
-    #                         text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-    #                         text = None                                     # Text override (if no text callback is passed)
-    #     ):
+#     # # Selects a specific rig and bank, or toggles between two rigs (if rig_off is also provided). 
+#     # # Rigs are indexed starting from one, range: [1..5], as well as banks.
+#     # @staticmethod
+#     # def RIG_AND_BANK_SELECT(rig, 
+#     #                         bank, 
+#     #                         rig_off = None,                                 # Set to "auto" to always remember the "off" rig
+#     #                         bank_off = None,                                # Set to "auto" to always remember the "off" bank
+#     #                         display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
+#     #                         display = None, 
+#     #                         id = False, 
+#     #                         use_leds = True, 
+#     #                         enable_callback = None,
+#     #                         color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+#     #                         color = None,                                   # Color override (if no color callback is passed)
+#     #                         text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+#     #                         text = None                                     # Text override (if no text callback is passed)
+#     #     ):
 
-    #     # Finally we can create the action definition ;)
-    #     return PushButtonAction({
-    #         "display": display,
-    #         "mode": PushButtonAction.LATCH,
-    #         "id": id,
-    #         "useSwitchLeds": use_leds,
-    #         "callback": KemperActionDefinitions._RigSelectCallback(
-    #             rig = rig,
-    #             rig_off = rig_off,
-    #             bank = bank,
-    #             bank_off = bank_off,
-    #             color = color,
-    #             color_callback = color_callback,
-    #             text = text,
-    #             text_callback = text_callback,
-    #             display_mode = display_mode
-    #         ),
-    #         "enableCallback": enable_callback
-    #     })
+#     #     # Finally we can create the action definition ;)
+#     #     return PushButtonAction({
+#     #         "display": display,
+#     #         "mode": PushButtonAction.LATCH,
+#     #         "id": id,
+#     #         "useSwitchLeds": use_leds,
+#     #         "callback": KemperActionDefinitions._RigSelectCallback(
+#     #             rig = rig,
+#     #             rig_off = rig_off,
+#     #             bank = bank,
+#     #             bank_off = bank_off,
+#     #             color = color,
+#     #             color_callback = color_callback,
+#     #             text = text,
+#     #             text_callback = text_callback,
+#     #             display_mode = display_mode
+#     #         ),
+#     #         "enableCallback": enable_callback
+#     #     })
     
-    # Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). 
-    # Banks are indexed starting from one, range: [1..126].    
-    @staticmethod
-    def BANK_SELECT(bank, 
-                    bank_off = None,
-                    preselect = False,                              # If False, the bank is switched immediately (by sending a rig select command after bank preselect). If True, only the bank preselect is sent.
-                    display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
-                    display = None, 
-                    id = False, 
-                    use_leds = True, 
-                    enable_callback = None,
-                    color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                    color = None,                                   # Color override (if no color callback is passed)
-                    text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                    text = None                                     # Text override (if no text callback is passed)
-        ):
+#     # Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). 
+#     # Banks are indexed starting from one, range: [1..126].    
+#     @staticmethod
+#     def BANK_SELECT(bank, 
+#                     bank_off = None,
+#                     preselect = False,                              # If False, the bank is switched immediately (by sending a rig select command after bank preselect). If True, only the bank preselect is sent.
+#                     display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
+#                     display = None, 
+#                     id = False, 
+#                     use_leds = True, 
+#                     enable_callback = None,
+#                     color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+#                     color = None,                                   # Color override (if no color callback is passed)
+#                     text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+#                     text = None                                     # Text override (if no text callback is passed)
+#         ):
         
-        return PushButtonAction({
-            "display": display,
-            "mode": PushButtonAction.LATCH,
-            "id": id,
-            "useSwitchLeds": use_leds,
-            "callback": KemperActionDefinitions._BankSelectCallback(
-                mapping = KemperMappings.BANK_AND_RIG_SELECT(0),
-                bank = bank,
-                bank_off = bank_off,
-                text = text,
-                text_callback = text_callback,
-                color = color,
-                color_callback = color_callback,
-                display_mode = display_mode,
-                preselect = preselect
-            ),
-            "enableCallback": enable_callback
-        })
+#         return PushButtonAction({
+#             "display": display,
+#             "mode": PushButtonAction.LATCH,
+#             "id": id,
+#             "useSwitchLeds": use_leds,
+#             "callback": KemperActionDefinitions._BankSelectCallback(
+#                 mapping = KemperMappings.BANK_AND_RIG_SELECT(0),
+#                 bank = bank,
+#                 bank_off = bank_off,
+#                 text = text,
+#                 text_callback = text_callback,
+#                 color = color,
+#                 color_callback = color_callback,
+#                 display_mode = display_mode,
+#                 preselect = preselect
+#             ),
+#             "enableCallback": enable_callback
+#         })
     
-    # Adds morph state display on one LED to the rig select action. Returns a list of actions!
-    # For details on the parameters, see RIG_SELECT.
-    @staticmethod
-    def RIG_SELECT_AND_MORPH_STATE(rig, 
-                                   rig_off = None, 
-                                   bank = None,
-                                   bank_off = None,
-                                   display = None, 
-                                   id = False, 
-                                   use_leds = True, 
-                                   enable_callback = None,
-                                   color_callback = None,
-                                   color = None,
-                                   text_callback = None,
-                                   text = None,
-                                   display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                                   morph_display = None,                           # Optional DisplayLabel to show morph color
-                                   morph_use_leds = True,                          # Use the LEDs to show morph state?
-                                   morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
-                                   morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
+#     # Adds morph state display on one LED to the rig select action. Returns a list of actions!
+#     # For details on the parameters, see RIG_SELECT.
+#     @staticmethod
+#     def RIG_SELECT_AND_MORPH_STATE(rig, 
+#                                    rig_off = None, 
+#                                    bank = None,
+#                                    bank_off = None,
+#                                    display = None, 
+#                                    id = False, 
+#                                    use_leds = True, 
+#                                    enable_callback = None,
+#                                    color_callback = None,
+#                                    color = None,
+#                                    text_callback = None,
+#                                    text = None,
+#                                    display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+#                                    morph_display = None,                           # Optional DisplayLabel to show morph color
+#                                    morph_use_leds = True,                          # Use the LEDs to show morph state?
+#                                    morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
+#                                    morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
 
-    ):
-        rig_select = KemperActionDefinitions.RIG_SELECT(
-            rig = rig,
-            rig_off = rig_off,
-            bank = bank,
-            bank_off = bank_off,
-            display_mode = display_mode,
-            display = display,
-            id = id,
-            use_leds = use_leds,
-            enable_callback = enable_callback,
-            color_callback = color_callback,
-            color = color,
-            text_callback = text_callback,
-            text = text
-        )        
+#     ):
+#         rig_select = KemperActionDefinitions.RIG_SELECT(
+#             rig = rig,
+#             rig_off = rig_off,
+#             bank = bank,
+#             bank_off = bank_off,
+#             display_mode = display_mode,
+#             display = display,
+#             id = id,
+#             use_leds = use_leds,
+#             enable_callback = enable_callback,
+#             color_callback = color_callback,
+#             color = color,
+#             text_callback = text_callback,
+#             text = text
+#         )        
         
-        return [
-            # Rig select action
-            rig_select,
+#         return [
+#             # Rig select action
+#             rig_select,
 
-            # Use a separate action to show morph state
-            PushButtonAction({
-                "callback": KemperMorphCallback(
-                    mapping = KemperMappings.MORPH_PEDAL(),
-                    comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-                    led_brightness_off = "on",
-                    display_dim_factor_off = "on",
-                    suppress_send = True
-                ),
-                "useSwitchLeds": morph_use_leds,
-                "display": morph_display,
-                "id": morph_id if morph_id != None else id,
-                "enableCallback": KemperActionDefinitions._MorphDisplayEnableCallback(
-                    action_rig_select = rig_select, 
-                    rig = rig, 
-                    morph_only_when_enabled = morph_only_when_enabled
-                )
-            })            
-        ]
+#             # Use a separate action to show morph state
+#             PushButtonAction({
+#                 "callback": KemperMorphCallback(
+#                     mapping = KemperMappings.MORPH_PEDAL(),
+#                     comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+#                     led_brightness_off = "on",
+#                     display_dim_factor_off = "on",
+#                     suppress_send = True
+#                 ),
+#                 "useSwitchLeds": morph_use_leds,
+#                 "display": morph_display,
+#                 "id": morph_id if morph_id != None else id,
+#                 "enableCallback": KemperActionDefinitions._MorphDisplayEnableCallback(
+#                     action_rig_select = rig_select, 
+#                     rig = rig, 
+#                     morph_only_when_enabled = morph_only_when_enabled
+#                 )
+#             })            
+#         ]
     
 
-    # # Adds morph state display on one LED to the rig and bank select action. Returns a list of actions!
-    # @staticmethod
-    # def RIG_AND_BANK_SELECT_AND_MORPH_STATE(rig, 
-    #                                         bank,
-    #                                         rig_off = None, 
-    #                                         bank_off = None,
-    #                                         display = None, 
-    #                                         id = False, 
-    #                                         use_leds = True, 
-    #                                         enable_callback = None,
-    #                                         color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-    #                                         color = None,                                   # Color override (if no text callback is passed)
-    #                                         text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-    #                                         text = None,                                    # Text override (if no text callback is passed)
-    #                                         morph_display = None,                           # Optional DisplayLabel to show morph color
-    #                                         morph_use_leds = True,                          # Use the LEDs to show morph state?
-    #                                         morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
-    #                                         morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
+#     # # Adds morph state display on one LED to the rig and bank select action. Returns a list of actions!
+#     # @staticmethod
+#     # def RIG_AND_BANK_SELECT_AND_MORPH_STATE(rig, 
+#     #                                         bank,
+#     #                                         rig_off = None, 
+#     #                                         bank_off = None,
+#     #                                         display = None, 
+#     #                                         id = False, 
+#     #                                         use_leds = True, 
+#     #                                         enable_callback = None,
+#     #                                         color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+#     #                                         color = None,                                   # Color override (if no text callback is passed)
+#     #                                         text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+#     #                                         text = None,                                    # Text override (if no text callback is passed)
+#     #                                         morph_display = None,                           # Optional DisplayLabel to show morph color
+#     #                                         morph_use_leds = True,                          # Use the LEDs to show morph state?
+#     #                                         morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
+#     #                                         morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
 
-    # ):
-    #     rig_and_bank_select = KemperActionDefinitions.RIG_AND_BANK_SELECT(
-    #         rig = rig,
-    #         bank = bank,
-    #         rig_off = rig_off,
-    #         bank_off = bank_off,
-    #         display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-    #         display = display,
-    #         id = id,
-    #         use_leds = use_leds,
-    #         enable_callback = enable_callback,
-    #         color_callback = color_callback,
-    #         color = color,
-    #         text_callback = text_callback,
-    #         text = text
-    #     )
+#     # ):
+#     #     rig_and_bank_select = KemperActionDefinitions.RIG_AND_BANK_SELECT(
+#     #         rig = rig,
+#     #         bank = bank,
+#     #         rig_off = rig_off,
+#     #         bank_off = bank_off,
+#     #         display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+#     #         display = display,
+#     #         id = id,
+#     #         use_leds = use_leds,
+#     #         enable_callback = enable_callback,
+#     #         color_callback = color_callback,
+#     #         color = color,
+#     #         text_callback = text_callback,
+#     #         text = text
+#     #     )
 
-    #     return [
-    #         # Rig and bank select action
-    #         rig_and_bank_select,
+#     #     return [
+#     #         # Rig and bank select action
+#     #         rig_and_bank_select,
 
-    #         # Use a separate action to show morph state
-    #         PushButtonAction({
-    #             "callback": KemperMorphCallback(
-    #                 mapping = KemperMappings.MORPH_PEDAL(),
-    #                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-    #                 led_brightness_off = "on",
-    #                 display_dim_factor_off = "on",
-    #                 suppress_send = True
-    #             ),
-    #             "useSwitchLeds": morph_use_leds,
-    #             "display": morph_display,
-    #             "id": morph_id if morph_id != None else id,
-    #             "enableCallback": KemperActionDefinitions._MorphDisplayEnableCallback(
-    #                 action_rig_select = rig_and_bank_select, 
-    #                 rig = rig, 
-    #                 morph_only_when_enabled = morph_only_when_enabled
-    #             )
-    #         })            
-    #     ]
+#     #         # Use a separate action to show morph state
+#     #         PushButtonAction({
+#     #             "callback": KemperMorphCallback(
+#     #                 mapping = KemperMappings.MORPH_PEDAL(),
+#     #                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+#     #                 led_brightness_off = "on",
+#     #                 display_dim_factor_off = "on",
+#     #                 suppress_send = True
+#     #             ),
+#     #             "useSwitchLeds": morph_use_leds,
+#     #             "display": morph_display,
+#     #             "id": morph_id if morph_id != None else id,
+#     #             "enableCallback": KemperActionDefinitions._MorphDisplayEnableCallback(
+#     #                 action_rig_select = rig_and_bank_select, 
+#     #                 rig = rig, 
+#     #                 morph_only_when_enabled = morph_only_when_enabled
+#     #             )
+#     #         })            
+#     #     ]
     
     
-    # Custom callback showing current bank color (only used by Bank up/down)
-    class _BankChangeCallback(BinaryParameterCallback):
-        def __init__(self, 
-                     mapping, 
-                     offset,
-                     dim_factor,
-                     display_mode,
-                     led_brightness,
-                     color,
-                     color_callback,
-                     text,
-                     text_callback
-            ):            
-            super().__init__(
-                mapping = mapping,
-                value_enable = 0,
-                value_disable = 0,
-                comparison_mode = self.NO_STATE_CHANGE
-            )
+#     # Custom callback showing current bank color (only used by Bank up/down)
+#     class _BankChangeCallback(BinaryParameterCallback):
+#         def __init__(self, 
+#                      mapping, 
+#                      offset,
+#                      dim_factor,
+#                      display_mode,
+#                      led_brightness,
+#                      color,
+#                      color_callback,
+#                      text,
+#                      text_callback
+#             ):            
+#             super().__init__(
+#                 mapping = mapping,
+#                 value_enable = 0,
+#                 value_disable = 0,
+#                 comparison_mode = self.NO_STATE_CHANGE
+#             )
 
-            self.__mapping = mapping
-            self.__dim_factor_p = dim_factor
-            self.__led_brightness_p = led_brightness
-            self.__display_mode = display_mode
+#             self.__mapping = mapping
+#             self.__dim_factor_p = dim_factor
+#             self.__led_brightness_p = led_brightness
+#             self.__display_mode = display_mode
 
-            self.__color = color
-            self.__color_callback = color_callback
-            self.__offset = offset
+#             self.__color = color
+#             self.__color_callback = color_callback
+#             self.__offset = offset
 
-            self.__text = text
-            self.__text_callback = text_callback
+#             self.__text = text
+#             self.__text_callback = text_callback
 
-        def init(self, appl, listener = None):
-            super().init(appl, listener)
+#         def init(self, appl, listener = None):
+#             super().init(appl, listener)
 
-            if self.__dim_factor_p == "off":
-                self.__dim_factor = get_option(appl.config, "displayDimFactorOff", 0.2)
-            elif self.__display_mode == "on":
-                self.__dim_factor = get_option(appl.config, "displayDimFactorOn", 1)
-            else:
-                self.__dim_factor = self.__dim_factor_p
+#             if self.__dim_factor_p == "off":
+#                 self.__dim_factor = get_option(appl.config, "displayDimFactorOff", 0.2)
+#             elif self.__display_mode == "on":
+#                 self.__dim_factor = get_option(appl.config, "displayDimFactorOn", 1)
+#             else:
+#                 self.__dim_factor = self.__dim_factor_p
 
-            if self.__led_brightness_p == "off":
-                self.__led_brightness = get_option(appl.config, "ledBrightnessOff", 0.02)
-            elif self.__led_brightness_p == "on":
-                self.__led_brightness = get_option(appl.config, "ledBrightnessOn", 0.3)
-            else:
-                self.__led_brightness = self.__led_brightness_p
+#             if self.__led_brightness_p == "off":
+#                 self.__led_brightness = get_option(appl.config, "ledBrightnessOff", 0.02)
+#             elif self.__led_brightness_p == "on":
+#                 self.__led_brightness = get_option(appl.config, "ledBrightnessOn", 0.3)
+#             else:
+#                 self.__led_brightness = self.__led_brightness_p
 
-        def update_displays(self, action):
-            if self.__mapping.value == None:
-                # Fallback to default behaviour
-                if action.label:
-                    action.label.text = self.__text
-                    action.label.back_color = self.dim_color(Colors.WHITE, self.__dim_factor)
+#         def update_displays(self, action):
+#             if self.__mapping.value == None:
+#                 # Fallback to default behaviour
+#                 if action.label:
+#                     action.label.text = self.__text
+#                     action.label.back_color = self.dim_color(Colors.WHITE, self.__dim_factor)
 
-                action.switch_color = Colors.WHITE
-                action.switch_brightness = self.__led_brightness
-                return
+#                 action.switch_color = Colors.WHITE
+#                 action.switch_brightness = self.__led_brightness
+#                 return
             
-            # Calculate bank and rig numbers in range [0...]
-            bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
-            rig = self.__mapping.value % NUM_RIGS_PER_BANK
+#             # Calculate bank and rig numbers in range [0...]
+#             bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
+#             rig = self.__mapping.value % NUM_RIGS_PER_BANK
             
-            if self.__color_callback:
-                bank_color = self.__color_callback(action, bank, rig)
-            elif self.__color:
-                bank_color = self.__color
-            else:
-                bank_color = BANK_COLORS[bank % len(BANK_COLORS)] if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[(len(BANK_COLORS) + bank + self.__offset) % len(BANK_COLORS)]
+#             if self.__color_callback:
+#                 bank_color = self.__color_callback(action, bank, rig)
+#             elif self.__color:
+#                 bank_color = self.__color
+#             else:
+#                 bank_color = BANK_COLORS[bank % len(BANK_COLORS)] if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[(len(BANK_COLORS) + bank + self.__offset) % len(BANK_COLORS)]
 
-            # Label text
-            if action.label:
-                action.label.back_color = self.dim_color(bank_color, self.__dim_factor)
+#             # Label text
+#             if action.label:
+#                 action.label.back_color = self.dim_color(bank_color, self.__dim_factor)
 
-                if self.__text_callback:
-                    if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                        action.label.text = self.__text_callback(action, bank, rig)
+#                 if self.__text_callback:
+#                     if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
+#                         action.label.text = self.__text_callback(action, bank, rig)
 
-                    elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                        target_bank = bank + self.__offset
+#                     elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+#                         target_bank = bank + self.__offset
                         
-                        while target_bank >= NUM_BANKS:
-                            target_bank -= NUM_BANKS
+#                         while target_bank >= NUM_BANKS:
+#                             target_bank -= NUM_BANKS
                         
-                        while target_bank < 0:
-                            target_bank += NUM_BANKS
+#                         while target_bank < 0:
+#                             target_bank += NUM_BANKS
 
-                        action.label.text = self.__text_callback(action, target_bank, rig)
-                    else:
-                        raise Exception() #"Invalid display mode: " + repr(display_mode))
-                else:
-                    action.label.text = self.__text
+#                         action.label.text = self.__text_callback(action, target_bank, rig)
+#                     else:
+#                         raise Exception() #"Invalid display mode: " + repr(display_mode))
+#                 else:
+#                     action.label.text = self.__text
 
-            action.switch_color = bank_color
-            action.switch_brightness = self.__led_brightness
+#             action.switch_color = bank_color
+#             action.switch_brightness = self.__led_brightness
 
 
-    # Callback implementation for Bank Select, showing bank colors and rig/bank info
-    class _BankSelectCallback(BinaryParameterCallback):
-        def __init__(self,
-                     mapping,
-                     bank,
-                     bank_off,
-                     text, 
-                     text_callback,
-                     color,
-                     color_callback,
-                     display_mode,
-                     preselect,
-                     preselect_blink_interval = 400
-            ):
-            super().__init__(
-                mapping = mapping
-            )
+#     # Callback implementation for Bank Select, showing bank colors and rig/bank info
+#     class _BankSelectCallback(BinaryParameterCallback):
+#         def __init__(self,
+#                      mapping,
+#                      bank,
+#                      bank_off,
+#                      text, 
+#                      text_callback,
+#                      color,
+#                      color_callback,
+#                      display_mode,
+#                      preselect,
+#                      preselect_blink_interval = 400
+#             ):
+#             super().__init__(
+#                 mapping = mapping
+#             )
 
-            self.__mapping = mapping
-            self.__bank = bank
-            self.__bank_off = bank_off
-            self.__text = text
-            self.__text_callback = text_callback
-            self.__color = color
-            self.__color_callback = color_callback
-            self.__display_mode = display_mode
+#             self.__mapping = mapping
+#             self.__bank = bank
+#             self.__bank_off = bank_off
+#             self.__text = text
+#             self.__text_callback = text_callback
+#             self.__color = color
+#             self.__color_callback = color_callback
+#             self.__display_mode = display_mode
 
-            self.__current_value = -1
-            self.__current_state = -1
+#             self.__current_value = -1
+#             self.__current_state = -1
 
-            self.__preselect = preselect
-            if preselect:
-                self.__preselect_blink_period = PeriodCounter(preselect_blink_interval)
-                self.__blink_state = False
+#             self.__preselect = preselect
+#             if preselect:
+#                 self.__preselect_blink_period = PeriodCounter(preselect_blink_interval)
+#                 self.__blink_state = False
 
-            self.__action = None
+#             self.__action = None
 
-        def init(self, appl, listener = None):
-            super().init(appl, listener)
+#         def init(self, appl, listener = None):
+#             super().init(appl, listener)
 
-            self.__default_dim_factor_off = get_option(appl.config, "displayDimFactorOff", 0.2)
-            self.__default_led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
-            self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
-            self.__appl = appl
+#             self.__default_dim_factor_off = get_option(appl.config, "displayDimFactorOff", 0.2)
+#             self.__default_led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
+#             self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
+#             self.__appl = appl
 
-        def update(self):
-            BinaryParameterCallback.update(self)
+#         def update(self):
+#             BinaryParameterCallback.update(self)
 
-            if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1 and self.__preselect_blink_period.exceeded:
-                self.__blink_state = not self.__blink_state
+#             if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1 and self.__preselect_blink_period.exceeded:
+#                 self.__blink_state = not self.__blink_state
 
-                self.update_displays(self.__action)
+#                 self.update_displays(self.__action)
 
-        def state_changed_by_user(self, action):
-            self.__action = action
+#         def state_changed_by_user(self, action):
+#             self.__action = action
 
-            # Bank and rig select
-            if self.__mapping.value == None:
-                return
+#             # Bank and rig select
+#             if self.__mapping.value == None:
+#                 return
             
-            curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)            
+#             curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)            
 
-            if self.__preselect:
-                if "preselectedBank" in self.__appl.shared:
-                    # The kemper only accepts one bank preselect. All following bank preselects will be ignored.
-                    # So, we also do not accept any preselects when there is already one.
-                    return 
+#             if self.__preselect:
+#                 if "preselectedBank" in self.__appl.shared:
+#                     # The kemper only accepts one bank preselect. All following bank preselects will be ignored.
+#                     # So, we also do not accept any preselects when there is already one.
+#                     return 
                 
-                set_mapping = KemperMappings.BANK_SELECT()
+#                 set_mapping = KemperMappings.BANK_SELECT()
 
-                value_bank = [self.__bank - 1]
-                if self.__bank_off != None:
-                    value_bank_off = [self.__bank_off - 1]
+#                 value_bank = [self.__bank - 1]
+#                 if self.__bank_off != None:
+#                     value_bank_off = [self.__bank_off - 1]
 
-                    if action.state:
-                        self.__appl.shared["preselectedBank"] = self.__bank - 1
-                    else:
-                        self.__appl.shared["preselectedBank"] = self.__bank_off - 1
-                else:
-                    self.__appl.shared["preselectedBank"] = self.__bank - 1
+#                     if action.state:
+#                         self.__appl.shared["preselectedBank"] = self.__bank - 1
+#                     else:
+#                         self.__appl.shared["preselectedBank"] = self.__bank_off - 1
+#                 else:
+#                     self.__appl.shared["preselectedBank"] = self.__bank - 1
 
-                print(self.__appl.shared)
+#                 print(self.__appl.shared)
 
-                for switch in self.__appl.switches:
-                    for a in switch.actions:
-                        a.update_displays()
+#                 for switch in self.__appl.switches:
+#                     for a in switch.actions:
+#                         a.update_displays()
 
-            else:
-                curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
-                set_mapping = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
+#             else:
+#                 curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
+#                 set_mapping = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
 
-                value_bank = [self.__bank - 1, 1, 0]
-                if self.__bank_off:
-                    value_bank_off = [self.__bank_off - 1, 1, 0]
+#                 value_bank = [self.__bank - 1, 1, 0]
+#                 if self.__bank_off:
+#                     value_bank_off = [self.__bank_off - 1, 1, 0]
 
-                if "preselectedBank" in self.__appl.shared:
-                    del self.__appl.shared["preselectedBank"]
+#                 if "preselectedBank" in self.__appl.shared:
+#                     del self.__appl.shared["preselectedBank"]
 
-            if self.__bank_off != None:
-                if action.state:
-                    if curr_bank != self.__bank - 1:
-                        self.__appl.client.set(set_mapping, value_bank)
-                else:
-                    if curr_bank != self.__bank_off - 1:
-                        self.__appl.client.set(set_mapping, value_bank_off)
-            else:
-                if curr_bank != self.__bank - 1:
-                    self.__appl.client.set(set_mapping, value_bank)
+#             if self.__bank_off != None:
+#                 if action.state:
+#                     if curr_bank != self.__bank - 1:
+#                         self.__appl.client.set(set_mapping, value_bank)
+#                 else:
+#                     if curr_bank != self.__bank_off - 1:
+#                         self.__appl.client.set(set_mapping, value_bank_off)
+#             else:
+#                 if curr_bank != self.__bank - 1:
+#                     self.__appl.client.set(set_mapping, value_bank)
 
-            # # Request value
-            # self.update()
+#             # # Request value
+#             # self.update()
 
-        def update_displays(self, action):
-            self.__action = action
+#         def update_displays(self, action):
+#             self.__action = action
 
-            if self.__mapping.value == None:
-                if action.label:
-                    action.label.text = ""
-                    action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
+#             if self.__mapping.value == None:
+#                 if action.label:
+#                     action.label.text = ""
+#                     action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
 
-                action.switch_color = Colors.WHITE
-                action.switch_brightness = self.__default_led_brightness_off
-                return
+#                 action.switch_color = Colors.WHITE
+#                 action.switch_brightness = self.__default_led_brightness_off
+#                 return
             
-            # Calculate bank and rig numbers in range [0...]
-            curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
-            curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK                
+#             # Calculate bank and rig numbers in range [0...]
+#             curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
+#             curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK                
             
-            if self.__mapping.value != self.__current_value or action.state != self.__current_state:
-                action.feedback_state(curr_bank == (self.__bank - 1))
+#             if self.__mapping.value != self.__current_value or action.state != self.__current_state:
+#                 action.feedback_state(curr_bank == (self.__bank - 1))
                                 
-                self.__current_value = self.__mapping.value
-                self.__current_state = action.state
+#                 self.__current_value = self.__mapping.value
+#                 self.__current_state = action.state
 
-                # if "preselectedBank" in self.__appl.shared:
-                #     del self.__appl.shared["preselectedBank"]
+#                 # if "preselectedBank" in self.__appl.shared:
+#                 #     del self.__appl.shared["preselectedBank"]
 
-            if "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1:
-                is_current = self.__blink_state
-            else:
-                is_current = (curr_bank == (self.__bank - 1))
+#             if "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1:
+#                 is_current = self.__blink_state
+#             else:
+#                 is_current = (curr_bank == (self.__bank - 1))
 
-            if self.__color != None:
-                bank_color = self.__color
-            elif self.__color_callback:
-                bank_color = self.__color_callback(action, curr_bank, curr_rig)
-            else:
-                bank_color = KemperActionDefinitions._get_bank_color(action, curr_bank, self.__bank, self.__bank_off, self.__display_mode)
+#             if self.__color != None:
+#                 bank_color = self.__color
+#             elif self.__color_callback:
+#                 bank_color = self.__color_callback(action, curr_bank, curr_rig)
+#             else:
+#                 bank_color = KemperActionDefinitions._get_bank_color(action, curr_bank, self.__bank, self.__bank_off, self.__display_mode)
                             
-            # Label text
-            if action.label:
-                if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                    action.label.text = self._get_text(action, curr_bank, curr_rig) 
-                    action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
+#             # Label text
+#             if action.label:
+#                 if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
+#                     action.label.text = self._get_text(action, curr_bank, curr_rig) 
+#                     action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
 
-                elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                    if "preselectedBank" in self.__appl.shared:
-                        action.label.back_color = bank_color if is_current else self.dim_color(bank_color, self.__default_dim_factor_off) 
-                    else:
-                        action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
+#                 elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+#                     if "preselectedBank" in self.__appl.shared:
+#                         action.label.back_color = bank_color if is_current else self.dim_color(bank_color, self.__default_dim_factor_off) 
+#                     else:
+#                         action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
 
-                    if is_current and self.__bank_off != None:
-                        action.label.text = self._get_text(action, self.__bank_off - 1, curr_rig)
-                    else:
-                        action.label.text = self._get_text(action, self.__bank - 1, curr_rig)
+#                     if is_current and self.__bank_off != None:
+#                         action.label.text = self._get_text(action, self.__bank_off - 1, curr_rig)
+#                     else:
+#                         action.label.text = self._get_text(action, self.__bank - 1, curr_rig)
 
-                else:
-                    raise Exception()  #"Invalid display mode: " + repr(display_mode))
+#                 else:
+#                     raise Exception()  #"Invalid display mode: " + repr(display_mode))
 
-            # LEDs
-            action.switch_color = bank_color
+#             # LEDs
+#             action.switch_color = bank_color
 
-            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                if "preselectedBank" in self.__appl.shared:
-                    if is_current:
-                        action.switch_brightness = self.__default_led_brightness_on
-                    else:
-                        action.switch_brightness = self.__default_led_brightness_off
-                else:
-                    if action.state:
-                        action.switch_brightness = self.__default_led_brightness_on
-                    else:
-                        action.switch_brightness = self.__default_led_brightness_off
-            else:
-                action.switch_brightness = self.__default_led_brightness_off
+#             if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+#                 if "preselectedBank" in self.__appl.shared:
+#                     if is_current:
+#                         action.switch_brightness = self.__default_led_brightness_on
+#                     else:
+#                         action.switch_brightness = self.__default_led_brightness_off
+#                 else:
+#                     if action.state:
+#                         action.switch_brightness = self.__default_led_brightness_on
+#                     else:
+#                         action.switch_brightness = self.__default_led_brightness_off
+#             else:
+#                 action.switch_brightness = self.__default_led_brightness_off
 
-        # Get text for the label
-        def _get_text(self, action, bank, rig):
-            if self.__text:
-                return self.__text
-            elif self.__text_callback:
-                return self.__text_callback(action, bank, rig)
-            else:
-                return "Bank " + repr(bank + 1)
+#         # Get text for the label
+#         def _get_text(self, action, bank, rig):
+#             if self.__text:
+#                 return self.__text
+#             elif self.__text_callback:
+#                 return self.__text_callback(action, bank, rig)
+#             else:
+#                 return "Bank " + repr(bank + 1)
                    
 
-    # Callback implementation for Rig Select, showing bank colors and rig/bank info
-    class _RigSelectCallback(BinaryParameterCallback):
-        def __init__(self,
-                     rig,
-                     rig_off,                     
-                     bank,
-                     bank_off,
-                     color,
-                     color_callback,
-                     display_mode,
-                     text,
-                     text_callback,
-                     auto_exclude_rigs = None
-            ):
+#     # Callback implementation for Rig Select, showing bank colors and rig/bank info
+#     class _RigSelectCallback(BinaryParameterCallback):
+#         def __init__(self,
+#                      rig,
+#                      rig_off,                     
+#                      bank,
+#                      bank_off,
+#                      color,
+#                      color_callback,
+#                      display_mode,
+#                      text,
+#                      text_callback,
+#                      auto_exclude_rigs = None
+#             ):
             
-            if rig_off != None and bank != None and bank_off == None:
-                raise Exception() #"Also provide bank_off")        
+#             if rig_off != None and bank != None and bank_off == None:
+#                 raise Exception() #"Also provide bank_off")        
 
-            if bank == None:
-                mapping = KemperMappings.RIG_SELECT(rig - 1)
-                mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.RIG_SELECT(rig_off - 1)
-                value_enable = [1, 0]
-                value_disable = [1, 0]
-            else:
-                mapping = KemperMappings.BANK_AND_RIG_SELECT(rig - 1)
-                mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1)
-                value_enable = [bank - 1, 1, 0]
-                value_disable = [bank - 1, 1, 0] if (bank_off == None or bank_off == "auto") else [bank_off - 1, 1, 0]
+#             if bank == None:
+#                 mapping = KemperMappings.RIG_SELECT(rig - 1)
+#                 mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.RIG_SELECT(rig_off - 1)
+#                 value_enable = [1, 0]
+#                 value_disable = [1, 0]
+#             else:
+#                 mapping = KemperMappings.BANK_AND_RIG_SELECT(rig - 1)
+#                 mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1)
+#                 value_enable = [bank - 1, 1, 0]
+#                 value_disable = [bank - 1, 1, 0] if (bank_off == None or bank_off == "auto") else [bank_off - 1, 1, 0]
 
-            super().__init__(
-                mapping = mapping,
-                mapping_disable = mapping_disable,
-                value_enable = value_enable,
-                value_disable = value_disable,
-                reference_value = (bank - 1) * NUM_RIGS_PER_BANK + (rig - 1) if bank != None else None,
-                comparison_mode = self.EQUAL if bank != None else BinaryParameterCallback.GREATER_EQUAL 
-            )
+#             super().__init__(
+#                 mapping = mapping,
+#                 mapping_disable = mapping_disable,
+#                 value_enable = value_enable,
+#                 value_disable = value_disable,
+#                 reference_value = (bank - 1) * NUM_RIGS_PER_BANK + (rig - 1) if bank != None else None,
+#                 comparison_mode = self.EQUAL if bank != None else BinaryParameterCallback.GREATER_EQUAL 
+#             )
 
-            self.__current_value = -1
-            self.__current_state = -1
-            self.__mapping = mapping
-            self.__bank = bank
-            self.__bank_off = bank_off if bank_off != "auto" else 1
-            self.__rig = rig
-            self.__rig_off = rig_off if rig_off != "auto" else 1
+#             self.__current_value = -1
+#             self.__current_state = -1
+#             self.__mapping = mapping
+#             self.__bank = bank
+#             self.__bank_off = bank_off if bank_off != "auto" else 1
+#             self.__rig = rig
+#             self.__rig_off = rig_off if rig_off != "auto" else 1
 
-            self.__rig_off_auto = True if rig_off == "auto" else False
-            self.__bank_off_auto = (bank != None) if bank_off == "auto" else False
+#             self.__rig_off_auto = True if rig_off == "auto" else False
+#             self.__bank_off_auto = (bank != None) if bank_off == "auto" else False
 
-            self.__color_callback = color_callback
-            self.__color = color
+#             self.__color_callback = color_callback
+#             self.__color = color
 
-            self.__text_callback = text_callback
-            self.__text = text
+#             self.__text_callback = text_callback
+#             self.__text = text
 
-            self.__display_mode = display_mode
+#             self.__display_mode = display_mode
 
-            self.__auto_exclude_rigs = auto_exclude_rigs
+#             self.__auto_exclude_rigs = auto_exclude_rigs
 
-        def init(self, appl, listener = None):
-            super().init(appl, listener)
+#         def init(self, appl, listener = None):
+#             super().init(appl, listener)
 
-            self.__default_dim_factor_off = get_option(appl.config, "displayDimFactorOff", 0.2)
-            self.__default_led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
-            self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
+#             self.__default_dim_factor_off = get_option(appl.config, "displayDimFactorOff", 0.2)
+#             self.__default_led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
+#             self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
 
-            self.__appl = appl
+#             self.__appl = appl
 
-        def state_changed_by_user(self, action):
-            if "preselectedBank" in self.__appl.shared:
-                set_mapping = self.__mapping
-                value = self._value_enable
-            else:
-                if action.state:
-                    set_mapping = self.__mapping
-                    value = self._value_enable
-                else:
-                    if self.mapping_disable:
-                        set_mapping = self.mapping_disable
-                    else:
-                        set_mapping = self.__mapping
+#         def state_changed_by_user(self, action):
+#             if "preselectedBank" in self.__appl.shared:
+#                 set_mapping = self.__mapping
+#                 value = self._value_enable
+#             else:
+#                 if action.state:
+#                     set_mapping = self.__mapping
+#                     value = self._value_enable
+#                 else:
+#                     if self.mapping_disable:
+#                         set_mapping = self.mapping_disable
+#                     else:
+#                         set_mapping = self.__mapping
 
-                    value = self._value_disable
+#                     value = self._value_disable
 
-            self.__appl.client.set(set_mapping, value)
+#             self.__appl.client.set(set_mapping, value)
 
-            # # Request value
-            # self.update()
+#             # # Request value
+#             # self.update()
 
-        def update_displays(self, action):
-            if self.__mapping.value == None:
-                if action.label:
-                    action.label.text = ""
-                    action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
+#         def update_displays(self, action):
+#             if self.__mapping.value == None:
+#                 if action.label:
+#                     action.label.text = ""
+#                     action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
 
-                action.switch_color = Colors.WHITE
-                action.switch_brightness = self.__default_led_brightness_off
-                return
+#                 action.switch_color = Colors.WHITE
+#                 action.switch_brightness = self.__default_led_brightness_off
+#                 return
             
-            # Calculate bank and rig numbers in range [0...]
-            curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
-            curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
+#             # Calculate bank and rig numbers in range [0...]
+#             curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
+#             curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
             
-            if self.__mapping.value != self.__current_value or action.state != self.__current_state:
-                if self.__bank != None:
-                    self.evaluate_value(action, self.__mapping.value)
-                else:
-                    if self.__mapping.value != None:                        
-                        action.feedback_state(curr_rig == self.__rig - 1) 
-                    else:
-                        action.feedback_state(False)            
+#             if self.__mapping.value != self.__current_value or action.state != self.__current_state:
+#                 if self.__bank != None:
+#                     self.evaluate_value(action, self.__mapping.value)
+#                 else:
+#                     if self.__mapping.value != None:                        
+#                         action.feedback_state(curr_rig == self.__rig - 1) 
+#                     else:
+#                         action.feedback_state(False)            
 
-                self.__current_value = self.__mapping.value
-                self.__current_state = action.state
+#                 self.__current_value = self.__mapping.value
+#                 self.__current_state = action.state
 
-                # Auto rig off: If we are not on the "on" rig, set the current rig as "off" rig
-                if (not self.__auto_exclude_rigs or (curr_rig + 1) not in self.__auto_exclude_rigs) and self.__rig_off_auto and curr_rig != self.__rig - 1:
-                    if self.__bank != None:
-                        self.mapping_disable = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
-                    else:
-                        self.mapping_disable = KemperMappings.RIG_SELECT(curr_rig)
+#                 # Auto rig off: If we are not on the "on" rig, set the current rig as "off" rig
+#                 if (not self.__auto_exclude_rigs or (curr_rig + 1) not in self.__auto_exclude_rigs) and self.__rig_off_auto and curr_rig != self.__rig - 1:
+#                     if self.__bank != None:
+#                         self.mapping_disable = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
+#                     else:
+#                         self.mapping_disable = KemperMappings.RIG_SELECT(curr_rig)
 
-                if self.__bank_off_auto and curr_bank != self.__bank - 1:
-                    self.__bank_off = curr_bank + 1                    
-                    self._value_disable[0] = curr_bank
+#                 if self.__bank_off_auto and curr_bank != self.__bank - 1:
+#                     self.__bank_off = curr_bank + 1                    
+#                     self._value_disable[0] = curr_bank
 
-                if "preselectedBank" in self.__appl.shared:
-                    del self.__appl.shared["preselectedBank"]
+#                 if "preselectedBank" in self.__appl.shared:
+#                     del self.__appl.shared["preselectedBank"]
                 
-            if self.__bank != None:
-                is_current = (curr_rig == (self.__rig - 1) and curr_bank == (self.__bank - 1))
-            else:
-                if "preselectedBank" in self.__appl.shared:
-                    is_current = False
-                else:
-                    is_current = (curr_rig == self.__rig - 1)
+#             if self.__bank != None:
+#                 is_current = (curr_rig == (self.__rig - 1) and curr_bank == (self.__bank - 1))
+#             else:
+#                 if "preselectedBank" in self.__appl.shared:
+#                     is_current = False
+#                 else:
+#                     is_current = (curr_rig == self.__rig - 1)
                 
-            bank_color = self._get_color(action, curr_bank, curr_rig, is_current)                    
+#             bank_color = self._get_color(action, curr_bank, curr_rig, is_current)                    
 
-            # Label text
-            if action.label:
-                if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                    action.label.text = self._get_text(action, curr_bank, curr_rig) 
-                    action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
+#             # Label text
+#             if action.label:
+#                 if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
+#                     action.label.text = self._get_text(action, curr_bank, curr_rig) 
+#                     action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
 
-                elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                    if "preselectedBank" in self.__appl.shared:
-                        action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off) 
-                        action.label.text = self._get_text(action, self.__appl.shared["preselectedBank"], self.__rig - 1)
-                    else:
-                        action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
+#                 elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+#                     if "preselectedBank" in self.__appl.shared:
+#                         action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off) 
+#                         action.label.text = self._get_text(action, self.__appl.shared["preselectedBank"], self.__rig - 1)
+#                     else:
+#                         action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
 
-                        if self.__bank != None:
-                            if is_current and self.__rig_off != None and self.__bank_off != None:
-                                action.label.text = self._get_text(action, self.__bank_off - 1, self.__rig_off - 1)
-                            else:
-                                action.label.text = self._get_text(action, self.__bank - 1, self.__rig - 1)
-                        else:
-                            if is_current and self.__rig_off != None:                    
-                                action.label.text = self._get_text(action, curr_bank, self.__rig_off - 1) 
-                            else:
-                                action.label.text = self._get_text(action, curr_bank, self.__rig - 1)
+#                         if self.__bank != None:
+#                             if is_current and self.__rig_off != None and self.__bank_off != None:
+#                                 action.label.text = self._get_text(action, self.__bank_off - 1, self.__rig_off - 1)
+#                             else:
+#                                 action.label.text = self._get_text(action, self.__bank - 1, self.__rig - 1)
+#                         else:
+#                             if is_current and self.__rig_off != None:                    
+#                                 action.label.text = self._get_text(action, curr_bank, self.__rig_off - 1) 
+#                             else:
+#                                 action.label.text = self._get_text(action, curr_bank, self.__rig - 1)
 
-                else:
-                    raise Exception()  #"Invalid display mode: " + repr(display_mode))
+#                 else:
+#                     raise Exception()  #"Invalid display mode: " + repr(display_mode))
 
-            # LEDs
-            action.switch_color = bank_color
+#             # LEDs
+#             action.switch_color = bank_color
 
-            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state and not "preselectedBank" in self.__appl.shared:
-                action.switch_brightness = self.__default_led_brightness_on
-            else:
-                action.switch_brightness = self.__default_led_brightness_off
+#             if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state and not "preselectedBank" in self.__appl.shared:
+#                 action.switch_brightness = self.__default_led_brightness_on
+#             else:
+#                 action.switch_brightness = self.__default_led_brightness_off
     
-        def _get_color(self, action, curr_bank, curr_rig, is_current):
-            if self.__color:
-                return self.__color
+#         def _get_color(self, action, curr_bank, curr_rig, is_current):
+#             if self.__color:
+#                 return self.__color
             
-            if self.__color_callback:
-                return self.__color_callback(action, curr_bank, curr_rig)
+#             if self.__color_callback:
+#                 return self.__color_callback(action, curr_bank, curr_rig)
 
-            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and "preselectedBank" in self.__appl.shared:
-                return BANK_COLORS[self.__appl.shared["preselectedBank"] % len(BANK_COLORS)]
+#             if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and "preselectedBank" in self.__appl.shared:
+#                 return BANK_COLORS[self.__appl.shared["preselectedBank"] % len(BANK_COLORS)]
 
-            if self.__bank == None:
-                return BANK_COLORS[curr_bank % len(BANK_COLORS)]
+#             if self.__bank == None:
+#                 return BANK_COLORS[curr_bank % len(BANK_COLORS)]
 
-            # is_current = (curr_rig == (self.__rig - 1) and curr_bank == (self.__bank - 1))
+#             # is_current = (curr_rig == (self.__rig - 1) and curr_bank == (self.__bank - 1))
 
-            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                if self.__bank_off != None and is_current:
-                    return BANK_COLORS[(self.__bank_off - 1) % len(BANK_COLORS)]
-                else:
-                    return BANK_COLORS[(self.__bank - 1) % len(BANK_COLORS)]
+#             if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+#                 if self.__bank_off != None and is_current:
+#                     return BANK_COLORS[(self.__bank_off - 1) % len(BANK_COLORS)]
+#                 else:
+#                     return BANK_COLORS[(self.__bank - 1) % len(BANK_COLORS)]
 
-            elif self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                return BANK_COLORS[curr_bank % len(BANK_COLORS)]
+#             elif self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
+#                 return BANK_COLORS[curr_bank % len(BANK_COLORS)]
 
-            else:
-                raise Exception() #"Invalid display mode: " + repr(display_mode))
+#             else:
+#                 raise Exception() #"Invalid display mode: " + repr(display_mode))
             
-        def _get_text(self, action, bank, rig):
-            if self.__text_callback:
-                return self.__text_callback(action, bank, rig)
+#         def _get_text(self, action, bank, rig):
+#             if self.__text_callback:
+#                 return self.__text_callback(action, bank, rig)
             
-            if self.__text:
-                return self.__text
+#             if self.__text:
+#                 return self.__text
                 
-            return "Rig " + repr(bank + 1) + "-" + repr(rig + 1)
+#             return "Rig " + repr(bank + 1) + "-" + repr(rig + 1)
         
 
-    # Callback to enable the morph state display only when the rig is selected
-    class _MorphDisplayEnableCallback(Callback):
-        def __init__(self, 
-                     action_rig_select, 
-                     rig, 
-                     morph_only_when_enabled
-            ):
-            Callback.__init__(self)
+#     # Callback to enable the morph state display only when the rig is selected
+#     class _MorphDisplayEnableCallback(Callback):
+#         def __init__(self, 
+#                      action_rig_select, 
+#                      rig, 
+#                      morph_only_when_enabled
+#             ):
+#             Callback.__init__(self)
             
-            self.__action_rig_select = action_rig_select
-            self.__morph_only_when_enabled = morph_only_when_enabled
+#             self.__action_rig_select = action_rig_select
+#             self.__morph_only_when_enabled = morph_only_when_enabled
 
-            self.__mapping = KemperMappings.RIG_SELECT(rig - 1)
-            self.register_mapping(self.__mapping)
+#             self.__mapping = KemperMappings.RIG_SELECT(rig - 1)
+#             self.register_mapping(self.__mapping)
 
-        def enabled(self, action):
-            if self.__morph_only_when_enabled:
-                return self.__action_rig_select.state and self.__action_rig_select.enabled
-            else:
-                return self.__action_rig_select.enabled
+#         def enabled(self, action):
+#             if self.__morph_only_when_enabled:
+#                 return self.__action_rig_select.state and self.__action_rig_select.enabled
+#             else:
+#                 return self.__action_rig_select.enabled
                 
     
-    # Default color callback for bank color
-    def _get_bank_color(action, curr_bank, bank, bank_off, display_mode):
-        is_current = (curr_bank == (bank - 1))
+#     # Default color callback for bank color
+#     def _get_bank_color(action, curr_bank, bank, bank_off, display_mode):
+#         is_current = (curr_bank == (bank - 1))
 
-        if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-            if is_current and bank_off != None:
-                return BANK_COLORS[(bank_off - 1) % len(BANK_COLORS)]
-            else:
-                return BANK_COLORS[(bank - 1) % len(BANK_COLORS)]
+#         if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
+#             if is_current and bank_off != None:
+#                 return BANK_COLORS[(bank_off - 1) % len(BANK_COLORS)]
+#             else:
+#                 return BANK_COLORS[(bank - 1) % len(BANK_COLORS)]
 
-        elif display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-            return BANK_COLORS[curr_bank % len(BANK_COLORS)]
+#         elif display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
+#             return BANK_COLORS[curr_bank % len(BANK_COLORS)]
 
-        else:
-            raise Exception() #"Invalid display mode: " + repr(display_mode))         
+#         else:
+#             raise Exception() #"Invalid display mode: " + repr(display_mode))         
 
 
 ####################################################################################################################

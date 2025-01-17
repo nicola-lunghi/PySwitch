@@ -8,7 +8,10 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
 
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
+from pyswitch.clients.kemper import KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
+from pyswitch.clients.actions.rig_select import RIG_SELECT
+from pyswitch.clients.actions.bank_select import BANK_SELECT
+
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
 ##############################################################################################################################################
@@ -20,7 +23,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.BANK_SELECT(
+            BANK_SELECT(
                 bank = 1,
                 preselect = True,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
@@ -33,7 +36,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            KemperActionDefinitions.BANK_SELECT(
+            BANK_SELECT(
                 bank = 2,
                 preselect = True,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
@@ -46,7 +49,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 1,
                 display = DISPLAY_FOOTER_1,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG                
@@ -58,7 +61,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 2,
                 rig_off = 4,
                 display = DISPLAY_FOOTER_2,
