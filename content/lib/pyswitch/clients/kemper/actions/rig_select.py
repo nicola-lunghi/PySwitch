@@ -6,19 +6,19 @@ from ....misc import get_option, Colors
 # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
 # the current bank. Rigs are indexed starting from one, range: [1..5].
 def RIG_SELECT(rig, 
-                rig_off = None,                                 # If set, this defines the "off" rig chosen when the action is disabled. Set to "auto" to always remember the current rig as "off" rig
-                bank = None,                                    # If set, a specific bank is selected. If None, the current bank is kept
-                bank_off = None,                                # If set, this defines the "off" bank to be chosen when the action is disabled. Set to "auto" to always remember the current bank as "off" bank
-                display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
-                display = None, 
-                id = False, 
-                use_leds = True, 
-                enable_callback = None,
-                color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                color = None,                                   # Color override (if no text callback is passed)
-                text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                text = None,                                    # Text override (if no text callback is passed)
-                auto_exclude_rigs = None                        # If rig_off is "auto", this can be filled with a tuple or list of rigs to exclude from "remembering" when disabled
+               rig_off = None,                                 # If set, this defines the "off" rig chosen when the action is disabled. Set to "auto" to always remember the current rig as "off" rig
+               bank = None,                                    # If set, a specific bank is selected. If None, the current bank is kept
+               bank_off = None,                                # If set, this defines the "off" bank to be chosen when the action is disabled. Set to "auto" to always remember the current bank as "off" bank
+               display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
+               display = None, 
+               id = False, 
+               use_leds = True, 
+               enable_callback = None,
+               color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+               color = None,                                   # Color override (if no text callback is passed)
+               text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+               text = None,                                    # Text override (if no text callback is passed)
+               auto_exclude_rigs = None                        # If rig_off is "auto", this can be filled with a tuple or list of rigs to exclude from "remembering" when disabled
     ):
     
     # Finally we can create the action definition ;)

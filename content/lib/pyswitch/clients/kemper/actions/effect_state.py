@@ -6,11 +6,11 @@ from ....misc import Colors, DEFAULT_LABEL_COLOR
 
 # Switch an effect slot on / off
 def EFFECT_STATE(slot_id, 
-                    display = None, 
-                    mode = PushButtonAction.HOLD_MOMENTARY, 
-                    id = False, 
-                    use_leds = True, 
-                    enable_callback = None
+                 display = None, 
+                 mode = PushButtonAction.HOLD_MOMENTARY, 
+                 id = False, 
+                 use_leds = True, 
+                 enable_callback = None
     ):
     return PushButtonAction({
         "callback": KemperEffectEnableCallback(slot_id),

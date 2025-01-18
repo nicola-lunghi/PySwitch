@@ -10,7 +10,9 @@
 - The code from code.py now is moved to a function inside the init script of the module, so multi-boot scenarios (different firmwares on button presses on boot, like @gstrotmanns version does) are also possible. Unit tests added for the init script.
 - Further performance optimizations, the following ones need config file adjustments:
     - Merged HoldAction into Footswitch controller (put "actionsHold" into the switch definition directly instead)
-    - Removed performance dot coding (remove this from display.py if exists)
+    - All Kemper action pre-definitions are now separated in files. In switches.py, you now have to omit the KemperActionDefinitions. prefixes, and import the action definitions you need separately (see examples) which is a huge memory benefit.
+    Implementation Notes: kemper.py code is now way smaller and moved to pyswitch/clients/kemper/\__init__.py
+    - Removed performance dot (remove this from display.py if exists)
     - Merged HierarchicalDisplayElement into DisplayElement (replace HierarchicalDisplayElement with DisplayElement in display.py)
     - Removed DisplaySplitContainer and subtractive layouting (manually set display areas instead in display.py, see examples)
     - Removed some redundant actions for the sake of memory savings:

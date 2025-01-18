@@ -102,11 +102,13 @@ The file **switches.py** must provide a Switches list holding all switch assignm
 Example for assigning switch 1 of a MIDICaptain Nano 4 to switching the Kemper effect slot A on or off:
 
 ```python
+from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
+
 Switches = [
 	{
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
             ),
 
@@ -123,15 +125,17 @@ Switches = [
 You can assign different actions to long pressing of switches. This is done by providing the "holdActions" parameter of the switch definitions:
 
 ```python
+from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
+
 Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
             )
         ],
-        "actionsHold": KemperActionDefinitions.BANK_UP(
+        "actionsHold": BANK_UP(
             #use_leds = False
         )
     },
@@ -156,19 +160,22 @@ Most actions feature a "mode" parameter. This parameter controls the behaviour o
 - **PushButtonModes.HOLD_MOMENTARY**: Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is used (inverse or not: This depends on the current state of the functionality. When it is on, it will momentarily be switched off and vice versa). This is the default for most of the actions.
 - **PushButtonModes.ONE_SHOT**: Fire the SET command on every push (show as disabled)
 
-Each switch can be assigned to any number of actions, which are implementing the functionality for the switch. Actions are instances based on the lib/pyswitch/controller/actions/Action base class. Normally you would use predefined actions as provided by lib/pyswitch/clients/kemper.py (class KemperActionDefinitions as used in the example above), however you could also directly use the classes defined in lib/pyswitch/controller/actions.py and provide all the MIDI mapping manually.
+Each switch can be assigned to any number of actions, which are implementing the functionality for the switch. Actions are instances based on the lib/pyswitch/controller/actions/Action base class. Normally you would use predefined actions as provided by lib/pyswitch/clients/kemper/actions, however you could also directly use the classes defined in lib/pyswitch/controller/actions.py and provide all the MIDI mapping manually.
 
 ##### Action Colors
 
-Most actions provide a color option: If set, this defines the color for switch LEDs and an eventual display label. For example, the following example creates a rotary speed selector shown in purple:
+Most actions provide a color option: If set, this defines the color for switch LEDs and an eventual display label. For example, the following example creates a rig select action shown in purple:
 
 ```python
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
+
 Switches = [
 	{
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.ROTARY_SPEED(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
+            RIG_SELECT(
+                rig = 1,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
                 color = (180, 0, 120)    # (R, G, B)
             )
         ]
@@ -181,6 +188,9 @@ Switches = [
 Actions can also be defined depending on a parameter or other stuff: For example the switch could be assigned to tapping tempo if the rig name contains the token "TAP", and control effect slot A if not. This is accomplished by defining a custom callback class to enable/disable actions:
 
 ```python
+from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
+from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO
+
 # Custom callback function
 class _RigNameCallback(Callback):
     def __init__(self):
@@ -216,11 +226,11 @@ Switches = [
 	{
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.TAP_TEMPO(
+            TAP_TEMPO(
                 id = 10,
                 callback = _enable_callback
             ),
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                 id = 20,
                 callback = _enable_callback
@@ -237,13 +247,14 @@ Switches = [
 The last example only uses the switch LEDs to indicate the effect status (brightness) and type (color). You can also connect a display area (defined in **display.py**) to the action, so the effect type (color and name) and state (brightness) are also visualized on screen. This works by importing labels defined in **display.py** and pass them to the display attribute of the action(s):
 
 ```python
+from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 from display import DISPLAY_LABEL_X
 
 Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                 display = DISPLAY_LABEL_X,
             )
@@ -838,19 +849,21 @@ The firmware is capable of running on several controllers, even if it has been d
 class Hardware:
 
     # PaintAudio MIDI Captain Nano (4 Switches)
-    PA_MIDICAPTAIN_NANO_SWITCH_1 = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1" }
-    PA_MIDICAPTAIN_NANO_SWITCH_2 = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2"  }
-    PA_MIDICAPTAIN_NANO_SWITCH_A = { "model": AdafruitSwitch(board.GP9),  "pixels": (6, 7, 8), "name": "A"  }
-    PA_MIDICAPTAIN_NANO_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (9, 10, 11), "name": "B"  }
+    PA_MIDICAPTAIN_NANO_SWITCH_1 = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1", "strobeOrder": 0 }
+    PA_MIDICAPTAIN_NANO_SWITCH_2 = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2", "strobeOrder": 1 }
+    PA_MIDICAPTAIN_NANO_SWITCH_A = { "model": AdafruitSwitch(board.GP9),  "pixels": (6, 7, 8), "name": "A", "strobeOrder": 3 }
+    PA_MIDICAPTAIN_NANO_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (9, 10, 11), "name": "B", "strobeOrder": 2 }
 
     # PaintAudio MIDI Captain Mini (6 Switches)
-    PA_MIDICAPTAIN_MINI_SWITCH_1 = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_2 = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_3 = { "model": AdafruitSwitch(board.GP24), "pixels": (6, 7, 8), "name": "3"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_A = { "model": AdafruitSwitch(board.GP9),  "pixels": (9, 10, 11), "name": "A"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (12, 13, 14), "name": "B"  }
-    PA_MIDICAPTAIN_MINI_SWITCH_C = { "model": AdafruitSwitch(board.GP11), "pixels": (15, 16, 17), "name": "C"  }
+    PA_MIDICAPTAIN_MINI_SWITCH_1 = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1", "strobeOrder": 0 }
+    PA_MIDICAPTAIN_MINI_SWITCH_2 = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2", "strobeOrder": 1 }
+    PA_MIDICAPTAIN_MINI_SWITCH_3 = { "model": AdafruitSwitch(board.GP24), "pixels": (6, 7, 8), "name": "3", "strobeOrder": 2 }
+    PA_MIDICAPTAIN_MINI_SWITCH_A = { "model": AdafruitSwitch(board.GP9),  "pixels": (9, 10, 11), "name": "A", "strobeOrder": 5 }
+    PA_MIDICAPTAIN_MINI_SWITCH_B = { "model": AdafruitSwitch(board.GP10), "pixels": (12, 13, 14), "name": "B", "strobeOrder": 4 }
+    PA_MIDICAPTAIN_MINI_SWITCH_C = { "model": AdafruitSwitch(board.GP11), "pixels": (15, 16, 17), "name": "C", "strobeOrder": 3 }
 ```
+
+The "strobeOrder" attribute controls how the strobe tuner uses the switch LEDs to get a rotary movement.
 
 To discover the GPIO wiring of unknown devices (like the other MIDICaptains for example), a separate mode is provided. This can be enabled in config.py:
 
