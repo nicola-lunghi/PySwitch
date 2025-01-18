@@ -5,7 +5,7 @@ generic configuration script. Features are:
 
 - Program (Foot)switches to send MIDI messages. Each switch can do any amount of actions.
 - Request parameters via NRPN MIDI from the controlled device and evaluate them on a TFT screen or using NeoPixel LEDs (for example the rig/amp/IR names can be displayed)
-- Establish a bidirectional communication with the client device (implemented for the Kemper Profiler Player, but can be used for anything with similar protocol)
+- Establish a bidirectional communication with the client device (implemented for the Kemper Profiler Player (all Levels), but can be adapted for the other Kemper devices or anything with similar protocol)
 - Use callbacks in the configuration to make functions depending on MIDI parameters of the device, or program any other custom behaviour
 - Ready-to-go Device implementation for the Kemper Profiler Player (R), others can be added
 - MIDI routing capatbilities
