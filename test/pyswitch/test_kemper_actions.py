@@ -18,7 +18,7 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     
-    from lib.pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectEnableCallback, KemperEffectSlot, KemperMappings, KemperMorphCallback
+    from lib.pyswitch.clients.kemper import KemperEffectSlot, KemperMappings
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
     from lib.pyswitch.misc import Updater
@@ -26,6 +26,14 @@ with patch.dict(sys.modules, {
     from .mocks_appl import *
     from .mocks_callback import *
 
+    from lib.pyswitch.clients.kemper.actions.binary_switch import *
+    from lib.pyswitch.clients.kemper.actions.effect_state import *
+    from lib.pyswitch.clients.kemper.actions.tempo import *
+    from lib.pyswitch.clients.kemper.actions.effect_button import *
+    from lib.pyswitch.clients.kemper.actions.morph import *
+    from lib.pyswitch.clients.kemper.actions.rig_volume_boost import *
+    from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
+    
 
 class MockController2(Updater):
     def __init__(self):
@@ -50,7 +58,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         ecb = MockEnabledCallback()
 
-        action = KemperActionDefinitions.BINARY_SWITCH(
+        action = BINARY_SWITCH(
             mapping = mapping_1,
             display = display, 
             text = "foo", 
@@ -90,7 +98,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         ecb = MockEnabledCallback()
 
-        action = KemperActionDefinitions.EFFECT_STATE(
+        action = EFFECT_STATE(
             KemperEffectSlot.EFFECT_SLOT_ID_C, 
             display = display,
             mode = PushButtonAction.LATCH, 
@@ -119,7 +127,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         ecb = MockEnabledCallback()
 
-        action = KemperActionDefinitions.TAP_TEMPO(
+        action = TAP_TEMPO(
             display = display, 
             color = (4, 5, 6), 
             id = 67, 
@@ -158,7 +166,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         ecb = MockEnabledCallback()
 
-        action = KemperActionDefinitions.EFFECT_BUTTON(
+        action = EFFECT_BUTTON(
             num = num,
             display = display, 
             color = (4, 5, 6), 
@@ -189,7 +197,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         ecb = MockEnabledCallback()
 
-        action = KemperActionDefinitions.MORPH_BUTTON(
+        action = MORPH_BUTTON(
             display = display, 
             text = "foo",
             id = 67, 
@@ -222,7 +230,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         ecb = MockEnabledCallback()
 
-        action = KemperActionDefinitions.MORPH_BUTTON(
+        action = MORPH_BUTTON(
             display = display, 
             text = "foo",
             id = 67, 
@@ -254,7 +262,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         ecb = MockEnabledCallback()
 
-        action = KemperActionDefinitions.MORPH_DISPLAY(
+        action = MORPH_DISPLAY(
             display = display, 
             text = "foo",
             id = 67, 
@@ -294,7 +302,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         ecb = MockEnabledCallback()
 
-        action = KemperActionDefinitions.RIG_VOLUME_BOOST(
+        action = RIG_VOLUME_BOOST(
             boost_volume = boost_volume, 
             mode = PushButtonAction.LATCH, 
             remember_off_value = remember_off_value, 
@@ -333,7 +341,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         ecb = MockEnabledCallback()
 
-        action_select, action_morph = KemperActionDefinitions.RIG_SELECT_AND_MORPH_STATE(
+        action_select, action_morph = RIG_SELECT_AND_MORPH_STATE(
             rig = 1,
             rig_off = 2,
             display = display_select, 
@@ -388,7 +396,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
     #     ecb = MockEnabledCallback()
 
-    #     action_select, action_morph = KemperActionDefinitions.RIG_AND_BANK_SELECT_AND_MORPH_STATE(
+    #     action_select, action_morph = RIG_AND_BANK_SELECT_AND_MORPH_STATE(
     #         rig = 1,
     #         bank = 5, 
     #         rig_off = 2,

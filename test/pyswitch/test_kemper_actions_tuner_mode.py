@@ -16,15 +16,14 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from adafruit_midi.system_exclusive import SystemExclusive
-    
-    from lib.pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectEnableCallback, KemperEffectSlot, KemperMappings, KemperMorphCallback
+    from lib.pyswitch.clients.kemper import KemperMappings
     from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.controller.callbacks import BinaryParameterCallback
     from lib.pyswitch.misc import Updater
     
     from .mocks_appl import *
     from .mocks_callback import *
+
+    from lib.pyswitch.clients.kemper.actions.tuner_mode import *
 
 
 class MockController2(Updater):
@@ -53,7 +52,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.TUNER_MODE(
+        action = TUNER_MODE(
             display = display, 
             mode = PushButtonAction.ONE_SHOT, 
             color = (4, 5, 6), 
@@ -63,7 +62,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
         )
 
         cb = action.callback
-        self.assertIsInstance(cb, KemperActionDefinitions._TunerModeCallback)
+        self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
         self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.TUNER_MODE_STATE())
@@ -159,7 +158,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
 
 
     def test_state_change_by_user(self):
-        action = KemperActionDefinitions.TUNER_MODE()
+        action = TUNER_MODE()
 
         switch = MockFootSwitch(
             actions = [
@@ -199,7 +198,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
 
 
     def test_override_action_self(self):
-        action = KemperActionDefinitions.TUNER_MODE(
+        action = TUNER_MODE(
             mode = PushButtonAction.ONE_SHOT
         )
 
@@ -241,7 +240,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
 
 
     def test_override_action_others(self):
-        action = KemperActionDefinitions.TUNER_MODE(
+        action = TUNER_MODE(
             mode = PushButtonAction.ONE_SHOT
         )
 

@@ -9,8 +9,8 @@ from pyswitch.hardware.Hardware import Hardware
 from pyswitch.misc import Colors
 
 from pyswitch.clients.kemper import KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
-from pyswitch.clients.actions.rig_select import RIG_SELECT
-from pyswitch.clients.actions.bank_select import BANK_SELECT
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
+from pyswitch.clients.kemper.actions.bank_select import BANK_SELECT
 
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 

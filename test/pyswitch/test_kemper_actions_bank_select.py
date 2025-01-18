@@ -17,12 +17,14 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from .mocks_appl import *
-    from .mocks_callback import *
+    from .mocks_callback import *    
 
     from lib.pyswitch.clients.kemper import *
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.misc import Updater, Colors
 
+    from lib.pyswitch.clients.kemper.actions.bank_select import *
+    
 
 class MockController2(Updater):
    def __init__(self):
@@ -199,7 +201,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         exp_color = self._get_exp_color(mapping_value, display_mode, bank, bank_off)
 
-        action = KemperActionDefinitions.BANK_SELECT(
+        action = BANK_SELECT(
             bank = bank, 
             bank_off = bank_off,
             display_mode = display_mode, 
@@ -231,7 +233,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.BANK_SELECT(
+        action = BANK_SELECT(
             display = display,
             bank = bank, 
             bank_off = bank_off,
@@ -303,7 +305,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             self.assertEqual(action, action_paramater)
             return repr(bank) + "|" + repr(rig)
 
-        action = KemperActionDefinitions.BANK_SELECT(
+        action = BANK_SELECT(
             display = display,
             bank = bank, 
             bank_off = bank_off,
@@ -359,7 +361,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
             return (3, 4, 5)
 
-        action = KemperActionDefinitions.BANK_SELECT(
+        action = BANK_SELECT(
             display = display,
             bank = bank, 
             bank_off = bank_off,
@@ -402,7 +404,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.BANK_SELECT(
+        action = BANK_SELECT(
             display = display,
             bank = 1, 
             id = 45, 
@@ -459,7 +461,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.BANK_SELECT(
+        action = BANK_SELECT(
             display = display,
             bank = 1,
             display_mode = self,                   # Invalid value ;)
@@ -491,7 +493,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
 
     def _test_messages(self, rig):
-        action = KemperActionDefinitions.BANK_SELECT(
+        action = BANK_SELECT(
             bank = 1            
         )
 
@@ -555,7 +557,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
 
     def _test_messages_bank_off(self, rig):
-        action = KemperActionDefinitions.BANK_SELECT(
+        action = BANK_SELECT(
             bank = 2,
             bank_off = 4           
         )

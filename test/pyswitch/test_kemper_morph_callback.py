@@ -18,8 +18,7 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     
-    from lib.pyswitch.clients.kemper import KemperMorphCallback
-    from lib.pyswitch.ui.elements import DisplayLabel
+    from lib.pyswitch.clients.kemper.actions.morph import KemperMorphCallback
     from lib.pyswitch.misc import Colors, compare_midi_messages
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
     

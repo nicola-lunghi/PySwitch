@@ -16,13 +16,15 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.clients.kemper import KemperActionDefinitions, KemperMappings
+    from lib.pyswitch.clients.kemper import KemperMappings
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
     from lib.pyswitch.misc import Updater
     
     from .mocks_appl import *
     from .mocks_callback import *
+
+    from lib.pyswitch.clients.kemper.actions.tempo import *
 
 
 class MockController2(Updater):
@@ -39,7 +41,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
             "font": "foo"
         })
 
-        action = KemperActionDefinitions.SHOW_TEMPO(
+        action = SHOW_TEMPO(
             display = display, 
             color = (4, 5, 6), 
             text = "foo",
@@ -83,7 +85,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         ecb = MockEnabledCallback()
 
-        action = KemperActionDefinitions.SHOW_TEMPO(
+        action = SHOW_TEMPO(
             display = display, 
             color = (4, 5, 6), 
             text = "foo",

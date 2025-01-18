@@ -1,7 +1,7 @@
-from ..kemper import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG, NUM_RIGS_PER_BANK, BANK_COLORS, KemperMappings
-from ...controller.actions import PushButtonAction
-from ...controller.callbacks import BinaryParameterCallback
-from ...misc import get_option, Colors
+from ...kemper import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG, NUM_RIGS_PER_BANK, BANK_COLORS, KemperMappings
+from ....controller.actions import PushButtonAction
+from ....controller.callbacks import BinaryParameterCallback
+from ....misc import get_option, Colors
 
 # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
 # the current bank. Rigs are indexed starting from one, range: [1..5].

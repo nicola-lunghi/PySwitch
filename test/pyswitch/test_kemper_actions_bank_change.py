@@ -23,6 +23,8 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.misc import Updater, Colors
 
+    from lib.pyswitch.clients.kemper.actions.bank_up_down import *
+
 
 class MockController2(Updater):
    def __init__(self):
@@ -150,14 +152,14 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         ecb = MockEnabledCallback(output = True)
 
         if up:
-            action = KemperActionDefinitions.BANK_UP(
+            action = BANK_UP(
                 display_mode = display_mode, 
                 id = 45, 
                 use_leds = True, 
                 enable_callback = ecb
             )
         else:
-            action = KemperActionDefinitions.BANK_DOWN(
+            action = BANK_DOWN(
                 display_mode = display_mode, 
                 id = 45, 
                 use_leds = True, 
@@ -186,7 +188,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         ecb = MockEnabledCallback(output = True)
 
         if up:
-            action = KemperActionDefinitions.BANK_UP(
+            action = BANK_UP(
                 display = display, 
                 text = "foo", 
                 display_mode = display_mode, 
@@ -197,7 +199,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
                 dim_factor = 0.4,
             )
         else:
-            action = KemperActionDefinitions.BANK_DOWN(
+            action = BANK_DOWN(
                 display = display, 
                 text = "foo", 
                 display_mode = display_mode, 
@@ -262,7 +264,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
             return repr(bank) + "|" + repr(rig)
 
         if up:
-            action = KemperActionDefinitions.BANK_UP(
+            action = BANK_UP(
                 display = display, 
                 text = "foo2", 
                 display_mode = display_mode, 
@@ -272,7 +274,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
                 text_callback = text_cb
             )
         else:
-            action = KemperActionDefinitions.BANK_DOWN(
+            action = BANK_DOWN(
                 display = display, 
                 text = "foo2", 
                 display_mode = display_mode, 
@@ -322,7 +324,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
             return (3, 4, 5)
 
         if up:
-            action = KemperActionDefinitions.BANK_UP(
+            action = BANK_UP(
                 display = display, 
                 display_mode = display_mode, 
                 id = 45, 
@@ -334,7 +336,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
 
             )
         else:
-            action = KemperActionDefinitions.BANK_DOWN(
+            action = BANK_DOWN(
                 display = display, 
                 display_mode = display_mode, 
                 id = 45, 
@@ -383,7 +385,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         ecb = MockEnabledCallback(output = True)
 
         if up:
-            action = KemperActionDefinitions.BANK_UP(
+            action = BANK_UP(
                 display = display, 
                 text = "foo", 
                 color = (3, 5, 7),
@@ -394,7 +396,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
                 enable_callback = ecb
             )
         else:
-            action = KemperActionDefinitions.BANK_DOWN(
+            action = BANK_DOWN(
                 display = display, 
                 text = "foo", 
                 color = (3, 5, 7),
@@ -441,7 +443,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         def text_cb(bank, rig):
             pass
 
-        action = KemperActionDefinitions.BANK_UP(
+        action = BANK_UP(
             display = display, 
             display_mode = self,   # Just some value guaranteed to not be equal to one of the valid modes ;)
             id = 45, 

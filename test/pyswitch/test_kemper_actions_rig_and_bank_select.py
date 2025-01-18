@@ -23,6 +23,9 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.misc import Updater, Colors
 
+    from lib.pyswitch.clients.kemper.actions.rig_select import *
+    from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
+    
 
 class MockController2(Updater):
    def __init__(self):
@@ -237,7 +240,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
         exp_color = self._get_exp_color(mapping_value, display_mode, bank, bank_off)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             rig = rig, 
             rig_off = rig_off,
             bank = bank,
@@ -271,7 +274,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             display = display,
             rig = rig, 
             rig_off = rig_off,
@@ -350,7 +353,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
             return repr(bank) + "|" + repr(rig)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             display = display,
             rig = rig, 
             rig_off = rig_off,
@@ -410,7 +413,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
             return exp_color
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             display = display,
             rig = rig, 
             rig_off = rig_off,
@@ -452,7 +455,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             display = display,
             rig = 1,
             display_mode = self,                   # Invalid value ;)
@@ -483,7 +486,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             display = display,
             rig = 1, 
             bank = 2,
@@ -542,7 +545,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
 
     def _test_messages(self, rig):
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             rig = rig + 1,
             bank = 3
         )
@@ -597,7 +600,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
 
     def test_messages_rig_off(self):
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             rig = 1,
             bank = 2,
             rig_off = 2,
@@ -692,7 +695,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
             "backColor": (0, 0, 0)
         })
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             display = display,
             rig = 1,
             bank = 3,
@@ -712,7 +715,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
     def test_error_no_bank_off(self):
         with self.assertRaises(Exception):        
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 1,
                 bank = 3,
                 rig_off = 5
@@ -730,7 +733,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
     def _test_rig_select_and_morph_enabled(self, morph_only_when_enabled):
         ecb = MockEnabledCallback()
 
-        action_select, action_morph = KemperActionDefinitions.RIG_SELECT_AND_MORPH_STATE(
+        action_select, action_morph = RIG_SELECT_AND_MORPH_STATE(
             rig = 1,
             bank = 2,
             rig_off = 2,
@@ -787,7 +790,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 ############################################################################################################
 
     def test_auto_rig_off(self):
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             rig = 3,
             bank = 2,
             rig_off = "auto",

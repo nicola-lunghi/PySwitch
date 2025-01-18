@@ -24,6 +24,9 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.misc import Updater, Colors
 
+    from lib.pyswitch.clients.kemper.actions.rig_select import *
+    from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
+
 
 class MockController2(Updater):
    def __init__(self):
@@ -194,7 +197,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
     def _do_test_bank_colors_without_label(self, mapping_value, rig, rig_off, display_mode, exp_color, exp_enlightened):    
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             rig = rig, 
             rig_off = rig_off,
             display_mode = display_mode, 
@@ -224,7 +227,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             display = display,
             rig = rig, 
             rig_off = rig_off,
@@ -295,7 +298,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             self.assertEqual(action, action_paramater)
             return repr(bank) + "|" + repr(rig)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             display = display,
             rig = rig, 
             rig_off = rig_off,
@@ -351,7 +354,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
             return (3, 4, 5)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             display = display,
             rig = rig, 
             rig_off = rig_off,
@@ -394,7 +397,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             display = display,
             rig = 1, 
             id = 45, 
@@ -451,7 +454,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             display = display,
             rig = 1,
             display_mode = self,                   # Invalid value ;)
@@ -483,7 +486,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
 
     def _test_messages(self, rig):
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             rig = rig + 1
         )
 
@@ -540,7 +543,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             self._test_messages_rig_off(bank)
 
     def _test_messages_rig_off(self, bank):
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             rig = 1,   
             rig_off = 3
         )
@@ -621,7 +624,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
     def _test_rig_select_and_morph_enabled(self, morph_only_when_enabled):
         ecb = MockEnabledCallback()
 
-        action_select, action_morph = KemperActionDefinitions.RIG_SELECT_AND_MORPH_STATE(
+        action_select, action_morph = RIG_SELECT_AND_MORPH_STATE(
             rig = 1,
             rig_off = 2,
             use_leds = True, 
@@ -677,7 +680,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
     def test_auto_rig_off(self):
         bank = 0
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             rig = 3,
             rig_off = "auto"
         )
@@ -759,7 +762,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
     def _test_auto_rig_off_with_exclude_rigs(self, exclude_rigs):
         bank = 0
-        action = KemperActionDefinitions.RIG_SELECT(
+        action = RIG_SELECT(
             rig = 3,
             rig_off = "auto",
             auto_exclude_rigs = exclude_rigs

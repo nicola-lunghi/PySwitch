@@ -5,12 +5,10 @@ from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 from adafruit_midi.program_change import ProgramChange
 
-from ..misc import Colors, PeriodCounter, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR, formatted_timestamp, do_print, PYSWITCH_VERSION
-from ..controller.actions import PushButtonAction
-from ..controller.callbacks import BinaryParameterCallback, Callback, EffectEnableCallback
-from ..controller.Client import ClientParameterMapping
-from ..misc import get_option
-from ..ui.elements import TunerDisplay
+from ...misc import Colors, PeriodCounter, formatted_timestamp, do_print, PYSWITCH_VERSION
+from ...controller.callbacks import Callback
+from ...controller.Client import ClientParameterMapping
+from ...ui.elements import TunerDisplay
 
 
 ####################################################################################################################
@@ -1275,111 +1273,111 @@ RIG_SELECT_DISPLAY_TARGET_RIG = 20   # Show the target rig ID
 ####################################################################################################################
 
 
-# Used for effect enable/disable ParameterAction
-class KemperEffectEnableCallback(EffectEnableCallback):
+# # Used for effect enable/disable ParameterAction
+# class KemperEffectEnableCallback(EffectEnableCallback):
 
-    # Effect types enum (used internally, also for indexing colors, so be sure these are always a row from 0 to n)
-    CATEGORY_WAH = const(1)
-    CATEGORY_DISTORTION = const(2)
-    CATEGORY_COMPRESSOR = const(3)
-    CATEGORY_NOISE_GATE = const(4)
-    CATEGORY_SPACE = const(5)
-    CATEGORY_CHORUS = const(6)
-    CATEGORY_PHASER_FLANGER = const(7)
-    CATEGORY_EQUALIZER = const(8)
-    CATEGORY_BOOSTER = const(9)
-    CATEGORY_LOOPER = const(10)
-    CATEGORY_PITCH = const(11)
-    CATEGORY_DUAL = const(12)
-    CATEGORY_DELAY = const(13)
-    CATEGORY_REVERB = const(14)
+#     # Effect types enum (used internally, also for indexing colors, so be sure these are always a row from 0 to n)
+#     CATEGORY_WAH = const(1)
+#     CATEGORY_DISTORTION = const(2)
+#     CATEGORY_COMPRESSOR = const(3)
+#     CATEGORY_NOISE_GATE = const(4)
+#     CATEGORY_SPACE = const(5)
+#     CATEGORY_CHORUS = const(6)
+#     CATEGORY_PHASER_FLANGER = const(7)
+#     CATEGORY_EQUALIZER = const(8)
+#     CATEGORY_BOOSTER = const(9)
+#     CATEGORY_LOOPER = const(10)
+#     CATEGORY_PITCH = const(11)
+#     CATEGORY_DUAL = const(12)
+#     CATEGORY_DELAY = const(13)
+#     CATEGORY_REVERB = const(14)
 
-    # Effect colors. The order must match the enums for the effect types defined above!
-    CATEGORY_COLORS = (
-        DEFAULT_LABEL_COLOR,                            # None
-        Colors.ORANGE,                                  # Wah
-        Colors.RED,                                     # Distortion
-        Colors.BLUE,                                    # Comp
-        Colors.BLUE,                                    # Gate
-        Colors.GREEN,                                   # Space
-        Colors.BLUE,                                    # Chorus
-        Colors.PURPLE,                                  # Phaser/Flanger
-        Colors.YELLOW,                                  # EQ
-        Colors.RED,                                     # Booster
-        Colors.PURPLE,                                  # Looper
-        Colors.WHITE,                                   # Pitch
-        Colors.GREEN,                                   # Dual
-        Colors.GREEN,                                   # Delay
-        Colors.GREEN,                                   # Reverb
-    )
+#     # Effect colors. The order must match the enums for the effect types defined above!
+#     CATEGORY_COLORS = (
+#         DEFAULT_LABEL_COLOR,                            # None
+#         Colors.ORANGE,                                  # Wah
+#         Colors.RED,                                     # Distortion
+#         Colors.BLUE,                                    # Comp
+#         Colors.BLUE,                                    # Gate
+#         Colors.GREEN,                                   # Space
+#         Colors.BLUE,                                    # Chorus
+#         Colors.PURPLE,                                  # Phaser/Flanger
+#         Colors.YELLOW,                                  # EQ
+#         Colors.RED,                                     # Booster
+#         Colors.PURPLE,                                  # Looper
+#         Colors.WHITE,                                   # Pitch
+#         Colors.GREEN,                                   # Dual
+#         Colors.GREEN,                                   # Delay
+#         Colors.GREEN,                                   # Reverb
+#     )
 
-    # Effect type display names. The order must match the enums for the effect types defined above!
-    CATEGORY_NAMES = (
-        "-",
-        "Wah",
-        "Dist",
-        "Comp",
-        "Gate",
-        "Space",
-        "Chorus",
-        "Phaser",
-        "EQ",
-        "Boost",
-        "Looper",
-        "Pitch",
-        "Dual",
-        "Delay",
-        "Reverb"
-    )
+#     # Effect type display names. The order must match the enums for the effect types defined above!
+#     CATEGORY_NAMES = (
+#         "-",
+#         "Wah",
+#         "Dist",
+#         "Comp",
+#         "Gate",
+#         "Space",
+#         "Chorus",
+#         "Phaser",
+#         "EQ",
+#         "Boost",
+#         "Looper",
+#         "Pitch",
+#         "Dual",
+#         "Delay",
+#         "Reverb"
+#     )
 
-    def __init__(self, slot_id):
-        super().__init__(
-            mapping_state = KemperMappings.EFFECT_STATE(slot_id),
-            mapping_type = KemperMappings.EFFECT_TYPE(slot_id)
-        )
+#     def __init__(self, slot_id):
+#         super().__init__(
+#             mapping_state = KemperMappings.EFFECT_STATE(slot_id),
+#             mapping_type = KemperMappings.EFFECT_TYPE(slot_id)
+#         )
     
-    # Must return the effect category for a mapping value
-    def get_effect_category(self, kpp_effect_type):
-        # NOTE: The ranges are defined by Kemper with a lot of unused numbers, so the borders between types
-        # could need to be adjusted with future Kemper firmware updates!
-        if (kpp_effect_type == 0):
-            return self.CATEGORY_NONE
-        elif (0 < kpp_effect_type and kpp_effect_type <= 14):
-            return self.CATEGORY_WAH
-        elif (14 < kpp_effect_type and kpp_effect_type <= 45):
-            return self.CATEGORY_DISTORTION
-        elif (45 < kpp_effect_type and kpp_effect_type <= 55):
-            return self.CATEGORY_COMPRESSOR
-        elif (55 < kpp_effect_type and kpp_effect_type <= 60):
-            return self.CATEGORY_NOISE_GATE       
-        elif (60 < kpp_effect_type and kpp_effect_type <= 64):
-            return self.CATEGORY_SPACE            
-        elif (64 < kpp_effect_type and kpp_effect_type <= 80):
-            return self.CATEGORY_CHORUS
-        elif (80 < kpp_effect_type and kpp_effect_type <= 95):
-            return self.CATEGORY_PHASER_FLANGER
-        elif (95 < kpp_effect_type and kpp_effect_type <= 110):
-            return self.CATEGORY_EQUALIZER
-        elif (110 < kpp_effect_type and kpp_effect_type <= 120):
-            return self.CATEGORY_BOOSTER
-        elif (120 < kpp_effect_type and kpp_effect_type <= 125):
-            return self.CATEGORY_LOOPER
-        elif (125 < kpp_effect_type and kpp_effect_type <= 135):
-            return self.CATEGORY_PITCH
-        elif (135 < kpp_effect_type and kpp_effect_type <= 143):
-            return self.CATEGORY_DUAL
-        elif (143 < kpp_effect_type and kpp_effect_type <= 170):
-            return self.CATEGORY_DELAY
-        else:
-            return self.CATEGORY_REVERB
+#     # Must return the effect category for a mapping value
+#     def get_effect_category(self, kpp_effect_type):
+#         # NOTE: The ranges are defined by Kemper with a lot of unused numbers, so the borders between types
+#         # could need to be adjusted with future Kemper firmware updates!
+#         if (kpp_effect_type == 0):
+#             return self.CATEGORY_NONE
+#         elif (0 < kpp_effect_type and kpp_effect_type <= 14):
+#             return self.CATEGORY_WAH
+#         elif (14 < kpp_effect_type and kpp_effect_type <= 45):
+#             return self.CATEGORY_DISTORTION
+#         elif (45 < kpp_effect_type and kpp_effect_type <= 55):
+#             return self.CATEGORY_COMPRESSOR
+#         elif (55 < kpp_effect_type and kpp_effect_type <= 60):
+#             return self.CATEGORY_NOISE_GATE       
+#         elif (60 < kpp_effect_type and kpp_effect_type <= 64):
+#             return self.CATEGORY_SPACE            
+#         elif (64 < kpp_effect_type and kpp_effect_type <= 80):
+#             return self.CATEGORY_CHORUS
+#         elif (80 < kpp_effect_type and kpp_effect_type <= 95):
+#             return self.CATEGORY_PHASER_FLANGER
+#         elif (95 < kpp_effect_type and kpp_effect_type <= 110):
+#             return self.CATEGORY_EQUALIZER
+#         elif (110 < kpp_effect_type and kpp_effect_type <= 120):
+#             return self.CATEGORY_BOOSTER
+#         elif (120 < kpp_effect_type and kpp_effect_type <= 125):
+#             return self.CATEGORY_LOOPER
+#         elif (125 < kpp_effect_type and kpp_effect_type <= 135):
+#             return self.CATEGORY_PITCH
+#         elif (135 < kpp_effect_type and kpp_effect_type <= 143):
+#             return self.CATEGORY_DUAL
+#         elif (143 < kpp_effect_type and kpp_effect_type <= 170):
+#             return self.CATEGORY_DELAY
+#         else:
+#             return self.CATEGORY_REVERB
         
-    # Must return the color for a category    
-    def get_effect_category_color(self, category):
-        return self.CATEGORY_COLORS[category]
+#     # Must return the color for a category    
+#     def get_effect_category_color(self, category):
+#         return self.CATEGORY_COLORS[category]
 
-    # Must return the text to show for a category    
-    def get_effect_category_text(self, category):
-        return self.CATEGORY_NAMES[category]
+#     # Must return the text to show for a category    
+#     def get_effect_category_text(self, category):
+#         return self.CATEGORY_NAMES[category]
          
 
 ####################################################################################################################
@@ -1401,63 +1399,63 @@ class KemperRigNameCallback(Callback):
 ####################################################################################################################
 
 
-# BinaryParameterCallback for morph pedal mapping, with colors reflecting the morph state
-class KemperMorphCallback(BinaryParameterCallback):
+# # BinaryParameterCallback for morph pedal mapping, with colors reflecting the morph state
+# class KemperMorphCallback(BinaryParameterCallback):
 
-    COLOR_BASE = Colors.RED
-    COLOR_MORPH = Colors.BLUE
+#     COLOR_BASE = Colors.RED
+#     COLOR_MORPH = Colors.BLUE
 
-    def __init__(self, 
-                 mapping,
-                 text = "Morph", 
-                 value_enable = 1, 
-                 value_disable = 0, 
-                 reference_value = None, 
-                 comparison_mode = BinaryParameterCallback.GREATER_EQUAL, 
-                 display_dim_factor_on = None,
-                 display_dim_factor_off = None,
-                 led_brightness_on = None,
-                 led_brightness_off = None,
-                 suppress_send = False
-        ):
+#     def __init__(self, 
+#                  mapping,
+#                  text = "Morph", 
+#                  value_enable = 1, 
+#                  value_disable = 0, 
+#                  reference_value = None, 
+#                  comparison_mode = BinaryParameterCallback.GREATER_EQUAL, 
+#                  display_dim_factor_on = None,
+#                  display_dim_factor_off = None,
+#                  led_brightness_on = None,
+#                  led_brightness_off = None,
+#                  suppress_send = False
+#         ):
 
-        def get_color(action, value):
-            if value == None:
-                return Colors.WHITE
+#         def get_color(action, value):
+#             if value == None:
+#                 return Colors.WHITE
             
-            r_diff = self.COLOR_MORPH[0] - self.COLOR_BASE[0]
-            g_diff = self.COLOR_MORPH[1] - self.COLOR_BASE[1]
-            b_diff = self.COLOR_MORPH[2] - self.COLOR_BASE[2]
+#             r_diff = self.COLOR_MORPH[0] - self.COLOR_BASE[0]
+#             g_diff = self.COLOR_MORPH[1] - self.COLOR_BASE[1]
+#             b_diff = self.COLOR_MORPH[2] - self.COLOR_BASE[2]
 
-            v = value / 16383
+#             v = value / 16383
 
-            return (
-                self.COLOR_BASE[0] + int(r_diff * v),
-                self.COLOR_BASE[1] + int(g_diff * v),
-                self.COLOR_BASE[2] + int(b_diff * v),
-            )
+#             return (
+#                 self.COLOR_BASE[0] + int(r_diff * v),
+#                 self.COLOR_BASE[1] + int(g_diff * v),
+#                 self.COLOR_BASE[2] + int(b_diff * v),
+#             )
         
-        super().__init__(
-            mapping = mapping, 
-            color_callback = get_color,
-            text = text, 
-            value_enable = value_enable, 
-            value_disable = value_disable, 
-            reference_value = reference_value, 
-            comparison_mode = comparison_mode, 
-            display_dim_factor_on = display_dim_factor_on, 
-            display_dim_factor_off = display_dim_factor_off, 
-            led_brightness_on = led_brightness_on, 
-            led_brightness_off = led_brightness_off
-        )
+#         super().__init__(
+#             mapping = mapping, 
+#             color_callback = get_color,
+#             text = text, 
+#             value_enable = value_enable, 
+#             value_disable = value_disable, 
+#             reference_value = reference_value, 
+#             comparison_mode = comparison_mode, 
+#             display_dim_factor_on = display_dim_factor_on, 
+#             display_dim_factor_off = display_dim_factor_off, 
+#             led_brightness_on = led_brightness_on, 
+#             led_brightness_off = led_brightness_off
+#         )
 
-        self.__suppress_send = suppress_send
+#         self.__suppress_send = suppress_send
 
-    def state_changed_by_user(self, action):
-        if self.__suppress_send:
-            return
+#     def state_changed_by_user(self, action):
+#         if self.__suppress_send:
+#             return
         
-        super().state_changed_by_user(action)
+#         super().state_changed_by_user(action)
 
 
 ####################################################################################################################
@@ -1511,7 +1509,7 @@ class TunerDisplayCallback(Callback):
             )
 
         if strobe:
-            from ..controller.strobe import StrobeController
+            from ...controller.strobe import StrobeController
 
             self.__strobe_controller = StrobeController(
                 mapping_state = KemperMappings.TUNER_MODE_STATE(),
