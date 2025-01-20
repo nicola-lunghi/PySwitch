@@ -192,7 +192,7 @@ class PushButtonAction(Action):
     DISABLE = const(10)                    # Switch the functionality off
     LATCH = const(20)                      # Toggle state on every button push
     MOMENTARY = const(30)                  # Enable on push, disable on release
-    # MOMENTARY_INVERSE = const(40)          # Disable on push, Enable on release
+    MOMENTARY_INVERSE = const(40)          # Disable on push, Enable on release
     HOLD_MOMENTARY = const(50)             # Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is 
                                            # used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is 
                                            # used (inverse or not: This depends on the current state of the functionality. When it is
@@ -265,9 +265,9 @@ class PushButtonAction(Action):
             # Momentary mode: Enable on push
             self.state = True
 
-        # elif mode == self.MOMENTARY_INVERSE:
-        #     # Momentary mode: Enable on push
-        #     self.state = False
+        elif mode == self.MOMENTARY_INVERSE:
+            # Momentary mode: Enable on push
+            self.state = False
 
         elif mode == self.HOLD_MOMENTARY:
             # Hold Momentary: Toggle like latch, and remember the current timestamp
@@ -285,8 +285,8 @@ class PushButtonAction(Action):
         if mode == self.MOMENTARY:
             self.state = False
         
-        # elif mode == self.MOMENTARY_INVERSE:
-        #     self.state = True
+        elif mode == self.MOMENTARY_INVERSE:
+            self.state = True
         
         elif mode == self.HOLD_MOMENTARY:
             if self.__period.exceeded:

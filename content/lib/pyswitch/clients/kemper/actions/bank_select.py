@@ -120,8 +120,6 @@ class KemperBankSelectCallback(BinaryParameterCallback):
             else:
                 self.__appl.shared["preselectedBank"] = self.__bank - 1
 
-            print(self.__appl.shared)
-
             for switch in self.__appl.switches:
                 for a in switch.actions:
                     a.update_displays()

@@ -210,7 +210,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback._BinaryParameterCallback__mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -241,7 +241,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback._BinaryParameterCallback__mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -313,7 +313,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback._BinaryParameterCallback__mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -369,7 +369,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback._BinaryParameterCallback__mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -412,7 +412,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback._BinaryParameterCallback__mapping 
         
         # On state
         mapping.value = NUM_RIGS_PER_BANK * 2
@@ -467,7 +467,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback._BinaryParameterCallback__mapping 
         mapping.value = 0
 
         with self.assertRaises(Exception):            
@@ -477,13 +477,76 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 ###################################################################################################################
 
 
-    def test_messages(self):
-        self._test_messages(0)
-        self._test_messages(1)
-        self._test_messages(2)
-        self._test_messages(3)
-        self._test_messages(4)
+    def test_bank_colors_with_preselect(self):
+        display = DisplayLabel(layout = {
+            "font": "foo",
+            "backColor": (0, 0, 0)
+        })
 
+        action = RIG_SELECT(
+            display = display,
+            rig = 3, 
+            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+        )        
+
+        appl = MockController2()
+        switch = MockFootswitch(actions = [action])
+        action.init(appl, switch)
+
+        mapping = action.callback._BinaryParameterCallback__mapping 
+
+        # Normal        
+        mapping.value = 5 # Off rig
+        exp_color = BANK_COLORS[1]
+
+        action.update_displays()
+
+        self.assertEqual(switch.color, exp_color)
+        self.assertEqual(switch.brightness, 0.02)
+
+        factor = 0.2
+        self.assertEqual(display.back_color, (
+            int(exp_color[0] * factor),
+            int(exp_color[1] * factor),
+            int(exp_color[2] * factor)
+        ))
+
+        # With preselect
+        exp_color = BANK_COLORS[0]
+        appl.shared = { "preselectedBank": 0 }
+        action.update_displays()
+
+        self.assertEqual(switch.color, exp_color)
+        self.assertEqual(switch.brightness, 0.02)
+
+        factor = 0.2
+        self.assertEqual(display.back_color, (
+            int(exp_color[0] * factor),
+            int(exp_color[1] * factor),
+            int(exp_color[2] * factor)
+        ))
+
+        # With preselect (other bank)
+        exp_color = BANK_COLORS[4]
+        appl.shared = { "preselectedBank": 9 }
+        action.update_displays()
+
+        self.assertEqual(switch.color, exp_color)
+        self.assertEqual(switch.brightness, 0.02)
+
+        factor = 0.2
+        self.assertEqual(display.back_color, (
+            int(exp_color[0] * factor),
+            int(exp_color[1] * factor),
+            int(exp_color[2] * factor)
+        ))
+        
+###################################################################################################################
+
+
+    def test_messages(self):
+        for rig in range(NUM_RIGS_PER_BANK):
+            self._test_messages(rig)
 
     def _test_messages(self, rig):
         action = RIG_SELECT(

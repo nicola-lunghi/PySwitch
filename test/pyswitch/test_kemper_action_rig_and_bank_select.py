@@ -689,6 +689,104 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 ###################################################################################################################
 
 
+    def test_messages_rig_off_with_preselect(self):
+        action = RIG_SELECT(
+            rig = 1,
+            bank = 2,
+            rig_off = 2,
+            bank_off = 4
+        )
+
+        appl = MockController2()              
+        switch = MockFootswitch(actions = [action])
+        action.init(appl, switch)
+
+        mapping = action.callback._BinaryParameterCallback__mapping
+        mapping_disable = action.callback.mapping_disable
+
+        mapping.value = 33   # Not matching
+        action.update_displays()
+        self.assertEqual(action.state, False)            
+
+        # Select rig the first time
+        appl.shared = { "preselectedBank": 4 }  
+        action.push()
+        action.release()
+        self.assertEqual(appl.shared, {})
+
+        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(appl.client.set_calls[0], {
+            "mapping": mapping,
+            "value": [1, 1, 0]
+        })
+
+        mapping.value = 5  # On rig
+        action.update_displays()
+
+        self.assertEqual(action.state, True)
+
+        # Select off rig
+        appl.shared = { "preselectedBank": 4 }  
+        action.push()
+        action.release()
+        self.assertEqual(appl.shared, {})
+
+        self.assertEqual(len(appl.client.set_calls), 2)
+        self.assertEqual(appl.client.set_calls[1], {
+            "mapping": mapping_disable,
+            "value": [1, 1, 0]
+        })
+
+        mapping.value = 16  # Off rig
+        action.update_displays()
+
+        self.assertEqual(action.state, False)
+
+        # Select rig again
+        appl.shared = { "preselectedBank": 4 }  
+        action.push()
+        action.release()
+        self.assertEqual(appl.shared, {})
+
+        self.assertEqual(len(appl.client.set_calls), 3)
+        self.assertEqual(appl.client.set_calls[2], {
+            "mapping": mapping,
+            "value": [1, 1, 0]
+        })
+
+        mapping.value = 5  # On rig
+        action.update_displays()
+
+        self.assertEqual(action.state, True)
+
+        # Select off rig again
+        appl.shared = { "preselectedBank": 4 }  
+        action.push()
+        action.release()
+        self.assertEqual(appl.shared, {})
+
+        self.assertEqual(len(appl.client.set_calls), 4)
+        self.assertEqual(appl.client.set_calls[3], {
+            "mapping": mapping_disable,
+            "value": [1, 1, 0]
+        })
+
+        action.update_displays()
+
+        self.assertEqual(action.state, True)
+
+        # Other rig selected
+        mapping.value = 172  # Not matching
+        action.update_displays()
+
+        self.assertEqual(action.state, False)
+
+        self.assertEqual(len(appl.client.set_calls), 4)
+
+
+###################################################################################################################
+
+
     def test_invalid_display_mode(self):
         display = DisplayLabel(layout = {
             "font": "foo",
