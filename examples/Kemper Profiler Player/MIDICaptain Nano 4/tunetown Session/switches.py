@@ -8,8 +8,13 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
 
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
+from pyswitch.clients.kemper import KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
+
+from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO
+from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
+from pyswitch.clients.kemper.actions.binary_switch import BINARY_SWITCH
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
 
 ##############################################################################################################################################
 
@@ -20,11 +25,11 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.TAP_TEMPO(use_leds = False),
-            KemperActionDefinitions.SHOW_TEMPO()    # Shows beats with the LED(s)
+            TAP_TEMPO(use_leds = False),
+            SHOW_TEMPO()    # Shows beats with the LED(s)
         ],
         "actionsHold": [
-            KemperActionDefinitions.TUNER_MODE(
+            TUNER_MODE(
                 display = DISPLAY_HEADER_1,
                 text = "Tap|Tune"
             )            
@@ -36,7 +41,7 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
             # Freeze on/off
-            KemperActionDefinitions.BINARY_SWITCH(
+            BINARY_SWITCH(
                 mapping = KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
                 display = DISPLAY_HEADER_2,
                 text = "Freeze",
@@ -49,7 +54,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 4,
                 rig_off = "auto",
                 auto_exclude_rigs = (4, 5),
@@ -65,7 +70,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 5,
                 rig_off = "auto",
                 auto_exclude_rigs = (4, 5),

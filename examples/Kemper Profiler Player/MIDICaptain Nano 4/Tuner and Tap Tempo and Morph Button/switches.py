@@ -8,8 +8,14 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
 
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot #, KemperMappings
+from pyswitch.clients.kemper import KemperEffectSlot #, KemperMappings
 from display import DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_HEADER_1, DISPLAY_HEADER_2
+
+from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO
+from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
+from pyswitch.clients.kemper.actions.morph import MORPH_BUTTON
+from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
+
 
 # Defines the switch assignments
 Switches = [
@@ -18,7 +24,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.TUNER_MODE(
+            TUNER_MODE(
                 display = DISPLAY_HEADER_1
             )                         
         ]
@@ -28,12 +34,12 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            KemperActionDefinitions.TAP_TEMPO(
+            TAP_TEMPO(
                 display = DISPLAY_HEADER_2,
                 color = Colors.LIGHT_GREEN,
                 use_leds = False
             ),
-            KemperActionDefinitions.SHOW_TEMPO()    # Shows beats with the LED(s)   
+            SHOW_TEMPO()    # Shows beats with the LED(s)   
         ]
     },
 
@@ -41,7 +47,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                 display = DISPLAY_FOOTER_1
             )
@@ -52,7 +58,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.MORPH_BUTTON(
+            MORPH_BUTTON(
                 display = DISPLAY_FOOTER_2,
                 #color = "kemper"
             )

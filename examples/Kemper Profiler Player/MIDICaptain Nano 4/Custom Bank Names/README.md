@@ -1,6 +1,6 @@
 ## Exampe Description
 
-This shows how to use custom text output callbacks for the RIG_SELECT, RIG_AND_BANK_SELECT and BANK_UP/DOWN actions. The assignments have no practical use, this example is just for demonstration! If they seem confusing at first, see this chart for what each action does:
+This shows how to use custom text output callbacks for the RIG_SELECT, RIG_AND_BANK_SELECT and BANK_UP/DOWN actions. The example has no practical use, this is just for demonstration! If they seem confusing at first, see this chart for what each action does:
 
 |            | What it does?                                | What's displayed?                                           |
 |------------|----------------------------------------------|-------------------------------------------------------------|

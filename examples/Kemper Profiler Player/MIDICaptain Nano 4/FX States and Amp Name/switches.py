@@ -7,10 +7,10 @@
 from pyswitch.hardware.Hardware import Hardware
 
 #from pyswitch.misc import Colors
-#from pyswitch.controller.actions.actions import PushButtonAction
-
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot #, KemperMappings
+from pyswitch.clients.kemper import KemperEffectSlot #, KemperMappings
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
+
+from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 
 
 # Defines the switch assignments
@@ -20,7 +20,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                 display = DISPLAY_HEADER_1
             )                         
@@ -31,7 +31,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
                 display = DISPLAY_HEADER_2
             )
@@ -42,7 +42,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
                 display = DISPLAY_FOOTER_1
             )
@@ -53,7 +53,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
                 display = DISPLAY_FOOTER_2
             )

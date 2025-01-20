@@ -8,16 +8,13 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
 
-from pyswitch.clients.kemper import KemperEffectSlot #, KemperMappings
-from pyswitch.clients.kemper import RIG_SELECT_DISPLAY_TARGET_RIG #, RIG_SELECT_DISPLAY_CURRENT_RIG
+from pyswitch.clients.kemper import KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
+from pyswitch.clients.kemper.actions.bank_select import BANK_SELECT
 
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
-from pyswitch.clients.kemper.actions.morph import MORPH_DISPLAY
-from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
-from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
-from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
-
+##############################################################################################################################################
 
 # Defines the switch assignments
 Switches = [
@@ -26,22 +23,26 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            TUNER_MODE(
+            BANK_SELECT(
+                bank = 1,
+                preselect = True,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
                 display = DISPLAY_HEADER_1
-            ),
-            MORPH_DISPLAY()        
+            )         
         ]
     },
 
     # Switch 2
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
-        "actions": [   
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_X,
+        "actions": [
+            BANK_SELECT(
+                bank = 2,
+                preselect = True,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
                 display = DISPLAY_HEADER_2
-            )
-        ]               
+            )     
+        ]
     },
 
     # Switch A
@@ -49,13 +50,11 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             RIG_SELECT(
-                rig = 3,
+                rig = 2,
                 rig_off = 1,
                 display = DISPLAY_FOOTER_1,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                color = Colors.PINK,
-                text = "Synth-3"
-            )            
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG                
+            )   
         ]
     },
     
@@ -64,12 +63,11 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             RIG_SELECT(
-                rig = 2,
+                rig = 3,
                 rig_off = 1,
                 display = DISPLAY_FOOTER_2,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                text = "Lead-2"
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ]
-    }
+    },
 ]

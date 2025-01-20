@@ -8,8 +8,12 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
 from pyswitch.controller.callbacks import Callback
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
+from pyswitch.clients.kemper import KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_HEADER_3, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_FOOTER_3
+
+from pyswitch.clients.kemper.actions.tempo import SHOW_TEMPO
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
+from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 
 ##############################################################################################################################################
 
@@ -40,13 +44,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_D,
                 id = 10,
                 display = DISPLAY_HEADER_1,
                 enable_callback = _enable_callback
             ),
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_X,
                 id = 20,
                 display = DISPLAY_HEADER_1,
@@ -59,11 +63,14 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_2,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
                 display = DISPLAY_HEADER_2#,
             ),
-            KemperActionDefinitions.SHOW_TEMPO(color = (50, 255, 50))
+            SHOW_TEMPO(
+                color = (50, 255, 50),
+                led_brightness_on = 0.2
+            )
         ]
     },
 
@@ -71,7 +78,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_3,
         "actions": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
                 # color = Colors.TURQUOISE,
                 display = DISPLAY_HEADER_3
@@ -83,7 +90,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_A,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 1,
                 color = (85, 255, 85),
                 display = DISPLAY_FOOTER_1,
@@ -96,7 +103,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 3,
                 color = Colors.ORANGE,
                 display = DISPLAY_FOOTER_2,
@@ -109,7 +116,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_C,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 4,
                 color = Colors.RED,
                 display = DISPLAY_FOOTER_3,

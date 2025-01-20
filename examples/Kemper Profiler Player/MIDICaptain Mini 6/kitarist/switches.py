@@ -8,8 +8,13 @@ from pyswitch.hardware.Hardware import Hardware
 
 #from pyswitch.misc import Colors
 
-from pyswitch.clients.kemper import KemperActionDefinitions, KemperEffectSlot, RIG_SELECT_DISPLAY_TARGET_RIG #, KemperMappings
+from pyswitch.clients.kemper import KemperEffectSlot, RIG_SELECT_DISPLAY_TARGET_RIG #, KemperMappings
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
+
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
+from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
+from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
+from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO
 
 
 # Defines the switch assignments
@@ -19,13 +24,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 1,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ],
         "actionsHold": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
                 display = DISPLAY_HEADER_1
             )   
@@ -36,13 +41,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_2,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 2,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ],
         "actionsHold": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_D,
                 display = DISPLAY_HEADER_2
             )
@@ -53,13 +58,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_3,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 3,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ],
         "actionsHold": [
-            KemperActionDefinitions.TUNER_MODE()
+            TUNER_MODE()
         ]
     },
 
@@ -67,13 +72,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_A,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 4,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ],
         "actionsHold": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD,
                 display = DISPLAY_FOOTER_1
             )
@@ -84,13 +89,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 5,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ],
         "actionsHold": [
-            KemperActionDefinitions.EFFECT_STATE(
+            EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
                 display = DISPLAY_FOOTER_2
             )
@@ -101,8 +106,8 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_C,
         "actions": [
-            KemperActionDefinitions.TAP_TEMPO(use_leds = False),
-            KemperActionDefinitions.SHOW_TEMPO()    # Shows beats with the LED(s)
+            TAP_TEMPO(use_leds = False),
+            SHOW_TEMPO()    # Shows beats with the LED(s)
         ]
     }
 ]

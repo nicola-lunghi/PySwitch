@@ -8,8 +8,11 @@ from pyswitch.hardware.Hardware import Hardware
 
 #from pyswitch.misc import Colors
 
-from pyswitch.clients.kemper import KemperActionDefinitions, RIG_SELECT_DISPLAY_TARGET_RIG
+from pyswitch.clients.kemper import RIG_SELECT_DISPLAY_TARGET_RIG
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
+
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
+from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
 
 
 # Defines the switch assignments
@@ -19,7 +22,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 1,                
                 display = DISPLAY_HEADER_1,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
@@ -31,7 +34,7 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 2,                
                 display = DISPLAY_HEADER_2,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
@@ -43,14 +46,14 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 3,
                 display = DISPLAY_FOOTER_1,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ],
         "actionsHold": [
-            KemperActionDefinitions.BANK_DOWN(
+            BANK_DOWN(
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ]
@@ -60,14 +63,14 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            KemperActionDefinitions.RIG_SELECT(
+            RIG_SELECT(
                 rig = 4,
                 display = DISPLAY_FOOTER_2,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ],
         "actionsHold": [
-            KemperActionDefinitions.BANK_UP(
+            BANK_UP(
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
         ]
