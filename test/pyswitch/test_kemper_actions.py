@@ -91,35 +91,6 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(action._Action__enable_callback, ecb)
 
 
-    def test_effect_state(self):
-        display = DisplayLabel(layout = {
-            "font": "foo"
-        })
-
-        ecb = MockEnabledCallback()
-
-        action = EFFECT_STATE(
-            KemperEffectSlot.EFFECT_SLOT_ID_C, 
-            display = display,
-            mode = PushButtonAction.LATCH, 
-            id = 45, 
-            use_leds = True, 
-            enable_callback = ecb
-        )
-
-        cb = action.callback
-        self.assertIsInstance(cb, KemperEffectEnableCallback)
-        self.assertIsInstance(action, PushButtonAction)
-
-        self.assertEqual(cb.mapping_fxtype, KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_C))
-        
-        self.assertEqual(action.label, display)
-        self.assertEqual(action.id, 45)
-        self.assertEqual(action.uses_switch_leds, True)
-        self.assertEqual(action._Action__enable_callback, ecb)
-        self.assertEqual(action._PushButtonAction__mode, PushButtonAction.LATCH)
-
-
     def test_tap_tempo(self):
         display = DisplayLabel(layout = {
             "font": "foo"

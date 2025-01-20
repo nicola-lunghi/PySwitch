@@ -27,7 +27,7 @@ def RIG_SELECT(rig,
         "mode": PushButtonAction.LATCH,
         "id": id,
         "useSwitchLeds": use_leds,
-        "callback": _RigSelectCallback(
+        "callback": KemperRigSelectCallback(
             rig = rig,
             rig_off = rig_off,
             bank = bank,
@@ -43,7 +43,7 @@ def RIG_SELECT(rig,
     })  
 
 # Callback implementation for Rig Select, showing bank colors and rig/bank info
-class _RigSelectCallback(BinaryParameterCallback):
+class KemperRigSelectCallback(BinaryParameterCallback):
     def __init__(self,
                     rig,
                     rig_off,                     

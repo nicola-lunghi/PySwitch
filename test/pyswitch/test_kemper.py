@@ -18,7 +18,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from lib.pyswitch.clients.kemper import *
-
+    
     from lib.pyswitch.ui.ui import DisplayElement
     from lib.pyswitch.ui.elements import DisplayLabel, TunerDisplay
     from lib.pyswitch.misc import Updater

@@ -17,7 +17,7 @@ def BANK_UP(display = None,
             display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
     ):
     return PushButtonAction({
-        "callback": _BankChangeCallback(
+        "callback": KemperBankChangeCallback(
             mapping = KemperMappings.NEXT_BANK(),
             offset = 1,
             dim_factor = dim_factor,
@@ -49,7 +49,7 @@ def BANK_DOWN(display = None,
                 display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
     ):
     return PushButtonAction({
-        "callback": _BankChangeCallback(
+        "callback": KemperBankChangeCallback(
             mapping = KemperMappings.PREVIOUS_BANK(),
             offset = -1,
             dim_factor = dim_factor,
@@ -69,7 +69,7 @@ def BANK_DOWN(display = None,
 
 
 # Custom callback showing current bank color (only used by Bank up/down)
-class _BankChangeCallback(BinaryParameterCallback):
+class KemperBankChangeCallback(BinaryParameterCallback):
     def __init__(self, 
                     mapping, 
                     offset,

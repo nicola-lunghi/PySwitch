@@ -58,7 +58,7 @@ def RIG_SELECT_AND_MORPH_STATE(rig,
             "useSwitchLeds": morph_use_leds,
             "display": morph_display,
             "id": morph_id if morph_id != None else id,
-            "enableCallback": _MorphDisplayEnableCallback(
+            "enableCallback": KemperMorphDisplayEnableCallback(
                 action_rig_select = rig_select, 
                 rig = rig, 
                 morph_only_when_enabled = morph_only_when_enabled
@@ -68,7 +68,7 @@ def RIG_SELECT_AND_MORPH_STATE(rig,
 
 
 # Callback to enable the morph state display only when the rig is selected
-class _MorphDisplayEnableCallback(Callback):
+class KemperMorphDisplayEnableCallback(Callback):
     def __init__(self, 
                     action_rig_select, 
                     rig, 

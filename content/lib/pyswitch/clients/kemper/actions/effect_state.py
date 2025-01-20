@@ -91,8 +91,10 @@ class KemperEffectEnableCallback(EffectEnableCallback):
         # could need to be adjusted with future Kemper firmware updates!
         if (kpp_effect_type == 0):
             return self.CATEGORY_NONE
-        elif (0 < kpp_effect_type and kpp_effect_type <= 14):
+        elif (0 < kpp_effect_type and kpp_effect_type <= 10) or kpp_effect_type == 12:
             return self.CATEGORY_WAH
+        elif kpp_effect_type == 11 or kpp_effect_type == 13:
+            return self.CATEGORY_PITCH
         elif (14 < kpp_effect_type and kpp_effect_type <= 45):
             return self.CATEGORY_DISTORTION
         elif (45 < kpp_effect_type and kpp_effect_type <= 55):

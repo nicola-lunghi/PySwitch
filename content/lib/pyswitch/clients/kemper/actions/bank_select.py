@@ -24,7 +24,7 @@ def BANK_SELECT(bank,
         "mode": PushButtonAction.LATCH,
         "id": id,
         "useSwitchLeds": use_leds,
-        "callback": _BankSelectCallback(
+        "callback": KemperBankSelectCallback(
             mapping = KemperMappings.BANK_AND_RIG_SELECT(0),
             bank = bank,
             bank_off = bank_off,
@@ -40,7 +40,7 @@ def BANK_SELECT(bank,
 
 
 # Callback implementation for Bank Select, showing bank colors and rig/bank info
-class _BankSelectCallback(BinaryParameterCallback):
+class KemperBankSelectCallback(BinaryParameterCallback):
     def __init__(self,
                     mapping,
                     bank,
