@@ -137,7 +137,10 @@ class BinaryParameterCallback(Callback):
                  # LED brightness [0..1] for off state (Switch LEDs) Optional.
                  # If None, the global config value will be used
                  # If "on", the global on config value will be used.
-                 led_brightness_off = None
+                 led_brightness_off = None,
+
+                 # If enabled, the callback will not wait until a MIDI value comes in, the state is displayed as-is any time.
+                 use_internal_state = False
         ):
         super().__init__(mappings = [mapping])
 
@@ -156,6 +159,7 @@ class BinaryParameterCallback(Callback):
         self._led_brightness_off = led_brightness_off
         self.__color = color
         self.__color_callback = color_callback
+        self.__use_internal_state = use_internal_state
 
         self.reset()
 
@@ -165,6 +169,7 @@ class BinaryParameterCallback(Callback):
             self.__update_value_disabled = (self._value_disable == "auto")
         else:
             self.__update_value_disabled = [v == "auto" for v in self._value_disable]            
+
 
     def init(self, appl, listener = None):
         super().init(appl, listener)
@@ -191,6 +196,7 @@ class BinaryParameterCallback(Callback):
             self._led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
         elif self._led_brightness_off == "on":
             self._led_brightness_off = get_option(appl.config, "ledBrightnessOn", 0.3)
+
 
     def state_changed_by_user(self, action):
         if action.state:
@@ -219,11 +225,13 @@ class BinaryParameterCallback(Callback):
         # Request value
         self.update()
 
+
     # Reset state
     def reset(self):
         self._current_display_state = -1
         self._current_value = self       # Just some value which will never occur as a mapping value ;)
         self._current_color = -1
+
 
     def update_displays(self, action):
         value = self.__mapping.value
@@ -242,6 +250,7 @@ class BinaryParameterCallback(Callback):
             self.set_switch_color(action, color)
             self.set_label_color(action, color)
             self.__update_label_text(action)            
+
 
     # Evaluate a new value
     def evaluate_value(self, action, value):
@@ -289,27 +298,30 @@ class BinaryParameterCallback(Callback):
                 if self.__update_value_disabled[i]:
                     self._value_disable[i] = value
 
+
     # Update switch brightness
     def set_switch_color(self, action, color):
         # Update switch LED color 
         action.switch_color = color
 
-        if action.state == True and self.__mapping.response:
+        if action.state == True and (self.__mapping.response or self.__use_internal_state):
             # Switched on
             action.switch_brightness = self._led_brightness_on
         else:
             # Switched off
             action.switch_brightness = self._led_brightness_off
 
+
    # Update label color, if any
     def set_label_color(self, action, color):
         if not action.label:
             return
             
-        if action.state == True and self.__mapping.response:
+        if action.state == True and (self.__mapping.response or self.__use_internal_state):
             action.label.back_color = self.dim_color(color, self.__display_dim_factor_on)
         else:
             action.label.back_color = self.dim_color(color, self.__display_dim_factor_off)
+
 
     # Update text if set
     def __update_label_text(self, action):
@@ -319,13 +331,14 @@ class BinaryParameterCallback(Callback):
         if not self.__text:
             return
         
-        if action.state == True or not self.__mapping.response:
+        if action.state == True or not (self.__mapping.response or self.__use_internal_state):
             action.label.text = self.__text
         else:
             if self.__text_disabled:
                 action.label.text = self.__text_disabled
             else:
                 action.label.text = self.__text
+
 
     # Dims a passed color for display of disabled state
     def dim_color(self, color, factor):

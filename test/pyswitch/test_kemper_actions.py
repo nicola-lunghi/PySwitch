@@ -30,11 +30,13 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.actions.tempo import *
     from lib.pyswitch.clients.kemper.actions.effect_button import *
     from lib.pyswitch.clients.kemper.actions.morph import *
+    from lib.pyswitch.clients.kemper.actions.looper import *
     from lib.pyswitch.clients.kemper.actions.rig_volume_boost import *
     from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
 
     from lib.pyswitch.clients.kemper.mappings.tempo import *
     from lib.pyswitch.clients.kemper.mappings.morph import *
+    from lib.pyswitch.clients.kemper.mappings.looper import *
     
 
 class MockController2(Updater):
@@ -414,3 +416,241 @@ class TestKemperActionDefinitions(unittest.TestCase):
     #     self.assertEqual(action_morph.id, 68)
     #     self.assertEqual(action_morph.uses_switch_leds, False)
     #     self.assertNotEqual(action_morph._Action__enable_callback, ecb)
+
+
+########################################################################################
+
+
+    def test_looper_rec_play_overdub(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action = LOOPER_REC_PLAY_OVERDUB(
+            display = display, 
+            text = "foo", 
+            color = (2, 3, 4), 
+            id = 45, 
+            use_leds = True, 
+            enable_callback = ecb
+        )
+
+        cb = action.callback
+        self.assertIsInstance(cb, BinaryParameterCallback)
+        self.assertIsInstance(action, PushButtonAction)
+
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_REC_PLAY_OVERDUB())
+        self.assertEqual(cb._value_enable, 1)
+        self.assertEqual(cb._value_disable, 0)
+        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        
+        self.assertEqual(action.label, display)
+        self.assertEqual(action.id, 45)
+        self.assertEqual(action.uses_switch_leds, True)
+        self.assertEqual(action._Action__enable_callback, ecb)
+        self.assertEqual(action._PushButtonAction__mode, PushButtonAction.MOMENTARY)
+
+
+    def test_looper_stop(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action = LOOPER_STOP(
+            display = display, 
+            text = "foo", 
+            color = (2, 3, 4), 
+            id = 45, 
+            use_leds = True, 
+            enable_callback = ecb
+        )
+
+        cb = action.callback
+        self.assertIsInstance(cb, BinaryParameterCallback)
+        self.assertIsInstance(action, PushButtonAction)
+
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_STOP())
+        self.assertEqual(cb._value_enable, 1)
+        self.assertEqual(cb._value_disable, 0)
+        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        
+        self.assertEqual(action.label, display)
+        self.assertEqual(action.id, 45)
+        self.assertEqual(action.uses_switch_leds, True)
+        self.assertEqual(action._Action__enable_callback, ecb)
+        self.assertEqual(action._PushButtonAction__mode, PushButtonAction.MOMENTARY)
+
+
+    def test_looper_erase(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action = LOOPER_ERASE(
+            display = display, 
+            text = "foo", 
+            color = (2, 3, 4), 
+            id = 45, 
+            use_leds = True, 
+            enable_callback = ecb
+        )
+
+        cb = action.callback
+        self.assertIsInstance(cb, BinaryParameterCallback)
+        self.assertIsInstance(action, PushButtonAction)
+
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_ERASE())
+        self.assertEqual(cb._value_enable, 1)
+        self.assertEqual(cb._value_disable, 0)
+        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        
+        self.assertEqual(action.label, display)
+        self.assertEqual(action.id, 45)
+        self.assertEqual(action.uses_switch_leds, True)
+        self.assertEqual(action._Action__enable_callback, ecb)
+        self.assertEqual(action._PushButtonAction__mode, PushButtonAction.MOMENTARY)
+
+        
+
+    def test_looper_cancel(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action = LOOPER_CANCEL(
+            display = display, 
+            text = "foo", 
+            color = (2, 3, 4), 
+            id = 45, 
+            use_leds = True, 
+            enable_callback = ecb
+        )
+
+        cb = action.callback
+        self.assertIsInstance(cb, BinaryParameterCallback)
+        self.assertIsInstance(action, PushButtonAction)
+
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_CANCEL())
+        self.assertEqual(cb._value_enable, 1)
+        self.assertEqual(cb._value_disable, 0)
+        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        
+        self.assertEqual(action.label, display)
+        self.assertEqual(action.id, 45)
+        self.assertEqual(action.uses_switch_leds, True)
+        self.assertEqual(action._Action__enable_callback, ecb)
+        self.assertEqual(action._PushButtonAction__mode, PushButtonAction.MOMENTARY)
+
+        
+
+    def test_looper_reverse(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action = LOOPER_REVERSE(
+            display = display, 
+            text = "foo", 
+            color = (2, 3, 4), 
+            id = 45, 
+            use_leds = True, 
+            enable_callback = ecb
+        )
+
+        cb = action.callback
+        self.assertIsInstance(cb, BinaryParameterCallback)
+        self.assertIsInstance(action, PushButtonAction)
+
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_REVERSE())
+        self.assertEqual(cb._value_enable, 1)
+        self.assertEqual(cb._value_disable, 0)
+        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        
+        self.assertEqual(action.label, display)
+        self.assertEqual(action.id, 45)
+        self.assertEqual(action.uses_switch_leds, True)
+        self.assertEqual(action._Action__enable_callback, ecb)
+        self.assertEqual(action._PushButtonAction__mode, PushButtonAction.MOMENTARY)
+
+        
+
+    def test_looper_trigger(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action = LOOPER_TRIGGER(
+            display = display, 
+            text = "foo", 
+            color = (2, 3, 4), 
+            id = 45, 
+            use_leds = True, 
+            enable_callback = ecb
+        )
+
+        cb = action.callback
+        self.assertIsInstance(cb, BinaryParameterCallback)
+        self.assertIsInstance(action, PushButtonAction)
+
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_TRIGGER())
+        self.assertEqual(cb._value_enable, 1)
+        self.assertEqual(cb._value_disable, 0)
+        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        
+        self.assertEqual(action.label, display)
+        self.assertEqual(action.id, 45)
+        self.assertEqual(action.uses_switch_leds, True)
+        self.assertEqual(action._Action__enable_callback, ecb)
+        self.assertEqual(action._PushButtonAction__mode, PushButtonAction.MOMENTARY)
+
+        
+
+    def test_looper_half_speed(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action = LOOPER_HALF_SPEED(
+            display = display, 
+            text = "foo", 
+            color = (2, 3, 4), 
+            id = 45, 
+            use_leds = True, 
+            enable_callback = ecb
+        )
+
+        cb = action.callback
+        self.assertIsInstance(cb, BinaryParameterCallback)
+        self.assertIsInstance(action, PushButtonAction)
+
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_HALF_SPEED())
+        self.assertEqual(cb._value_enable, 1)
+        self.assertEqual(cb._value_disable, 0)
+        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        
+        self.assertEqual(action.label, display)
+        self.assertEqual(action.id, 45)
+        self.assertEqual(action.uses_switch_leds, True)
+        self.assertEqual(action._Action__enable_callback, ecb)
+        self.assertEqual(action._PushButtonAction__mode, PushButtonAction.MOMENTARY)

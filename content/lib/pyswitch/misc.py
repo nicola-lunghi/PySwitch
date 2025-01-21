@@ -31,6 +31,7 @@ class Colors:
     DARK_GREEN = (73, 110, 41)      #(0, 100, 0)
     TURQUOISE = (64, 242, 208)
     BLUE = (0, 0, 255)
+    LIGHT_BLUE = (100, 100, 255)
     DARK_BLUE = (0, 0, 120)
     GRAY = (190, 190, 190)
     DARK_GRAY = (50, 50, 50)
