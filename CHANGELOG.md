@@ -19,7 +19,7 @@
         - RIG_AND_BANK_SELECT: Use RIG_SELECT instead (which now supports bank and bank_off parameters)
         - RIG_AND_BANK_SELECT_AND_MORPH_STATE: Use RIG_SELECT_AND_MORPH_STATE instead (which now supports bank and bank_off parameters)
         - MORPH_BUTTON_WITH_DISPLAY: Use MORPH_BUTTON instead, setting the color parameter to "kemper".
-- Removed the davjunk example (the Arek77 example does the same but better)
+- Removed the davjunk example (the Arek77 example does the same but better), added several new examples
 
 # PySwitch v2.2.2
 - Morph pedal position can now be requested from the Kemper. The position can be visualized with colors (faded between red and blue). See tehguitarist's example. Thanks to @sumsar for the NRPN mapping info.

@@ -89,6 +89,15 @@ NRPN_AMP_PARAMETER_STATE = const(0x02)
 # Cab parameters (page 0x0c)
 NRPN_CABINET_PARAMETER_STATE = const(0x02)
 
+# Looper/freeze parameters
+NRPN_LOOPER_PARAMETER_REC_PLAY_OVERDUB = const(88)
+NRPN_LOOPER_PARAMETER_STOP = const(89)
+NRPN_LOOPER_PARAMETER_TRIGGER = const(90)
+NRPN_LOOPER_PARAMETER_REVERSE = const(91)
+NRPN_LOOPER_PARAMETER_HALF_SPEED = const(92)
+NRPN_LOOPER_PARAMETER_CANCEL = const(93)
+NRPN_LOOPER_PARAMETER_ERASE = const(94)
+
 # NRPN String parameters
 NRPN_STRING_PARAMETER_ID_RIG_NAME = const(0x01)
 NRPN_STRING_PARAMETER_ID_RIG_COMMENT = const(0x04)
@@ -1002,6 +1011,77 @@ class KemperMappings:
             )
         )
     
+    # Looper ##########################################################
+
+    def LOOPER_REC_PLAY_OVERDUB():
+        return KemperParameterMapping(
+            name = "LoopRec",
+            set = KemperNRPNMessage(
+                NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                NRPN_ADDRESS_PAGE_FREEZE,
+                NRPN_LOOPER_PARAMETER_REC_PLAY_OVERDUB
+            )
+        )
+    
+    def LOOPER_STOP():
+        return KemperParameterMapping(
+            name = "LoopStop",
+            set = KemperNRPNMessage(
+                NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                NRPN_ADDRESS_PAGE_FREEZE,
+                NRPN_LOOPER_PARAMETER_STOP
+            )
+        )
+
+    def LOOPER_TRIGGER():
+        return KemperParameterMapping(
+            name = "LoopTrig",
+            set = KemperNRPNMessage(
+                NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                NRPN_ADDRESS_PAGE_FREEZE,
+                NRPN_LOOPER_PARAMETER_TRIGGER
+            )
+        )
+
+    def LOOPER_REVERSE():
+        return KemperParameterMapping(
+            name = "LoopRev",
+            set = KemperNRPNMessage(
+                NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                NRPN_ADDRESS_PAGE_FREEZE,
+                NRPN_LOOPER_PARAMETER_REVERSE
+            )
+        )
+
+    def LOOPER_HALF_SPEED():
+        return KemperParameterMapping(
+            name = "Loop1/2",
+            set = KemperNRPNMessage(
+                NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                NRPN_ADDRESS_PAGE_FREEZE,
+                NRPN_LOOPER_PARAMETER_HALF_SPEED
+            )
+        )
+
+    def LOOPER_CANCEL():
+        return KemperParameterMapping(
+            name = "LoopCanc",
+            set = KemperNRPNMessage(
+                NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                NRPN_ADDRESS_PAGE_FREEZE,
+                NRPN_LOOPER_PARAMETER_CANCEL
+            )
+        )
+
+    def LOOPER_ERASE():
+        return KemperParameterMapping(
+            name = "LoopErase",
+            set = KemperNRPNMessage(
+                NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
+                NRPN_ADDRESS_PAGE_FREEZE,
+                NRPN_LOOPER_PARAMETER_ERASE
+            )
+        )
 
 ####################################################################################################################
 

@@ -9,10 +9,12 @@ from pyswitch.hardware.Hardware import Hardware
 from pyswitch.misc import Colors
 
 from pyswitch.clients.kemper import KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
-from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
-from pyswitch.clients.kemper.actions.bank_select import BANK_SELECT
-
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
+
+from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO
+from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
+from pyswitch.clients.kemper.actions.binary_switch import BINARY_SWITCH
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
 
 ##############################################################################################################################################
 
@@ -23,12 +25,14 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            BANK_SELECT(
-                bank = 1,
-                preselect = True,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                display = DISPLAY_HEADER_1
-            )         
+            TAP_TEMPO(use_leds = False),
+            SHOW_TEMPO()    # Shows beats with the LED(s)
+        ],
+        "actionsHold": [
+            TUNER_MODE(
+                display = DISPLAY_HEADER_1,
+                text = "Tap|Tune"
+            )            
         ]
     },
 
@@ -36,12 +40,13 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            BANK_SELECT(
-                bank = 2,
-                preselect = True,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                display = DISPLAY_HEADER_2
-            )     
+            # Freeze on/off
+            BINARY_SWITCH(
+                mapping = KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
+                display = DISPLAY_HEADER_2,
+                text = "Freeze",
+                color = Colors.LIGHT_GREEN
+            )
         ]
     },
 
@@ -50,9 +55,13 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             RIG_SELECT(
-                rig = 1,
+                rig = 4,
+                rig_off = "auto",
+                auto_exclude_rigs = (4, 5),
                 display = DISPLAY_FOOTER_1,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG                
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+                color = Colors.PINK,
+                text = "Synth-4"
             )   
         ]
     },
@@ -62,10 +71,13 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             RIG_SELECT(
-                rig = 2,
-                rig_off = 4,
+                rig = 5,
+                rig_off = "auto",
+                auto_exclude_rigs = (4, 5),
                 display = DISPLAY_FOOTER_2,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+                color = Colors.RED,
+                text = "Lead-5"
             )
         ]
     },

@@ -22,6 +22,7 @@ class Colors:
     DARK_YELLOW = (130, 130, 0)
     ORANGE = (255, 125, 0)
     RED = (255, 0, 0)
+    LIGHT_RED = (255, 100, 100)
     PINK = (255, 125, 70)
     PURPLE = (180, 0, 120)
     DARK_PURPLE = (100, 0, 65)
