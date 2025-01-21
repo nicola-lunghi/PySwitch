@@ -8,7 +8,7 @@
 import board
 from usb_midi import ports
 
-from .adafruit import AdafruitSwitch, AdfruitDinMidiDevice, AdfruitUsbMidiDevice
+from .adafruit import AdafruitSwitch, AdafruitPotentiometer, AdfruitDinMidiDevice, AdfruitUsbMidiDevice
 
 #################################################################################################################################
 
@@ -90,6 +90,8 @@ class Hardware:
     # GP23 - FootSwitch 4
     # GP24 - FootSwitch 3
     # GP25 - FootSwitch 2
+    # GP27 - Exp. Pedal 1
+    # GP28 - Exp. Pedal 2
     PA_MIDICAPTAIN_10_SWITCH_1    = { "model": AdafruitSwitch(board.GP1),  "pixels": (0, 1, 2), "name": "1", "strobeOrder": 0 }
     PA_MIDICAPTAIN_10_SWITCH_2    = { "model": AdafruitSwitch(board.GP25), "pixels": (3, 4, 5), "name": "2", "strobeOrder": 1 }
     PA_MIDICAPTAIN_10_SWITCH_3    = { "model": AdafruitSwitch(board.GP24), "pixels": (6, 7, 8), "name": "3", "strobeOrder": 2 }
@@ -100,6 +102,8 @@ class Hardware:
     PA_MIDICAPTAIN_10_SWITCH_C    = { "model": AdafruitSwitch(board.GP11), "pixels": (21, 22, 23), "name": "C", "strobeOrder": 7 }
     PA_MIDICAPTAIN_10_SWITCH_D    = { "model": AdafruitSwitch(board.GP18), "pixels": (24, 25, 26), "name": "D", "strobeOrder": 6 }
     PA_MIDICAPTAIN_10_SWITCH_DOWN = { "model": AdafruitSwitch(board.GP19), "pixels": (27, 28, 29), "name": "Dn", "strobeOrder": 5 }
+    PA_MIDICAPTAIN_10_EXP_PEDAL_1 = { "model": AdafruitPotentiometer(board.GP27), "name": "Exp1" }
+    PA_MIDICAPTAIN_10_EXP_PEDAL_2 = { "model": AdafruitPotentiometer(board.GP28), "name": "Exp2" }
 
 ###########################################################################################################################
 

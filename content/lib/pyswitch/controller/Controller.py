@@ -31,7 +31,7 @@ class Controller(Updater): #ClientRequestListener
     #                },
     #                ...
     #           ]
-    def __init__(self, led_driver, midi, protocol = None, config = {}, switches = [], ui = None, period_counter = None):
+    def __init__(self, led_driver, midi, protocol = None, config = {}, switches = [], pedals = [], ui = None, period_counter = None):
         Updater.__init__(self)
 
         # Flag which is used by display elements to show the user there is not enough memory left
@@ -106,6 +106,13 @@ class Controller(Updater): #ClientRequestListener
         for sw_def in switches:
             self.switches.append(FootSwitchController(self, sw_def))
 
+        # Set up pedals
+        self.pedals = []
+        if pedals:
+            from .PedalController import PedalController            
+            for p_def in pedals:            
+                self.pedals.append(PedalController(self, p_def))
+
         # Set up the screen elements
         if self.ui:
             self.ui.init(self)
@@ -169,6 +176,9 @@ class Controller(Updater): #ClientRequestListener
             for switch in self.switches:
                 switch.process()
             #self.__measurement_switch_jitter.start()
+
+            for pedal in self.pedals:
+                pedal.process()
 
             midimsg = self.__midi.receive()
 

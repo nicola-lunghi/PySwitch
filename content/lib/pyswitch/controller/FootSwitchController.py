@@ -13,8 +13,7 @@ class FootSwitchController: #ConditionListener
     #         "pixels":        List of indexes for the Neopixels that belong to this switch, for example (0, 1, 2)
     #     },
     #
-    #     "actions": [         Array of actions. Entries must be either Action instances or Conditions with Action
-    #                          instance(s) inside (conditions can be deep).
+    #     "actions": [         Array of actions. Entries must be Action instances
     #         ExampleAction({
     #             ...                  
     #         }),

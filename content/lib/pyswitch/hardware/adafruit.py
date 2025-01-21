@@ -22,6 +22,8 @@ from adafruit_misc.neopixel import NeoPixel
 # Switch driver
 from digitalio import DigitalInOut, Direction, Pull
 
+# Pot driver
+from analogio import AnalogIn
 
 # TFT driver class
 class AdafruitST7789DisplayDriver:
@@ -119,7 +121,7 @@ class AdafruitNeoPixelDriver:
 ##################################################################################################
 
 
-# Simple GPIO switch
+# GPIO switch
 class AdafruitSwitch: #(SwitchDriver):
     
     # port: The board GPIO pin definition to be used for this switch (for example board.GP1)
@@ -142,7 +144,7 @@ class AdafruitSwitch: #(SwitchDriver):
     @property
     def pushed(self):
         if not self.__switch:
-            return False
+            return None
         
         return self.__switch.value == False  # Inverse logic!
 
@@ -150,6 +152,34 @@ class AdafruitSwitch: #(SwitchDriver):
 ##################################################################################################
 
 
+# Analog GPIO (Potentiometer)
+class AdafruitPotentiometer: #(PotentiometerDriver):
+    
+    # port: The board GPIO pin definition to be used for this pot (for example board.GP1)
+    def __init__(self, port):
+        self.__port = port
+        self.__input = None
+
+    # Initializes the input to the GPIO port
+    def init(self):
+        self.__input = AnalogIn(self.__port)
+
+    # Representational string for debug output (optional)
+    def __repr__(self):
+        return repr(self.__port)
+
+    # Returns the value of the pot (integer in range [0..65535])
+    @property
+    def value(self):
+        if not self.__input:
+            return None
+        
+        return self.__input.value
+
+
+##################################################################################################
+ 
+ 
 # USB MIDI Device
 class AdfruitUsbMidiDevice:
     def __init__(self, 
