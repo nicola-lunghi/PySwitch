@@ -58,19 +58,32 @@ class PedalController:
 
 class PedalAction:
     def __init__(self, 
-                 mapping,              # Parameter mapping to be controlled
-                 max_value = 16384,    # Maximum value plus one (!) of the mapping (16384 for NRPN, 128 for CC)
-                 max_frame_rate = 24   # Maximum frame rate for sending MIDI values (fps)
+                 mapping,                 # Parameter mapping to be controlled
+                 max_value = 16384,       # Maximum value plus one (!) of the mapping (16384 for NRPN, 128 for CC)
+                 max_frame_rate = 24,     # Maximum frame rate for sending MIDI values (fps)
+                 num_steps = 128,         # Number of steps to be regarded as different (saves MIDI traffic at the cost of precision)
+                 enable_callback = None   # Callback to set enabled state (optional). Must contain an enabled(action) function.
         ):
         self.__mapping = mapping
         self.__factor = max_value / 65536
         self.__period = PeriodCounter(1000 / max_frame_rate)
+        self.__enable_callback = enable_callback
+        self.__step_width = int(65536 / num_steps)
+        self.__last_value = -1
+
+    @property
+    def enabled(self):
+        return self.__enable_callback.enabled(self) if self.__enable_callback else True
 
     def init(self, appl):
         self.__appl = appl
 
     # Process a value in range [0..65535]
     def process(self, value):
-        if self.__period.exceeded:
-            self.__appl.client.set(self.__mapping, value * self.__factor)
+        v = value * self.__factor
+        v = int(v / self.__step_width) * self.__step_width 
+        
+        if self.__last_value != v and self.__period.exceeded:
+            self.__last_value = v
+            self.__appl.client.set(self.__mapping, v)
         
