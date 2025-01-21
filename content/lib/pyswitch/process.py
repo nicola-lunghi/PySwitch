@@ -53,7 +53,7 @@ if not _get_option(_Config, "exploreMode"):
         from switches import Switches as _Switches
 
         # Controller instance (runs the processing loop and keeps everything together)
-        _Controller(
+        _controller = _Controller(
             led_driver = _NeoPixelDriver(), 
             protocol = _get_option(_Communication, "protocol", None),
             midi = _midi,
@@ -64,7 +64,14 @@ if not _get_option(_Config, "exploreMode"):
                 font_loader = _FontLoader(),
                 splash_callback = _Splashes
             )
-        ).process()
+        )
+
+        # Prepare to run the processing loop
+        _controller.init()
+
+        # Start processing loop (done here to keep the call stack short)
+        while _controller.tick():
+            pass
 
     except Exception as e:
         if _get_option(_Config, "enableMidiBridge"):
@@ -84,7 +91,7 @@ else:
         def create_switch(self, port):
             return _Switch(port)
 
-    _ExploreModeController(
+    _controller = _ExploreModeController(
         board = _board, 
         switch_factory = _SwitchFactory(), 
         led_driver = _NeoPixelDriver(), 
@@ -92,5 +99,13 @@ else:
             display_driver = _display_driver,
             font_loader = _FontLoader()
         )
-    ).process()
+    )
+
+    # Prepare to run the processing loop
+    _controller.init()
+
+    # Start processing loop (done here to keep the call stack short)
+    while _controller.tick():
+        pass
+
     

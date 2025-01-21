@@ -24,6 +24,17 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.misc import Updater
 
     from .mocks_appl import MockClient
+    from lib.pyswitch.clients.kemper.mappings.select import *
+    from lib.pyswitch.clients.kemper.mappings.rotary import *
+    from lib.pyswitch.clients.kemper.mappings.freeze import *
+    from lib.pyswitch.clients.kemper.mappings.effects import *
+    from lib.pyswitch.clients.kemper.mappings.rig import *
+    from lib.pyswitch.clients.kemper.mappings.bank import *
+    from lib.pyswitch.clients.kemper.mappings.tempo import *
+    from lib.pyswitch.clients.kemper.mappings.morph import *
+    from lib.pyswitch.clients.kemper.mappings.amp import *
+    from lib.pyswitch.clients.kemper.mappings.cabinet import *
+    from lib.pyswitch.clients.kemper.mappings.looper import *
 
 
 
@@ -233,72 +244,78 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Type", KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
         self.assertIn("Type", KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
 
-        self.assertIn("Speed", KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
-        self.assertIn("Speed", KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
-        self.assertIn("Speed", KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_C).name)
-        self.assertIn("Speed", KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_D).name)
-        self.assertIn("Speed", KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_X).name)
-        self.assertIn("Speed", KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
-        self.assertIn("Speed", KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
-        self.assertIn("Speed", KemperMappings.ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
+        self.assertIn("Speed", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
+        self.assertIn("Speed", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
+        self.assertIn("Speed", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_C).name)
+        self.assertIn("Speed", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_D).name)
+        self.assertIn("Speed", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_X).name)
+        self.assertIn("Speed", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
+        self.assertIn("Speed", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
+        self.assertIn("Speed", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
 
-        self.assertIn("Freeze", KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
-        self.assertIn("Freeze", KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
-        self.assertIn("Freeze", KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_C).name)
-        self.assertIn("Freeze", KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_D).name)
-        self.assertIn("Freeze", KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_X).name)
-        self.assertIn("Freeze", KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
-        self.assertIn("Freeze", KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
-        self.assertIn("Freeze", KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
+        self.assertIn("Freeze", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
+        self.assertIn("Freeze", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
+        self.assertIn("Freeze", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_C).name)
+        self.assertIn("Freeze", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_D).name)
+        self.assertIn("Freeze", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_X).name)
+        self.assertIn("Freeze", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
+        self.assertIn("Freeze", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
+        self.assertIn("Freeze", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
 
-        self.assertIn("Mix", KemperMappings.DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
-        self.assertIn("Mix", KemperMappings.DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
-        self.assertIn("Mix", KemperMappings.DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_C).name)
-        self.assertIn("Mix", KemperMappings.DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_D).name)
-        self.assertIn("Mix", KemperMappings.DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_X).name)
-        self.assertIn("Mix", KemperMappings.DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
-        self.assertIn("Mix", KemperMappings.DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
-        self.assertIn("Mix", KemperMappings.DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
+        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
+        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
+        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_C).name)
+        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_D).name)
+        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_X).name)
+        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
+        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
+        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
 
-        self.assertIn("Button 1", KemperMappings.EFFECT_BUTTON(1).name)
-        self.assertIn("Button 2", KemperMappings.EFFECT_BUTTON(2).name)
-        self.assertIn("Button 3", KemperMappings.EFFECT_BUTTON(3).name)
-        self.assertIn("Button 4", KemperMappings.EFFECT_BUTTON(4).name)
+        self.assertIn("Button 1", MAPPING_EFFECT_BUTTON(1).name)
+        self.assertIn("Button 2", MAPPING_EFFECT_BUTTON(2).name)
+        self.assertIn("Button 3", MAPPING_EFFECT_BUTTON(3).name)
+        self.assertIn("Button 4", MAPPING_EFFECT_BUTTON(4).name)
 
         self.assertIn("Rig Name", KemperMappings.RIG_NAME().name)
 
-        self.assertIn("Rig Date", KemperMappings.RIG_DATE().name)
+        self.assertIn("Rig Date", MAPPING_RIG_DATE().name)
 
         self.assertIn("Tuner", KemperMappings.TUNER_MODE_STATE().name)
         self.assertIn("Tuner Note", KemperMappings.TUNER_NOTE().name)
         self.assertIn("Tuner", KemperMappings.TUNER_DEVIANCE().name)
 
-        self.assertIn("Tap", KemperMappings.TAP_TEMPO().name)
+        self.assertIn("Tap", MAPPING_TAP_TEMPO().name)
 
-        self.assertIn("Morph Button", KemperMappings.MORPH_BUTTON().name)
-        self.assertIn("Morph Pedal", KemperMappings.MORPH_PEDAL().name)
+        self.assertIn("Morph Button", MAPPING_MORPH_BUTTON().name)
+        self.assertIn("Morph Pedal", MAPPING_MORPH_PEDAL().name)
 
-        self.assertIn("Volume", KemperMappings.RIG_VOLUME().name)
+        self.assertIn("Volume", MAPPING_RIG_VOLUME().name)
 
-        self.assertIn("Amp Name", KemperMappings.AMP_NAME().name)
+        self.assertIn("Amp Name", MAPPING_AMP_NAME().name)
+        self.assertIn("Amp State", MAPPING_AMP_STATE().name)
 
-        self.assertIn("Amp State", KemperMappings.AMP_STATE().name)
+        self.assertIn("Cab Name", MAPPING_CABINET_NAME().name)
+        self.assertIn("Cab State", MAPPING_CABINET_STATE().name)
 
-        self.assertIn("Cab Name", KemperMappings.CABINET_NAME().name)
+        self.assertIn("Next", MAPPING_NEXT_BANK().name)
+        self.assertIn("Prev", MAPPING_PREVIOUS_BANK().name)
 
-        self.assertIn("Cab State", KemperMappings.CABINET_STATE().name)
+        self.assertIn("Rig", MAPPING_RIG_SELECT(rig = 2).name)
 
-        self.assertIn("Next", KemperMappings.NEXT_BANK().name)
-        self.assertIn("Prev", KemperMappings.PREVIOUS_BANK().name)
-
-        self.assertIn("Rig", KemperMappings.RIG_SELECT(rig = 2).name)
-
-        self.assertIn("Bank", KemperMappings.BANK_AND_RIG_SELECT(rig = 3).name)
+        self.assertIn("Bank", MAPPING_BANK_AND_RIG_SELECT(rig = 3).name)
 
         self.assertIn("Sense", KemperMappings.BIDIRECTIONAL_SENSING().name)
 
-        self.assertIn("Tempo", KemperMappings.TEMPO_DISPLAY().name)
+        self.assertIn("Tempo", MAPPING_TEMPO_DISPLAY().name)
 
-        self.assertIn("Freeze", KemperMappings.FREEZE_ALL_GLOBAL().name)
+        self.assertIn("Freeze", MAPPING_FREEZE_ALL_GLOBAL().name)
 
-        self.assertIn("Comment", KemperMappings.RIG_COMMENT().name)
+        self.assertIn("Comment", MAPPING_RIG_COMMENT().name)
+
+        self.assertIn("Loop", MAPPING_LOOPER_REC_PLAY_OVERDUB().name)
+        self.assertIn("Loop", MAPPING_LOOPER_STOP().name)
+        self.assertIn("Loop", MAPPING_LOOPER_TRIGGER().name)
+        self.assertIn("Loop", MAPPING_LOOPER_REVERSE().name)
+        self.assertIn("Loop", MAPPING_LOOPER_HALF_SPEED().name)
+        self.assertIn("Loop", MAPPING_LOOPER_CANCEL().name)
+        self.assertIn("Loop", MAPPING_LOOPER_ERASE().name)

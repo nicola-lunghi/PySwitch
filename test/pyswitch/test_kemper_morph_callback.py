@@ -21,6 +21,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.actions.morph import KemperMorphCallback
     from lib.pyswitch.misc import Colors, compare_midi_messages
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
+    from lib.pyswitch.controller.Controller import Controller
     
     from .mocks_appl import *
     from .mocks_callback import *
@@ -68,7 +69,7 @@ class TestKemperMorphCallback(unittest.TestCase):
         midi = MockMidiController()
         period = MockPeriodCounter()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = midi,
             switches = [
@@ -85,6 +86,8 @@ class TestKemperMorphCallback(unittest.TestCase):
             period_counter = period
         )
 
+        appl.init()
+
         answer_msg = SystemExclusive(
             manufacturer_id = [0xbb, 0x10, 0x25],
             data = [0xaa, 0x00, 0x07, 0x47]
@@ -92,81 +95,56 @@ class TestKemperMorphCallback(unittest.TestCase):
 
         # Build scene:
         # Step 1
-        def prep1():
-            midi.next_receive_messages = [
-                answer_msg
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg,
-                    "value": 0
-                }
-            ]
+        midi.next_receive_messages = [
+            answer_msg
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg,
+                "value": 0
+            }
+        ]
 
-        def eval1():
-            self.assertEqual(appl.switches[0].color, Colors.RED)
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)            
-            
-            return True        
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(appl.switches[0].color, Colors.RED)
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.1)            
         
         # Step 2
-        def prep2():
-            midi.next_receive_messages = [
-                answer_msg
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg,
-                    "value": 16383
-                }
-            ]    
+        midi.next_receive_messages = [
+            answer_msg
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg,
+                "value": 16383
+            }
+        ]    
 
-        def eval2():
-            self.assertEqual(appl.switches[0].color, Colors.BLUE)
-            self.assertEqual(appl.switches[0].brightness, 0.5)
-                        
-            return True        
-
-        # Step 3
-        def prep3():
-            midi.next_receive_messages = [
-                answer_msg
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg,
-                    "value": 8191
-                }
-            ]    
-
-        def eval3():
-            self.assertEqual(appl.switches[0].color, (128, 0, 127))
-            self.assertEqual(appl.switches[0].brightness, 0.5)
-                        
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2,
-
-                next = SceneStep(
-                    num_pass_ticks = 5,
-                    prepare = prep3,
-                    evaluate = eval3
-                )
-            )
-        )
-
-        # Run process
-        appl.process()
+        appl.tick()
+        appl.tick()
         
+        self.assertEqual(appl.switches[0].color, Colors.BLUE)
+        self.assertEqual(appl.switches[0].brightness, 0.5)
+                    
+        # Step 3
+        midi.next_receive_messages = [
+            answer_msg
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg,
+                "value": 8191
+            }
+        ]    
+
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(appl.switches[0].color, (128, 0, 127))
+        self.assertEqual(appl.switches[0].brightness, 0.5)
+                
 
 #############################################################################################
 
@@ -206,7 +184,7 @@ class TestKemperMorphCallback(unittest.TestCase):
         midi = MockMidiController()
         period = MockPeriodCounter()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = midi,
             switches = [
@@ -221,57 +199,40 @@ class TestKemperMorphCallback(unittest.TestCase):
                 }
             ],
             period_counter = period
-        )        
+        )
+
+        appl.init()
 
         # Build scene:
         # Step 1
-        def prep1():
-            switch_1.shall_be_pushed = True
+        switch_1.shall_be_pushed = True
 
-        def eval1():
-            if suppress_send:
-                self.assertEqual(len(mapping_1.set_value_calls), 0)    
-                self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
-            else:
-                self.assertEqual(len(mapping_1.set_value_calls), 1)
-                self.assertEqual(mapping_1.set_value_calls[0], 127)
-
-                self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-                self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
-                
-            return True        
+        appl.tick()
+        appl.tick()
         
+        if suppress_send:
+            self.assertEqual(len(mapping_1.set_value_calls), 0)    
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
+        else:
+            self.assertEqual(len(mapping_1.set_value_calls), 1)
+            self.assertEqual(mapping_1.set_value_calls[0], 127)
+
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
+            
         # Step 2
-        def prep2():
-            switch_1.shall_be_pushed = False
-           
-
-        def eval2():
-            if suppress_send:
-                self.assertEqual(len(mapping_1.set_value_calls), 0)    
-                self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
-            else:
-                self.assertEqual(len(mapping_1.set_value_calls), 2)
-                self.assertEqual(mapping_1.set_value_calls[1], 0)
-
-                self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-                self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
-
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
+        switch_1.shall_be_pushed = False
         
+        appl.tick()
+        appl.tick()
+        
+        if suppress_send:
+            self.assertEqual(len(mapping_1.set_value_calls), 0)    
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
+        else:
+            self.assertEqual(len(mapping_1.set_value_calls), 2)
+            self.assertEqual(mapping_1.set_value_calls[1], 0)
+
+            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
+

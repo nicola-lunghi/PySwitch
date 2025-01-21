@@ -144,17 +144,13 @@ class ExploreModeController(Updater):
 
         self.ui.init(self)
 
-    # Runs the processing loop (which never ends)
-    def process(self):
+    # Prepare to run the processing loop
+    def init(self):
         # Show user interface    
         if self.ui:    
             self.ui.show()
 
-        # Start processing loop
-        while self.tick():
-            pass
-
-    # Single tick in the processing loop. Must return True to keep the loop alive.
+    # Single tick in the processing loop. Must return True to keep the loop alive. Call this in an endless loop.
     def tick(self):
         # Update switch states
         for switch in self.switches:

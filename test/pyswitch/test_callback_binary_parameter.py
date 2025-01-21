@@ -27,7 +27,9 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.controller.actions import PushButtonAction
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
-    from lib.pyswitch.misc import compare_midi_messages, DEFAULT_LABEL_COLOR
+    from lib.pyswitch.misc import compare_midi_messages
+
+    from lib.pyswitch.controller.Controller import Controller
 
 
 
@@ -64,7 +66,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         led_driver = MockNeoPixelDriver()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [
@@ -80,57 +82,42 @@ class TestBinaryParameterCallback(unittest.TestCase):
             ]
         )
 
+        appl.init()
+        appl.tick()   # TODO why is this needed??
+
         # Build scene:
         # Step 1: Enable
-        def prep1():
-            switch_1.shall_be_pushed = True            
+        switch_1.shall_be_pushed = True            
 
-        def eval1():
-            self.assertEqual(len(mapping_1.set_value_calls), 1)
-            self.assertEqual(mapping_1.set_value_calls[0], 10)
+        appl.tick()
+        appl.tick()
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
+        self.assertEqual(len(mapping_1.set_value_calls), 1)
+        self.assertEqual(mapping_1.set_value_calls[0], 10)
 
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
-            self.assertEqual(led_driver.leds[0], (100, 50, 0))
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
+
+        self.assertEqual(appl.switches[0].color, (200, 100, 0))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
+        self.assertEqual(led_driver.leds[0], (100, 50, 0))
             
-            return True        
-        
         # Step 2: Disable
-        def prep2():
-            switch_1.shall_be_pushed = False
+        switch_1.shall_be_pushed = False
 
-        def eval2():
-            self.assertEqual(len(mapping_1.set_value_calls), 2)
-            self.assertEqual(mapping_1.set_value_calls[1], 3)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 2)
+        self.assertEqual(mapping_1.set_value_calls[1], 3)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
-            self.assertEqual(led_driver.leds[0], (20, 10, 0))
-                        
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
-
+        self.assertEqual(appl.switches[0].color, (200, 100, 0))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
+        self.assertEqual(led_driver.leds[0], (20, 10, 0))
+                    
 
 ###############################################################################################
 
@@ -177,7 +164,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         led_driver = MockNeoPixelDriver()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [
@@ -193,53 +180,37 @@ class TestBinaryParameterCallback(unittest.TestCase):
             ]
         )
 
+        appl.init()
+
         # Build scene:
         # Step 1: Enable
-        def prep1():
-            switch_1.shall_be_pushed = True        
+        switch_1.shall_be_pushed = True        
             
-            mock_data["color"] = (100, 100, 50)            
-            mock_data["expValue"] = 10
-            mapping_1.value = 10
+        mock_data["color"] = (100, 100, 50)            
+        mock_data["expValue"] = 10
+        mapping_1.value = 10
 
-        def eval1():
-            self.assertEqual(appl.switches[0].color, (100, 100, 50))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
-            self.assertEqual(led_driver.leds[0], (50, 50, 25))
-            
-            return True        
+        appl.tick()
+        appl.tick()
+
+        self.assertEqual(appl.switches[0].color, (100, 100, 50))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
+        self.assertEqual(led_driver.leds[0], (50, 50, 25))
         
         # Step 2: Disable
-        def prep2():
-            switch_1.shall_be_pushed = False
+        switch_1.shall_be_pushed = False
 
-            mock_data["color"] = (100, 200, 50)
-            mock_data["expValue"] = 3
-            mapping_1.value = 3
+        mock_data["color"] = (100, 200, 50)
+        mock_data["expValue"] = 3
+        mapping_1.value = 3
 
-        def eval2():
-            self.assertEqual(appl.switches[0].color, (100, 200, 50))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
-            self.assertEqual(led_driver.leds[0], (10, 20, 5))
-                        
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
-
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(appl.switches[0].color, (100, 200, 50))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
+        self.assertEqual(led_driver.leds[0], (10, 20, 5))
+        
 
 ###############################################################################################
  
@@ -271,7 +242,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         led_driver = MockNeoPixelDriver()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [
@@ -287,57 +258,42 @@ class TestBinaryParameterCallback(unittest.TestCase):
             ]
         )
 
+        appl.init()
+        appl.tick()   # TODO why is this needed?
+        
         # Build scene:
         # Step 1: Enable
-        def prep1():
-            switch_1.shall_be_pushed = True            
+        switch_1.shall_be_pushed = True            
 
-        def eval1():
-            self.assertEqual(len(mapping_1.set_value_calls), 1)
-            self.assertEqual(mapping_1.set_value_calls[0], 10)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 1)
+        self.assertEqual(mapping_1.set_value_calls[0], 10)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
-            self.assertEqual(led_driver.leds[0], (20, 10, 0))
-            
-            return True        
+        self.assertEqual(appl.switches[0].color, (200, 100, 0))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
+        self.assertEqual(led_driver.leds[0], (20, 10, 0))
         
         # Step 2: Disable
-        def prep2():
-            switch_1.shall_be_pushed = False
+        switch_1.shall_be_pushed = False
 
-        def eval2():
-            self.assertEqual(len(mapping_1.set_value_calls), 2)
-            self.assertEqual(mapping_1.set_value_calls[1], 3)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 2)
+        self.assertEqual(mapping_1.set_value_calls[1], 3)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
-            self.assertEqual(led_driver.leds[0], (20, 10, 0))
-                        
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
-
+        self.assertEqual(appl.switches[0].color, (200, 100, 0))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
+        self.assertEqual(led_driver.leds[0], (20, 10, 0))
+    
 
 ###############################################################################################
 
@@ -372,7 +328,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         led_driver = MockNeoPixelDriver()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [
@@ -389,6 +345,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             period_counter = period
         )
 
+        appl.init()
+
         answer_msg_1 = SystemExclusive(
             manufacturer_id = [0x00, 0x10, 0x20],
             data = [0x00, 0x00, 0x09, 0x44]
@@ -401,146 +359,96 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         # Build scene:
         # Check if nothing crashes if set is called before a value came in
-        def prep1():
-            switch_1.shall_be_pushed = True
+        switch_1.shall_be_pushed = True
 
-        def eval1():
-            self.assertEqual(len(mapping_1.set_value_calls), 1)
-            self.assertEqual(mapping_1.set_value_calls[0], 11)
-
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
-            
-            self.assertEqual(action_1.state, True)
-
-            return True
-
+        appl.tick()
+        appl.tick()
         
-        def prep2():
-            switch_1.shall_be_pushed = False
-            self.assertEqual(cb._value_disable, "auto")
+        self.assertEqual(len(mapping_1.set_value_calls), 1)
+        self.assertEqual(mapping_1.set_value_calls[0], 11)
 
-        def eval2():
-            # Nothing must have been sent because we still have no disabling value
-            self.assertEqual(len(mapping_1.set_value_calls), 1)
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            
-            self.assertEqual(action_1.state, False)
-
-            return True
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
         
+        self.assertEqual(action_1.state, True)
+
+        # Step 2
+        switch_1.shall_be_pushed = False
+        self.assertEqual(cb._value_disable, "auto")
+
+        appl.tick()
+        appl.tick()
+        
+        # Nothing must have been sent because we still have no disabling value
+        self.assertEqual(len(mapping_1.set_value_calls), 1)
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        
+        self.assertEqual(action_1.state, False)
+
         # Receive a value
-        def prep3():
-            period.exceed_next_time = True
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_1,
-                answer_msg_2
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg_2,
-                    "value": 6
-                }
-            ]
+        period.exceed_next_time = True
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_1,
+            answer_msg_2
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg_2,
+                "value": 6
+            }
+        ]
 
-            return True
-
-        def eval3():            
-            self.assertEqual(action_1.state, False)
-            self.assertEqual(cb._value_disable, 6)
-
-            return True     
+        appl.tick()
+        appl.tick()
         
+        self.assertEqual(action_1.state, False)
+        self.assertEqual(cb._value_disable, 6)
+
         # Enable
-        def prep4():
-            switch_1.shall_be_pushed = True
+        switch_1.shall_be_pushed = True
 
-        def eval4():
-            self.assertEqual(len(mapping_1.set_value_calls), 2)
-            self.assertEqual(mapping_1.set_value_calls[1], 11)
-
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
-            
-            self.assertEqual(action_1.state, True)
-
-            return True        
+        appl.tick()
+        appl.tick()
         
+        self.assertEqual(len(mapping_1.set_value_calls), 2)
+        self.assertEqual(mapping_1.set_value_calls[1], 11)
+
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
+        
+        self.assertEqual(action_1.state, True)
+
         # Receive a value when state is True (must not override the remembered value)
-        def prep5():
-            period.exceed_next_time = True
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_1
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg_1,
-                    "value": 100
-                }
-            ]
-            
-            return True
-
-        def eval5():            
-            self.assertEqual(action_1.state, True)
-            self.assertEqual(cb._value_disable, 6)
-
-            return True  
+        period.exceed_next_time = True
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_1
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg_1,
+                "value": 100
+            }
+        ]
+        
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(action_1.state, True)
+        self.assertEqual(cb._value_disable, 6)
                 
         # Disable again
-        def prep6():
-            switch_1.shall_be_pushed = False
+        switch_1.shall_be_pushed = False
 
-        def eval6():
-            self.assertEqual(len(mapping_1.set_value_calls), 3)
-            self.assertEqual(mapping_1.set_value_calls[2], 6)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 3)
+        self.assertEqual(mapping_1.set_value_calls[2], 6)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 3)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[2], mapping_1.set))
-                        
-            self.assertEqual(action_1.state, False)
-
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2,
-
-                next = SceneStep(
-                    num_pass_ticks = 5,
-                    prepare = prep3,
-                    evaluate = eval3,
-
-                    next = SceneStep(
-                        num_pass_ticks = 5,
-                        prepare = prep4,
-                        evaluate = eval4,
-
-                        next = SceneStep(
-                            num_pass_ticks = 5,
-                            prepare = prep5,
-                            evaluate = eval5,
-
-                            next = SceneStep(
-                                num_pass_ticks = 5,
-                                prepare = prep6,
-                                evaluate = eval6
-                            )
-                        )
-                    )
-                )
-            )
-        )
-
-        # Run process
-        appl.process()
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 3)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[2], mapping_1.set))
+                    
+        self.assertEqual(action_1.state, False)
 
 
 ###############################################################################################
@@ -582,7 +490,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         led_driver = MockNeoPixelDriver()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [
@@ -599,6 +507,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             period_counter = period
         )
 
+        appl.init()
+
         answer_msg_1 = SystemExclusive(
             manufacturer_id = [0x00, 0x10, 0x20],
             data = [0x00, 0x00, 0x09, 0x44]
@@ -606,147 +516,97 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         # Build scene:
         # Check if nothing crashes if set is called before a value came in
-        def prep1():
-            switch_1.shall_be_pushed = True
+        switch_1.shall_be_pushed = True
 
-            self.assertEqual(cb._BinaryParameterCallback__update_value_disabled, [False, True])
+        self.assertEqual(cb._BinaryParameterCallback__update_value_disabled, [False, True])
 
-        def eval1():
-            self.assertEqual(len(mapping_1.set_value_calls), 0)            
-                        
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
-            
-            self.assertEqual(action_1.state, True)
-
-            return True
-
+        appl.tick()
+        appl.tick()
         
-        def prep2():
-            switch_1.shall_be_pushed = False
-            self.assertEqual(cb._value_disable, [4, "auto"])
-
-        def eval2():
-            self.assertEqual(len(mapping_1.set_value_calls), 0)
-
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
-            
-            self.assertEqual(action_1.state, False)
-
-            return True
+        self.assertEqual(len(mapping_1.set_value_calls), 0)            
+                    
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
         
+        self.assertEqual(action_1.state, True)
+
+        # Step 2        
+        switch_1.shall_be_pushed = False
+        self.assertEqual(cb._value_disable, [4, "auto"])
+
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 0)
+
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
+        
+        self.assertEqual(action_1.state, False)
+       
         # Receive a value
-        def prep3():
-            period.exceed_next_time = True
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_1
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg_1,
-                    "value": 7
-                }
-            ]
-            
-            return True
-
-        def eval3():            
-            self.assertEqual(action_1.state, False)
-            self.assertEqual(cb._value_disable, [4, 7])
-
-            return True     
+        period.exceed_next_time = True
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_1
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg_1,
+                "value": 7
+            }
+        ]
         
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(action_1.state, False)
+        self.assertEqual(cb._value_disable, [4, 7])
+
         # Enable
-        def prep4():
-            switch_1.shall_be_pushed = True
+        switch_1.shall_be_pushed = True
 
-        def eval4():
-            self.assertEqual(len(mapping_1.set_value_calls), 1)
-            self.assertEqual(mapping_1.set_value_calls[0], [11, 12])
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 1)
+        self.assertEqual(mapping_1.set_value_calls[0], [11, 12])
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set[0]))
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set[1]))
-            
-            self.assertEqual(action_1.state, True)
-
-            return True        
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set[0]))
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set[1]))
+        
+        self.assertEqual(action_1.state, True)
         
         # Receive a value when state is True (must not override the remembered value)
-        def prep5():
-            period.exceed_next_time = True
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_1
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg_1,
-                    "value": 100
-                }
-            ]
-            
-            return True
+        period.exceed_next_time = True
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_1
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg_1,
+                "value": 100
+            }
+        ]
 
-        def eval5():            
-            self.assertEqual(action_1.state, True)
-            self.assertEqual(cb._value_disable, [4, 7])
-
-            return True     
+        appl.tick()
+        appl.tick()
         
+        self.assertEqual(action_1.state, True)
+        self.assertEqual(cb._value_disable, [4, 7])
+
         # Disable again
-        def prep6():
-            switch_1.shall_be_pushed = False
+        switch_1.shall_be_pushed = False
 
-        def eval6():
-            self.assertEqual(len(mapping_1.set_value_calls), 2)
-            self.assertEqual(mapping_1.set_value_calls[1], [4, 7])
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 2)
+        self.assertEqual(mapping_1.set_value_calls[1], [4, 7])
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 4)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[2], mapping_1.set[0]))
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[3], mapping_1.set[1]))
-                        
-            self.assertEqual(action_1.state, False)
-
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2,
-
-                next = SceneStep(
-                    num_pass_ticks = 5,
-                    prepare = prep3,
-                    evaluate = eval3,
-
-                    next = SceneStep(
-                        num_pass_ticks = 5,
-                        prepare = prep4,
-                        evaluate = eval4,
-
-                        next = SceneStep(
-                            num_pass_ticks = 5,
-                            prepare = prep5,
-                            evaluate = eval5,
-
-                        next = SceneStep(
-                            num_pass_ticks = 5,
-                            prepare = prep6,
-                            evaluate = eval6
-                        )
-                        )
-                    )
-                )
-            )
-        )
-
-        # Run process
-        appl.process()
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 4)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[2], mapping_1.set[0]))
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[3], mapping_1.set[1]))
+                    
+        self.assertEqual(action_1.state, False)
 
 
 ###############################################################################################
@@ -792,7 +652,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         led_driver = MockNeoPixelDriver()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [
@@ -808,56 +668,41 @@ class TestBinaryParameterCallback(unittest.TestCase):
             ]
         )
 
+        appl.init()
+        appl.tick()  # TODO why is this necessary?
+        
         # Build scene:
         # Step 1: Enable
-        def prep1():
-            switch_1.shall_be_pushed = True
+        switch_1.shall_be_pushed = True
 
-        def eval1():
-            self.assertEqual(len(mapping_1.set_value_calls), 1)
-            self.assertEqual(mapping_1.set_value_calls[0], 10)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 1)
+        self.assertEqual(mapping_1.set_value_calls[0], 10)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
-            self.assertEqual(led_driver.leds[0], (100, 50, 0))
-            
-            return True        
+        self.assertEqual(appl.switches[0].color, (200, 100, 0))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
+        self.assertEqual(led_driver.leds[0], (100, 50, 0))
         
         # Step 2: Disable
-        def prep2():
-            switch_1.shall_be_pushed = False
+        switch_1.shall_be_pushed = False
 
-        def eval2():
-            self.assertEqual(len(mapping_disable_1.set_value_calls), 1)
-            self.assertEqual(mapping_disable_1.set_value_calls[0], 3)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_disable_1.set_value_calls), 1)
+        self.assertEqual(mapping_disable_1.set_value_calls[0], 3)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_disable_1.set))
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_disable_1.set))
 
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
-            self.assertEqual(led_driver.leds[0], (20, 10, 0))
-                        
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
+        self.assertEqual(appl.switches[0].color, (200, 100, 0))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
+        self.assertEqual(led_driver.leds[0], (20, 10, 0))        
 
 
 ###############################################################################################
@@ -911,7 +756,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         led_driver = MockNeoPixelDriver()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [
@@ -926,51 +771,37 @@ class TestBinaryParameterCallback(unittest.TestCase):
             ]
         )
 
+        appl.init()
+        appl.tick()   # TODO why is this needed?
+        
+
         # Build scene:
         # Step 1: Enable
-        def prep1():
-            switch_1.shall_be_pushed = True
+        switch_1.shall_be_pushed = True
 
-        def eval1():
-            self.assertEqual(len(mapping_1.set_value_calls), 1)
-            self.assertEqual(mapping_1.set_value_calls[0], [1, 2, 3])
-
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 3)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set[0]))
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set[1]))
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[2], mapping_1.set[2]))
-
-            return True        
+        appl.tick()
+        appl.tick()
         
+        self.assertEqual(len(mapping_1.set_value_calls), 1)
+        self.assertEqual(mapping_1.set_value_calls[0], [1, 2, 3])
+
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 3)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set[0]))
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set[1]))
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[2], mapping_1.set[2]))
+
         # Step 2: Disable
-        def prep2():
-            switch_1.shall_be_pushed = False
+        switch_1.shall_be_pushed = False
 
-        def eval2():
-            self.assertEqual(len(mapping_disable_1.set_value_calls), 1)
-            self.assertEqual(mapping_disable_1.set_value_calls[0], [0, -1])
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_disable_1.set_value_calls), 1)
+        self.assertEqual(mapping_disable_1.set_value_calls[0], [0, -1])
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 5)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[3], mapping_disable_1.set[0]))
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[4], mapping_disable_1.set[1]))
-
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 5)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[3], mapping_disable_1.set[0]))
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[4], mapping_disable_1.set[1]))
 
 
 ###############################################################################################
@@ -1010,7 +841,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         led_driver = MockNeoPixelDriver()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [
@@ -1026,65 +857,50 @@ class TestBinaryParameterCallback(unittest.TestCase):
             ]
         )
 
+        appl.init()
+        appl.tick()  # TODO why?
+        
         action_1.label = MockDisplayLabel()
 
         # Build scene:
         # Step 1: Enable
-        def prep1():
-            switch_1.shall_be_pushed = True
+        switch_1.shall_be_pushed = True
 
-        def eval1():
-            self.assertEqual(len(mapping_1.set_value_calls), 1)
-            self.assertEqual(mapping_1.set_value_calls[0], 10)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 1)
+        self.assertEqual(mapping_1.set_value_calls[0], 10)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
-            self.assertEqual(led_driver.leds[0], (100, 50, 0))
+        self.assertEqual(appl.switches[0].color, (200, 100, 0))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
+        self.assertEqual(led_driver.leds[0], (100, 50, 0))
 
-            self.assertEqual(action_1.label.text, "foo")
-            self.assertEqual(action_1.label.back_color, (100, 50, 0))
-            
-            return True        
+        self.assertEqual(action_1.label.text, "foo")
+        self.assertEqual(action_1.label.back_color, (100, 50, 0))
         
         # Step 2: Disable
-        def prep2():
-            switch_1.shall_be_pushed = False
+        switch_1.shall_be_pushed = False
 
-        def eval2():
-            self.assertEqual(len(mapping_1.set_value_calls), 2)
-            self.assertEqual(mapping_1.set_value_calls[1], 3)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 2)
+        self.assertEqual(mapping_1.set_value_calls[1], 3)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
-            self.assertEqual(led_driver.leds[0], (20, 10, 0))
+        self.assertEqual(appl.switches[0].color, (200, 100, 0))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
+        self.assertEqual(led_driver.leds[0], (20, 10, 0))
 
-            self.assertEqual(action_1.label.text, "foo")
-            self.assertEqual(action_1.label.back_color, (40, 20, 0))
-                        
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
-
+        self.assertEqual(action_1.label.text, "foo")
+        self.assertEqual(action_1.label.back_color, (40, 20, 0))
+                    
 
 ###############################################################################################
 
@@ -1124,7 +940,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         led_driver = MockNeoPixelDriver()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [
@@ -1140,65 +956,50 @@ class TestBinaryParameterCallback(unittest.TestCase):
             ]
         )
 
+        appl.init()
+        appl.tick()  # TODO why?
+        
         action_1.label = MockDisplayLabel()
 
         # Build scene:
         # Step 1: Enable
-        def prep1():
-            switch_1.shall_be_pushed = True
+        switch_1.shall_be_pushed = True
 
-        def eval1():
-            self.assertEqual(len(mapping_1.set_value_calls), 1)
-            self.assertEqual(mapping_1.set_value_calls[0], 10)
-
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
-
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
-            self.assertEqual(led_driver.leds[0], (100, 50, 0))
-
-            self.assertEqual(action_1.label.text, "foo")
-            self.assertEqual(action_1.label.back_color, (100, 50, 0))
-            
-            return True        
+        appl.tick()
+        appl.tick()
         
+        self.assertEqual(len(mapping_1.set_value_calls), 1)
+        self.assertEqual(mapping_1.set_value_calls[0], 10)
+
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
+
+        self.assertEqual(appl.switches[0].color, (200, 100, 0))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.5)
+        self.assertEqual(led_driver.leds[0], (100, 50, 0))
+
+        self.assertEqual(action_1.label.text, "foo")
+        self.assertEqual(action_1.label.back_color, (100, 50, 0))
+            
         # Step 2: Disable
-        def prep2():
-            switch_1.shall_be_pushed = False
+        switch_1.shall_be_pushed = False
 
-        def eval2():
-            self.assertEqual(len(mapping_1.set_value_calls), 2)
-            self.assertEqual(mapping_1.set_value_calls[1], 3)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 2)
+        self.assertEqual(mapping_1.set_value_calls[1], 3)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
-            self.assertEqual(appl.switches[0].color, (200, 100, 0))
-            self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
-            self.assertEqual(led_driver.leds[0], (20, 10, 0))
+        self.assertEqual(appl.switches[0].color, (200, 100, 0))
+        self.assertAlmostEqual(appl.switches[0].brightness, 0.1)
+        self.assertEqual(led_driver.leds[0], (20, 10, 0))
 
-            self.assertEqual(action_1.label.text, "bar")
-            self.assertEqual(action_1.label.back_color, (40, 20, 0))
-                        
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
-
+        self.assertEqual(action_1.label.text, "bar")
+        self.assertEqual(action_1.label.back_color, (40, 20, 0))
+                    
 
 ###############################################################################################
 
@@ -1235,7 +1036,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
         
         led_driver = MockNeoPixelDriver()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [
@@ -1251,67 +1052,52 @@ class TestBinaryParameterCallback(unittest.TestCase):
             ]
         )
 
+        appl.init()
+        appl.tick()  # Why?
+        
         action_1.label = MockDisplayLabel()
 
         # Build scene:
         # Step 1: Enable
-        def prep1():
-            switch_1.shall_be_pushed = True
+        switch_1.shall_be_pushed = True
 
-        def eval1():
-            self.assertEqual(len(mapping_1.set_value_calls), 1)
-            self.assertEqual(mapping_1.set_value_calls[0], 10)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 1)
+        self.assertEqual(mapping_1.set_value_calls[0], 10)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[0], mapping_1.set))
 
-            self.assertEqual(appl.switches[0].colors, [(200, 100, 0), (10, 20, 30)])
-            self.assertEqual(appl.switches[0].brightnesses, [0.5, 0.5])
-            self.assertEqual(led_driver.leds[0], (100, 50, 0))
-            self.assertEqual(led_driver.leds[1], (5, 10, 15))
+        self.assertEqual(appl.switches[0].colors, [(200, 100, 0), (10, 20, 30)])
+        self.assertEqual(appl.switches[0].brightnesses, [0.5, 0.5])
+        self.assertEqual(led_driver.leds[0], (100, 50, 0))
+        self.assertEqual(led_driver.leds[1], (5, 10, 15))
 
-            self.assertEqual(action_1.label.text, "")
-            self.assertEqual(action_1.label.back_color, [(200, 100, 0), (10, 20, 30)])
-            
-            return True        
+        self.assertEqual(action_1.label.text, "")
+        self.assertEqual(action_1.label.back_color, [(200, 100, 0), (10, 20, 30)])
         
         # Step 2: Disable
-        def prep2():
-            switch_1.shall_be_pushed = False
+        switch_1.shall_be_pushed = False
 
-        def eval2():
-            self.assertEqual(len(mapping_1.set_value_calls), 2)
-            self.assertEqual(mapping_1.set_value_calls[1], 3)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(mapping_1.set_value_calls), 2)
+        self.assertEqual(mapping_1.set_value_calls[1], 3)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-            self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+        self.assertTrue(compare_midi_messages(appl._Controller__midi.messages_sent[1], mapping_1.set))
 
-            self.assertEqual(appl.switches[0].colors, [(200, 100, 0), (10, 20, 30)])
-            self.assertAlmostEqual(appl.switches[0].brightnesses[0], 0.1)
-            self.assertAlmostEqual(appl.switches[0].brightnesses[1], 0.1)
-            self.assertEqual(led_driver.leds[0], (20, 10, 0))
-            self.assertEqual(led_driver.leds[1], (1, 2, 3))
+        self.assertEqual(appl.switches[0].colors, [(200, 100, 0), (10, 20, 30)])
+        self.assertAlmostEqual(appl.switches[0].brightnesses[0], 0.1)
+        self.assertAlmostEqual(appl.switches[0].brightnesses[1], 0.1)
+        self.assertEqual(led_driver.leds[0], (20, 10, 0))
+        self.assertEqual(led_driver.leds[1], (1, 2, 3))
 
-            self.assertEqual(action_1.label.text, "")
-            self.assertEqual(action_1.label.back_color, [(40, 20, 0), (2, 4, 6)])
-                        
-            return False        
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
+        self.assertEqual(action_1.label.text, "")
+        self.assertEqual(action_1.label.back_color, [(40, 20, 0), (2, 4, 6)])
 
 
 ###############################################################################################
@@ -1381,7 +1167,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         period = MockPeriodCounter()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
             switches = [
@@ -1397,6 +1183,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             period_counter = period
         )
 
+        appl.init()
+
         answer_msg_1 = SystemExclusive(
             manufacturer_id = [0x00, 0x10, 0x20],
             data = [0x00, 0x00, 0x09, 0x44]
@@ -1409,84 +1197,56 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         # Build scene:
         # Send update request
-        def prep1():
-            period.exceed_next_time = True
+        period.exceed_next_time = True
 
-        def eval1():
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request)
-            return True
-
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request)
+        
         # Step without update
-        def eval2():
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            return True
-
-        # Receive value 
-        def prep3():
-            period.exceed_next_time = True
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_1,
-                answer_msg_2
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg_1,
-                    "value": test_value_on
-                }
-            ]
-
-        def eval3():
-            self.assertEqual(mapping_1.value, test_value_on)
-            self.assertEqual(action_1.state, exp_state_on)
-
-            return True
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
         
         # Receive value 
-        def prep4():
-            period.exceed_next_time = True
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_1
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg_1,
-                    "value": test_value_off
-                }
-            ]
+        period.exceed_next_time = True
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_1,
+            answer_msg_2
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg_1,
+                "value": test_value_on
+            }
+        ]
 
-        def eval4():
-            self.assertEqual(mapping_1.value, test_value_off)
-            self.assertEqual(action_1.state, exp_state_off)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(mapping_1.value, test_value_on)
+        self.assertEqual(action_1.state, exp_state_on)
 
-            return False
+        # Receive value 
+        period.exceed_next_time = True
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_1
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg_1,
+                "value": test_value_off
+            }
+        ]
 
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                evaluate = eval2,
-
-                next = SceneStep(
-                    num_pass_ticks = 5,
-                    prepare = prep3,
-                    evaluate = eval3,
-
-                    next = SceneStep(
-                        num_pass_ticks = 5,
-                        prepare = prep4,
-                        evaluate = eval4
-                    )
-                )
-            )
-        )
-
-        # Run process
-        appl.process()
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(mapping_1.value, test_value_off)
+        self.assertEqual(action_1.state, exp_state_off)
 
 
 ###############################################################################################
@@ -1532,7 +1292,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         period = MockPeriodCounter()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
             switches = [
@@ -1548,6 +1308,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             period_counter = period
         )
 
+        appl.init()
+
         answer_msg_1 = SystemExclusive(
             manufacturer_id = [0x00, 0x10, 0x20],
             data = [0x00, 0x00, 0x09, 0x44]
@@ -1560,84 +1322,56 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         # Build scene:
         # Send update request
-        def prep1():
-            period.exceed_next_time = True
+        period.exceed_next_time = True
 
-        def eval1():
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-            self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request[0])
-            self.assertEqual(appl._Controller__midi.messages_sent[1], mapping_1.request[1])
-            return True
-
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
+        self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request[0])
+        self.assertEqual(appl._Controller__midi.messages_sent[1], mapping_1.request[1])
+        
         # Step without update
-        def eval2():
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
-            return True
-
-        # Receive value 
-        def prep3():
-            period.exceed_next_time = True
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_1,
-                answer_msg_2
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg_1,
-                    "value": 2
-                }
-            ]
-
-        def eval3():
-            self.assertEqual(mapping_1.value, 2)
-
-            return True
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 2)
         
         # Receive value 
-        def prep4():
-            period.exceed_next_time = True
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_1
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg_1,
-                    "value": 66
-                }
-            ]
+        period.exceed_next_time = True
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_1,
+            answer_msg_2
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg_1,
+                "value": 2
+            }
+        ]
 
-        def eval4():
-            self.assertEqual(mapping_1.value, 66)
-
-            return False
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                evaluate = eval2,
-
-                next = SceneStep(
-                    num_pass_ticks = 5,
-                    prepare = prep3,
-                    evaluate = eval3,
-
-                    next = SceneStep(
-                        num_pass_ticks = 5,
-                        prepare = prep4,
-                        evaluate = eval4
-                    )
-                )
-            )
-        )
-
-        # Run process
-        appl.process()
+        appl.tick()
+        appl.tick()
         
+        self.assertEqual(mapping_1.value, 2)
+
+        # Receive value 
+        period.exceed_next_time = True
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_1
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg_1,
+                "value": 66
+            }
+        ]
+
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(mapping_1.value, 66)
+
 
 ###############################################################################################
 
@@ -1669,7 +1403,7 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         period = MockPeriodCounter()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
             switches = [
@@ -1685,6 +1419,8 @@ class TestBinaryParameterCallback(unittest.TestCase):
             period_counter = period
         )
 
+        appl.init()
+
         answer_msg_1 = SystemExclusive(
             manufacturer_id = [0x00, 0x10, 0x20],
             data = [0x00, 0x00, 0x09, 0x44]
@@ -1692,58 +1428,37 @@ class TestBinaryParameterCallback(unittest.TestCase):
 
         # Build scene:
         # Send update request
-        def prep1():
-            period.exceed_next_time = True
+        period.exceed_next_time = True
 
-        def eval1():
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request)
-            return True
-
-        # Step without update
-        def eval2():
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            return True
-
-        # Receive value 
-        def prep3():
-            period.exceed_next_time = True
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_1
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg_1,
-                    "value": 1
-                }
-            ]
-            cb_enable.output_get = False
-
-        def eval3():
-            self.assertEqual(mapping_1.value, 1)
-            
-            self.assertEqual(action_1.state, True)
-
-            return False
+        appl.tick()
+        appl.tick()
         
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_1.request)
+        
+        # Step without update
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        
+        # Receive value 
+        period.exceed_next_time = True
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_1
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg_1,
+                "value": 1
+            }
+        ]
+        cb_enable.output_get = False
 
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(mapping_1.value, 1)
+        
+        self.assertEqual(action_1.state, True)
 
-            next = SceneStep(
-                num_pass_ticks = 5,
-                evaluate = eval2,
-
-                next = SceneStep(
-                    num_pass_ticks = 5,
-                    prepare = prep3,
-                    evaluate = eval3
-                )
-            )
-        )
-
-        # Run process
-        appl.process()

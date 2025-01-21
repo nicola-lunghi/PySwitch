@@ -1,7 +1,8 @@
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
-from ...kemper import KemperMappings
 from ....misc import Colors
+
+from ..mappings.effects import MAPPING_EFFECT_BUTTON
 
 # Effect Button I-IIII (set only). num must be a number (1 to 4).
 def EFFECT_BUTTON(num, text = None, display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True, enable_callback = None):
@@ -17,7 +18,7 @@ def EFFECT_BUTTON(num, text = None, display = None, color = Colors.LIGHT_GREEN, 
 
     return PushButtonAction({
         "callback": BinaryParameterCallback(
-            mapping = KemperMappings.EFFECT_BUTTON(num),
+            mapping = MAPPING_EFFECT_BUTTON(num),
             text = text,
             color = color
         ),

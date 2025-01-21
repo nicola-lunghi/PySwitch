@@ -18,7 +18,6 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     
-    from lib.pyswitch.clients.kemper import KemperEffectSlot, KemperMappings
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
     from lib.pyswitch.misc import Updater
@@ -33,6 +32,9 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.actions.morph import *
     from lib.pyswitch.clients.kemper.actions.rig_volume_boost import *
     from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
+
+    from lib.pyswitch.clients.kemper.mappings.tempo import *
+    from lib.pyswitch.clients.kemper.mappings.morph import *
     
 
 class MockController2(Updater):
@@ -110,7 +112,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.TAP_TEMPO())
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_TAP_TEMPO())
         self.assertEqual(cb._BinaryParameterCallback__text, "Tap")
         self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
 
@@ -151,7 +153,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.EFFECT_BUTTON(num))
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_EFFECT_BUTTON(num))
         self.assertEqual(cb._BinaryParameterCallback__text, exp_text)
         self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
 
@@ -181,7 +183,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.MORPH_BUTTON())
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_MORPH_BUTTON())
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
         self.assertEqual(cb._BinaryParameterCallback__color, (3, 4, 5))
         self.assertEqual(cb._value_enable, 1)
@@ -214,7 +216,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, KemperMorphCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.MORPH_BUTTON())
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_MORPH_BUTTON())
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
@@ -248,7 +250,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, KemperMorphCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.MORPH_PEDAL())
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_MORPH_PEDAL())
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
         self.assertEqual(cb._BinaryParameterCallback__comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
         self.assertEqual(cb._led_brightness_off, 0.3)
@@ -289,7 +291,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.RIG_VOLUME())
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_RIG_VOLUME())
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
         self.assertEqual(cb._value_enable, exp_value_enable)
         self.assertEqual(cb._value_disable, exp_value_disable)
@@ -337,10 +339,10 @@ class TestKemperActionDefinitions(unittest.TestCase):
         cb_morph = action_morph.callback
 
         self.assertIsInstance(cb_select, BinaryParameterCallback)
-        self.assertEqual(cb_select._BinaryParameterCallback__mapping, KemperMappings.RIG_SELECT(0))
+        self.assertEqual(cb_select._BinaryParameterCallback__mapping, MAPPING_RIG_SELECT(0))
 
         self.assertIsInstance(cb_morph, KemperMorphCallback)
-        self.assertEqual(cb_morph._BinaryParameterCallback__mapping, KemperMappings.MORPH_PEDAL())
+        self.assertEqual(cb_morph._BinaryParameterCallback__mapping, MAPPING_MORPH_PEDAL())
         self.assertEqual(cb_morph._BinaryParameterCallback__comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
         self.assertEqual(cb_morph._led_brightness_off, 0.3)
         self.assertEqual(cb_morph._BinaryParameterCallback__display_dim_factor_off, 1)
@@ -394,10 +396,10 @@ class TestKemperActionDefinitions(unittest.TestCase):
     #     cb_morph = action_morph.callback
 
     #     self.assertIsInstance(cb_select, BinaryParameterCallback)
-    #     self.assertEqual(cb_select._BinaryParameterCallback__mapping, KemperMappings.BANK_AND_RIG_SELECT(0))
+    #     self.assertEqual(cb_select._BinaryParameterCallback__mapping, MAPPING_BANK_AND_RIG_SELECT(0))
 
     #     self.assertIsInstance(cb_morph, KemperMorphCallback)
-    #     self.assertEqual(cb_morph._BinaryParameterCallback__mapping, KemperMappings.MORPH_PEDAL())
+    #     self.assertEqual(cb_morph._BinaryParameterCallback__mapping, MAPPING_MORPH_PEDAL())
     #     self.assertEqual(cb_morph._BinaryParameterCallback__comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
     #     self.assertEqual(cb_morph._led_brightness_off, 0.3)
     #     self.assertEqual(cb_morph._BinaryParameterCallback__display_dim_factor_off, 1)

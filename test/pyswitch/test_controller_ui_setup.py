@@ -26,6 +26,7 @@ with patch.dict(sys.modules, {
        
         from lib.pyswitch.ui.ui import DisplayElement
         from lib.pyswitch.ui.UiController import UiController
+        from lib.pyswitch.controller.Controller import Controller
 
         from gc import gc_mock_data
         from .mocks_appl import *
@@ -72,7 +73,7 @@ class TestControllerUiSetup(unittest.TestCase):
             )
         )
 
-        appl = MockController(
+        appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
             switches = [
@@ -89,22 +90,16 @@ class TestControllerUiSetup(unittest.TestCase):
             ui = ui
         )
 
-       # Build scene
-        def prep1():      
-            period.exceed_next_time = True      
-            pass
+        appl.init()
 
-        def eval1():            
-            self.assertEqual(element_3.num_update_calls, 1)
-            return False
+        # Build scene
+        period.exceed_next_time = True      
+        
+        appl.tick()
+        appl.tick()
 
-        appl.next_step = SceneStep(
-            prepare = prep1,
-            evaluate = eval1
-        )
-
-        appl.process()
-
+        self.assertEqual(element_3.num_update_calls, 1)
+        
         self.assertEqual(ui.num_show_calls, 1)
 
 
@@ -112,23 +107,17 @@ class TestControllerUiSetup(unittest.TestCase):
         gc_mock_data().reset()
         gc_mock_data().output_mem_free_override(20)
 
-        appl = MockController(
+        appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
             config = {
                 "memoryWarnLimitBytes": 1024
             }
         )
+
+        appl.init()        
+        appl.tick()
         
-        def eval1():            
-            return False
-
-        appl.next_step = SceneStep(
-            evaluate = eval1
-        )
-
-        appl.process()
-
         self.assertEqual(appl.low_memory_warning, True)
 
 
@@ -136,22 +125,16 @@ class TestControllerUiSetup(unittest.TestCase):
         gc_mock_data().reset()
         gc_mock_data().output_mem_free_override(2048)
 
-        appl = MockController(
+        appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
             config = {
                 "memoryWarnLimitBytes": 1024
             }
         )
+
+        appl.init()
+        appl.tick()
         
-        def eval1():            
-            return False
-
-        appl.next_step = SceneStep(
-            evaluate = eval1
-        )
-
-        appl.process()
-
         self.assertEqual(appl.low_memory_warning, False)
 

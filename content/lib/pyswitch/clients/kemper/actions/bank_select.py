@@ -1,7 +1,10 @@
-from ...kemper import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG, NUM_RIGS_PER_BANK, BANK_COLORS, KemperMappings
+from ...kemper import NUM_RIGS_PER_BANK, BANK_COLORS
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
 from ....misc import get_option, Colors, PeriodCounter
+
+from ..mappings.select import MAPPING_BANK_AND_RIG_SELECT, MAPPING_BANK_SELECT
+from .rig_select import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG
 
 # Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). 
 # Banks are indexed starting from one, range: [1..126].    
@@ -25,7 +28,7 @@ def BANK_SELECT(bank,
         "id": id,
         "useSwitchLeds": use_leds,
         "callback": KemperBankSelectCallback(
-            mapping = KemperMappings.BANK_AND_RIG_SELECT(0),
+            mapping = MAPPING_BANK_AND_RIG_SELECT(0),
             bank = bank,
             bank_off = bank_off,
             text = text,
@@ -107,7 +110,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
                 # So, we also do not accept any preselects when there is already one.
                 return 
             
-            set_mapping = KemperMappings.BANK_SELECT()
+            set_mapping = MAPPING_BANK_SELECT()
 
             value_bank = [self.__bank - 1]
             if self.__bank_off != None:
@@ -126,7 +129,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
 
         else:
             curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
-            set_mapping = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
+            set_mapping = MAPPING_BANK_AND_RIG_SELECT(curr_rig)
 
             value_bank = [self.__bank - 1, 1, 0]
             if self.__bank_off:

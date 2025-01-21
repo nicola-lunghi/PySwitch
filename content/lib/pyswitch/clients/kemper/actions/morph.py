@@ -1,13 +1,14 @@
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
-from ...kemper import KemperMappings
 from ....misc import Colors
+
+from ..mappings.morph import MAPPING_MORPH_BUTTON, MAPPING_MORPH_PEDAL
 
 # Morph button (faded change of morph state) with fixed color.
 def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None, color = Colors.WHITE):
     if color == "kemper":
         cb = KemperMorphCallback(
-            mapping = KemperMappings.MORPH_BUTTON(),
+            mapping = MAPPING_MORPH_BUTTON(),
             text = text,
             comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
             led_brightness_off = "on",
@@ -15,7 +16,7 @@ def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, en
         )
     else:        
         cb = BinaryParameterCallback(
-            mapping = KemperMappings.MORPH_BUTTON(),
+            mapping = MAPPING_MORPH_BUTTON(),
             text = text,
             color = color,
             comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
@@ -36,7 +37,7 @@ def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, en
 # def MORPH_BUTTON_WITH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
 #     return PushButtonAction({
 #         "callback": KemperMorphCallback(
-#             mapping = KemperMappings.MORPH_BUTTON(),
+#             mapping = MAPPING_MORPH_BUTTON(),
 #             text = text,
 #             comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
 #             led_brightness_off = "on",
@@ -53,7 +54,7 @@ def MORPH_BUTTON(display = None, text = "Morph", id = False, use_leds = True, en
 def MORPH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, enable_callback = None):
     return PushButtonAction({
         "callback": KemperMorphCallback(
-            mapping = KemperMappings.MORPH_PEDAL(),
+            mapping = MAPPING_MORPH_PEDAL(),
             text = text,
             comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
             led_brightness_off = "on",

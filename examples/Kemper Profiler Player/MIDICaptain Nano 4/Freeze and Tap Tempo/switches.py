@@ -10,11 +10,12 @@ from pyswitch.misc import Colors
 from pyswitch.controller.actions import PushButtonAction
 from pyswitch.controller.callbacks import BinaryParameterCallback
 
-from pyswitch.clients.kemper import KemperEffectSlot, KemperMappings
+from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
 from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
+from pyswitch.clients.kemper.mappings.freeze import MAPPING_FREEZE
 
 
 # Defines the switch assignments
@@ -48,7 +49,7 @@ Switches = [
         "actions": [
             PushButtonAction({
                 "callback": BinaryParameterCallback(
-                    mapping = KemperMappings.FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_REV),
+                    mapping = MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_REV),
                     text = "RvFreeze",
                     color = Colors.DARK_GREEN
                 ),

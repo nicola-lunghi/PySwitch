@@ -1,7 +1,14 @@
-from ...kemper import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG, NUM_RIGS_PER_BANK, BANK_COLORS, KemperMappings
+from ...kemper import NUM_RIGS_PER_BANK, BANK_COLORS
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
 from ....misc import get_option, Colors
+
+from ..mappings.select import MAPPING_RIG_SELECT, MAPPING_BANK_AND_RIG_SELECT
+
+# Display text modes for RIG_SELECT (only regarded if a display is attached to the action)
+RIG_SELECT_DISPLAY_CURRENT_RIG = 10  # Show current rig ID (for example 2-1 for bank 2 rig 1)
+RIG_SELECT_DISPLAY_TARGET_RIG = 20   # Show the target rig ID
+
 
 # Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
 # the current bank. Rigs are indexed starting from one, range: [1..5].
@@ -61,13 +68,13 @@ class KemperRigSelectCallback(BinaryParameterCallback):
             raise Exception() #"Also provide bank_off")        
 
         if bank == None:
-            mapping = KemperMappings.RIG_SELECT(rig - 1)
-            mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.RIG_SELECT(rig_off - 1)
+            mapping = MAPPING_RIG_SELECT(rig - 1)
+            mapping_disable = None if (rig_off == None or rig_off == "auto") else MAPPING_RIG_SELECT(rig_off - 1)
             value_enable = [1, 0]
             value_disable = [1, 0]
         else:
-            mapping = KemperMappings.BANK_AND_RIG_SELECT(rig - 1)
-            mapping_disable = None if (rig_off == None or rig_off == "auto") else KemperMappings.BANK_AND_RIG_SELECT(rig_off - 1)
+            mapping = MAPPING_BANK_AND_RIG_SELECT(rig - 1)
+            mapping_disable = None if (rig_off == None or rig_off == "auto") else MAPPING_BANK_AND_RIG_SELECT(rig_off - 1)
             value_enable = [bank - 1, 1, 0]
             value_disable = [bank - 1, 1, 0] if (bank_off == None or bank_off == "auto") else [bank_off - 1, 1, 0]
 
@@ -160,9 +167,9 @@ class KemperRigSelectCallback(BinaryParameterCallback):
             # Auto rig off: If we are not on the "on" rig, set the current rig as "off" rig
             if (not self.__auto_exclude_rigs or (curr_rig + 1) not in self.__auto_exclude_rigs) and self.__rig_off_auto and curr_rig != self.__rig - 1:
                 if self.__bank != None:
-                    self.mapping_disable = KemperMappings.BANK_AND_RIG_SELECT(curr_rig)
+                    self.mapping_disable = MAPPING_BANK_AND_RIG_SELECT(curr_rig)
                 else:
-                    self.mapping_disable = KemperMappings.RIG_SELECT(curr_rig)
+                    self.mapping_disable = MAPPING_RIG_SELECT(curr_rig)
 
             if self.__bank_off_auto and curr_bank != self.__bank - 1:
                 self.__bank_off = curr_bank + 1                    

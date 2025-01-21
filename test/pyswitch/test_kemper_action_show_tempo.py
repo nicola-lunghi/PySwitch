@@ -25,6 +25,7 @@ with patch.dict(sys.modules, {
     from .mocks_callback import *
 
     from lib.pyswitch.clients.kemper.actions.tempo import *
+    from lib.pyswitch.clients.kemper.mappings.tempo import *
 
 
 class MockController2(Updater):
@@ -53,7 +54,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.TEMPO_DISPLAY())
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_TEMPO_DISPLAY())
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
         self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
 
@@ -98,7 +99,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.TEMPO_DISPLAY())
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_TEMPO_DISPLAY())
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
         self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
 

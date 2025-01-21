@@ -111,8 +111,8 @@ class Controller(Updater): #ClientRequestListener
             self.ui.init(self)
             self.add_updateable(ui)
 
-    # Runs the processing loop (which never ends)
-    def process(self):
+    # Prepare to run the processing loop
+    def init(self):
         # Show user interface
         if self.ui:            
             Memory.watch("Showing UI")
@@ -134,11 +134,7 @@ class Controller(Updater): #ClientRequestListener
                 if not self.__midi.receive():
                     break
 
-        # Start processing loop
-        while self.tick():
-            pass
-
-    # Single tick in the processing loop. Must return True to keep the loop alive.
+    # Single tick in the processing loop. Must return True to keep the loop alive. Call this in an endless loop.
     def tick(self):
         # If enabled, remember the tick starting time for statistics
         if self.__debug_stats:

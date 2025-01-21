@@ -25,7 +25,7 @@ with patch.dict(sys.modules, {
     from .mocks_callback import *
 
 
-class MockController(Updater):
+class MockController2(Updater):
     def __init__(self, config = {}, ui = None):
         super().__init__()
 
@@ -104,7 +104,7 @@ class TestAction(unittest.TestCase):
             }
         )
 
-        appl = MockController()
+        appl = MockController2()
 
         action_1.init(appl, MockFootSwitch())
 
@@ -171,7 +171,7 @@ class TestAction(unittest.TestCase):
             }
         )
 
-        appl = MockController()
+        appl = MockController2()
 
         action_1.init(appl, MockFootSwitch())
 
@@ -219,7 +219,7 @@ class TestAction(unittest.TestCase):
             }
         )
 
-        appl = MockController()
+        appl = MockController2()
 
         action_1.init(appl, MockFootSwitch())
 
@@ -246,7 +246,7 @@ class TestAction(unittest.TestCase):
     #######################################################################################################
 
     def test_led_segments_one_action(self):
-        appl = MockController()
+        appl = MockController2()
         switch = MockFootSwitch()
         
         action_1 = MockAction()
@@ -306,7 +306,7 @@ class TestAction(unittest.TestCase):
 
 
     def test_led_segments_three_actions(self):
-        appl = MockController()
+        appl = MockController2()
         switch = MockFootSwitch()
         
         cb_1 = MockEnabledCallback(output = True)
@@ -395,7 +395,7 @@ class TestAction(unittest.TestCase):
 
 
     def test_property_set_switch_colors_brightness(self):
-        appl = MockController()
+        appl = MockController2()
         switch = MockFootSwitch()
         
         action_1 = MockAction()
@@ -474,7 +474,7 @@ class TestAction(unittest.TestCase):
 
 
     def test_property_set_switch_color_brightness_tuples(self):
-        appl = MockController()
+        appl = MockController2()
         switch = MockFootSwitch()
         
         cb_4 = MockEnabledCallback(output = True)

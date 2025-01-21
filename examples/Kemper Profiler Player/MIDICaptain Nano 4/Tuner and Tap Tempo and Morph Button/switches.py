@@ -8,7 +8,7 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
 
-from pyswitch.clients.kemper import KemperEffectSlot #, KemperMappings
+from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_HEADER_1, DISPLAY_HEADER_2
 
 from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO

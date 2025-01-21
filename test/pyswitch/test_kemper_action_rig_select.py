@@ -27,6 +27,8 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.actions.rig_select import *
     from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
 
+    from lib.pyswitch.clients.kemper.mappings.select import *
+
 
 class MockController2(Updater):
    def __init__(self):
@@ -776,7 +778,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         action.push()
         action.release()
 
-        self.assertEqual(action.callback.mapping_disable, KemperMappings.RIG_SELECT(1))
+        self.assertEqual(action.callback.mapping_disable, MAPPING_RIG_SELECT(1))
 
         self.assertEqual(len(appl.client.set_calls), 2)
         self.assertEqual(appl.client.set_calls[1], {
@@ -806,7 +808,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         action.push()
         action.release()
 
-        self.assertEqual(action.callback.mapping_disable, KemperMappings.RIG_SELECT(4))
+        self.assertEqual(action.callback.mapping_disable, MAPPING_RIG_SELECT(4))
 
         self.assertEqual(len(appl.client.set_calls), 4)
         self.assertEqual(appl.client.set_calls[3], {
@@ -859,7 +861,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         action.push()
         action.release()
 
-        self.assertEqual(action.callback.mapping_disable, KemperMappings.RIG_SELECT(1))
+        self.assertEqual(action.callback.mapping_disable, MAPPING_RIG_SELECT(1))
 
         self.assertEqual(len(appl.client.set_calls), 2)
         self.assertEqual(appl.client.set_calls[1], {
@@ -889,7 +891,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         action.push()
         action.release()
 
-        self.assertEqual(action.callback.mapping_disable, KemperMappings.RIG_SELECT(1))
+        self.assertEqual(action.callback.mapping_disable, MAPPING_RIG_SELECT(1))
 
         self.assertEqual(len(appl.client.set_calls), 4)
         self.assertEqual(appl.client.set_calls[3], {
@@ -905,7 +907,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         action.push()
         action.release()
 
-        self.assertEqual(action.callback.mapping_disable, KemperMappings.RIG_SELECT(1))
+        self.assertEqual(action.callback.mapping_disable, MAPPING_RIG_SELECT(1))
 
         self.assertEqual(len(appl.client.set_calls), 5)
         self.assertEqual(appl.client.set_calls[4], {

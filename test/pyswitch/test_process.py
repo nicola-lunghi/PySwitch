@@ -77,15 +77,20 @@ class MockImports:
                 self.switches = switches
                 self.ui = ui
 
-                self.process_calls = 0
+                self.init_calls = 0
+                self.tick_calls = 0
 
                 MockImports.MockController.controllers.append(self)
 
-            def process(self):
-                self.process_calls += 1
+            def init(self):
+                self.init_calls += 1
     
                 if MockImports.MockController.raise_on_process:
                     raise MockImports.MockController.raise_on_process
+                
+            def tick(self):
+                self.tick_calls += 1
+                return False
 
 
     class MockMidiController:
@@ -154,12 +159,16 @@ class MockImports:
                 self.led_driver = led_driver
                 self.ui = ui
                 
-                self.process_calls = 0
+                self.init_calls = 0
+                self.tick_calls = 0
 
                 MockImports.MockExploreModeController.controllers.append(self)
 
-            def process(self):
-                self.process_calls += 1
+            def init(self):
+                self.init_calls += 1
+
+            def tick(self):
+                self.tick_calls += 1
         
 
     class MockBoard:
@@ -202,7 +211,8 @@ class TestProcessScript(unittest.TestCase):
 
             controller = MockImports.MockController.controllers[0]
 
-            self.assertEqual(controller.process_calls, 1)
+            self.assertEqual(controller.init_calls, 1)
+            self.assertEqual(controller.tick_calls, 1)
 
             self.assertIsInstance(controller.led_driver, MockImports.MockHardwareAdafruit.AdafruitNeoPixelDriver)
             self.assertIsInstance(controller.protocol, MockProtocol)
@@ -252,7 +262,8 @@ class TestProcessScript(unittest.TestCase):
 
             controller = MockImports.MockController.controllers[0]
 
-            self.assertEqual(controller.process_calls, 1)
+            self.assertEqual(controller.init_calls, 1)
+            self.assertEqual(controller.tick_calls, 1)
 
             self.assertIsInstance(controller.led_driver, MockImports.MockHardwareAdafruit.AdafruitNeoPixelDriver)
             self.assertIsInstance(controller.protocol, MockProtocol)
@@ -356,7 +367,8 @@ class TestProcessScript(unittest.TestCase):
 
             controller = MockImports.MockExploreModeController.controllers[0]
 
-            self.assertEqual(controller.process_calls, 1)
+            self.assertEqual(controller.init_calls, 1)
+            self.assertEqual(controller.tick_calls, 1)
 
             self.assertIsInstance(controller.led_driver, MockImports.MockHardwareAdafruit.AdafruitNeoPixelDriver)
             self.assertIsInstance(controller.ui, MockImports.MockUiController.UiController)

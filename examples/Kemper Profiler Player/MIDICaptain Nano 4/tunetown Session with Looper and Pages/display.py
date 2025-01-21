@@ -53,6 +53,14 @@ DISPLAY_FOOTER_2 = DisplayLabel(
     bounds = DisplayBounds(_SLOT_WIDTH, _FOOTER_Y, _SLOT_WIDTH, _SLOT_HEIGHT)
 )
 
+# Page
+DISPLAY_PAGE = DisplayLabel(
+    layout = {
+        "font": "/fonts/A12.pcf",
+        "backColor": (0, 0, 0)
+    },
+    bounds = DisplayBounds(0, _FOOTER_Y - 20, _DISPLAY_WIDTH, 20)
+)
 
 Splashes = TunerDisplayCallback(
     strobe = True,
@@ -85,6 +93,9 @@ Splashes = TunerDisplayCallback(
 
                 callback = KemperRigNameCallback()
             ),
+
+            # Pager
+            DISPLAY_PAGE,
 
             # Bidirectional protocol state indicator (dot)
             BidirectionalProtocolState(DisplayBounds(

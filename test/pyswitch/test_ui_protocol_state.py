@@ -27,7 +27,7 @@ with patch.dict(sys.modules, {
     from .mocks_ui import *
     
 
-class MockController:
+class MockController2:
     def __init__(self, client):
         self.client = client
 
@@ -43,7 +43,7 @@ class TestProtocolState(unittest.TestCase):
 
         protocol = MockBidirectionalProtocol()        
 
-        appl = MockController(
+        appl = MockController2(
             client = BidirectionalClient(
                 midi = MockMidiController(), 
                 config = {}, 
@@ -73,7 +73,7 @@ class TestProtocolState(unittest.TestCase):
             bounds = DisplayBounds(22, 33, 44, 55)
         )
 
-        appl = MockController(
+        appl = MockController2(
             client = MockClient()
         )
 

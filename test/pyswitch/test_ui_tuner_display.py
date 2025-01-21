@@ -22,9 +22,10 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.ui.ui import DisplayBounds
     from lib.pyswitch.ui.elements import TunerDisplay, DisplayLabel
     from lib.pyswitch.ui.UiController import UiController
+    from lib.pyswitch.controller.Controller import Controller
 
     from .mocks_appl import *
-    from .mocks_ui import MockDisplayDriver, MockFontLoader, MockUiController
+    from .mocks_ui import MockDisplayDriver, MockFontLoader
     from .mocks_callback import *
     from lib.pyswitch.misc import Colors
 
@@ -144,13 +145,15 @@ class TestTunerDisplay(unittest.TestCase):
             }
         ]
 
-        appl = MockController(
+        appl = Controller(
             led_driver = MockNeoPixelDriver(),
             protocol = protocol,
             midi = MockMidiController(),
             period_counter = period,
             ui = ui
         )
+
+        appl.init()
 
         answer_msg_1 = SystemExclusive(
             manufacturer_id = [0x00, 0x10, 0x20],
@@ -164,69 +167,52 @@ class TestTunerDisplay(unittest.TestCase):
 
         # Build scene:
         # Step 1: Not exceeded
-        def prep1():
-            self.assertEqual(display.label_note._DisplayLabel__label.scale, 2.33)
-            period.exceed_next_time = True
-            
-        def eval1():
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
-            return True
+        self.assertEqual(display.label_note._DisplayLabel__label.scale, 2.33)
+        period.exceed_next_time = True
+        
+        appl.tick()
+        appl.tick()
 
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
+        
         # Step 2: Exceeded the first time
-        def prep2():
-            period.exceed_next_time = True
+        period.exceed_next_time = True
 
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_1,
-                answer_msg_2
-            ]
-            mapping_1.outputs_parse = [
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_1,
+            answer_msg_2
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg_1,
+                "value": note_value
+            }
+        ]
+        if mapping_2:
+            mapping_2.outputs_parse = [
                 {
-                    "message": answer_msg_1,
-                    "value": note_value
+                    "message": answer_msg_2,
+                    "value": deviance_value
                 }
             ]
-            if mapping_2:
-                mapping_2.outputs_parse = [
-                    {
-                        "message": answer_msg_2,
-                        "value": deviance_value
-                    }
-                ]
 
-        def eval2():
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
-            self.assertEqual(display.label_note.text, note_text)
-
-            if deviance_value != None:
-                act_pos = display.deviance._TunerDevianceDisplay__marker.x / ((444 - deviance_width) / 2) - 1
-                self.assertAlmostEqual(act_pos, max(-1, min(deviance_pos * deviance_zoom, 1)), delta = deviance_tolerance)
-
-                self.assertEqual(display.label_note.text_color, exp_color)
-                self.assertEqual(display.deviance._TunerDevianceDisplay__marker.fill, exp_color)
-                self.assertEqual(display.deviance._TunerDevianceDisplay__marker.width, deviance_width)
-
-            display.reset()
-
-            if deviance_value != None:
-                self.assertEqual(display.label_note.text_color, Colors.WHITE)
-
-            return False
-                
+        appl.tick()
+        appl.tick()
         
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 0)
+        self.assertEqual(display.label_note.text, note_text)
 
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
+        if deviance_value != None:
+            act_pos = display.deviance._TunerDevianceDisplay__marker.x / ((444 - deviance_width) / 2) - 1
+            self.assertAlmostEqual(act_pos, max(-1, min(deviance_pos * deviance_zoom, 1)), delta = deviance_tolerance)
 
-        # Run process
-        appl.process()
+            self.assertEqual(display.label_note.text_color, exp_color)
+            self.assertEqual(display.deviance._TunerDevianceDisplay__marker.fill, exp_color)
+            self.assertEqual(display.deviance._TunerDevianceDisplay__marker.width, deviance_width)
 
+        display.reset()
+
+        if deviance_value != None:
+            self.assertEqual(display.label_note.text_color, Colors.WHITE)
+
+        

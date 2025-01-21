@@ -8,11 +8,11 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
 from pyswitch.controller.callbacks import Callback
-from pyswitch.clients.kemper import KemperEffectSlot, KemperMappings, RIG_SELECT_DISPLAY_TARGET_RIG
+from pyswitch.clients.kemper import KemperEffectSlot, KemperMappings
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_HEADER_3, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_FOOTER_3
 
 from pyswitch.clients.kemper.actions.tempo import SHOW_TEMPO
-from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 
 ##############################################################################################################################################

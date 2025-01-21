@@ -1,7 +1,10 @@
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
-from ...kemper import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG, KemperMappings, NUM_RIGS_PER_BANK, BANK_COLORS, NUM_BANKS
+from ...kemper import NUM_RIGS_PER_BANK, BANK_COLORS, NUM_BANKS
 from ....misc import Colors, get_option
+
+from ..mappings.bank import MAPPING_NEXT_BANK, MAPPING_PREVIOUS_BANK
+from .rig_select import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG
 
 # Next bank (keeps rig index)
 def BANK_UP(display = None, 
@@ -18,7 +21,7 @@ def BANK_UP(display = None,
     ):
     return PushButtonAction({
         "callback": KemperBankChangeCallback(
-            mapping = KemperMappings.NEXT_BANK(),
+            mapping = MAPPING_NEXT_BANK(),
             offset = 1,
             dim_factor = dim_factor,
             display_mode = display_mode,
@@ -50,7 +53,7 @@ def BANK_DOWN(display = None,
     ):
     return PushButtonAction({
         "callback": KemperBankChangeCallback(
-            mapping = KemperMappings.PREVIOUS_BANK(),
+            mapping = MAPPING_PREVIOUS_BANK(),
             offset = -1,
             dim_factor = dim_factor,
             display_mode = display_mode,

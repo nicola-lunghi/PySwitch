@@ -11,7 +11,7 @@ For operating the Looper, switch 2 provides basic, casual functions. With long p
 |            | Short Press              | Long Press                                       |  
 |------------|--------------------------|--------------------------------------------------|
 | Switch 1   | Tap Tempo                | Tuner Mode                                       |
-| Switch 2   | Looper Start             | Looper: Erase Loop                               |
+| Switch 2   | Looper Rec/Play/OD       | Looper: Erase Loop                               |
 | Switch A   | Toggle Rig 4 (*)         |                                                  |
 | Switch B   | Toggle Rig 5 (*)         | Toggle Pages (Normal - Looper)                   |
 
@@ -20,9 +20,9 @@ For operating the Looper, switch 2 provides basic, casual functions. With long p
 |            | Short Press                      | Long Press                                       |  
 |------------|----------------------------------|--------------------------------------------------|
 | Switch 1   | Tap Tempo                        | Tuner Mode                                       |
-| Switch 2   | Looper Start                     | Looper: Erase Loop                               |
+| Switch 2   | Looper Stop                      | Looper: Erase Loop                               |
 | Switch A   | Looper Cancel/Reactivate Overdub | Looper Reverse                                   |
-| Switch B   | Looper Stop                      | Toggle Pages (Normal - Looper)                   |
+| Switch B   | Looper Rec/Play/OD               | Toggle Pages (Normal - Looper)                   |
 
 (\*) If not one of the target rigs (4 and 5) is selected, these always remember the current rig and switch back to it on disabling. This makes it possible to access 3 rigs with one click and only 2 buttons.
 

@@ -41,7 +41,7 @@ class TestLedEvaluation(unittest.TestCase):
         led_driver = MockNeoPixelDriver()
         switch_1 = MockSwitch()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [
@@ -64,7 +64,7 @@ class TestLedEvaluation(unittest.TestCase):
         switch_2 = MockSwitch()
         switch_3 = MockSwitch()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
             switches = [

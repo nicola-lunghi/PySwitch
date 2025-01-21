@@ -15,7 +15,7 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    #from lib.pyswitch.controller.Controller import Controller
+    from lib.pyswitch.controller.Controller import Controller
     from .mocks_appl import *
 
 
@@ -31,7 +31,7 @@ class TestControllerActions(unittest.TestCase):
 
         period = MockPeriodCounter()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
             switches = [
@@ -56,89 +56,63 @@ class TestControllerActions(unittest.TestCase):
             period_counter = period
         )
 
+        appl.init()
+
         # Build scene:
         # Step 1: Not exceeded
-        def prep1():
-            self.assertEqual(period.exceed_next_time, False)
-            self.assertEqual(action_1.num_update_calls_overall, 0)
-            self.assertEqual(action_2.num_update_calls_overall, 0)
-            self.assertEqual(action_3.num_update_calls_overall, 0)
+        self.assertEqual(period.exceed_next_time, False)
+        self.assertEqual(action_1.num_update_calls_overall, 0)
+        self.assertEqual(action_2.num_update_calls_overall, 0)
+        self.assertEqual(action_3.num_update_calls_overall, 0)
 
-        def eval1():
-            self.assertEqual(period.exceed_next_time, False)
-            self.assertEqual(action_1.num_update_calls_overall, 0)
-            self.assertEqual(action_2.num_update_calls_overall, 0)
-            self.assertEqual(action_3.num_update_calls_overall, 0)
-            return True
-
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(period.exceed_next_time, False)
+        self.assertEqual(action_1.num_update_calls_overall, 0)
+        self.assertEqual(action_2.num_update_calls_overall, 0)
+        self.assertEqual(action_3.num_update_calls_overall, 0)
+        
         # Step 2: Exceeded the first time
-        def prep2():
-            period.exceed_next_time = True
-            self.assertEqual(action_1.num_update_calls_overall, 0)
-            self.assertEqual(action_2.num_update_calls_overall, 0)
-            self.assertEqual(action_3.num_update_calls_overall, 0)
+        period.exceed_next_time = True
+        self.assertEqual(action_1.num_update_calls_overall, 0)
+        self.assertEqual(action_2.num_update_calls_overall, 0)
+        self.assertEqual(action_3.num_update_calls_overall, 0)
 
-        def eval2():
-            self.assertEqual(period.exceed_next_time, False)
-            self.assertEqual(action_1.num_update_calls_overall, 1)
-            self.assertEqual(action_2.num_update_calls_overall, 1)
-            self.assertEqual(action_3.num_update_calls_overall, 1)
-            return True
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(period.exceed_next_time, False)
+        self.assertEqual(action_1.num_update_calls_overall, 1)
+        self.assertEqual(action_2.num_update_calls_overall, 1)
+        self.assertEqual(action_3.num_update_calls_overall, 1)
         
         # Step 3: Not exceeded
-        def prep3():
-            self.assertEqual(period.exceed_next_time, False)
-            self.assertEqual(action_1.num_update_calls_overall, 1)
-            self.assertEqual(action_2.num_update_calls_overall, 1)
-            self.assertEqual(action_3.num_update_calls_overall, 1)
+        self.assertEqual(period.exceed_next_time, False)
+        self.assertEqual(action_1.num_update_calls_overall, 1)
+        self.assertEqual(action_2.num_update_calls_overall, 1)
+        self.assertEqual(action_3.num_update_calls_overall, 1)
 
-        def eval3():
-            self.assertEqual(period.exceed_next_time, False)
-            self.assertEqual(action_1.num_update_calls_overall, 1)
-            self.assertEqual(action_2.num_update_calls_overall, 1)
-            self.assertEqual(action_3.num_update_calls_overall, 1)
-            return True
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(period.exceed_next_time, False)
+        self.assertEqual(action_1.num_update_calls_overall, 1)
+        self.assertEqual(action_2.num_update_calls_overall, 1)
+        self.assertEqual(action_3.num_update_calls_overall, 1)
         
         # Step 4: Exceeded again
-        def prep4():
-            period.exceed_next_time = True
-            self.assertEqual(action_1.num_update_calls_overall, 1)
-            self.assertEqual(action_2.num_update_calls_overall, 1)
-            self.assertEqual(action_3.num_update_calls_overall, 1)
+        period.exceed_next_time = True
+        self.assertEqual(action_1.num_update_calls_overall, 1)
+        self.assertEqual(action_2.num_update_calls_overall, 1)
+        self.assertEqual(action_3.num_update_calls_overall, 1)
 
-        def eval4():
-            self.assertEqual(period.exceed_next_time, False)
-            self.assertEqual(action_1.num_update_calls_overall, 2)
-            self.assertEqual(action_2.num_update_calls_overall, 2)
-            self.assertEqual(action_3.num_update_calls_overall, 2)
-            return False
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2,
-            
-                next = SceneStep(
-                    num_pass_ticks = 5,
-                    prepare = prep3,
-                    evaluate = eval3,
-            
-                    next = SceneStep(
-                        num_pass_ticks = 5,
-                        prepare = prep4,
-                        evaluate = eval4
-                    )
-                )
-            )
-        )
-
-        # Run process
-        appl.process()
-
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(period.exceed_next_time, False)
+        self.assertEqual(action_1.num_update_calls_overall, 2)
+        self.assertEqual(action_2.num_update_calls_overall, 2)
+        self.assertEqual(action_3.num_update_calls_overall, 2)
+        
         

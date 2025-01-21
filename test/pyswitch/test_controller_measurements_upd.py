@@ -23,9 +23,10 @@ class TestControllerMeasurementsUpdate(unittest.TestCase):
             with patch.dict(sys.modules, {
                 "lib.pyswitch.misc": MockMisc
             }):
-                from .mocks_appl import MockController, MockNeoPixelDriver, MockMidiController, MockSwitch, SceneStep, MockAction, MockPeriodCounter
+                from .mocks_appl import MockNeoPixelDriver, MockMidiController, MockSwitch, MockAction, MockPeriodCounter
                 
                 from lib.pyswitch.controller.RuntimeMeasurement import RuntimeMeasurement
+                from lib.pyswitch.controller.Controller import Controller
 
                 action_1 = MockAction()
                 period = MockPeriodCounter()
@@ -33,7 +34,7 @@ class TestControllerMeasurementsUpdate(unittest.TestCase):
                 gc_mock_data().reset()
                 MockMisc.reset_mock()
 
-                appl = MockController(
+                appl = Controller(
                     led_driver = MockNeoPixelDriver(),
                     midi = MockMidiController(),
                     switches = [
@@ -52,25 +53,19 @@ class TestControllerMeasurementsUpdate(unittest.TestCase):
                     }
                 )
 
+                appl.init()
+
                 m = appl._Controller__measurement_tick_time
                 self.assertIsInstance(m, RuntimeMeasurement)
 
                 gc_mock_data().output_mem_free = 1024 * 566
 
                 # Build scene
-                def prep1():            
-                    period.exceed_next_time = True
+                period.exceed_next_time = True
                 
-                def eval1():            
-                    self.assertGreaterEqual(gc_mock_data().collect_calls, 1)
-                    self.assertIn(MockMisc.format_size(gc_mock_data().output_mem_free), MockMisc.msgs_str)
-                    return False
-
-                appl.next_step = SceneStep(
-                    num_pass_ticks = 5,
-                    prepare = prep1,
-                    evaluate = eval1
-                )
-
-                appl.process()
-
+                appl.tick()
+                appl.tick()
+                
+                self.assertGreaterEqual(gc_mock_data().collect_calls, 1)
+                self.assertIn(MockMisc.format_size(gc_mock_data().output_mem_free), MockMisc.msgs_str)
+                

@@ -21,7 +21,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.controller.actions import PushButtonAction
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
     from lib.pyswitch.controller.Client import BidirectionalClient
-    #from lib.pyswitch.misc import compare_midi_messages
+    from lib.pyswitch.controller.Controller import Controller
 
     from.mocks_appl import *
     
@@ -231,7 +231,7 @@ class TestBidirectionalClient(unittest.TestCase):
             }
         ]
 
-        appl = MockController(
+        appl = Controller(
             led_driver = MockNeoPixelDriver(),
             protocol = protocol,
             midi = MockMidiController(),
@@ -249,6 +249,8 @@ class TestBidirectionalClient(unittest.TestCase):
             period_counter = period
         )
 
+        appl.init()
+
         answer_msg_1 = SystemExclusive(
             manufacturer_id = [0x00, 0x10, 0x20],
             data = [0x00, 0x00, 0x09, 0x44]
@@ -261,105 +263,72 @@ class TestBidirectionalClient(unittest.TestCase):
 
         # Build scene:
         # Send update request
-        def prep1():
-            period.exceed_next_time = True
+        period.exceed_next_time = True
 
-        def eval1():
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_2.request)
-            
-            return True
-
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        self.assertEqual(appl._Controller__midi.messages_sent[0], mapping_2.request)
+        
         # Receive type
-        def prep2():
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_2
-            ]
-            mapping_2.outputs_parse = [
-                {
-                    "message": answer_msg_2,
-                    "value": 1
-                }
-            ]
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_2
+        ]
+        mapping_2.outputs_parse = [
+            {
+                "message": answer_msg_2,
+                "value": 1
+            }
+        ]
 
-        def eval2():
-            self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
+        appl.tick()
+        appl.tick()
+        
+        self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
 
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
 
-            self.assertEqual(mapping_2.value, 1)
-            
-            self.assertEqual(action_1.state, False)
-            self.assertEqual(action_2.state, True)
-            
-            self.assertNotIn(answer_msg_2, protocol.receive_calls)
-
-            return True
+        self.assertEqual(mapping_2.value, 1)
+        
+        self.assertEqual(action_1.state, False)
+        self.assertEqual(action_2.state, True)
+        
+        self.assertNotIn(answer_msg_2, protocol.receive_calls)
 
         # Receive status (which is bidirectional)
-        def prep3():
-            appl._Controller__midi.next_receive_messages = [
-                answer_msg_1
-            ]
-            mapping_1.outputs_parse = [
-                {
-                    "message": answer_msg_1,
-                    "value": 1
-                }
-            ]
+        appl._Controller__midi.next_receive_messages = [
+            answer_msg_1
+        ]
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg_1,
+                "value": 1
+            }
+        ]
 
-        def eval3():
-            self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
-
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
-            
-            self.assertEqual(appl.client.requests[0].mapping.value, 1)
-
-            self.assertNotIn(answer_msg_1, protocol.receive_calls)
-
-            self.assertEqual(action_1.state, True)
-            self.assertEqual(action_2.state, True)
-
-            return True
+        appl.tick()
+        appl.tick()
         
+        self.assertEqual(len(appl._Controller__midi.next_receive_messages), 0)
+
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 1)
+        
+        self.assertEqual(appl.client.requests[0].mapping.value, 1)
+
+        self.assertNotIn(answer_msg_1, protocol.receive_calls)
+
+        self.assertEqual(action_1.state, True)
+        self.assertEqual(action_2.state, True)
+
         # Set status (check if feedback is working)
-        def prep4():
-            switch_1.shall_be_pushed = True
+        switch_1.shall_be_pushed = True
 
-        def eval4():
-            self.assertEqual(len(appl._Controller__midi.messages_sent), 4)
-            self.assertIn(mapping_1.set, appl._Controller__midi.messages_sent)
-            self.assertIn(mapping_2.set, appl._Controller__midi.messages_sent)
-            self.assertIn(mapping_2.request, appl._Controller__midi.messages_sent)
-            self.assertEqual(action_1.state, False)
-
-            return False
+        appl.tick()
+        appl.tick()
         
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            num_pass_ticks = 5,
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                num_pass_ticks = 5,
-                prepare = prep2,
-                evaluate = eval2,
-
-                next = SceneStep(
-                    num_pass_ticks = 5,
-                    prepare = prep3,
-                    evaluate = eval3,
-
-                    next = SceneStep(
-                        num_pass_ticks = 5,
-                        prepare = prep4,
-                        evaluate = eval4
-                    )
-                )
-            )
-        )
-
-        # Run process
-        appl.process()
+        self.assertEqual(len(appl._Controller__midi.messages_sent), 4)
+        self.assertIn(mapping_1.set, appl._Controller__midi.messages_sent)
+        self.assertIn(mapping_2.set, appl._Controller__midi.messages_sent)
+        self.assertIn(mapping_2.request, appl._Controller__midi.messages_sent)
+        self.assertEqual(action_1.state, False)

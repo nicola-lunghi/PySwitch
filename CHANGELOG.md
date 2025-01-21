@@ -4,6 +4,7 @@
 - Tuner mode:
     - Disable tuner mode with any switch
     - Added strobe tuner using all available LEDs when in tuner mode (active by default, can be disabled with parameter "strobe" in TunerDisplayCallback / display.py if you do not like to use it)
+- Added Looper mappings (see example Nano 4 -> tunetown Session with Looper and Pages). This is also an example how to realize pages.
 - Tempo Display is now darker by default, and brightness for on and off states can be adjusted by using the "led_brightness_\*" parameters of the SHOW_TEMPO action
 - Default global brightness factors for LEDs and DisplayLabels can now be set optionally in config.py, see comments there.
 - Now supporting file editing from the browser via MIDI using the <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a> library. <a href="https://demo.midibridge.tunetown.de">Click here</a> with your device connected to the computer via USB (no switches pressed!) and it will automatically connect. This needs no USB mounting/unmounting and is useful for quick experimenting and changing settings. Should also serve as proof-of-concept for building a visual editor in the future (!)

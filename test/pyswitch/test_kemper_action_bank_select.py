@@ -24,6 +24,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.misc import Updater, Colors
 
     from lib.pyswitch.clients.kemper.actions.bank_select import *
+    from lib.pyswitch.clients.kemper.mappings.select import *
     
 
 class MockController2(Updater):
@@ -515,7 +516,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
-            "mapping": KemperMappings.BANK_AND_RIG_SELECT(rig),
+            "mapping": MAPPING_BANK_AND_RIG_SELECT(rig),
             "value": [0, 1, 0]
         })
 
@@ -576,7 +577,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
-            "mapping": KemperMappings.BANK_AND_RIG_SELECT(rig),
+            "mapping": MAPPING_BANK_AND_RIG_SELECT(rig),
             "value": [1, 1, 0]
         })
 
@@ -598,7 +599,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         self.assertEqual(len(appl.client.set_calls), 2)
         self.assertEqual(appl.client.set_calls[1], {
-            "mapping": KemperMappings.BANK_AND_RIG_SELECT(rig),
+            "mapping": MAPPING_BANK_AND_RIG_SELECT(rig),
             "value": [1, 1, 0]
         })
 
@@ -612,7 +613,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         self.assertEqual(len(appl.client.set_calls), 3)
         self.assertEqual(appl.client.set_calls[2], {
-            "mapping": KemperMappings.BANK_AND_RIG_SELECT(rig),
+            "mapping": MAPPING_BANK_AND_RIG_SELECT(rig),
             "value": [3, 1, 0]
         })
 
@@ -671,7 +672,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
-            "mapping": KemperMappings.BANK_SELECT(),
+            "mapping": MAPPING_BANK_SELECT(),
             "value": [1]
         })
 
@@ -824,7 +825,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
-            "mapping": KemperMappings.BANK_SELECT(),
+            "mapping": MAPPING_BANK_SELECT(),
             "value": [2]   # This is correct because push() triggers update_displays, too!
         })
 

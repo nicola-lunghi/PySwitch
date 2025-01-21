@@ -17,6 +17,7 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     from .mocks_appl import *
+    from lib.pyswitch.controller.Controller import Controller
 
 
 class TestControllerMidi(unittest.TestCase):
@@ -34,7 +35,7 @@ class TestControllerMidi(unittest.TestCase):
     def _test_clear_buffers(self, do_it, num_msgs):
         midi = MockMidiController()
 
-        appl = MockController(
+        appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = midi,
             config = {
@@ -46,8 +47,7 @@ class TestControllerMidi(unittest.TestCase):
                         "model":  MockSwitch()
                     }
                 }
-            ],
-            no_tick = True
+            ]
         )
 
         for i in range(num_msgs):
@@ -58,7 +58,7 @@ class TestControllerMidi(unittest.TestCase):
                 )
             )            
 
-        appl.process()
+        appl.init()
 
         self.assertEqual(len(midi.next_receive_messages), 0 if do_it else num_msgs)
 

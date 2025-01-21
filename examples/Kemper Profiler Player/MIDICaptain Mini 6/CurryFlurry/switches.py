@@ -5,9 +5,8 @@
 ##############################################################################################################################################
  
 from pyswitch.hardware.Hardware import Hardware
-from pyswitch.clients.kemper import RIG_SELECT_DISPLAY_TARGET_RIG
 
-from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
 from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
 from pyswitch.clients.kemper.actions.effect_button import EFFECT_BUTTON
 

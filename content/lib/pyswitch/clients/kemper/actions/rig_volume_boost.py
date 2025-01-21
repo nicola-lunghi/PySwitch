@@ -1,7 +1,9 @@
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
-from ...kemper import NRPN_VALUE, KemperMappings
+from ...kemper import NRPN_VALUE
 from ....misc import Colors
+
+from ..mappings.rig import MAPPING_RIG_VOLUME
 
 # Volume boost function, based on setting rig volume to a certain boost value. To 
 # make sense, all rig volumes have to be zero in your rigs! You can then set the
@@ -19,7 +21,7 @@ def RIG_VOLUME_BOOST(boost_volume,
     ):
     return PushButtonAction({
         "callback": BinaryParameterCallback(
-            mapping = KemperMappings.RIG_VOLUME(),
+            mapping = MAPPING_RIG_VOLUME(),
             text = text,
             color = color,
             value_enable = NRPN_VALUE(boost_volume),

@@ -50,49 +50,58 @@ class MockSwitchFactory:
         return None          
     
 
-class MockExploreModeController(ExploreModeController):
-    def __init__(self, board, switch_factory, led_driver = None, ui = None, num_pixels_per_switch = 3, num_port_columns = 5):
-        super().__init__(
-            board = board, 
-            switch_factory = switch_factory, 
-            led_driver = led_driver, 
-            ui = ui, 
-            num_pixels_per_switch = num_pixels_per_switch, 
-            num_port_columns = num_port_columns
-        )
+# # Used to build szenarios
+# class SceneStep:
+#     def __init__(self, num_pass_ticks = 0, prepare = None, evaluate = None, next = None):
+#         self.num_pass_ticks = num_pass_ticks
+#         self.prepare = prepare
+#         self.evaluate = evaluate
+#         self.next = next
 
-        self._next_step = None
 
-    def tick(self):
-        if not self._next_step:  
-            return super().tick()
+# class MockExploreModeController(ExploreModeController):
+#     def __init__(self, board, switch_factory, led_driver = None, ui = None, num_pixels_per_switch = 3, num_port_columns = 5):
+#         super().__init__(
+#             board = board, 
+#             switch_factory = switch_factory, 
+#             led_driver = led_driver, 
+#             ui = ui, 
+#             num_pixels_per_switch = num_pixels_per_switch, 
+#             num_port_columns = num_port_columns
+#         )
+
+#         self._next_step = None
+
+#     def tick(self):
+#         if not self._next_step:  
+#             return super().tick()
         
-        if callable(self._next_step.prepare):
-            self._next_step.prepare()
+#         if callable(self._next_step.prepare):
+#             self._next_step.prepare()
 
-        res = super().tick()
-        if not res:
-            raise Exception("tick() does not return True")
+#         res = super().tick()
+#         if not res:
+#             raise Exception("tick() does not return True")
         
-        if not callable(self._next_step.evaluate):
-            return False
+#         if not callable(self._next_step.evaluate):
+#             return False
         
-        ret = self._next_step.evaluate()
+#         ret = self._next_step.evaluate()
 
-        self._next_step = self._next_step.next
+#         self._next_step = self._next_step.next
 
-        return ret        
+#         return ret        
     
-    @property
-    def next_step(self): 
-        return self._next_step
+#     @property
+#     def next_step(self): 
+#         return self._next_step
     
-    @next_step.setter
-    def next_step(self, step):
-        if not isinstance(step, SceneStep): 
-            raise Exception("Invalid test step")
+#     @next_step.setter
+#     def next_step(self, step):
+#         if not isinstance(step, SceneStep): 
+#             raise Exception("Invalid test step")
         
-        self._next_step = step
+#         self._next_step = step
 
 
 ##################################################################################################
@@ -101,19 +110,11 @@ class MockExploreModeController(ExploreModeController):
 class TestExploreMode(unittest.TestCase):
 
     def test_minimal(self):
-        appl = MockExploreModeController(MockBoard(), MockSwitchFactory())    # Must not throw
-    
-        def eval1():
-            return False
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            evaluate = eval1
-        )
-
-        # Run process
-        appl.process()
-
+        appl = ExploreModeController(MockBoard(), MockSwitchFactory())    # Must not throw
+        appl.init()            
+        appl.tick()
+        appl.tick()
+            
 
 ##################################################################################################
 
@@ -123,12 +124,14 @@ class TestExploreMode(unittest.TestCase):
         led_driver = MockNeoPixelDriver()
         switch_factory = MockSwitchFactory()
 
-        appl = MockExploreModeController(
+        appl = ExploreModeController(
             board = MockBoard(), 
             switch_factory = switch_factory,
             led_driver = led_driver,
             num_pixels_per_switch = 2
         )
+
+        appl.init()
 
         self.assertIn("EXPLORE MODE", MockMisc.msgs_str)
         self.assertIn("GP4", MockMisc.msgs_str)
@@ -139,41 +142,28 @@ class TestExploreMode(unittest.TestCase):
         self.assertEqual(len(appl.switches), 3)
         
         # Build scenario
-        def prep1():
-            switch_factory.find_by_port("MockPort_6").shall_be_pushed = True
-            MockMisc.reset_mock()
+        switch_factory.find_by_port("MockPort_6").shall_be_pushed = True
+        MockMisc.reset_mock()
 
-        def eval1():
-            self.assertNotIn("GP4", MockMisc.msgs_str)
-            self.assertIn("GP6", MockMisc.msgs_str)
-            self.assertNotIn("GP11", MockMisc.msgs_str)
-            return True
+        appl.tick()
+        appl.tick()
+            
+        self.assertNotIn("GP4", MockMisc.msgs_str)
+        self.assertIn("GP6", MockMisc.msgs_str)
+        self.assertNotIn("GP11", MockMisc.msgs_str)
+        
+        # Next step
+        switch_factory.find_by_port("MockPort_6").shall_be_pushed = False
+        switch_factory.find_by_port("MockPort_11").shall_be_pushed = True
+        MockMisc.reset_mock()
 
-        def prep2():
-            switch_factory.find_by_port("MockPort_6").shall_be_pushed = False
-            switch_factory.find_by_port("MockPort_11").shall_be_pushed = True
-            MockMisc.reset_mock()
-
-        def eval2():
-            self.assertNotIn("GP4", MockMisc.msgs_str)
-            self.assertNotIn("GP6", MockMisc.msgs_str)
-            self.assertIn("GP11", MockMisc.msgs_str)            
-            return False
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
-
+        appl.tick()
+        appl.tick()
+            
+        self.assertNotIn("GP4", MockMisc.msgs_str)
+        self.assertNotIn("GP6", MockMisc.msgs_str)
+        self.assertIn("GP11", MockMisc.msgs_str)            
+        
 
 ##################################################################################################
 
@@ -184,13 +174,15 @@ class TestExploreMode(unittest.TestCase):
         switch_factory = MockSwitchFactory()
         ui = MockUiController(width = 999, height = 600)
 
-        appl = MockExploreModeController(
+        appl = ExploreModeController(
             board = MockBoard(), 
             switch_factory = switch_factory,
             led_driver = led_driver,
             num_pixels_per_switch = 2,
             ui = ui
         )
+
+        appl.init()
 
         ui.show()
 
@@ -218,49 +210,36 @@ class TestExploreMode(unittest.TestCase):
         self.assertEqual(label_2.text, "GP6")
 
         # Build scenario
-        def prep1():
-            switch_factory.find_by_port("MockPort_6").shall_be_pushed = True
-            MockMisc.reset_mock()
+        switch_factory.find_by_port("MockPort_6").shall_be_pushed = True
+        MockMisc.reset_mock()
 
-        def eval1():
-            self.assertNotIn("GP4", MockMisc.msgs_str)
-            self.assertIn("GP6", MockMisc.msgs_str)
-            self.assertNotIn("GP11", MockMisc.msgs_str)
+        appl.tick()
+        appl.tick()
+            
+        self.assertNotIn("GP4", MockMisc.msgs_str)
+        self.assertIn("GP6", MockMisc.msgs_str)
+        self.assertNotIn("GP11", MockMisc.msgs_str)
 
-            self.assertEqual(label_0.back_color, Colors.DARK_BLUE)
-            self.assertEqual(label_1.back_color, Colors.DARK_BLUE)
-            self.assertEqual(label_2.back_color, Colors.RED)
-            return True
+        self.assertEqual(label_0.back_color, Colors.DARK_BLUE)
+        self.assertEqual(label_1.back_color, Colors.DARK_BLUE)
+        self.assertEqual(label_2.back_color, Colors.RED)
+        
+        # Next step
+        switch_factory.find_by_port("MockPort_6").shall_be_pushed = False
+        switch_factory.find_by_port("MockPort_11").shall_be_pushed = True
+        MockMisc.reset_mock()
 
-        def prep2():
-            switch_factory.find_by_port("MockPort_6").shall_be_pushed = False
-            switch_factory.find_by_port("MockPort_11").shall_be_pushed = True
-            MockMisc.reset_mock()
+        appl.tick()
+        appl.tick()
+            
+        self.assertNotIn("GP4", MockMisc.msgs_str)
+        self.assertNotIn("GP6", MockMisc.msgs_str)
+        self.assertIn("GP11", MockMisc.msgs_str)            
 
-        def eval2():
-            self.assertNotIn("GP4", MockMisc.msgs_str)
-            self.assertNotIn("GP6", MockMisc.msgs_str)
-            self.assertIn("GP11", MockMisc.msgs_str)            
-
-            self.assertEqual(label_0.back_color, Colors.RED)
-            self.assertEqual(label_1.back_color, Colors.DARK_BLUE)
-            self.assertEqual(label_2.back_color, Colors.DARK_BLUE)
-            return False
-
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                prepare = prep2,
-                evaluate = eval2
-            )
-        )
-
-        # Run process
-        appl.process()
-
+        self.assertEqual(label_0.back_color, Colors.RED)
+        self.assertEqual(label_1.back_color, Colors.DARK_BLUE)
+        self.assertEqual(label_2.back_color, Colors.DARK_BLUE)
+        
 
 ##################################################################################################
 
@@ -269,7 +248,7 @@ class TestExploreMode(unittest.TestCase):
         MockMisc.reset_mock()
         ui = MockUiController(width = 1000, height = 600)
 
-        appl = MockExploreModeController(
+        appl = ExploreModeController(
             board = MockBoard(), 
             switch_factory = MockSwitchFactory(),
             led_driver = MockNeoPixelDriver(),
@@ -277,6 +256,8 @@ class TestExploreMode(unittest.TestCase):
             ui = ui,
             num_port_columns = 2
         )
+
+        appl.init()
 
         ui.show()
 
@@ -312,124 +293,86 @@ class TestExploreMode(unittest.TestCase):
         led_driver = MockNeoPixelDriver()
         switch_factory = MockSwitchFactory()
 
-        appl = MockExploreModeController(
+        appl = ExploreModeController(
             board = MockBoard(), 
             switch_factory = switch_factory,
             led_driver = led_driver,
             num_pixels_per_switch = 4
         )
 
+        appl.init()
+
         self.assertEqual(len(appl.switches), 3)
         
         # Build scenario
-        def prep1():
-            switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.reset_mock()
-            pass
-
-        def eval1():
-            if direction == "up":
-                self.assertIn("(0, 1, 2, 3) of 12", MockMisc.msgs_str)            
-                self._assert_enlightened(led_driver, (0, 1, 2, 3))
-            else:
-                self.assertIn("(8, 9, 10, 11) of 12", MockMisc.msgs_str)
-                self._assert_enlightened(led_driver, (8, 9, 10, 11))
-            return True
-
-        def prep2():
-            switch_factory.switches[switch_id].shall_be_pushed = False
-
-        def eval2():            
-            return True
-
-        def prep3():
-            switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.reset_mock()            
-
-        def eval3():
-            self.assertIn("(4, 5, 6, 7) of 12", MockMisc.msgs_str)    
-            self._assert_enlightened(led_driver, (4, 5, 6, 7))        
-            return True
+        switch_factory.switches[switch_id].shall_be_pushed = True
+        MockMisc.reset_mock()
         
-        def prep4():
-            switch_factory.switches[switch_id].shall_be_pushed = False
-
-        def eval4():            
-            return True
-
-        def prep5():
-            switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.reset_mock()
-            pass
-
-        def eval5():
-            if direction == "up":
-                self.assertIn("(8, 9, 10, 11) of 12", MockMisc.msgs_str)
-                self._assert_enlightened(led_driver, (8, 9, 10, 11))
-            else:
-                self.assertIn("(0, 1, 2, 3) of 12", MockMisc.msgs_str)     
-                self._assert_enlightened(led_driver, (0, 1, 2, 3))       
-            return True
+        appl.tick()
+        appl.tick()
+            
+        if direction == "up":
+            self.assertIn("(0, 1, 2, 3) of 12", MockMisc.msgs_str)            
+            self._assert_enlightened(led_driver, (0, 1, 2, 3))
+        else:
+            self.assertIn("(8, 9, 10, 11) of 12", MockMisc.msgs_str)
+            self._assert_enlightened(led_driver, (8, 9, 10, 11))
         
-        def prep6():
-            switch_factory.switches[switch_id].shall_be_pushed = False
+        # Next step
+        switch_factory.switches[switch_id].shall_be_pushed = False
 
-        def eval6():            
-            return True
+        appl.tick()
+        appl.tick()
+            
+        # Next step
+        switch_factory.switches[switch_id].shall_be_pushed = True
+        MockMisc.reset_mock()            
 
-        def prep7():
-            switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.reset_mock()
-            pass
+        appl.tick()
+        appl.tick()
+            
+        self.assertIn("(4, 5, 6, 7) of 12", MockMisc.msgs_str)    
+        self._assert_enlightened(led_driver, (4, 5, 6, 7))        
+    
+        # Next step
+        switch_factory.switches[switch_id].shall_be_pushed = False
 
-        def eval7():
-            if direction == "up":
-                self.assertIn("(0, 1, 2, 3) of 12", MockMisc.msgs_str)     
-                self._assert_enlightened(led_driver, (0, 1, 2, 3))       
-            else:
-                self.assertIn("(8, 9, 10, 11) of 12", MockMisc.msgs_str)
-                self._assert_enlightened(led_driver, (8, 9, 10, 11))                
-            return False
+        appl.tick()
+        appl.tick()
+            
+        # Next step
+        switch_factory.switches[switch_id].shall_be_pushed = True
+        MockMisc.reset_mock()
         
+        appl.tick()
+        appl.tick()
+        
+        if direction == "up":
+            self.assertIn("(8, 9, 10, 11) of 12", MockMisc.msgs_str)
+            self._assert_enlightened(led_driver, (8, 9, 10, 11))
+        else:
+            self.assertIn("(0, 1, 2, 3) of 12", MockMisc.msgs_str)     
+            self._assert_enlightened(led_driver, (0, 1, 2, 3))       
+                
+        # Next step        
+        switch_factory.switches[switch_id].shall_be_pushed = False
 
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            prepare = prep1,
-            evaluate = eval1,
-
-            next = SceneStep(
-                prepare = prep2,
-                evaluate = eval2,
-
-                next = SceneStep(
-                    prepare = prep3,
-                    evaluate = eval3,
-
-                    next = SceneStep(
-                        prepare = prep4,
-                        evaluate = eval4,
-
-                        next = SceneStep(
-                            prepare = prep5,
-                            evaluate = eval5,
-
-                            next = SceneStep(
-                                prepare = prep6,
-                                evaluate = eval6,
-
-                                next = SceneStep(
-                                    prepare = prep7,
-                                    evaluate = eval7
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
-
-        # Run process
-        appl.process()
+        appl.tick()
+        appl.tick()
+            
+        # Next step
+        switch_factory.switches[switch_id].shall_be_pushed = True
+        MockMisc.reset_mock()
+        
+        appl.tick()
+        appl.tick()
+            
+        if direction == "up":
+            self.assertIn("(0, 1, 2, 3) of 12", MockMisc.msgs_str)     
+            self._assert_enlightened(led_driver, (0, 1, 2, 3))       
+        else:
+            self.assertIn("(8, 9, 10, 11) of 12", MockMisc.msgs_str)
+            self._assert_enlightened(led_driver, (8, 9, 10, 11))                
 
 
 ##################################################################################################
@@ -446,7 +389,7 @@ class TestExploreMode(unittest.TestCase):
         switch_factory = MockSwitchFactory()
         ui = MockUiController()
 
-        appl = MockExploreModeController(
+        appl = ExploreModeController(
             board = MockBoard(), 
             switch_factory = switch_factory,
             led_driver = led_driver,
@@ -454,97 +397,69 @@ class TestExploreMode(unittest.TestCase):
             ui = ui
         )
 
+        appl.init()
+
         self.assertEqual(len(appl.switches), 3)        
         
         label = []  # Use a list to keep the field global (dirty hack)
 
         # Build scenario
-        def prep1():
-            self.assertEqual(len(ui.shown_root.children), 2)
-            label.append(ui.shown_root.children[0])
+        self.assertEqual(len(ui.shown_root.children), 2)
+        label.append(ui.shown_root.children[0])
 
-            switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.reset_mock()
-            pass
-
-        def eval1():
-            if direction == "up":
-                self.assertIn("(0, 1, 2) of 9", MockMisc.msgs_str)            
-                self._assert_enlightened(led_driver, (0, 1, 2))
-                self.assertIn("(0, 1, 2) of 9", label[0].text)
-            else:
-                self.assertIn("(6, 7, 8) of 9", MockMisc.msgs_str)
-                self._assert_enlightened(led_driver, (6, 7, 8))
-                self.assertIn("(6, 7, 8) of 9", label[0].text)
-            return True
-
-        def prep2():
-            switch_factory.switches[switch_id].shall_be_pushed = False
-
-        def eval2():            
-            return True
-
-        def prep3():
-            switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.reset_mock()            
-
-        def eval3():
-            self.assertIn("(3, 4, 5) of 9", MockMisc.msgs_str)    
-            self._assert_enlightened(led_driver, (3, 4, 5))        
-            self.assertIn("(3, 4, 5) of 9", label[0].text)
-            return True
+        switch_factory.switches[switch_id].shall_be_pushed = True
+        MockMisc.reset_mock()
         
-        def prep4():
-            switch_factory.switches[switch_id].shall_be_pushed = False
-
-        def eval4():            
-            return True
-
-        def prep5():
-            switch_factory.switches[switch_id].shall_be_pushed = True
-            MockMisc.reset_mock()
-            pass
-
-        def eval5():
-            if direction == "up":
-                self.assertIn("(6, 7, 8) of 9", MockMisc.msgs_str)
-                self._assert_enlightened(led_driver, (6, 7, 8))
-                self.assertIn("(6, 7, 8) of 9", label[0].text)
-            else:
-                self.assertIn("(0, 1, 2) of 9", MockMisc.msgs_str)     
-                self._assert_enlightened(led_driver, (0, 1, 2))  
-                self.assertIn("(0, 1, 2) of 9", label[0].text)     
-            return False
+        appl.tick()
+        appl.tick()
+            
+        if direction == "up":
+            self.assertIn("(0, 1, 2) of 9", MockMisc.msgs_str)            
+            self._assert_enlightened(led_driver, (0, 1, 2))
+            self.assertIn("(0, 1, 2) of 9", label[0].text)
+        else:
+            self.assertIn("(6, 7, 8) of 9", MockMisc.msgs_str)
+            self._assert_enlightened(led_driver, (6, 7, 8))
+            self.assertIn("(6, 7, 8) of 9", label[0].text)
         
+        # Next step        
+        switch_factory.switches[switch_id].shall_be_pushed = False
 
-        # Build scenes hierarchy
-        appl.next_step = SceneStep(
-            prepare = prep1,
-            evaluate = eval1,
+        appl.tick()
+        appl.tick()
+            
+        # Next step
+        switch_factory.switches[switch_id].shall_be_pushed = True
+        MockMisc.reset_mock()            
 
-            next = SceneStep(
-                prepare = prep2,
-                evaluate = eval2,
+        appl.tick()
+        appl.tick()
+            
+        self.assertIn("(3, 4, 5) of 9", MockMisc.msgs_str)    
+        self._assert_enlightened(led_driver, (3, 4, 5))        
+        self.assertIn("(3, 4, 5) of 9", label[0].text)
+            
+        # Next step    
+        switch_factory.switches[switch_id].shall_be_pushed = False
 
-                next = SceneStep(
-                    prepare = prep3,
-                    evaluate = eval3,
-
-                    next = SceneStep(
-                        prepare = prep4,
-                        evaluate = eval4,
-
-                        next = SceneStep(
-                            prepare = prep5,
-                            evaluate = eval5
-                        )
-                    )
-                )
-            )
-        )
-
-        # Run process
-        appl.process()
+        appl.tick()
+        appl.tick()
+            
+        # Next step
+        switch_factory.switches[switch_id].shall_be_pushed = True
+        MockMisc.reset_mock()
+        
+        appl.tick()
+        appl.tick()
+            
+        if direction == "up":
+            self.assertIn("(6, 7, 8) of 9", MockMisc.msgs_str)
+            self._assert_enlightened(led_driver, (6, 7, 8))
+            self.assertIn("(6, 7, 8) of 9", label[0].text)
+        else:
+            self.assertIn("(0, 1, 2) of 9", MockMisc.msgs_str)     
+            self._assert_enlightened(led_driver, (0, 1, 2))  
+            self.assertIn("(0, 1, 2) of 9", label[0].text)     
 
 
 ##################################################################################################

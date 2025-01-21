@@ -1,9 +1,12 @@
-from ...kemper import RIG_SELECT_DISPLAY_TARGET_RIG, KemperMappings
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback, Callback
 
-from .rig_select import RIG_SELECT
 from .morph import KemperMorphCallback
+from .rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
+
+from ..mappings.morph import MAPPING_MORPH_PEDAL
+from ..mappings.select import MAPPING_RIG_SELECT
+
 
 # Adds morph state display on one LED to the rig select action. Returns a list of actions!
 # For details on the parameters, see RIG_SELECT.
@@ -49,7 +52,7 @@ def RIG_SELECT_AND_MORPH_STATE(rig,
         # Use a separate action to show morph state
         PushButtonAction({
             "callback": KemperMorphCallback(
-                mapping = KemperMappings.MORPH_PEDAL(),
+                mapping = MAPPING_MORPH_PEDAL(),
                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
                 led_brightness_off = "on",
                 display_dim_factor_off = "on",
@@ -79,7 +82,7 @@ class KemperMorphDisplayEnableCallback(Callback):
         self.__action_rig_select = action_rig_select
         self.__morph_only_when_enabled = morph_only_when_enabled
 
-        self.__mapping = KemperMappings.RIG_SELECT(rig - 1)
+        self.__mapping = MAPPING_RIG_SELECT(rig - 1)
         self.register_mapping(self.__mapping)
 
     def enabled(self, action):

@@ -23,7 +23,7 @@ with patch.dict(sys.modules, {
     from .mocks_callback import *
 
 
-class MockController(Updater):
+class MockController2(Updater):
     def __init__(self, config = {}):
         super().__init__()
         
@@ -40,7 +40,7 @@ class TestFootswitchControllerHold(unittest.TestCase):
         action_2 = MockAction()
         action_3 = MockAction()
     
-        appl = MockController()
+        appl = MockController2()
 
         fs = FootSwitchController(
             appl,
@@ -171,7 +171,7 @@ class TestFootswitchControllerHold(unittest.TestCase):
         action_1 = MockAction()
         action_2 = MockAction()
     
-        appl = MockController()
+        appl = MockController2()
 
         fs = FootSwitchController(
             appl,
@@ -260,7 +260,7 @@ class TestFootswitchControllerHold(unittest.TestCase):
         action_3 = MockAction()
         action_4 = MockAction(config = { "enableCallback": ec })
     
-        appl = MockController()
+        appl = MockController2()
 
         fs = FootSwitchController(
             appl,

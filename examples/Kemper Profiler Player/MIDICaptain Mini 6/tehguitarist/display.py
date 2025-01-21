@@ -11,7 +11,10 @@ from pyswitch.ui.ui import DisplayElement, DisplayBounds
 from pyswitch.ui.elements import DisplayLabel, BidirectionalProtocolState
 from pyswitch.controller.callbacks import Callback
 
-from pyswitch.clients.kemper import KemperRigNameCallback, TunerDisplayCallback, KemperMappings
+from pyswitch.clients.kemper import KemperRigNameCallback, TunerDisplayCallback
+
+from pyswitch.clients.kemper.mappings.bank import MAPPING_NEXT_BANK
+from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_NAME
 
 #############################################################################################################################################
 
@@ -71,8 +74,8 @@ class _BankNameCallback(Callback):
        
         # This defines that the following mappings have to be listened to.
         # In your case you need to listen to two mappings as you also need the amp name.        
-        self._mapping_bank = KemperMappings.NEXT_BANK()
-        self._mapping_amp_name = KemperMappings.AMP_NAME()
+        self._mapping_bank = MAPPING_NEXT_BANK()
+        self._mapping_amp_name = MAPPING_AMP_NAME()
 
         self.register_mapping(self._mapping_bank)
         self.register_mapping(self._mapping_amp_name)
