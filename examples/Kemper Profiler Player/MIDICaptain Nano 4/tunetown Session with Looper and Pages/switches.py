@@ -8,17 +8,14 @@ from pyswitch.hardware.Hardware import Hardware
 
 from pyswitch.misc import Colors
 
-#from pyswitch.clients.kemper import KemperMappings
-from pyswitch.controller.actions import PushButtonAction
 from pyswitch.controller.pager import PagerAction
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_PAGE
 
 from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
-from pyswitch.clients.kemper.actions.binary_switch import BINARY_SWITCH
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
 
-from pyswitch.clients.kemper.mappings.looper import MAPPING_LOOPER_REC_PLAY_OVERDUB, MAPPING_LOOPER_ERASE, MAPPING_LOOPER_CANCEL, MAPPING_LOOPER_REVERSE, MAPPING_LOOPER_STOP
+from pyswitch.clients.kemper.actions.looper import LOOPER_REC_PLAY_OVERDUB, LOOPER_STOP, LOOPER_ERASE, LOOPER_CANCEL, LOOPER_REVERSE
 
 ##############################################################################################################################################
 
@@ -70,10 +67,8 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
             # Page 1: Looper Rec/Play/Overdub
-            BINARY_SWITCH(
-                mapping = MAPPING_LOOPER_REC_PLAY_OVERDUB(),
+            LOOPER_REC_PLAY_OVERDUB(
                 color = Colors.LIGHT_GREEN,
-                mode = PushButtonAction.MOMENTARY,
                 display = DISPLAY_HEADER_2,
                 text = "Rec|Erase",
                 id = _PAGE_1,
@@ -81,10 +76,8 @@ Switches = [
             ),
 
             # Page 2: Looper Stop
-            BINARY_SWITCH(
-                mapping = MAPPING_LOOPER_STOP(),
+            LOOPER_STOP(
                 color = Colors.LIGHT_RED,
-                mode = PushButtonAction.MOMENTARY,
                 display = DISPLAY_HEADER_2,
                 text = "Stp|Erase",
                 id = _PAGE_2,
@@ -93,10 +86,8 @@ Switches = [
         ],
         "actionsHold": [
             # Page 1: Looper Erase
-            BINARY_SWITCH(
-                mapping = MAPPING_LOOPER_ERASE(),
-                color = Colors.RED,
-                mode = PushButtonAction.MOMENTARY
+            LOOPER_ERASE(
+                color = Colors.RED
             )
         ]
     },
@@ -121,10 +112,8 @@ Switches = [
             ),
             
             # Page 2: Looper Cancel/Reactivate Overdub
-            BINARY_SWITCH(
-                mapping = MAPPING_LOOPER_CANCEL(),
+            LOOPER_CANCEL(
                 color = Colors.LIGHT_GREEN,
-                mode = PushButtonAction.MOMENTARY,
                 display = DISPLAY_FOOTER_1,
                 text = "Undo|Rev",
                 id = _PAGE_2,
@@ -133,10 +122,8 @@ Switches = [
         ],
         "actionsHold": [
             # Pahe 2: Looper Reverse
-            BINARY_SWITCH(
-                mapping = MAPPING_LOOPER_REVERSE(),
+            LOOPER_REVERSE(
                 color = Colors.YELLOW,
-                mode = PushButtonAction.MOMENTARY,
                 id = _PAGE_2,
                 enable_callback = _pager.enable_callback
             )
@@ -161,10 +148,8 @@ Switches = [
             ),
 
             # Page 1: Looper Rec/Play/Overdub
-            BINARY_SWITCH(
-                mapping = MAPPING_LOOPER_REC_PLAY_OVERDUB(),
+            LOOPER_REC_PLAY_OVERDUB(
                 color = Colors.LIGHT_GREEN,
-                mode = PushButtonAction.MOMENTARY,
                 display = DISPLAY_FOOTER_2,
                 text = "Rec|Exit",
                 id = _PAGE_2,
