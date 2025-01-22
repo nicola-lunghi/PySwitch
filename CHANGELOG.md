@@ -5,6 +5,7 @@
 - Tuner mode:
     - Disable tuner mode with any switch
     - Added strobe tuner using all available LEDs when in tuner mode (active by default, can be disabled with parameter "strobe" in TunerDisplayCallback / display.py if you do not like to use it)
+- Morph Button: When pushing this, the displayed state will be toggled whatever the Kemper says. Only if the Kemper sends an updated value, it will be updated on the controller, too. Note: This does only work when morph is triggered from the Controller! When using the Kemper "Rig Btn Morph" option, this will not be reflected.
 - Added Looper mappings (see example Nano 4 -> tunetown Session with Looper and Pages). 
 - Added Paging: Use class PagerAction to step through multiple pages with individual actions. Also partial pages are possible. The actions are switched via callback, see example Nano 4 -> tunetown Session.with Looper and Pages.
 - Tempo Display is now darker by default, and brightness for on and off states can be adjusted by using the "led_brightness_\*" parameters of the SHOW_TEMPO action
