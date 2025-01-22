@@ -38,8 +38,8 @@ class StrobeController:
         appl.client.register(self.__mapping_deviance, self)
         
         # Bring the switches into the correct order for strobe
-        self.__switches = [s for s in appl.switches]
-        self.__current_strobe_brightnesses = [0 for s in appl.switches]
+        self.__switches = [s for s in appl.inputs if hasattr(s, "pixels")]
+        self.__current_strobe_brightnesses = [0 for s in self.__switches]
 
         # Period counter for saving LED updates (restricts the updates to a certain frame rate)
         period = int(1000 / self.__max_fps * len(self.__switches))

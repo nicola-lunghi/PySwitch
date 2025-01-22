@@ -28,12 +28,12 @@ with patch.dict(sys.modules, {
     
 
 class MockController2(Updater):
-   def __init__(self, switches = []):
+   def __init__(self, inputs = []):
        Updater.__init__(self)
        self.client = MockClient()
        self.config = {}
        self.shared = {}
-       self.switches = switches
+       self.inputs = inputs
 
 
 class MockFootswitch:
@@ -651,9 +651,11 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         switch_1 = MockFootswitch(actions = [action_other])
         switch_2 = MockFootswitch(actions = [action])
-        appl = MockController2(switches = [
+        appl = MockController2(inputs = [
             switch_1,
-            switch_2
+            MockInputControllerDefinition(),
+            switch_2,
+            MockInputControllerDefinition()
         ])
         action.init(appl, switch_2)
         
@@ -804,9 +806,10 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         switch_1 = MockFootswitch(actions = [action_other])
         switch_2 = MockFootswitch(actions = [action])
-        appl = MockController2(switches = [
+        appl = MockController2(inputs = [
             switch_1,
-            switch_2
+            switch_2,
+            MockInputControllerDefinition()
         ])
         action.init(appl, switch_2)
         

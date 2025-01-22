@@ -235,7 +235,7 @@ class TestBidirectionalClient(unittest.TestCase):
             led_driver = MockNeoPixelDriver(),
             protocol = protocol,
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1

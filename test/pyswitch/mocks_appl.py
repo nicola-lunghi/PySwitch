@@ -150,6 +150,21 @@ class MockSwitch:
 ##################################################################################################################################
 
 
+class MockPotentiometer:
+    def __init__(self):
+        self.output = 0
+
+    def init(self):
+        pass
+
+    @property
+    def value(self):
+        return self.output
+
+
+##################################################################################################################################
+
+
 class MockParameterMapping(ClientParameterMapping):
     def __init__(self, name = "", set = None, request = None, response = None, value = None):
         super().__init__(name = name, set = set, request = request, response = response, value = value)
@@ -246,6 +261,38 @@ class MockAction(Action):
         super().update_displays()
 
         self.num_update_displays_calls += 1
+
+
+##################################################################################################################################
+
+
+class MockInputAction:
+    def __init__(self, enabled = True):
+        self.enabled = enabled
+        self.init_calls = []
+        self.process_calls = []
+    
+    def init(self, appl):
+        self.init_calls.append(appl)
+
+    # Process a value in range [0..65535]
+    def process(self, value):
+        self.process_calls.append(value)
+
+
+##################################################################################################################################
+
+
+def MockInputControllerDefinition():
+    return {
+        "assignment": {
+            "model": MockPotentiometer()
+        },
+        "actions": {
+            MockInputAction(),
+            MockInputAction()
+        }
+    }
 
 
 ##################################################################################################################################

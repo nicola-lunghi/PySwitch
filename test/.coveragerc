@@ -5,7 +5,9 @@ omit =
     /project/lib/pyswitch/hardware/*
     /project/lib/pymidibridge/*
     /project/lib/functools.py
-    /project/test/*
+    /project/test/test-examples/*
+    
+    #/project/test/*
     
 [report]
 show_missing = True

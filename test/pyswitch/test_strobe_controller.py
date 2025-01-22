@@ -25,9 +25,9 @@ with patch.dict(sys.modules, {
 
 
 class MockController2:
-    def __init__(self, switches = []):
+    def __init__(self, inputs = []):
         self.client = MockClient()
-        self.switches = switches
+        self.inputs = inputs
 
 
 class MockFootSwitch:
@@ -36,6 +36,7 @@ class MockFootSwitch:
         self.color = (0, 0, 0)
         self.brightness = 0
         self.strobe_order = order
+        self.pixels = []
 
 
 
@@ -142,7 +143,7 @@ class TestStrobeController(unittest.TestCase):
 
         # Create mock controller and init the Tuner display with it
         appl = MockController2(
-            switches = switches_unsorted
+            inputs = switches_unsorted + [MockInputControllerDefinition()]
         )
         strobe.init(appl)
 
@@ -333,7 +334,7 @@ class TestStrobeController(unittest.TestCase):
 
         # Create mock controller and init the Tuner display with it
         appl = MockController2(
-            switches = switches
+            inputs = switches + [MockInputControllerDefinition()]
         )
         strobe.init(appl)
 

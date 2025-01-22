@@ -16,10 +16,81 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from lib.pyswitch.controller.Controller import Controller
+    from lib.pyswitch.controller.FootSwitchController import FootSwitchController
+    from lib.pyswitch.controller.input import InputController
     from .mocks_appl import *
 
 
 class TestControllerActions(unittest.TestCase):
+
+    def test_switches_and_inputs(self):
+        switch_1 = MockSwitch()
+        switch_2 = MockSwitch()
+
+        pot_3 = MockPotentiometer()
+        pot_4 = MockPotentiometer()
+        
+        action_1 = MockAction()
+        action_2 = MockAction()
+        action_3 = MockInputAction()
+        action_4 = MockInputAction()
+
+        period = MockPeriodCounter()
+
+        appl = Controller(
+            led_driver = MockNeoPixelDriver(),
+            midi = MockMidiController(),
+            inputs = [
+                {
+                    "assignment": {
+                        "model": switch_1
+                    },
+                    "actions": [
+                        action_1                        
+                    ]
+                },
+                {
+                    "assignment": {
+                        "model": switch_2
+                    },
+                    "actions": [
+                        action_2
+                    ]
+                },
+                {
+                    "assignment": {
+                        "model": pot_3
+                    },
+                    "actions": [
+                        action_3
+                    ]
+                },
+                {
+                    "assignment": {
+                        "model": pot_4
+                    },
+                    "actions": [
+                        action_4
+                    ]
+                }
+            ],
+            period_counter = period
+        )
+
+        appl.init()
+
+        period.exceed_next_time = True
+        
+        switch_ctrl_1 = appl.inputs[0]
+        switch_ctrl_2 = appl.inputs[1]
+        input_ctrl_3 = appl.inputs[2]
+        input_ctrl_4 = appl.inputs[3]
+
+        self.assertIsInstance(switch_ctrl_1, FootSwitchController)
+        self.assertIsInstance(switch_ctrl_2, FootSwitchController)
+        self.assertIsInstance(input_ctrl_3, InputController)
+        self.assertIsInstance(input_ctrl_4, InputController)
+
 
     def test_update_period(self):
         switch_1 = MockSwitch()
@@ -34,7 +105,7 @@ class TestControllerActions(unittest.TestCase):
         appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1
@@ -43,6 +114,7 @@ class TestControllerActions(unittest.TestCase):
                         action_1                        
                     ]
                 },
+                MockInputControllerDefinition(),
                 {
                     "assignment": {
                         "model": switch_2

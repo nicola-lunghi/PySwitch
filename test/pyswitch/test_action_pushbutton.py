@@ -80,7 +80,7 @@ class TestActionPushButton(unittest.TestCase):
         appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1
@@ -144,7 +144,7 @@ class TestActionPushButton(unittest.TestCase):
         appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1
@@ -209,7 +209,7 @@ class TestActionPushButton(unittest.TestCase):
         appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1
@@ -271,7 +271,7 @@ class TestActionPushButton(unittest.TestCase):
         appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1
@@ -336,7 +336,7 @@ class TestActionPushButton(unittest.TestCase):
         appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1
@@ -402,7 +402,7 @@ class TestActionPushButton(unittest.TestCase):
         appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1
@@ -478,7 +478,7 @@ class TestActionPushButton(unittest.TestCase):
         appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1
@@ -486,7 +486,8 @@ class TestActionPushButton(unittest.TestCase):
                     "actions": [
                         action_1
                     ]
-                }
+                },
+                MockInputControllerDefinition()
             ]
         )
 
@@ -555,7 +556,7 @@ class TestActionPushButton(unittest.TestCase):
         appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1
@@ -563,7 +564,8 @@ class TestActionPushButton(unittest.TestCase):
                     "actions": [
                         action_1
                     ]
-                }
+                },
+                MockInputControllerDefinition()
             ]
         )
 

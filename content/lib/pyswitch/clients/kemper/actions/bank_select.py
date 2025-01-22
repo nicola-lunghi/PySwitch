@@ -123,9 +123,10 @@ class KemperBankSelectCallback(BinaryParameterCallback):
             else:
                 self.__appl.shared["preselectedBank"] = self.__bank - 1
 
-            for switch in self.__appl.switches:
-                for a in switch.actions:
-                    a.update_displays()
+            for input in self.__appl.inputs:
+                if hasattr(input, "pixels"):
+                    for a in input.actions:
+                        a.update_displays()
 
         else:
             curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK

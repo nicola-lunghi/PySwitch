@@ -58,22 +58,23 @@ class InputController:
 
 class InputAction:
     def __init__(self, 
-                 mapping,                 # Parameter mapping to be controlled
-                 max_value = 16384,       # Maximum value plus one (!) of the mapping (16384 for NRPN, 128 for CC)
-                 max_frame_rate = 24,     # Maximum frame rate for sending MIDI values (fps)
-                 num_steps = 128,         # Number of steps to be regarded as different (saves MIDI traffic at the cost of precision)
-                 enable_callback = None,  # Callback to set enabled state (optional). Must contain an enabled(action) function.
-                 transfer = None          # Transfer handler instance. See TransferFunction below. If used, this disables the num_steps parameter.
-                                          # When designing your transfer function, take care that the output values do not change too often as this 
-                                          # imposes performance issues! 
+                 mapping,                          # Parameter mapping to be controlled
+                 max_frame_rate = 24,              # Maximum frame rate for sending MIDI values (fps)
+                 max_value = 16384,                # Maximum value plus one (!) of the mapping (16384 for NRPN, 128 for CC)
+                 num_steps = 128,                  # Number of steps to be regarded as different (saves MIDI traffic at the cost of precision)
+                 enable_callback = None,           # Callback to set enabled state (optional). Must contain an enabled(action) function.
+                 transfer_function = None          # Transfer function. Input is the raw encoder value in range [0..65535]. Must return the value to be sent for 
+                                                   # the mapping, in its range. If used, this disables the num_steps and max_value parameters.
+                                                   # NOTE: When designing your transfer function, take care that the output values do not change too often as this 
+                                                   # imposes performance issues! 
         ):
         self.__mapping = mapping
-        self.__factor = max_value / 65536
+        self.__factor = 65536 / max_value
         self.__period = PeriodCounter(1000 / max_frame_rate)
         self.__enable_callback = enable_callback
         self.__step_width = int(65536 / num_steps)
         self.__last_value = -1
-        self.__transfer = transfer
+        self.__transfer_function = transfer_function
 
     @property
     def enabled(self):
@@ -85,13 +86,13 @@ class InputAction:
     # Process a value in range [0..65535]
     def process(self, value):
         if self.__period.exceeded:
-            if self.__transfer:
+            if self.__transfer_function:
                 # Use an external transfer function
-                v = self.__transfer.get(value)
+                v = self.__transfer_function(value)
             else:
                 # Scale and quantize
-                v = value * self.__factor
-                v = int(v / self.__step_width) * self.__step_width 
+                v = round(value / self.__step_width) * self.__step_width 
+                v = round(v / self.__factor)                
 
             if self.__last_value != v:
                 # Update value on client

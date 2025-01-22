@@ -27,11 +27,11 @@ with patch.dict(sys.modules, {
 
 
 class MockController2(Updater):
-    def __init__(self, switches = []):
+    def __init__(self, inputs = []):
         Updater.__init__(self)
         self.client = MockClient()
         self.config = {}
-        self.switches = switches
+        self.inputs = inputs
 
 
 class MockFootSwitch:
@@ -100,10 +100,12 @@ class TestKemperActionTunerMode(unittest.TestCase):
         )
 
         appl = MockController2(
-            switches = [
+            inputs = [
                 switch_other_1,
+                MockInputControllerDefinition(),
                 switch,
-                switch_other_2
+                switch_other_2,
+                MockInputControllerDefinition()
             ]
         )
         action.init(appl, switch)

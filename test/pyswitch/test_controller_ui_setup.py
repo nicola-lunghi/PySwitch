@@ -76,7 +76,7 @@ class TestControllerUiSetup(unittest.TestCase):
         appl = Controller(
             led_driver = MockNeoPixelDriver(),
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1

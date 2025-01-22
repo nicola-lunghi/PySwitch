@@ -41,7 +41,7 @@ class TestControllerMidi(unittest.TestCase):
             config = {
                 "clearBuffers": do_it
             },
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model":  MockSwitch()

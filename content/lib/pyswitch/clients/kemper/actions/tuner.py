@@ -52,18 +52,20 @@ class _TunerModeCallback(BinaryParameterCallback):
         
         if self.__mapping.value == 1:
             # Tuner on
-            for switch in self.__appl.switches:
-                switch.override_action = self
-                
-                switch.color = Colors.WHITE
-                switch.brightness = self._led_brightness_off
+            for input in self.__appl.inputs:
+                if hasattr(input, "pixels"):
+                    input.override_action = self
+                    
+                    input.color = Colors.WHITE
+                    input.brightness = self._led_brightness_off
         else:
             # Tuner off
-            for switch in self.__appl.switches:
-                switch.override_action = None
+            for input in self.__appl.inputs:
+                if hasattr(input, "pixels"):
+                    input.override_action = None
 
-                for action in switch.actions:
-                    action.reset()
+                    for action in input.actions:
+                        action.reset()
 
     def push(self):
         pass

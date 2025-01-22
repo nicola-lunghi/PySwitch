@@ -92,7 +92,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
         appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1,
@@ -101,7 +101,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
                     "actions": [
                         action_1                        
                     ]
-                }
+                },
+                MockInputControllerDefinition()
             ],
             period_counter = period
         )
@@ -151,8 +152,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
         self.assertEqual(cb._EffectEnableCallback__effect_category, 0)
         self.assertEqual(action_1.state, False)
 
-        self.assertEqual(appl.switches[0].color, (0, 2, 0))
-        self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
+        self.assertEqual(appl.inputs[0].color, (0, 2, 0))
+        self.assertAlmostEqual(appl.inputs[0].brightness, 0.02)
         self.assertEqual(led_driver.leds[0], (0, 0, 0))
 
         # Push switch (must stay false when not assigned)
@@ -167,8 +168,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
         
         self.assertEqual(action_1.state, False)
 
-        self.assertEqual(appl.switches[0].color, (0, 2, 0))
-        self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
+        self.assertEqual(appl.inputs[0].color, (0, 2, 0))
+        self.assertAlmostEqual(appl.inputs[0].brightness, 0.02)
         self.assertEqual(led_driver.leds[0], (0, 0, 0))
         
         # Receive other value (not pushed)
@@ -192,8 +193,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
         self.assertEqual(cb._EffectEnableCallback__effect_category, 10)
         self.assertEqual(action_1.state, False)
 
-        self.assertEqual(appl.switches[0].color, (10, 12, 40))
-        self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
+        self.assertEqual(appl.inputs[0].color, (10, 12, 40))
+        self.assertAlmostEqual(appl.inputs[0].brightness, 0.02)
         self.assertAlmostEqual(led_driver.leds[0], (int(10*0.02), int(12*0.02), int(40*0.02)))
 
         # Receive status enabled
@@ -215,8 +216,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
         self.assertEqual(mapping_1.value, 1)
         self.assertEqual(action_1.state, True)
 
-        self.assertEqual(appl.switches[0].color, (10, 12, 40))
-        self.assertAlmostEqual(appl.switches[0].brightness, 0.3)
+        self.assertEqual(appl.inputs[0].color, (10, 12, 40))
+        self.assertAlmostEqual(appl.inputs[0].brightness, 0.3)
         self.assertAlmostEqual(led_driver.leds[0], (int(10*0.3), int(12*0.3), int(40*0.3)))
         
         # Receive non-assigned type again
@@ -237,8 +238,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
         self.assertEqual(mapping_type_1.value, 0)
         self.assertEqual(action_1.state, False)
 
-        self.assertEqual(appl.switches[0].color, (0, 2, 0))
-        self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
+        self.assertEqual(appl.inputs[0].color, (0, 2, 0))
+        self.assertAlmostEqual(appl.inputs[0].brightness, 0.02)
         self.assertEqual(led_driver.leds[0], (0, 0, 0))
         
 
@@ -291,7 +292,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
         appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1,
@@ -300,7 +301,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
                     "actions": [
                         action_1                        
                     ]
-                }
+                },
+                MockInputControllerDefinition()
             ],
             period_counter = period
         )
@@ -353,8 +355,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
 
         self.assertEqual(action_1.state, False)
 
-        self.assertEqual(appl.switches[0].color, (0, 2, 0))
-        self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
+        self.assertEqual(appl.inputs[0].color, (0, 2, 0))
+        self.assertAlmostEqual(appl.inputs[0].brightness, 0.02)
         self.assertEqual(led_driver.leds[0], (0, 0, 0))
         
         self.assertEqual(action_1.label.text, "name0")
@@ -372,8 +374,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
         
         self.assertEqual(action_1.state, False)
 
-        self.assertEqual(appl.switches[0].color, (0, 2, 0))
-        self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
+        self.assertEqual(appl.inputs[0].color, (0, 2, 0))
+        self.assertAlmostEqual(appl.inputs[0].brightness, 0.02)
         self.assertEqual(led_driver.leds[0], (0, 0, 0))
 
         self.assertEqual(action_1.label.text, "name0")
@@ -399,8 +401,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
         self.assertEqual(mapping_type_1.value, 1)
         self.assertEqual(cb._EffectEnableCallback__effect_category, 10)
 
-        self.assertEqual(appl.switches[0].color, (10, 12, 40))
-        self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
+        self.assertEqual(appl.inputs[0].color, (10, 12, 40))
+        self.assertAlmostEqual(appl.inputs[0].brightness, 0.02)
         self.assertAlmostEqual(led_driver.leds[0], (int(10*0.02), int(12*0.02), int(40*0.02)))
 
         self.assertEqual(action_1.state, False)
@@ -425,8 +427,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
     
         self.assertEqual(cb._EffectEnableCallback__effect_category, 20)
 
-        self.assertEqual(appl.switches[0].color, (20, 22, 80))
-        self.assertAlmostEqual(appl.switches[0].brightness, 0.02)
+        self.assertEqual(appl.inputs[0].color, (20, 22, 80))
+        self.assertAlmostEqual(appl.inputs[0].brightness, 0.02)
         self.assertAlmostEqual(led_driver.leds[0], (int(20*0.02), int(22*0.02), int(80*0.02)))
 
         self.assertEqual(action_1.state, False)
@@ -454,8 +456,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
 
         self.assertEqual(action_1.state, True)
 
-        self.assertEqual(appl.switches[0].color, (20, 22, 80))
-        self.assertAlmostEqual(appl.switches[0].brightness, 0.3)
+        self.assertEqual(appl.inputs[0].color, (20, 22, 80))
+        self.assertAlmostEqual(appl.inputs[0].brightness, 0.3)
         self.assertAlmostEqual(led_driver.leds[0], (int(20*0.3), int(22*0.3), int(80*0.3)))
 
         self.assertEqual(action_1.label.text, "name20")
@@ -513,7 +515,7 @@ class TestCallbackEffectEnable(unittest.TestCase):
         appl = Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1,
@@ -522,7 +524,8 @@ class TestCallbackEffectEnable(unittest.TestCase):
                     "actions": [
                         action_1                        
                     ]
-                }
+                },
+                MockInputControllerDefinition()
             ],
             period_counter = period
         )

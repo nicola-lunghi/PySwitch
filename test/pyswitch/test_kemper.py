@@ -68,7 +68,7 @@ class MockController2(Updater):
         Updater.__init__(self)
 
         self.client = MockClient()
-        self.switches = []
+        self.inputs = []
       
 
 class TestKemper(unittest.TestCase):

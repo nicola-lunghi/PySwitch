@@ -72,7 +72,7 @@ class TestKemperMorphCallback(unittest.TestCase):
         appl = Controller(
             led_driver = led_driver,
             midi = midi,
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1,
@@ -81,7 +81,8 @@ class TestKemperMorphCallback(unittest.TestCase):
                     "actions": [
                         action_1                        
                     ]
-                }
+                },
+                MockInputControllerDefinition()
             ],
             period_counter = period
         )
@@ -108,8 +109,8 @@ class TestKemperMorphCallback(unittest.TestCase):
         appl.tick()
         appl.tick()
         
-        self.assertEqual(appl.switches[0].color, Colors.RED)
-        self.assertAlmostEqual(appl.switches[0].brightness, 0.1)            
+        self.assertEqual(appl.inputs[0].color, Colors.RED)
+        self.assertAlmostEqual(appl.inputs[0].brightness, 0.1)            
         
         # Step 2
         midi.next_receive_messages = [
@@ -125,8 +126,8 @@ class TestKemperMorphCallback(unittest.TestCase):
         appl.tick()
         appl.tick()
         
-        self.assertEqual(appl.switches[0].color, Colors.BLUE)
-        self.assertEqual(appl.switches[0].brightness, 0.5)
+        self.assertEqual(appl.inputs[0].color, Colors.BLUE)
+        self.assertEqual(appl.inputs[0].brightness, 0.5)
                     
         # Step 3
         midi.next_receive_messages = [
@@ -142,8 +143,8 @@ class TestKemperMorphCallback(unittest.TestCase):
         appl.tick()
         appl.tick()
         
-        self.assertEqual(appl.switches[0].color, (128, 0, 127))
-        self.assertEqual(appl.switches[0].brightness, 0.5)
+        self.assertEqual(appl.inputs[0].color, (128, 0, 127))
+        self.assertEqual(appl.inputs[0].brightness, 0.5)
                 
 
 #############################################################################################
@@ -187,7 +188,7 @@ class TestKemperMorphCallback(unittest.TestCase):
         appl = Controller(
             led_driver = led_driver,
             midi = midi,
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1,
@@ -196,7 +197,8 @@ class TestKemperMorphCallback(unittest.TestCase):
                     "actions": [
                         action_1                        
                     ]
-                }
+                },
+                MockInputControllerDefinition()
             ],
             period_counter = period
         )

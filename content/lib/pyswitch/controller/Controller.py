@@ -1,6 +1,7 @@
 from gc import collect, mem_free
 
 from .FootSwitchController import FootSwitchController
+from .input import InputController
 from .Client import Client, BidirectionalClient
 from ..misc import Updater, PeriodCounter, get_option, do_print, format_size, fill_up_to
 from ..stats import Memory #, RuntimeStatistics
@@ -13,10 +14,10 @@ class Controller(Updater): #ClientRequestListener
     STAT_ID_TICK_TIME = 1             # Time one processing loop takes overall
 
     # config:   Configuration dictionary. 
-    # switches: [           list of switch definitions
+    # inputs:  [           list of switch and input definitions
     #                {
     #                     "assignment": {   Selects which switch of your device you want to assign. 
-    #                          "model":    Instance of AdafruitSwitch
+    #                          "model":    Instance of AdafruitSwitch or AdafruitPotentiometer or other hardware models
     #                          "pixels":   Optional, tiple of LED indices to assign to the switch, for example (0, 1, 2) 
     #                          "name":     Optional, name of the switch for output
     #                     },
@@ -31,7 +32,7 @@ class Controller(Updater): #ClientRequestListener
     #                },
     #                ...
     #           ]
-    def __init__(self, led_driver, midi, protocol = None, config = {}, switches = [], inputs = [], ui = None, period_counter = None):
+    def __init__(self, led_driver, midi, protocol = None, config = {}, inputs = [], ui = None, period_counter = None):
         Updater.__init__(self)
 
         # Flag which is used by display elements to show the user there is not enough memory left
@@ -86,7 +87,7 @@ class Controller(Updater): #ClientRequestListener
                         ret = pp1
             return ret
         
-        self.led_driver.init(get_num_pixels(switches))
+        self.led_driver.init(get_num_pixels(inputs))
         
         # Periodic update handler (the client is only asked when a certain time has passed)
         self.period = period_counter
@@ -101,17 +102,15 @@ class Controller(Updater): #ClientRequestListener
         else:
             self.client = Client(self.__midi, config)
 
-        # Set up switches
-        self.switches = []
-        for sw_def in switches:
-            self.switches.append(FootSwitchController(self, sw_def))
-
-        # Set up pedals and other inputs
+        # Set up inputs
         self.inputs = []
-        if inputs:
-            from .InputController import InputController            
-            for p_def in inputs:            
-                self.inputs.append(InputController(self, p_def))
+        for sw_def in inputs:
+            if hasattr(sw_def["assignment"]["model"], "pushed"):
+                # It is a switch
+                self.inputs.append(FootSwitchController(self, sw_def))
+            else:
+                # It is a continuous input. 
+                self.inputs.append(InputController(self, sw_def))
 
         # Set up the screen elements
         if self.ui:
@@ -173,13 +172,9 @@ class Controller(Updater): #ClientRequestListener
         while True:
             # Detect switch state changes
             #self.__measurement_switch_jitter.finish()
-            for switch in self.switches:
-                switch.process()
-            #self.__measurement_switch_jitter.start()
-
-            # Pedals and other inputs
             for input in self.inputs:
                 input.process()
+            #self.__measurement_switch_jitter.start()
 
             # Receive MIDI
             midimsg = self.__midi.receive()

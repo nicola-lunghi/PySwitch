@@ -50,7 +50,7 @@ if not _get_option(_Config, "exploreMode"):
     try:
         # Load configuration files
         from display import Splashes as _Splashes
-        from switches import Switches as _Switches, Inputs as _Inputs
+        from inputs import Inputs as _Inputs
 
         # Controller instance (runs the processing loop and keeps everything together)
         _controller = _Controller(
@@ -58,7 +58,6 @@ if not _get_option(_Config, "exploreMode"):
             protocol = _get_option(_Communication, "protocol", None),
             midi = _midi,
             config = _Config, 
-            switches = _Switches, 
             inputs = _Inputs,
             ui = _UiController(
                 display_driver = _display_driver,

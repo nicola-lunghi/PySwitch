@@ -25,8 +25,8 @@ with patch.dict(sys.modules, {
 
 
 class MockController2:
-    def __init__(self, switches = []):
-        self.switches = switches
+    def __init__(self, inputs = []):
+        self.inputs = inputs
 
 
 class MockFootswitch:
@@ -102,7 +102,7 @@ class TestPagerAction(unittest.TestCase):
         )
         
         appl = MockController2(
-            switches = [
+            inputs = [
                 switch, 
                 switch_pager
             ]
@@ -169,7 +169,7 @@ class TestPagerAction(unittest.TestCase):
         )
         
         appl = MockController2(
-            switches = [
+            inputs = [
                 switch, 
                 switch_pager
             ]
@@ -246,7 +246,7 @@ class TestPagerAction(unittest.TestCase):
         )
         
         appl = MockController2(
-            switches = [
+            inputs = [
                 switch, 
                 switch_pager
             ]

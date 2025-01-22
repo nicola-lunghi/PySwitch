@@ -67,7 +67,6 @@ class MockImports:
                          protocol,
                          midi,
                          config,                         
-                         switches, 
                          inputs,
                          ui
             ):
@@ -75,7 +74,6 @@ class MockImports:
                 self.protocol = protocol
                 self.midi = midi
                 self.config = config
-                self.switches = switches
                 self.inputs = inputs
                 self.ui = ui
 
@@ -140,12 +138,9 @@ class MockImports:
         Splashes = "SplashCallback"
     
     
-    class MockSwitches:
-        Switches = [
-            "someswitch"
-        ]
+    class MockInputs:
         Inputs = [
-            "somepedal"
+            "someswitch"
         ]
     
     class MockExploreModeController:
@@ -196,7 +191,7 @@ class TestProcessScript(unittest.TestCase):
             "communication": MockImports.MockCommunication(),
             "pymidibridge.MidiBridgeWrapper": MockImports.MockMidiBridgeWrapper(),
             "display": MockImports.MockDisplay(),
-            "switches": MockImports.MockSwitches()
+            "inputs": MockImports.MockInputs()
         }):            
             MockImports.MockConfig.Config = { "some": "config" }
             MockImports.MockStats.Memory.start_calls = 0
@@ -225,8 +220,7 @@ class TestProcessScript(unittest.TestCase):
             self.assertEqual(controller.midi.routings, ["routing1", "routing2"])
         
             self.assertEqual(controller.config, { "some": "config" })
-            self.assertEqual(controller.switches, ["someswitch"])
-            self.assertEqual(controller.inputs, ["somepedal"])
+            self.assertEqual(controller.inputs, ["someswitch"])            
             
             self.assertIsInstance(controller.ui, MockImports.MockUiController.UiController)
             self.assertIsInstance(controller.ui.display_driver, MockImports.MockHardwareAdafruit.AdafruitST7789DisplayDriver)
@@ -246,7 +240,7 @@ class TestProcessScript(unittest.TestCase):
             "communication": MockImports.MockCommunication(),
             "pymidibridge.MidiBridgeWrapper": MockImports.MockMidiBridgeWrapper(),
             "display": MockImports.MockDisplay(),
-            "switches": MockImports.MockSwitches()
+            "inputs": MockImports.MockInputs()
         }):
             MockImports.MockConfig.Config = {
                 "enableMidiBridge": True
@@ -278,8 +272,7 @@ class TestProcessScript(unittest.TestCase):
             self.assertEqual(controller.midi.midi.routings, ["routing1", "routing2"])
 
             self.assertEqual(controller.config, { "enableMidiBridge": True })
-            self.assertEqual(controller.switches, ["someswitch"])
-            self.assertEqual(controller.inputs, ["somepedal"])
+            self.assertEqual(controller.inputs, ["someswitch"])            
             
             self.assertIsInstance(controller.ui, MockImports.MockUiController.UiController)
             self.assertIsInstance(controller.ui.display_driver, MockImports.MockHardwareAdafruit.AdafruitST7789DisplayDriver)
@@ -299,7 +292,7 @@ class TestProcessScript(unittest.TestCase):
             "communication": MockImports.MockCommunication(),
             "pymidibridge.MidiBridgeWrapper": MockImports.MockMidiBridgeWrapper(),
             "display": MockImports.MockDisplay(),
-            "switches": MockImports.MockSwitches()
+            "inputs": MockImports.MockInputs()
         }):
             MockImports.MockConfig.Config = { "some": "config" }
             MockImports.MockStats.Memory.start_calls = 0
@@ -324,7 +317,7 @@ class TestProcessScript(unittest.TestCase):
             "communication": MockImports.MockCommunication(),
             "pymidibridge.MidiBridgeWrapper": MockImports.MockMidiBridgeWrapper(),
             "display": MockImports.MockDisplay(),
-            "switches": MockImports.MockSwitches()
+            "inputs": MockImports.MockInputs()
         }):
             MockImports.MockConfig.Config = { "enableMidiBridge": True }
             MockImports.MockStats.Memory.start_calls = 0

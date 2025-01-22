@@ -9,7 +9,7 @@ from pyswitch.hardware.Hardware import Hardware
 # from pyswitch.misc import Colors
 
 from pyswitch.clients.kemper import KemperEffectSlot
-from pyswitch.controller.InputAction import InputAction
+from pyswitch.controller.input import InputAction
 from display import DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_HEADER_1, DISPLAY_HEADER_2
 
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
@@ -20,8 +20,17 @@ from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 
 from pyswitch.clients.kemper.mappings.rig import MAPPING_RIG_VOLUME
 
-# Defines the switch assignments
-Switches = [
+# Defines the switch assignments and other inputs
+Inputs = [
+    # Pedal 1
+    {
+        "assignment": Hardware.PA_MIDICAPTAIN_10_EXP_PEDAL_1,
+        "actions": [
+            InputAction(
+                mapping = MAPPING_RIG_VOLUME()
+            )
+        ]
+    },
 
     # Switch 1
     {
@@ -210,16 +219,3 @@ Switches = [
     },
 ]
 
-#################################################################################
-
-# Expression Pedals and other inputs (None if not used)
-Inputs = [
-    {
-        "assignment": Hardware.PA_MIDICAPTAIN_10_EXP_PEDAL_1,
-        "actions": [
-            InputAction(
-                mapping = MAPPING_RIG_VOLUME()
-            )
-        ]
-    }
-]

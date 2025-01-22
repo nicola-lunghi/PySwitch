@@ -33,7 +33,7 @@ class TestLedEvaluation(unittest.TestCase):
         )
 
         self.assertEqual(len(led_driver.leds), 0)
-        self.assertEqual(len(appl.switches), 0)
+        self.assertEqual(len(appl.inputs), 0)
         
     #################################################################################################
 
@@ -41,16 +41,17 @@ class TestLedEvaluation(unittest.TestCase):
         led_driver = MockNeoPixelDriver()
         switch_1 = MockSwitch()
 
-        appl = Controller(
+        Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1,
                         "pixels": (0, 1, 2, 3, 8)
                     }
-                }
+                },
+                MockInputControllerDefinition()
             ]
         )
 
@@ -64,10 +65,10 @@ class TestLedEvaluation(unittest.TestCase):
         switch_2 = MockSwitch()
         switch_3 = MockSwitch()
 
-        appl = Controller(
+        Controller(
             led_driver = led_driver,
             midi = MockMidiController(),
-            switches = [
+            inputs = [
                 {
                     "assignment": {
                         "model": switch_1,
@@ -79,6 +80,7 @@ class TestLedEvaluation(unittest.TestCase):
                         "model": switch_2
                     }
                 },
+                MockInputControllerDefinition(),
                 {
                     "assignment": {
                         "model": switch_3,
