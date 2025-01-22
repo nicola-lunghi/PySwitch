@@ -32,7 +32,7 @@ def get_custom_text(action, bank, rig):
 
 
 # Defines the switch assignments
-Switches = [
+Inputs = [
 
     # Switch 1
     {
@@ -87,8 +87,3 @@ Switches = [
         ]
     }
 ]
-
-######################################################################
-
-# Expression pedals and other inputs
-Inputs = None

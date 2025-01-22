@@ -17,7 +17,7 @@ from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 
 # Defines the switch assignments
-Switches = [
+Inputs = [
 
     # Switch 1
     {
@@ -126,8 +126,3 @@ Switches = [
         ]
     }
 ]
-
-######################################################################
-
-# Expression pedals and other inputs
-Inputs = None

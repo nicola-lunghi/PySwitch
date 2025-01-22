@@ -1,5 +1,5 @@
 # PySwitch v2.3.0
-- Added Expression Pedal support (for MIDI Captain 10-Switch versions). Every switches.py file now has to feature an "Inputs" field (which can be None). See examples, for the MIDI Captaion 10-switch version there is a dedicated one.
+- Added Expression Pedal support (for MIDI Captain 10-Switch versions). This includes renaming the switches.py file to inputs.py. See examples for the 10 switch MIDI Captain.
 - Added BANK_SELECT action for changing/toggling banks but stay at the same rig
 - Added option to RIG_SELECT and RIG_AND_BANK_SELECT which remembers the current rig in "off" state and switches back to it when disabling again. See example Nano 4 -> tunetown Session.
 - Tuner mode:

@@ -6,26 +6,26 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
-from pyswitch.clients.kemper.actions.bank_select import BANK_SELECT
+#from pyswitch.misc import Colors
 
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
-##############################################################################################################################################
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
+from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
+
 
 # Defines the switch assignments
-Switches = [
+Inputs = [
 
     # Switch 1
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            BANK_SELECT(
-                bank = 1,
-                preselect = True,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                display = DISPLAY_HEADER_1
-            )         
+            RIG_SELECT(
+                rig = 1,                
+                display = DISPLAY_HEADER_1,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
         ]
     },
 
@@ -33,12 +33,11 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            BANK_SELECT(
-                bank = 2,
-                preselect = True,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                display = DISPLAY_HEADER_2
-            )     
+            RIG_SELECT(
+                rig = 2,                
+                display = DISPLAY_HEADER_2,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
         ]
     },
 
@@ -47,11 +46,15 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             RIG_SELECT(
-                rig = 2,
-                rig_off = 1,
+                rig = 3,
                 display = DISPLAY_FOOTER_1,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG                
-            )   
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ],
+        "actionsHold": [
+            BANK_DOWN(
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
         ]
     },
     
@@ -60,16 +63,15 @@ Switches = [
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             RIG_SELECT(
-                rig = 3,
-                rig_off = 1,
+                rig = 4,
                 display = DISPLAY_FOOTER_2,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
             )
+        ],
+        "actionsHold": [
+            BANK_UP(
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
         ]
-    },
+    }
 ]
-
-######################################################################
-
-# Expression pedals and other inputs
-Inputs = None

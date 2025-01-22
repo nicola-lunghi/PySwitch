@@ -17,7 +17,7 @@ from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 
 
 # Defines the switch assignments
-Switches = [
+Inputs = [
 
     # Switch 1
     {
@@ -62,8 +62,3 @@ Switches = [
         ]
     }
 ]
-
-######################################################################
-
-# Expression pedals and other inputs
-Inputs = None

@@ -38,7 +38,7 @@ _enable_callback = _EnableCallback()
 ##############################################################################################################################################
 
 # Defines the switch assignments
-Switches = [
+Inputs = [
 
     # Switch 1 | Drive (Slot D)/FX (Slot X)
     {
@@ -125,8 +125,3 @@ Switches = [
         ]
     }
 ]
-
-######################################################################
-
-# Expression pedals and other inputs
-Inputs = None

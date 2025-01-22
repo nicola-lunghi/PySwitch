@@ -16,7 +16,7 @@ from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
 
 
 # Defines the switch assignments
-Switches = [
+Inputs = [
 
     # Switch 1
     {
@@ -78,8 +78,3 @@ Switches = [
         ]
     }
 ]
-
-######################################################################
-
-# Expression pedals and other inputs
-Inputs = None

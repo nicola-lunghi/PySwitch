@@ -21,7 +21,7 @@ from pyswitch.clients.kemper.mappings.freeze import MAPPING_FREEZE
 ##############################################################################################################################################
 
 # Defines the switch assignments
-Switches = [
+Inputs = [
 
     # Switch 1
     {
@@ -84,8 +84,3 @@ Switches = [
         ]
     },
 ]
-
-######################################################################
-
-# Expression pedals and other inputs
-Inputs = None

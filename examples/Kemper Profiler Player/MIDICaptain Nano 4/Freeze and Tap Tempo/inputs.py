@@ -6,21 +6,27 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
+from pyswitch.misc import Colors
+from pyswitch.controller.actions import PushButtonAction
+from pyswitch.controller.callbacks import BinaryParameterCallback
+
 from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
-from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
+from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
+from pyswitch.clients.kemper.mappings.freeze import MAPPING_FREEZE
 
 
 # Defines the switch assignments
-Switches = [
+Inputs = [
 
     # Switch 1
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
-            BANK_DOWN(
+            EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                 display = DISPLAY_HEADER_1
             )                         
         ]
@@ -30,7 +36,8 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            BANK_UP(
+            EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
                 display = DISPLAY_HEADER_2
             )
         ]
@@ -40,10 +47,16 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
-                display = DISPLAY_FOOTER_1
-            )
+            PushButtonAction({
+                "callback": BinaryParameterCallback(
+                    mapping = MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_REV),
+                    text = "RvFreeze",
+                    color = Colors.DARK_GREEN
+                ),
+                "mode": PushButtonAction.MOMENTARY,
+                "display": DISPLAY_FOOTER_1,
+                "useSwitchLeds": True
+            })
         ]
     },
     
@@ -51,15 +64,12 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
-                display = DISPLAY_FOOTER_2
-            )
+            TAP_TEMPO(
+                display = DISPLAY_FOOTER_2,
+                color = Colors.LIGHT_GREEN,
+                use_leds = False
+            ),
+            SHOW_TEMPO()    # Shows beats with the LED(s)
         ]
     }
 ]
-
-######################################################################
-
-# Expression pedals and other inputs
-Inputs = None

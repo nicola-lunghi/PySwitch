@@ -6,21 +6,15 @@
  
 from pyswitch.hardware.Hardware import Hardware
 
-from pyswitch.misc import Colors
-
+#from pyswitch.misc import Colors
 from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
 
-from pyswitch.clients.kemper.actions.binary_switch import BINARY_SWITCH
-from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
-
-from pyswitch.clients.kemper.mappings.rotary import MAPPING_ROTARY_SPEED
-from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_STATE
 
 
 # Defines the switch assignments
-Switches = [
+Inputs = [
 
     # Switch 1
     {
@@ -29,10 +23,7 @@ Switches = [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
                 display = DISPLAY_HEADER_1
-            )
-        ],
-        "actionsHold": [
-            TUNER_MODE()
+            )                         
         ]
     },
 
@@ -51,13 +42,9 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            BINARY_SWITCH(
-                mapping = MAPPING_ROTARY_SPEED(
-                    slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A
-                ),
-                display = DISPLAY_FOOTER_1,
-                color = Colors.DARK_BLUE,
-                text = "A: Fast"
+            EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
+                display = DISPLAY_FOOTER_1
             )
         ]
     },
@@ -66,17 +53,10 @@ Switches = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            BINARY_SWITCH(
-                mapping = MAPPING_AMP_STATE(),
-                display = DISPLAY_FOOTER_2,
-                color = Colors.GRAY,
-                text = "Amp"
+            EFFECT_STATE(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
+                display = DISPLAY_FOOTER_2
             )
         ]
     }
 ]
-
-######################################################################
-
-# Expression pedals and other inputs
-Inputs = None
