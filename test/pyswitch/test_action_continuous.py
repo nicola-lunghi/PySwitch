@@ -23,7 +23,7 @@ with patch.dict(sys.modules, {
         "lib.pyswitch.misc": MockMisc
     }):
         
-        from lib.pyswitch.controller.input import InputAction
+        from lib.pyswitch.controller.ContinuousAction import ContinuousAction
         from .mocks_appl import *
 
 
@@ -144,7 +144,7 @@ class TestInputAction(unittest.TestCase):
             )
         )
 
-        action = InputAction(
+        action = ContinuousAction(
             mapping = mapping,
             max_value = max_value,
             max_frame_rate = 10,
@@ -157,11 +157,11 @@ class TestInputAction(unittest.TestCase):
         action.init(appl)
 
         self.assertEqual(action.enabled, True)
-        self.assertEqual(action._InputAction__period.interval, 100)
-        self.assertEqual(action._InputAction__mapping, mapping)
+        self.assertEqual(action._ContinuousAction__period.interval, 100)
+        self.assertEqual(action._ContinuousAction__mapping, mapping)
 
-        action._InputAction__period = MockPeriodCounter()
-        period = action._InputAction__period
+        action._ContinuousAction__period = MockPeriodCounter()
+        period = action._ContinuousAction__period
 
         # Call without period exceeding
         action.process(1)
@@ -214,7 +214,7 @@ class TestInputAction(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = InputAction(
+        action = ContinuousAction(
             mapping = mapping,
             enable_callback = ecb
         )
@@ -239,7 +239,7 @@ class TestInputAction(unittest.TestCase):
             )
         )
 
-        action = InputAction(
+        action = ContinuousAction(
             mapping = mapping,
             max_value = 65535,
             max_frame_rate = 10,
@@ -251,8 +251,8 @@ class TestInputAction(unittest.TestCase):
         appl = MockController2()
         action.init(appl)
 
-        action._InputAction__period = MockPeriodCounter()
-        period = action._InputAction__period
+        action._ContinuousAction__period = MockPeriodCounter()
+        period = action._ContinuousAction__period
 
         # Window too small
         period.exceed_next_time = True
@@ -313,7 +313,7 @@ class TestInputAction(unittest.TestCase):
             )
         )
 
-        action = InputAction(
+        action = ContinuousAction(
             mapping = mapping,
             max_value = 1023,
             max_frame_rate = 10,
@@ -325,8 +325,8 @@ class TestInputAction(unittest.TestCase):
         appl = MockController2()
         action.init(appl)
 
-        action._InputAction__period = MockPeriodCounter()
-        period = action._InputAction__period
+        action._ContinuousAction__period = MockPeriodCounter()
+        period = action._ContinuousAction__period
 
         # Window too small
         period.exceed_next_time = True
@@ -390,7 +390,7 @@ class TestInputAction(unittest.TestCase):
         def transfer(value):
             return round(value / 2) + 2
 
-        action = InputAction(
+        action = ContinuousAction(
             mapping = mapping,
             max_value = 1023,
             max_frame_rate = 10,
@@ -403,8 +403,8 @@ class TestInputAction(unittest.TestCase):
         appl = MockController2()
         action.init(appl)
 
-        action._InputAction__period = MockPeriodCounter()
-        period = action._InputAction__period
+        action._ContinuousAction__period = MockPeriodCounter()
+        period = action._ContinuousAction__period
 
         # Window too small
         period.exceed_next_time = True

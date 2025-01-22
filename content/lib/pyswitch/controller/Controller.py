@@ -1,7 +1,6 @@
 from gc import collect, mem_free
 
-from .FootSwitchController import FootSwitchController
-from .input import InputController
+from .InputControllers import SwitchController, ContinuousController
 from .Client import Client, BidirectionalClient
 from ..misc import Updater, PeriodCounter, get_option, do_print, format_size, fill_up_to
 from ..stats import Memory #, RuntimeStatistics
@@ -107,10 +106,10 @@ class Controller(Updater): #ClientRequestListener
         for sw_def in inputs:
             if hasattr(sw_def["assignment"]["model"], "pushed"):
                 # It is a switch
-                self.inputs.append(FootSwitchController(self, sw_def))
+                self.inputs.append(SwitchController(self, sw_def))
             else:
                 # It is a continuous input. 
-                self.inputs.append(InputController(self, sw_def))
+                self.inputs.append(ContinuousController(self, sw_def))
 
         # Set up the screen elements
         if self.ui:

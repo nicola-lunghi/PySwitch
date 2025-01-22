@@ -22,7 +22,7 @@ with patch.dict(sys.modules, {
         "lib.pyswitch.misc": MockMisc
     }):
         
-        from lib.pyswitch.controller.input import InputController
+        from lib.pyswitch.controller.InputControllers import ContinuousController
         from .mocks_appl import *
 
 
@@ -44,7 +44,7 @@ class TestControllerInput(unittest.TestCase):
 
         appl = MockController2()
 
-        input = InputController(appl, {
+        input = ContinuousController(appl, {
             "assignment": {
                 "model": pedal,
             },

@@ -2,7 +2,7 @@ from ..misc import Colors, get_option, PeriodCounter
 from array import array
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
-class FootSwitchController: #ConditionListener
+class SwitchController:
 
     DEFAULT_HOLD_TIME_MILLIS = 600
 
@@ -222,7 +222,60 @@ class FootSwitchController: #ConditionListener
         self.__brightnesses = array('f', brightnesses)
 
 
-################################################################################################
+##############################################################################################################################
+
+
+# Controller class for expression pedals, encoders and other pseudo-continuous inputs
+class ContinuousController:
+
+    # config must be a dictionary holding the following attributes:
+    # { 
+    #     "assignment": {
+    #         "model":         Model instance for the hardware. Must implement an init() method and a .value property.
+    #     },
+    #
+    #     "actions": [         Array of actions. Entries must be objects of type InputAction (see below)
+    #         ExampleAction({
+    #             ...                  
+    #         }),
+    #         ...
+    #     ]
+    # }
+    def __init__(self, appl, config):
+        self.__pot = config["assignment"]["model"]
+        self.__pot.init()
+
+        self.__actions = get_option(config, "actions", [])
+        
+        # Init actions
+        for action in self.__actions:
+            action.init(appl)
+                    
+    # Process the input
+    def process(self):
+        value = self.__pot.value
+
+        for action in self.__actions:
+            if not action.enabled:
+                continue
+
+            action.process(value)
+
+
+##############################################################################################################################
+
+
+## Base class for implementing pot driver classes
+#class PotentiometerDriver:
+#    
+#    # Initializes the pot. Called once before usage.
+#    def init(self):
+#        pass
+#
+#    # Returns the value of the pot (integer in range [0..65535])
+#    @property
+#    def value(self):
+#        return 0
 
 
 ## Base class for implementing switch driver classes

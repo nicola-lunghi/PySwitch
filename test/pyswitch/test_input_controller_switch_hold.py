@@ -16,7 +16,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
 
-    from lib.pyswitch.controller.FootSwitchController import FootSwitchController
+    from lib.pyswitch.controller.InputControllers import SwitchController
     from lib.pyswitch.misc import Updater
 
     from .mocks_appl import MockAction, MockPeriodCounter, MockSwitch
@@ -30,7 +30,7 @@ class MockController2(Updater):
         self.config = config
 
 
-class TestFootswitchControllerHold(unittest.TestCase):
+class TestSwitchControllerHold(unittest.TestCase):
 
     def test(self):
         hold_period = MockPeriodCounter()
@@ -42,7 +42,7 @@ class TestFootswitchControllerHold(unittest.TestCase):
     
         appl = MockController2()
 
-        fs = FootSwitchController(
+        fs = SwitchController(
             appl,
             {
                 "assignment": {
@@ -173,7 +173,7 @@ class TestFootswitchControllerHold(unittest.TestCase):
     
         appl = MockController2()
 
-        fs = FootSwitchController(
+        fs = SwitchController(
             appl,
             {
                 "assignment": {
@@ -262,7 +262,7 @@ class TestFootswitchControllerHold(unittest.TestCase):
     
         appl = MockController2()
 
-        fs = FootSwitchController(
+        fs = SwitchController(
             appl,
             {
                 "assignment": {

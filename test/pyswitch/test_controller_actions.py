@@ -16,8 +16,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from lib.pyswitch.controller.Controller import Controller
-    from lib.pyswitch.controller.FootSwitchController import FootSwitchController
-    from lib.pyswitch.controller.input import InputController
+    from lib.pyswitch.controller.InputControllers import SwitchController, ContinuousController
     from .mocks_appl import *
 
 
@@ -86,10 +85,10 @@ class TestControllerActions(unittest.TestCase):
         input_ctrl_3 = appl.inputs[2]
         input_ctrl_4 = appl.inputs[3]
 
-        self.assertIsInstance(switch_ctrl_1, FootSwitchController)
-        self.assertIsInstance(switch_ctrl_2, FootSwitchController)
-        self.assertIsInstance(input_ctrl_3, InputController)
-        self.assertIsInstance(input_ctrl_4, InputController)
+        self.assertIsInstance(switch_ctrl_1, SwitchController)
+        self.assertIsInstance(switch_ctrl_2, SwitchController)
+        self.assertIsInstance(input_ctrl_3, ContinuousController)
+        self.assertIsInstance(input_ctrl_4, ContinuousController)
 
 
     def test_update_period(self):

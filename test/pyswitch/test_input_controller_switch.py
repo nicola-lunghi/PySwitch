@@ -22,7 +22,7 @@ with patch.dict(sys.modules, {
         "lib.pyswitch.misc": MockMisc
     }):
         
-        from lib.pyswitch.controller.FootSwitchController import FootSwitchController
+        from lib.pyswitch.controller.InputControllers import SwitchController
         from lib.pyswitch.misc import Colors, Updater
         from .mocks_appl import *
 
@@ -39,7 +39,7 @@ class MockController2(Updater):
 ##################################################################################################################################
 
 
-class TestControllerFootswitch(unittest.TestCase):
+class TestControllerSwitch(unittest.TestCase):
 
     def test_actions(self):
         appl = MockController2(num_leds=5)
@@ -48,7 +48,7 @@ class TestControllerFootswitch(unittest.TestCase):
         action_1 = MockAction()
         action_2 = MockAction()
 
-        fs = FootSwitchController(appl, {
+        fs = SwitchController(appl, {
             "assignment": {
                 "model": switch_1,
                 "pixels": (2, 4)                
@@ -87,7 +87,7 @@ class TestControllerFootswitch(unittest.TestCase):
         action_1 = MockAction({ "enableCallback": cb_1 })
         action_2 = MockAction({ "enableCallback": cb_2 })
 
-        fs = FootSwitchController(appl, {
+        fs = SwitchController(appl, {
             "assignment": {
                 "model": switch_1
             },
@@ -189,7 +189,7 @@ class TestControllerFootswitch(unittest.TestCase):
         appl = MockController2()
         switch_1 = MockSwitch()
 
-        fs = FootSwitchController(appl, {
+        fs = SwitchController(appl, {
             "assignment": {
                 "model": switch_1
             },
@@ -207,7 +207,7 @@ class TestControllerFootswitch(unittest.TestCase):
         appl = MockController2(num_leds=5)
         switch_1 = MockSwitch()
 
-        fs = FootSwitchController(appl, {
+        fs = SwitchController(appl, {
             "assignment": {
                 "model": switch_1,
                 "pixels": (2, 4)
@@ -229,7 +229,7 @@ class TestControllerFootswitch(unittest.TestCase):
         appl = MockController2(num_leds=5)
         switch_1 = MockSwitch()
 
-        fs = FootSwitchController(appl, {
+        fs = SwitchController(appl, {
             "assignment": {
                 "model": switch_1,
                 "pixels": (0, 1, 2, 3, 4)
@@ -272,7 +272,7 @@ class TestControllerFootswitch(unittest.TestCase):
         appl = MockController2(num_leds=5)
         switch_1 = MockSwitch()        
 
-        fs = FootSwitchController(appl, {
+        fs = SwitchController(appl, {
             "assignment": {
                 "model": switch_1,
                 "pixels": (2, 4)
@@ -294,7 +294,7 @@ class TestControllerFootswitch(unittest.TestCase):
         appl = MockController2(num_leds=5)
         switch_1 = MockSwitch()        
 
-        fs = FootSwitchController(appl, {
+        fs = SwitchController(appl, {
             "assignment": {
                 "model": switch_1
             }
@@ -310,7 +310,7 @@ class TestControllerFootswitch(unittest.TestCase):
         switch_1 = MockSwitch()
 
         for order in range(0, 10):
-            fs = FootSwitchController(appl, {
+            fs = SwitchController(appl, {
                 "assignment": {
                     "model": switch_1,
                     "pixels": (2, 4),
@@ -326,7 +326,7 @@ class TestControllerFootswitch(unittest.TestCase):
         appl = MockController2(num_leds=5)
         switch_1 = MockSwitch()
 
-        fs = FootSwitchController(appl, {
+        fs = SwitchController(appl, {
             "assignment": {
                 "model": switch_1,
                 "pixels": (2, 4)                
@@ -345,7 +345,7 @@ class TestControllerFootswitch(unittest.TestCase):
         action_2 = MockAction()
         action_o = MockAction()
 
-        fs = FootSwitchController(appl, {
+        fs = SwitchController(appl, {
             "assignment": {
                 "model": switch_1,
                 "pixels": (2, 4)                

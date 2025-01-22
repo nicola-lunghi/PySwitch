@@ -1,4 +1,4 @@
-from .FootSwitchController import FootSwitchController
+from .InputControllers import SwitchController
 from .callbacks import Callback
 from .actions import Action
 from ..ui.layout import remove_from_bottom
@@ -226,7 +226,7 @@ class ExploreModeController(Updater):
         else:
             scan_step = -1
         
-        switch = FootSwitchController(
+        switch = SwitchController(
             self,
             {
                 "assignment": {

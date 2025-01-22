@@ -9,7 +9,7 @@ from pyswitch.hardware.Hardware import Hardware
 # from pyswitch.misc import Colors
 
 from pyswitch.clients.kemper import KemperEffectSlot
-from pyswitch.controller.input import InputAction
+from pyswitch.controller.ContinuousAction import ContinuousAction
 from display import DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_HEADER_1, DISPLAY_HEADER_2
 
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
@@ -26,7 +26,7 @@ Inputs = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_10_EXP_PEDAL_1,
         "actions": [
-            InputAction(
+            ContinuousAction(
                 mapping = MAPPING_RIG_VOLUME()
             )
         ]
