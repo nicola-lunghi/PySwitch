@@ -3,12 +3,10 @@
 This project provides an open source firmware for CircuitPy Microcontroller based MIDI controllers. It can control devices via MIDI based on a 
 generic configuration script. Features are:
 
-- Program (Foot)switches to send MIDI messages. Each switch can do any amount of actions.
-- Request parameters via NRPN MIDI from the controlled device and evaluate them on a TFT screen or using NeoPixel LEDs (for example the rig/amp/IR names can be displayed)
-- Establish a bidirectional communication with the client device (implemented for the Kemper Profiler Player (all Levels), but can be adapted for the other Kemper devices or anything with similar protocol)
-- Use callbacks in the configuration to make functions depending on MIDI parameters of the device, or program any other custom behaviour
-- Ready-to-go Device implementation for the Kemper Profiler Player (R), others can be added
-- MIDI routing capatbilities
+- Program (Foot)switches and expression pedals to send MIDI messages. Each switch or pedal can do any amount of actions. Programming is done by setup scripts, with lots of examples.
+- Establish a bidirectional communication with the client device to show the states correctly when changed on the client device (e.g. a Kemper Player). Implemented for the Kemper Profiler Player (all Levels), but can be adapted for the other Kemper devices or anything with similar protocol
+- Ready-to-go implementation for the Kemper Profiler Player (R), others (like Fractal / Line 6 Helix) can be added easily.
+- Free MIDI routing capatbilities
 
 ![Overview Image](https://github.com/user-attachments/assets/c48903b2-a5f7-4d78-b7eb-9fca98dbfbe0)
 
@@ -50,11 +48,11 @@ The whole configuration is done in some files in the root directory (of the devi
 *Technical note: The pyswitch module does not import any of the files in the root folder directly. The code.py script (which is the CircuitPy entry point) loads all configuration by importing pyswitch/process.py*
 
 - **config.py**: Global configuration (MIDI channel, processing control, debug switches)
-- **switches.py**: Defines which action(s) are triggered when a switch is pushed
+- **inputs.py**: Defines which action(s) are triggered when a switch is pushed or an expression pedal is moved
 - **display.py**: Defines the layout of the TFT display and which data to show
 - **communication.py**: Defines the communication with the client, as well as generic MIDI routing between available MIDI ports
 
-These files can make use of the objects contained in **lib/pyswitch/clients/kemper.py** which provide all necessary mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change). Contributors welcome!
+These files can make use of the objects contained in the **lib/pyswitch/clients/kemper** module which provide lots of mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change). Contributors welcome!
 
 ## Editing Configuration via the Browser
 
@@ -69,7 +67,7 @@ The editor is only a demo application, by no means fully developed:
 - You can just browse the files and read/write them, no delete/create/rename/move etc.
 - The syntax checking is pretty basic and reports much falsy errors
 
-However, it is sometimes way faster editing your switches.py file this way than having to mount/unmount every time, for example when you forget to change presets before a gig and only have 2 minutes ;) Other features:
+However, it is sometimes way faster editing your inputs.py file this way than having to mount/unmount every time, for example when you forget to change presets before a gig and only have 2 minutes ;) Other features:
 
 - Syntax errors happening on the device are reported back to the browser. When you make an error in your config, the error will be shown in the bottom area on the web site. The MidiBridge will still be functional.
 - The application is designed according to RESTful principles, so every file has its own path you can bookmark.
@@ -83,7 +81,7 @@ The file **config.py** contains the global device configuration, and only define
 
 ### Switch Assignment
 
-The file **switches.py** must provide a Switches list holding all switch assignments. A switch definitions consists of a dict with the following entries:
+The file **inputs.py** must provide an "Inputs" list holding all switch assignments. A switch definitions consists of a dict with the following entries:
 	
 - **"assignment"**: Assignment to the hardware switch and corresponding LED pixels. Must be a dict. You can specify this manually, however it is recommended to use the predefined assignments in lib/pyswitch/hardware/hardware.py. Must contain the following entries:
 
@@ -104,7 +102,7 @@ Example for assigning switch 1 of a MIDICaptain Nano 4 to switching the Kemper e
 ```python
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 
-Switches = [
+Inputs = [
 	{
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
@@ -127,7 +125,7 @@ You can assign different actions to long pressing of switches. This is done by p
 ```python
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 
-Switches = [
+Inputs = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
@@ -169,7 +167,7 @@ Most actions provide a color option: If set, this defines the color for switch L
 ```python
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
 
-Switches = [
+Inputs = [
 	{
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
@@ -183,9 +181,49 @@ Switches = [
 ]
 ```
 
+### Expression Pedal Assignment
+
+Continuous controllers like expression pedals can also be added to the "Inputs" list in **inputs.py**, using the appropriate models from lib/pyswitch/hardware/hardware.py. However, the actions are different than with switches: You have to use a ContinuousAction instance like in this example:
+
+```python
+from pyswitch.controller.ContinuousAction import ContinuousAction
+
+Inputs = [
+    # Pedal 1
+    {
+        "assignment": Hardware.PA_MIDICAPTAIN_10_EXP_PEDAL_1,
+        "actions": [
+            ContinuousAction(
+                mapping = MAPPING_RIG_VOLUME(),
+                auto_calibrate = True
+            )
+        ]
+    },
+
+    # Switch 1
+    {
+        # ...
+    },
+
+    # ...
+]
+```
+
+This definition would control the rig volume by expression pedal 1 of the PaintAudio MIDI Captain (10 switch version only).
+
+There are several options to ContinuousAction:
+- **auto_calibrate**: If this is True (which is the default), the pedal controller will permanently do auto-calibration. Before the pedal is moved the first time, nothing is changed. When you rock the pedal up and down once, the switch remembers the min/max positions and adjusts output values to fill the whole range. This is similar to the Kemper auto-calibration. To reset, reboot the controller.
+- **cal_min_window**: If aut-calibration is enabled, this defines how big the window between min/max values has to be before any MIDI messages are being sent. Per default, this is set to 25% of the full range of values.
+- **max_frame_rate**: To not overload the MIDI traffic, the controller only sends values to the device at a certain frame rate. This defines this rate in frames per second (default: 24)
+- **max_value**: Most NRPN parameters have a value range of 0..16383, which is the default here. If you want to use mappings using a ControlChange message, you have to set this to 127.
+- **num_steps**: The full range of values to be sent via MIDI is divided into steps, to reduce MIDI traffic further. The analog IO pins always fluctuate by a very small amount even if the pedal is not moved, this option prevents all of these redundant values to be sent. A good value is 128 which is the default, and splits the range into 128 steps which is enough for most pedal applications.
+- **enable_callback**: See the switch actions, this can be used the same way with the same callbacks (e.g. for paging)
+- **transfer_function**: Here you can pass a transfer function which is used to transform the incoming raw values in range [0..65535] to the output range needed. This overrides the max_value and num_steps parameters. Note that even if max_value is not needed for calculation, it defines the maximum out value nevertheless, so you have to set it.
+
+
 ##### Enable/Disable Actions by Callback
 
-Actions can also be defined depending on a parameter or other stuff: For example the switch could be assigned to tapping tempo if the rig name contains the token "TAP", and control effect slot A if not. This is accomplished by defining a custom callback class to enable/disable actions:
+All Actions (switch and continuous) can also be defined depending on a parameter or other stuff: For example the switch could be assigned to tapping tempo if the rig name contains the token "TAP", and control effect slot A if not. This is accomplished by defining a custom callback class to enable/disable actions:
 
 ```python
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
@@ -222,7 +260,7 @@ class _RigNameCallback(Callback):
 _enable_callback = _EnableCallback()
 
 # Both actions now get the same callback which switches their states.
-Switches = [
+Inputs = [
 	{
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
@@ -250,7 +288,7 @@ The last example only uses the switch LEDs to indicate the effect status (bright
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 from display import DISPLAY_LABEL_X
 
-Switches = [
+Inputs = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
@@ -311,7 +349,7 @@ class CustomCallback(Callback):
         action.switch_brightness = 0.8        # [0..1]
 
 
-Switches = [
+Inputs = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
@@ -328,7 +366,7 @@ Switches = [
 To simply switch a parameter in an on/off fashion with values for on and off etc., the BinaryParameterAction is provided (which itself is a callback like in the last chapter). This is used by most of the predefined Kemper action definitions internally. Here an example which switches the rotary speed fast/slow:
 
 ```python
-Switches = [
+Inputs = [
     {
         "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
@@ -360,7 +398,7 @@ _ACTION_LABEL_LAYOUT = {
     "stroke": 1
 }
 
-# Labels to be used by **switches.py**: Header
+# Labels to be used by **inputs.py**: Header
 DISPLAY_HEADER_1 = DisplayLabel(
     layout = _ACTION_LABEL_LAYOUT,
     bounds = DisplayBounds(0, 0, 120, 40)
@@ -680,7 +718,7 @@ font_loader = AdafruitFontLoader()
 
 # Load configuration files (this is where the clients specific code is used)
 from display import Splashes
-from switches import Switches
+from inputs import Inputs
 from communication import Communication
 
 # Controller instance (runs the processing loop and keeps everything together)
@@ -691,7 +729,7 @@ appl = Controller(
         routings = Communication["midi"]["routings"]
     ),
     config = Config, 
-    switches = Switches, 
+    inputs = Inputs, 
     ui = UiController(
         display_driver = display_driver,
         font_loader = font_loader,
