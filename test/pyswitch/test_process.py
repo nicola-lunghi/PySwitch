@@ -68,7 +68,7 @@ class MockImports:
                          midi,
                          config,                         
                          switches, 
-                         pedals,
+                         inputs,
                          ui
             ):
                 self.led_driver = led_driver
@@ -76,7 +76,7 @@ class MockImports:
                 self.midi = midi
                 self.config = config
                 self.switches = switches
-                self.pedals = pedals
+                self.inputs = inputs
                 self.ui = ui
 
                 self.init_calls = 0
@@ -144,7 +144,7 @@ class MockImports:
         Switches = [
             "someswitch"
         ]
-        Pedals = [
+        Inputs = [
             "somepedal"
         ]
     
@@ -226,7 +226,7 @@ class TestProcessScript(unittest.TestCase):
         
             self.assertEqual(controller.config, { "some": "config" })
             self.assertEqual(controller.switches, ["someswitch"])
-            self.assertEqual(controller.pedals, ["somepedal"])
+            self.assertEqual(controller.inputs, ["somepedal"])
             
             self.assertIsInstance(controller.ui, MockImports.MockUiController.UiController)
             self.assertIsInstance(controller.ui.display_driver, MockImports.MockHardwareAdafruit.AdafruitST7789DisplayDriver)
@@ -279,7 +279,7 @@ class TestProcessScript(unittest.TestCase):
 
             self.assertEqual(controller.config, { "enableMidiBridge": True })
             self.assertEqual(controller.switches, ["someswitch"])
-            self.assertEqual(controller.pedals, ["somepedal"])
+            self.assertEqual(controller.inputs, ["somepedal"])
             
             self.assertIsInstance(controller.ui, MockImports.MockUiController.UiController)
             self.assertIsInstance(controller.ui.display_driver, MockImports.MockHardwareAdafruit.AdafruitST7789DisplayDriver)

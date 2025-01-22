@@ -65,4 +65,5 @@ Switches = [
 
 ######################################################################
 
-Pedals = None
+# Expression pedals and other inputs
+Inputs = None

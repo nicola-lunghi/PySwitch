@@ -31,7 +31,7 @@ class Controller(Updater): #ClientRequestListener
     #                },
     #                ...
     #           ]
-    def __init__(self, led_driver, midi, protocol = None, config = {}, switches = [], pedals = [], ui = None, period_counter = None):
+    def __init__(self, led_driver, midi, protocol = None, config = {}, switches = [], inputs = [], ui = None, period_counter = None):
         Updater.__init__(self)
 
         # Flag which is used by display elements to show the user there is not enough memory left
@@ -106,12 +106,12 @@ class Controller(Updater): #ClientRequestListener
         for sw_def in switches:
             self.switches.append(FootSwitchController(self, sw_def))
 
-        # Set up pedals
-        self.pedals = []
-        if pedals:
-            from .PedalController import PedalController            
-            for p_def in pedals:            
-                self.pedals.append(PedalController(self, p_def))
+        # Set up pedals and other inputs
+        self.inputs = []
+        if inputs:
+            from .InputController import InputController            
+            for p_def in inputs:            
+                self.inputs.append(InputController(self, p_def))
 
         # Set up the screen elements
         if self.ui:
@@ -177,14 +177,15 @@ class Controller(Updater): #ClientRequestListener
                 switch.process()
             #self.__measurement_switch_jitter.start()
 
-            for pedal in self.pedals:
-                pedal.process()
+            # Pedals and other inputs
+            for input in self.inputs:
+                input.process()
 
+            # Receive MIDI
             midimsg = self.__midi.receive()
-
-            # Process the midi message
             self.client.receive(midimsg)
 
+            # Break after a certain amount of messages to keep the device responsive
             cnt = cnt + 1
             if not midimsg or cnt > self.__max_consecutive_midi_msgs:
                 break  

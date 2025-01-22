@@ -1,15 +1,15 @@
 from ..misc import get_option, PeriodCounter
 
-# Controller class for a Foot Switch. Each foot switch has three Neopixels.
-class PedalController:
+# Controller class for expression pedals, encoders and other inputs
+class InputController:
 
     # config must be a dictionary holding the following attributes:
     # { 
     #     "assignment": {
-    #         "model":         Model instance for the potentiometer hardware. Must implement an init() method and a .value property.
+    #         "model":         Model instance for the hardware. Must implement an init() method and a .value property.
     #     },
     #
-    #     "actions": [         Array of actions. Entries must be objects like PedalAction (see below)
+    #     "actions": [         Array of actions. Entries must be objects of type InputAction (see below)
     #         ExampleAction({
     #             ...                  
     #         }),
@@ -26,7 +26,7 @@ class PedalController:
         for action in self.__actions:
             action.init(appl)
                     
-    # Process the pedal
+    # Process the input
     def process(self):
         value = self.__pot.value
 
@@ -56,7 +56,7 @@ class PedalController:
 ################################################################################################
 
 
-class PedalAction:
+class InputAction:
     def __init__(self, 
                  mapping,                 # Parameter mapping to be controlled
                  max_value = 16384,       # Maximum value plus one (!) of the mapping (16384 for NRPN, 128 for CC)
