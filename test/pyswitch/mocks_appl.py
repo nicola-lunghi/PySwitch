@@ -305,6 +305,10 @@ class MockClient:
         self.set_calls = []
         self.num_notify_connection_lost_calls = 0
 
+    @property
+    def last_sent_message(self):
+        return self.set_calls[len(self.set_calls)-1] if self.set_calls else None
+
     def set(self, mapping, value):
         self.set_calls.append({
             "mapping": mapping,

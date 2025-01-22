@@ -7,7 +7,7 @@ omit =
     /project/lib/functools.py
     /project/test/test-examples/*
     
-    #/project/test/*
+    /project/test/*
     
 [report]
 show_missing = True
