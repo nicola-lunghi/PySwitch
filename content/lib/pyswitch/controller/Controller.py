@@ -57,9 +57,9 @@ class Controller(Updater): #ClientRequestListener
         if self.__debug_stats:
             from .RuntimeMeasurement import RuntimeMeasurement
 
-            self.__measurement_tick_time = RuntimeMeasurement(get_option(config, "debugStatsInterval", update_interval))
-            self.__measurement_tick_time.add_listener(self)
-            self.add_updateable(self.__measurement_tick_time)            
+            self.__measurement_process_jitter = RuntimeMeasurement(get_option(config, "debugStatsInterval", update_interval))
+            self.__measurement_process_jitter.add_listener(self)
+            self.add_updateable(self.__measurement_process_jitter)            
 
         # Limit of minimum free memory before low_memory_warning is set to True (the check is done before ticks
         # are running so this should be enough to operate all configurations imaginable. Normally you need about 
@@ -141,10 +141,6 @@ class Controller(Updater): #ClientRequestListener
 
     # Single tick in the processing loop. Must return True to keep the loop alive. Call this in an endless loop.
     def tick(self):
-        # If enabled, remember the tick starting time for statistics
-        if self.__debug_stats:
-            self.__measurement_tick_time.start()       
-
         # Update all Updateables in periodic intervals, less frequently than every tick.        
         if self.period.exceeded:
             for u in self.updateables:
@@ -158,22 +154,21 @@ class Controller(Updater): #ClientRequestListener
         # Receive all available MIDI messages
         self.__receive_midi_messages()
 
-        # Output statistical info if enabled
-        if self.__debug_stats:
-            self.__measurement_tick_time.finish()        
-
         return True
 
     # Receive MIDI messages, and in between check for switch state changes
     def __receive_midi_messages(self):
-        #self._measurement_midi_jitter.finish()
         cnt = 0
-        while True:
+        while True:            
+            if self.__debug_stats:
+                self.__measurement_process_jitter.finish()
+            
             # Detect switch state changes
-            #self.__measurement_switch_jitter.finish()
             for input in self.inputs:
                 input.process()
-            #self.__measurement_switch_jitter.start()
+            
+            if self.__debug_stats:
+                self.__measurement_process_jitter.start()
 
             # Receive MIDI
             midimsg = self.__midi.receive()

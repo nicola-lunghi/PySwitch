@@ -55,7 +55,7 @@ class TestControllerMeasurementsUpdate(unittest.TestCase):
 
                 appl.init()
 
-                m = appl._Controller__measurement_tick_time
+                m = appl._Controller__measurement_process_jitter
                 self.assertIsInstance(m, RuntimeMeasurement)
 
                 gc_mock_data().output_mem_free = 1024 * 566
