@@ -19,6 +19,7 @@ from pyswitch.clients.kemper.actions.morph import MORPH_DISPLAY, MORPH_BUTTON
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 
 from pyswitch.clients.kemper.mappings.rig import MAPPING_RIG_VOLUME
+from pyswitch.clients.kemper.mappings.morph import MAPPING_MORPH_PEDAL
 
 # Defines the switch assignments and other inputs
 Inputs = [
@@ -27,10 +28,24 @@ Inputs = [
         "assignment": Hardware.PA_MIDICAPTAIN_10_EXP_PEDAL_1,
         "actions": [
             ContinuousAction(
-                mapping = MAPPING_RIG_VOLUME()
+                mapping = MAPPING_RIG_VOLUME(),
+                auto_calibrate = True
             )
         ]
     },
+
+    # Pedal 2
+    {
+        "assignment": Hardware.PA_MIDICAPTAIN_10_EXP_PEDAL_2,
+        "actions": [
+            ContinuousAction(
+                mapping = MAPPING_MORPH_PEDAL(),
+                auto_calibrate = True
+            )
+        ]
+    },
+
+    ####################################################################################
 
     # Switch 1
     {
