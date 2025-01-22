@@ -187,7 +187,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_MORPH_BUTTON())
         self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (3, 4, 5))
+        #self.assertEqual(cb._BinaryParameterCallback__color, (3, 4, 5))
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
 

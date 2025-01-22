@@ -161,6 +161,8 @@ class BinaryParameterCallback(Callback):
         self.__color_callback = color_callback
         self.__use_internal_state = use_internal_state
 
+        self.__current_value = self       # Just some value which will never occur as a mapping value ;)
+
         self.reset()
 
         # Auto mode for value_disable
@@ -229,15 +231,15 @@ class BinaryParameterCallback(Callback):
     # Reset state
     def reset(self):
         self._current_display_state = -1
-        self._current_value = self       # Just some value which will never occur as a mapping value ;)
+        self.__current_value = self       # Just some value which will never occur as a mapping value ;)
         self._current_color = -1
 
 
     def update_displays(self, action):
         value = self.__mapping.value
 
-        if value != self._current_value:
-            self._current_value = value
+        if value != self.__current_value:
+            self.__current_value = value
             self.evaluate_value(action, value)
 
         color = self.__color_callback(action, value) if self.__color_callback else self.__color

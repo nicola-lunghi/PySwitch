@@ -12,26 +12,24 @@ def MORPH_BUTTON(display = None,
                  enable_callback = None, 
                  color = "kemper"         # Can be "kemper" or a fixed color
     ):
-    if color == "kemper":
-        cb = KemperMorphCallback(
-            mapping = MAPPING_MORPH_BUTTON(),
-            text = text,
-            comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-            led_brightness_off = "on",
-            display_dim_factor_off = "on",
-        )
-    else:        
-        cb = BinaryParameterCallback(
-            mapping = MAPPING_MORPH_BUTTON(),
-            text = text,
-            color = color,
-            comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
-            led_brightness_off = "on",
-            display_dim_factor_off = "on",
-        )
+        # cb = BinaryParameterCallback(
+        #     mapping = MAPPING_MORPH_BUTTON(),
+        #     text = text,
+        #     color = color,
+        #     comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+        #     led_brightness_off = "on",
+        #     display_dim_factor_off = "on",
+        # )
     
     return PushButtonAction({
-        "callback": cb,
+        "callback": KemperMorphCallback(
+            mapping = MAPPING_MORPH_BUTTON(),
+            text = text,
+            comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+            led_brightness_off = "on",
+            display_dim_factor_off = "on",
+            color = color
+        ),
         "mode": PushButtonAction.MOMENTARY,
         "useSwitchLeds": use_leds,
         "display": display,
@@ -57,18 +55,44 @@ def MORPH_DISPLAY(display = None, text = "Morph", id = False, use_leds = True, e
     })
 
 
+###################################################################################################
+
+def _get_color(action, value):
+    if KemperMorphCallback.morph_value_override != None:
+        value = KemperMorphCallback.morph_value_override
+        
+    if value == None:
+        return Colors.WHITE
+
+    cb = action.callback
+    if cb.fix_color:
+        return cb.fix_color
+
+    v = value / 16383
+    
+    return (
+        cb.COLOR_BASE[0] + int(cb.R_DIFF * v),
+        cb.COLOR_BASE[1] + int(cb.G_DIFF * v),
+        cb.COLOR_BASE[2] + int(cb.B_DIFF * v),
+    )  
+
 # BinaryParameterCallback for morph pedal mapping, with colors reflecting the morph state
 class KemperMorphCallback(BinaryParameterCallback):
 
     COLOR_BASE = Colors.RED
     COLOR_MORPH = Colors.BLUE
 
+    # Used by set_internal_state to globally override the color
+    morph_value_override = None
+    
     def __init__(self, 
                  mapping,
+                 set_internal_state = True,    # If this is set, a global, internal morph state is used instead of the values coming from the Kemper.
+                 color = "kemper",             # Can be "kemper" or a fixed color
                  text = "Morph", 
                  value_enable = 1, 
                  value_disable = 0, 
-                 reference_value = None, 
+                 reference_value = 8191, 
                  comparison_mode = BinaryParameterCallback.GREATER_EQUAL, 
                  display_dim_factor_on = None,
                  display_dim_factor_off = None,
@@ -77,25 +101,13 @@ class KemperMorphCallback(BinaryParameterCallback):
                  suppress_send = False
         ):
 
-        def get_color(action, value):
-            if value == None:
-                return Colors.WHITE
-            
-            r_diff = self.COLOR_MORPH[0] - self.COLOR_BASE[0]
-            g_diff = self.COLOR_MORPH[1] - self.COLOR_BASE[1]
-            b_diff = self.COLOR_MORPH[2] - self.COLOR_BASE[2]
-
-            v = value / 16383
-
-            return (
-                self.COLOR_BASE[0] + int(r_diff * v),
-                self.COLOR_BASE[1] + int(g_diff * v),
-                self.COLOR_BASE[2] + int(b_diff * v),
-            )
+        KemperMorphCallback.R_DIFF = KemperMorphCallback.COLOR_MORPH[0] - KemperMorphCallback.COLOR_BASE[0]
+        KemperMorphCallback.G_DIFF = KemperMorphCallback.COLOR_MORPH[1] - KemperMorphCallback.COLOR_BASE[1]
+        KemperMorphCallback.B_DIFF = KemperMorphCallback.COLOR_MORPH[2] - KemperMorphCallback.COLOR_BASE[2]
         
         super().__init__(
             mapping = mapping, 
-            color_callback = get_color,
+            color_callback = _get_color,
             text = text, 
             value_enable = value_enable, 
             value_disable = value_disable, 
@@ -107,10 +119,27 @@ class KemperMorphCallback(BinaryParameterCallback):
             led_brightness_off = led_brightness_off
         )
 
+        self.__set_internal_state = set_internal_state
         self.__suppress_send = suppress_send
+        self.fix_color = color if color != "kemper" else None
+
+        if set_internal_state:
+            KemperMorphCallback.morph_value_override = 0            
+
 
     def state_changed_by_user(self, action):
         if self.__suppress_send:
             return
         
         super().state_changed_by_user(action)
+
+        if self.__set_internal_state and action.state:
+            KemperMorphCallback.morph_value_override = 0 if (KemperMorphCallback.morph_value_override > 0) else 16383
+
+    
+    def evaluate_value(self, action, value):
+        if self.__set_internal_state and value != None:
+            # Morph value has changed from the outside
+            KemperMorphCallback.morph_value_override = value
+
+        super().evaluate_value(action, value)
