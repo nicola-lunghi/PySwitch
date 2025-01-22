@@ -62,7 +62,10 @@ class PedalAction:
                  max_value = 16384,       # Maximum value plus one (!) of the mapping (16384 for NRPN, 128 for CC)
                  max_frame_rate = 24,     # Maximum frame rate for sending MIDI values (fps)
                  num_steps = 128,         # Number of steps to be regarded as different (saves MIDI traffic at the cost of precision)
-                 enable_callback = None   # Callback to set enabled state (optional). Must contain an enabled(action) function.
+                 enable_callback = None,  # Callback to set enabled state (optional). Must contain an enabled(action) function.
+                 transfer = None          # Transfer handler instance. See TransferFunction below. If used, this disables the num_steps parameter.
+                                          # When designing your transfer function, take care that the output values do not change too often as this 
+                                          # imposes performance issues! 
         ):
         self.__mapping = mapping
         self.__factor = max_value / 65536
@@ -70,6 +73,7 @@ class PedalAction:
         self.__enable_callback = enable_callback
         self.__step_width = int(65536 / num_steps)
         self.__last_value = -1
+        self.__transfer = transfer
 
     @property
     def enabled(self):
@@ -80,10 +84,22 @@ class PedalAction:
 
     # Process a value in range [0..65535]
     def process(self, value):
-        v = value * self.__factor
-        v = int(v / self.__step_width) * self.__step_width 
-        
-        if self.__last_value != v and self.__period.exceeded:
-            self.__last_value = v
-            self.__appl.client.set(self.__mapping, v)
-        
+        if self.__period.exceeded:
+            if self.__transfer:
+                # Use an external transfer function
+                v = self.__transfer.get(value)
+            else:
+                # Scale and quantize
+                v = value * self.__factor
+                v = int(v / self.__step_width) * self.__step_width 
+
+            if self.__last_value != v:
+                # Update value on client
+                self.__last_value = v
+                self.__appl.client.set(self.__mapping, v)
+
+
+# class TransferFunction:
+#     # Input is the raw encoder value in range [0..65535]. Must return the value to be sent for the mapping, in its range.
+#     def get(self, raw_value):
+#         return 0
