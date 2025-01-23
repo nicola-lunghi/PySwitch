@@ -29,7 +29,9 @@ _DISPLAY_HEIGHT = const(240)
 _SLOT_WIDTH = const(120)                 # Slot width on the display
 _SLOT_HEIGHT = const(40)                 # Slot height on the display
 _FOOTER_Y = const(200)
+_RIG_ID_HEIGHT = const(40)
 _RIG_NAME_HEIGHT = const(160)
+_RIG_ID_Y = const(160)
 
 #############################################################################################################################################
 
@@ -53,14 +55,6 @@ DISPLAY_FOOTER_2 = DisplayLabel(
     bounds = DisplayBounds(_SLOT_WIDTH, _FOOTER_Y, _SLOT_WIDTH, _SLOT_HEIGHT)
 )
 
-# Page
-DISPLAY_PAGE = DisplayLabel(
-    layout = {
-        "font": "/fonts/A12.pcf",
-        "backColor": (0, 0, 0)
-    },
-    bounds = DisplayBounds(0, _FOOTER_Y - 20, _DISPLAY_WIDTH, 20)
-)
 
 Splashes = TunerDisplayCallback(
     strobe = True,
@@ -91,11 +85,30 @@ Splashes = TunerDisplayCallback(
                     "text": KemperRigNameCallback.DEFAULT_TEXT,
                 },
 
-                callback = KemperRigNameCallback()
+                callback = KemperRigNameCallback(
+                    show_name = True,
+                    show_rig_id = False
+                )
             ),
 
-            # Pager
-            DISPLAY_PAGE,
+            # Rig ID
+            DisplayLabel(
+                bounds = DisplayBounds(
+                    0,
+                    _RIG_ID_Y,
+                    _DISPLAY_WIDTH,
+                    _RIG_ID_HEIGHT
+                ),
+
+                layout = {
+                    "font": "/fonts/H20.pcf"
+                },
+
+                callback = KemperRigNameCallback(
+                    show_name = False,
+                    show_rig_id = True
+                )
+            ),
 
             # Bidirectional protocol state indicator (dot)
             BidirectionalProtocolState(DisplayBounds(
