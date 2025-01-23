@@ -277,6 +277,7 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Button 4", MAPPING_EFFECT_BUTTON(4).name)
 
         self.assertIn("Rig Name", KemperMappings.RIG_NAME().name)
+        self.assertIn("Rig ID", KemperMappings.RIG_ID().name)
 
         self.assertIn("Rig Date", MAPPING_RIG_DATE().name)
 

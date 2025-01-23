@@ -186,31 +186,31 @@ class KemperRigSelectCallback(BinaryParameterCallback):
             else:
                 is_current = (curr_rig == self.__rig - 1)
             
-        bank_color = self._get_color(action, curr_bank, curr_rig, is_current)                    
+        bank_color = self.__get_color(action, curr_bank, curr_rig, is_current)                    
 
         # Label text
         if action.label:
             if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                action.label.text = self._get_text(action, curr_bank, curr_rig) 
+                action.label.text = self.__get_text(action, curr_bank, curr_rig) 
                 action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
 
             elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
                 if "preselectedBank" in self.__appl.shared:
                     action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off) 
-                    action.label.text = self._get_text(action, self.__appl.shared["preselectedBank"], self.__rig - 1)
+                    action.label.text = self.__get_text(action, self.__appl.shared["preselectedBank"], self.__rig - 1)
                 else:
                     action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
 
                     if self.__bank != None:
                         if is_current and self.__rig_off != None and self.__bank_off != None:
-                            action.label.text = self._get_text(action, self.__bank_off - 1, self.__rig_off - 1)
+                            action.label.text = self.__get_text(action, self.__bank_off - 1, self.__rig_off - 1)
                         else:
-                            action.label.text = self._get_text(action, self.__bank - 1, self.__rig - 1)
+                            action.label.text = self.__get_text(action, self.__bank - 1, self.__rig - 1)
                     else:
                         if is_current and self.__rig_off != None:                    
-                            action.label.text = self._get_text(action, curr_bank, self.__rig_off - 1) 
+                            action.label.text = self.__get_text(action, curr_bank, self.__rig_off - 1) 
                         else:
-                            action.label.text = self._get_text(action, curr_bank, self.__rig - 1)
+                            action.label.text = self.__get_text(action, curr_bank, self.__rig - 1)
 
             else:
                 raise Exception()  #"Invalid display mode: " + repr(display_mode))
@@ -223,7 +223,7 @@ class KemperRigSelectCallback(BinaryParameterCallback):
         else:
             action.switch_brightness = self.__default_led_brightness_off
 
-    def _get_color(self, action, curr_bank, curr_rig, is_current):
+    def __get_color(self, action, curr_bank, curr_rig, is_current):
         if self.__color:
             return self.__color
         
@@ -250,12 +250,12 @@ class KemperRigSelectCallback(BinaryParameterCallback):
         else:
             raise Exception() #"Invalid display mode: " + repr(display_mode))
         
-    def _get_text(self, action, bank, rig):
+    def __get_text(self, action, bank, rig):
         if self.__text_callback:
             return self.__text_callback(action, bank, rig)
         
         if self.__text:
             return self.__text
             
-        return "Rig " + repr(bank + 1) + "-" + repr(rig + 1)
+        return f"Rig { repr(bank + 1) }-{ repr(rig + 1) }"
     

@@ -29,7 +29,9 @@ _DISPLAY_HEIGHT = const(240)
 _SLOT_WIDTH = const(120)                 # Slot width on the display
 _SLOT_HEIGHT = const(40)                 # Slot height on the display
 _FOOTER_Y = const(200)
+_RIG_ID_HEIGHT = const(40)
 _RIG_NAME_HEIGHT = const(160)
+_RIG_ID_Y = const(160)
 
 #############################################################################################################################################
 
@@ -83,7 +85,29 @@ Splashes = TunerDisplayCallback(
                     "text": KemperRigNameCallback.DEFAULT_TEXT,
                 },
 
-                callback = KemperRigNameCallback()
+                callback = KemperRigNameCallback(
+                    show_name = True,
+                    show_rig_id = False
+                )
+            ),
+
+            # Rig ID
+            DisplayLabel(
+                bounds = DisplayBounds(
+                    0,
+                    _RIG_ID_Y,
+                    _DISPLAY_WIDTH,
+                    _RIG_ID_HEIGHT
+                ),
+
+                layout = {
+                    "font": "/fonts/H20.pcf"
+                },
+
+                callback = KemperRigNameCallback(
+                    show_name = False,
+                    show_rig_id = True
+                )
             ),
 
             # Bidirectional protocol state indicator (dot)

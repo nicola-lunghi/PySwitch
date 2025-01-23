@@ -2,6 +2,7 @@
 - Added Expression Pedal support (for MIDI Captain 10-Switch versions). This includes renaming the switches.py file to inputs.py. See examples for the 10 switch MIDI Captain.
 - Added support for the rotary wheel on the MIDI Captain 10-Switch versions. Both the rotary encoder as well as the push button can be mapped. See examples.
 - Added BANK_SELECT action for changing/toggling banks but stay at the same rig
+- Added RIG_UP and RIG_DOWN actions (see examples for the Nano 4)
 - Added option to RIG_SELECT and RIG_AND_BANK_SELECT which remembers the current rig in "off" state and switches back to it when disabling again. See example Nano 4 -> tunetown Session.
 - Tuner mode:
     - Disable tuner mode with any switch

@@ -68,13 +68,36 @@ def NRPN_VALUE(value):
 class KemperRigNameCallback(Callback):
     DEFAULT_TEXT = "Kemper Control " + PYSWITCH_VERSION
 
-    def __init__(self):
+    def __init__(self, show_name = True, show_rig_id = False):
         Callback.__init__(self)
-        self.__mapping = KemperMappings.RIG_NAME()
-        self.register_mapping(self.__mapping)
+
+        # Rig name
+        self.__show_name = show_name
+        if show_name:
+            self.__mapping_name = KemperMappings.RIG_NAME()
+            self.register_mapping(self.__mapping_name)
+
+        # Rig ID
+        self.__show_rig_id = show_rig_id
+        if show_rig_id:
+            self.__mapping_id = KemperMappings.RIG_ID()
+            self.register_mapping(self.__mapping_id)        
 
     def update_label(self, label):
-        label.text = self.__mapping.value if self.__mapping.value else self.DEFAULT_TEXT
+        if self.__show_name:
+            name = self.__mapping_name.value if self.__mapping_name.value else self.DEFAULT_TEXT
+
+        if self.__show_rig_id and self.__mapping_id.value != None:
+            bank = int(self.__mapping_id.value / NUM_RIGS_PER_BANK)
+            rig = self.__mapping_id.value % NUM_RIGS_PER_BANK
+
+            if self.__show_name:
+                label.text = f"{ repr(bank + 1) }-{ repr(rig + 1) } { name }"
+            else:
+                label.text = f"{ repr(bank + 1) }-{ repr(rig + 1) }"
+                
+        elif self.__show_name:
+            label.text = name
 
 
 ####################################################################################################################
@@ -433,6 +456,7 @@ class KemperTwoPartParameterMapping(KemperParameterMapping):
 
 # ControlChange Addresses
 _CC_TUNER_MODE = const(31)
+_CC_RIG_INDEX_PART_1 = const(32) # The second part will be sent as program change.
 
 # NRPN parameters for effect slots
 _NRPN_EFFECT_PARAMETER_ADDRESS_TYPE = const(0x00) 
@@ -549,6 +573,20 @@ class KemperMappings:
             )
         ) 
     
+    # Rig ID
+    def RIG_ID():
+        return KemperTwoPartParameterMapping(
+            name = "Rig ID",
+            response = [
+                ControlChange(
+                    _CC_RIG_INDEX_PART_1,
+                    0    # Dummy value, will be ignored
+                ),
+                ProgramChange(
+                    0    # Dummy value, will be ignored
+                )
+            ]
+        )
 
 ####################################################################################################################
 
