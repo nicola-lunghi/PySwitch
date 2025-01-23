@@ -1,6 +1,7 @@
 from lib.pyswitch.controller.actions import Action, PushButtonAction
 #from lib.pyswitch.controller.Controller import Controller
 from lib.pyswitch.controller.Client import ClientParameterMapping
+from lib.pyswitch.misc import Updateable
 
 from .mocks_lib import *
 
@@ -160,7 +161,22 @@ class MockPotentiometer:
     @property
     def value(self):
         return self.output
+    
 
+##################################################################################################################################
+
+
+class MockRotaryEncoder: 
+    def __init__(self):
+        self.num_init_calls = 0
+        self.output = 0
+
+    def init(self):
+        self.num_init_calls += 1
+
+    @property
+    def position(self):
+        return self.output
 
 ##################################################################################################################################
 
@@ -266,7 +282,7 @@ class MockAction(Action):
 ##################################################################################################################################
 
 
-class MockInputAction:
+class MockAnalogAction:
     def __init__(self, enabled = True):
         self.enabled = enabled
         self.init_calls = []
@@ -283,14 +299,34 @@ class MockInputAction:
 ##################################################################################################################################
 
 
+class MockEncoderAction(Updateable):
+    def __init__(self):
+        self.enabled = True
+        self.init_calls = []
+        self.process_calls = []
+        self.num_update_calls = 0
+
+    def init(self, appl):
+        self.init_calls.append(appl)
+
+    def update(self):
+        self.num_update_calls += 1
+
+    def process(self, position):
+        self.process_calls.append(position)
+
+
+##################################################################################################################################
+
+
 def MockInputControllerDefinition():
     return {
         "assignment": {
             "model": MockPotentiometer()
         },
         "actions": {
-            MockInputAction(),
-            MockInputAction()
+            MockAnalogAction(),
+            MockAnalogAction()
         }
     }
 
@@ -315,13 +351,13 @@ class MockClient:
             "value": value
         })
 
-    def register(self, mapping, listener):
+    def register(self, mapping, listener = None):
         self.register_calls.append({
             "mapping": mapping,
             "listener": listener
         })
 
-    def request(self, mapping, listener):
+    def request(self, mapping, listener = None):
         self.request_calls.append({
             "mapping": mapping,
             "listener": listener
@@ -329,6 +365,7 @@ class MockClient:
 
     def notify_connection_lost(self):
         self.num_notify_connection_lost_calls += 1
+
 
 ##################################################################################################################################
 

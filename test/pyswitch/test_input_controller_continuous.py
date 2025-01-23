@@ -23,11 +23,13 @@ with patch.dict(sys.modules, {
     }):
         
         from lib.pyswitch.controller.InputControllers import ContinuousController
+        from lib.pyswitch.misc import Updater
         from .mocks_appl import *
 
 
-class MockController2:
+class MockController2(Updater):
     def __init__(self):
+        Updater.__init__(self)
         self.client = MockClient()
 
 
@@ -36,17 +38,17 @@ class MockController2:
 
 class TestControllerInput(unittest.TestCase):
 
-    def test_actions(self):
-        pedal = MockPotentiometer()
+    def test_potentiometer(self):
+        pot = MockPotentiometer()
         
-        action_1 = MockInputAction()
-        action_2 = MockInputAction()
+        action_1 = MockAnalogAction()
+        action_2 = MockAnalogAction()
 
         appl = MockController2()
 
         input = ContinuousController(appl, {
             "assignment": {
-                "model": pedal,
+                "model": pot,
             },
             "actions": [
                 action_1,
@@ -57,27 +59,27 @@ class TestControllerInput(unittest.TestCase):
         self.assertEqual(action_1.init_calls, [appl])
         self.assertEqual(action_2.init_calls, [appl])
 
-        pedal.output = 100
+        pot.output = 100
         input.process()
 
         self.assertEqual(action_1.process_calls, [100])
         self.assertEqual(action_2.process_calls, [100])
 
-        pedal.output = 101
+        pot.output = 101
         input.process()
 
         self.assertEqual(action_1.process_calls, [100, 101])
         self.assertEqual(action_2.process_calls, [100, 101])
 
         # Disable
-        pedal.output = 102
+        pot.output = 102
         action_1.enabled = False
         input.process()
 
         self.assertEqual(action_1.process_calls, [100, 101])
         self.assertEqual(action_2.process_calls, [100, 101, 102])
 
-        pedal.output = 103
+        pot.output = 103
         action_1.enabled = True
         action_2.enabled = False
         input.process()
@@ -85,7 +87,63 @@ class TestControllerInput(unittest.TestCase):
         self.assertEqual(action_1.process_calls, [100, 101, 103])
         self.assertEqual(action_2.process_calls, [100, 101, 102])
 
-        pedal.output = 104
+        pot.output = 104
+        input.process()
+
+        self.assertEqual(action_1.process_calls, [100, 101, 103, 104])
+        self.assertEqual(action_2.process_calls, [100, 101, 102])
+        
+
+    def test_encoder(self):
+        encoder = MockRotaryEncoder()
+        
+        action_1 = MockEncoderAction()
+        action_2 = MockEncoderAction()
+
+        appl = MockController2()
+
+        input = ContinuousController(appl, {
+            "assignment": {
+                "model": encoder,
+            },
+            "actions": [
+                action_1,
+                action_2,
+            ]
+        })
+
+        self.assertEqual(action_1.init_calls, [appl])
+        self.assertEqual(action_2.init_calls, [appl])
+
+        encoder.output = 100
+        input.process()
+
+        self.assertEqual(action_1.process_calls, [100])
+        self.assertEqual(action_2.process_calls, [100])
+
+        encoder.output = 101
+        input.process()
+
+        self.assertEqual(action_1.process_calls, [100, 101])
+        self.assertEqual(action_2.process_calls, [100, 101])
+
+        # Disable
+        encoder.output = 102
+        action_1.enabled = False
+        input.process()
+
+        self.assertEqual(action_1.process_calls, [100, 101])
+        self.assertEqual(action_2.process_calls, [100, 101, 102])
+
+        encoder.output = 103
+        action_1.enabled = True
+        action_2.enabled = False
+        input.process()
+
+        self.assertEqual(action_1.process_calls, [100, 101, 103])
+        self.assertEqual(action_2.process_calls, [100, 101, 102])
+
+        encoder.output = 104
         input.process()
 
         self.assertEqual(action_1.process_calls, [100, 101, 103, 104])

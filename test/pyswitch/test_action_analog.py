@@ -23,7 +23,7 @@ with patch.dict(sys.modules, {
         "lib.pyswitch.misc": MockMisc
     }):
         
-        from lib.pyswitch.controller.ContinuousAction import ContinuousAction
+        from lib.pyswitch.controller.AnalogAction import AnalogAction
         from .mocks_appl import *
 
 
@@ -35,10 +35,10 @@ class MockController2:
 ##################################################################################################################################
 
 
-class TestInputAction(unittest.TestCase):
+class TestAnalogAction(unittest.TestCase):
 
-    def test_input_action(self):
-        self._test_input_action(
+    def test(self):
+        self._test(
             max_value = 127,
             num_steps = 128,
             data = [
@@ -58,7 +58,7 @@ class TestInputAction(unittest.TestCase):
             ]
         )
 
-        self._test_input_action(
+        self._test(
             max_value = 255,
             num_steps = 128,
             data = [
@@ -75,7 +75,7 @@ class TestInputAction(unittest.TestCase):
             ]
         )
 
-        self._test_input_action(
+        self._test(
             max_value = 127, 
             num_steps = 16,
             data = [
@@ -92,7 +92,7 @@ class TestInputAction(unittest.TestCase):
 
         ############################################
 
-        self._test_input_action(
+        self._test(
             max_value = 16383, 
             num_steps = 128,
             data = [
@@ -112,11 +112,11 @@ class TestInputAction(unittest.TestCase):
             ]
         )
 
-    def test_input_action_transfer_function(self):
+    def test_transfer_function(self):
         def transfer(value):
             return round(value / 1024) + 32
         
-        self._test_input_action(
+        self._test(
             max_value = 96,
             data = [
                 (0, 32),
@@ -136,7 +136,7 @@ class TestInputAction(unittest.TestCase):
             transfer_function = transfer
         )
         
-    def _test_input_action(self, data, max_value, num_steps = 1, transfer_function = None):
+    def _test(self, data, max_value, num_steps = 1, transfer_function = None):
         mapping = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
@@ -144,7 +144,7 @@ class TestInputAction(unittest.TestCase):
             )
         )
 
-        action = ContinuousAction(
+        action = AnalogAction(
             mapping = mapping,
             max_value = max_value,
             max_frame_rate = 10,
@@ -157,11 +157,11 @@ class TestInputAction(unittest.TestCase):
         action.init(appl)
 
         self.assertEqual(action.enabled, True)
-        self.assertEqual(action._ContinuousAction__period.interval, 100)
-        self.assertEqual(action._ContinuousAction__mapping, mapping)
+        self.assertEqual(action._AnalogAction__period.interval, 100)
+        self.assertEqual(action._AnalogAction__mapping, mapping)
 
-        action._ContinuousAction__period = MockPeriodCounter()
-        period = action._ContinuousAction__period
+        action._AnalogAction__period = MockPeriodCounter()
+        period = action._AnalogAction__period
 
         # Call without period exceeding
         action.process(1)
@@ -204,7 +204,7 @@ class TestInputAction(unittest.TestCase):
     #################################################################################
 
         
-    def test_input_action_enable_callback(self):
+    def test_enable_callback(self):
         mapping = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
@@ -214,7 +214,7 @@ class TestInputAction(unittest.TestCase):
 
         ecb = MockEnabledCallback(output = True)
 
-        action = ContinuousAction(
+        action = AnalogAction(
             mapping = mapping,
             enable_callback = ecb
         )
@@ -231,7 +231,7 @@ class TestInputAction(unittest.TestCase):
     #################################################################################
 
         
-    def test_input_action_calibration(self):
+    def test_calibration(self):
         mapping = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
@@ -239,7 +239,7 @@ class TestInputAction(unittest.TestCase):
             )
         )
 
-        action = ContinuousAction(
+        action = AnalogAction(
             mapping = mapping,
             max_value = 65535,
             max_frame_rate = 10,
@@ -251,8 +251,8 @@ class TestInputAction(unittest.TestCase):
         appl = MockController2()
         action.init(appl)
 
-        action._ContinuousAction__period = MockPeriodCounter()
-        period = action._ContinuousAction__period
+        action._AnalogAction__period = MockPeriodCounter()
+        period = action._AnalogAction__period
 
         # Window too small
         period.exceed_next_time = True
@@ -305,7 +305,7 @@ class TestInputAction(unittest.TestCase):
             self.assertLessEqual(outval, 65535)
 
 
-    def test_input_action_calibration_with_range(self):
+    def test_calibration_with_range(self):
         mapping = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
@@ -313,7 +313,7 @@ class TestInputAction(unittest.TestCase):
             )
         )
 
-        action = ContinuousAction(
+        action = AnalogAction(
             mapping = mapping,
             max_value = 1023,
             max_frame_rate = 10,
@@ -325,8 +325,8 @@ class TestInputAction(unittest.TestCase):
         appl = MockController2()
         action.init(appl)
 
-        action._ContinuousAction__period = MockPeriodCounter()
-        period = action._ContinuousAction__period
+        action._AnalogAction__period = MockPeriodCounter()
+        period = action._AnalogAction__period
 
         # Window too small
         period.exceed_next_time = True
@@ -379,7 +379,7 @@ class TestInputAction(unittest.TestCase):
             self.assertLessEqual(outval, 1023)
     
 
-    def test_input_action_calibration_with_range_and_function(self):
+    def test_calibration_with_range_and_function(self):
         mapping = MockParameterMapping(
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
@@ -390,7 +390,7 @@ class TestInputAction(unittest.TestCase):
         def transfer(value):
             return round(value / 2) + 2
 
-        action = ContinuousAction(
+        action = AnalogAction(
             mapping = mapping,
             max_value = 1023,
             max_frame_rate = 10,
@@ -403,8 +403,8 @@ class TestInputAction(unittest.TestCase):
         appl = MockController2()
         action.init(appl)
 
-        action._ContinuousAction__period = MockPeriodCounter()
-        period = action._ContinuousAction__period
+        action._AnalogAction__period = MockPeriodCounter()
+        period = action._AnalogAction__period
 
         # Window too small
         period.exceed_next_time = True

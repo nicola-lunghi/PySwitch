@@ -1,7 +1,7 @@
 from rotaryio import IncrementalEncoder as _IncrementalEncoder
 
 # Rotary encoder
-class AdafruitEncoder: #(PotentiometerDriver):
+class AdafruitEncoder:
     
     def __init__(self, port_1, port_2, divisor = 2):
         self.__port_1 = port_1

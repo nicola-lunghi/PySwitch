@@ -28,12 +28,15 @@ class EncoderAction(Updateable):
 
     # Process the current encoder position
     def process(self, position):
-        if self.__mapping.value == None:
-            return
-    
+        if self.__last_pos == -1:
+            self.__last_pos = position
+
         if self.__last_pos == position:
             return
                         
+        if self.__mapping.value == None:
+            return
+    
         add_value = (position - self.__last_pos) * self.__step_width        
         self.__last_pos = position
 

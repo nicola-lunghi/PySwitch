@@ -182,6 +182,59 @@ class TestClient(unittest.TestCase):
 ##############################################################################################
 
 
+    def test_request_no_listener(self):        
+        midi = MockAdafruitMIDI.MIDI()
+
+        client = Client(
+            midi = midi,
+            config = {},
+        )
+
+        mapping_1 = MockParameterMapping(
+            request = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            ),
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        client.request(mapping_1)
+
+        self.assertEqual(len(midi.messages_sent), 1)
+        self.assertEqual(midi.messages_sent[0], mapping_1.request)
+        
+        # Receive None
+        client.receive(None)
+        
+        # Receive ControlChange
+        client.receive(ControlChange(3, 4))
+        
+        # Receive correct message
+        req = client.requests[0]
+        answer_msg = SystemExclusive(
+            manufacturer_id = [0x00, 0x10, 0x20],
+            data = [0x00, 0x00, 0x07, 0x45]
+        )
+
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg,
+                "value": 34
+            }
+        ]
+
+        client.receive(answer_msg)
+        self.assertEqual(mapping_1.value, 34)
+        self.assertEqual(req.finished, True)
+        self.assertEqual(client.requests, [])
+        
+        
+##############################################################################################
+
+
     def test_request_add_listeners(self):        
         midi = MockAdafruitMIDI.MIDI()
 
@@ -409,6 +462,49 @@ class TestClient(unittest.TestCase):
 
         client.receive(answer_msg)
         self.assertEqual(listener.parameter_changed_calls, [mapping_1])        
+        
+        self.assertEqual(mapping_1.value, 34)
+        self.assertEqual(req.finished, False)
+        self.assertTrue(req in client.requests)
+
+
+##############################################################################################
+
+
+    def test_request_endless_no_listener(self):        
+        midi = MockAdafruitMIDI.MIDI()
+
+        client = Client(
+            midi = midi,
+            config = {
+                "maxRequestLifetimeMillis": 0
+            }
+        )
+
+        mapping_1 = MockParameterMapping(
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        client.register(mapping_1)
+
+        answer_msg = SystemExclusive(
+            manufacturer_id = [0x00, 0x10, 0x20],
+            data = [0x00, 0x00, 0x07, 0x45]
+        )
+        
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg,
+                "value": 34
+            }
+        ]
+
+        req = client.requests[0]
+
+        client.receive(answer_msg)
         
         self.assertEqual(mapping_1.value, 34)
         self.assertEqual(req.finished, False)

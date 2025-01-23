@@ -1,7 +1,7 @@
 from analogio import AnalogIn as _AnalogIn
 
 # Analog GPIO (Potentiometer)
-class AdafruitPotentiometer: #(PotentiometerDriver):
+class AdafruitPotentiometer:
     
     # port: The board GPIO pin definition to be used for this pot (for example board.GP1)
     def __init__(self, port):

@@ -31,8 +31,8 @@ class TestControllerActions(unittest.TestCase):
         
         action_1 = MockAction()
         action_2 = MockAction()
-        action_3 = MockInputAction()
-        action_4 = MockInputAction()
+        action_3 = MockAnalogAction()
+        action_4 = MockEncoderAction()
 
         period = MockPeriodCounter()
 
