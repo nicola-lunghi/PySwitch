@@ -1,4 +1,4 @@
-from ..misc import Colors, get_option, PeriodCounter
+from ..misc import Colors, get_option, PeriodCounter, Updateable
 from array import array
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.
@@ -234,7 +234,7 @@ class ContinuousController:
     #         "model":         Model instance for the hardware. Must implement an init() method and a .value property.
     #     },
     #
-    #     "actions": [         Array of actions. Entries must be objects of type InputAction (see below)
+    #     "actions": [         Array of actions. Entries must be objects of type ContinuousAction (see below)
     #         ExampleAction({
     #             ...                  
     #         }),
@@ -242,18 +242,27 @@ class ContinuousController:
     #     ]
     # }
     def __init__(self, appl, config):
-        self.__pot = config["assignment"]["model"]
-        self.__pot.init()
+        self.__input = config["assignment"]["model"]
+        self.__input.init()
 
+        self.__pot = hasattr(self.__input, "value")
         self.__actions = get_option(config, "actions", [])
         
         # Init actions
         for action in self.__actions:
             action.init(appl)
+
+            if isinstance(action, Updateable):             
+                appl.add_updateable(action)
                     
     # Process the input
     def process(self):
-        value = self.__pot.value
+        if self.__pot:
+            # Potentiometer
+            value = self.__input.value
+        else:
+            # Encoder
+            value = self.__input.position
 
         for action in self.__actions:
             if not action.enabled:

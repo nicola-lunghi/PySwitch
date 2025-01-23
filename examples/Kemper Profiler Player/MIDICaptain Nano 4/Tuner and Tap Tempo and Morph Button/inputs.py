@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
  
-from pyswitch.hardware.Hardware import Hardware
+from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
 
 from pyswitch.misc import Colors
 
@@ -22,7 +22,7 @@ Inputs = [
 
     # Switch 1
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             TUNER_MODE(
                 display = DISPLAY_HEADER_1
@@ -32,7 +32,7 @@ Inputs = [
 
     # Switch 2
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
             TAP_TEMPO(
                 display = DISPLAY_HEADER_2,
@@ -45,7 +45,7 @@ Inputs = [
 
     # Switch A
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
@@ -56,7 +56,7 @@ Inputs = [
     
     # Switch B
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             MORPH_BUTTON(
                 display = DISPLAY_FOOTER_2,

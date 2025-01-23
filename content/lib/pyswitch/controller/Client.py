@@ -107,7 +107,7 @@ class Client: #(ClientRequestListener):
 
     # Register the mapping and listener in advance (only plays a role for bidirectional parameters,
     # here this is redundant)
-    def register(self, mapping, listener):
+    def register(self, mapping, listener = None):
         if not mapping.request and mapping.response:
             self.__register_mapping(mapping, listener, False)
 
@@ -135,7 +135,7 @@ class Client: #(ClientRequestListener):
 
     # Send the request message of a mapping. Calls the passed listener when the answer has arrived.
     #@RuntimeStatistics.measure
-    def request(self, mapping, listener):
+    def request(self, mapping, listener = None):
         if not mapping.request or not mapping.response:
             return            
         
@@ -150,7 +150,8 @@ class Client: #(ClientRequestListener):
             # New request
             req = self.__create_request(mapping)
             
-            req.add_listener(listener)
+            if listener:
+                req.add_listener(listener)
 
             # Add to list
             self.__requests.append(req)
@@ -161,7 +162,8 @@ class Client: #(ClientRequestListener):
 
         else:
             # Existing request: Add listener
-            req.add_listener(listener)
+            if listener:
+                req.add_listener(listener)
 
     # Create a new request
     def __create_request(self, mapping):
@@ -343,7 +345,7 @@ class BidirectionalClient(Client, Updateable):
         self.protocol.init(midi, self)
 
     # Register the mapping and listener in advance (only plays a role for bidirectional parameters)
-    def register(self, mapping, listener):
+    def register(self, mapping, listener = None):
         if self.protocol.is_bidirectional(mapping):
             mapping.request = None
     

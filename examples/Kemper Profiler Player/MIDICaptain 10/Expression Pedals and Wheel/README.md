@@ -1,9 +1,10 @@
 ## Example Description
 
-This demonstrated how expression pedals can be added to the inputs list to control stuff.
+This demonstrated how expression pedals and the wheel of the MIDI Captain (10-switch version) can be added to the inputs list to control stuff.
 
 **Pedal 1:** Rig Volume
 **Pedal 2:** Morph State
+**Wheel:** Amp Gain (turn), Amp on/off (push)
 
 The pedals per default use auto-calibration similar to the way the Kemper does. The pedal range is calibrated all the time, just rock the pedal up and down once to get the full range, reboot the controller to reset calibration.
 

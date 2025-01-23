@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
  
-from pyswitch.hardware.Hardware import Hardware
+from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
 
 from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
@@ -18,7 +18,7 @@ Inputs = [
 
     # Switch 1
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             BANK_DOWN(
                 display = DISPLAY_HEADER_1
@@ -28,7 +28,7 @@ Inputs = [
 
     # Switch 2
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
             BANK_UP(
                 display = DISPLAY_HEADER_2
@@ -38,7 +38,7 @@ Inputs = [
 
     # Switch A
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
@@ -49,7 +49,7 @@ Inputs = [
     
     # Switch B
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,

@@ -1,5 +1,6 @@
 # PySwitch v2.3.0
 - Added Expression Pedal support (for MIDI Captain 10-Switch versions). This includes renaming the switches.py file to inputs.py. See examples for the 10 switch MIDI Captain.
+- Added support for the rotary wheel on the MIDI Captain 10-Switch versions. Both the rotary encoder as well as the push button can be mapped. See examples.
 - Added BANK_SELECT action for changing/toggling banks but stay at the same rig
 - Added option to RIG_SELECT and RIG_AND_BANK_SELECT which remembers the current rig in "off" state and switches back to it when disabling again. See example Nano 4 -> tunetown Session.
 - Tuner mode:
@@ -16,6 +17,7 @@
     - Merged HoldAction into Footswitch controller (put "actionsHold" into the switch definition directly instead)
     - All Kemper action pre-definitions are now separated in files. In switches.py, you now have to omit the KemperActionDefinitions. prefixes, and import the action definitions you need separately (see examples) which is a huge memory benefit.
     Implementation Notes: kemper.py code is now way smaller and moved to pyswitch/clients/kemper/\__init__.py
+    - Hardware implementations are now separated into files for the different MIDI Captains. At the top of inputs.py (formerly switches.py), adjust to the device you use, see examples.
     - Removed performance dot (remove this from display.py if exists)
     - Merged HierarchicalDisplayElement into DisplayElement (replace HierarchicalDisplayElement with DisplayElement in display.py)
     - Removed DisplaySplitContainer and subtractive layouting (manually set display areas instead in display.py, see examples)

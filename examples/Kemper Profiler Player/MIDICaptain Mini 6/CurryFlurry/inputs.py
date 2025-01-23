@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
  
-from pyswitch.hardware.Hardware import Hardware
+from pyswitch.hardware.devices.pa_midicaptain_mini_6 import *
 
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
 from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
@@ -16,7 +16,7 @@ Inputs = [
 
     # Switch 1
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_1,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_1,
         "actions": [
             RIG_SELECT(
                 rig = 4,
@@ -27,7 +27,7 @@ Inputs = [
 
     # Switch 2
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_2,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_2,
         "actions": [
             RIG_SELECT(
                 rig = 5,
@@ -38,7 +38,7 @@ Inputs = [
 
     # Switch 3
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_3,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_3,
         "actions": [
             EFFECT_BUTTON(
                 num = 2
@@ -51,7 +51,7 @@ Inputs = [
 
     # Switch A
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_A,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_A,
         "actions": [
             RIG_SELECT(
                 rig = 1,
@@ -62,7 +62,7 @@ Inputs = [
     
     # Switch B
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_B,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_B,
         "actions": [
             RIG_SELECT(
                 rig = 2,
@@ -73,7 +73,7 @@ Inputs = [
 
     # Switch C
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_C,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_C,
         "actions": [
             RIG_SELECT(
                 rig = 3,

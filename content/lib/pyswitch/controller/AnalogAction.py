@@ -1,7 +1,7 @@
 from ..misc import PeriodCounter
 
 
-class ContinuousAction:
+class AnalogAction:
     def __init__(self, 
                  mapping,                          # Parameter mapping to be controlled
                  max_frame_rate = 24,              # Maximum frame rate for sending MIDI values (fps)
@@ -33,6 +33,7 @@ class ContinuousAction:
     def enabled(self):
         return self.__enable_callback.enabled(self) if self.__enable_callback else True
 
+    # is_pot tells whether the input is a potentiometer (True) or a rotary encoder (False)
     def init(self, appl):
         self.__appl = appl
 

@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
  
-from pyswitch.hardware.Hardware import Hardware
+from pyswitch.hardware.devices.pa_midicaptain_10 import *
 
 from pyswitch.clients.kemper import KemperEffectSlot
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
@@ -20,7 +20,7 @@ Inputs = [
 
     # Switch 1
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_1,
+        "assignment": PA_MIDICAPTAIN_10_SWITCH_1,
         "actions": [
             BANK_SELECT(
                 bank = 1,
@@ -32,7 +32,7 @@ Inputs = [
 
     # Switch 2
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_2,
+        "assignment": PA_MIDICAPTAIN_10_SWITCH_2,
         "actions": [
             BANK_SELECT(
                 bank = 2,
@@ -44,7 +44,7 @@ Inputs = [
 
     # Switch 3
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_3,
+        "assignment": PA_MIDICAPTAIN_10_SWITCH_3,
         "actions": [
             BANK_SELECT(
                 bank = 3,
@@ -56,7 +56,7 @@ Inputs = [
 
     # Switch 4
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_4,
+        "assignment": PA_MIDICAPTAIN_10_SWITCH_4,
         "actions": [
             BANK_SELECT(
                 bank = 4,
@@ -68,7 +68,7 @@ Inputs = [
 
     # Switch up
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_UP,
+        "assignment": PA_MIDICAPTAIN_10_SWITCH_UP,
         "actions": [
             BANK_SELECT(
                 bank = 5,
@@ -82,7 +82,7 @@ Inputs = [
 
     # Switch A
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_A,
+        "assignment": PA_MIDICAPTAIN_10_SWITCH_A,
         "actions": [
             RIG_SELECT(
                 rig = 1,
@@ -99,7 +99,7 @@ Inputs = [
     
     # Switch B
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_B,
+        "assignment": PA_MIDICAPTAIN_10_SWITCH_B,
         "actions": [
             RIG_SELECT(
                 rig = 2,
@@ -116,7 +116,7 @@ Inputs = [
 
     # Switch C
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_C,
+        "assignment": PA_MIDICAPTAIN_10_SWITCH_C,
         "actions": [
             RIG_SELECT(
                 rig = 3,
@@ -133,7 +133,7 @@ Inputs = [
 
     # Switch D
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_D,
+        "assignment": PA_MIDICAPTAIN_10_SWITCH_D,
         "actions": [
             RIG_SELECT(
                 rig = 4,
@@ -150,7 +150,7 @@ Inputs = [
 
     # Switch down
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_10_SWITCH_DOWN,
+        "assignment": PA_MIDICAPTAIN_10_SWITCH_DOWN,
         "actions": [
             RIG_SELECT(
                 rig = 5,

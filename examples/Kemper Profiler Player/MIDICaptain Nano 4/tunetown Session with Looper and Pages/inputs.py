@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
  
-from pyswitch.hardware.Hardware import Hardware
+from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
 
 from pyswitch.misc import Colors
 
@@ -49,7 +49,7 @@ Inputs = [
 
     # Switch 1
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             TAP_TEMPO(use_leds = False),
             SHOW_TEMPO()    # Shows beats with the LED(s)
@@ -64,7 +64,7 @@ Inputs = [
 
     # Switch 2
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
             # Page 1: Looper Rec/Play/Overdub
             LOOPER_REC_PLAY_OVERDUB(
@@ -96,7 +96,7 @@ Inputs = [
 
     # Switch A
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             # Page 1: Rig select
             RIG_SELECT(
@@ -132,7 +132,7 @@ Inputs = [
     
     # Switch B
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             # Page 1: Rig select
             RIG_SELECT(

@@ -108,7 +108,7 @@ class Controller(Updater): #ClientRequestListener
                 # It is a switch
                 self.inputs.append(SwitchController(self, sw_def))
             else:
-                # It is a continuous input. 
+                # It is a continuous input or rotary encoder. 
                 self.inputs.append(ContinuousController(self, sw_def))
 
         # Set up the screen elements

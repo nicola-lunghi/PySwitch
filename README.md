@@ -181,19 +181,24 @@ Inputs = [
 ]
 ```
 
-### Expression Pedal Assignment
+### 
 
-Continuous controllers like expression pedals can also be added to the "Inputs" list in **inputs.py**, using the appropriate models from lib/pyswitch/hardware/hardware.py. However, the actions are different than with switches: You have to use a ContinuousAction instance like in this example:
+Continuous controllers like expression pedals and rotary encoders can also be added to the "Inputs" list in **inputs.py**, using the appropriate models from lib/pyswitch/hardware/hardware.py. However, the actions are different than with switches.
+
+#### Expression Pedals (Analog In)
+
+For anything using the analog inputs of the board (like expression pedals), you have to use a AnalogAction instance like in this example:
 
 ```python
-from pyswitch.controller.ContinuousAction import ContinuousAction
+from pyswitch.controller.AnalogAction import AnalogAction
+from pyswitch.clients.kemper.mappings.rig import MAPPING_RIG_VOLUME
 
 Inputs = [
     # Pedal 1
     {
         "assignment": Hardware.PA_MIDICAPTAIN_10_EXP_PEDAL_1,
         "actions": [
-            ContinuousAction(
+            AnalogAction(
                 mapping = MAPPING_RIG_VOLUME(),
                 auto_calibrate = True
             )
@@ -211,7 +216,7 @@ Inputs = [
 
 This definition would control the rig volume by expression pedal 1 of the PaintAudio MIDI Captain (10 switch version only).
 
-There are several options to ContinuousAction:
+There are several options to AnalogAction:
 - **auto_calibrate**: If this is True (which is the default), the pedal controller will permanently do auto-calibration. Before the pedal is moved the first time, nothing is changed. When you rock the pedal up and down once, the switch remembers the min/max positions and adjusts output values to fill the whole range. This is similar to the Kemper auto-calibration. To reset, reboot the controller.
 - **cal_min_window**: If aut-calibration is enabled, this defines how big the window between min/max values has to be before any MIDI messages are being sent. Per default, this is set to 25% of the full range of values.
 - **max_frame_rate**: To not overload the MIDI traffic, the controller only sends values to the device at a certain frame rate. This defines this rate in frames per second (default: 24)
@@ -220,6 +225,41 @@ There are several options to ContinuousAction:
 - **enable_callback**: See the switch actions, this can be used the same way with the same callbacks (e.g. for paging)
 - **transfer_function**: Here you can pass a transfer function which is used to transform the incoming raw values in range [0..65535] to the output range needed. This overrides the max_value and num_steps parameters. Note that even if max_value is not needed for calculation, it defines the maximum out value nevertheless, so you have to set it.
 
+
+#### Rotary Encoders (Wheels)
+
+For rotary encoders like the wheel on the PaintAudio MIDI Captain (10 switch version), use EncoderAction:
+
+```python
+from pyswitch.controller.EncoderAction import EncoderAction
+from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_GAIN
+
+Inputs = [
+    # Wheel
+    {
+        "assignment": Hardware.PA_MIDICAPTAIN_10_WHEEL_ENCODER,
+        "actions": [
+            EncoderAction(
+                mapping = MAPPING_AMP_GAIN()
+            )
+        ]
+    },
+
+    # Switch 1
+    {
+        # ...
+    },
+
+    # ...
+]
+```
+
+This will let you control the gain with the wheel, relative to the current value.
+
+There are some options to EncoderAction:
+- **max_value**: Most NRPN parameters have a value range of 0..16383, which is the default here. If you want to use mappings using a ControlChange message, you have to set this to 127.
+- **step_width**: Increment/Decrement for one encoder step. 128 (which is the default) results in 16384 / 128 = 128 steps for NRPN parameters. Set to this to 1 for ControlChange parameters.
+- **enable_callback**: See the switch actions, this can be used the same way with the same callbacks (e.g. for paging)
 
 ##### Enable/Disable Actions by Callback
 

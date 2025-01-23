@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
  
-from pyswitch.hardware.Hardware import Hardware
+from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
 
 #from pyswitch.misc import Colors
 
@@ -19,7 +19,7 @@ Inputs = [
 
     # Switch 1
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             RIG_SELECT(
                 rig = 1,                
@@ -31,7 +31,7 @@ Inputs = [
 
     # Switch 2
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
             RIG_SELECT(
                 rig = 2,                
@@ -43,7 +43,7 @@ Inputs = [
 
     # Switch A
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             RIG_SELECT(
                 rig = 3,
@@ -60,7 +60,7 @@ Inputs = [
     
     # Switch B
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
             RIG_SELECT(
                 rig = 4,

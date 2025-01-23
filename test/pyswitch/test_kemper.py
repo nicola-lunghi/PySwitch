@@ -293,10 +293,11 @@ class TestKemper(unittest.TestCase):
 
         self.assertIn("Amp Name", MAPPING_AMP_NAME().name)
         self.assertIn("Amp State", MAPPING_AMP_STATE().name)
+        self.assertIn("Amp Gain", MAPPING_AMP_GAIN().name)
 
         self.assertIn("Cab Name", MAPPING_CABINET_NAME().name)
         self.assertIn("Cab State", MAPPING_CABINET_STATE().name)
-
+        
         self.assertIn("Next", MAPPING_NEXT_BANK().name)
         self.assertIn("Prev", MAPPING_PREVIOUS_BANK().name)
 

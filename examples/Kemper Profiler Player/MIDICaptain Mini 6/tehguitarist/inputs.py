@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
  
-from pyswitch.hardware.Hardware import Hardware
+from pyswitch.hardware.devices.pa_midicaptain_mini_6 import *
 
 from pyswitch.misc import Colors
 from pyswitch.controller.callbacks import Callback
@@ -42,7 +42,7 @@ Inputs = [
 
     # Switch 1 | Drive (Slot D)/FX (Slot X)
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_1,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_1,
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_D,
@@ -61,7 +61,7 @@ Inputs = [
 
     # Switch 2 | Delay
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_2,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_2,
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
@@ -76,7 +76,7 @@ Inputs = [
 
     # Switch 3 | Reverb
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_3,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_3,
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
@@ -88,7 +88,7 @@ Inputs = [
 
     # Switch A | Rig 1 - Clean (usually)
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_A,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_A,
         "actions": [
             RIG_SELECT(
                 rig = 1,
@@ -101,7 +101,7 @@ Inputs = [
     
     # Switch B | Rig 3 - Crunch (usually)
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_B,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_B,
         "actions": [
             RIG_SELECT(
                 rig = 3,
@@ -114,7 +114,7 @@ Inputs = [
 
     # Switch C | Rig 4 - High Gain (usually)
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_C,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_C,
         "actions": [
             RIG_SELECT(
                 rig = 4,

@@ -12,5 +12,5 @@ This example is as requested by @CurryFlurry on the Kemper Forum:
 | Switch C   | Select Rig 3             | Bank down        |
 
 
-**MIDI Through**: Messages are passed from DIN Input to USB MIDI Out (Kemper)
+**MIDI Through**: Messages are passed from the DIN Input to USB MIDI (Kemper) if you use the **communication.py** example "Through DIN to USB".
 

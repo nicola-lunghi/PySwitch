@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
  
-from pyswitch.hardware.Hardware import Hardware
+from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
 
 #from pyswitch.misc import Colors
 
@@ -20,7 +20,7 @@ Inputs = [
 
     # Switch 1
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": 
             # Note that for RIG_SELECT_AND_MORPH you have to omit the [] brackets as this function returns a list by its own!
             RIG_SELECT_AND_MORPH_STATE(
@@ -32,7 +32,7 @@ Inputs = [
 
     # Switch 2
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_2,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": 
             # Note that for RIG_SELECT_AND_MORPH you have to omit the [] brackets as this function returns a list by its own!
             RIG_SELECT_AND_MORPH_STATE(
@@ -44,7 +44,7 @@ Inputs = [
 
     # Switch A
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_A,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": 
             # Note that for RIG_SELECT_AND_MORPH you have to omit the [] brackets as this function returns a list by its own!
             RIG_SELECT_AND_MORPH_STATE(
@@ -62,7 +62,7 @@ Inputs = [
     
     # Switch B
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_NANO_SWITCH_B,
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": 
             # Note that for RIG_SELECT_AND_MORPH you have to omit the [] brackets as this function returns a list by its own!
             RIG_SELECT_AND_MORPH_STATE(

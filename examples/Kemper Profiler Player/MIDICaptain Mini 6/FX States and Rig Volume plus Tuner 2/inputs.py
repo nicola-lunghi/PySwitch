@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
  
-from pyswitch.hardware.Hardware import Hardware
+from pyswitch.hardware.devices.pa_midicaptain_mini_6 import *
 
 #from pyswitch.misc import Colors
 from pyswitch.clients.kemper import KemperEffectSlot
@@ -20,7 +20,7 @@ Inputs = [
 
     # Switch 1
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_1,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_1,
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A,
@@ -31,7 +31,7 @@ Inputs = [
 
     # Switch 2
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_2,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_2,
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B,
@@ -42,7 +42,7 @@ Inputs = [
 
     # Switch 3
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_3,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_3,
         "actions": [
             TUNER_MODE(
                 display = DISPLAY_HEADER_3
@@ -52,7 +52,7 @@ Inputs = [
 
     # Switch A
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_A,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_A,
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
@@ -63,7 +63,7 @@ Inputs = [
     
     # Switch B
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_B,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_B,
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
@@ -74,7 +74,7 @@ Inputs = [
 
     # Switch C
     {
-        "assignment": Hardware.PA_MIDICAPTAIN_MINI_SWITCH_C,
+        "assignment": PA_MIDICAPTAIN_MINI_SWITCH_C,
         "actions": [
             RIG_VOLUME_BOOST(
                 boost_volume = 0.75,    # Value im [0..1] representing the Rig Volume Knob. Examples: 0.5 = 0dB (no boost), 0.75 = +6dB, 1.0 = +12dB
