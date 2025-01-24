@@ -200,7 +200,7 @@ class TestEncoderAction(unittest.TestCase):
         self.assertEqual(action.enabled, True)
         self.assertEqual(action._EncoderAction__mapping, mapping)
         
-        if mapping_with_response:
+        if mapping_with_response or start_value != 0:
             mapping.value = start_value
 
         # Start position (only catches the current mapping value and exits)
