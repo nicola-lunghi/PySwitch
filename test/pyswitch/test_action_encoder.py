@@ -149,18 +149,43 @@ class TestEncoderAction(unittest.TestCase):
             ]
         )
 
-       
     def _test(self, max_value, step_width, start_pos, start_value, data, cc_mapping = False):
+        self._do_test(
+            max_value = max_value,
+            step_width = step_width,
+            start_pos = start_pos,
+            start_value = start_value,
+            data = data,
+            cc_mapping = cc_mapping,
+            mapping_with_response = True
+        )
+
+        self._do_test(
+            max_value = max_value,
+            step_width = step_width,
+            start_pos = start_pos,
+            start_value = start_value,
+            data = data,
+            cc_mapping = cc_mapping,
+            mapping_with_response = False
+        )
+
+    def _do_test(self, max_value, step_width, start_pos, start_value, data, cc_mapping, mapping_with_response):
         if not cc_mapping:
             mapping = MockParameterMapping(
                 set = SystemExclusive(
                     manufacturer_id = [0x00, 0x10, 0x20],
                     data = [0x05, 0x07, 0x09]
+                ),
+                response = None if not mapping_with_response else SystemExclusive(
+                    manufacturer_id = [0x00, 0x11, 0x20],
+                    data = [0x05, 0x07, 0x03]
                 )
             )
         else:
             mapping = MockParameterMapping(
-                set = ControlChange(20, 1)
+                set = ControlChange(20, 1),
+                response = None if not mapping_with_response else ControlChange(20, 1)
             )
 
         action = EncoderAction(
@@ -175,7 +200,8 @@ class TestEncoderAction(unittest.TestCase):
         self.assertEqual(action.enabled, True)
         self.assertEqual(action._EncoderAction__mapping, mapping)
         
-        mapping.value = start_value
+        if mapping_with_response:
+            mapping.value = start_value
 
         # Start position (only catches the current mapping value and exits)
         action.process(start_pos)
@@ -189,15 +215,18 @@ class TestEncoderAction(unittest.TestCase):
             self.assertEqual(appl.client.last_sent_message, { "mapping": mapping, "value": exp_value }, repr(entry))
             
             # Simulate that the mapping value had been changed by an incoming message
-            mapping.value = exp_value
+            if mapping_with_response:
+                mapping.value = exp_value
 
 
         # None
-        mapping.value = None
-        appl.client.set_calls = []
-        action.process(7865)
-        
-        self.assertEqual(appl.client.last_sent_message, None)
+        if mapping_with_response:
+            mapping.value = None
+            
+            appl.client.set_calls = []
+            action.process(7865)
+            
+            self.assertEqual(appl.client.last_sent_message, None)
 
 
     def test_none_value(self):

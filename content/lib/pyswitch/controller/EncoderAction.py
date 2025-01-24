@@ -48,8 +48,12 @@ class EncoderAction(Updateable):
             return
                         
         if self.__mapping.value == None:
-            return
-    
+            if not self.__mapping.response:
+                # Send-only mapping
+                self.__mapping.value = 0
+            else:
+                return
+
         add_value = (position - self.__last_pos) * self.__step_width        
         self.__last_pos = position
 
@@ -64,3 +68,7 @@ class EncoderAction(Updateable):
             
             # Send MIDI message for new value
             self.__appl.client.set(self.__mapping, v)
+
+            if not self.__mapping.response:
+                # Send-only mapping
+                self.__mapping.value = v
