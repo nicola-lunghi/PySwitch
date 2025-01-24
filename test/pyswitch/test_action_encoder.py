@@ -16,6 +16,8 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
+    from adafruit_midi.control_change import ControlChange
+    
     from .mocks_misc import MockMisc
     from .mocks_callback import *
 
@@ -37,7 +39,7 @@ class MockController2:
 
 class TestEncoderAction(unittest.TestCase):
 
-    def test(self):
+    def test_fix_range(self):
         self._test(
             max_value = 1023,
             step_width = 16,
@@ -91,14 +93,75 @@ class TestEncoderAction(unittest.TestCase):
             ]
         )
 
-       
-    def _test(self, max_value, step_width, start_pos, start_value, data):
-        mapping = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
-            )
+
+    def test_auto_range(self):
+        self._test(
+            cc_mapping = False,
+            max_value = None,
+            step_width = None,
+            start_pos = 0, 
+            start_value = 0, 
+            data = [
+                (1, 160),
+                (2, 320),
+                (3, 480),
+                (102, 16320),
+                (103, 16383),
+                (104, 16383),
+                (10000, 16383),
+                (9999, 16223),
+                (9989, 14623),
+                (9916, 2943),
+                (9898, 63),
+                (9897, 0),
+                (1, 0),
+                (2, 160),
+                (3, 320),
+                (5, 640)
+            ]
         )
+
+        self._test(
+            cc_mapping = True,
+            max_value = None,
+            step_width = None,
+            start_pos = 4, 
+            start_value = 100, 
+            data = [
+                (5, 101),
+                (6, 102),
+                (7, 103),
+                (24, 120),
+                (31, 127),
+                (61, 127),
+                (62, 127),
+                (65, 127),
+                (10000, 127),
+                (9999, 126),
+                (9989, 116),
+                (9919, 46),
+                (9900, 27),
+                (9873, 0),
+                (9872, 0),
+                (1, 0),
+                (2, 1),
+                (20, 19)
+            ]
+        )
+
+       
+    def _test(self, max_value, step_width, start_pos, start_value, data, cc_mapping = False):
+        if not cc_mapping:
+            mapping = MockParameterMapping(
+                set = SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x20],
+                    data = [0x05, 0x07, 0x09]
+                )
+            )
+        else:
+            mapping = MockParameterMapping(
+                set = ControlChange(20, 1)
+            )
 
         action = EncoderAction(
             mapping = mapping,

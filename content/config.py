@@ -4,7 +4,7 @@
 #
 ##############################################################################################################################################
 
-#from pyswitch.clients.kemper import KemperMappings, KemperEffectSlot
+#from pyswitch.clients.kemper.mappings.morph import MAPPING_MORPH_PEDAL
 
 Config = {
     
@@ -61,7 +61,7 @@ Config = {
     #"debugClientStats": True,                        # Periodically shows client information (pending requests etc.). "debugStatsInterval" is used as period.
 
     # When a ClientParameterMapping instance is set here, incoming messages for this mapping will be shown.
-    #"debugMapping": KemperMappings.TUNER_MODE_STATE(),
+    #"debugMapping": MAPPING_MORPH_PEDAL(),
 
     # Explore Mode: Set this to True to boot into explore mode. This mode listens to all GPIO pins available
     # and outputs the ID of the last pushed one, and also rotates through all available NeoPixels. 

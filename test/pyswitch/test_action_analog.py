@@ -16,6 +16,8 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
+    from adafruit_midi.control_change import ControlChange
+    
     from .mocks_misc import MockMisc
     from .mocks_callback import *
 
@@ -37,7 +39,7 @@ class MockController2:
 
 class TestAnalogAction(unittest.TestCase):
 
-    def test(self):
+    def test_fix_range(self):
         self._test(
             max_value = 127,
             num_steps = 128,
@@ -112,6 +114,49 @@ class TestAnalogAction(unittest.TestCase):
             ]
         )
 
+    def test_auto_range(self):
+        self._test(
+            cc_mapping = False,
+            max_value = None, 
+            num_steps = 128,
+            data = [
+                (0, 0),
+                (128, 0),
+                (256, 0),
+                (257, 128),
+                (384, 128),
+                (512, 128),
+                (8192, 2048),
+                (16384, 4096),
+                (32768, 8192),
+                (49152, 12288),
+                (65279, 16256),
+                (65280, 16383),
+                (65535, 16383)
+            ]
+        )
+
+        self._test(
+            cc_mapping = True,
+            max_value = None,
+            num_steps = 128,
+            data = [
+                (0, 0),
+                (128, 0),
+                (256, 0),
+                (257, 1),
+                (384, 1),
+                (512, 1),
+                (8192, 16),
+                (16384, 32),
+                (32768, 64),
+                (49152, 96),
+                (65278, 127),
+                (65280, 127),
+                (65535, 127)
+            ]
+        )
+
     def test_transfer_function(self):
         def transfer(value):
             return round(value / 1024) + 32
@@ -136,13 +181,18 @@ class TestAnalogAction(unittest.TestCase):
             transfer_function = transfer
         )
         
-    def _test(self, data, max_value, num_steps = 1, transfer_function = None):
-        mapping = MockParameterMapping(
-            set = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x05, 0x07, 0x09]
+    def _test(self, data, max_value, num_steps = 1, transfer_function = None, cc_mapping = False):
+        if not cc_mapping:
+            mapping = MockParameterMapping(
+                set = SystemExclusive(
+                    manufacturer_id = [0x00, 0x10, 0x20],
+                    data = [0x05, 0x07, 0x09]
+                )
             )
-        )
+        else:
+            mapping = MockParameterMapping(
+                set = ControlChange(20, 1)
+            )
 
         action = AnalogAction(
             mapping = mapping,
@@ -191,14 +241,15 @@ class TestAnalogAction(unittest.TestCase):
             self.assertEqual(appl.client.set_calls, exp_set_calls) 
 
         # Finally check if any of the possible input values exceeds the range
-        appl.client.set_calls = []
-        for value in range(0, 65535, 15):
-            period.exceed_next_time = True
-            action.process(value)
-            outval = appl.client.last_sent_message["value"]
+        if max_value != None:
+            appl.client.set_calls = []
+            for value in range(0, 65535, 15):
+                period.exceed_next_time = True
+                action.process(value)
+                outval = appl.client.last_sent_message["value"]
 
-            self.assertGreaterEqual(outval, 0)
-            self.assertLessEqual(outval, max_value)
+                self.assertGreaterEqual(outval, 0)
+                self.assertLessEqual(outval, max_value)
 
 
     #################################################################################
@@ -455,3 +506,5 @@ class TestAnalogAction(unittest.TestCase):
 
             self.assertGreaterEqual(outval, 0)
             self.assertLessEqual(outval, transfer(65535))
+
+

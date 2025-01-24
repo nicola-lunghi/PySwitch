@@ -1,12 +1,13 @@
 from ..misc import PeriodCounter
 
+from adafruit_midi.system_exclusive import SystemExclusive
 
 class AnalogAction:
     def __init__(self, 
                  mapping,                          # Parameter mapping to be controlled
                  max_frame_rate = 24,              # Maximum frame rate for sending MIDI values (fps)
-                 max_value = 16383,                # Maximum value of the mapping (16383 for NRPN, 127 for CC)
-                 num_steps = 128,                  # Number of steps to be regarded as different (saves MIDI traffic at the cost of precision)
+                 max_value = None,                 # Maximum value of the mapping (16383 for NRPN, 127 for CC) Set this to None to auto-detect these ranges.
+                 num_steps = 128,                  # Number of steps to be regarded as different (saves MIDI traffic at the cost of precision).
                  enable_callback = None,           # Callback to set enabled state (optional). Must contain an enabled(action) function.
                  auto_calibrate = True,            # Auto-calibrate (similar to Kemper devices)
                  cal_min_window = 0.25,            # Minimum calibration range in percent [0..1]. A value of 0.25 means that the pedal has to cover at least 25% of the full range to be regarded.
@@ -15,6 +16,13 @@ class AnalogAction:
                                                    # NOTE: When designing your transfer function, take care that the output values do not change too often as this 
                                                    # imposes performance issues! 
         ):
+        if isinstance(mapping.set, SystemExclusive):
+            if max_value == None:
+                max_value = 16383
+        else:
+            if max_value == None:
+                max_value = 127
+        
         self.__mapping = mapping
         self.__factor = 65536 / (max_value + 1)
         self.__max_value = max_value

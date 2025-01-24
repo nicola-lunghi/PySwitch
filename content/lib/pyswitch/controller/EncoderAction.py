@@ -1,12 +1,25 @@
 from ..misc import Updateable
 
+from adafruit_midi.system_exclusive import SystemExclusive
+
 class EncoderAction(Updateable):
     def __init__(self, 
                  mapping,                          # Parameter mapping to be controlled
-                 max_value = 16383,                # Maximum value of the mapping (16383 for NRPN, 127 for CC)
-                 step_width = 128,                 # Increment/Decrement for one encoder step. 128 results in 16384/128 = 128 steps for NRPN parameters. Set to this to 1 for ControlChange.
+                 max_value = None,                 # Maximum value of the mapping (set to None for auto-detect: 16383 for NRPN, 127 for CC)
+                 step_width = None,                # Increment/Decrement for one encoder step. Set to None for auto-detect (NRPN: 160, CC: 1)
                  enable_callback = None            # Callback to set enabled state (optional). Must contain an enabled(action) function.                 
         ):
+        if isinstance(mapping.set, SystemExclusive):
+            if max_value == None:
+                max_value = 16383
+            if step_width == None:
+                step_width = 160
+        else:
+            if max_value == None:
+                max_value = 127
+            if step_width == None:
+                step_width = 1
+
         self.__mapping = mapping
         self.__max_value = max_value
         self.__step_width = step_width

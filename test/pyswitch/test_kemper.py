@@ -35,6 +35,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.mappings.amp import *
     from lib.pyswitch.clients.kemper.mappings.cabinet import *
     from lib.pyswitch.clients.kemper.mappings.looper import *
+    from lib.pyswitch.clients.kemper.mappings.pedals import *
 
 
 
@@ -321,3 +322,13 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Loop", MAPPING_LOOPER_HALF_SPEED().name)
         self.assertIn("Loop", MAPPING_LOOPER_CANCEL().name)
         self.assertIn("Loop", MAPPING_LOOPER_ERASE().name)
+
+        self.assertIn("Vol", MAPPING_VOLUME_PEDAL().name)
+        self.assertIn("Wah", MAPPING_WAH_PEDAL().name)
+        self.assertIn("Pitch", MAPPING_PITCH_PEDAL().name)
+
+        self.assertIn("DlyMix", MAPPING_DELAY_MIX_PEDAL().name)   
+        self.assertIn("DlyFB", MAPPING_DELAY_FEEDBACK_PEDAL().name)   
+        self.assertIn("RevMix", MAPPING_REVERB_MIX_PEDAL().name)
+        self.assertIn("RevTime", MAPPING_REVERB_TIME_PEDAL().name)
+        self.assertIn("OutVol", MAPPING_VOLUME_OUTPUT_PEDAL().name)

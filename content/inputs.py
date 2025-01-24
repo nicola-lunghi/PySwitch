@@ -16,7 +16,7 @@ from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 from pyswitch.clients.kemper.actions.binary_switch import BINARY_SWITCH
 from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
 
-from pyswitch.clients.kemper.mappings.rig import MAPPING_RIG_VOLUME
+from pyswitch.clients.kemper.mappings.pedals import MAPPING_VOLUME_PEDAL, MAPPING_WAH_PEDAL
 from pyswitch.clients.kemper.mappings.morph import MAPPING_MORPH_PEDAL
 from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_GAIN, MAPPING_AMP_STATE
 
@@ -31,7 +31,7 @@ Inputs = [
         "assignment": PA_MIDICAPTAIN_10_EXP_PEDAL_1,
         "actions": [
             AnalogAction(
-                mapping = MAPPING_RIG_VOLUME(),
+                mapping = MAPPING_VOLUME_PEDAL(),
                 auto_calibrate = True
             )
         ]
@@ -42,7 +42,7 @@ Inputs = [
         "assignment": PA_MIDICAPTAIN_10_EXP_PEDAL_2,
         "actions": [
             AnalogAction(
-                mapping = MAPPING_MORPH_PEDAL(),
+                mapping = MAPPING_WAH_PEDAL(),
                 auto_calibrate = True
             )
         ]
