@@ -125,3 +125,32 @@ class MockNeoPixel:
 class MockFontIO:
     class FontProtocol:
         pass
+
+    class Glyph:
+        pass
+
+class MockDisplayShapes:
+    class rect:
+        class Rect:
+            def __init__(self, x = 0, y = 0, width = 0, height = 0, fill = None): #, outline = None, stroke = 0):
+                self.x = x 
+                self.y = y
+                self.width = width
+                self.height = height
+                self.fill = fill 
+                #self.outline = outline
+                #self.stroke = stroke
+
+            def render(self, canvas, x, y):
+                ctx = canvas.getContext('2d')
+                ctx.fillStyle = "red" #f"rgb({ self.fill[0] }, { self.fill[1] }, { self.fill[2] })"
+                ctx.fillRect(
+                    self.x + x,
+                    self.y + y,
+                    self.width,
+                    self.height
+                )
+
+class MockBitmapTools:
+    def readinto(bitmap, file, bits_per_pixel, element_size = 1, reverse_pixels_in_element = False, swap_bytes_in_element = False, reverse_rows = False):
+        pass

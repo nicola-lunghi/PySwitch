@@ -1,17 +1,4 @@
-# import sys
-# from unittest.mock import patch
-
-# from mocks.mocks_adafruit import *
-
-# class MockAdafruitDisplayTextInternal:
-#     pass
-
-# with patch.dict(sys.modules, {
-#     "displayio": MockDisplayIO(),
-#     "fontio": MockFontIO(),
-# }):
-#     from .adafruit.adafruit_display_text.label import Label as _Label
-#     from .adafruit.adafruit_display_text import wrap_text_to_pixels as _wrap_text_to_pixels
+from adafruit_bitmap_font import bitmap_font
 
 
 # class MockAdafruitDisplayText:
@@ -52,27 +39,6 @@
 #         ]
     
 
-class MockDisplayShapes:
-    class rect:
-        class Rect:
-            def __init__(self, x = 0, y = 0, width = 0, height = 0, fill = None): #, outline = None, stroke = 0):
-                self.x = x 
-                self.y = y
-                self.width = width
-                self.height = height
-                self.fill = fill 
-                #self.outline = outline
-                #self.stroke = stroke
-
-            def render(self, canvas, x, y):
-                ctx = canvas.getContext('2d')
-                ctx.fillStyle = "red" #f"rgb({ self.fill[0] }, { self.fill[1] }, { self.fill[2] })"
-                ctx.fillRect(
-                    self.x + x,
-                    self.y + y,
-                    self.width,
-                    self.height
-                )
 
 
 # Buffered font loader

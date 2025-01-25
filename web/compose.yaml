@@ -7,6 +7,7 @@ services:
     volumes:
       - ./htdocs:/var/www/html
       - ../content/lib/pyswitch:/var/www/html/pyswitch
+      - ../content/fonts:/var/www/html/fonts
       
       - ./apache2-conf:/etc/apache2/sites-available
       #- ./apache2-log:/var/log/apache2

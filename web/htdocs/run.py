@@ -6,7 +6,6 @@ from browser import console
 
 from mocks.mocks_lib import *
 from mocks.mocks_adafruit import *
-from mocks.mocks_adafruit_display import *
 from mocks.mocks_circuitpy import *
 
 from mocks.display.WebDisplayDriver import WebDisplayDriver
@@ -27,9 +26,13 @@ with patch.dict(sys.modules, {
     "adafruit_misc.adafruit_st7789": MockAdafruit_ST7789,
     "adafruit_misc.neopixel": MockNeoPixel,
     # "adafruit_bitmap_font": MockAdafruitBitmapFont,
+    "fontio": MockFontIO(),
     "digitalio": MockDigitalIO,
     "fontio": MockFontIO(),
+    "bitmaptools": MockBitmapTools
 }):
+    from mocks.mocks_adafruit_display import *
+
     # Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)
     display_driver = WebDisplayDriver()
     display_driver.init()
