@@ -29,7 +29,8 @@ with patch.dict(sys.modules, {
     "fontio": MockFontIO(),
     "digitalio": MockDigitalIO,
     "fontio": MockFontIO(),
-    "bitmaptools": MockBitmapTools
+    "bitmaptools": MockBitmapTools,
+    "io": MockIO
 }):
     from mocks.mocks_adafruit_display import *
 

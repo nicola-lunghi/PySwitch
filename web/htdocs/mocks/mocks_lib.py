@@ -10,3 +10,8 @@ class MockGC:
         return 0
         
         
+class MockIO:
+    class FileIO:
+        def readinto(self, buffer):
+            pass
+
