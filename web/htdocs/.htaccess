@@ -1,0 +1,8 @@
+<Files *.py>
+    SetHandler none
+    SetHandler default-handler
+
+    Options -ExecCGI
+    php_flag engine off
+    RemoveHandler .py
+</Files>

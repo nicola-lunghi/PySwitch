@@ -24,31 +24,31 @@ ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
 # INSTALL PHP & LIBRARIES
-# RUN add-apt-repository -y ppa:ondrej/php
-# RUN apt-get update
-# RUN apt-get --no-install-recommends --no-install-suggests --yes --quiet install \
-#     php-pear \
-#     php8.2 \
-#     php8.2-common \
-#     php8.2-mbstring \
-#     php8.2-dev \
-#     php8.2-xml \
-#     php8.2-cli \
-#     php8.2-mysql \
-#     php8.2-sqlite3 \
-#     php8.2-mbstring \
-#     php8.2-curl \
-#     php8.2-gd \
-#     php8.2-imagick \
-#     php8.2-xdebug \
-#     php8.2-xml \
-#     php8.2-zip \
-#     php8.2-odbc \
-#     php8.2-opcache \
-#     php8.2-redis \
-#     autoconf \
-#     zlib1g-dev \
-#     libapache2-mod-php8.2
+RUN add-apt-repository -y ppa:ondrej/php
+RUN apt-get update
+RUN apt-get --no-install-recommends --no-install-suggests --yes --quiet install \
+    php-pear \
+    php8.2 \
+    php8.2-common \
+    php8.2-mbstring \
+    php8.2-dev \
+    php8.2-xml \
+    php8.2-cli \
+    php8.2-mysql \
+    php8.2-sqlite3 \
+    php8.2-mbstring \
+    php8.2-curl \
+    php8.2-gd \
+    php8.2-imagick \
+    php8.2-xdebug \
+    php8.2-xml \
+    php8.2-zip \
+    php8.2-odbc \
+    php8.2-opcache \
+    php8.2-redis \
+    autoconf \
+    zlib1g-dev \
+    libapache2-mod-php8.2
 
 # INSTALL ODBC DRIVER & TOOLS
 
