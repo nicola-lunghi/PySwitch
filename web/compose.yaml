@@ -1,0 +1,14 @@
+services:
+  pyswitch-ui:
+    build: .
+    container_name: apache-pyswitch-ui
+    ports:
+      - "80:80"
+    volumes:
+      - ./htdocs:/var/www/html
+      - ../content/lib/pyswitch:/var/www/html/pyswitch
+      
+      - ./apache2-conf:/etc/apache2/sites-available
+      #- ./apache2-log:/var/log/apache2
+      
+  
