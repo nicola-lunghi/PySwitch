@@ -11,12 +11,15 @@ from wrappers.wrap_adafruit_led import *
 from wrappers.wrap_adafruit_midi import *
 
 class PySwitchRunner:
-    def __init__(self, dom_namespace, update_interval_ms):
+    def __init__(self, container_id, dom_namespace, update_interval_ms):
+        self.container_id = container_id
+
         self.dom_namespace = dom_namespace
         self.update_interval_ms = update_interval_ms
         self.running = False
         
-    def init(self):
+    # Set up a PySwitch controller and let it run
+    def run(self):
         with patch.dict(sys.modules, {
             "micropython": MockMicropython,
             "gc": MockGC(),
@@ -29,8 +32,8 @@ class PySwitchRunner:
             "adafruit_misc.neopixel": MockNeoPixel,
             "adafruit_bitmap_font": MockAdafruitBitmapFont,
             "fontio": MockFontIO(),
-            "digitalio": WrapDigitalIO
-        }):
+            "digitalio": WrapDigitalIO(self.dom_namespace)
+        }):            
             self.display_driver = WrapDisplayDriver(
                 width = 240,
                 height = 240,
@@ -47,6 +50,10 @@ class PySwitchRunner:
 
             from display import Splashes
             from inputs import Inputs
+
+            from PySwitchDevice import PySwitchDevice
+            self.device = PySwitchDevice(self.container_id, self.dom_namespace)
+            self.device.init(Inputs, Splashes)
 
             midi_in = WrapMidiInput()
             midi_out = WrapMidiOutput()
@@ -80,8 +87,8 @@ class PySwitchRunner:
                 ),
                 config = {
                     "debugBidirectionalProtocol": True,
-                    "ledBrightnessOn": 1,
-                    "ledBrightnessOff": 0.4
+                    "ledBrightnessOn": 0.3,
+                    "ledBrightnessOff": 0.1
                 },
                 inputs = Inputs,
                 ui = UiController(
@@ -111,3 +118,7 @@ class PySwitchRunner:
     # Stop execution
     def stop(self):        
         self.running = False
+
+
+    
+

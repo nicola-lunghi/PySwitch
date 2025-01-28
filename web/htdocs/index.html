@@ -5,8 +5,10 @@
     <title>PySwitch on JS Experiment</title>
     
     <link rel="stylesheet" type="text/css" href="css/ui.css">
-    <link rel="stylesheet" type="text/css" href="css/leds.css">
-    <link rel="stylesheet" type="text/css" href="css/display.css">
+    <link rel="stylesheet" type="text/css" href="css/switches.css">
+    <link rel="stylesheet" type="text/css" href="css/settings.css">
+    
+    <link rel="stylesheet" type="text/css" href="css/devices/midicaptain-nano-4.css">
     
     <script type="text/javascript" src="lib/pyodide/pyodide.js"></script>
 
@@ -19,6 +21,7 @@
     <script type="text/javascript">
         window.onload = function() {
             new PySwitch({
+                containerId: "pyswitch-device",
                 domNamespace: "pyswitch",
                 updateIntervalMillis: 20
             }).run();
@@ -30,29 +33,8 @@
         
     </div>
     <div id="content">
-        <canvas id="pyswitch-display"></canvas>
-        <div id="pyswitch-leds">
-            <div class="pyswitch-switch">
-                <div id="pyswitch-led-0"></div>
-                <div id="pyswitch-led-1"></div>
-                <div id="pyswitch-led-2"></div>                    
-            </div>
-            <div class="pyswitch-switch">
-                <div id="pyswitch-led-3"></div>
-                <div id="pyswitch-led-4"></div>
-                <div id="pyswitch-led-5"></div>                    
-            </div>
-            <div class="pyswitch-switch">
-                <div id="pyswitch-led-6"></div>
-                <div id="pyswitch-led-7"></div>
-                <div id="pyswitch-led-8"></div>                    
-            </div>
-            <div class="pyswitch-switch">
-                <div id="pyswitch-led-9"></div>
-                <div id="pyswitch-led-10"></div>
-                <div id="pyswitch-led-11"></div>                    
-            </div>
-        </div>
+        <!-- This will be filled by the PySwitch device driver. -->
+        <div id="pyswitch-device" class="midicaptain-nano-4"></div>
     </div>
 </body>
 </link>

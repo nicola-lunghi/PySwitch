@@ -6,9 +6,10 @@ class PySwitchRunner {
     /**
      * Options:
      * {
-     *     domNamespace: "pyswitch",      ID prefix for access to DOM elements from Python code
+     *     containerId: "some-id",        ID of the container DOM element (mandatory)
+     *     domNamespace: "pyswitch",      ID prefix for access to DOM elements from Python code. All generated elements will be prefixed with this. Mandatory.
      *     updateIntervalMillis: 10,      Tick interval in milliseconds. On CircuitPython, the program does as much ticks as it can (in a while True loop),
-     *                                    which in a browser woult block all user interaction, so the ticks are triggered in intervals.
+     *                                    which in a browser woult block all user interaction, so the ticks are triggered in intervals. Mandatory.
      * }
      */
     constructor(options) {
@@ -28,6 +29,7 @@ class PySwitchRunner {
         console.log("Load files to python");
 
         await this.#loadModule("PySwitchRunner.py", "python/");
+        await this.#loadModule("PySwitchDevice.py", "python/");
         await this.#loadModule("mocks.py", "python/");
 
         this.pyodide.FS.mkdir("wrappers");
@@ -193,8 +195,12 @@ class PySwitchRunner {
         // Run PySwitch!
         this.#runner = await this.pyodide.runPython(`
             from PySwitchRunner import PySwitchRunner
-            runner = PySwitchRunner("` + this.#options.domNamespace + `", "` + this.#options.updateIntervalMillis + `")
-            runner.init()
+            runner = PySwitchRunner(
+                container_id = "` + this.#options.containerId + `", 
+                dom_namespace = "` + this.#options.domNamespace + `", 
+                update_interval_ms = "` + this.#options.updateIntervalMillis + `"
+            )
+            runner.run()
             runner      # Returns the runner as a JS proxy
         `);
     }

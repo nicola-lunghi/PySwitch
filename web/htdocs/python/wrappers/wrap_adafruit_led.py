@@ -17,6 +17,9 @@ class WrapNeoPixelDriver:
             if not led:
                 return
             
+            # Scale up values so that the "on" brightness (set to 0.3 in PySwitchRunner) will be one.
+            value = [v * (1 / 0.3) for v in value]
+
             led.style.backgroundColor = f"rgb({ value[0] }, { value[1] }, { value[2] })"
 
 

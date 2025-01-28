@@ -1,0 +1,15 @@
+#settings {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+
+    background-color: lightgray;    
+}
+
+#settings > * {
+    margin-top: 10px;
+    margin-left: 10px;
+    display: block;
+}

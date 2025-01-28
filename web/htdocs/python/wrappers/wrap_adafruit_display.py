@@ -48,14 +48,14 @@ class WrapAdafruitDisplayText:
 
             def render(self, canvas, x, y):
                 ctx = canvas.getContext('2d')
-                ctx.font = self.font.css
+                ctx.font = self.font.css(self.scale)
                 ctx.fillStyle = _color_2_css(self.color)
 
                 lines = self.text.splitlines()
                 if len(lines) < 1: 
                     return
                 
-                font_size = self.font.size
+                font_size = self.font.size(self.scale)                
                 line_spacing = self.line_spacing * font_size * 0.1
                 height = len(lines) * font_size + (len(lines) - 1) * line_spacing
                 for i in range(len(lines)):
@@ -67,8 +67,8 @@ class WrapAdafruitDisplayText:
                 
                     ctx.fillText(
                         line,
-                        self.anchored_position[0] + x - dx + self.font.offset_x,
-                        self.anchored_position[1] + y + dy + self.font.offset_y
+                        self.anchored_position[0] + x - dx + self.font.offset_x(self.scale),
+                        self.anchored_position[1] + y + dy + self.font.offset_y(self.scale)
                     )
 
     def __init__(self, dom_namespace):
@@ -84,7 +84,7 @@ class WrapAdafruitDisplayText:
     ):
         canvas = WrapTFT.get_canvas(self.dom_namespace)
         ctx = canvas.getContext('2d')
-        ctx.font = font.css
+        ctx.font = font.css(1)
 
         words = string.split()
 
@@ -109,24 +109,20 @@ class WrapFont:
     def __init__(self, path):
         self.path = path
 
-    @property
-    def size(self):
+    def size(self, scale = 1):
         nums = re.findall(r'\d+', self.path)
         if not nums:
-            return 20
-        return int(nums[0])
+            return 20 * scale
+        return int(nums[0]) * scale
     
-    @property
-    def css(self):
-        return str(self.size * 0.9) + "px \"Arial\", sans-serif"
+    def css(self, scale):
+        return "bold " + str(self.size(scale) * 0.9) + "px \"Arial\", sans-serif"
 
-    @property
-    def offset_x(self):
+    def offset_x(self, scale):
         return 0
 
-    @property
-    def offset_y(self):
-        return - self.size * 0.15   # Empirically determined offset
+    def offset_y(self, scale):
+        return - self.size(scale) * 0.15   # Empirically determined offset
 
 
 class WrapFontLoader:

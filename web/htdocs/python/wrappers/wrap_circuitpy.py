@@ -1,4 +1,4 @@
-
+from js import document
       
 class WrapBoard:
     GP0 = 0
@@ -33,12 +33,22 @@ class WrapBoard:
         
 
 class WrapDigitalIO:
+    def __init__(self, dom_namespace):
+        WrapDigitalIO.dom_namespace = dom_namespace
+
     class DigitalInOut:
         def __init__(self, port):
             self.port = port
 
+            self.element = document.getElementById(WrapDigitalIO.dom_namespace + "-switch-gp" + str(port))
+
+        @property
         def value(self):
-            return 1
+            dataset = self.element.dataset.to_py()
+            if not dataset.hasOwnProperty("pushed"):
+                return 1
+            
+            return 0 if dataset.pushed == "true" else 1
 
     class Direction:
         INPUT = 1
