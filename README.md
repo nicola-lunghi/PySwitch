@@ -12,7 +12,10 @@ generic configuration script. Features are:
 
 ## Motivation
 
-The firmware has been developed to interface the PaintAudio MIDI Captain series of MIDI controller pedals to the Kemper Profiler Player, which can be controlled very deeply via MIDI. It is based on the great explorational work of @gstrotmann who did the hardware reverse engineering and provided the initial script this project is based on (https://github.com/gstrotmann/MidiCaptain4Kemper).
+The firmware has been developed to interface the PaintAudio MIDI Captain series of MIDI controller pedals to the Kemper Profiler Player, which can be controlled very deeply via MIDI. It is based on the great explorational work of @gstrotmann who did the hardware reverse engineering and provided the initial script this project is based on (https://github.com/gstrotmann/MidiCaptain4Kemper). The developent had a lot of traffic in those threads on the Kemper forum:
+
+https://forum.kemper-amps.com/forum/thread/65206-pyswitch-an-alternative-customizable-firmware-for-paintaudio-midi-captain-contro/
+https://forum.kemper-amps.com/forum/thread/63569-custom-firmware-for-paintauido-midi-captain-mini-6/
 
 The manufacturer PaintAudio also provides a Kemper Player related firmware (<a href="https://cdn.shopify.com/s/files/1/0656/8312/8548/files/FW_MINI6_KPP_V3.51.zip?v=1711205983" target="_blank">PaintAudio firmware 3.5</a>) but this is hard wired all along, so it can only control few functions of the Player like enabling/disabling effect slots. 
 
