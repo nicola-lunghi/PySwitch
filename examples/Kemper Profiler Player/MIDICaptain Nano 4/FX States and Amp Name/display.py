@@ -11,7 +11,8 @@ from pyswitch.ui.ui import DisplayElement, DisplayBounds
 from pyswitch.ui.elements import DisplayLabel, BidirectionalProtocolState
 from pyswitch.controller.callbacks import Callback
 
-from pyswitch.clients.kemper import KemperRigNameCallback, TunerDisplayCallback, KemperMappings
+from pyswitch.clients.kemper import KemperRigNameCallback, TunerDisplayCallback
+from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_NAME
 
 #############################################################################################################################################
 
@@ -41,7 +42,7 @@ class _AmpNameCallback(Callback):
         Callback.__init__(self)
         
         # This defines that the following mappings have to be listened to
-        self._mapping = KemperMappings.AMP_NAME()
+        self._mapping = MAPPING_AMP_NAME()
         self.register_mapping(self._mapping)        
 
     # This will be called for updating the label whenever the mappings defined above
