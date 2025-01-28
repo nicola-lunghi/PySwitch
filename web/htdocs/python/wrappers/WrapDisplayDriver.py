@@ -1,9 +1,6 @@
-#from browser import document
-#from browser.html import CANVAS
-#from browser import console
 from js import document
 
-class WebTFT:
+class WrapTFT:
     def __init__(self, width, height, dom_namespace):
         self.width = width
         self.height = height
@@ -18,10 +15,7 @@ class WebTFT:
         self.update()
 
     def update(self):
-        id = self.dom_namespace + "-display"
-        self.canvas = document.getElementById(id)
-        if not self.canvas:
-            raise Exception("No canvas found with ID " + repr(id))
+        self.canvas = self.get_canvas(self.dom_namespace)
         
         self.canvas.width = self.width
         self.canvas.height = self.height
@@ -38,14 +32,22 @@ class WebTFT:
         for s in self.splash:
             s.render(self.canvas, 0, 0)
 
+    @staticmethod
+    def get_canvas(dom_namespace):
+        id = dom_namespace + "-display"
+        canvas = document.getElementById(id)
+        if not canvas:
+            raise Exception("No canvas found with ID " + repr(id))
+        return canvas
 
-class WebDisplayDriver:
+
+class WrapDisplayDriver:
     def __init__(self,
                  width, 
                  height,
                  dom_namespace 
         ):
-        self.tft = WebTFT(width, height, dom_namespace)
+        self.tft = WrapTFT(width, height, dom_namespace)
         
     # Initialize the display
     def init(self):        

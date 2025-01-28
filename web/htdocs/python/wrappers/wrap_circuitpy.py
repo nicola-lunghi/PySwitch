@@ -1,10 +1,6 @@
 
-class MockMicropython:
-    def const(a):
-        return a
-
       
-class MockBoard:
+class WrapBoard:
     GP0 = 0
     GP1 = 1
     GP2 = 2
@@ -36,7 +32,7 @@ class MockBoard:
     GP28 = 28
         
 
-class MockDigitalIO:
+class WrapDigitalIO:
     class DigitalInOut:
         def __init__(self, port):
             self.port = port

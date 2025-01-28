@@ -1,11 +1,11 @@
-from js import midiWrapper
+from js import externalRefs
 
-class MockMidiInput:
+class WrapMidiInput:
     def read(self, num_bytes):
         cnt = 0
         buf = []
-        while len(midiWrapper.messageQueue) > 0:
-            m = midiWrapper.messageQueue.pop(0)
+        while len(externalRefs.midiWrapper.messageQueue) > 0:
+            m = externalRefs.midiWrapper.messageQueue.pop(0)
             msg = list(m)
 
             if cnt + len(msg) > num_bytes:
@@ -16,7 +16,7 @@ class MockMidiInput:
         return buf
 
 
-class MockMidiOutput:
+class WrapMidiOutput:
     def write(self, packet, length):
-        midiWrapper.send(packet)
+        externalRefs.midiWrapper.send(packet)
 

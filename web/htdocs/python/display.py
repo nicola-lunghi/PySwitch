@@ -30,8 +30,7 @@ _DISPLAY_HEIGHT = const(240)
 _SLOT_WIDTH = const(120)                 # Slot width on the display
 _SLOT_HEIGHT = const(40)                 # Slot height on the display
 _FOOTER_Y = const(200)
-_RIG_NAME_HEIGHT = const(140)
-_AMP_NAME_HEIGHT = const(20)
+_RIG_NAME_HEIGHT = const(160)
 
 #############################################################################################################################################
 

@@ -1,30 +1,43 @@
 class PySwitchRunner {
 
     #options = null;
+    #runner = null;
 
+    /**
+     * Options:
+     * {
+     *     domNamespace: "pyswitch",      ID prefix for access to DOM elements from Python code
+     *     updateIntervalMillis: 10,      Tick interval in milliseconds. On CircuitPython, the program does as much ticks as it can (in a while True loop),
+     *                                    which in a browser woult block all user interaction, so the ticks are triggered in intervals.
+     * }
+     */
     constructor(options) {
         this.#options = options;        
     }
 
+    /**
+     * Set up Pyodide and copy all sources to the Emscripten virtual file system.
+     */
     async init() {
+        // Set up pyodide
+        console.log("Initialize Pyodide");
         this.pyodide = await loadPyodide();
         
-        await this.#loadModule("PyRunner.py", "python/");
-        await this.#loadModule("inputs.py", "python/");
-        await this.#loadModule("display.py", "python/");
+        // Load all files by GETing them and storing them to the virtual FS.
+        // TODO this could be optimized
+        console.log("Load files to python");
 
-        this.pyodide.FS.mkdir("mocks");
-        await this.#loadModule("mocks/__init__.py", "python/");
-        await this.#loadModule("mocks/mocks_lib.py", "python/");
-        await this.#loadModule("mocks/mocks_circuitpy.py", "python/");
-        await this.#loadModule("mocks/mocks_adafruit_midi.py", "python/");
-        await this.#loadModule("mocks/mocks_adafruit_led.py", "python/");
-        await this.#loadModule("mocks/mocks_adafruit_display.py", "python/");
+        await this.#loadModule("PySwitchRunner.py", "python/");
+        await this.#loadModule("mocks.py", "python/");
 
-        this.pyodide.FS.mkdir("mocks/display");
-        await this.#loadModule("mocks/display/__init__.py", "python/");
-        await this.#loadModule("mocks/display/WebDisplayDriver.py", "python/");
-
+        this.pyodide.FS.mkdir("wrappers");
+        await this.#loadModule("wrappers/__init__.py", "python/");
+        await this.#loadModule("wrappers/wrap_circuitpy.py", "python/");
+        await this.#loadModule("wrappers/wrap_adafruit_midi.py", "python/");
+        await this.#loadModule("wrappers/wrap_adafruit_led.py", "python/");
+        await this.#loadModule("wrappers/wrap_adafruit_display.py", "python/");
+        await this.#loadModule("wrappers/WrapDisplayDriver.py", "python/");
+        
         //////////////////////////////////////////////////////////////////////////////////////////////
 
         this.pyodide.FS.mkdir("adafruit_midi");
@@ -131,32 +144,65 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/ui/UiController.py");
     }
 
-    async run(midiWrapper) {
-        window.midiWrapper = midiWrapper;
-        
-        await this.pyodide.runPython(`
-            from PyRunner import PyRunner
-            runner = PyRunner("` + this.#options.domNamespace + `", "` + this.#options.updateIntervalMillis + `")
-            runner.init()            
-        `);
-
-        midiWrapper.onmidimessage = async function(event) {
-            // Check if its a sysex message
-            if (event.data[0] != 0xf0 || event.data[event.data.length - 1] != 0xf7) {
-                return;
-            }
-
-            const manufacturerId = Array.from(event.data).slice(1, 4);
-            const data = Array.from(event.data).slice(4, event.data.length - 1);
-            
-            // Pass it to the bridge
-            await bridge.receive({
-                manufacturerId: manufacturerId,
-                data: data
-            });
+    /**
+     * Has to be called before running to provide a MIDI wrapper. This has to feature a send(bytes) method and
+     * a messageQueue attribute holding incoming messages as raw bye arrays (one per queue entry).
+     */
+    setMidiWrapper(midiWrapper) {
+        // Create access object
+        if (!window.externalRefs) {
+            window.externalRefs = {};
         }
+        // If there is an old MIDI wrapper, detach it so it does not listen anymore
+        if (window.externalRefs.midiWrapper) {
+            window.externalRefs.midiWrapper.detach();
+        }
+
+        // Set the new MIDI wrapper. This will be accessed in the python MIDI wrappers.
+        window.externalRefs.midiWrapper = midiWrapper;
     }
 
+    /**
+     * Returns if a MIDI wrapper is set
+     */
+    hasMidiWrapper() {
+        if (!window.externalRefs) return false;
+        return (!!window.externalRefs.midiWrapper);
+    }
+
+    /**
+     * Run PySwitch, terminating an existing runner before.
+     * The passed inputs and display must be python code for the inputs.py and display.py files.
+     */
+    async run(inputs_py, display_py) {
+        console.log("Run PySwitch");
+        // Set a dummy MIDI wrapper if none is there
+        if (!this.hasMidiWrapper()) {
+            this.setMidiWrapper(new DummyMidiWrapper());
+        }
+
+        // Stop if already running
+        if (this.#runner) {
+            this.#runner.stop()
+        }        
+
+        // Copy the configuration to the virtual FS
+        this.pyodide.FS.writeFile("/home/pyodide/inputs.py", inputs_py);
+        this.pyodide.FS.writeFile("/home/pyodide/display.py", display_py);
+
+        // Run PySwitch!
+        this.#runner = await this.pyodide.runPython(`
+            from PySwitchRunner import PySwitchRunner
+            runner = PySwitchRunner("` + this.#options.domNamespace + `", "` + this.#options.updateIntervalMillis + `")
+            runner.init()
+            runner      # Returns the runner as a JS proxy
+        `);
+    }
+
+    /**
+     * Load a file into the virtual Emscripten file system. fileName is the path and name of the file inside the virtual FS,
+     * rscPath will be added as prefix if set for getting the files on the web server.
+     */
     async #loadModule(fileName, srcPath) {
         const code = await (await fetch((srcPath ? srcPath : "") + fileName)).text();
         this.pyodide.FS.writeFile("/home/pyodide/" + fileName, code);

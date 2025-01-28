@@ -3,35 +3,35 @@ from unittest.mock import patch
 
 from pyodide.ffi.wrappers import set_timeout
 
-from mocks.mocks_lib import *
-from mocks.mocks_adafruit_led import *
-from mocks.mocks_adafruit_midi import *
-from mocks.mocks_adafruit_display import *
-from mocks.mocks_circuitpy import *
+from mocks import *
+from wrappers.WrapDisplayDriver import *
+from wrappers.wrap_circuitpy import *
+from wrappers.wrap_adafruit_display import *
+from wrappers.wrap_adafruit_led import *
+from wrappers.wrap_adafruit_midi import *
 
-from mocks.display.WebDisplayDriver import WebDisplayDriver
-
-class PyRunner:
+class PySwitchRunner:
     def __init__(self, dom_namespace, update_interval_ms):
         self.dom_namespace = dom_namespace
         self.update_interval_ms = update_interval_ms
+        self.running = False
         
     def init(self):
         with patch.dict(sys.modules, {
             "micropython": MockMicropython,
             "gc": MockGC(),
-            "board": MockBoard,
-            "displayio": MockDisplayIO(),
-            "adafruit_display_text": MockAdafruitDisplayText,
-            "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
+            "board": WrapBoard,
+            "displayio": WrapDisplayIO(),
+            "adafruit_display_text": WrapAdafruitDisplayText(self.dom_namespace),
+            "adafruit_display_shapes.rect": WrapDisplayShapes().rect(),
             "busio": MockBusIO(),
             "adafruit_misc.adafruit_st7789": MockAdafruit_ST7789,
             "adafruit_misc.neopixel": MockNeoPixel,
             "adafruit_bitmap_font": MockAdafruitBitmapFont,
             "fontio": MockFontIO(),
-            "digitalio": MockDigitalIO
+            "digitalio": WrapDigitalIO
         }):
-            self.display_driver = WebDisplayDriver(
+            self.display_driver = WrapDisplayDriver(
                 width = 240,
                 height = 240,
                 dom_namespace = self.dom_namespace
@@ -48,8 +48,8 @@ class PyRunner:
             from display import Splashes
             from inputs import Inputs
 
-            midi_in = MockMidiInput()
-            midi_out = MockMidiOutput()
+            midi_in = WrapMidiInput()
+            midi_out = WrapMidiOutput()
 
             midi = AdafruitUsbMidiDevice(
                 port_in = midi_in,
@@ -59,7 +59,7 @@ class PyRunner:
 
             # Controller instance (runs the processing loop and keeps everything together)
             self.controller = Controller(
-                led_driver = MockNeoPixelDriver(self.dom_namespace), 
+                led_driver = WrapNeoPixelDriver(self.dom_namespace), 
                 protocol = KemperBidirectionalProtocol(
                     time_lease_seconds = 30
                 ),
@@ -86,7 +86,7 @@ class PyRunner:
                 inputs = Inputs,
                 ui = UiController(
                     display_driver = self.display_driver,
-                    font_loader = MockAdafruitFontLoader(),
+                    font_loader = WrapFontLoader(),
                     splash_callback = Splashes
                 )
             )
@@ -94,12 +94,20 @@ class PyRunner:
             # Prepare to run the processing loop
             self.controller.init()
                 
+        self.running = True
+
         # Local callback for set_timeout
-        def tick():
-            set_timeout(tick, self.update_interval_ms)
+        def tick():            
+            if self.running:
+                set_timeout(tick, self.update_interval_ms)
             
+            #print(repr(self) + " tick")
+
             self.controller.tick()
-            self.display_driver.update()
+            self.display_driver.update()            
 
         tick()
 
+    # Stop execution
+    def stop(self):        
+        self.running = False
