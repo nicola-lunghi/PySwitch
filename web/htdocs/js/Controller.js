@@ -1,4 +1,6 @@
-class PySwitch {
+class Controller {
+
+    VERSION = "2.4.0";          // Should always match the PySwitch version, except during developent
 
     ui = null;                  // User Interface implementation
     pyswitch = null;            // PySwitch runner

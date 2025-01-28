@@ -11,5 +11,5 @@
 #settings > * {
     margin-top: 10px;
     margin-left: 10px;
-    display: block;
+    display: inline;
 }

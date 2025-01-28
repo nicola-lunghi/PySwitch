@@ -7,12 +7,14 @@ class PySwitchUI {
     }
 
     async init() {
-        this.#setupPortSelector();
+        const settings = document.getElementById("settings");
+
+        this.#setupPortSelector(settings);
+        this.#setupVersionDisplay(settings)
     }
 
-    #setupPortSelector() {
+    #setupPortSelector(settings) {
         const ports = this.#controller.bridge.getMatchingPortPairs();
-        const settings = document.getElementById("settings");
         
         const sel = document.createElement("select");        
         settings.appendChild(sel);
@@ -44,5 +46,11 @@ class PySwitchUI {
             return;
             }
         });
+    }
+
+    #setupVersionDisplay(settings) {
+        const el = document.createElement("option");
+        el.innerHTML = "PySwitchUI v" + this.#controller.VERSION;
+        settings.appendChild(el);
     }
 }
