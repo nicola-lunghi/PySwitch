@@ -144,6 +144,11 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/ui/layout.py");
         await this.#loadModule("pyswitch/ui/ui.py");
         await this.#loadModule("pyswitch/ui/UiController.py");
+
+        // Create external refs object (used to communicate with the python scripts)
+        if (!window.externalRefs) {
+            window.externalRefs = {};
+        }        
     }
 
     /**
@@ -151,10 +156,6 @@ class PySwitchRunner {
      * a messageQueue attribute holding incoming messages as raw bye arrays (one per queue entry).
      */
     setMidiWrapper(midiWrapper) {
-        // Create access object
-        if (!window.externalRefs) {
-            window.externalRefs = {};
-        }
         // If there is an old MIDI wrapper, detach it so it does not listen anymore
         if (window.externalRefs.midiWrapper) {
             window.externalRefs.midiWrapper.detach();

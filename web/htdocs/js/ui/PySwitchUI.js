@@ -34,6 +34,12 @@ class PySwitchUI {
 
         const that = this;
         sel.addEventListener("change", async function(e) {
+            // First throw out the MIDI wrapper already active
+            that.#controller.pyswitch.setMidiWrapper(
+                new DummyMidiWrapper()
+            );
+
+            // If the selected port is found, set a new wrapper
             for (const port of ports) {
                 if (port.name != sel.value) continue;
 
