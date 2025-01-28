@@ -38,15 +38,11 @@ _RIG_ID_Y = const(160)
 # Header
 DISPLAY_HEADER_1 = DisplayLabel(
     layout = _ACTION_LABEL_LAYOUT,
-    bounds = DisplayBounds(0, 0, 80, _SLOT_HEIGHT)
+    bounds = DisplayBounds(0, 0, _SLOT_WIDTH, _SLOT_HEIGHT)
 )
 DISPLAY_HEADER_2 = DisplayLabel(
     layout = _ACTION_LABEL_LAYOUT,
-    bounds = DisplayBounds(80, 0, 80, _SLOT_HEIGHT)
-)
-DISPLAY_HEADER_3 = DisplayLabel(
-    layout = _ACTION_LABEL_LAYOUT,
-    bounds = DisplayBounds(160, 0, 80, _SLOT_HEIGHT)
+    bounds = DisplayBounds(_SLOT_WIDTH, 0, _SLOT_WIDTH, _SLOT_HEIGHT)
 )
 
 # Footer
@@ -68,7 +64,6 @@ Splashes = TunerDisplayCallback(
             # Header area 
             DISPLAY_HEADER_1,
             DISPLAY_HEADER_2,
-            DISPLAY_HEADER_3,
 
             # Footer area 
             DISPLAY_FOOTER_1,

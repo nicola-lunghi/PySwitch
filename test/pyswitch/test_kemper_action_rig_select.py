@@ -26,7 +26,7 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.clients.kemper.actions.rig_select import *
     from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
-
+    
     from lib.pyswitch.clients.kemper.mappings.select import *
 
 
@@ -443,6 +443,120 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         ))
 
         self.assertEqual(display.text, "foo")
+
+
+###################################################################################################################
+
+    def test_rig_btn_morph(self):
+        self._test_rig_btn_morph(preselect = False)
+        self._test_rig_btn_morph(preselect = True)
+
+    def _test_rig_btn_morph(self, preselect):
+        action = RIG_SELECT(
+            rig = 1,
+            rig_btn_morph = True
+        )
+
+        appl = MockController2()
+        switch = MockFootswitch(actions = [action])
+        action.init(appl, switch)
+        
+        mapping = action.callback._BinaryParameterCallback__mapping 
+
+        self.assertNotIn("morphStateOverride", appl.shared)
+        
+        # Select rig the first time
+        mapping.value = 1   # Not matching
+        action.update_displays()
+        self.assertEqual(action.state, False)
+        
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.state, True)
+
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 16383)
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.state, True)
+
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.state, True)
+
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 16383)
+
+        # Select rig the first time
+        mapping.value = 1   # Not matching
+        action.update_displays()
+        self.assertEqual(action.state, False)
+        
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.state, True)
+
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 16383)
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.state, True)
+
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        if preselect:
+            appl.shared["preselectedBank"] = 56
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.state, True)
+
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 16383 if not preselect else 0)
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.state, True)
+
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0 if not preselect else 16383)
 
 
 ###################################################################################################################

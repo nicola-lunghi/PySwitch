@@ -1,3 +1,4 @@
+from ....misc import Colors
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback, Callback
 
@@ -27,6 +28,9 @@ def RIG_SELECT_AND_MORPH_STATE(rig,
                                morph_use_leds = True,                          # Use the LEDs to show morph state?
                                morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
                                morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
+                               morph_color_base = Colors.RED,                  
+                               morph_color_morphed = Colors.BLUE,
+                               rig_btn_morph = False                           # If set True, second press will trigger morphing (only if no rig_off or bank_off are specified)
 
 ):
     rig_select = RIG_SELECT(
@@ -38,11 +42,12 @@ def RIG_SELECT_AND_MORPH_STATE(rig,
         display = display,
         id = id,
         use_leds = use_leds,
-        enable_callback = enable_callback,
+        enable_callback = enable_callback,  
         color_callback = color_callback,
         color = color,
         text_callback = text_callback,
-        text = text
+        text = text,
+        rig_btn_morph = rig_btn_morph
     )        
     
     return [
@@ -56,7 +61,9 @@ def RIG_SELECT_AND_MORPH_STATE(rig,
                 comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
                 led_brightness_off = "on",
                 display_dim_factor_off = "on",
-                suppress_send = True
+                suppress_send = True,
+                color_base = morph_color_base,
+                color_morph = morph_color_morphed
             ),
             "useSwitchLeds": morph_use_leds,
             "display": morph_display,

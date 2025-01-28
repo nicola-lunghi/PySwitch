@@ -3,7 +3,9 @@
 - Added support for the rotary wheel on the MIDI Captain 10-Switch versions. Both the rotary encoder as well as the push button can be mapped. See examples.
 - Added BANK_SELECT action for changing/toggling banks but stay at the same rig
 - Added RIG_UP and RIG_DOWN actions (see examples for the Nano 4)
-- Added option to RIG_SELECT and RIG_AND_BANK_SELECT which remembers the current rig in "off" state and switches back to it when disabling again. See example Nano 4 -> tunetown Session.
+- Added option to RIG_SELECT and RIG_AND_BANK_SELECT which remembers the current rig in "off" state and switches back to it when disabling again. 
+- Added option to RIG_SELECT and etc. to regard the "Rig Btn Morph" setting in the Kemper when selecting the current rig again. See the CurryFlurry Example for the Mini 6.
+See example Nano 4 -> tunetown Session.
 - Tuner mode:
     - Disable tuner mode with any switch
     - Added strobe tuner using all available LEDs when in tuner mode (active by default, can be disabled with parameter "strobe" in TunerDisplayCallback / display.py if you do not like to use it)
@@ -11,6 +13,7 @@
 - Added Looper mappings (see example Nano 4 -> tunetown Session with Looper and Pages). 
 - Added Paging: Use class PagerAction to step through multiple pages with individual actions. Also partial pages are possible. The actions are switched via callback, see example Nano 4 -> tunetown Session.with Looper and Pages.
 - Tempo Display is now darker by default, and brightness for on and off states can be adjusted by using the "led_brightness_\*" parameters of the SHOW_TEMPO action
+- Effect Button mappings now just toggle their states regardless of the state on the Kemper (much of you wanted this). Can be disabled to the old behaviour by setting use_internal_state to False.
 - Default global brightness factors for LEDs and DisplayLabels can now be set optionally in config.py, see comments there.
 - Now supporting file editing from the browser via MIDI using the <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a> library. <a href="https://demo.midibridge.tunetown.de">Click here</a> with your device connected to the computer via USB (no switches pressed!) and it will automatically connect. This needs no USB mounting/unmounting and is useful for quick experimenting and changing settings. Should also serve as proof-of-concept for building a visual editor in the future (!)
 - The code from code.py now is moved to a function inside the init script of the module, so multi-boot scenarios (different firmwares on button presses on boot, like @gstrotmanns version does) are also possible. Unit tests added for the init script.
