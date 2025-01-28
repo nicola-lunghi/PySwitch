@@ -5,7 +5,9 @@ from ....misc import Colors
 from ..mappings.effects import MAPPING_EFFECT_BUTTON
 
 # Effect Button I-IIII (set only). num must be a number (1 to 4).
-def EFFECT_BUTTON(num, text = None, display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True, enable_callback = None):
+# NOTE: The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper does not report the state at all sadly). 
+# If you dont want this behaviour, you can set "use_internal_state = False".
+def EFFECT_BUTTON(num, text = None, display = None, color = Colors.LIGHT_GREEN, id = False, use_leds = True, enable_callback = None, use_internal_state = True):
     if not text:
         if num == 1:
             text = "FX I"
@@ -20,7 +22,8 @@ def EFFECT_BUTTON(num, text = None, display = None, color = Colors.LIGHT_GREEN, 
         "callback": BinaryParameterCallback(
             mapping = MAPPING_EFFECT_BUTTON(num),
             text = text,
-            color = color
+            color = color,
+            use_internal_state = use_internal_state
         ),
         "mode": PushButtonAction.LATCH,
         "display": display,

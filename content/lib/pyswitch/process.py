@@ -12,7 +12,7 @@
 #from pyswitch.stats import Memory as _Memory
 #_Memory.start()
 
-from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver as _DisplayDriver, AdafruitNeoPixelDriver as _NeoPixelDriver, AdafruitFontLoader as _FontLoader, AdafruitSwitch as _Switch
+from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver as _DisplayDriver, AdafruitNeoPixelDriver as _NeoPixelDriver, AdafruitFontLoader as _FontLoader
 from pyswitch.misc import get_option as _get_option
 
 # Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)
@@ -84,6 +84,8 @@ else:
     # on unknown devices, to create layouts for the configuration.
     from pyswitch.controller.ExploreModeController import ExploreModeController as _ExploreModeController
     from pyswitch.ui.UiController import UiController as _UiController
+    from pyswitch.hardware.adafruit.AdafruitSwitch import AdafruitSwitch as _Switch
+    
     import board as _board
 
     # Switch factory

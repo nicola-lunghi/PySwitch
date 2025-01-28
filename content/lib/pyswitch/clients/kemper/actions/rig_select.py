@@ -4,6 +4,7 @@ from ....controller.callbacks import BinaryParameterCallback
 from ....misc import get_option, Colors
 
 from ..mappings.select import MAPPING_RIG_SELECT, MAPPING_BANK_AND_RIG_SELECT
+from .morph import KemperMorphCallback
 
 # Display text modes for RIG_SELECT (only regarded if a display is attached to the action)
 RIG_SELECT_DISPLAY_CURRENT_RIG = 10  # Show current rig ID (for example 2-1 for bank 2 rig 1)
@@ -25,7 +26,8 @@ def RIG_SELECT(rig,
                color = None,                                   # Color override (if no text callback is passed)
                text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
                text = None,                                    # Text override (if no text callback is passed)
-               auto_exclude_rigs = None                        # If rig_off is "auto", this can be filled with a tuple or list of rigs to exclude from "remembering" when disabled
+               auto_exclude_rigs = None,                       # If rig_off is "auto", this can be filled with a tuple or list of rigs to exclude from "remembering" when disabled
+               rig_btn_morph = False                           # If set True, second press will trigger morphing (only if no rig_off or bank_off are specified)
     ):
     
     # Finally we can create the action definition ;)
@@ -44,7 +46,8 @@ def RIG_SELECT(rig,
             display_mode = display_mode,
             text = text,
             text_callback = text_callback,
-            auto_exclude_rigs = auto_exclude_rigs
+            auto_exclude_rigs = auto_exclude_rigs,
+            rig_btn_morph = rig_btn_morph
         ),
         "enableCallback": enable_callback
     })  
@@ -61,7 +64,8 @@ class KemperRigSelectCallback(BinaryParameterCallback):
                     display_mode,
                     text,
                     text_callback,
-                    auto_exclude_rigs = None
+                    auto_exclude_rigs = None,
+                    rig_btn_morph = False
         ):
         
         if rig_off != None and bank != None and bank_off == None:
@@ -107,6 +111,7 @@ class KemperRigSelectCallback(BinaryParameterCallback):
         self.__display_mode = display_mode
 
         self.__auto_exclude_rigs = auto_exclude_rigs
+        self.__rig_btn_morph = rig_btn_morph
 
     def init(self, appl, listener = None):
         super().init(appl, listener)
@@ -121,6 +126,9 @@ class KemperRigSelectCallback(BinaryParameterCallback):
         if "preselectedBank" in self.__appl.shared:
             set_mapping = self.__mapping
             value = self._value_enable
+
+            if self.__rig_btn_morph and self.__rig_off == None and self.__bank_off == None:
+                self.__appl.shared["morphStateOverride"] = 0
         else:
             if action.state:
                 set_mapping = self.__mapping
@@ -133,10 +141,20 @@ class KemperRigSelectCallback(BinaryParameterCallback):
 
                 value = self._value_disable
 
+            # If the current rig has not changed, toggle global morphing state    
+            curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
+            curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
+
+            if self.__rig_btn_morph and self.__rig_off == None and self.__bank_off == None:
+                if self.__rig == curr_rig + 1 and (not self.__bank or self.__bank == curr_bank + 1):
+                    if not "morphStateOverride" in self.__appl.shared:
+                        self.__appl.shared["morphStateOverride"] = 0
+                    self.__appl.shared["morphStateOverride"] = 0 if (self.__appl.shared["morphStateOverride"] > 0) else 16383
+                else:
+                    self.__appl.shared["morphStateOverride"] = 0
+
         self.__appl.client.set(set_mapping, value)
 
-        # # Request value
-        # self.update()
 
     def update_displays(self, action):
         if self.__mapping.value == None:

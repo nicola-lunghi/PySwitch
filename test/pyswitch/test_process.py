@@ -39,6 +39,7 @@ class MockImports:
         class AdafruitFontLoader:
             pass
 
+    class MockHardwareAdafruitSwitch:
         class AdafruitSwitch:
             def __init__(self, port):
                 self.port = port
@@ -352,6 +353,7 @@ class TestProcessScript(unittest.TestCase):
         with patch.dict(sys.modules, {
             "pyswitch.stats": MockImports.MockStats(),
             "pyswitch.hardware.adafruit": MockImports.MockHardwareAdafruit(),
+            "pyswitch.hardware.adafruit.AdafruitSwitch": MockImports.MockHardwareAdafruitSwitch(),
             "pyswitch.misc": MockImports.MockMisc(),
             "config": MockImports.MockConfig(),
             "pyswitch.ui.UiController": MockImports.MockUiController(),
@@ -388,5 +390,5 @@ class TestProcessScript(unittest.TestCase):
 
             switch = switch_factory.create_switch(456)
 
-            self.assertIsInstance(switch, MockImports.MockHardwareAdafruit.AdafruitSwitch)
+            self.assertIsInstance(switch, MockImports.MockHardwareAdafruitSwitch.AdafruitSwitch)
             self.assertEqual(switch.port, 456)
