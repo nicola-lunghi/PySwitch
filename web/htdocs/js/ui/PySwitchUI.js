@@ -11,7 +11,7 @@ class PySwitchUI {
     }
 
     #setupPortSelector() {
-        const ports = this.#controller.getMatchingPortPairs();
+        const ports = this.#controller.bridge.getMatchingPortPairs();
         const settings = document.getElementById("settings");
         
         const sel = document.createElement("select");        
