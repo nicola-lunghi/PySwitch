@@ -1,0 +1,31 @@
+.messages {
+	position: absolute;
+	top: 5px;
+ 	left: 50%;
+  	transform: translateX(-50%);
+  	background: rgba(0, 0, 0, 0.2);
+  	border-radius: 4px;	
+
+	z-index: 50;
+}
+
+.messages tbody {
+	padding: 6px 6px;
+}
+
+.messages td {
+	text-align: center;	
+}
+	
+.messages td > div {
+	width: fit-content;
+	white-space: pre;
+	font-size: 1em;
+}
+
+.message-traceback {
+	font-family: 'Courier New', Courier, monospace;
+	font-weight: bold;
+	text-align: left;
+}
+

@@ -128,7 +128,7 @@ class MidiBridgeHandler {
     /**
      * Connect to a port input/output pair by port name.
      */
-    async connect(portName) {
+    async connect(portName, timeoutMillis = BRIDGE_TIMEOUT_INTERVAL_MILLIS) {
         const that = this;
 
         function findPort(ports) {
@@ -196,11 +196,12 @@ class MidiBridgeHandler {
                 // Stop the timout
                 clearTimeout(timeout);
 
-                reject({
-                    name: output.name,
-                    input: input,
-                    output: output
-                });
+                reject(new Error("Failed to connect to " + output.name)); 
+                // reject({
+                //     name: output.name,
+                //     input: input,
+                //     output: output
+                // });
             }
 
             // Listen to both finish and error events to know there is a bridge listening
@@ -214,7 +215,7 @@ class MidiBridgeHandler {
             bridge.request(path, BRIDGE_CHUNK_SIZE_REQUEST);
 
             // Timeout
-            let timeout = setTimeout(doReject, BRIDGE_TIMEOUT_INTERVAL_MILLIS);
+            let timeout = setTimeout(doReject, timeoutMillis);
 
             // Register the connection attempt
             that.#connectionAttempts.set(portName, {

@@ -1,0 +1,70 @@
+.list-browser {
+    position: absolute;
+
+    top: 10vh;
+    bottom: 10vh;
+    right: 50%;
+    left: 50%;
+    width: 800px;
+    transform: translate(-50%, 0);
+
+    z-index: 100;
+
+    padding: 20px;
+
+    background-color: white;
+
+    border: 1px solid black;
+    border-radius: 20px;
+}
+
+.list-browser .listing-link {
+    cursor: pointer;
+}
+
+.list-browser .listing-link:hover {
+    text-decoration: underline;
+}
+
+.list-browser td > *:first-child {
+    margin-right: 15px
+}
+
+.list-browser .headline {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.list-browser .path {
+    margin-bottom: 10px;
+    color: gray;
+}
+
+.list-browser .path > *:first-child{
+    cursor: pointer;
+    width: 25px;
+    padding: 4px;
+    padding-left: 5px;
+    border-radius: 7px;
+    margin-right: 10px;
+}
+
+.list-browser .path > *:first-child:hover {
+    background-color: lightgray;
+}
+
+.list-browser .close-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+
+    cursor: pointer;
+    width: 25px;
+    padding: 4px;
+    padding-left: 5px;
+    border-radius: 7px;
+}
+
+.list-browser .close-button:hover {
+    background-color: lightgray;
+}

@@ -4,40 +4,58 @@
     <meta charset="utf-8">
     <title>PySwitch on JS Experiment</title>
     
-    <link rel="stylesheet" type="text/css" href="styles/ui.css">
-    <link rel="stylesheet" type="text/css" href="styles/switches.css">
-    <link rel="stylesheet" type="text/css" href="styles/settings.css">
-    
-    <link rel="stylesheet" type="text/css" href="styles/devices/midicaptain-nano-4.css">
-    
+    <!-- Lib -->
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/fa/css/all.min.css">    
+
+    <script type="text/javascript" src="lib/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="lib/sammy-latest.min.js"></script>    
+
     <script type="text/javascript" src="lib/pyodide/pyodide.js"></script>
 
     <script type="text/javascript" src="lib/jsmidibridge/JsMidiBridge.js"></script>
     <script type="text/javascript" src="lib/jsmidibridge/MidiBridgeHandler.js"></script>
 
+    <!-- Application -->
+    <link rel="stylesheet" type="text/css" href="styles/ui.css">
+    <link rel="stylesheet" type="text/css" href="styles/settings.css">
+    <link rel="stylesheet" type="text/css" href="styles/progress.css">
+    <link rel="stylesheet" type="text/css" href="styles/message.css">
+    <link rel="stylesheet" type="text/css" href="styles/list.css">
+    
+    <link rel="stylesheet" type="text/css" href="styles/devices/devices.css">
+    <link rel="stylesheet" type="text/css" href="styles/devices/midicaptain-nano-4.css">
+    
     <script type="text/javascript" src="js/Controller.js"></script>
     <script type="text/javascript" src="js/PySwitchRunner.js"></script>
+    <script type="text/javascript" src="js/PySwitchDevice.js"></script>
+    <script type="text/javascript" src="js/Tools.js"></script>
+
+    <script type="text/javascript" src="js/routing/Routing.js"></script>
+    <script type="text/javascript" src="js/routing/CallbackQueue.js"></script>
+    
     <script type="text/javascript" src="js/ui/PySwitchUi.js"></script>
+    <script type="text/javascript" src="js/ui/Progress.js"></script>
+    <script type="text/javascript" src="js/ui/Notifications.js"></script>
+    <script type="text/javascript" src="js/ui/ExampleBrowser.js"></script>
+    <script type="text/javascript" src="js/ui/ControllerBrowser.js"></script>
+
+    <script type="text/javascript" src="js/model/Configuration.js"></script>
+    <script type="text/javascript" src="js/model/ControllerConfiguration.js"></script>
+    <script type="text/javascript" src="js/model/WebConfiguration.js"></script>
+    <script type="text/javascript" src="js/model/DummyConfiguration.js"></script>
+
     <script type="text/javascript" src="js/midi/WebMidiWrapper.js"></script>
-    <script type="text/javascript" src="js/midi/DummyMidiWrapper.js"></script>
+    <script type="text/javascript" src="js/midi/DummyMidiWrapper.js"></script>    
 
     <script type="text/javascript">
         window.onload = function() {
             new Controller({
-                containerId: "pyswitch-device",
-                domNamespace: "pyswitch",
-                updateIntervalMillis: 20
+                containerElementSelector: "body"
             }).run();
         }
     </script>
 </script>
-<body>
-    <div id="settings">
-        
-    </div>
-    <div id="content">
-        <!-- This will be filled by the PySwitch device driver. -->
-        <div id="pyswitch-device" class="midicaptain-nano-4"></div>
-    </div>
+<body>    
 </body>
 </link>
