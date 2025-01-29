@@ -122,7 +122,7 @@ class PySwitchUI {
                 .on("click", async function() {
                     location.href = "#example/";
                 })
-                .text("Examples"),
+                .text("Load Example"),
 
                 // Version display
                 $('<div/>')
