@@ -1,6 +1,6 @@
 class Controller {
 
-    VERSION = "2.4.0";          // For productive releases, this should always match the PySwitch version.
+    VERSION = "2.4.0.0";        // For productive releases, the first three numbers should always match the PySwitch version. The last is the UI version.
 
     ui = null;                  // User Interface implementation
     routing = null;
