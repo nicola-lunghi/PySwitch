@@ -141,17 +141,18 @@ class KemperRigSelectCallback(BinaryParameterCallback):
 
                 value = self._value_disable
 
-            # If the current rig has not changed, toggle global morphing state    
-            curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
-            curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
+            # If the current rig has not changed, toggle global morphing state
+            if self.__mapping.value != None:
+                curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
+                curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
 
-            if self.__rig_btn_morph and self.__rig_off == None and self.__bank_off == None:
-                if self.__rig == curr_rig + 1 and (not self.__bank or self.__bank == curr_bank + 1):
-                    if not "morphStateOverride" in self.__appl.shared:
+                if self.__rig_btn_morph and self.__rig_off == None and self.__bank_off == None:
+                    if self.__rig == curr_rig + 1 and (not self.__bank or self.__bank == curr_bank + 1):
+                        if not "morphStateOverride" in self.__appl.shared:
+                            self.__appl.shared["morphStateOverride"] = 0
+                        self.__appl.shared["morphStateOverride"] = 0 if (self.__appl.shared["morphStateOverride"] > 0) else 16383
+                    else:
                         self.__appl.shared["morphStateOverride"] = 0
-                    self.__appl.shared["morphStateOverride"] = 0 if (self.__appl.shared["morphStateOverride"] > 0) else 16383
-                else:
-                    self.__appl.shared["morphStateOverride"] = 0
 
         self.__appl.client.set(set_mapping, value)
 

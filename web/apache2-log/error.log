@@ -1,0 +1,10 @@
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.19.0.2. Set the 'ServerName' directive globally to suppress this message
+[Wed Jan 29 13:21:12.256427 2025] [mpm_prefork:notice] [pid 8] AH00163: Apache/2.4.41 (Ubuntu) configured -- resuming normal operations
+[Wed Jan 29 13:21:12.256537 2025] [core:notice] [pid 8] AH00094: Command line: '/usr/sbin/apache2 -D FOREGROUND'
+[Wed Jan 29 13:21:17.481896 2025] [php:notice] [pid 9] [client 172.19.0.1:57442] PHP Warning:  Undefined variable $data in /var/www/html/examples/toc.php on line 23, referer: http://localhost/examples/
+[Wed Jan 29 13:21:17.482026 2025] [php:notice] [pid 9] [client 172.19.0.1:57442] PHP Stack trace:, referer: http://localhost/examples/
+[Wed Jan 29 13:21:17.482135 2025] [php:notice] [pid 9] [client 172.19.0.1:57442] PHP   1. {main}() /var/www/html/examples/toc.php:0, referer: http://localhost/examples/
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.19.0.2. Set the 'ServerName' directive globally to suppress this message
+[Wed Jan 29 15:55:12.027832 2025] [mpm_prefork:notice] [pid 8] AH00163: Apache/2.4.41 (Ubuntu) configured -- resuming normal operations
+[Wed Jan 29 15:55:12.027945 2025] [core:notice] [pid 8] AH00094: Command line: '/usr/sbin/apache2 -D FOREGROUND'
+[Wed Jan 29 15:55:14.084917 2025] [php:notice] [pid 10] [client 172.19.0.1:60346] PHP Parse error:  syntax error, unexpected token "=", expecting ")" in /var/www/html/examples/toc.php on line 11, referer: http://localhost/
