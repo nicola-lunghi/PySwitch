@@ -13,8 +13,9 @@ class PySwitchUI {
     selectController = null;        
     selectClient = null;
     notifications = null;
+
     examples = null;
-    controllers = null;
+    portBrowser = null;
 
     /**
      * Options:
@@ -40,32 +41,32 @@ class PySwitchUI {
      */
     build() {
         const that = this;
-        const ports = this.#controller.device.bridge.getMatchingPortPairs();
+        // const ports = this.#controller.device.bridge.getMatchingPortPairs();
 
         const containerElement = $(this.#options.containerElementSelector);
         if (!containerElement) {
             throw new Error("Container " + this.#options.containerElementSelector + " not found");
         }
 
-        /**
-         * Helper: Get option element list for client connections
-         */
-        function getOptions(ports, prefix, noneValue) {
-            const ret = [
-                $('<option/>')
-                .val(noneValue)
-                .text(prefix + noneValue)
-            ]
+        // /**
+        //  * Helper: Get option element list for client connections
+        //  */
+        // function getOptions(ports, prefix, noneValue) {
+        //     const ret = [
+        //         $('<option/>')
+        //         .val(noneValue)
+        //         .text(prefix + noneValue)
+        //     ]
 
-            for (const port of ports) {
-                ret.push(
-                    $('<option/>')
-                    .val(port.name)
-                    .text(prefix + port.name)
-                )            
-            }
-            return ret;
-        }
+        //     for (const port of ports) {
+        //         ret.push(
+        //             $('<option/>')
+        //             .val(port.name)
+        //             .text(prefix + port.name)
+        //         )            
+        //     }
+        //     return ret;
+        // }
 
         let messageElement = null;
         
@@ -73,20 +74,20 @@ class PySwitchUI {
         containerElement.append(
             $('<div class="settings">').append(
 
-                // Select client
-                this.selectClient = 
-                $('<select />')
-                .on("change", async function() {
-                    try {
-                        await that.#controller.selectClient(that.selectClient.val());
+                // // Select client
+                // this.selectClient = 
+                // $('<select />')
+                // .on("change", async function() {
+                //     // try {
+                //     //     await that.#controller.selectClient(that.selectClient.val());
 
-                    } catch (e) {
-                        that.#controller.handle(e);
-                    }
-                })
-                .append(
-                    getOptions(ports, "Client Device: ", "Not connected")
-                ),
+                //     // } catch (e) {
+                //     //     that.#controller.handle(e);
+                //     // }
+                // })
+                // .append(
+                //     getOptions(ports, "Client Device: ", "Not connected")
+                // ),
 
                 // // Select controller
                 // this.selectController = 
@@ -107,8 +108,7 @@ class PySwitchUI {
                 $('<div class="btn btn-primary"/>')
                 .on("click", async function() {
                     try {
-                        await that.controllers.browse("Select MIDI port to load configuration from:", async function(portName) {
-                            console.log(portName);
+                        await that.portBrowser.browse("Select MIDI port to load configuration from:", async function(portName) {
                             that.#controller.routing.call(that.#controller.getControllerUrl(portName));
                         });
 
@@ -135,6 +135,21 @@ class PySwitchUI {
             $('<div class="application"/>').append(
                 // Header, showing the current config.
                 this.#contentHeadline = $('<div class="headline"/>'),
+
+                // Client connection button
+                $('<div class="client-select"/>').append(
+                    $('<div class="fa fa-check" />')
+
+                ).on("click", async function() {
+                    try {
+                        await that.portBrowser.browse("Select client device to control:", async function(portName) {
+                            await that.#controller.selectClient(portName);
+                        });
+
+                    } catch (e) {
+                        that.#controller.handle(e);
+                    }
+                }),
 
                 // This will be filled by python. Can not have any class names in here, or they will be overwritten by python code.
                 this.#deviceElement = $('<div id="pyswitch-device"></div>')
@@ -163,7 +178,7 @@ class PySwitchUI {
         this.notifications = new Notifications(messageElement)
 
         this.examples = new ExampleBrowser(this.#controller, this.#listElement);        
-        this.controllers = new ControllerBrowser(this.#controller, this.#listElement);
+        this.portBrowser = new PortBrowser(this.#controller, this.#listElement);        
     }
 
     /**

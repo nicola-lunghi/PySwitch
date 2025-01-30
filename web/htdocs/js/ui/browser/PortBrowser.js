@@ -1,4 +1,4 @@
-class ControllerBrowser {
+class PortBrowser {
 
     #element = null;
     #controller = null;
@@ -77,6 +77,8 @@ class ControllerBrowser {
                     try {
                         //that.#controller.routing.call(that.#getExampleUrl(entry.path))
                         await onSelect(entry.input.name);
+
+                        that.hide();
 
                     } catch (e) {
                         that.#controller.handle(e);
