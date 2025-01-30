@@ -44,6 +44,9 @@ class WrapDigitalIO:
 
         @property
         def value(self):
+            if not self.element: 
+                return 1
+            
             dataset = self.element.dataset.to_py()
             if not dataset.hasOwnProperty("pushed"):
                 return 1
@@ -55,3 +58,50 @@ class WrapDigitalIO:
 
     class Pull:
         UP = 1
+
+
+class WrapAnalogIO:
+    def __init__(self, dom_namespace):
+        WrapAnalogIO.dom_namespace = dom_namespace 
+
+    class AnalogIn:
+        def __init__(self, port):
+            self.port = port
+
+            self.element = document.getElementById(WrapAnalogIO.dom_namespace + "-pedal-gp" + str(port))
+
+        @property
+        def value(self):
+            if not self.element: 
+                return 0
+            
+            dataset = self.element.dataset.to_py()
+            if not dataset.hasOwnProperty("value"):
+                return 0
+            
+            return dataset.value
+        
+
+class WrapRotaryIO:
+    def __init__(self, dom_namespace):
+        WrapRotaryIO.dom_namespace = dom_namespace 
+
+    class IncrementalEncoder:
+        def __init__(self, port_1, port_2, divisor = 1):
+            self.port_1 = port_1
+            self.port_2 = port_2
+            self.divisor = divisor
+            
+            # The first port is used to address the wheel element
+            self.element = document.getElementById(WrapRotaryIO.dom_namespace + "-wheel-gp" + str(port_1))
+
+        @property
+        def position(self):
+            if not self.element: 
+                return 0
+            
+            dataset = self.element.dataset.to_py()
+            if not dataset.hasOwnProperty("position"):
+                self.element.dataset.position = 0
+            
+            return dataset.position

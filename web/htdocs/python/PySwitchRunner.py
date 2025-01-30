@@ -32,7 +32,9 @@ class PySwitchRunner:
             "adafruit_misc.neopixel": MockNeoPixel,
             "adafruit_bitmap_font": MockAdafruitBitmapFont,
             "fontio": MockFontIO(),
-            "digitalio": WrapDigitalIO(self.dom_namespace)
+            "digitalio": WrapDigitalIO(self.dom_namespace),
+            "analogio": WrapAnalogIO(self.dom_namespace),
+            "rotaryio": WrapRotaryIO(self.dom_namespace)
         }):            
             self.display_driver = WrapDisplayDriver(
                 width = 240,

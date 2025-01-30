@@ -1,5 +1,6 @@
 
-.midicaptain-nano-4 {    
+.midicaptain-nano-4 {        
+    max-width: 700px;
 }
 
 .midicaptain-nano-4 #pyswitch-background {
@@ -9,16 +10,21 @@
 /****************************************************************/
 
 .midicaptain-nano-4 #pyswitch-display {
-    position: absolute;
-
     top: 49.3%;
     left: 50.04%;
     width: 19.7%;
-    
-    transform: translate(-50%, -50%);
 }
 
 /****************************************************************/
+
+.midicaptain-nano-4 .pyswitch-switch {
+    width: 16.5%;
+    height: 0;
+    padding-bottom: 16.5%;
+
+    container-type: size;
+    mask: radial-gradient(3.9cqw, #0000 98%, #000);
+}
 
 .midicaptain-nano-4 #pyswitch-switch-gp1 {
     top: 10.5%;

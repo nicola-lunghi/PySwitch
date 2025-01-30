@@ -1,17 +1,17 @@
 ## Example Description
 
-|            | Action                            |
-|------------|-----------------------------------|
-| Switch 1   | Effect C                          |
-| Switch 2   | Effect X                          |
-| Switch 3   | Effect MOD                        |
-| Switch 4   | Bank down                         |
-| Switch Up  | Bank Up                           |
-| Switch A   | Select Rig 1 of current bank (\*) |
-| Switch B   | Select Rig 2 of current bank      |
-| Switch C   | Select Rig 3 of current bank      |
-| Switch D   | Select Rig 4 of current bank      |
-| Switch Dn  | Select Rig 5 of current bank      |
+|            | Action                            | Long press        |
+|------------|-----------------------------------|-------------------|
+| Switch 1   | Effect C                          |                   |
+| Switch 2   | Effect X                          |                   |
+| Switch 3   | Effect MOD                        |                   |
+| Switch 4   | Bank down                         |                   |
+| Switch Up  | Bank Up                           | Tuner Mode        |
+| Switch A   | Select Rig 1 of current bank (\*) |                   |
+| Switch B   | Select Rig 2 of current bank      |                   |
+| Switch C   | Select Rig 3 of current bank      |                   |
+| Switch D   | Select Rig 4 of current bank      |                   |
+| Switch Dn  | Select Rig 5 of current bank      |                   |
 
 *(\*) controls DISPLAY_FOOTER_2, see below*
 
