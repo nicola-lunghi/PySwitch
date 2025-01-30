@@ -8,6 +8,7 @@ class PySwitchUI {
     #progressBarContainer = null;
     #contentHeadline = null;
     #listElement = null;
+    #deviceElement = null;
 
     selectController = null;        
     selectClient = null;
@@ -126,16 +127,17 @@ class PySwitchUI {
 
                 // Version display
                 $('<div/>')
-                .text("PySwitchUI v" + this.#controller.VERSION)
+                .text("PySwitch Emulator v" + this.#controller.VERSION)
             ),
+
+            /////////////////////////////////////////////////////////////////////////
             
-            // Content area
-            $('<div class="content">').append(
-                // Header, showing the current config
+            $('<div class="application"/>').append(
+                // Header, showing the current config.
                 this.#contentHeadline = $('<div class="headline"/>'),
 
-                // This will be filled by python
-                $('<div id="pyswitch-device" class="midicaptain-nano-4"></div>')
+                // This will be filled by python. Can not have any class names in here, or they will be overwritten by python code.
+                this.#deviceElement = $('<div id="pyswitch-device"></div>')
             ),
 
             // Progress bar and blocker
@@ -165,10 +167,14 @@ class PySwitchUI {
     }
 
     /**
-     * Sets the headline text
+     * Sets the UI properties for the configuration
      */
-    setHeadline(text) {
-        this.#contentHeadline.text(text);
+    async setConfig(config) {
+        // Headline (config name)
+        this.#contentHeadline.text(await config.headline());
+
+        // CSS classes for the main device element
+        this.#deviceElement[0].className = await (await config.parser()).getClass();
     }
 
     /**

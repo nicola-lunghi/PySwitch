@@ -1,0 +1,53 @@
+
+.midicaptain-mini-6 {
+    position: relative;
+    display: block;
+    width: 787px;
+    height: 501px;
+
+    background-image: url("midicaptain-mini-6.png");
+}
+
+/****************************************************************/
+
+.midicaptain-mini-6 #pyswitch-display {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%) scale(0.5);
+}
+
+/****************************************************************/
+
+.midicaptain-mini-6 #pyswitch-switch-gp1 {
+    top: 88px;
+    left: 73px;
+}
+
+.midicaptain-mini-6 #pyswitch-switch-gp25 {
+    top: 88px;
+    right: 72px;
+}
+
+.midicaptain-mini-6 #pyswitch-switch-gp24 {
+    top: 88px;
+    right: 72px;
+}
+
+.midicaptain-mini-6 #pyswitch-switch-gp9 {
+    bottom: 89px;
+    left: 72px;
+}
+
+.midicaptain-mini-6 #pyswitch-switch-gp10 {
+    bottom: 93px;
+    right: 76px;
+}
+
+.midicaptain-mini-6 #pyswitch-switch-gp11 {
+    top: 88px;
+    right: 72px;
+}
+

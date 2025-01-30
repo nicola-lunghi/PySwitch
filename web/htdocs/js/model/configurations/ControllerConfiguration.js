@@ -18,7 +18,9 @@ class ControllerConfiguration extends Configuration {
         await this.#controller.device.connect(this.#portName);
 
         // Get config scripts from the controller
-        this.inputs_py = await this.#controller.device.loadFile("/inputs.py");
-        this.display_py = await this.#controller.device.loadFile("/display.py");
+        return {
+            inputs_py: await this.#controller.device.loadFile("/inputs.py"),
+            display_py: await this.#controller.device.loadFile("/display.py")
+        };
     }
 }

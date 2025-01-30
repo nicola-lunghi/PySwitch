@@ -1,0 +1,60 @@
+.midicaptain #pyswitch-inputs {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.midicaptain .pyswitch-switch {
+    position: absolute;
+    width: 16.5%;
+    height: 0;
+    padding-bottom: 16.5%;
+
+    container-type: size;
+
+    cursor: pointer;
+    border-radius: 50%;
+    overflow: hidden;
+
+    mask: radial-gradient(3.9cqw, #0000 98%, #000);
+    /* background: radial-gradient(circle at center, #0000 98%, #000); */
+
+    /* transform: scale(0.64); */
+}
+
+.midicaptain .pyswitch-switch:hover {
+    outline: 4px solid rgba(255, 255, 255, 0.2);
+}
+
+.midicaptain .pyswitch-switch:active:hover {
+    outline: 4px solid rgba(255, 255, 255, 0.8);
+}
+
+/****************************************************************/
+
+.midicaptain .pyswitch-switch .pyswitch-led {
+    position: absolute;
+}
+
+.midicaptain .pyswitch-switch .pyswitch-led:nth-child(1) {
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 70%;
+}
+
+.midicaptain .pyswitch-switch .pyswitch-led:nth-child(2) {
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 70%;
+}
+
+.midicaptain .pyswitch-switch .pyswitch-led:nth-child(3) {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+}

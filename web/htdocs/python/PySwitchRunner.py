@@ -86,9 +86,7 @@ class PySwitchRunner:
                     }
                 ),
                 config = {
-                    "debugBidirectionalProtocol": True,
-                    "ledBrightnessOn": 0.3,
-                    "ledBrightnessOff": 0.1
+                    "debugBidirectionalProtocol": True
                 },
                 inputs = Inputs,
                 ui = UiController(

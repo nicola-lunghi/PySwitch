@@ -1,4 +1,5 @@
 from js import document
+from math import pow, floor
 
 class WrapNeoPixelDriver:
     class LedList(list):
@@ -17,8 +18,21 @@ class WrapNeoPixelDriver:
             if not led:
                 return
             
-            # Scale up values so that the "on" brightness (set to 0.3 in PySwitchRunner) will be one.
-            value = [v * (1 / 0.3) for v in value]
+
+            # # Scale up values so that the "on" brightness (set to 0.3 in PySwitchRunner) will be one.
+            # value = [floor(v * (1 / 0.3), 1) for v in value]
+
+            # Apply a non-linear function to approximate the NeoPixel behaviour. 
+            # steepness: Low values are steeper than high ones. Shall not be larger than 128.
+            def trans(x, steepness = 80):
+                return round((1 - pow(10, -(x / steepness))) * 255)
+
+            value = [trans(v) for v in value]
+
+            print(trans(0))
+            print(trans(1))
+            print(trans(2))
+            print(trans(17))
 
             led.style.backgroundColor = f"rgb({ value[0] }, { value[1] }, { value[2] })"
 

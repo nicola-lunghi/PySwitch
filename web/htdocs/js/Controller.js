@@ -81,12 +81,6 @@ class Controller {
      * Run PySwitch with a specific configuration.
      */
     async loadConfiguration(config) {
-        // if (config instanceof ControllerConfiguration) {
-        //     this.ui.selectController.val(config.name);
-        // } else {
-        //     this.ui.selectController.val("Not connected");
-        // }
-
         this.ui.progress(0.3, "Initialize Pyodide");
 
         // Initialize PySwitch (this starts Pyodide and copies all necessary sources to the Emscripten virtual file system)
@@ -97,12 +91,13 @@ class Controller {
         // Load config
         await config.load();
 
-        this.ui.setHeadline(config.headline());
+        // Show name of config, CSS classes etc.
+        await this.ui.setConfig(config);
 
         this.ui.progress(0.8, "Run PySwitch");
 
         // Run local PySwitch with local config "files"
-        await this.pyswitch.run(config.inputs_py, config.display_py);
+        await this.pyswitch.run(await config.get());
         this.ui.message("Loaded configuration: " + config.name, "S");
 
         this.ui.progress(1);
@@ -120,7 +115,7 @@ class Controller {
             // Try to load
             await config.load();
 
-            this.ui.setHeadline(config.headline());
+            await this.ui.setConfig(config);
             
             // Successful: Keep it
             await this.loadConfiguration(config);

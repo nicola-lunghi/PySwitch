@@ -15,14 +15,22 @@ class PySwitchDevice:
 
     # Initialize to a given set of inputs and splashes
     def init(self, inputs, splashes):
-        # Clear contents
         self.container.innerHTML = ""
 
+        # Clear contents and create container
+        self.__init_background()
+        
         # Add display (canvas)
         self.__init_display()
 
         # Add switches and LEDs
         self.__init_switches(inputs)
+
+    # Initialize background IMG
+    def __init_background(self):
+        img = document.createElement("img")
+        img.id = self.dom_namespace + "-background"
+        self.container.appendChild(img)
 
     # Initialize the display canvas
     def __init_display(self):

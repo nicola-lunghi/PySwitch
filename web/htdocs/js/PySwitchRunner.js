@@ -188,7 +188,7 @@ class PySwitchRunner {
      * Run PySwitch, terminating an existing runner before.
      * The passed inputs and display must be python code for the inputs.py and display.py files.
      */
-    async run(inputs_py, display_py) {
+    async run(config) {
         console.log("Run PySwitch");
         
         // Set a dummy MIDI wrapper if none is there
@@ -202,8 +202,8 @@ class PySwitchRunner {
         }        
 
         // Copy the configuration to the virtual FS
-        this.pyodide.FS.writeFile("/home/pyodide/inputs.py", inputs_py);
-        this.pyodide.FS.writeFile("/home/pyodide/display.py", display_py);
+        this.pyodide.FS.writeFile("/home/pyodide/inputs.py", config.inputs_py);
+        this.pyodide.FS.writeFile("/home/pyodide/display.py", config.display_py);
 
         // Run PySwitch!
         this.#runner = await this.pyodide.runPython(`
