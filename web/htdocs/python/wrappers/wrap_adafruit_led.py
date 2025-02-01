@@ -18,13 +18,18 @@ class WrapNeoPixelDriver:
             if not led:
                 return
             
-            # Apply a non-linear function to approximate the NeoPixel behaviour. 
-            # steepness: Low values are steeper than high ones.
-            def trans(x, steepness = 20):
-                return round((1 - pow(10, -(x / steepness))) * 255 + x/2) * 2/3
+            # When black, make transparent
+            if value == (0, 0, 0):
+                led.style.backgroundColor = f"rgba(0, 0, 0, 0.2)"
+                return
 
+            # Apply gamma correction
+            def trans(x, gamma = 0.3):
+                return pow((x/255), gamma) * 255
+            
             value = [trans(v) for v in value]
 
+            # When black, make transparent
             led.style.backgroundColor = f"rgb({ value[0] }, { value[1] }, { value[2] })"
 
 

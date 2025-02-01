@@ -1,19 +1,18 @@
-class ExampleBrowser {
+class ExampleBrowser extends BrowserBase {
 
-    #element = null;
     #controller = null;
 
     #toc = null;
 
     constructor(controller, element) {
+        super(element, false);
         this.#controller = controller;
-        this.#element = element;
     }
 
     #build(items, pathText, backPath) {
         const that = this;
 
-        this.#element.append(
+        this.element.append(
             // Headline
             $('<div class="headline"/>')
             .text('Choose an example to run:'),
@@ -36,11 +35,11 @@ class ExampleBrowser {
                 $('<tbody/>').append(items)
             ),
 
-            // Close button
-            $('<span class="fa fa-times close-button"/>')
-            .on('click', async function() {
-                that.#controller.routing.home();
-            })
+            // // Close button
+            // $('<span class="fa fa-times close-button"/>')
+            // .on('click', async function() {
+            //     that.#controller.routing.home();
+            // })
         );
     }
 
@@ -49,7 +48,7 @@ class ExampleBrowser {
      */
     async browse(path) {
         this.#controller.ui.block();
-        this.#element.empty();
+        this.element.empty();
 
         const listing = await this.#getListing(path);
         
@@ -78,14 +77,6 @@ class ExampleBrowser {
         splt.pop();
         const j = splt.join("/");
         return this.#getExampleUrl("/" + j);
-    }
-
-    hide() {
-        this.#element.hide();
-    }
-
-    show() {
-        this.#element.show();
     }
 
     /**

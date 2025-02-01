@@ -1,18 +1,17 @@
-class PortBrowser {
+class PortBrowser extends BrowserBase {
 
-    #element = null;
     #controller = null;
     
     constructor(controller, element) {
+        super(element);
         this.#controller = controller;
-        this.#element = element;
     }
 
     #build(items, headline) {
-        this.#element.empty();
+        this.element.empty();
 
         const that = this;
-        this.#element.append(
+        this.element.append(
             // Headline
             $('<div class="headline"/>')
             .text(headline),
@@ -34,14 +33,32 @@ class PortBrowser {
      * Show the browser. 
      * onSelect(portName) => void
      */
-    async browse(headline, onSelect) {
+    async browse(headline, onSelect, currentValue = null, additionalOptions = []) {
         this.#controller.ui.block();
         
-        const listing = await this.#controller.device.bridge.getMatchingPortPairs();
+        const listing = await this.#controller.midi.getMatchingPortPairs();
         
         const items = [];
         for(const entry of listing) {
-            items.push(this.#getListingElement(entry, onSelect));
+            items.push(
+                this.#getListingElement(
+                    entry.input.name, 
+                    entry.input.name, 
+                    onSelect,
+                    currentValue == entry.input.name
+                )
+            );
+        }
+
+        for (const addOption of additionalOptions) {
+            items.push(
+                this.#getListingElement(
+                    addOption.text, 
+                    addOption.value, 
+                    onSelect,
+                    currentValue == addOption.value
+                )
+            );
         }
 
         this.#build(items, headline);
@@ -51,32 +68,28 @@ class PortBrowser {
 
     hide() {
         this.#controller.ui.progress(1);
-        this.#element.hide();
-    }
-
-    show() {        
-        this.#element.show();
+        super.hide();
     }
 
     /**
      * Creates the listing elements (TR)
      */
-    #getListingElement(entry, onSelect) {
+    #getListingElement(text, value, onSelect, isSelected) {
         const that = this;
 
         return $('<tr/>').append(
             $('<td/>').append(
                 // Listing entry icon
-                $('<span class="fa"/>')
-                .addClass('fa-device'),
+                $('<span />')
+                .addClass(isSelected ? 'fa fa-check' : ''),
 
                 // Listing entry link
                 $('<span class="listing-link" />')
-                .text(entry.input.name)
+                .text(text)
                 .on('click', async function() {
                     try {
                         //that.#controller.routing.call(that.#getExampleUrl(entry.path))
-                        await onSelect(entry.input.name);
+                        await onSelect(value);
 
                         that.hide();
 

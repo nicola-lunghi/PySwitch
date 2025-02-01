@@ -163,6 +163,22 @@ class PySwitchRunner {
     }
 
     /**
+     * Set a callback on change of protocol state
+     * cb(state) => void
+     */
+    setProtocolStateCallback(cb) {
+        window.externalRefs.stateCallback = cb;
+    }
+
+    /**
+     * Returns the current protocol state
+     */
+    getProtocolState() {
+        if (!window.externalRefs) return null;
+        return window.externalRefs.protocolState;
+    }
+
+    /**
      * Has to be called before running to provide a MIDI wrapper. This has to feature a send(bytes) method and
      * a messageQueue attribute holding incoming messages as raw bye arrays (one per queue entry).
      */
@@ -191,11 +207,6 @@ class PySwitchRunner {
     async run(config) {
         console.log("Run PySwitch");
         
-        // Set a dummy MIDI wrapper if none is there
-        if (!this.hasMidiWrapper()) {
-            this.setMidiWrapper(new DummyMidiWrapper());
-        }
-
         // Stop if already running
         if (this.#runner) {
             this.#runner.stop()

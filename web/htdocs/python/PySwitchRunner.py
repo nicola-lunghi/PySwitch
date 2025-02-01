@@ -2,6 +2,7 @@ import sys
 from unittest.mock import patch
 
 from pyodide.ffi.wrappers import set_timeout
+from js import externalRefs
 
 from mocks import *
 from wrappers.WrapDisplayDriver import *
@@ -17,6 +18,7 @@ class PySwitchRunner:
         self.dom_namespace = dom_namespace
         self.update_interval_ms = update_interval_ms
         self.running = False
+        self.__protocol_state = None
         
     # Set up a PySwitch controller and let it run
     def run(self):
@@ -66,12 +68,14 @@ class PySwitchRunner:
                 in_buf_size = 100
             )
 
+            protocol = KemperBidirectionalProtocol(
+                time_lease_seconds = 30
+            )
+
             # Controller instance (runs the processing loop and keeps everything together)
             self.controller = Controller(
                 led_driver = WrapNeoPixelDriver(self.dom_namespace), 
-                protocol = KemperBidirectionalProtocol(
-                    time_lease_seconds = 30
-                ),
+                protocol = protocol,
                 midi = MidiController(
                     routings = {
                         # Application: Receive MIDI messages from USB
@@ -111,7 +115,17 @@ class PySwitchRunner:
             #print(repr(self) + " tick")
 
             self.controller.tick()
-            self.display_driver.update()            
+            self.display_driver.update()
+
+            externalRefs.protocolState = protocol.state
+
+            # # Notify when the bidirectional protocol state has been changed
+            # if protocol.state != self.__protocol_state:
+            #     self.__protocol_state = protocol.state
+
+            #     if externalRefs.stateCallback:
+            #         externalRefs.stateCallback(protocol.state);
+
 
         tick()
 

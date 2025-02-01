@@ -1,7 +1,6 @@
 class Configuration {
 
     #data = null;
-    #parser = null;
     
     constructor(name = "") {
         this.name = name;

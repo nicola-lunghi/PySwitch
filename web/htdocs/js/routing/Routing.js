@@ -37,22 +37,18 @@ class Routing {
 
             // Scan routes
             this.get("#", that.#queue.add(that.#executeRoute(async function() {
-                await that.#controller.scan();
+                await that.#controller.scanControllers();
             })));
 
             this.get("#/", that.#queue.add(that.#executeRoute(async function() {
-                await that.#controller.scan();
+                await that.#controller.scanControllers();
             })));
 
             // Load controller config
             this.get(/\#controller\/(.*)/, that.#queue.add(that.#executeRoute(async function() {
                 const portName = decodeURI(this.params['splat'][0]);
                 await that.#controller.loadConfiguration(
-                    (portName == "Not connected") 
-                        ? 
-                            new DummyConfiguration()
-                        :
-                            new ControllerConfiguration(that.#controller, portName)
+                    new ControllerConfiguration(that.#controller, portName)
                 );
             })));
 

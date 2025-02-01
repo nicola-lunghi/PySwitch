@@ -14,7 +14,6 @@
     <script type="text/javascript" src="lib/pyodide/pyodide.js"></script>
 
     <script type="text/javascript" src="lib/jsmidibridge/JsMidiBridge.js"></script>
-    <script type="text/javascript" src="lib/jsmidibridge/MidiBridgeHandler.js"></script>
 
     <!-- Application -->
     <link rel="stylesheet" type="text/css" href="styles/ui.css">
@@ -22,6 +21,7 @@
     <link rel="stylesheet" type="text/css" href="styles/progress.css">
     <link rel="stylesheet" type="text/css" href="styles/message.css">
     <link rel="stylesheet" type="text/css" href="styles/list.css">
+    <link rel="stylesheet" type="text/css" href="styles/client-select.css">
     
     <link rel="stylesheet" type="text/css" href="styles/devices/midicaptain.css">
     <link rel="stylesheet" type="text/css" href="styles/devices/midicaptain-nano-4.css">
@@ -31,6 +31,7 @@
     <script type="text/javascript" src="js/Controller.js"></script>
     <script type="text/javascript" src="js/PySwitchRunner.js"></script>
     <script type="text/javascript" src="js/PySwitchDevice.js"></script>
+    <script type="text/javascript" src="js/PySwitchClient.js"></script>
     <script type="text/javascript" src="js/Tools.js"></script>
 
     <script type="text/javascript" src="js/routing/Routing.js"></script>
@@ -39,7 +40,9 @@
     <script type="text/javascript" src="js/ui/PySwitchUi.js"></script>
     <script type="text/javascript" src="js/ui/Progress.js"></script>
     <script type="text/javascript" src="js/ui/Notifications.js"></script>
+    <script type="text/javascript" src="js/ui/ClientConnectionButton.js"></script>
 
+    <script type="text/javascript" src="js/ui/browser/BrowserBase.js"></script>
     <script type="text/javascript" src="js/ui/browser/ExampleBrowser.js"></script>
     <script type="text/javascript" src="js/ui/browser/PortBrowser.js"></script>
 
@@ -51,8 +54,13 @@
     <script type="text/javascript" src="js/model/parsers/Parser.js"></script>
     <script type="text/javascript" src="js/model/parsers/KemperParser.js"></script>
 
-    <script type="text/javascript" src="js/midi/WebMidiWrapper.js"></script>
-    <script type="text/javascript" src="js/midi/DummyMidiWrapper.js"></script>    
+    <script type="text/javascript" src="js/model/detectors/ClientDetector.js"></script>
+    <script type="text/javascript" src="js/model/detectors/KemperDetector.js"></script>
+
+    <script type="text/javascript" src="js/midi/MidiHandler.js"></script>
+    <script type="text/javascript" src="js/midi/MidiListener.js"></script>
+    <script type="text/javascript" src="js/midi/client/MidiBridgeHandler.js"></script>
+    <script type="text/javascript" src="js/midi/device/WebMidiWrapper.js"></script>    
 
     <script type="text/javascript">
         window.onload = function() {

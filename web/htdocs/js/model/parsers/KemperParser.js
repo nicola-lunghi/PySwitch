@@ -16,5 +16,19 @@ class KemperParser extends Parser {
             return "midicaptain midicaptain-10";
         }
         
+        throw new Error("Unknown device type");
+    }
+
+    /**
+     * Returns a ClientDetector instance for the configuration
+     */
+    async getClientDetector() {
+        const data = await this.config.get();
+        
+        if (data.inputs_py.includes("pyswitch.clients.kemper")) {
+            return new KemperDetector();
+        }
+
+        throw new Error("Unknown client type");
     }
 }

@@ -7,14 +7,7 @@ class PySwitchDevice {
 
     constructor(controller) {
         this.#controller = controller;
-    }
-
-    /**
-     * Set up MIDI bridge (this sets up Web MIDI)
-     */
-    async init() {
-        this.bridge = new MidiBridgeHandler();
-        await this.bridge.init();
+        this.bridge = new MidiBridgeHandler(controller.midi);        
     }
 
     /**
@@ -26,43 +19,51 @@ class PySwitchDevice {
     }
 
     /**
-     * Tries to find the port pair and returns it, or null if not found.
+     * Scans for controllers
+     * 
+     * finish(connection) => void
      */
-    getPortPair(portName) {
-        const ports = this.bridge.getMatchingPortPairs();
-        for (const port of ports) {
-            if (port.name != portName) continue;
-            return port;
-        }
-        return null;
+    async scan(finish) {
+        const that = this;
+
+        await this.#controller.midi.scan(
+            // connect
+            async function(portName, attempts) {
+                return that.bridge.connect(portName, attempts, 3000);
+            },
+
+            // finish
+            async function(connection, attempts) {
+                // Reject all older attempts
+                (new Map(attempts)).forEach(async function(attempt) {
+                    await attempt.reject();
+                });
+
+                await finish(connection);
+            }
+        );
     }
-
+    
     /**
-     * Connect to the passed port name
+     * Connect a bridge to the passed port name
      */
-    async connect(connectionName) {
-        if (this.#connection && this.#connection.name == connectionName) return;   // Already connected to the bridge
+    async connect(portName) {
+        if (this.#connection && this.#connection.name == portName) return;   // Already connected to the bridge
+        this.#connection = null;
         
-        this.#controller.ui.progress(0, "Connecting to controller " + connectionName);
-
-        if (this.#connection) {
-            this.bridge.detach(this.#connection);
-        }
+        this.#controller.ui.progress(0, "Connecting to controller " + portName);
 
         let connection = null;
         try {
-            connection = await this.bridge.connect(connectionName, 3000);
+            connection = await this.bridge.connect(portName, null, 3000);
 
         } catch (e) {
             this.#controller.ui.progress(1);
-            throw new Error("Failed to connect to controller " + connectionName);
+            throw new Error("Failed to connect to controller " + portName);
         }
 
         const bridge = connection.bridge;
-
         const that = this;
-
-        console.log("Connected to controller " + connectionName);
 
         // // Progress (send)
         // bridge.onSendProgress = async function(data) {            
@@ -97,7 +98,8 @@ class PySwitchDevice {
             that.#controller.message(message);
         }      
         
-        this.#connection = connection;        
+        this.#connection = connection;
+        console.log("Connected to controller " + portName);
     }
 
     /**
@@ -109,7 +111,6 @@ class PySwitchDevice {
         }
 
         const bridge = this.#connection.bridge;
-
         const that = this;
         return new Promise(async function(resolve, reject) {
             bridge.throwExceptionsOnReceive = true;

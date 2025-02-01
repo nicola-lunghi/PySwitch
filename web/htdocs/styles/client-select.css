@@ -1,0 +1,95 @@
+
+:root {
+    --color-client-select-connected: rgb(0, 128, 0);
+    --color-client-select-connected-alpha: rgba(0, 128, 0, 0.1);
+
+    --color-client-select-waiting: rgb(250, 150, 0);
+    --color-client-select-waiting-alpha: rgba(250, 150, 0, 0.1);
+
+    --color-client-select-not-connected: rgb(120, 120, 120);
+    --color-client-select-not-connected-alpha: rgba(120, 120, 120, 0.1);
+}
+
+.application .client-select {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 200;
+
+    width: 30vw;
+    max-width: 120px;
+    height: 30vw;
+    max-height: 120px;
+    
+    border-radius: 50%;
+
+    cursor: pointer;
+    opacity: 0.3;
+
+    transition: opacity 0.2s;
+    container-type: size;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.3;
+    }
+}
+
+.application .client-select.connected {
+    border: 0.3vw solid var(--color-client-select-connected);
+}
+
+.application .client-select.waiting {
+    border: 0.3vw solid var(--color-client-select-waiting);
+    animation: pulse 0.5s infinite;
+}
+
+.application .client-select.not-connected {
+    border: 0.3vw solid var(--color-client-select-not-connected);
+}
+
+
+.application .client-select.connected:hover {
+    background-color: var(--color-client-select-connected-alpha);
+    opacity: 1;
+}
+
+.application .client-select.connected:hover {
+    background-color: var(--color-client-select-waiting-alpha);
+    opacity: 1;
+}
+
+.application .client-select.not-connected:hover {
+    background-color: var(--color-client-select-not-connected-alpha);
+    opacity: 1;
+}
+
+.application .client-select > * {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    font-size: 40cqw;
+}
+
+.application .client-select.connected > * {
+    color: var(--color-client-select-connected);
+}
+
+.application .client-select.waiting > * {
+    color: var(--color-client-select-waiting);
+}
+
+.application .client-select.not-connected > * {
+    color: var(--color-client-select-not-connected);
+}

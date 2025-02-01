@@ -1,0 +1,109 @@
+class ClientConnectionButton {
+
+    #element = null;
+    #controller = null;
+    #icon = null;
+
+    #lastState = null;
+
+    static STATE_NOT_CONNECTED = 10;
+    static STATE_WAITING = 20;
+    static STATE_CONNECTED = 100;
+
+    constructor(controller, element) {
+        this.#controller = controller;
+        this.#element = element;
+
+        this.#build();
+
+        this.#setState(ClientConnectionButton.STATE_NOT_CONNECTED);
+    }
+
+    #build() {
+        const that = this;
+
+        this.#element.append(
+            this.#icon = $('<div />')
+        )
+        .on("click", async function() {
+            try {
+                const state = that.#controller.getState("client");
+                const currentDeviceText = (that.#controller.client.current && state == "auto") ? (' (' + that.#controller.client.current + ')') : '';
+
+                await that.#controller.ui.portBrowser.browse(
+                    "Select client device to control:", 
+                    async function(portName) {
+                        that.#controller.setState("client", portName);
+
+                        await that.#controller.client.init(that.#controller.currentConfig);
+                    },
+                    state,
+                    [
+                        {
+                            value: "Not connected",
+                            text: "Not connected",
+                        },
+                        {
+                            value: "auto",
+                            text: "Auto-detect client device" + currentDeviceText,
+                        }                        
+                    ]
+                );
+
+            } catch (e) {
+                that.#controller.handle(e);
+            }
+        });
+
+        // Schedule updates every 200ms
+        setInterval(function() {
+            that.#updateState();
+        }, 200);
+    }
+
+    /**
+     * Update button state
+     */
+    #updateState() {
+        this.#setState(this.#getCurrentState());
+    }
+
+    /**
+     * Determines the state to show currently
+     */
+    #getCurrentState() {
+        if (!this.#controller.pyswitch.hasMidiWrapper()) return ClientConnectionButton.STATE_NOT_CONNECTED;
+
+        if (this.#controller.pyswitch.getProtocolState() == 20) return ClientConnectionButton.STATE_CONNECTED;
+
+        return ClientConnectionButton.STATE_WAITING;
+    }
+
+    /**
+     * Set the button state
+     */
+    #setState(state) {
+        if (state == this.#lastState) return;
+        this.#lastState = state;
+
+        this.#icon[0].className = "";
+        this.#element[0].className = "client-select";
+
+        switch(state) {
+            case ClientConnectionButton.STATE_NOT_CONNECTED:
+                this.#icon.addClass("fa fa-times");                
+                this.#element.addClass("not-connected");
+                break;
+            
+            case ClientConnectionButton.STATE_WAITING:
+                this.#icon.addClass("fa fa-hourglass-half");                
+                this.#element.addClass("waiting");
+                break;
+
+            case ClientConnectionButton.STATE_CONNECTED:
+                this.#icon.addClass("fa fa-check");                
+                this.#element.addClass("connected");
+                break;
+        }
+    }
+}

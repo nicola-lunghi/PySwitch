@@ -16,4 +16,11 @@ class Parser {
     async getClass() {
         throw new Error("Must be implemented in child classes");
     }
+
+    /**
+     * Returns a ClientDetector instance for the configuration
+     */
+    async getClientDetector() {
+        throw new Error("Must be implemented in child classes");
+    }
 }

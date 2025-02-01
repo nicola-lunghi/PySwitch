@@ -1,12 +1,16 @@
 class Controller {
 
-    VERSION = "2.4.0.0";        // For productive releases, the first three numbers should always match the PySwitch version. The last is the UI version.
+    VERSION = "2.4.0.1";        // For productive releases, the first three numbers should always match the PySwitch version. The last is the UI version.
 
     ui = null;                  // User Interface implementation
-    routing = null;
+    routing = null;             // sammy.js router
 
-    pyswitch = null;            // PySwitch runner (in browser)
+    midi = null;                // MIDI handler
     device = null;              // Device handler (Controller, like Midi Captain)
+    client = null;              // Client handler (like Kemper Player)
+    pyswitch = null;            // PySwitch runner (in browser)
+
+    currentConfig = null;
     
     /**
      * Options:
@@ -38,24 +42,26 @@ class Controller {
 
         // Set up handlers
         this.ui = new PySwitchUI(this, options);
+
+        this.midi = new MidiHandler();
+
         this.pyswitch = new PySwitchRunner(options, options.domNamespace + "-device");    
         this.device = new PySwitchDevice(this);
+        this.client = new PySwitchClient(this);
     }
 
     /**
      * Run the app.
      */
     async run() {
-        // Initialize the device (this also sets up Web MIDI which the UI is reusing)
-        await this.device.init();
+        // Initialize MIDI
+        await this.midi.init();
 
         // Initialize UI (settings panel etc.)        
         await this.ui.build();
 
-        // Routing handler
+        // Routing handler: Runs routing. see Routing.js for the callbacks which in turn call this controller again.
         this.routing = new Routing(this);
-
-        // Run routing
         this.routing.run();
     }
 
@@ -68,39 +74,65 @@ class Controller {
     }
 
     /**
-     * Scans for controllers and hook up to the first one found
+     * Scans for controllers and navigate to load its configuration
      */
-    async scan() {
-        console.log("Scanning ports...");
+    async scanControllers() {
+        console.log("Scanning ports for MidiBridges...");
 
-        // Scan and open root folder of first found bridge.
-        await this.#scanAndOpenFirst();
+        const that = this;
+        await this.device.scan(
+            function(connection) {
+                setTimeout(function() {
+                    // Detach the bridge (scanning will just call a redirect which creates its own bridge)
+                    that.device.bridge.detach(connection.bridge);
+
+                    // Redirect to the found controller's URL
+                    that.routing.call(that.getControllerUrl(connection.name));
+                }, 0);
+            }
+        );
     }
 
     /**
      * Run PySwitch with a specific configuration.
      */
     async loadConfiguration(config) {
-        this.ui.progress(0.3, "Initialize Pyodide");
+        this.currentConfig = null;
+
+        this.ui.progress(0.1, "Initialize emulator");
 
         // Initialize PySwitch (this starts Pyodide and copies all necessary sources to the Emscripten virtual file system)
         await this.pyswitch.init();
 
+        this.ui.progress(0.3, "Initialize client device");
+        
+        // Initialize client (scan for devices)
+        await this.client.init(config);
+
+        const that = this;
+        this.pyswitch.setProtocolStateCallback(function(state) {
+            switch(state) {
+                case 10:  // Offline
+                    break;
+                case 20:  // Running
+                    that.ui.clientButton.setState(ClientConnectionButton.STATE_CONNECTED);
+                    break;
+            }
+        });
+
         this.ui.progress(0.5, "Load configuration");
 
-        // Load config
-        await config.load();
-
         // Show name of config, CSS classes etc.
-        await this.ui.setConfig(config);
+        await this.ui.applyConfig(config);
 
         this.ui.progress(0.8, "Run PySwitch");
 
-        // Run local PySwitch with local config "files"
+        // Run local PySwitch with the config
         await this.pyswitch.run(await config.get());
         this.ui.message("Loaded configuration: " + config.name, "S");
 
         this.ui.progress(1);
+        this.currentConfig = config;
     }
 
     /**
@@ -112,10 +144,7 @@ class Controller {
         try {
             console.info("If any 404 errors come up now, this is normal and tells the application to browse the contents of the example path.");
 
-            // Try to load
-            await config.load();
-
-            await this.ui.setConfig(config);
+            await this.ui.applyConfig(config);
             
             // Successful: Keep it
             await this.loadConfiguration(config);
@@ -123,7 +152,8 @@ class Controller {
         } catch(e) {
             if (e.message.includes("Error fetching")) {
                 // No configuration found: Show browser
-                await this.ui.browseExample(path);    
+                await this.ui.browseExample(path); 
+                   
             } else {
                 // Error
                 throw e;
@@ -132,47 +162,29 @@ class Controller {
     }
 
     /**
-     * Triggered on client selector change
+     * Set a variable in local storage
      */
-    selectClient(portName) {
-        // First throw out the MIDI wrapper already active
-        this.pyswitch.setMidiWrapper(
-            new DummyMidiWrapper()
-        );
-
-        // Search for the ports
-        const port = this.device.getPortPair(portName);       
-        if (!port) {
-            this.ui.message("No client device connected", "I");
-            return;
-        }
-
-        this.pyswitch.setMidiWrapper(                    
-            new WebMidiWrapper(port.input, port.output)
-        );
-
-        this.ui.message("Connected to client at " + port.name, "S");
+    setState(key, value) {
+        const data = JSON.parse(localStorage.getItem("pyswitch") || "{}");
+        data[key] = value;
+        localStorage.setItem("pyswitch", JSON.stringify(data));
     }
 
     /**
-     * Triggered on controller selector change
+     * Read local storage
      */
-    selectController(portName) {
-        this.routing.call(this.getControllerUrl(portName));
+    getState(key) {
+        const data = JSON.parse(localStorage.getItem("pyswitch") || "{}");
+        if (!data || !data.hasOwnProperty(key)) return null;
+        return data[key];
     }
 
-    /**
-     * Scan ports and open the first one
-     */
-    async #scanAndOpenFirst() {
-        const that = this;
-        await this.device.bridge.scan(function(data) {
-            setTimeout(function() {
-                that.routing.call(that.getControllerUrl(data.name));
-            }, 0);
-            return true
-        });
-    }
+    // /**
+    //  * Triggered on controller selector change
+    //  */
+    // selectController(portName) {
+    //     this.routing.call(this.getControllerUrl(portName));
+    // }
 
     /**
      * Returns a href for the passed path on the current port
