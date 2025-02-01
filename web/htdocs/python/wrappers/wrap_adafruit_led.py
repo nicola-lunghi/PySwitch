@@ -1,5 +1,6 @@
 from js import document
-from math import pow, floor
+from math import pow
+import colorsys
 
 class WrapNeoPixelDriver:
     class LedList(list):
@@ -28,6 +29,18 @@ class WrapNeoPixelDriver:
                 return pow((x/255), gamma) * 255
             
             value = [trans(v) for v in value]
+
+            # # Change orientation towards white
+            # hsv = colorsys.rgb_to_hsv(value[0] / 255, value[1] / 255, value[2] / 255)
+            # print("---")
+            # print(hsv)
+            # value = colorsys.hsv_to_rgb(
+            #     hsv[0],
+            #     hsv[1],
+            #     1 - hsv[2]
+            # )
+            # value = [v * 255 for v in value]
+            # print(value)
 
             # When black, make transparent
             led.style.backgroundColor = f"rgb({ value[0] }, { value[1] }, { value[2] })"
