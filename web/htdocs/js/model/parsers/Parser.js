@@ -6,7 +6,7 @@ class Parser {
         this.config = config;
     }
 
-    static async getInstance(config) {
+    static getInstance(config) {
         return new KemperParser(config);
     }
 

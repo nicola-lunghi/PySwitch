@@ -47,9 +47,16 @@ class Routing {
             // Load controller config
             this.get(/\#controller\/(.*)/, that.#queue.add(that.#executeRoute(async function() {
                 const portName = decodeURI(this.params['splat'][0]);
-                await that.#controller.loadConfiguration(
-                    new ControllerConfiguration(that.#controller, portName)
-                );
+                
+                if (portName != "pyswitch-default") {
+                    await that.#controller.loadConfiguration(
+                        new ControllerConfiguration(that.#controller, portName)
+                    );
+                } else {
+                    await that.#controller.loadConfiguration(
+                        new WebConfiguration("circuitpy", "PySwitch Default")
+                    );
+                }
             })));
 
             // Load/browse example configs

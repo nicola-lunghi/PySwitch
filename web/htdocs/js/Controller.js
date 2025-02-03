@@ -81,6 +81,7 @@ class Controller {
 
         const that = this;
         await this.device.scan(
+            // onSuccess
             function(connection) {
                 setTimeout(function() {
                     // Detach the bridge (scanning will just call a redirect which creates its own bridge)
@@ -88,6 +89,14 @@ class Controller {
 
                     // Redirect to the found controller's URL
                     that.routing.call(that.getControllerUrl(connection.name));
+                }, 0);
+            },
+
+            // onFailure
+            function() {
+                setTimeout(function() {
+                    // Redirect to the default config
+                    that.routing.call(that.getControllerUrl("pyswitch-default"));
                 }, 0);
             }
         );
@@ -104,7 +113,12 @@ class Controller {
         // Initialize PySwitch (this starts Pyodide and copies all necessary sources to the Emscripten virtual file system)
         await this.pyswitch.init();
 
-        this.ui.progress(0.3, "Initialize client device");
+        this.ui.progress(0.3, "Load configuration");
+
+        // Show name of config, CSS classes etc.
+        await this.ui.applyConfig(config);
+
+        this.ui.progress(0.6, "Initialize client device");
         
         // Initialize client (scan for devices)
         await this.client.init(config);
@@ -119,11 +133,6 @@ class Controller {
                     break;
             }
         });
-
-        this.ui.progress(0.5, "Load configuration");
-
-        // Show name of config, CSS classes etc.
-        await this.ui.applyConfig(config);
 
         this.ui.progress(0.8, "Run PySwitch");
 

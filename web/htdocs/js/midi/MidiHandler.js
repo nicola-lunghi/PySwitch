@@ -41,26 +41,36 @@ class MidiHandler {
      * Scans for devices. The scan callback can add ConnectionAttempt instances to a map which are terminated of finish() returns true.
      * 
      * id: Scan ID to manag attempts
-     * connect(portName, attempts) => connection
-     * finish(connection, attempts) => void
+     * connect(portName, attempts) => connection   // Must try to connect, and return a descriptor object of successful
+     * finish(connection, attempts) => void        // Called when an attempt has succeeded
+     * failure() => void                           // Called when the all attempts failed
      */
-    scan(connect, finish) {
+    scan(connect, onSuccess = null, onFailure = null) {
         // Get all in/out pairs sharing the same name
         const ports = this.getMatchingPortPairs();
 
         const attempts = new Map();
+        let success = false;
 
         async function scanPorts(name) {            
             try {
                 const connection = await connect(name, attempts);
 
                 console.log("   -> Connection success with " + name);
+                success = true;
 
-                await finish(connection, attempts);               
+                if (onSuccess) {
+                    await onSuccess(connection, attempts);               
+                }
     
             } catch (e) {
                 //console.error(e);
                 console.log("   -> Error connecting to " + name);
+
+                // When the last attempt failed
+                if (onFailure && !success && !attempts.size) {
+                    await onFailure();
+                }
             }        
         }
 

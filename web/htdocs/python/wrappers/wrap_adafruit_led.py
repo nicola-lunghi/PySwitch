@@ -25,7 +25,7 @@ class WrapNeoPixelDriver:
                 return
 
             # Apply gamma correction
-            def trans(x, gamma = 0.3):
+            def trans(x, gamma = 0.28):
                 return pow((x/255), gamma) * 255
             
             value = [trans(v) for v in value]

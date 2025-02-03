@@ -21,26 +21,30 @@ class PySwitchDevice {
     /**
      * Scans for controllers
      * 
-     * finish(connection) => void
+     * onSuccess(connection) => void
+     * onFailure() => void
      */
-    async scan(finish) {
+    async scan(onSuccess, onFailure = null) {
         const that = this;
 
         await this.#controller.midi.scan(
             // connect
             async function(portName, attempts) {
-                return that.bridge.connect(portName, attempts, 3000);
+                return that.bridge.connect(portName, attempts, 2000);
             },
 
-            // finish
+            // onSuccess
             async function(connection, attempts) {
                 // Reject all older attempts
                 (new Map(attempts)).forEach(async function(attempt) {
                     await attempt.reject();
                 });
 
-                await finish(connection);
-            }
+                await onSuccess(connection);
+            },
+
+            // onFailure
+            onFailure
         );
     }
     
@@ -58,6 +62,7 @@ class PySwitchDevice {
             connection = await this.bridge.connect(portName, null, 3000);
 
         } catch (e) {
+            console.error(e)
             this.#controller.ui.progress(1);
             throw new Error("Failed to connect to controller " + portName);
         }
