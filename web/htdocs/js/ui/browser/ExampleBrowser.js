@@ -1,15 +1,9 @@
 class ExampleBrowser extends BrowserBase {
 
-    #controller = null;
-
+    #last = null;
     #toc = null;
 
-    constructor(controller, element) {
-        super(element);
-        this.#controller = controller;
-    }
-
-    #build(items, pathText, backPath) {
+    #build(items, entry) {
         const that = this;
 
         this.element.append(
@@ -23,15 +17,15 @@ class ExampleBrowser extends BrowserBase {
                     $('<span class="fa fa-chevron-left"/>')
                     .on('click', async function() {
                         try {
-                            await that.browse(backPath);
+                            await that.browse(entry.parent);
 
                         } catch (e) {
-                            that.#controller.handle(e);
+                            that.controller.handle(e);
                         }
                     }),
 
                     // Path display
-                    $('<span />').text(pathText)
+                    $('<span />').text("/examples" + entry.path)
                 ),
 
                 // Listing
@@ -51,42 +45,48 @@ class ExampleBrowser extends BrowserBase {
     /**
      * Show the browser
      */
-    async browse(path = "") {
-        this.#controller.ui.block();
+    async browse(entry = null) {
+        await this.#loadToc();        
+            
+        if (!entry) entry = this.#last ? this.#last : this.#toc;
+
         this.element.empty();
 
-        const listing = await this.#getListing(path);
-
-        if (!listing.length) {
+        if (entry.path == "pyswitch-default") {
             this.hide();
-            this.#controller.routing.call(this.#getExampleUrl(path));
+            this.controller.routing.call(this.controller.getControllerUrl(entry.path));
+            return;
+        }
+
+        const listing = entry.children ? entry.children.filter((e) => e.type == "dir") : null; //await this.#getListing(entry);
+
+        listing.sort(function (a, b) {
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+        });
+
+        if (entry.isExample()) {
+            this.hide();
+            this.controller.routing.call(entry.getUrl());
             return;
         }
 
         if (listing.length == 1) {
-            await this.browse(listing[0].path);
+            await this.browse(listing[0]);
             return;
         }
         
         const items = [];
-        for(const entry of listing) {
-            items.push(this.#getListingElement(entry));
+
+        for(const e of listing) {
+            items.push(e.getElement());
         }
 
-        const backPath = this.#getBackPath(path);
+        this.#build(items, entry);
 
-        this.#build(items, "/examples" + path, backPath);
-
+        this.#last = entry;
         this.show();
-    }
-
-    /**
-     * Gets the path for navigation to the parent
-     */
-    #getBackPath(path) {
-        const splt = path.split("/");
-        splt.pop();
-        return splt.join("/");
     }
 
     /**
@@ -95,94 +95,44 @@ class ExampleBrowser extends BrowserBase {
     async #loadToc() {
         if (this.#toc) return;
 
-        this.#toc = JSON.parse(await Tools.fetch("examples/toc.php"));
+        // Load TOC data
+        const toc = JSON.parse(await Tools.fetch("examples/toc.php"));
         
-        // Get paths
-        function crawl(entry, prefix) {
-            entry.path = prefix + entry.name;
-
-            for(const child of entry.children || []) {
-                crawl(child, prefix + entry.name + "/");
-            }
-        }
-
-        for (const entry of this.#toc) {            
-            crawl(entry, "/");
-        }
-    }
-
-    /**
-     * Gets a list of files/folders in the path
-     */
-    async #getListing(path) {
-        await this.#loadToc();
-        
-        function find(list, tokens) {
-            if (!tokens.length) return list.filter((entry) => entry.type == "dir");
-
-            let first = tokens.shift();
-            while (!first && tokens) first = tokens.shift();
-
-            for (const entry of list) {
-                if (entry.name != first || entry.type != "dir" || !entry.children) continue;
-                return find(entry.children, tokens)
-            }
-
-            throw new Error("Example " + first + " not found");
-        }
-
-        return find(this.#toc, path ? path.split("/") : []);
-    }
-
-    /**
-     * Creates the listing elements (TR)
-     */
-    #getListingElement(entry) {
+        // Build hierarchy
         const that = this;
+        function crawl(entry, prefix) {
+            const ret = new ExampleEntry(
+                that,
+                entry.name,
+                prefix + entry.name,
+                entry.type
+            );
 
-        return $('<tr/>').append(
-            $('<td/>').append(
-                // Listing entry icon
-                $('<span class="fa"/>')
-                .addClass(this.#entryIsExample(entry) ? 'fa-play' : 'fa-folder'),
+            for(const child_def of entry.children || []) {
+                const child = crawl(child_def, prefix + entry.name + "/");
+                child.parent = ret;
+                ret.children.push(child);
+            }
 
-                // Listing entry link
-                $('<span class="listing-link" />')
-                .text(entry.name)
-                .on('click', async function() {
-                    try {
-                        await that.browse(entry.path);
+            return ret;
+        }
 
-                    } catch (e) {
-                        that.#controller.handle(e);
-                    }
-                })
+        this.#toc = crawl(toc, "/");
+        
+        // Add "Default PySwitch" option at root level
+        this.#toc.children.unshift(
+            new ExampleEntry(
+                this,
+                "PySwitch Default",
+                "pyswitch-default",
+                "dir",
+                this.#toc
             )
         )
     }
 
-    /**
-     * Returns if the passed entry contains an example
-     */
-    #entryIsExample(entry) {
-        if (entry.type != "dir") return false;
-
-        for (const child of entry.children || []) {
-            if (child.type == "dir") return false;
-        }
-        
-        return true;
-    }
-
-    /**
-     * Returns a href for the passed path
-     */
-    #getExampleUrl(path) {
-        return encodeURI("example" + path);
-    }
-
     hide() {
-        this.#controller.ui.progress(1);
+        this.controller.ui.progress(1);
         super.hide();
     }
 }

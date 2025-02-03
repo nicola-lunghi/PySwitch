@@ -1,16 +1,19 @@
 class BrowserBase {
 
     element = null;
-    #id = null;
-    #hideOnEscapeOrClickOutside = null;
+    controller = null;
 
-    constructor(element, hideOnEscapeOrClickOutside = true) {
+    #id = null;
+
+    constructor(controller, element) {
+        this.controller = controller;
         this.element = element;
+
         this.#id = Tools.uuid();
-        this.#hideOnEscapeOrClickOutside = hideOnEscapeOrClickOutside;
     }
 
     hide() {
+        this.controller.ui.progress(1);
         this.element.hide();
 
         $(window).off('.' + this.#id);
@@ -18,27 +21,26 @@ class BrowserBase {
     }
 
     show() {
+        this.controller.ui.block();
         this.element.show();
         
-        if (this.#hideOnEscapeOrClickOutside) {
-            // ESC to close
-            const that = this;
-            $(window).on('keydown.' + this.#id, async function(event) {
-                if(event.key === "Escape") {
-                    event.preventDefault();
-                    that.hide();
-                }
-            });
+        // ESC to close
+        const that = this;
+        $(window).on('keydown.' + this.#id, async function(event) {
+            if(event.key === "Escape") {
+                event.preventDefault();
+                that.hide();
+            }
+        });
 
-            this.element.on('click.' + this.#id, function(event) {
-                event.stopPropagation();
-            })
+        this.element.on('click.' + this.#id, function(event) {
+            event.stopPropagation();
+        })
 
-            setTimeout(function() {
-                $(window).on('click.' + that.#id, async function(event) {
-                    that.hide();
-                });    
-            }, 0)
-        }
+        setTimeout(function() {
+            $(window).on('click.' + that.#id, async function() {
+                that.hide();
+            });    
+        }, 0)
     }
 }

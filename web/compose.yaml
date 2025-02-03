@@ -10,6 +10,6 @@ services:
       - ../examples:/var/www/html/examples
       
       - ./apache2-conf:/etc/apache2/sites-available
-      #- ./apache2-log:/var/log/apache2
+      - ./apache2-log:/var/log/apache2
       
   

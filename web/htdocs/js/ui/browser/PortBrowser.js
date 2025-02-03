@@ -1,12 +1,5 @@
 class PortBrowser extends BrowserBase {
 
-    #controller = null;
-    
-    constructor(controller, element) {
-        super(element);
-        this.#controller = controller;
-    }
-
     #build(items, headline) {
         this.element.empty();
 
@@ -36,9 +29,7 @@ class PortBrowser extends BrowserBase {
      * onSelect(portName) => void
      */
     async browse(headline, onSelect, currentValue = null, additionalOptions = []) {
-        this.#controller.ui.block();
-        
-        const listing = await this.#controller.midi.getMatchingPortPairs();
+        const listing = await this.controller.midi.getMatchingPortPairs();
         
         const items = [];
         for(const entry of listing) {
@@ -68,11 +59,6 @@ class PortBrowser extends BrowserBase {
         this.show();
     }
 
-    hide() {
-        this.#controller.ui.progress(1);
-        super.hide();
-    }
-
     /**
      * Creates the listing elements (TR)
      */
@@ -96,7 +82,7 @@ class PortBrowser extends BrowserBase {
                         that.hide();
 
                     } catch (e) {
-                        that.#controller.handle(e);
+                        that.controller.handle(e);
                     }
                 })
             )

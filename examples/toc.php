@@ -25,6 +25,14 @@ function fillArrayWithFileNodes(DirectoryIterator $dir) {
     return $data;
 }
 
-$fileData = fillArrayWithFileNodes(new DirectoryIterator('.'));
-echo json_encode($fileData);
+$json = json_encode(
+    (object)array(
+        "type" => "dir",
+        "name" => "",
+        "path" => "",
+        "children" => fillArrayWithFileNodes(new DirectoryIterator('.'))
+    )
+);
+
+echo $json;
 ?>
