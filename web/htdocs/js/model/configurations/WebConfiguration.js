@@ -1,24 +1,16 @@
 class WebConfiguration extends Configuration {
 
     #path = null;
-    #title = null;
-
+    
     constructor(path, title = null) {
-        super(decodeURI(path));
-        this.#path = path;
-        this.#title = title;
-
-        if (!this.#title) {
-            const splt = this.name.split("/");
-            this.#title = splt.pop();
+        if (!title) {
+            const splt = decodeURI(path).split("/");
+            title = splt.pop();
         }
-    }
 
-    /**
-     * Returns the text for the head line
-     */
-    async headline() {
-        return this.#title;
+        super(title);
+        this.#path = path;
+
     }
 
     /**

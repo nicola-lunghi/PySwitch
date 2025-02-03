@@ -12,20 +12,22 @@ class PortBrowser extends BrowserBase {
 
         const that = this;
         this.element.append(
-            // Headline
-            $('<div class="headline"/>')
-            .text(headline),
+            $('<div class="content" />').append(
+                // Headline
+                $('<div class="headline"/>')
+                .text(headline),
 
-            // Listing
-            $('<table/>').append(
-                $('<tbody/>').append(items)
-            ),
+                // Listing
+                $('<table/>').append(
+                    $('<tbody/>').append(items)
+                ),
 
-            // Close button
-            $('<span class="fa fa-times close-button"/>')
-            .on('click', async function() {
-                that.hide();
-            })
+                // Close button
+                $('<span class="fa fa-times close-button"/>')
+                .on('click', async function() {
+                    that.hide();
+                })
+            )
         );
     }
 

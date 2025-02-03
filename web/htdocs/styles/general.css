@@ -1,0 +1,15 @@
+* {
+	box-sizing: border-box;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 15px;
+}
+
+select {
+    font-size: 1em;
+}

@@ -6,7 +6,7 @@ class Tools {
     static async fetch(url) {
         const resp = await fetch(url);
         if (!resp.ok) {
-            throw new Error("Error fetching " + url);
+            throw new Error("Error fetching " + decodeURI(url));
         }
         return resp.text();
     }

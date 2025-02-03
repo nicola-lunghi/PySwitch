@@ -1,9 +1,10 @@
 class Configuration {
 
     #data = null;
+    #name = null;
     
     constructor(name = "") {
-        this.name = name;
+        this.#name = name;
     }
 
     /**
@@ -39,8 +40,8 @@ class Configuration {
     /**
      * Returns the text for the head line
      */
-    async headline() {
-        return this.name;
+    async name() {
+        return this.#name;
     }
 
     ///////////////////////////////////////////////////////////////////

@@ -38,8 +38,6 @@ class PySwitchUI {
      * Build the DOM tree
      */
     build() {
-        const that = this;
-
         const containerElement = $(this.#options.containerElementSelector);
         if (!containerElement) {
             throw new Error("Container " + this.#options.containerElementSelector + " not found");
@@ -49,50 +47,28 @@ class PySwitchUI {
         let clientButtonElement = null;
         
         // Settings panel
-        containerElement.append(
-            $('<div class="settings">').append(
-
-                // Controllers link
-                $('<div class="btn btn-primary"/>')
-                .on("click", async function() {
-                    try {
-                        await that.portBrowser.browse(
-                            "Select MIDI port to load configuration from:", 
-                            async function(portName) {
-                                that.#controller.routing.call(that.#controller.getControllerUrl(portName));
-                            }
-                        );
-
-                    } catch (e) {
-                        that.#controller.handle(e);
-                    }
-                })
-                .text("Load from Controller"),
-
-                // Examples link
-                $('<div class="btn btn-primary"/>')
-                .on("click", async function() {
-                    location.href = "#example/";
-                })
-                .text("Load Example"),
-
-                // Version display
-                $('<div/>')
-                .text("PySwitch Emulator v" + this.#controller.VERSION)
-            ),
-
-            /////////////////////////////////////////////////////////////////////////
-            
+        containerElement.append(         
             $('<div class="application"/>').append(
-                // Header, showing the current config.
+                // Version display
+                $('<div class="version"/>').html("PySwitch Emulator <br>v" + this.#controller.VERSION),
+
+                // Client connection button (class is set in the ClientConnectionButton)
+                clientButtonElement = $('<div data-toggle="tooltip"/>'),
+
+                // This will be filled by python and show the device. Can not have any class names in 
+                // here, or they will be overwritten by python code.
+                this.#deviceElement = $('<div id="pyswitch-device"></div>'),
+
+                // Buttons
+                $('<div class="buttons" />').append(
+                    this.#buildButtons()
+                ),
+
+                // Header, showing the current config name
                 this.#contentHeadline = $('<div class="headline"/>'),
-
-                // Client connection button
-                clientButtonElement = $('<div />'),
-
-                // This will be filled by python. Can not have any class names in here, or they will be overwritten by python code.
-                this.#deviceElement = $('<div id="pyswitch-device"></div>')
             ),
+
+            /////////////////////////////////////////////////////////////////////////////////////
 
             // Progress bar and blocker
             this.#block = $('<div class="block"/>').append(
@@ -105,6 +81,8 @@ class PySwitchUI {
                 ),
                 this.#progressMessage = $('<span class="progressMessage" />').text("Initializing")
             ),
+
+            /////////////////////////////////////////////////////////////////////////////////////
 
             // List browser 
             this.#listElement = $('<div class="list-browser"/>')
@@ -122,21 +100,52 @@ class PySwitchUI {
     }
 
     /**
+     * Returns an array of button elements.
+     */
+    #buildButtons() {
+        const that = this;
+
+        return [
+            // Controllers
+            $('<div class="btn btn-primary"/>')
+            .text("Controllers")
+            .on("click", async function() {
+                try {
+                    await that.portBrowser.browse(
+                        "Select MIDI port to load configuration from:", 
+                        async function(portName) {
+                            that.#controller.routing.call(that.#controller.getControllerUrl(portName));
+                        }
+                    );
+
+                } catch (e) {
+                    that.#controller.handle(e);
+                }
+            }),
+
+            // Examples
+            $('<div class="btn btn-primary"/>')
+            .text("Examples")
+            .on("click", async function() {
+                try {
+                    await that.examples.browse();
+
+                } catch (e) {
+                    that.#controller.handle(e);
+                }
+            })            
+        ]
+    }
+
+    /**
      * Sets the UI properties for the configuration
      */
     async applyConfig(config) {
         // Headline (config name)
-        this.#contentHeadline.text(await config.headline());
+        this.#contentHeadline.text(await config.name());
 
         // CSS classes for the main device element
         this.#deviceElement[0].className = await (await config.parser()).getClass();
-    }
-
-    /**
-     * Shows the example browser showing the path.
-     */
-    async browseExample(path) {
-        await this.examples.browse(path);
     }
 
     /**

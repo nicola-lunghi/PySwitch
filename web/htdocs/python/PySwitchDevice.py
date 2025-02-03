@@ -68,13 +68,21 @@ class PySwitchDevice:
 
                 inputs_container.appendChild(element)
 
+                visual_element = document.createElement("div")
+                visual_element.className = self.dom_namespace + "-switch-visual"
+                element.appendChild(visual_element)
+
+                overlay_element = document.createElement("div")
+                overlay_element.className = self.dom_namespace + "-switch-overlay"
+                element.appendChild(overlay_element)
+
             else:
                 # Unknown type
                 print("Ignoring input (unsupported type: " + input.__class__.__name__ + ")")
                 continue
 
             # LEDs (can be added to any type)
-            if element and "pixels" in input["assignment"]:
+            if visual_element and "pixels" in input["assignment"]:
                 pixels = input["assignment"]["pixels"]
 
                 for pixel in pixels:
@@ -82,5 +90,5 @@ class PySwitchDevice:
                     pixel_element.id = self.dom_namespace + "-led-" + str(pixel)
                     pixel_element.className = self.dom_namespace + "-led"
 
-                    element.appendChild(pixel_element)
+                    visual_element.appendChild(pixel_element)
                 

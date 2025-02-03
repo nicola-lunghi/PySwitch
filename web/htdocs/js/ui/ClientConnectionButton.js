@@ -88,21 +88,25 @@ class ClientConnectionButton {
 
         this.#icon[0].className = "";
         this.#element[0].className = "client-select";
+        this.#element.attr("title", "");
 
         switch(state) {
             case ClientConnectionButton.STATE_NOT_CONNECTED:
                 this.#icon.addClass("fa fa-times");                
                 this.#element.addClass("not-connected");
+                this.#element.attr("title", "Not connected to any client device to control");
                 break;
             
             case ClientConnectionButton.STATE_WAITING:
                 this.#icon.addClass("fa fa-hourglass-half");                
                 this.#element.addClass("waiting");
+                this.#element.attr("title", "Connected MIDI to the client, waiting for the protocol to connect...");
                 break;
 
             case ClientConnectionButton.STATE_CONNECTED:
                 this.#icon.addClass("fa fa-check");                
                 this.#element.addClass("connected");
+                this.#element.attr("title", "Connected to client");
                 break;
         }
     }

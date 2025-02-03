@@ -138,7 +138,7 @@ class Controller {
 
         // Run local PySwitch with the config
         await this.pyswitch.run(await config.get());
-        this.ui.message("Loaded configuration: " + config.name, "S");
+        this.ui.message("Loaded configuration: " + (await config.name()), "S");
 
         this.ui.progress(1);
         this.currentConfig = config;
@@ -150,24 +150,23 @@ class Controller {
     async loadExample(path) {        
         const config = new WebConfiguration("examples/" + encodeURI(path));
             
-        try {
-            console.info("If any 404 errors come up now, this is normal and tells the application to browse the contents of the example path.");
+        // try {
+        //     console.info("If any 404 errors come up now, this is normal and tells the application to browse the contents of the example path.");
 
-            await this.ui.applyConfig(config);
+        await this.ui.applyConfig(config);
             
-            // Successful: Keep it
-            await this.loadConfiguration(config);
+        await this.loadConfiguration(config);
 
-        } catch(e) {
-            if (e.message.includes("Error fetching")) {
-                // No configuration found: Show browser
-                await this.ui.browseExample(path); 
+        // } catch(e) {
+        //     if (e.message.includes("Error fetching")) {
+        //         // No configuration found: Show browser
+        //         await this.ui.browseExample(path); 
                    
-            } else {
-                // Error
-                throw e;
-            }
-        }
+        //     } else {
+        //         // Error
+        //         throw e;
+        //     }
+        // }
     }
 
     /**

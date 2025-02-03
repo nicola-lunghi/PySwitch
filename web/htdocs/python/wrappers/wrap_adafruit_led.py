@@ -1,6 +1,6 @@
 from js import document
 from math import pow
-import colorsys
+# import colorsys
 
 class WrapNeoPixelDriver:
     class LedList(list):
@@ -21,14 +21,17 @@ class WrapNeoPixelDriver:
             
             # When black, make transparent
             if value == (0, 0, 0):
-                led.style.backgroundColor = f"rgba(0, 0, 0, 0.2)"
+                led.style.backgroundColor = f"rgba(0, 0, 0, 0)"
                 return
 
             # Apply gamma correction
             def trans(x, gamma = 0.28):
                 return pow((x/255), gamma) * 255
             
-            value = [trans(v) for v in value]
+            def clip(x):
+                return x if x < 256 else 255
+            
+            value = [clip(trans(v * 3)) for v in value]
 
             # # Change orientation towards white
             # hsv = colorsys.rgb_to_hsv(value[0] / 255, value[1] / 255, value[2] / 255)

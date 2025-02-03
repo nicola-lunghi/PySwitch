@@ -5,7 +5,9 @@
     bottom: 10vh;
     right: 50%;
     left: 50%;
-    width: 800px;
+    max-width: 800px;
+    width: 90vw;
+
     transform: translate(-50%, 0);
 
     z-index: 100;
@@ -18,12 +20,24 @@
     border-radius: 20px;
 }
 
+.list-browser .content {
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+}
+
 .list-browser .listing-link {
     cursor: pointer;
+    white-space: pre;
 }
 
 .list-browser .listing-link:hover {
     text-decoration: underline;
+}
+
+.list-browser td {
+    white-space: pre;
 }
 
 .list-browser td > *:first-child {
@@ -45,6 +59,9 @@
 .list-browser .path > *:first-child{
     cursor: pointer;
     width: 25px;
+    height: 25px;
+    text-align: center;
+    
     padding: 4px;
     padding-left: 5px;
     border-radius: 7px;
@@ -62,6 +79,8 @@
 
     cursor: pointer;
     width: 25px;
+    height: 25px;
+    text-align: center;
     padding: 4px;
     padding-left: 5px;
     border-radius: 7px;

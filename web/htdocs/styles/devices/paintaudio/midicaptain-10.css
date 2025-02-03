@@ -18,13 +18,9 @@
 /****************************************************************/
 
 .midicaptain-10 .pyswitch-switch {
-    position: absolute;
     width: 7.5%;
     height: 0;
     padding-bottom: 7.5%;
-
-    container-type: size;
-    mask: radial-gradient(2.5cqw, #0000 98%, #000);
 }
 
 /****************************************************************/
@@ -59,24 +55,29 @@
 .midicaptain-10 #pyswitch-switch-gp9 {
     bottom: 16.4%;
     left: 4.98%;
+    transform: rotate(180deg); 
 }
 
 .midicaptain-10 #pyswitch-switch-gp10 {
     bottom: 16.6%;
     left: 25.8%;
+    transform: rotate(180deg); 
 }
 
 .midicaptain-10 #pyswitch-switch-gp11 {
     bottom: 16.45%;
     left: 46.2%;
+    transform: rotate(180deg); 
 }
 
 .midicaptain-10 #pyswitch-switch-gp18 {
     bottom: 16.5%;
     right: 25.9%;
+    transform: rotate(180deg); 
 }
 
 .midicaptain-10 #pyswitch-switch-gp19 {
     bottom: 16.4%;
     left: 87.3%;
+    transform: rotate(180deg); 
 }

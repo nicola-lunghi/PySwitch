@@ -21,9 +21,6 @@
     width: 16.5%;
     height: 0;
     padding-bottom: 16.5%;
-
-    container-type: size;
-    mask: radial-gradient(3.9cqw, #0000 98%, #000);
 }
 
 .midicaptain-nano-4 #pyswitch-switch-gp1 {
@@ -39,10 +36,12 @@
 .midicaptain-nano-4 #pyswitch-switch-gp9 {
     bottom: 10.9%;
     left: 7%;
+    transform: rotate(180deg); 
 }
 
 .midicaptain-nano-4 #pyswitch-switch-gp10 {
     bottom: 10.9%;
     right: 7.1%;
+    transform: rotate(180deg); 
 }
 

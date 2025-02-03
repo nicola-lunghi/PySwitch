@@ -5,7 +5,7 @@ class ExampleBrowser extends BrowserBase {
     #toc = null;
 
     constructor(controller, element) {
-        super(element, false);
+        super(element);
         this.#controller = controller;
     }
 
@@ -13,47 +13,58 @@ class ExampleBrowser extends BrowserBase {
         const that = this;
 
         this.element.append(
-            // Headline
-            $('<div class="headline"/>')
-            .text('Choose an example to run:'),
+            $('<div class="content" />').append(
+                // Headline
+                $('<div class="headline"/>')
+                .text('Choose an example to run:'),
 
-            $('<div class="path"/>').append(
-                // Back button
-                $('<span class="fa fa-chevron-left"/>')
+                $('<div class="path"/>').append(
+                    // Back button
+                    $('<span class="fa fa-chevron-left"/>')
+                    .on('click', async function() {
+                        try {
+                            await that.browse(backPath);
+
+                        } catch (e) {
+                            that.#controller.handle(e);
+                        }
+                    }),
+
+                    // Path display
+                    $('<span />').text(pathText)
+                ),
+
+                // Listing
+                $('<table/>').append(
+                    $('<tbody/>').append(items)
+                ),
+
+                // Close button
+                $('<span class="fa fa-times close-button"/>')
                 .on('click', async function() {
-                    if (!backPath) return;
-
-                    that.#controller.routing.call(backPath);
-                }),
-
-                // Path display
-                $('<span />').text(pathText)
-            ),
-
-            // Listing
-            $('<table/>').append(
-                $('<tbody/>').append(items)
-            ),
-
-            // // Close button
-            // $('<span class="fa fa-times close-button"/>')
-            // .on('click', async function() {
-            //     that.#controller.routing.home();
-            // })
+                    that.hide();
+                })
+            )
         );
     }
 
     /**
-     * Show the browser to browse the contents of path inside the examples folder
+     * Show the browser
      */
-    async browse(path) {
+    async browse(path = "") {
         this.#controller.ui.block();
         this.element.empty();
 
         const listing = await this.#getListing(path);
-        
+
+        if (!listing.length) {
+            this.hide();
+            this.#controller.routing.call(this.#getExampleUrl(path));
+            return;
+        }
+
         if (listing.length == 1) {
-            this.#controller.routing.call(this.#getExampleUrl(listing[0].path));
+            await this.browse(listing[0].path);
             return;
         }
         
@@ -64,7 +75,7 @@ class ExampleBrowser extends BrowserBase {
 
         const backPath = this.#getBackPath(path);
 
-        this.#build(items, "/examples/" + path, backPath);
+        this.#build(items, "/examples" + path, backPath);
 
         this.show();
     }
@@ -75,8 +86,7 @@ class ExampleBrowser extends BrowserBase {
     #getBackPath(path) {
         const splt = path.split("/");
         splt.pop();
-        const j = splt.join("/");
-        return this.#getExampleUrl("/" + j);
+        return splt.join("/");
     }
 
     /**
@@ -99,8 +109,6 @@ class ExampleBrowser extends BrowserBase {
         for (const entry of this.#toc) {            
             crawl(entry, "/");
         }
-
-        //console.log(this.#toc)
     }
 
     /**
@@ -112,7 +120,8 @@ class ExampleBrowser extends BrowserBase {
         function find(list, tokens) {
             if (!tokens.length) return list.filter((entry) => entry.type == "dir");
 
-            const first = tokens.shift();
+            let first = tokens.shift();
+            while (!first && tokens) first = tokens.shift();
 
             for (const entry of list) {
                 if (entry.name != first || entry.type != "dir" || !entry.children) continue;
@@ -142,7 +151,8 @@ class ExampleBrowser extends BrowserBase {
                 .text(entry.name)
                 .on('click', async function() {
                     try {
-                        that.#controller.routing.call(that.#getExampleUrl(entry.path))
+                        await that.browse(entry.path);
+
                     } catch (e) {
                         that.#controller.handle(e);
                     }
@@ -169,5 +179,10 @@ class ExampleBrowser extends BrowserBase {
      */
     #getExampleUrl(path) {
         return encodeURI("example" + path);
+    }
+
+    hide() {
+        this.#controller.ui.progress(1);
+        super.hide();
     }
 }

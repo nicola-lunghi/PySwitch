@@ -8,8 +8,6 @@
     left: 0;
     width: 100%;
     height: 100%;
-
-    container-type: size;
 }
 
 /****************************************************************/
@@ -23,18 +21,34 @@
 
 .midicaptain .pyswitch-switch {
     position: absolute;
+}
 
+.midicaptain .pyswitch-switch .pyswitch-switch-visual {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+
+    /* mask: radial-gradient(ellipse 40% 40% at center, #0000 98%, #000); */
+    mask-image: url("midicaptain-switchmask.svg");
+    mask-size: 100%;    
+}
+
+.midicaptain .pyswitch-switch .pyswitch-switch-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     cursor: pointer;
     border-radius: 50%;
-    overflow: hidden;
+    transition: outline 0.1s ease-out;
 }
 
-.midicaptain .pyswitch-switch:hover {
-    outline: 4px solid rgba(255, 255, 255, 0.2);
+.midicaptain .pyswitch-switch .pyswitch-switch-overlay:hover {
+    outline: 4px solid rgba(255, 255, 255, 0.5);
 }
 
-.midicaptain .pyswitch-switch:active:hover {
-    outline: 4px solid rgba(255, 255, 255, 0.8);
+.midicaptain .pyswitch-switch .pyswitch-switch-overlay:active:hover {
+    outline: 4px solid rgba(255, 255, 255, 1);
 }
 
 /****************************************************************/

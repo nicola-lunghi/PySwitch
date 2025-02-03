@@ -1,0 +1,48 @@
+:root {
+    --elements-margin: 10px;
+}
+
+.application {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+
+    background-color: white;
+
+    z-index: 0;
+}
+
+/**********************************************/
+
+.application .headline {
+    margin-top: var(--elements-margin);
+    margin-left: var(--elements-margin);
+    width: fit-content;
+    display: inline-block;
+}
+
+.application .buttons {
+    display: inline-block;
+    margin-top: var(--elements-margin);
+    margin-left: var(--elements-margin);
+}
+
+.application .buttons > * {
+    margin-right: var(--elements-margin);
+}
+
+.application .buttons > *:last-child {
+    margin-right: 0;
+}
+
+.application .version {
+    float: right;
+    margin-top: var(--elements-margin);
+    margin-right: var(--elements-margin);
+    text-align: right;
+    font-size: 0.8em;
+
+    opacity: 0.5;
+}
