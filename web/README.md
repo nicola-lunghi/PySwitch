@@ -1,4 +1,4 @@
-# PySwitch Web User Interface
+# PySwitch Emulator
 
 This is a web based configuration/simulation tool for PySwitch. If you just want to use it, you can access the demo of this code here:
 
@@ -16,7 +16,7 @@ To shut down:
 
 docker compose down
 
-## Deploay to a Server
+## Deploy to a Server
 
 To deploy the application to a server, you have two choices:
 - Use docker (preferred) with the same volume mounts
