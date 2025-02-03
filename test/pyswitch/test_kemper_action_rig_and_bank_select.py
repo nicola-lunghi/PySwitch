@@ -566,6 +566,8 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         action.push()
         action.release()
 
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
             "mapping": mapping,
@@ -714,7 +716,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         appl.shared = { "preselectedBank": 4 }  
         action.push()
         action.release()
-        self.assertEqual(appl.shared, {})
+        self.assertNotIn("preselectedBank", appl.shared)
 
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
@@ -731,7 +733,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         appl.shared = { "preselectedBank": 4 }  
         action.push()
         action.release()
-        self.assertEqual(appl.shared, {})
+        self.assertNotIn("preselectedBank", appl.shared)
 
         self.assertEqual(len(appl.client.set_calls), 2)
         self.assertEqual(appl.client.set_calls[1], {
@@ -748,7 +750,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         appl.shared = { "preselectedBank": 4 }  
         action.push()
         action.release()
-        self.assertEqual(appl.shared, {})
+        self.assertNotIn("preselectedBank", appl.shared)
 
         self.assertEqual(len(appl.client.set_calls), 3)
         self.assertEqual(appl.client.set_calls[2], {
@@ -765,7 +767,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         appl.shared = { "preselectedBank": 4 }  
         action.push()
         action.release()
-        self.assertEqual(appl.shared, {})
+        self.assertNotIn("preselectedBank", appl.shared)
 
         self.assertEqual(len(appl.client.set_calls), 4)
         self.assertEqual(appl.client.set_calls[3], {

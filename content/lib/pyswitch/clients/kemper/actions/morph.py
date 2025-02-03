@@ -131,6 +131,8 @@ class KemperMorphCallback(BinaryParameterCallback):
         self.__last_value = None
         self.appl = None
 
+        self.ignore_next_value = False
+
     def init(self, appl, listener = None):
         super().init(appl, listener)
 
@@ -153,7 +155,10 @@ class KemperMorphCallback(BinaryParameterCallback):
         if self.__set_internal_state and value != None and value != self.__last_value:
             self.__last_value = value
 
-            # Morph value has changed from the outside
-            self.appl.shared["morphStateOverride"] = value
+            if not self.ignore_next_value:
+                # Morph value has changed from the outside
+                self.appl.shared["morphStateOverride"] = value
+            else:
+                self.ignore_next_value = False
 
         super().evaluate_value(action, value)

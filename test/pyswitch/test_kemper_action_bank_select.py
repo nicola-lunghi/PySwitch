@@ -541,7 +541,8 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         self.assertEqual(len(appl.client.set_calls), 1)
 
-        self.assertEqual(appl.shared, {})
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+        self.assertNotIn("preselectedBank", appl.shared)
 
 
 ###################################################################################################################

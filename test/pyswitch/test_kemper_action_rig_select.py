@@ -683,6 +683,8 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         action.push()
         action.release()
 
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
             "mapping": mapping,
@@ -741,6 +743,8 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         # Select on rig
         action.push()
         action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
 
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {

@@ -1,3 +1,9 @@
+# PySwitch v2.3.1
+- RIG_SELECT_AND_MORPH_STATE, RIG_UP, RIG_DOWN, BANK_SELECT, BANK_UP, BANK_DOWN:
+    - Reset the internal morph state globally (like RIG_SELECT did before already)
+
+
+
 # PySwitch v2.3.0
 - Added Expression Pedal support (for MIDI Captain 10-Switch versions). This includes renaming the switches.py file to inputs.py. See examples for the 10 switch MIDI Captain.
 - Added support for the rotary wheel on the MIDI Captain 10-Switch versions. Both the rotary encoder as well as the push button can be mapped. See examples.

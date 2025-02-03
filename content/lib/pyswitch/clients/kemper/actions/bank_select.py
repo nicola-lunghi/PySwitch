@@ -139,6 +139,8 @@ class KemperBankSelectCallback(BinaryParameterCallback):
             if "preselectedBank" in self.__appl.shared:
                 del self.__appl.shared["preselectedBank"]
 
+            self.__appl.shared["morphStateOverride"] = 0
+
         if self.__bank_off != None:
             if action.state:
                 if curr_bank != self.__bank - 1:

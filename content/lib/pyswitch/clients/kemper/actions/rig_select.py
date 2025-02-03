@@ -127,8 +127,8 @@ class KemperRigSelectCallback(BinaryParameterCallback):
             set_mapping = self.__mapping
             value = self._value_enable
 
-            if self.__rig_btn_morph and self.__rig_off == None and self.__bank_off == None:
-                self.__appl.shared["morphStateOverride"] = 0
+            # if self.__rig_btn_morph and self.__rig_off == None and self.__bank_off == None:
+            self.__appl.shared["morphStateOverride"] = 0
         else:
             if action.state:
                 set_mapping = self.__mapping
@@ -153,6 +153,10 @@ class KemperRigSelectCallback(BinaryParameterCallback):
                         self.__appl.shared["morphStateOverride"] = 0 if (self.__appl.shared["morphStateOverride"] > 0) else 16383
                     else:
                         self.__appl.shared["morphStateOverride"] = 0
+                else:
+                    self.__appl.shared["morphStateOverride"] = 0
+            else:
+                self.__appl.shared["morphStateOverride"] = 0
 
         self.__appl.client.set(set_mapping, value)
 

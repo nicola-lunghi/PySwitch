@@ -101,10 +101,11 @@ class KemperBankChangeCallback(BinaryParameterCallback):
         self.__offset = offset
 
         self.__text = text
-        self.__text_callback = text_callback
+        self.__text_callback = text_callback        
 
     def init(self, appl, listener = None):
         super().init(appl, listener)
+        self.__appl = appl
 
         if self.__dim_factor_p == "off":
             self.__dim_factor = get_option(appl.config, "displayDimFactorOff", 0.2)
@@ -119,6 +120,10 @@ class KemperBankChangeCallback(BinaryParameterCallback):
             self.__led_brightness = get_option(appl.config, "ledBrightnessOn", 0.3)
         else:
             self.__led_brightness = self.__led_brightness_p
+
+    def state_changed_by_user(self, action):
+        super().state_changed_by_user(action)
+        self.__appl.shared["morphStateOverride"] = 0
 
     def update_displays(self, action):
         if self.__mapping.value == None:

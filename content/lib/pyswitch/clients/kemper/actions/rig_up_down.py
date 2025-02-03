@@ -132,6 +132,8 @@ class _KemperRigChangeCallback(BinaryParameterCallback):
             set_mapping = MAPPING_BANK_AND_RIG_SELECT(next_rig)
             value = [next_bank, 1, 0]
         
+        self.__appl.shared["morphStateOverride"] = 0
+
         self.__appl.client.set(set_mapping, value)
 
     def update_displays(self, action):

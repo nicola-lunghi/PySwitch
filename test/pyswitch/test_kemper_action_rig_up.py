@@ -423,6 +423,8 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
         action.push()
         action.release()
 
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
             "mapping": MAPPING_RIG_SELECT(1),

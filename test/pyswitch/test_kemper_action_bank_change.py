@@ -31,6 +31,7 @@ class MockController2(Updater):
        Updater.__init__(self)
        self.client = MockClient()
        self.config = {}
+       self.shared = {}
 
 
 class MockFootswitch:
@@ -462,3 +463,24 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         with self.assertRaises(Exception):            
             action.update_displays()
 
+
+#########################################################################################################
+
+    def test_reset_morph_state(self):
+        self._test_reset_morph_state(False)
+        self._test_reset_morph_state(True)
+
+    def _test_reset_morph_state(self, up):
+        if up:
+            action = BANK_UP()
+        else:
+            action = BANK_DOWN()
+
+        appl = MockController2()
+        switch = MockFootswitch(actions = [action])
+        action.init(appl, switch)
+
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)

@@ -91,9 +91,22 @@ class KemperMorphDisplayEnableCallback(Callback):
 
         self.__mapping = MAPPING_RIG_SELECT(rig - 1)
         self.register_mapping(self.__mapping)
+        self.__last_enabled = None
 
     def enabled(self, action):
         if self.__morph_only_when_enabled:
-            return self.__action_rig_select.state and self.__action_rig_select.enabled
+            ret = self.__action_rig_select.state and self.__action_rig_select.enabled
         else:
-            return self.__action_rig_select.enabled
+            ret = self.__action_rig_select.enabled
+
+        if self.__last_enabled == None:
+            self.__last_enabled = ret
+
+        elif self.__last_enabled != ret:
+            self.__last_enabled = ret
+            
+            # Tell the callback to not take the first morph value from the Kemper as override.
+            action.callback.ignore_next_value = True
+
+        return ret
+
