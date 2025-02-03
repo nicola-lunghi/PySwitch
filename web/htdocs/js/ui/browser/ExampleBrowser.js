@@ -117,7 +117,7 @@ class ExampleBrowser extends BrowserBase {
             return ret;
         }
 
-        this.#toc = crawl(toc, "/");
+        this.#toc = crawl(toc, "");
         
         // Add "Default PySwitch" option at root level
         this.#toc.children.unshift(

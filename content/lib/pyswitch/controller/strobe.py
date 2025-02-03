@@ -52,11 +52,10 @@ class StrobeController:
 
         # Numer of switches: If this equals the amount of switches, you get one dot
         # running in the circle. If this equals half the available switches, it will show
-        # two dots and so on. We use one dot for everything with 4 switches or less, and
-        # two dots for all others.
+        # two dots and so on. 
         self.__num_switches = len(self.__switches)
-        if self.__num_switches > 4:
-            self.__num_switches = self.__num_switches / 2
+        # if self.__num_switches > 4:
+        #     self.__num_switches = self.__num_switches / 2
 
     # Listen to client value returns
     def parameter_changed(self, mapping):

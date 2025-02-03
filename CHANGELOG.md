@@ -1,7 +1,11 @@
 # PySwitch v2.3.1
-- RIG_SELECT_AND_MORPH_STATE, RIG_UP, RIG_DOWN, BANK_SELECT, BANK_UP, BANK_DOWN:
-    - Reset the internal morph state globally (like RIG_SELECT did before already)
-
+- Bug Fixes:
+    - **RIG_SELECT_AND_MORPH_STATE, RIG_UP, RIG_DOWN, BANK_SELECT, BANK_UP, BANK_DOWN**:
+        - Reset the internal morph state globally (like RIG_SELECT did before already)
+    - **BANK_SELECT** with Preselect Option enabled:
+        - Do not enter preselect mode again when the bank is already selected
+    - **Tuner**:
+        - Strobe: Only show one spot on all devices, and disable by default
 
 
 # PySwitch v2.3.0

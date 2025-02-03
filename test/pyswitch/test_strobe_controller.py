@@ -56,7 +56,7 @@ class TestStrobeController(unittest.TestCase):
         self._test_strobe_directions(num_switches, interval = 10)
         self._test_strobe_directions(num_switches, interval = 60)
         self._test_strobe_directions(num_switches, interval = 330)
-        self._test_strobe_directions(num_switches, interval = 2, speed = 100)   # This runs the algorithm into the max. speed threshold
+        self._test_strobe_directions(num_switches, interval = 1, speed = 100)   # This runs the algorithm into the max. speed threshold
 
 
     def _test_strobe_directions(self, num_switches, interval, speed = 2000, num_periods = 5):
@@ -147,7 +147,7 @@ class TestStrobeController(unittest.TestCase):
         )
         strobe.init(appl)
 
-        self.assertEqual(strobe._StrobeController__num_switches, (num_switches / 2) if num_switches > 4 else num_switches)
+        self.assertEqual(strobe._StrobeController__num_switches, num_switches) #(num_switches / 2) if num_switches > 4 else num_switches)
         self.assertEqual(strobe._StrobeController__enabled, False)
         self.assertEqual(strobe._StrobeController__period.interval, int(1000 / 12 * num_switches))
 
@@ -214,7 +214,7 @@ class TestStrobeController(unittest.TestCase):
             self.assertEqual(switch.color, (100, 0, 0))
 
         # Check maxima (must be at initial position(s) here)
-        num_maxima = 2 if num_switches > 4 else 1
+        num_maxima = 1 #2 if num_switches > 4 else 1
         maxima = get_maxima(num_maxima)
 
         for m in range(len(maxima)):
@@ -296,7 +296,6 @@ class TestStrobeController(unittest.TestCase):
             self.assertIn(exp_maxima, check_maxima_list)
 
         self.assertGreater(len(check_maxima_list), num_periods)
-        #print(check_maxima_list)
 
 
     ########################################################################################

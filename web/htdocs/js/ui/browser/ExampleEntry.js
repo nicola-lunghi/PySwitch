@@ -27,6 +27,17 @@ class ExampleEntry {
                 $('<span class="fa"/>')
                 .addClass(this.isExample() ? 'fa-play' : 'fa-folder'),
 
+                $('<span class="fa" />')
+                .addClass(this.isExample() ? 'fa-info' : '')
+                .on('click', async function() {
+                    try {
+                        window.open('examples' + that.path + '/README.md', '_blank');
+
+                    } catch (e) {
+                        that.#browser.controller.handle(e);
+                    }
+                }),
+
                 // Listing entry link
                 $('<span class="listing-link" />')
                 .text(this.name)

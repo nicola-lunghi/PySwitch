@@ -102,7 +102,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         if self.__mapping.value == None:
             return
         
-        curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)            
+        curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)         
 
         if self.__preselect:
             if "preselectedBank" in self.__appl.shared:
@@ -121,7 +121,8 @@ class KemperBankSelectCallback(BinaryParameterCallback):
                 else:
                     self.__appl.shared["preselectedBank"] = self.__bank_off - 1
             else:
-                self.__appl.shared["preselectedBank"] = self.__bank - 1
+                if curr_bank != self.__bank - 1:
+                    self.__appl.shared["preselectedBank"] = self.__bank - 1
 
             for input in self.__appl.inputs:
                 if hasattr(input, "pixels"):

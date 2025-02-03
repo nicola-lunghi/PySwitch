@@ -30,6 +30,7 @@
 .list-browser .listing-link {
     cursor: pointer;
     white-space: pre;
+    margin-right: 15px;
 }
 
 .list-browser .listing-link:hover {
@@ -40,10 +41,15 @@
     white-space: pre;
 }
 
-.list-browser td > *:first-child {
+.list-browser td > *:first-child,
+.list-browser td > *:nth-child(2) {
     margin-right: 15px;
     width: 15px;
     display: inline-block;
+}
+
+.list-browser td > *:nth-child(2) {
+    cursor: pointer;
 }
 
 .list-browser .headline {

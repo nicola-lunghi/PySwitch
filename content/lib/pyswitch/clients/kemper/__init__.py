@@ -116,7 +116,7 @@ class TunerDisplayCallback(Callback):
                  calibration_high = 8192 + 350,            # Threshold value above which the note is out of tune
                  calibration_low = 8192 - 350,             # Threshold value above which the note is out of tune
                  note_names = None,                        # If set, this must be a tuple or list of 12 note name strings starting at C.
-                 strobe = True,                            # If set, all available switch LEDs will act as a strobe tuner.
+                 strobe = False,                           # If set, all available switch LEDs will act as a strobe tuner.
                  strobe_color = Colors.WHITE,              # LED color for strobe tuner
                  strobe_dim = 0.1,                         # Dim factor for strobe tuner in range [0..1]
                  strobe_speed = 1000,                      # Higher values make the strobe tuner go slower. 1000 is the recommended speed to start from.

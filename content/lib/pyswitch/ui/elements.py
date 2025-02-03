@@ -7,8 +7,7 @@ from adafruit_display_shapes.rect import Rect
 from .ui import DisplayBounds, DisplayElement
 
 from ..controller.Client import BidirectionalClient
-from ..controller.Controller import Controller
-from ..misc import Updateable, Colors, get_option, PeriodCounter #, do_print
+from ..misc import Updateable, Colors, get_option #, do_print
 
 
 # Data class for layouts
