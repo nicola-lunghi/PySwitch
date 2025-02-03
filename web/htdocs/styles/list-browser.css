@@ -95,3 +95,10 @@
 .list-browser .close-button:hover {
     background-color: lightgray;
 }
+
+/*******************************************/
+
+.list-browser td > .fa-play {
+    color: lightgreen;
+}
+

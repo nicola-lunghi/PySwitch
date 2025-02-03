@@ -28,7 +28,7 @@ class ExampleEntry {
                 .addClass(this.isExample() ? 'fa-play' : 'fa-folder'),
 
                 $('<span class="fa" />')
-                .addClass(this.isExample() ? 'fa-info' : '')
+                .addClass((this.isExample() && this.path != "pyswitch-default") ? 'fa-info' : '')
                 .on('click', async function() {
                     try {
                         window.open('examples' + that.path + '/README.md', '_blank');
