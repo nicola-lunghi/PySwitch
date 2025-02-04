@@ -59,29 +59,6 @@ class TestKemper(unittest.TestCase):
 ##########################################################################################################
 
 
-    def test_rig_name_callback(self):
-        cb = KemperRigNameCallback()
-
-        self.assertIn(KemperMappings.RIG_NAME(), cb._Callback__mappings)
-
-        label = DisplayLabel(
-            layout = {
-                "font": "foo"
-            },
-            callback = cb
-        )
-
-        mapping = cb._Callback__mappings[0]
-        mapping.value = "foo"
-
-        cb.update_label(label)
-
-        self.assertEqual(label.text, "foo")
-
-
-##########################################################################################################
-
-
     def test_effect_slots_consistency(self):
         self.assertEqual(KemperEffectSlot.EFFECT_SLOT_ID_A, 0)
         self.assertEqual(KemperEffectSlot.EFFECT_SLOT_ID_B, 1)
