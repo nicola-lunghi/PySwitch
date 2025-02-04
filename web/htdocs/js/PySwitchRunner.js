@@ -230,6 +230,18 @@ class PySwitchRunner {
     }
 
     /**
+     * Get PySwitch version
+     */
+    async getVersion() {
+        console.log("Get PySwitch version");
+        
+        return this.pyodide.runPython(`
+            from pyswitch.misc import PYSWITCH_VERSION
+            PYSWITCH_VERSION
+        `);
+    }
+
+    /**
      * Load a file into the virtual Emscripten file system. fileName is the path and name of the file inside the virtual FS,
      * rscPath will be added as prefix if set for getting the files on the web server.
      */

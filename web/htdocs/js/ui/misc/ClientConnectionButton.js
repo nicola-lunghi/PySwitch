@@ -27,27 +27,27 @@ class ClientConnectionButton {
         )
         .on("click", async function() {
             try {
-                const state = that.#controller.getState("client");
-                const currentDeviceText = (that.#controller.client.current && state == "auto") ? (' (' + that.#controller.client.current + ')') : '';
+                // const state = that.#controller.getState("client");                
+                // const currentDeviceText = (that.#controller.client.current && state == "auto") ? (' (' + that.#controller.client.current + ')') : '';
 
-                await that.#controller.ui.portBrowser.browse(
-                    "Select client device to control:", 
-                    async function(portName) {
-                        that.#controller.setState("client", portName);
+                await that.#controller.ui.clientBrowser.browse(
+                    // "Select client device to control:", 
+                    // async function(portName) {
+                    //     that.#controller.setState("client", portName);
 
-                        await that.#controller.client.init(that.#controller.currentConfig);
-                    },
-                    state,
-                    [
-                        {
-                            value: "Not connected",
-                            text: "Not connected",
-                        },
-                        {
-                            value: "auto",
-                            text: "Auto-detect client device" + currentDeviceText,
-                        }                        
-                    ]
+                    //     await that.#controller.client.init(that.#controller.currentConfig);
+                    // },
+                    // state,
+                    // [
+                    //     {
+                    //         value: "Not connected",
+                    //         text: "Not connected",
+                    //     },
+                    //     {
+                    //         value: "auto",
+                    //         text: "Auto-detect client device" + currentDeviceText,
+                    //     }                        
+                    // ]
                 );
 
             } catch (e) {

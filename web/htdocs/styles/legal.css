@@ -1,0 +1,10 @@
+.about {
+    position: absolute;
+    left: 50%;
+    width: 90vw;
+    max-width: 900px;
+
+    transform: translate(-50%, 0);
+
+    padding-bottom: 100px;
+}

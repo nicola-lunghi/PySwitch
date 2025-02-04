@@ -37,12 +37,26 @@
     margin-right: 0;
 }
 
-.application .version {
+/**********************************************/
+
+.application .about {
     float: right;
     margin-top: var(--elements-margin);
     margin-right: var(--elements-margin);
-    text-align: right;
-    font-size: 0.8em;
 
+    text-align: right;
+}
+
+.application .about .version {
+    font-size: 0.8em;
     opacity: 0.5;
+    cursor: pointer;
+}
+
+.application .about .version:hover {
+    text-decoration: underline;
+}
+
+.application .about .donate {
+    font-size: 0.8em;
 }

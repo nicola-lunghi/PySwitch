@@ -1,6 +1,6 @@
 class Controller {
 
-    VERSION = "2.4.0.1";        // For productive releases, the first three numbers should always match the PySwitch version. The last is the UI version.
+    VERSION = "?.0";            // For productive releases, the first three numbers should always match the PySwitch version. The last is the UI version.
 
     ui = null;                  // User Interface implementation
     routing = null;             // sammy.js router
@@ -70,7 +70,6 @@ class Controller {
      */
     handle(e) {
         this.ui.message(e, "E");
-        //this.routing.home();
     }
 
     /**
@@ -117,6 +116,10 @@ class Controller {
 
         // Show name of config, CSS classes etc.
         await this.ui.applyConfig(config);
+
+        // Get PySwitch version
+        this.VERSION = this.VERSION.replace('?', await this.pyswitch.getVersion());
+        this.ui.updateVersion()
 
         this.ui.progress(0.6, "Initialize client device");
         

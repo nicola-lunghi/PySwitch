@@ -6,10 +6,11 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     
-    <!-- Lib -->
+    <!-- Lib CSS -->
     <link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="lib/fa/css/all.min.css">    
 
+    <!-- Lib JS -->
     <script type="text/javascript" src="lib/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" src="lib/sammy-latest.min.js"></script>    
 
@@ -17,7 +18,7 @@
 
     <script type="text/javascript" src="lib/jsmidibridge/JsMidiBridge.js"></script>
 
-    <!-- Application -->
+    <!-- Application CSS -->
     <link rel="stylesheet" type="text/css" href="styles/general.css">
     <link rel="stylesheet" type="text/css" href="styles/application.css">
     <link rel="stylesheet" type="text/css" href="styles/progress.css">
@@ -26,45 +27,59 @@
     <link rel="stylesheet" type="text/css" href="styles/client-select.css">
     <link rel="stylesheet" type="text/css" href="styles/pyswitch.css">
     
+    <!-- Device specific CSS -->
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain.css">
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-nano-4.css">
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-mini-6.css">
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-10.css">
     
+    <!-- Main classes -->
     <script type="text/javascript" src="js/Controller.js"></script>
     <script type="text/javascript" src="js/PySwitchRunner.js"></script>
     <script type="text/javascript" src="js/PySwitchDevice.js"></script>
     <script type="text/javascript" src="js/PySwitchClient.js"></script>
     <script type="text/javascript" src="js/Tools.js"></script>
 
+    <!-- Routing -->
     <script type="text/javascript" src="js/routing/Routing.js"></script>
     <script type="text/javascript" src="js/routing/CallbackQueue.js"></script>
     
+    <!-- User Interface -->
     <script type="text/javascript" src="js/ui/PySwitchUi.js"></script>
-    <script type="text/javascript" src="js/ui/Progress.js"></script>
-    <script type="text/javascript" src="js/ui/Notifications.js"></script>
-    <script type="text/javascript" src="js/ui/ClientConnectionButton.js"></script>
 
-    <script type="text/javascript" src="js/ui/browser/BrowserBase.js"></script>
-    <script type="text/javascript" src="js/ui/browser/ExampleBrowser.js"></script>
-    <script type="text/javascript" src="js/ui/browser/ExampleEntry.js"></script>
-    <script type="text/javascript" src="js/ui/browser/PortBrowser.js"></script>
+    <script type="text/javascript" src="js/ui/misc/Progress.js"></script>
+    <script type="text/javascript" src="js/ui/misc/Notifications.js"></script>
+    <script type="text/javascript" src="js/ui/misc/ClientConnectionButton.js"></script>
 
+    <!-- Popups -->
+    <script type="text/javascript" src="js/ui/popups/Popup.js"></script>
+    <script type="text/javascript" src="js/ui/popups/BrowserPopup.js"></script>
+    <script type="text/javascript" src="js/ui/popups/BrowserEntry.js"></script>
+
+    <script type="text/javascript" src="js/ui/popups/providers/BrowserProvider.js"></script>
+    <script type="text/javascript" src="js/ui/popups/providers/ExamplesProvider.js"></script>
+    <script type="text/javascript" src="js/ui/popups/providers/PortsProvider.js"></script>
+    
+    <!-- Data model -->
     <script type="text/javascript" src="js/model/configurations/Configuration.js"></script>
     <script type="text/javascript" src="js/model/configurations/ControllerConfiguration.js"></script>
     <script type="text/javascript" src="js/model/configurations/WebConfiguration.js"></script>
     <script type="text/javascript" src="js/model/configurations/DummyConfiguration.js"></script>
 
+    <!-- Parser(s) -->
     <script type="text/javascript" src="js/model/parsers/Parser.js"></script>
     <script type="text/javascript" src="js/model/parsers/KemperParser.js"></script>
 
+    <!-- Detectors (used to scan for connected controllers and clients) -->
     <script type="text/javascript" src="js/model/detectors/ClientDetector.js"></script>
     <script type="text/javascript" src="js/model/detectors/KemperDetector.js"></script>
 
+    <!-- MIDI related classes -->
     <script type="text/javascript" src="js/midi/MidiHandler.js"></script>
     <script type="text/javascript" src="js/midi/MidiListener.js"></script>
     <script type="text/javascript" src="js/midi/client/MidiBridgeHandler.js"></script>
     <script type="text/javascript" src="js/midi/device/WebMidiWrapper.js"></script>    
+
 
     <script type="text/javascript">
         window.onload = function() {

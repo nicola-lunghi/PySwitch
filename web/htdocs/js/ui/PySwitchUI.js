@@ -9,10 +9,11 @@ class PySwitchUI {
     #contentHeadline = null;
     #listElement = null;
     #deviceElement = null;
+    #versionElement = null;
 
     notifications = null;
-    examples = null;
-    portBrowser = null;
+    loadBrowser = null;
+    clientBrowser = null;
     clientButton = null;
 
     /**
@@ -35,6 +36,13 @@ class PySwitchUI {
     }
 
     /**
+     * Update the version
+     */
+    updateVersion() {
+        this.#versionElement.html("PySwitch Emulator<br>v" + this.#controller.VERSION);
+    }
+
+    /**
      * Build the DOM tree
      */
     build() {
@@ -47,10 +55,28 @@ class PySwitchUI {
         let clientButtonElement = null;
         
         // Settings panel
+        const that = this;
         containerElement.append(         
             $('<div class="application"/>').append(
-                // Version display
-                $('<div class="version"/>').html("PySwitch Emulator <br>v" + this.#controller.VERSION),
+                
+                $('<div class="about" />').append(
+                    // Version
+                    this.#versionElement = $('<div class="version"/>').html("PySwitch Emulator")
+                    .on('click', async function() {
+                        try {
+                            new Popup(that.#controller, { container: that.#listElement })
+                            .show(await Tools.fetch('about.html'));
+
+                        } catch (e) {
+                            that.#controller.handle(e);
+                        }
+                    }),
+
+                    // Donate
+                    $('<a class="donate" href="https://www.paypal.com/webapps/mpp/page-not-found?cmd=_s-xclick&hosted_button_id=6WHW7WRXSGQXY" target="_blank" />')
+                    .text('Donate')
+                ),
+                
 
                 // Client connection button (class is set in the ClientConnectionButton)
                 clientButtonElement = $('<div data-toggle="tooltip"/>'),
@@ -61,7 +87,17 @@ class PySwitchUI {
 
                 // Buttons
                 $('<div class="buttons" />').append(
-                    this.#buildButtons()
+                    // Load
+                    $('<div class="btn btn-primary"/>')
+                    .text("Load")
+                    .on("click", async function() {
+                        try {
+                            await that.loadBrowser.browse();
+
+                        } catch (e) {
+                            that.#controller.handle(e);
+                        }
+                    })  
                 ),
 
                 // Header, showing the current config name
@@ -84,7 +120,7 @@ class PySwitchUI {
 
             /////////////////////////////////////////////////////////////////////////////////////
 
-            // List browser 
+            // List browsers and popups (shared)
             this.#listElement = $('<div class="list-browser"/>')
             .hide(),
 
@@ -92,49 +128,85 @@ class PySwitchUI {
             messageElement = $('<div class="messages"/>')
         );
 
-        // Create handlers
-        this.notifications = new Notifications(messageElement)
-        this.examples = new ExampleBrowser(this.#controller, this.#listElement);        
-        this.portBrowser = new PortBrowser(this.#controller, this.#listElement);  
+        // Browsers
+        this.#initLoadBrowser();
+        this.#initClientBrowser();
+
+        // Client state button
         this.clientButton = new ClientConnectionButton(this.#controller, clientButtonElement);      
+
+        // Message alerts etc.
+        this.notifications = new Notifications(messageElement)
     }
 
-    /**
-     * Returns an array of button elements.
-     */
-    #buildButtons() {
+    #initLoadBrowser() {
         const that = this;
 
-        return [
-            // Controllers
-            $('<div class="btn btn-primary"/>')
-            .text("Controllers")
-            .on("click", async function() {
-                try {
-                    await that.portBrowser.browse(
-                        "Select MIDI port to load configuration from:", 
-                        async function(portName) {
-                            that.#controller.routing.call(that.#controller.getControllerUrl(portName));
+        // A browser for loading configurations, triggered by the load button
+        this.loadBrowser = new BrowserPopup(this.#controller, {
+            container: this.#listElement,
+            headline: "Please select a configuration to load",
+            providers: [
+                new ExamplesProvider(),
+                new PortsProvider({
+                    rootText: "Connected Controllers",
+                    onSelect: async function(entry) {
+                        that.#controller.routing.call(that.#controller.getControllerUrl(entry.value));
+                    }
+                })
+            ],
+            postProcess: async function(entry, generatedElement) {
+                // Highlight currently selected config
+                const currentName = that.#controller.currentConfig ? (await that.#controller.currentConfig.name()) : null;
+                
+                if (that.#controller.currentConfig && (entry.value == currentName)) {
+                    generatedElement.addClass('highlighted');
+                }    
+            }
+        }); 
+    }
+
+    #initClientBrowser() {
+        const that = this;
+
+        // A browser to select client connections (to Kemper etc.), triggered by the client select button
+        this.clientBrowser = new BrowserPopup(this.#controller, {
+            container: this.#listElement,
+            headline: "Please select a client device to control",
+            providers: [
+                new PortsProvider({
+                    onSelect: async function(entry) {
+                        that.#controller.setState("client", entry.value);
+                        await that.#controller.client.init(that.#controller.currentConfig);
+                    },
+                    additionalEntries: [                        
+                        {
+                            value: "auto",
+                            text: function(/*entry*/) {
+                                const client = that.#controller.getState("client");
+                                const currentDeviceText = (client == "auto") ? (" (" + (that.#controller.client.current ? that.#controller.client.current : "None found") + ")") : "";
+
+                                return "Auto-detect client device" + currentDeviceText;
+                            },
+                            sortString: "___01"
+                        },
+                        {
+                            value: "Not connected",
+                            text: "Not connected",
+                            sortString: "___02"
                         }
-                    );
+                    ]
+                })
+            ],
+            postProcess: function(entry, generatedElement) {
+                // Highlight currently selected client
+                const client = that.#controller.getState("client");
 
-                } catch (e) {
-                    that.#controller.handle(e);
+                if (client == entry.value) {
+                    generatedElement.addClass('highlighted');
                 }
-            }),
-
-            // Examples
-            $('<div class="btn btn-primary"/>')
-            .text("Examples")
-            .on("click", async function() {
-                try {
-                    await that.examples.browse();
-
-                } catch (e) {
-                    that.#controller.handle(e);
-                }
-            })            
-        ]
+            }
+        });
     }
 
     /**
