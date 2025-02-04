@@ -91,7 +91,8 @@ class SwitchController:
                     self.__hold_active = False
                     
                 if self.override_action:
-                    self.override_action.release()
+                    if self.override_action.release():
+                        release()
                 else:
                     release()
 
@@ -107,8 +108,8 @@ class SwitchController:
         self.__pushed_state = True
 
         if self.override_action:
-            self.override_action.push()
-            return
+            if not self.override_action.push():
+                return
 
         # Process all push actions assigned to the switch     
         if self.__actions_hold:        

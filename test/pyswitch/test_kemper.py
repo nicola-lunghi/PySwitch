@@ -19,8 +19,7 @@ with patch.dict(sys.modules, {
 }):
     from lib.pyswitch.clients.kemper import *
     
-    from lib.pyswitch.ui.ui import DisplayElement
-    from lib.pyswitch.ui.elements import DisplayLabel, TunerDisplay
+    from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.misc import Updater
 
     from .mocks_appl import MockClient
@@ -38,38 +37,13 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.mappings.pedals import *
 
 
-
-class MockStrobe:
-    class StrobeController:
-        def __init__(self,
-                     mapping_state, 
-                     mapping_deviance, 
-                     dim_factor = 0, 
-                     speed = 0, 
-                     color = None, 
-                     max_fps = 0, 
-                     reverse = None 
-            ):
-            self.init_calls = []
-
-            self.mapping_state = mapping_state
-            self.mapping_deviance = mapping_deviance
-            self.dim_factor = dim_factor
-            self.speed = speed
-            self.color = color 
-            self.max_fps = max_fps
-            self.reverse = reverse
-
-        def init(self, appl):
-            self.init_calls.append(appl)
-
-
 class MockController2(Updater):
-    def __init__(self):
+    def __init__(self, inputs = []):
         Updater.__init__(self)
 
         self.client = MockClient()
-        self.inputs = []
+        self.inputs = inputs
+        self.shared = {}
       
 
 class TestKemper(unittest.TestCase):
@@ -105,106 +79,6 @@ class TestKemper(unittest.TestCase):
         self.assertEqual(label.text, "foo")
 
 
-##########################################################################################################
-
-
-    def test_tuner_display_callback(self):
-        element = DisplayElement()
-
-        with patch.dict(sys.modules, {
-            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
-            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
-            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
-        }):
-            cb = TunerDisplayCallback(
-                splash_default = element,
-                strobe = False
-            )
-
-        appl = MockController2()
-        cb.init(appl)
-
-        self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._Callback__mappings)
-        
-        splash_tuner = cb._TunerDisplayCallback__splash_tuner
-
-        self.assertIsInstance(splash_tuner, TunerDisplay)
-
-        mapping = cb._Callback__mappings[0]
-
-        mapping.value = 0
-        self.assertEqual(cb.get_root(), element)
-
-        mapping.value = 1
-        self.assertEqual(cb.get_root(), splash_tuner)
-
-
-    def test_tuner_display_callback_with_custom_element(self):
-        element = DisplayElement()
-        element_2 = DisplayElement()
-
-        with patch.dict(sys.modules, {
-            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
-            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
-            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
-        }):
-            cb = TunerDisplayCallback(
-                splash_default = element,
-                splash_tuner = element_2
-            )
-
-        appl = MockController2()
-        cb.init(appl)
-
-        self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._Callback__mappings)
-        
-        mapping = cb._Callback__mappings[0]
-
-        mapping.value = 0
-        self.assertEqual(cb.get_root(), element)
-
-        mapping.value = 1
-        self.assertEqual(cb.get_root(), element_2)
-
-
-    def test_tuner_display_callback_with_strobe(self):
-        element = DisplayElement()
-
-        with patch.dict(sys.modules, {
-            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
-            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
-            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
-            "lib.pyswitch.controller.strobe": MockStrobe(),
-        }):
-            cb = TunerDisplayCallback(
-                splash_default = element,
-                strobe = True,
-                strobe_color = (3, 4, 5),
-                strobe_dim = 0.75,
-                strobe_speed = 1111,
-                strobe_max_fps = 121,
-                strobe_reverse = False
-            )
-
-        appl = MockController2()
-        cb.init(appl)
-
-        strobe = cb._TunerDisplayCallback__strobe_controller
-        self.assertIsInstance(strobe, MockStrobe.StrobeController)
-        self.assertEqual(strobe.init_calls, [appl])
-        
-        self.assertEqual(strobe.mapping_state, KemperMappings.TUNER_MODE_STATE())
-        self.assertEqual(strobe.mapping_deviance, KemperMappings.TUNER_DEVIANCE())
-        self.assertEqual(strobe.dim_factor, 0.75)
-        self.assertEqual(strobe.speed, 1111)
-        self.assertEqual(strobe.color, (3, 4, 5))
-        self.assertEqual(strobe.max_fps, 121)
-        self.assertEqual(strobe.reverse, False)
-
-        
 ##########################################################################################################
 
 

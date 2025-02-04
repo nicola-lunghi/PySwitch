@@ -377,3 +377,49 @@ class TestControllerSwitch(unittest.TestCase):
         self.assertEqual(action_1.num_release_calls, 0)
         self.assertEqual(action_2.num_release_calls, 0)
         self.assertEqual(action_o.num_release_calls, 1)
+
+    ##############################################################################
+
+    def test_override_action_process_normal(self):
+        appl = MockController2(num_leds=5)
+        switch_1 = MockSwitch()
+        
+        action_1 = MockAction()
+        action_2 = MockAction()
+        action_o = MockAction()
+
+        action_o.output_push = True
+        action_o.output_release = True
+
+        fs = SwitchController(appl, {
+            "assignment": {
+                "model": switch_1,
+                "pixels": (2, 4)                
+            },
+            "actions": [
+                action_1,
+                action_2,
+            ]
+        })
+
+        fs.override_action = action_o
+
+        switch_1.shall_be_pushed = True
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_2.num_push_calls, 1)
+        self.assertEqual(action_o.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 0)
+        self.assertEqual(action_2.num_release_calls, 0)
+        self.assertEqual(action_o.num_release_calls, 0)
+
+        switch_1.shall_be_pushed = False
+        fs.process()
+
+        self.assertEqual(action_1.num_push_calls, 1)
+        self.assertEqual(action_2.num_push_calls, 1)
+        self.assertEqual(action_o.num_push_calls, 1)
+        self.assertEqual(action_1.num_release_calls, 1)
+        self.assertEqual(action_2.num_release_calls, 1)
+        self.assertEqual(action_o.num_release_calls, 1)

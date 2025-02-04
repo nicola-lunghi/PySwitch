@@ -5,7 +5,9 @@
     - **BANK_SELECT** with Preselect Option enabled:
         - Do not enter preselect mode again when the bank is already selected
     - **Tuner**:
+        - All buttons disable the tuner now, also if no TUNER_MODE action is contained in the preset
         - Strobe: Only show one spot on all devices, and disable by default
+- Added an option "process_overridden_actions" to TunerDisplayCallback (disabled by default). If this is enabled, the buttons keep their functionality when in tuner mode. But still, all buttons trigger switching off the tuner.
 
 
 # PySwitch v2.3.0

@@ -6,82 +6,6 @@ from lib.pyswitch.misc import Updateable
 from .mocks_lib import *
 
 
-# # Used to build szenarios
-# class SceneStep:
-#     def __init__(self, num_pass_ticks = 0, prepare = None, evaluate = None, next = None):
-#         self.num_pass_ticks = num_pass_ticks
-#         self.prepare = prepare
-#         self.evaluate = evaluate
-#         self.next = next
-
-
-##################################################################################################################################
-
-
-# class MockController(Controller):
-#     def __init__(self, led_driver, midi, protocol = None, config = {}, switches = [],  ui = None, period_counter = None, no_tick = False):
-#         super().__init__(
-#             led_driver = led_driver, 
-#             protocol = protocol,
-#             midi = midi, 
-#             config = config, 
-#             switches = switches, 
-#             ui = ui, 
-#             period_counter = period_counter
-#         )
-
-#         self._next_step = None
-#         self._cnt = 0
-#         self._no_tick = no_tick
-
-#     def tick(self):
-#         if self._no_tick:
-#             return False
-        
-#         if not self._next_step: 
-#             return super().tick()
-        
-#         if self._cnt < self._next_step.num_pass_ticks:
-#             self._cnt += 1
-#             return super().tick()
-        
-#         self._cnt = 0
-#         if callable(self._next_step.prepare):
-#             self._next_step.prepare()
-
-#         res = super().tick()
-#         if not res:  
-#             raise Exception("tick() does not return True")
-        
-#         if not callable(self._next_step.evaluate):
-#             return False
-        
-#         ret = self._next_step.evaluate()
-
-#         self._next_step = self._next_step.next
-
-#         return ret
-
-#     def process(self):
-#         self.init()
-#         while self.tick():
-#             pass 
-    
-#     @property
-#     def next_step(self):  
-#         return self._next_step
-    
-#     @next_step.setter
-#     def next_step(self, step):
-#         if not isinstance(step, SceneStep): 
-#             raise Exception("Invalid test step")
-        
-#         self._next_step = step
-
-
-##################################################################################################################################
-
-
 class MockMidiController:
     def __init__(self):
         self.messages_sent = []
@@ -246,6 +170,9 @@ class MockAction(Action):
 
         self.reset_mock()
 
+        self.output_push = None
+        self.output_release = None
+
     def reset_mock(self):
         self.num_update_calls_overall = 0
         self.num_update_calls_enabled = 0
@@ -258,9 +185,11 @@ class MockAction(Action):
 
     def push(self):
         self.num_push_calls += 1
+        return self.output_push
 
     def release(self):
         self.num_release_calls += 1
+        return self.output_release
 
     def update(self):
         super().update()

@@ -119,11 +119,14 @@ class TunerDisplayCallback(Callback):
                  strobe = False,                           # If set, all available switch LEDs will act as a strobe tuner.
                  strobe_color = Colors.WHITE,              # LED color for strobe tuner
                  strobe_dim = 0.1,                         # Dim factor for strobe tuner in range [0..1]
-                 strobe_speed = 1000,                      # Higher values make the strobe tuner go slower. 1000 is the recommended speed to start from.
+                 strobe_speed = 1000,                      # Higher values make the strobe tuner go slower. 1000 is the recommended speed to 
+                                                           # start from.
                  strobe_max_fps = 120,                     # Maximum cumulative frame rate for update of strobe tuner LEDs. Reduce this to save processing power.
                                                            # The number will be divided by the amount of available switches to get the real max. frame rate (that's
                                                            # why it is called cumulative ;)
-                 strobe_reverse = True                     # If False, the strobe is rotating clockwise when too high / ccw when too low. If True, the other way round.
+                 strobe_reverse = True,                    # If False, the strobe is rotating clockwise when too high / ccw when too low. If True, the other way round.
+                 process_overridden_actions = True         # If set, when in tuner mode, the underlying actions will also be processed after disabling the tuner. 
+                                                           # Also the LEDs keep their initial state (if strobe is disabled of course)
         ):
         Callback.__init__(self)
 
@@ -132,6 +135,7 @@ class TunerDisplayCallback(Callback):
         
         self.__splash_tuner = splash_tuner
         self.__splash_default = splash_default
+        self.__process_overridden_actions = process_overridden_actions
 
         if not self.__splash_tuner:
             self.__splash_tuner = TunerDisplay(
@@ -167,9 +171,47 @@ class TunerDisplayCallback(Callback):
 
     def init(self, appl, listener = None):
         Callback.init(self, appl, listener)
+        self.__appl = appl
 
         if self.__strobe_controller:
             self.__strobe_controller.init(appl)
+
+    def parameter_changed(self, mapping):
+        super().parameter_changed(mapping)
+        
+        if mapping != self.__mapping:
+            return
+        
+        if self.__mapping.value == 1:
+            # Tuner on
+            for input in self.__appl.inputs:
+                if hasattr(input, "pixels"):
+                    input.override_action = self
+                    
+                    if not self.__process_overridden_actions:
+                        input.color = Colors.WHITE
+                        input.brightness = 0
+        else:
+            # Tuner off
+            for input in self.__appl.inputs:
+                if hasattr(input, "pixels"):
+                    input.override_action = None
+
+                    for action in input.actions:
+                        action.reset()
+
+    def push(self):
+        return self.__process_overridden_actions
+
+    def release(self):
+        if "tunerActionPushed" in self.__appl.shared and self.__appl.shared["tunerActionPushed"]:
+            # This prevents that the tuner button switches off the tuner immediately at releasing 
+            del self.__appl.shared["tunerActionPushed"]
+            return
+        
+        self.__appl.client.set(self.__mapping, 0)
+
+        return self.__process_overridden_actions
 
     def get_root(self):
         if self.__mapping.value != 1:

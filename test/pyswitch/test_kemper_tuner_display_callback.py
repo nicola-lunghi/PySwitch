@@ -1,0 +1,304 @@
+import sys
+import unittest
+from unittest.mock import patch   # Necessary workaround! Needs to be separated.
+
+from .mocks_lib import *
+
+# Import subject under test
+with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
+    "displayio": MockDisplayIO(),
+    "adafruit_display_text": MockAdafruitDisplayText(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+    "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+    "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
+    "gc": MockGC()
+}):
+    from lib.pyswitch.clients.kemper import *
+    
+    from lib.pyswitch.ui.ui import DisplayElement
+    from lib.pyswitch.ui.elements import TunerDisplay
+    from lib.pyswitch.misc import Updater
+
+    from .mocks_appl import MockClient, MockAction, MockInputControllerDefinition
+
+
+
+class MockStrobe:
+    class StrobeController:
+        def __init__(self,
+                     mapping_state, 
+                     mapping_deviance, 
+                     dim_factor = 0, 
+                     speed = 0, 
+                     color = None, 
+                     max_fps = 0, 
+                     reverse = None 
+            ):
+            self.init_calls = []
+
+            self.mapping_state = mapping_state
+            self.mapping_deviance = mapping_deviance
+            self.dim_factor = dim_factor
+            self.speed = speed
+            self.color = color 
+            self.max_fps = max_fps
+            self.reverse = reverse
+
+        def init(self, appl):
+            self.init_calls.append(appl)
+
+
+class MockController2(Updater):
+    def __init__(self, inputs = []):
+        Updater.__init__(self)
+
+        self.client = MockClient()
+        self.inputs = inputs
+        self.shared = {}
+      
+
+class MockFootSwitch:
+    def __init__(self, actions = []):
+        self.override_action = None
+        self.actions = actions
+        self.pixels = []
+
+
+
+
+class TestKemperTunerDisplayCallback(unittest.TestCase):
+
+    def test(self):
+        self._test(process_overridden_actions = False)
+        self._test(process_overridden_actions = True)
+
+    def _test(self, process_overridden_actions):
+        element = DisplayElement()
+
+        cb = TunerDisplayCallback(
+            splash_default = element,
+            strobe = False,
+            process_overridden_actions = process_overridden_actions
+        )
+
+        switch_action_0 = MockAction()
+        switch_action_1 = MockAction()
+        switch_action_2 = MockAction()
+        switch_action_3 = MockAction()
+
+        switch = MockFootSwitch(
+            actions = [
+                switch_action_0
+            ]
+        )
+
+        switch_other_1 = MockFootSwitch(
+            actions = [
+                switch_action_1,
+                switch_action_2
+            ]
+        )
+
+        switch_other_2 = MockFootSwitch(
+            actions = [
+                switch_action_3
+            ]
+        )
+
+        appl = MockController2(
+            inputs = [
+                switch_other_1,
+                MockInputControllerDefinition(),
+                switch,
+                switch_other_2,
+                MockInputControllerDefinition()
+            ]
+        )
+        cb.init(appl)
+
+        self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._Callback__mappings)
+        
+        splash_tuner = cb._TunerDisplayCallback__splash_tuner
+
+        self.assertIsInstance(splash_tuner, TunerDisplay)
+
+        mapping = cb._Callback__mappings[0]
+
+        mapping.value = 0
+        cb.parameter_changed(mapping)
+
+        self.assertEqual(cb.get_root(), element)
+
+        self.assertEqual(switch.override_action, None)
+        self.assertEqual(switch_other_1.override_action, None)
+        self.assertEqual(switch_other_2.override_action, None)
+        
+        self.assertEqual(switch_action_0.num_reset_calls, 1)
+        self.assertEqual(switch_action_1.num_reset_calls, 1)
+        self.assertEqual(switch_action_2.num_reset_calls, 1)
+        self.assertEqual(switch_action_3.num_reset_calls, 1)
+
+        mapping.value = 1
+        cb.parameter_changed(mapping)
+
+        self.assertEqual(cb.get_root(), splash_tuner)
+
+        self.assertEqual(switch.override_action, cb)
+        self.assertEqual(switch_other_1.override_action, cb)
+        self.assertEqual(switch_other_2.override_action, cb)
+        
+        self.assertEqual(switch_action_0.num_reset_calls, 1)
+        self.assertEqual(switch_action_1.num_reset_calls, 1)
+        self.assertEqual(switch_action_2.num_reset_calls, 1)
+        self.assertEqual(switch_action_3.num_reset_calls, 1)
+
+        mapping.value = 0
+        cb.parameter_changed(mapping)
+
+        self.assertEqual(cb.get_root(), element)
+
+        self.assertEqual(switch.override_action, None)
+        self.assertEqual(switch_other_1.override_action, None)
+        self.assertEqual(switch_other_2.override_action, None)
+        
+        self.assertEqual(switch_action_0.num_reset_calls, 2)
+        self.assertEqual(switch_action_1.num_reset_calls, 2)
+        self.assertEqual(switch_action_2.num_reset_calls, 2)
+        self.assertEqual(switch_action_3.num_reset_calls, 2)
+
+        self.assertEqual(cb.push(), process_overridden_actions)
+        self.assertEqual(cb.release(), process_overridden_actions)
+
+
+    def test_with_custom_element(self):
+        element = DisplayElement()
+        element_2 = DisplayElement()
+
+        cb = TunerDisplayCallback(
+            splash_default = element,
+            splash_tuner = element_2,
+            strobe = False
+        )
+
+        appl = MockController2()
+        cb.init(appl)
+
+        self.assertIn(KemperMappings.TUNER_MODE_STATE(), cb._Callback__mappings)
+        
+        mapping = cb._Callback__mappings[0]
+
+        mapping.value = 0
+        self.assertEqual(cb.get_root(), element)
+
+        mapping.value = 1
+        self.assertEqual(cb.get_root(), element_2)
+
+
+    def test_with_strobe(self):
+        element = DisplayElement()
+
+        with patch.dict(sys.modules, {
+            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "lib.pyswitch.controller.strobe": MockStrobe(),
+        }):
+            cb = TunerDisplayCallback(
+                splash_default = element,
+                strobe = True,
+                strobe_color = (3, 4, 5),
+                strobe_dim = 0.75,
+                strobe_speed = 1111,
+                strobe_max_fps = 121,
+                strobe_reverse = False
+            )
+
+        appl = MockController2()
+        cb.init(appl)
+
+        strobe = cb._TunerDisplayCallback__strobe_controller
+        self.assertIsInstance(strobe, MockStrobe.StrobeController)
+        self.assertEqual(strobe.init_calls, [appl])
+        
+        self.assertEqual(strobe.mapping_state, KemperMappings.TUNER_MODE_STATE())
+        self.assertEqual(strobe.mapping_deviance, KemperMappings.TUNER_DEVIANCE())
+        self.assertEqual(strobe.dim_factor, 0.75)
+        self.assertEqual(strobe.speed, 1111)
+        self.assertEqual(strobe.color, (3, 4, 5))
+        self.assertEqual(strobe.max_fps, 121)
+        self.assertEqual(strobe.reverse, False)
+
+
+    ############################################################################################
+        
+
+    # def test_override_action_self(self):
+    #     cb = TunerDisplayCallback(
+    #         splash_default = DisplayElement(),
+    #         strobe = False
+    #     )
+
+    #     switch = MockFootSwitch(
+    #         actions = [
+    #             action
+    #         ]
+    #     )
+        
+    #     appl = MockController2(inputs = [switch])
+    #     cb.init(appl)
+
+    #     # Simulate switching the tuner on by PySwitch
+    #     cb.state_changed_by_user()
+
+    #     cb.push()
+    #     cb.release()
+
+    #     self.assertEqual(appl.client.set_calls, [
+    #         {
+    #             "mapping": cb._BinaryParameterCallback__mapping,
+    #             "value": 1
+    #         }
+    #     ])
+
+    #     appl.client.set_calls = []
+
+    #     cb.push()
+    #     cb.release()
+
+    #     self.assertEqual(appl.client.set_calls, [
+    #         {
+    #             "mapping": cb._BinaryParameterCallback__mapping,
+    #             "value": 0
+    #         }
+    #     ])
+
+
+    # def test_override_action_others(self):
+    #     action = TUNER_MODE(
+    #         mode = PushButtonAction.ONE_SHOT
+    #     )
+
+    #     cb = action.callback
+
+    #     switch = MockFootSwitch(
+    #         actions = [
+    #             action
+    #         ]
+    #     )
+        
+    #     appl = MockController2()
+    #     action.init(appl, switch)
+
+    #     cb.push()
+    #     cb.release()
+
+    #     self.assertEqual(appl.client.set_calls, [
+    #         {
+    #             "mapping": cb._BinaryParameterCallback__mapping,
+    #             "value": 0
+    #         }
+    #     ])

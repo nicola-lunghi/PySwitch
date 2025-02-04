@@ -29,8 +29,6 @@ class _TunerModeCallback(BinaryParameterCallback):
             color = color
         )
 
-        self.__just_clicked = False
-
     def init(self, appl, listener = None):
         super().init(appl, listener)
         self.__appl = appl
@@ -42,38 +40,4 @@ class _TunerModeCallback(BinaryParameterCallback):
         # Request value
         self.update()
         
-        self.__just_clicked = True
-
-    def parameter_changed(self, mapping):
-        super().parameter_changed(mapping)
-        
-        if mapping != self.__mapping:
-            return
-        
-        if self.__mapping.value == 1:
-            # Tuner on
-            for input in self.__appl.inputs:
-                if hasattr(input, "pixels"):
-                    input.override_action = self
-                    
-                    input.color = Colors.WHITE
-                    input.brightness = self._led_brightness_off
-        else:
-            # Tuner off
-            for input in self.__appl.inputs:
-                if hasattr(input, "pixels"):
-                    input.override_action = None
-
-                    for action in input.actions:
-                        action.reset()
-
-    def push(self):
-        pass
-
-    def release(self):
-        if self.__just_clicked:
-            # This prevents that the tuner button switches off the tuner immediately at releasing 
-            self.__just_clicked = False
-            return
-        
-        self.__appl.client.set(self.__mapping, 0)  
+        self.__appl.shared["tunerActionPushed"] = True

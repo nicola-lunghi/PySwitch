@@ -16,7 +16,6 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.clients.kemper import KemperMappings
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.misc import Updater
     
@@ -32,6 +31,7 @@ class MockController2(Updater):
         self.client = MockClient()
         self.config = {}
         self.inputs = inputs
+        self.shared = {}
 
 
 class MockFootSwitch:
@@ -42,7 +42,6 @@ class MockFootSwitch:
 
 
 class TestKemperActionTunerMode(unittest.TestCase):
-
 
     def test_tuner_mode(self):
         display = DisplayLabel(layout = {
@@ -74,90 +73,6 @@ class TestKemperActionTunerMode(unittest.TestCase):
         self.assertEqual(action.uses_switch_leds, True)
         self.assertEqual(action._Action__enable_callback, ecb)
 
-        switch_action_0 = MockAction()
-        switch_action_1 = MockAction()
-        switch_action_2 = MockAction()
-        switch_action_3 = MockAction()
-
-        switch = MockFootSwitch(
-            actions = [
-                switch_action_0,
-                action
-            ]
-        )
-
-        switch_other_1 = MockFootSwitch(
-            actions = [
-                switch_action_1,
-                switch_action_2
-            ]
-        )
-
-        switch_other_2 = MockFootSwitch(
-            actions = [
-                switch_action_3
-            ]
-        )
-
-        appl = MockController2(
-            inputs = [
-                switch_other_1,
-                MockInputControllerDefinition(),
-                switch,
-                switch_other_2,
-                MockInputControllerDefinition()
-            ]
-        )
-        action.init(appl, switch)
-        self.assertTrue(action.enabled)
-
-        # We have to call update_displays because this "dirty hack" allows the callback to get a reference to the action
-        action.update_displays()
-
-        mapping = cb._BinaryParameterCallback__mapping
-
-        # Tuner off
-        mapping.value = 3
-        cb.parameter_changed(mapping)
-        
-        self.assertEqual(switch.override_action, None)
-        self.assertEqual(switch_other_1.override_action, None)
-        self.assertEqual(switch_other_2.override_action, None)
-        
-        #self.assertEqual(action.num_reset_calls, 1)
-        self.assertEqual(switch_action_0.num_reset_calls, 1)
-        self.assertEqual(switch_action_1.num_reset_calls, 1)
-        self.assertEqual(switch_action_2.num_reset_calls, 1)
-        self.assertEqual(switch_action_3.num_reset_calls, 1)
-
-        # Tuner on
-        mapping.value = 1
-        cb.parameter_changed(mapping)
-        
-        self.assertEqual(switch.override_action, cb)
-        self.assertEqual(switch_other_1.override_action, cb)
-        self.assertEqual(switch_other_2.override_action, cb)
-        
-        #self.assertEqual(action.num_reset_calls, 1)
-        self.assertEqual(switch_action_0.num_reset_calls, 1)
-        self.assertEqual(switch_action_1.num_reset_calls, 1)
-        self.assertEqual(switch_action_2.num_reset_calls, 1)
-        self.assertEqual(switch_action_3.num_reset_calls, 1)
-
-        # Tuner off again
-        mapping.value = 0
-        cb.parameter_changed(mapping)
-        
-        self.assertEqual(switch.override_action, None)
-        self.assertEqual(switch_other_1.override_action, None)
-        self.assertEqual(switch_other_2.override_action, None)
-        
-        #self.assertEqual(action.num_reset_calls, 1)
-        self.assertEqual(switch_action_0.num_reset_calls, 2)
-        self.assertEqual(switch_action_1.num_reset_calls, 2)
-        self.assertEqual(switch_action_2.num_reset_calls, 2)
-        self.assertEqual(switch_action_3.num_reset_calls, 2)
-
 
     def test_state_change_by_user(self):
         action = TUNER_MODE()
@@ -171,6 +86,8 @@ class TestKemperActionTunerMode(unittest.TestCase):
         appl = MockController2()
         action.init(appl, switch)
 
+        self.assertNotIn("tunerActionPushed", appl.shared)
+
         cb = action.callback
         mapping = cb._BinaryParameterCallback__mapping
         self.assertEqual(action.state, False)
@@ -178,7 +95,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
         mapping.value = 1
         action.state = True
         self.assertEqual(action.state, True)
-        
+        self.assertEqual(appl.shared["tunerActionPushed"], True)
         self.assertEqual(appl.client.set_calls, [
             {
                 "mapping": cb._BinaryParameterCallback__mapping,
@@ -190,7 +107,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
         mapping.value = 3
         action.state = False
         self.assertEqual(action.state, False)
-
+        self.assertEqual(appl.shared["tunerActionPushed"], True)
         self.assertEqual(appl.client.set_calls, [
             {
                 "mapping": cb._BinaryParameterCallback__mapping,
@@ -198,71 +115,3 @@ class TestKemperActionTunerMode(unittest.TestCase):
             }
         ])
 
-
-    def test_override_action_self(self):
-        action = TUNER_MODE(
-            mode = PushButtonAction.ONE_SHOT
-        )
-
-        cb = action.callback
-
-        switch = MockFootSwitch(
-            actions = [
-                action
-            ]
-        )
-        
-        appl = MockController2()
-        action.init(appl, switch)
-
-        # Simulate switching the tuner on by PySwitch
-        action.state = True
-
-        cb.push()
-        cb.release()
-
-        self.assertEqual(appl.client.set_calls, [
-            {
-                "mapping": cb._BinaryParameterCallback__mapping,
-                "value": 1
-            }
-        ])
-
-        appl.client.set_calls = []
-
-        cb.push()
-        cb.release()
-
-        self.assertEqual(appl.client.set_calls, [
-            {
-                "mapping": cb._BinaryParameterCallback__mapping,
-                "value": 0
-            }
-        ])
-
-
-    def test_override_action_others(self):
-        action = TUNER_MODE(
-            mode = PushButtonAction.ONE_SHOT
-        )
-
-        cb = action.callback
-
-        switch = MockFootSwitch(
-            actions = [
-                action
-            ]
-        )
-        
-        appl = MockController2()
-        action.init(appl, switch)
-
-        cb.push()
-        cb.release()
-
-        self.assertEqual(appl.client.set_calls, [
-            {
-                "mapping": cb._BinaryParameterCallback__mapping,
-                "value": 0
-            }
-        ])
