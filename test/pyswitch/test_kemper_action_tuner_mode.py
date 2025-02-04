@@ -86,8 +86,6 @@ class TestKemperActionTunerMode(unittest.TestCase):
         appl = MockController2()
         action.init(appl, switch)
 
-        self.assertNotIn("tunerActionPushed", appl.shared)
-
         cb = action.callback
         mapping = cb._BinaryParameterCallback__mapping
         self.assertEqual(action.state, False)
@@ -95,7 +93,6 @@ class TestKemperActionTunerMode(unittest.TestCase):
         mapping.value = 1
         action.state = True
         self.assertEqual(action.state, True)
-        self.assertEqual(appl.shared["tunerActionPushed"], True)
         self.assertEqual(appl.client.set_calls, [
             {
                 "mapping": cb._BinaryParameterCallback__mapping,
@@ -107,7 +104,6 @@ class TestKemperActionTunerMode(unittest.TestCase):
         mapping.value = 3
         action.state = False
         self.assertEqual(action.state, False)
-        self.assertEqual(appl.shared["tunerActionPushed"], True)
         self.assertEqual(appl.client.set_calls, [
             {
                 "mapping": cb._BinaryParameterCallback__mapping,

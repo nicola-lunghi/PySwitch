@@ -136,7 +136,8 @@ class TunerDisplayCallback(Callback):
         self.__splash_tuner = splash_tuner
         self.__splash_default = splash_default
         self.__process_overridden_actions = process_overridden_actions
-
+        self.__pushed_before = False
+        
         if not self.__splash_tuner:
             self.__splash_tuner = TunerDisplay(
                 mapping_note = KemperMappings.TUNER_NOTE(),
@@ -201,14 +202,15 @@ class TunerDisplayCallback(Callback):
                         action.reset()
 
     def push(self):
+        self.__pushed_before = True
         return self.__process_overridden_actions
 
     def release(self):
-        if "tunerActionPushed" in self.__appl.shared and self.__appl.shared["tunerActionPushed"]:
+        if not self.__pushed_before:            
             # This prevents that the tuner button switches off the tuner immediately at releasing 
-            del self.__appl.shared["tunerActionPushed"]
             return
         
+        self.__pushed_before = False
         self.__appl.client.set(self.__mapping, 0)
 
         return self.__process_overridden_actions

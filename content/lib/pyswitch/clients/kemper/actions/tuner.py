@@ -39,5 +39,3 @@ class _TunerModeCallback(BinaryParameterCallback):
         
         # Request value
         self.update()
-        
-        self.__appl.shared["tunerActionPushed"] = True
