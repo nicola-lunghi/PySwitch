@@ -125,7 +125,7 @@ class TunerDisplayCallback(Callback):
                                                            # The number will be divided by the amount of available switches to get the real max. frame rate (that's
                                                            # why it is called cumulative ;)
                  strobe_reverse = True,                    # If False, the strobe is rotating clockwise when too high / ccw when too low. If True, the other way round.
-                 process_overridden_actions = True         # If set, when in tuner mode, the underlying actions will also be processed after disabling the tuner. 
+                 process_overridden_actions = False        # If set, when in tuner mode, the underlying actions will also be processed after disabling the tuner. 
                                                            # Also the LEDs keep their initial state (if strobe is disabled of course)
         ):
         Callback.__init__(self)
