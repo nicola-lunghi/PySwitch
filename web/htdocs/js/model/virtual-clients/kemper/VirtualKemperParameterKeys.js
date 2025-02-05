@@ -1,4 +1,4 @@
-class ParameterKeys {
+class VirtualKemperParameterKeys {
     send = null;
     receive = null;
 
@@ -52,7 +52,7 @@ class ParameterKeys {
  */
 class NRPNKey {
     constructor(data) {
-        this.data = data;
+        this.data = Array.from(data);
     }
 
     getId() {

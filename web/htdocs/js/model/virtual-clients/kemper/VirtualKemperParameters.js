@@ -44,7 +44,7 @@ class VirtualKemperParameters {
         const jsonKey = key.getId();
 
         if (!this.#data.has(jsonKey)) {
-            return this.init({ keys: { send: key }, value: 0 });
+            return this.init({ keys: new VirtualKemperParameterKeys({ send: key }), value: 0 });
         }
 
         return this.#data.get(jsonKey);

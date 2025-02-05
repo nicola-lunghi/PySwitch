@@ -12,10 +12,10 @@ class VirtualKemperParameter {
 
     /**
      * {
-     *      value,                         // Value (determines the type, too!) Default: 0
-     *      keys: new ParameterKeys(),     // Keys for sending/requesting values (mandatory)
-     *      parameterSets,                 // Optional array of parameter set IDs the parameter is part of
-     *      callback,                      // Optional callback. Will be added using addChangeCallback()
+     *      value,                                      // Value (determines the type, too!) Default: 0
+     *      keys: new VirtualKemperParameterKeys(),     // Keys for sending/requesting values (mandatory)
+     *      parameterSets,                              // Optional array of parameter set IDs the parameter is part of
+     *      callback,                                   // Optional callback. Will be added using addChangeCallback()
      * }
      */
     constructor(client, config) {
@@ -76,12 +76,12 @@ class VirtualKemperParameter {
 
     #parseKey(key, message) {
         // Is it a request message for this parameter?
-        if (key instanceof NRPNKey) {
+        if (key instanceof NRPNKey) {           
             // Request parameter
             if (Tools.compareArrays(
                 message.slice(0, 8 + key.data.length),
                 [240, 0, 32, 51, this.client.config.productType, 127, this.requestFunctionCode, 0].concat(key.data)
-            )) {                        
+            )) {   
                 this.send();
                 return true;
             }
