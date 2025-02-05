@@ -53,12 +53,7 @@ class VirtualKemperClientSetup {
         });
 
         // Bank preselect
-        this.#client.parameters.init({ 
-            keys: new ParameterKeys({ receive: new CCKey(47) }),
-            callback: function(param, value) {
-                console.log("Bank preselect " + value)
-            } 
-        });
+        this.#client.parameters.init({ keys: new ParameterKeys({ receive: new CCKey(47) }) });
 
         // Rig select
         function onRigIdChange(param, value) {
@@ -66,7 +61,7 @@ class VirtualKemperClientSetup {
             const bankPreselect = that.#client.parameters.get(new CCKey(47)).value;
             that.#client.parameters.get(new CCKey(47)).setValue(null);
 
-            const bank = bankPreselect ? bankPreselect : Math.floor(that.#client.getRigId() / 5);
+            const bank = (bankPreselect !== null) ? bankPreselect : Math.floor(that.#client.getRigId() / 5);
             const rigId = bank * 5 + rig;
 
             if (value == 1) {
