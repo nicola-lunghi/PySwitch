@@ -86,9 +86,11 @@ class VirtualKemperClientUI {
 
         // Rig ID input
         let rigIdInput = null;
+        let tempoInput = null;
         createBox(
             "Rig",
             [
+                // Rig ID
                 $('<div class="label" />')
                 .text("Rig ID"),
 
@@ -97,6 +99,17 @@ class VirtualKemperClientUI {
                 .on('change', function() {
                     const rigId = parseInt($(this).val());
                     that.#client.setRigId(rigId);
+                }),
+
+                // Tempo (BPM)
+                $('<div class="label" />')
+                .text("Tempo"),
+
+                tempoInput = $('<input type="text" autocomplete="off">')
+                .val(that.#client.tempo.bpm())
+                .on('change', function() {
+                    const tempo = parseInt($(this).val());
+                    that.#client.tempo.set(tempo);
                 })
             ]
         );
@@ -113,6 +126,10 @@ class VirtualKemperClientUI {
 
         this.#client.parameters.get(new CCKey(48)).addChangeCallback(onRigChange);  // Bank up
         this.#client.parameters.get(new CCKey(49)).addChangeCallback(onRigChange);  // Bank down
+
+        this.#client.tempo.addChangeCallback(function(bpm) {
+            tempoInput.val(bpm);
+        })
     }
 
     destroy() {

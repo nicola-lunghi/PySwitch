@@ -29,9 +29,11 @@ class VirtualKemperClientSetup {
         this.#setupParameterSet1();
         this.#setupParameterSet2();
 
+        // Rig and bank changes
         this.#setupRigChange();
 
-        // this.#setupLooperFreeze();
+        // Tempo related stuff
+        this.#setupTempo();
     }
 
     /**
@@ -93,9 +95,20 @@ class VirtualKemperClientSetup {
         this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(49) }), callback: onBankChange, noBuffer: true });  // Down
     }
 
-    // #setupLooperFreeze() {
-    //     this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(48) }), callback: onBankChange, noBuffer: true });  // Up
-    // }
+    /**
+     * Set up tempo related stuff
+     */
+    #setupTempo() {
+        const that = this;
+
+        // Tempo display
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([124, 0]) }), parameterSets: [1, 2, 3, 4] });
+
+        // Tap tempo
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(30) }), callback: function(param, value) {
+            that.#client.tempo.tap(value);
+        } });
+    }
 
     /**
      * Add parameters for parameter set 1 with some foo values 

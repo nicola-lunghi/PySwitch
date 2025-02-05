@@ -137,7 +137,7 @@ class PySwitchClient {
             this.#controller.pyswitch.setMidiWrapper(virtualClient);
             
             // Run the virtual client
-            virtualClient.run(200);
+            virtualClient.run(5);
 
             // Show user interface, if any
             this.#controller.ui.showVirtualClient(virtualClient);

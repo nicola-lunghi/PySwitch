@@ -6,7 +6,7 @@ class VirtualKemperClient extends VirtualClient {
 
     config = null;
     parameters = null;
-     
+
     /**
      * {
      *      productType: 2   (Player)
@@ -21,6 +21,9 @@ class VirtualKemperClient extends VirtualClient {
 
         // Bidirectional protocol
         this.protocol = new VirtualKemperProtocol(this);
+
+        // Tempo handler
+        this.tempo = new VirtualKemperTempo(this);
 
         // Initialize the parameters with values and types
         (new VirtualKemperClientSetup(this)).setup();
@@ -52,6 +55,7 @@ class VirtualKemperClient extends VirtualClient {
      */
     update() {
         this.protocol.update();
+        this.tempo.update();
     }
 
     /**
@@ -115,8 +119,9 @@ class VirtualKemperClient extends VirtualClient {
     /**
      * Add a raw message to the queue
      */
-    queueMessage(msg) {        
-        this.messageQueue.push(msg);
+    queueMessage(message) {   
+        // console.log(message)     
+        this.messageQueue.push(message);
     }
 
     /**
@@ -126,6 +131,7 @@ class VirtualKemperClient extends VirtualClient {
         clearInterval(this.#runIntervalHandler);
 
         this.parameters.destroy();
+        this.tempo.destroy();
         if (this.#ui) this.#ui.destroy();
     }
 

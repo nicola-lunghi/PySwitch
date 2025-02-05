@@ -32,6 +32,19 @@
     color: black;
 }
 
+.virtual-client .box input[type="text"] {
+    position: relative;
+    top: -0.2em;
+
+    width: 3em;
+    font-size: 0.7em;
+}
+
+.virtual-client .box input[type="checkbox"] {
+    position: relative;
+    top: -0.2em;
+}
+
 /*******************************************/
 
 .virtual-client .slot {
@@ -51,17 +64,4 @@
 
 .virtual-client .slot input {
     grid-column: 2; 
-}
-
-.virtual-client .slot input[type="checkbox"] {
-    position: relative;
-    top: -0.2em;
-}
-
-.virtual-client .slot input[type="text"] {
-    position: relative;
-    top: -0.2em;
-
-    width: 3em;
-    font-size: 0.7em;
 }

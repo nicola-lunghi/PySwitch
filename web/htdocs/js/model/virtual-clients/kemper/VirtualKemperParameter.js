@@ -16,6 +16,9 @@ class VirtualKemperParameter {
      *      keys: new VirtualKemperParameterKeys(),     // Keys for sending/requesting values (mandatory)
      *      parameterSets,                              // Optional array of parameter set IDs the parameter is part of
      *      callback,                                   // Optional callback. Will be added using addChangeCallback()
+     *      requestFunctionCode,
+     *      returnFunctionCode,
+     *      setFunctionCode
      * }
      */
     constructor(client, config) {
@@ -46,15 +49,15 @@ class VirtualKemperParameter {
     #detectFunctionCodes() {
         switch (typeof this.value) {
             case "number":
-                this.requestFunctionCode = 65;    // 0x41
-                this.returnFunctionCode = 1;
-                this.setFunctionCode = 1;
+                this.requestFunctionCode = this.config.requestFunctionCode ? this.config.requestFunctionCode : 65;    // 0x41
+                this.returnFunctionCode = this.config.returnFunctionCode ? this.config.returnFunctionCode : 1;
+                this.setFunctionCode = this.config.setFunctionCode ? this.config.setFunctionCode : 1;
                 break;
 
             case "string":
-                this.requestFunctionCode = 67;    // 0x43
-                this.returnFunctionCode = 3;
-                this.setFunctionCode = 3;
+                this.requestFunctionCode = this.config.requestFunctionCode ? this.config.requestFunctionCode : 67;    // 0x43
+                this.returnFunctionCode = this.config.returnFunctionCode ? this.config.returnFunctionCode : 3;
+                this.setFunctionCode = this.config.setFunctionCode ? this.config.setFunctionCode : 3;
                 break;
 
             default:
@@ -133,7 +136,7 @@ class VirtualKemperParameter {
         for (const callback of this.#callbacks) {
             callback(this, value);
         }
-
+        
         // Send current state, if the parameter is part of an active parameter set. All others must be requested.
         if (this.config.parameterSets && this.config.parameterSets.includes(this.client.protocol.parameterSet)) {
             this.send();
