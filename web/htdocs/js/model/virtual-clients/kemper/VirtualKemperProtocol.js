@@ -7,7 +7,8 @@ class VirtualKemperProtocol {
 
     #client = null;
 
-    #parameterSet = null;
+    parameterSet = null;        // Currently active parameter set
+
     #tunemode = null;
     #timeLeaseCounter = null;   // PeriodCounter
     #keepAliveCounter = null;    // PeriodCounter
@@ -31,6 +32,7 @@ class VirtualKemperProtocol {
                 this.state = VirtualKemperProtocol.STATE_OFFLINE;
             
                 this.#keepAliveStep = 0;
+                this.parameterSet = null;
             }
 
             // Send keep-alive messages every 500ms with increasing steps
@@ -63,7 +65,7 @@ class VirtualKemperProtocol {
         )) return false;
 
         // Decode 
-        this.#parameterSet = message[9];
+        this.parameterSet = message[9];
 
         const flag_init     = !!(message[10] & 0b00000001);
         // const flag_sysex    = !!(message[10] & 0b00000010);   // Not supported
@@ -90,9 +92,9 @@ class VirtualKemperProtocol {
      * Initially send all parameters of the set
      */
     #sendParameterSet() {
-        const params = this.#client.parameters.getParameterSet(this.#parameterSet);
+        const params = this.#client.parameters.getParameterSet(this.parameterSet);
         if (!params) {
-            console.warn("Parameter set not supported by the virtual Kemper client: " + this.#parameterSet);
+            console.warn("Parameter set not supported by the virtual Kemper client: " + this.parameterSet);
         }
 
         for (const param of params) {

@@ -10,10 +10,8 @@ class VirtualKemperParameterDefault extends VirtualKemperParameter {
             [240, 0, 32, 51, this.client.config.productType, 127, this.requestFunctionCode, 0]
         )) return false;
 
-        const key = message.slice(8, 10);
-
         // Send parameter value
-        this.send(key);
+        this.send(message.slice(8, 10));
 
         return true;
     }
@@ -21,10 +19,10 @@ class VirtualKemperParameterDefault extends VirtualKemperParameter {
     /**
      * Send a single parameter (numeric or string)
      */
-    send(key) {
+    send(keyData) {
         const msg = [240, 0, 32, 51, 0, 0, this.returnFunctionCode, 0].concat(
-            Array.from(key), 
-            this.encodeValue(this.value()), 
+            Array.from(keyData), 
+            this.encodeValue(this.value), 
             [247]
         );
         

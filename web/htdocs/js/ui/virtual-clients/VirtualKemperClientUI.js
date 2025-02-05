@@ -18,8 +18,24 @@ class VirtualKemperClientUI {
 
     #buildEffectSlots() {
         const that = this;
+
+        // Effect slots
         function createSlot(text, addressPage, addresses) {
-            return $('<div class="slot" />').append(
+            const paramState = that.#client.parameters.get(new NRPNKey([addressPage, addresses.state]));
+            const paramType = that.#client.parameters.get(new NRPNKey([addressPage, addresses.type]));
+
+            const inputState = $('<input type="checkbox" autocomplete="off">');
+            const inputType = $('<input type="text" autocomplete="off">');
+
+            paramState.addChangeCallback(function(param, value) {
+                inputState.prop("checked", value != 0);                
+            });
+
+            paramType.addChangeCallback(function(param, value) {
+                inputType.val(value);
+            });
+
+            return $('<div class="box slot" />').append(
                 // Slot title
                 $('<div class="title" />')
                 .text(text),
@@ -28,21 +44,33 @@ class VirtualKemperClientUI {
                 $('<div class="label" />')
                 .text("State"),
 
-                $('<input type="checkbox">')
-                .attr('checked', that.#client.parameters.value([addressPage, addresses.state] != 0))
+                inputState
+                .prop('checked', paramState.value != 0)
                 .on('change', function() {
-                    that.#client.parameters.set([addressPage, addresses.state], this.checked ? 1 : 0)
+                    paramState.setValue(this.checked ? 1 : 0)
                 }),
 
                 // Type
                 $('<div class="label" />')
                 .text("Type"),
 
-                $('<input type="text">')
-                .val(that.#client.parameters.value([addressPage, addresses.type]))
+                inputType
+                .val(paramType.value)
                 .on('change', function() {
-                    that.#client.parameters.set([addressPage, addresses.type], parseInt($(this).val()));
+                    paramType.setValue(parseInt($(this).val()));
                 })
+            )
+        }
+
+        function createBox(title, content) {
+            that.#container.append(
+                $('<div class="box" />').append(
+                    // Box title
+                    $('<div class="title" />')
+                    .text(title),
+
+                    content
+                )
             )
         }
 
@@ -55,6 +83,36 @@ class VirtualKemperClientUI {
         this.#container.append(createSlot("MOD", 58, { state: 3, type: 0 }));
         this.#container.append(createSlot("DLY", 60, { state: 3, type: 0 }));
         this.#container.append(createSlot("REV", 61, { state: 3, type: 0 }));
+
+        // Rig ID input
+        let rigIdInput = null;
+        createBox(
+            "Rig",
+            [
+                $('<div class="label" />')
+                .text("Rig ID"),
+
+                rigIdInput = $('<input type="text" autocomplete="off">')
+                .val(that.#client.getRigId())
+                .on('change', function() {
+                    const rigId = parseInt($(this).val());
+                    that.#client.setRigId(rigId);
+                })
+            ]
+        );
+
+        function onRigChange(param, value) {
+            rigIdInput.val(that.#client.getRigId());
+        }
+
+        this.#client.parameters.get(new CCKey(50)).addChangeCallback(onRigChange);
+        this.#client.parameters.get(new CCKey(51)).addChangeCallback(onRigChange);
+        this.#client.parameters.get(new CCKey(52)).addChangeCallback(onRigChange);
+        this.#client.parameters.get(new CCKey(53)).addChangeCallback(onRigChange);
+        this.#client.parameters.get(new CCKey(54)).addChangeCallback(onRigChange);
+
+        this.#client.parameters.get(new CCKey(48)).addChangeCallback(onRigChange);  // Bank up
+        this.#client.parameters.get(new CCKey(49)).addChangeCallback(onRigChange);  // Bank down
     }
 
     destroy() {

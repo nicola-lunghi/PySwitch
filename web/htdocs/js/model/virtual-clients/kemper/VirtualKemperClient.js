@@ -1,12 +1,11 @@
 class VirtualKemperClient extends VirtualClient {
     
     #runIntervalHandler = null;
-    #protocol = null;
+    protocol = null;
     #ui = null;
 
     config = null;
     parameters = null;
-    rigId = 0;
      
     /**
      * {
@@ -21,12 +20,12 @@ class VirtualKemperClient extends VirtualClient {
         this.parameters = new VirtualKemperParameters(this);
 
         // Bidirectional protocol
-        this.#protocol = new VirtualKemperProtocol(this);
+        this.protocol = new VirtualKemperProtocol(this);
 
         // Initialize the parameters with values and types
-        (new VirtualKemperClientSetup(this.parameters)).setup();
+        (new VirtualKemperClientSetup(this)).setup();
         
-        this.#updateRig();
+        this.updateRig();
     }
 
     /**
@@ -52,18 +51,40 @@ class VirtualKemperClient extends VirtualClient {
      * When running, this is called regularly to update the protocol and other timed stuff
      */
     update() {
-        this.#protocol.update();
+        this.protocol.update();
     }
 
     /**
      * Updates everything to the current rig ID.
      */
-    #updateRig() {
-        const bank = Math.floor(this.rigId / 5);
-        const rig = this.rigId % 5;
+    updateRig() {
+        const rigId = this.getRigId();
+
+        const bank = Math.floor(rigId / 5);
+        const rig = rigId % 5;
         const rigName = "Rig " + (bank + 1) + "-" + (rig + 1);
 
-        this.parameters.get([0, 1]).config.value = rigName;
+        this.parameters.get(new NRPNKey([0, 1])).setValue(rigName);
+    }
+
+    /**
+     * Determine current rig ID
+     */
+    getRigId() {
+        const rigId_cc32 = this.parameters.get(new CCKey(32)).value;
+        const rigId_pc = this.parameters.get(new PCKey()).value;
+
+        return 128 * rigId_cc32 + rigId_pc;
+    }
+
+    /**
+     * Sets the rig ID
+     */
+    setRigId(rigId) {
+        this.parameters.get(new CCKey(32)).setValue(Math.floor(rigId / 128));
+        this.parameters.get(new PCKey()).setValue(rigId % 128);
+
+        this.updateRig();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -77,7 +98,7 @@ class VirtualKemperClient extends VirtualClient {
             message = message.toJs();
             
             // Try to parse message: Protocol
-            if (this.#protocol.parse(message)) return;
+            if (this.protocol.parse(message)) return;
 
             // Try to parse message: Parameters
             if (this.parameters.parse(message)) return;
@@ -104,6 +125,7 @@ class VirtualKemperClient extends VirtualClient {
     detach() {  
         clearInterval(this.#runIntervalHandler);
 
+        this.parameters.destroy();
         if (this.#ui) this.#ui.destroy();
     }
 

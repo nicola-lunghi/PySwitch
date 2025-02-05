@@ -30,41 +30,36 @@ class VirtualKemperParameters {
      * Returns the value for the key, or 0 if not found
      */
     value(key) {
-        const entry = this.get(key);
-        if (entry) return entry.config.value;
+        const jsonKey = key.getId();
+        if (!this.#data.has(jsonKey)) return 0;
 
-        return 0;
+        const entry = this.#data.get(jsonKey);
+        return entry.value;
     }
 
     /**
-     * Returns the entry of the parameter (if known), or null
+     * Returns the entry of the parameter (if known). Will be created if not present.
      */
     get(key) {
         const jsonKey = key.getId();
-        return this.#data.has(jsonKey) ? this.#data.get(jsonKey) : null
-    }
 
-    /**
-     * Sets the value for the given key.
-     */
-    set(key, value) {
-        let param = this.get(key);
-        if (!param) {
-            param = this.init({ key: key, value: value });
+        if (!this.#data.has(jsonKey)) {
+            return this.init({ keys: { send: key }, value: 0 });
         }
 
-        param.config.value = value;
-
-        // Send message
-        param.send();
+        return this.#data.get(jsonKey);
     }
 
     /**
      * Initializes a parameter value.
      */
     init(config) {
-        const jsonKey = config.key.getId();
+        const jsonKey = config.keys.getId();
         
+        if (this.#data.has(jsonKey)) {
+            throw new Error("Redundant parameter definition: " + jsonKey);
+        }
+
         const param = new VirtualKemperParameter(
             this.#client, 
             config
@@ -101,5 +96,9 @@ class VirtualKemperParameters {
             }
         }
         return ret;
+    }
+
+    destroy() {
+        this.#data = new Map();
     }
 }
