@@ -19,7 +19,7 @@ class PySwitchClient {
         if (savedClient == "auto" || !savedClient) {
             await this.#scan(config);
         } else {
-            await this.#connect(savedClient);
+            await this.#connect(savedClient, config);
         }
     }
             
@@ -43,7 +43,7 @@ class PySwitchClient {
                 });
 
                 //console.log("Found client: ", connection);
-                await that.#connect(connection.name);
+                await that.#connect(connection.name, config);
             }
         );
     }
@@ -119,10 +119,26 @@ class PySwitchClient {
     /**
      * Connect to a client directly
      */
-    async #connect(portName) {
+    async #connect(portName, config) {
         // First throw out the old MIDI wrapper, if any
         this.#controller.pyswitch.setMidiWrapper(null);
         this.current = null;
+
+        // In case its a virtual client, use that one        
+        if (portName == "virtual") {
+            const virtualClient = await VirtualClient.getInstance(config);
+            if (!virtualClient) {
+                this.#controller.ui.message((await config.name()) + " does not support a virtual client device", "W");
+                return;
+            }
+
+            this.#controller.pyswitch.setMidiWrapper(virtualClient);
+            
+            virtualClient.run(200);
+
+            this.#controller.ui.message("Connected to " + virtualClient.name, "S");
+            return;
+        }
 
         // Search for the ports
         const port = this.#controller.midi.getPortPair(portName);       
@@ -132,7 +148,7 @@ class PySwitchClient {
         }
 
         // Set a Web MIDI wrapper to connect the ports to PySwitch
-        this.#controller.pyswitch.setMidiWrapper(                    
+        this.#controller.pyswitch.setMidiWrapper(
             new WebMidiWrapper(this.#controller.midi, port.input, port.output)
         );
 

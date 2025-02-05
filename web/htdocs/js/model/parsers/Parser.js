@@ -11,7 +11,7 @@ class Parser {
     }
 
     /**
-     * Returns the class(es) to set on the device element
+     * Returns the CSS class(es) to set on the device element
      */
     async getClass() {
         throw new Error("Must be implemented in child classes");
@@ -22,5 +22,12 @@ class Parser {
      */
     async getClientDetector() {
         throw new Error("Must be implemented in child classes");
+    }
+
+    /**
+     * Must return a virtual client, or null if the config does not support a virtual client.
+     */
+    async getVirtualClient() {
+        return null;
     }
 }

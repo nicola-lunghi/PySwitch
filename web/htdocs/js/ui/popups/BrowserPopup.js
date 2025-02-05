@@ -33,19 +33,15 @@ class BrowserPopup extends Popup {
         }
 
         // Get sorted child list of the current entry
-        const listing = entry.children ? entry.children.filter((e) => e.children.length || e.isCallable()) : [];
+        let listing = entry.children ? entry.children.filter((e) => e.children.length || e.isCallable()) : [];
 
-        listing.sort(function (a, b) {
-            const aname = a.getSortString();
-            const bname = b.getSortString();
-            
-            return aname.localeCompare(bname);
-        });
+        // Sort it
+        listing = await this.#sort(listing);
 
         // Create DOM items for the children
         const items = [];
         for(const e of listing) {
-            const el = e.getElement(entry.config.childLayout);            
+            const el = await e.getElement(entry.config.childLayout);            
 
             if (this.config.postProcess) {
                 await this.config.postProcess(e, el);
@@ -58,9 +54,32 @@ class BrowserPopup extends Popup {
 
         // Build DOM and show the browser
         this.show(
-            this.#buildContent(items, entry),
+            await this.#buildContent(items, entry),
             this.config.headline
         );
+    }
+
+    /**
+     * Sort the listing of entries (Schwartzian transform). Returns the sorted array.
+     * https://stackoverflow.com/questions/45661247/implement-async-await-in-sort-function-of-arrays-javascript
+     */
+    async #sort(listing) {
+        // Get an array with [sortString, entry] instead of each entry
+        const comparableArray = await Promise.all(
+            listing.map(
+                async x => [await x.getSortString(), x]
+            )
+        );
+
+        // Sort
+        comparableArray.sort(function (a, b) {
+            const aname = a[0]; //.getSortString();
+            const bname = b[0]; //.getSortString();
+            return aname.localeCompare(bname);
+        });
+
+        // Transform back into original form
+        return comparableArray.map(x => x[1]);
     }
 
     /**
@@ -90,7 +109,7 @@ class BrowserPopup extends Popup {
     /**
      * Build the DOM (returns content for Popup)
      */
-    #buildContent(items, entry) {
+    async #buildContent(items, entry) {
         const that = this;
         
         return [
@@ -108,7 +127,7 @@ class BrowserPopup extends Popup {
                 }),
 
                 // Path display
-                $('<span />').append(entry.getHierarchicalPath())
+                $('<span />').append(await entry.getHierarchicalPath())
             ),
 
             // Listing

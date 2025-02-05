@@ -31,4 +31,13 @@ class KemperParser extends Parser {
 
         throw new Error("Unknown client type");
     }
+
+    /**
+     * Must return a virtual client
+     */
+    async getVirtualClient() {
+        return new VirtualKemperClient({
+            productType: 2  // KPP
+        });
+    }
 }

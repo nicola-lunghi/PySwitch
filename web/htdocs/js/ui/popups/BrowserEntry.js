@@ -53,13 +53,13 @@ class BrowserEntry {
     /**
      * Returns a path inside the hierarchy, as an array of DOM elements.
      */
-    getHierarchicalPath() {
+    async getHierarchicalPath() {
         const that = this;
 
         return (
                 this.parent 
             ? 
-                this.parent.getHierarchicalPath().concat([
+                (await this.parent.getHierarchicalPath()).concat([
                     $('<span/>')
                     .text("/")
                 ]) 
@@ -68,7 +68,7 @@ class BrowserEntry {
         ).concat(
             [
                 $('<span class="path-link"/>')
-                .text(this.getText())
+                .text(await this.getText())
                 .on("click", async function() {
                     try {
                         await that.#browser.browse(that);
@@ -84,21 +84,21 @@ class BrowserEntry {
     /**
      * Returns the sort string to be used to compare this entry to its siblings
      */
-    getSortString() {
+    async getSortString() {
         return this.config.sortString ? this.config.sortString : this.getText();
     }
 
     /**
      * Returns the text to show
      */
-    getText() {
+    async getText() {
         return (typeof this.text == "function") ? this.text(this) : (this.text ? this.text : this.value);
     }
 
     /**
      * Creates the listing elements (TR)
      */
-    getElement(layout) {
+    async getElement(layout) {
         const that = this;
 
         const tr = $('<tr/>');
@@ -112,7 +112,7 @@ class BrowserEntry {
                     td.append(
                         // Listing entry link
                         $('<span class="listing-link" />')
-                        .text(this.getText())
+                        .text(await this.getText())
                         .on('click', async function() {
                             try {
                                 await that.#browser.browse(that);

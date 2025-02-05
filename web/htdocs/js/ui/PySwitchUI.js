@@ -139,6 +139,9 @@ class PySwitchUI {
         this.notifications = new Notifications(messageElement)
     }
 
+    /**
+     * Init browser for loading configurations
+     */
     #initLoadBrowser() {
         const that = this;
 
@@ -166,6 +169,9 @@ class PySwitchUI {
         }); 
     }
 
+    /**
+     * Init browser for client connection select
+     */
     #initClientBrowser() {
         const that = this;
 
@@ -194,6 +200,17 @@ class PySwitchUI {
                             value: "Not connected",
                             text: "Not connected",
                             sortString: "___02"
+                        },
+                        {
+                            value: "virtual",
+                            text: async function(/*entry*/) {
+                                const vc = (await VirtualClient.getInstance(that.#controller.currentConfig));
+                                if (!vc) {
+                                    return "Virtual client (not supported for " + (await that.#controller.currentConfig.name()) + ")";
+                                }
+                                return vc.name;
+                            },
+                            sortString: "ZZZZZZZ"
                         }
                     ]
                 })

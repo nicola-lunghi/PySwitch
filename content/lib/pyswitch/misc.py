@@ -212,6 +212,7 @@ class PeriodCounter:
     def reset(self):
         self.__last_reset = get_current_millis()
 
+    # Returns the amount of milliseconds passed since the last reset
     @property
     def passed(self):
         return get_current_millis() - self.__last_reset

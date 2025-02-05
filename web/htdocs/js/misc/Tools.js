@@ -19,4 +19,21 @@ class Tools {
             (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
         );
     }
+
+    /**
+	 * Compare two arrays (i know, could be done more js-like but works)
+	 */
+	static compareArrays(a, b) {
+		if (a.length != b.length) {
+			return false;
+		}
+		 
+		for (let i = 0; i < a.length; ++i) {
+			if (a[i] != b[i]) {
+				return false;
+			} 
+		}
+		
+		return true;
+	}
 }
