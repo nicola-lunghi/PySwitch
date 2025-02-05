@@ -12,6 +12,7 @@ class VirtualClient {
 
     name = null;
     messageQueue = [];   // Queue of raw MIDI bytes. Will be filled here message by message, and fetched from the python midi wrappers
+    ui = null;           // Set by the 
     
     constructor(name) {
         this.name = name;
@@ -31,8 +32,14 @@ class VirtualClient {
     }
 
     /**
-     * Stop listening to the input
+     * Stop listening to the input, and remove all UIs
      */
     detach() {        
+    }
+
+    /**
+     * If supported, can create a user interface in the passed container DOM element
+     */
+    createUserInterface(container) {
     }
 }

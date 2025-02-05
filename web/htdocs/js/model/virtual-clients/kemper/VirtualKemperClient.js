@@ -1,14 +1,13 @@
 class VirtualKemperClient extends VirtualClient {
     
-    messageQueue = [];   // Queue of raw MIDI bytes. Will be filled here message by message, and fetched from the python midi wrappers
-
     #runIntervalHandler = null;
+    #protocol = null;
+    #ui = null;
+
     config = null;
     parameters = null;
     rigId = 0;
      
-    #protocol = null;
-    
     /**
      * {
      *      productType: 2   (Player)
@@ -24,32 +23,10 @@ class VirtualKemperClient extends VirtualClient {
         // Bidirectional protocol
         this.#protocol = new VirtualKemperProtocol(this);
 
-        // Some values
-        this.#setupParameters();
-
-        this.#updateRig();
-    }
-
-    /**
-     * Set up some data on parameters not contained in any parameter set
-     */
-    #setupParameters() {
-        // Amp comment
-        this.parameters.set({ key: [0, 16], value: "Amp Comment" });
-
-        // FX Slot DLY
-        this.parameters.set({ key: [60, 0], value: 160 });  // DLY
-        this.parameters.set({ key: [60, 3], value: 1 });     // On
-
-        // FX Slot REV
-        this.parameters.set({ key: [61, 0], value: 180 });  // REV
-        this.parameters.set({ key: [61, 3], value: 1 });  // On
-
-        // Default values
-        this.parameters.setDefault({ value: 0 });         // Default for numeric parameters
-        this.parameters.setDefault({ value: "none" });    // Default for string parameters
-
+        // Initialize the parameters with values and types
+        (new VirtualKemperClientSetup(this.parameters)).setup();
         
+        this.#updateRig();
     }
 
     /**
@@ -92,8 +69,8 @@ class VirtualKemperClient extends VirtualClient {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Send a MIDI message. Expects a byte array of raw data.
-     * In this case, as we are a client, this effectively receives data!
+     * Called by PySwitch when a message should be sent to the client. 
+     * Naming is misleading here: this effectively receives data!
      */
     async send(message) {
         try {
@@ -117,8 +94,7 @@ class VirtualKemperClient extends VirtualClient {
     /**
      * Add a raw message to the queue
      */
-    queueMessage(msg) {
-        // console.log(msg);
+    queueMessage(msg) {        
         this.messageQueue.push(msg);
     }
 
@@ -127,6 +103,16 @@ class VirtualKemperClient extends VirtualClient {
      */
     detach() {  
         clearInterval(this.#runIntervalHandler);
+
+        if (this.#ui) this.#ui.destroy();
+    }
+
+    /**
+     * If supported, can create a user interface in the passed container DOM element
+     */
+    createUserInterface(container) {
+        if (this.#ui) this.#ui.destroy();
+        this.#ui = new VirtualKemperClientUI(container, this);
     }
 
     /**

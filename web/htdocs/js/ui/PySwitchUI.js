@@ -10,6 +10,7 @@ class PySwitchUI {
     #listElement = null;
     #deviceElement = null;
     #versionElement = null;
+    #virtualClientElement = null;
 
     notifications = null;
     loadBrowser = null;
@@ -53,6 +54,7 @@ class PySwitchUI {
 
         let messageElement = null;
         let clientButtonElement = null;
+        let virtualClientElement = null;
         
         // Settings panel
         const that = this;
@@ -102,6 +104,9 @@ class PySwitchUI {
 
                 // Header, showing the current config name
                 this.#contentHeadline = $('<div class="headline"/>'),
+
+                // Virtual client if enabled
+                this.#virtualClientElement = $('<div class="virtual-client"/>')
             ),
 
             /////////////////////////////////////////////////////////////////////////////////////
@@ -235,6 +240,13 @@ class PySwitchUI {
 
         // CSS classes for the main device element
         this.#deviceElement[0].className = await (await config.parser()).getClass();
+    }
+
+    /**
+     * Shows the passed virtual client. The UI is destroyed by itself.
+     */
+    showVirtualClient(client) {
+        client.createUserInterface(this.#virtualClientElement);
     }
 
     /**

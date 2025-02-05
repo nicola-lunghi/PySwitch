@@ -18,8 +18,6 @@ class VirtualKemperProtocol {
 
         this.state = VirtualKemperProtocol.STATE_OFFLINE;
 
-        this.#setupParameterSet2();
-
         this.#keepAliveCounter = new PeriodCounter(500);
     }
 
@@ -50,7 +48,7 @@ class VirtualKemperProtocol {
     #sendKeepAlive(cnt) {
         const msg = [240, 0, 32, 51, this.#client.config.productType, 127, 126, 0, 127, cnt, 247];
 
-        this.#client.log("Send keepalive message (" + cnt + ")");
+        // this.#client.log("Send keepalive message (" + cnt + ")");
 
         this.#client.queueMessage(msg);
     }    
@@ -100,37 +98,5 @@ class VirtualKemperProtocol {
         for (const param of params) {
             param.send();
         }
-    }
-
-    /**
-     * Add parameters for parameter set 2 with some foo values 
-     */
-    #setupParameterSet2() {
-        // FX Slot A
-        this.#client.parameters.set({ key: [50, 0], value: 8, parameterSets: [2] });  // Wah
-        this.#client.parameters.set({ key: [50, 3], value: 1, parameterSets: [2] });  // On
-        
-        // FX Slot B
-        this.#client.parameters.set({ key: [51, 0], value: 13, parameterSets: [2] });  // Pitch
-        this.#client.parameters.set({ key: [51, 3], value: 1, parameterSets: [2] });  // On
-
-        // FX Slot C
-        this.#client.parameters.set({ key: [52, 0], value: 30, parameterSets: [2] });  // Dist
-        this.#client.parameters.set({ key: [52, 3], value: 1, parameterSets: [2] });  // On
-
-        // FX Slot D
-        this.#client.parameters.set({ key: [53, 0], value: 50, parameterSets: [2] });  // Comp
-        this.#client.parameters.set({ key: [53, 3], value: 1, parameterSets: [2] });  // On
-
-        // FX Slot X
-        this.#client.parameters.set({ key: [56, 0], value: 115, parameterSets: [2] });  // EQ
-        this.#client.parameters.set({ key: [56, 3], value: 1, parameterSets: [2] });  // On
-
-        // FX Slot MOD
-        this.#client.parameters.set({ key: [58, 0], value: 100, parameterSets: [2] });  // Phaser
-        this.#client.parameters.set({ key: [58, 3], value: 1, parameterSets: [2] });  // On
-
-        // Rig name
-        this.#client.parameters.set({ key: [0, 1], value: "Rig Name", parameterSets: [2] });  // Rig Name
     }
 }

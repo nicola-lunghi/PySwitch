@@ -126,15 +126,21 @@ class PySwitchClient {
 
         // In case its a virtual client, use that one        
         if (portName == "virtual") {
+            // Create virtual client
             const virtualClient = await VirtualClient.getInstance(config);
             if (!virtualClient) {
                 this.#controller.ui.message((await config.name()) + " does not support a virtual client device", "W");
                 return;
             }
 
+            // Set client as MIDI wrapper to connect it to PySwitch
             this.#controller.pyswitch.setMidiWrapper(virtualClient);
             
+            // Run the virtual client
             virtualClient.run(200);
+
+            // Show user interface, if any
+            this.#controller.ui.showVirtualClient(virtualClient);
 
             this.#controller.ui.message("Connected to " + virtualClient.name, "S");
             return;
