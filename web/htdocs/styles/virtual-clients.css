@@ -7,7 +7,10 @@
 }
 
 .virtual-client .box {
-    display: inline-block;
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    grid-gap: 0.5em 1em;
+
     border-radius: 0.3em;
     
     padding: 0.5em;
@@ -25,43 +28,34 @@
 }
 
 .virtual-client .box .title {
-    font-weight: bold;
+    grid-column: 1 / 3;
+    grid-row: 1;
+    font-weight: bold;    
 }
 
 .virtual-client .box .label {
     color: black;
+    grid-column: 1;
+}
+
+.virtual-client .box input {
+    position: relative;
+
+    top: -0.2em;
+    grid-column: 2; 
+}
+
+.virtual-client .box input[type="checkbox"] {
 }
 
 .virtual-client .box input[type="text"] {
-    position: relative;
-    top: -0.2em;
-
     width: 3em;
     font-size: 0.7em;
 }
 
-.virtual-client .box input[type="checkbox"] {
-    position: relative;
-    top: -0.2em;
-}
+/*****************************************************/
 
-/*******************************************/
+/* .virtual-client .slot {
+    background-color: blanchedalmond;
+} */
 
-.virtual-client .slot {
-    display: inline-grid;
-    grid-template-columns: auto auto;
-    grid-gap: 0.5em 1em;
-}
-
-.virtual-client .slot .title {
-    grid-column: 1 / 3;
-    grid-row: 1;
-}
-
-.virtual-client .slot .label {
-    grid-column: 1;
-}
-
-.virtual-client .slot input {
-    grid-column: 2; 
-}
