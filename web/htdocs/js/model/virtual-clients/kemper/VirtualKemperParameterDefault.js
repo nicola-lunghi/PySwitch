@@ -24,12 +24,12 @@ class VirtualKemperParameterDefault extends VirtualKemperParameter {
      */
     send() {
         throw new Error("This shall not be called");
-        // const msg = [240, 0, 32, 51, 0, 0, this.returnFunctionCode, 0].concat(
-        //     Array.from(keyData), 
-        //     this.encodeValue(this.value), 
-        //     [247]
-        // );
-        
-        // this.client.queueMessage(msg);
+    }
+
+    /**
+     * Name for display
+     */
+    getDisplayName() {
+        return "Default: " + (typeof this.value);
     }
 }

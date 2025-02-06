@@ -53,6 +53,19 @@ class VirtualKemperParameterKeys {
     }
 
     /**
+     * Name to display
+     */
+    getDisplayName() {
+        if (this.send) return this.send.getDisplayName();
+
+        const ret = [];
+        for (const r of this.receive) {
+            ret.push(r.getDisplayName());
+        }
+        return ret.join(", ");
+    }
+
+    /**
      * Returns if the keys are mixed type
      */
     mixed() {
@@ -75,8 +88,26 @@ class VirtualKemperParameterKeys {
 /**************************************************************/
 
 class ParameterKey {
+
+    /**
+     * Must return a unique ID from the key
+     */
     getId() {
         throw new Error("Must be implemented in child classes");
+    }
+
+    /**
+     * Name to display
+     */
+    getDisplayName() {
+        throw new Error("Must be implemented in child classes");
+    }
+
+    /**
+     * Returns a byte array containing the value
+     */
+    encodeValue(value) {
+        throw new Error("Not supported for this type");
     }
 }
 
@@ -87,7 +118,7 @@ class NRPNKey extends ParameterKey {
     constructor(data) {
         super();
 
-        if (!Array.isArray(data)) throw new Error("Invalid NRPN data")
+        if (!(Array.isArray(data) || (data instanceof Uint8Array))) throw new Error("Invalid NRPN data")
         this.data = Array.from(data);
     }
 
@@ -95,8 +126,35 @@ class NRPNKey extends ParameterKey {
         return JSON.stringify({ data: this.data });
     }
 
+    getDisplayName() {
+        return this.data.join("|");
+    }
+
     evaluateValue(value) {
         return value[0] * 128 + value[1];
+    }
+
+    /**
+     * Returns a byte array containing the value
+     */
+    encodeValue(value) {
+        switch (typeof value) {
+            case "number":
+                const lsb = value % 128;
+                const msb = Math.floor(value / 128);
+                return [msb, lsb];
+
+            case "string":
+                const ret = [];
+                for (var i = 0; i < value.length; ++i) {
+                    ret.push(value.charCodeAt(i));                    
+                }
+                ret.push(0);   // Null termination
+                return ret;
+
+            default:
+                throw new Error("Invalid value type: " + (typeof value));
+        }
     }
 }
 
@@ -116,6 +174,10 @@ class CCKey extends ParameterKey {
         return JSON.stringify({ control: this.control });
     }
 
+    getDisplayName() {
+        return "" + this.control;
+    }
+
     evaluateValue(value) {
         return value;        
     }
@@ -127,5 +189,9 @@ class CCKey extends ParameterKey {
 class PCKey extends ParameterKey {
     getId() {
         return JSON.stringify({ program: true });
+    }
+
+    getDisplayName() {
+        return "PC";
     }
 }

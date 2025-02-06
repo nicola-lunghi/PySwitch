@@ -16,6 +16,12 @@ class VirtualKemperClientUI {
         this.#buildEffectSlots();
         this.#buildRig();
         this.#buildTuner();
+
+        // Use a callback to show auto generated parameters
+        const that = this;
+        this.#client.parameters.addInitCallback(async function(param) {
+            that.#addGeneratedParameter(param);
+        });
     }
 
     #buildEffectSlots() {
@@ -243,6 +249,44 @@ class VirtualKemperClientUI {
         // Tuner deviance
         this.#client.parameters.get(new NRPNKey([124, 15])).addChangeCallback(async function(param, value) {            
             devianceInput.val(value);
+        });
+    }
+
+    /**
+     * Adds an auto generated parameter
+     */
+    #addGeneratedParameter(param) {
+        let valueInput = null;
+
+        this.#createBox(
+            param.getDisplayName(),
+            [
+                // Value
+                $('<div class="label" />')
+                .text("Value"),
+
+                valueInput = $('<input type="text" autocomplete="off">')
+                .val(param.value)
+                .on('change', function() {
+                    const value = $(this).val();
+
+                    switch (param.valueType) {
+                        case "number":
+                            param.setValue(parseInt(value));
+                            break;
+                        case "string":
+                            param.setValue(value);
+                            break;
+
+                        default:
+                            throw new Error("Invalid value type: " + param.valueType);
+                    }
+                })
+            ]
+        );
+
+        param.addChangeCallback(async function(param, value) {          
+            valueInput.val(value);
         });
     }
 

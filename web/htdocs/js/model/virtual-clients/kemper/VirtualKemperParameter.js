@@ -7,11 +7,9 @@ class VirtualKemperParameter {
     client = null;
     config = null;
     value = null;
-    id = null;
-
-    static #nextId = 0;
 
     #callbacks = [];   // Callbacks executed on change
+    valueType = null;
 
     /**
      * {
@@ -39,8 +37,15 @@ class VirtualKemperParameter {
         }
 
         this.#detectFunctionCodes();
+        this.#detectValueType();
+    }
 
-        this.id = VirtualKemperParameter.#nextId++;
+    /**
+     * Name for display
+     */
+    getDisplayName() {
+        if (this.config.keys) return this.config.keys.getDisplayName();
+        return "??";
     }
 
     /**
@@ -73,6 +78,13 @@ class VirtualKemperParameter {
     }
 
     /**
+     * Auto detect value type
+     */
+    #detectValueType() {
+        this.valueType = typeof this.value;
+    }
+
+    /**
      * Parse a parameter request message. Must return if successful.
      */
     parse(message) {        
@@ -100,7 +112,7 @@ class VirtualKemperParameter {
                 message.slice(0, 8 + key.data.length),
                 [240, 0, 32, 51, this.client.config.productType, 127, this.setFunctionCode, 0].concat(key.data)
             )) {
-                this.setValue(key.evaluateValue(message.slice(8, 10)), "NRPN");
+                this.setValue(key.evaluateValue(message.slice(8 + key.data.length, 10 + key.data.length)), "NRPN");
                 return true;
             }
         
@@ -133,9 +145,13 @@ class VirtualKemperParameter {
      */
     setValue(value, source = "NRPN") {
         if (!this.config.noBuffer && this.value == value) return;
+
+        if (typeof value != this.valueType) {
+            throw new Error("Invalid value type in setValue: " + (typeof value));
+        }
         
         // Set new value: If we have both NRPN and other keys, we always translate to NRPN range.
-        if (this.config.keys && this.config.keys.mixed()) {            
+        if (this.config.keys && this.config.keys.mixed()) {                 
             this.value = (source != "NRPN") ? (value * 128) : value;
         } else {
             this.value = value;
@@ -170,7 +186,7 @@ class VirtualKemperParameter {
         if (this.config.keys.send instanceof NRPNKey) {
             const msg = [240, 0, 32, 51, 0, 0, this.returnFunctionCode, 0].concat(
                 Array.from(this.config.keys.send.data), 
-                this.encodeValue(this.value),
+                this.config.keys.send.encodeValue(this.value),
                 [247]
             );
             
@@ -192,29 +208,6 @@ class VirtualKemperParameter {
 
         } else {
             throw new Error("Invalid key type: " + (typeof this.config.keys.send));
-        }
-    }
-
-    /**
-     * Returns a byte array containing the value
-     */
-    encodeValue(value) {
-        switch (typeof value) {
-            case "number":
-                const lsb = value % 128;
-                const msb = Math.floor(value / 128);
-                return [msb, lsb];
-
-            case "string":
-                const ret = [];
-                for (var i = 0; i < value.length; ++i) {
-                    ret.push(value.charCodeAt(i));                    
-                }
-                ret.push(0);   // Null termination
-                return ret;
-
-            default:
-                throw new Error("Invalid value type: " + (typeof value));
         }
     }
 }
