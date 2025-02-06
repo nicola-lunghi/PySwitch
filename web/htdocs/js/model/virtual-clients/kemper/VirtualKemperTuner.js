@@ -8,7 +8,7 @@ class VirtualKemperTuner {
     constructor(client) {
         this.#client = client;
 
-        this.#period = new PeriodCounter(200);
+        this.#period = new PeriodCounter(20);
     }
 
     update() {
