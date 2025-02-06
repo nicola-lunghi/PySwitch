@@ -6,8 +6,17 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     
+    <style>
+        .pyswitch-emulator {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+        }
+    </style>
+
     <!-- Lib CSS -->
-    <link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="lib/fa/css/all.min.css">    
 
     <!-- Lib JS -->
@@ -29,10 +38,10 @@
     <link rel="stylesheet" type="text/css" href="styles/virtual-clients.css">
     
     <!-- Device specific CSS -->
-    <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain.css">
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-nano-4.css">
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-mini-6.css">
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-10.css">
+    <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain.css">    <!-- Must be last for media queries to work! -->
     
     <!-- Main classes -->
     <script type="text/javascript" src="js/Controller.js"></script>
@@ -42,7 +51,7 @@
     
     <script type="text/javascript" src="js/misc/Tools.js"></script>
     <script type="text/javascript" src="js/misc/PeriodCounter.js"></script>
-
+    
     <!-- Routing -->
     <script type="text/javascript" src="js/routing/Routing.js"></script>
     <script type="text/javascript" src="js/routing/CallbackQueue.js"></script>
@@ -53,6 +62,7 @@
     <script type="text/javascript" src="js/ui/misc/Progress.js"></script>
     <script type="text/javascript" src="js/ui/misc/Notifications.js"></script>
     <script type="text/javascript" src="js/ui/misc/ClientConnectionButton.js"></script>
+    <script type="text/javascript" src="js/ui/misc/ResizeHandler.js"></script>
 
     <!-- Popups -->
     <script type="text/javascript" src="js/ui/popups/Popup.js"></script>
@@ -103,11 +113,12 @@
     <script type="text/javascript">
         window.onload = function() {
             new Controller({
-                containerElementSelector: "body"
+                containerElementSelector: '.pyswitch-emulator'
             }).run();
         }
     </script>
 </script>
-<body>    
+<body>
+    <div class="pyswitch-emulator" />
 </body>
 </link>

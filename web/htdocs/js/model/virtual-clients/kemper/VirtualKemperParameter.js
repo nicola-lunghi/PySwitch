@@ -146,7 +146,7 @@ class VirtualKemperParameter {
     setValue(value, source = "NRPN") {
         if (!this.config.noBuffer && this.value == value) return;
 
-        if (typeof value != this.valueType) {
+        if (value !== null && (typeof value != this.valueType)) {
             throw new Error("Invalid value type in setValue: " + (typeof value));
         }
         

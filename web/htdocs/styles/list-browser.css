@@ -1,4 +1,4 @@
-.list-browser {
+.container .list-browser {
     position: absolute;
 
     top: 10vh;
@@ -12,113 +12,112 @@
 
     z-index: 100;
 
-    padding: 20px;
+    padding: 1.5em;
 
     background-color: white;
 
-    /* border: 1px solid black; */
-    border-radius: 20px;
+    border-radius: 1.5em;
 }
 
-.list-browser .content {
+.container .list-browser .content {
     overflow-x: hidden;
     overflow-y: auto;
     width: 100%;
     height: 100%;
 }
 
-.list-browser .listing-link {
+.container .list-browser .listing-link {
     cursor: pointer;
     white-space: pre;
-    margin-right: 15px;
+    margin-right: 1.2em;
 }
 
-.list-browser .listing-link:hover {
+.container .list-browser .listing-link:hover {
     text-decoration: underline;
 }
 
-.list-browser table {
-    border-spacing: 10px 1px;
+.container .list-browser table {
+    border-spacing: 0.7em 0.1em;
     border-collapse: separate;
 }
 
-.list-browser td {
+.container .list-browser td {
     white-space: pre;    
 }
 
-.list-browser tr.highlighted .listing-link {
+.container .list-browser tr.highlighted .listing-link {
     color: rgb(150, 150, 150);
 }
 
-.list-browser .headline {
-    margin-bottom: 10px;
+.container .list-browser .headline {
+    margin-bottom: 0.7em;
     font-weight: bold;
 }
 
-.list-browser .path {
-    margin-bottom: 10px;
+.container .list-browser .path {
+    margin-bottom: 0.7em;
     color: gray;
 }
 
-.list-browser .path > *:first-child{
+.container .list-browser .path > *:first-child{
     cursor: pointer;
-    width: 25px;
-    height: 25px;
+    width: 2em;
+    height: 2em;
     text-align: center;
     
-    padding: 5px;
-    border-radius: 7px;
-    margin-right: 10px;
+    padding: 0.4em;
+    border-radius: 0.5em;
+    margin-right: 0.7em;
 }
 
-.list-browser .path > *:first-child:hover {
+.container .list-browser .path > *:first-child:hover {
     background-color: lightgray;
 }
 
-.list-browser .path .path-link {
+.container .list-browser .path .path-link {
     cursor: pointer;
 }
 
-.list-browser .close-button {
+.container .list-browser .close-button {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 1.7em;
+    right: 1.7em;
 
     cursor: pointer;
-    width: 25px;
-    height: 25px;
+    width: 2em;
+    height: 2em;
     text-align: center;
-    padding: 5px;
-    border-radius: 7px;
+    padding: 0.4em;
+    border-radius: 0.5em;
     background-color: white;
 }
 
-.list-browser .close-button:hover {
+.container .list-browser .close-button:hover {
     background-color: lightgray;
 }
 
 /*******************************************/
 
-.list-browser td > .fa-play {
+.container .list-browser td > .fa-play {
     color: lightgreen;
 }
 
-.list-browser td > .fa-info {
+.container .list-browser td > .fa-info {
     cursor: pointer;
-    width: 20px;
-    height: 20px;
+    width: 1.7em;
+    height: 1.7em;
     text-align: center;
-    font-size: 0.8em;
+    font-size: 0.6em;
     
-    padding: 5px;
-    padding-left: 5px;
-    border-radius: 7px;
+    padding: 0.4em;
+    padding-left: 0.4em;
+    border-radius: 0.5em;
 }
 
-.list-browser td > .fa-info:hover {
+.container .list-browser td > .fa-info:hover {
     background-color: lightgray;
 }
 
-.list-browser .about li {
-    margin-bottom: 10px;
+.container .list-browser .about li {
+    margin-bottom: 0.7em;
 }

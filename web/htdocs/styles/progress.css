@@ -1,4 +1,4 @@
-.block {
+.container .block {
     position: absolute;
     top: 0;
 	left: 0;
@@ -9,7 +9,7 @@
 	z-index: 100;
 }
 
-.progressBar {
+.container .progressBar {
 	display: block;
 	
 	position: absolute;
@@ -19,7 +19,7 @@
 	width: 50%;
 }
 
-.progressBar > * {
+.container .progressBar > * {
 	display: block; 
 	
 	position: relative;
@@ -28,7 +28,7 @@
 	height: 100%;
 }
 
-.progressBar > * > * {
+.container .progressBar > * > * {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -42,7 +42,7 @@
 	overflow: hidden;
 }
 
-.progressBar > * > * > * {
+.container .progressBar > * > * > * {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -54,7 +54,7 @@
 	transition: width 0.06s;
 }
 
-.progressMessage {
+.container .progressMessage {
 	display: block;
 	
 	position: absolute;
@@ -62,7 +62,7 @@
 	left: 25%;
 	width: 50%;
 
-	transform: translateY(20px);
+	transform: translateY(1.5em);
 	color: white;
 
 	text-align: center;

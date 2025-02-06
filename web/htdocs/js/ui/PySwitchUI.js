@@ -11,11 +11,15 @@ class PySwitchUI {
     #deviceElement = null;
     #versionElement = null;
     #virtualClientElement = null;
+    #virtualClientUI = null;
+    #applicationElement = null;
 
     notifications = null;
     loadBrowser = null;
     clientBrowser = null;
     clientButton = null;
+
+    // #resizeHandler = null;
 
     /**
      * Options:
@@ -54,83 +58,85 @@ class PySwitchUI {
 
         let messageElement = null;
         let clientButtonElement = null;
-        let virtualClientElement = null;
         
         // Settings panel
         const that = this;
-        containerElement.append(         
-            $('<div class="application"/>').append(
-                
-                $('<div class="about" />').append(
-                    // Version
-                    this.#versionElement = $('<div class="version"/>').html("PySwitch Emulator")
-                    .on('click', async function() {
-                        try {
-                            new Popup(that.#controller, { container: that.#listElement })
-                            .show(await Tools.fetch('about.html'));
+        containerElement.append(
+            $('<div class="container"/>').append(
+                this.#applicationElement = $('<div class="application"/>').append(
+                    
+                    $('<div class="about" />').append(
+                        // Version
+                        this.#versionElement = $('<div class="version"/>').html("PySwitch Emulator")
+                        .on('click', async function() {
+                            try {
+                                new Popup(that.#controller, { container: that.#listElement })
+                                .show(await Tools.fetch('about.html'));
 
-                        } catch (e) {
-                            that.#controller.handle(e);
-                        }
-                    }),
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
+                        }),
 
-                    // Donate
-                    $('<a class="donate" href="https://www.paypal.com/webapps/mpp/page-not-found?cmd=_s-xclick&hosted_button_id=6WHW7WRXSGQXY" target="_blank" />')
-                    .text('Donate')
+                        // Donate
+                        $('<a class="donate" href="https://www.paypal.com/webapps/mpp/page-not-found?cmd=_s-xclick&hosted_button_id=6WHW7WRXSGQXY" target="_blank" />')
+                        .text('Donate')
+                    ),
+                    
+
+                    // Client connection button (class is set in the ClientConnectionButton)
+                    clientButtonElement = $('<div data-toggle="tooltip"/>'),
+
+                    // This will be filled by python and show the device. Can not have any class names in 
+                    // here, or they will be overwritten by python code.
+                    this.#deviceElement = $('<div id="pyswitch-device"></div>'),
+
+                    // Buttons
+                    $('<div class="buttons" />').append(
+                        // Load
+                        $('<div class="button button-primary"/>')
+                        .text("Load")
+                        .on("click", async function() {
+                            try {
+                                await that.loadBrowser.browse();
+
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
+                        })  
+                    ),
+
+                    // Header, showing the current config name
+                    this.#contentHeadline = $('<div class="headline"/>'),
                 ),
-                
-
-                // Client connection button (class is set in the ClientConnectionButton)
-                clientButtonElement = $('<div data-toggle="tooltip"/>'),
-
-                // This will be filled by python and show the device. Can not have any class names in 
-                // here, or they will be overwritten by python code.
-                this.#deviceElement = $('<div id="pyswitch-device"></div>'),
-
-                // Buttons
-                $('<div class="buttons" />').append(
-                    // Load
-                    $('<div class="btn btn-primary"/>')
-                    .text("Load")
-                    .on("click", async function() {
-                        try {
-                            await that.loadBrowser.browse();
-
-                        } catch (e) {
-                            that.#controller.handle(e);
-                        }
-                    })  
-                ),
-
-                // Header, showing the current config name
-                this.#contentHeadline = $('<div class="headline"/>'),
 
                 // Virtual client if enabled
                 this.#virtualClientElement = $('<div class="virtual-client"/>')
-            ),
+                .hide(),
 
-            /////////////////////////////////////////////////////////////////////////////////////
+                /////////////////////////////////////////////////////////////////////////////////////
 
-            // Progress bar and blocker
-            this.#block = $('<div class="block"/>').append(
-                this.#progressBarContainer = $('<span class="progressBar" />').append(   // progressBarOuterContainer
-                    $('<span />').append(  //progressBarContainer
-                        $('<span />').append(   // progressBarBack
-                            this.#progressBar = $('<span />')  // progressBar
-                        )
-                    ),                        
+                // Progress bar and blocker
+                this.#block = $('<div class="block"/>').append(
+                    this.#progressBarContainer = $('<span class="progressBar" />').append(   // progressBarOuterContainer
+                        $('<span />').append(  //progressBarContainer
+                            $('<span />').append(   // progressBarBack
+                                this.#progressBar = $('<span />')  // progressBar
+                            )
+                        ),                        
+                    ),
+                    this.#progressMessage = $('<span class="progressMessage" />').text("Initializing")
                 ),
-                this.#progressMessage = $('<span class="progressMessage" />').text("Initializing")
-            ),
 
-            /////////////////////////////////////////////////////////////////////////////////////
+                /////////////////////////////////////////////////////////////////////////////////////
 
-            // List browsers and popups (shared)
-            this.#listElement = $('<div class="list-browser"/>')
-            .hide(),
+                // List browsers and popups (shared)
+                this.#listElement = $('<div class="list-browser"/>')
+                .hide(),
 
-            // Messages
-            messageElement = $('<div class="messages"/>')
+                // Messages
+                messageElement = $('<div class="messages"/>')
+            )
         );
 
         // Browsers
@@ -141,7 +147,10 @@ class PySwitchUI {
         this.clientButton = new ClientConnectionButton(this.#controller, clientButtonElement);      
 
         // Message alerts etc.
-        this.notifications = new Notifications(messageElement)
+        this.notifications = new Notifications(messageElement);
+
+        // // Resizer for application area
+        // this.#resizeHandler = new ResizeHandler(this.#applicationElement);
     }
 
     /**
@@ -243,10 +252,22 @@ class PySwitchUI {
     }
 
     /**
-     * Shows the passed virtual client. The UI is destroyed by itself.
+     * Shows the passed virtual client.
      */
     showVirtualClient(client) {
-        client.createUserInterface(this.#virtualClientElement);
+        if (client) {
+            this.#virtualClientUI = client.getUserInterface(this.#virtualClientElement);    
+            this.#virtualClientElement.show();
+
+            this.#applicationElement.toggleClass("resizeable", true);
+        } else {
+            if (this.#virtualClientUI) {
+                this.#virtualClientUI.destroy();
+            }
+            this.#virtualClientElement.hide();
+
+            this.#applicationElement.toggleClass("resizeable", false);
+        }
     }
 
     /**
@@ -289,4 +310,6 @@ class PySwitchUI {
         this.progress(1);
         this.notifications.message(msg, type, options);
     }
+
+    
 }

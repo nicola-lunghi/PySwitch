@@ -156,7 +156,7 @@ class VirtualKemperClient extends VirtualClient {
     /**
      * If supported, can create a user interface in the passed container DOM element
      */
-    createUserInterface(container) {
+    getUserInterface(container) {
         if (this.#ui) this.#ui.destroy();
         this.#ui = new VirtualKemperClientUI(container, this);
     }

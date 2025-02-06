@@ -1,5 +1,14 @@
 .midicaptain {
-    width: 90%;
+    width: 90cqw;    
+}
+
+@container (orientation: landscape) {
+    .midicaptain {
+        width: max-content;
+        max-width: unset;
+
+        height: 60cqh;        
+    }
 }
 
 .midicaptain #pyswitch-inputs {

@@ -1,14 +1,21 @@
-.virtual-client {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 140px;
-    min-width: fit-content;
+.container .virtual-client {
+    width: 100%;
+    overflow: auto;
 
     display: block;
+
+    background-color: darkgray;
+    padding: 1em;
 }
 
-.virtual-client .box {
+.container .virtual-client::before {
+    content: "Virtual Profiler Player";
+    display: block;
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+.container .virtual-client .box {
     display: inline-grid;
     grid-template-columns: auto auto;
     grid-gap: 0.5em 1em;
@@ -24,33 +31,33 @@
 }
 
 
-.virtual-client .box * {
+.container .virtual-client .box * {
     font-weight: normal;
     text-align: left;
 }
 
-.virtual-client .box .title {
+.container .virtual-client .box .title {
     grid-column: 1 / 3;
     grid-row: 1;
     font-weight: bold;    
 }
 
-.virtual-client .box .label {
+.container .virtual-client .box .label {
     color: black;
     grid-column: 1;
 }
 
-.virtual-client .box input {
+.container .virtual-client .box input {
     position: relative;
 
     top: -0.2em;
     grid-column: 2; 
 }
 
-.virtual-client .box input[type="checkbox"] {
+.container .virtual-client .box input[type="checkbox"] {
 }
 
-.virtual-client .box input[type="text"] {
+.container .virtual-client .box input[type="text"] {
     width: 4em;
     font-size: 0.7em;
 }

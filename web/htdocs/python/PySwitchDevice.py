@@ -62,9 +62,11 @@ class PySwitchDevice:
                     event.currentTarget.dataset.pushed = False
 
                 add_event_listener(element, "mousedown", on_click)
+                add_event_listener(element, "touchstart", on_click)
                 add_event_listener(element, "mouseup", on_release)
                 add_event_listener(element, "mouseout", on_release)
                 add_event_listener(element, "mouseleave", on_release)
+                add_event_listener(element, "touchend", on_release)
 
                 inputs_container.appendChild(element)
 

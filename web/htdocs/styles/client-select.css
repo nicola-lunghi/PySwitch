@@ -10,16 +10,16 @@
     --color-client-select-not-connected-alpha: rgba(120, 120, 120, 0.1);
 }
 
-.application .client-select {
+.container .application .client-select {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    bottom: 1em;
+    right: 1em;
     z-index: 200;
 
     width: 20vw;
-    max-width: 120px;
+    max-width: 6em;
     height: 20vw;
-    max-height: 120px;
+    max-height: 6em;
     
     border-radius: 50%;
 
@@ -30,7 +30,7 @@
     container-type: size;
 }
 
-@keyframes pulse {
+@keyframes pyswitch-pulse {
     0% {
         opacity: 0.3;
     }
@@ -44,36 +44,36 @@
     }
 }
 
-.application .client-select.connected {
+.container .application .client-select.connected {
     border: 0.3vw solid var(--color-client-select-connected);
 }
 
-.application .client-select.waiting {
+.container .application .client-select.waiting {
     border: 0.3vw solid var(--color-client-select-waiting);
-    animation: pulse 0.5s infinite;
+    animation: pyswitch-pulse 0.5s infinite;
 }
 
-.application .client-select.not-connected {
+.container .application .client-select.not-connected {
     border: 0.3vw solid var(--color-client-select-not-connected);
 }
 
 
-.application .client-select.connected:hover {
+.container .application .client-select.connected:hover {
     background-color: var(--color-client-select-connected-alpha);
     opacity: 1;
 }
 
-.application .client-select.connected:hover {
+.container .application .client-select.connected:hover {
     background-color: var(--color-client-select-waiting-alpha);
     opacity: 1;
 }
 
-.application .client-select.not-connected:hover {
+.container .application .client-select.not-connected:hover {
     background-color: var(--color-client-select-not-connected-alpha);
     opacity: 1;
 }
 
-.application .client-select > * {
+.container .application .client-select > * {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -82,14 +82,14 @@
     font-size: 40cqw;
 }
 
-.application .client-select.connected > * {
+.container .application .client-select.connected > * {
     color: var(--color-client-select-connected);
 }
 
-.application .client-select.waiting > * {
+.container .application .client-select.waiting > * {
     color: var(--color-client-select-waiting);
 }
 
-.application .client-select.not-connected > * {
+.container .application .client-select.not-connected > * {
     color: var(--color-client-select-not-connected);
 }

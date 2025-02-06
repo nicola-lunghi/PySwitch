@@ -144,6 +144,8 @@ class PySwitchClient {
 
             this.#controller.ui.message("Connected to " + virtualClient.name, "S");
             return;
+        } else {
+            this.#controller.ui.showVirtualClient(null);
         }
 
         // Search for the ports

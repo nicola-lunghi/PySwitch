@@ -9,7 +9,7 @@ class VirtualKemperTempo {
     constructor(client) {
         this.#client = client;
 
-        // this.set(120);
+        this.set(120);
     }
 
     update() {
@@ -17,7 +17,6 @@ class VirtualKemperTempo {
 
         if (this.#period.exceeded()) {
             const param = this.#client.parameters.get(new NRPNKey([124, 0]));
-            console.log(param.value)
             param.setValue((param.value == 0) ? 1 : 0);
         }
     }

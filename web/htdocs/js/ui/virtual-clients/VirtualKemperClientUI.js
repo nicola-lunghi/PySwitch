@@ -11,7 +11,7 @@ class VirtualKemperClientUI {
     }
 
     #build() {
-        this.destroy();
+        this.#container.empty();
 
         this.#buildEffectSlots();
         this.#buildRig();

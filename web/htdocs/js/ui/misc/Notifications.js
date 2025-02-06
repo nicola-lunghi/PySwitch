@@ -68,7 +68,7 @@ class Notifications {
 
 		switch (type) {
 		case 'E':
-			msgEl.addClass("btn btn-danger");
+			msgEl.addClass("message message-danger");
 
 			if (typeof msg == "string" && msg.includes("Traceback")) {
 				msgEl.addClass("message-traceback")
@@ -78,22 +78,22 @@ class Notifications {
 			console.error(msgOrException);
 			break;
 		case 'W':
-			msgEl.addClass("btn btn-warning");
+			msgEl.addClass("message message-warning");
 			fadeTime = errorFadeTimeMs;
 			console.warn(msgOrException);
 			break;
 		case 'S':
-			msgEl.addClass("btn btn-success");
+			msgEl.addClass("message message-success");
 			fadeTime = infoFadeTimeMs;		
 			console.info(msgOrException);	
 			break;
 		case 'I':
-			msgEl.addClass("btn btn-info");
+			msgEl.addClass("message message-info");
 			fadeTime = infoFadeTimeMs;
 			console.info(msgOrException);
 			break;
 		default:
-			msgEl.addClass("btn btn-danger");
+			msgEl.addClass("message message-danger");
 			fadeTime = errorFadeTimeMs; 
 			console.error(msgOrException);
 			break;
