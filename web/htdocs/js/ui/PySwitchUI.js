@@ -63,6 +63,11 @@ class PySwitchUI {
         const that = this;
         containerElement.append(
             $('<div class="container"/>').append(
+                // Virtual client if enabled
+                this.#virtualClientElement = $('<div class="virtual-client"/>')
+                .hide(),
+
+                // Application area
                 this.#applicationElement = $('<div class="application"/>').append(
                     
                     $('<div class="about" />').append(
@@ -109,10 +114,6 @@ class PySwitchUI {
                     // Header, showing the current config name
                     this.#contentHeadline = $('<div class="headline"/>'),
                 ),
-
-                // Virtual client if enabled
-                this.#virtualClientElement = $('<div class="virtual-client"/>')
-                .hide(),
 
                 /////////////////////////////////////////////////////////////////////////////////////
 

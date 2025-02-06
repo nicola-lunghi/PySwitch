@@ -1,12 +1,21 @@
 .container .virtual-client {
-    width: 100%;
-    overflow: auto;
+    height: 100cqh;
+    width: 30cqw;
 
+    overflow: auto;
     display: block;
 
     background-color: darkgray;
     padding: 1em;
 }
+
+@media screen and (width < 600px) {
+    .container .virtual-client {
+        width: 100cqw;
+        height: auto;
+    }        
+}
+
 
 .container .virtual-client::before {
     content: "Virtual Profiler Player";
