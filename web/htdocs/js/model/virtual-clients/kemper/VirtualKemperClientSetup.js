@@ -10,30 +10,15 @@ class VirtualKemperClientSetup {
      * Set up some data on parameters not contained in any parameter set
      */
     setup() {
-        // Amp comment
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 16]) }), value: "Amp Comment" });
-
-        // FX Slot DLY
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 0]) }), value: 160 });  // DLY
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 3]), receive: [new CCKey(26), new CCKey(27)] }), value: 1 });    // On
-
-        // FX Slot REV
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([61, 0]) }), value: 180 });  // REV
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([61, 3]), receive: [new CCKey(28), new CCKey(29)] }), value: 1 });    // On
+        this.#setupParameters();
+        this.#setupRigChange();
+        this.#setupTempo();
+        this.#setupTuner();
+        this.#setupMorph();
 
         // Default values
         this.#client.parameters.initDefault({ value: 0 });         // Default for numeric parameters
         this.#client.parameters.initDefault({ value: "none" });    // Default for string parameters
-
-        // Parameter sets
-        this.#setupParameterSet1();
-        this.#setupParameterSet2();
-
-        // Rig and bank changes
-        this.#setupRigChange();
-
-        // Tempo related stuff
-        this.#setupTempo();
     }
 
     /**
@@ -58,18 +43,29 @@ class VirtualKemperClientSetup {
 
         // Bank preselect
         this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(47) }) });
-
+        
         // Rig select
+        let lastRigId = null;
+
         function onRigIdChange(param, value) {
             const rig = param.config.keys.receive[0].control - 50;
             const bankPreselect = that.#client.parameters.get(new CCKey(47)).value;
+            
+            // Reset bank preselect
             that.#client.parameters.get(new CCKey(47)).setValue(null);
 
             const bank = (bankPreselect !== null) ? bankPreselect : Math.floor(that.#client.getRigId() / 5);
             const rigId = bank * 5 + rig;
 
             if (value == 1) {
+                // Update rig
                 that.#client.setRigId(rigId);
+
+                if (that.#client.morph.rigBtnMorph && lastRigId == rigId) {
+                    that.#client.morph.triggerButton();
+                }
+                
+                lastRigId = rigId;
             }
         }
 
@@ -110,6 +106,63 @@ class VirtualKemperClientSetup {
         } });
     }
 
+    /**
+     * Set up tuner related stuff
+     */
+    #setupTuner() {
+        const that = this;
+
+        // Tuner mode
+        function onTunerModeChange(param, value) {
+            that.#client.tuner.running = (value == 1);
+        }
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([127, 126]), receive: new CCKey(31) }), parameterSets: [1, 2, 3, 4], callback: onTunerModeChange });
+
+        // Tuner note
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([125, 84]) }), parameterSets: [1, 2, 3, 4] });
+
+        // Tuner deviance
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([124, 15]) }), parameterSets: [1, 2, 3, 4], value: 8191 });
+    }
+
+    /**
+     * Set up morph state
+     */
+    #setupMorph() {
+        const that = this;
+
+        // Morph state
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 11]), receive: new CCKey(11) }) });
+
+        // Morph button
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(80) }), callback: function(param, value) {
+            // Update morph state
+            if (value == 1) {
+                that.#client.morph.triggerButton();
+            }
+        } });
+    }
+
+    /**
+     * Sets up all "normal" parameter stuff
+     */
+    #setupParameters() {
+        // Amp comment
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 16]) }), value: "Amp Comment" });
+
+        // FX Slot DLY
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 0]) }), value: 160 });  // DLY
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 3]), receive: [new CCKey(26), new CCKey(27)] }), value: 1 });    // On
+
+        // FX Slot REV
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([61, 0]) }), value: 180 });  // REV
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([61, 3]), receive: [new CCKey(28), new CCKey(29)] }), value: 1 });    // On
+
+        // Parameter sets
+        this.#setupParameterSet1();
+        this.#setupParameterSet2();
+    }
+    
     /**
      * Add parameters for parameter set 1 with some foo values 
      */

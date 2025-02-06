@@ -4,6 +4,8 @@
     left: 0;
     right: 140px;
     min-width: fit-content;
+
+    display: block;
 }
 
 .virtual-client .box {
@@ -52,10 +54,4 @@
     width: 3em;
     font-size: 0.7em;
 }
-
-/*****************************************************/
-
-/* .virtual-client .slot {
-    background-color: blanchedalmond;
-} */
 

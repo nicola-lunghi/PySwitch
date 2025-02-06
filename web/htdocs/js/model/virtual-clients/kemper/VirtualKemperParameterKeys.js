@@ -31,6 +31,12 @@ class VirtualKemperParameterKeys {
             // Use send key as receive key
             this.receive = [this.send];
         }
+
+        if (this.send && !(this.send instanceof ParameterKey)) throw new Error("Invalid send key");
+        
+        for (const r of this.receive) {
+            if (!(r instanceof ParameterKey)) throw new Error("Invalid receive key");
+        }        
     }
 
     /**
@@ -45,13 +51,43 @@ class VirtualKemperParameterKeys {
         }
         return ret;
     }
+
+    /**
+     * Returns if the keys are mixed type
+     */
+    mixed() {
+        let sendNRPN = (this.send instanceof NRPNKey);
+        let receiveHasNRPN = false;
+        let receiveHasOthers = false;
+
+        for (const r of this.receive) {
+            if (r instanceof NRPNKey) {
+                receiveHasNRPN = true;
+            } else {
+                receiveHasOthers = true;
+            }
+        }
+
+        return ((sendNRPN && receiveHasOthers) || (!sendNRPN && receiveHasNRPN))
+    }
+}
+
+/**************************************************************/
+
+class ParameterKey {
+    getId() {
+        throw new Error("Must be implemented in child classes");
+    }
 }
 
 /**
  * Key for a NRPN parameter
  */
-class NRPNKey {
+class NRPNKey extends ParameterKey {
     constructor(data) {
+        super();
+
+        if (!Array.isArray(data)) throw new Error("Invalid NRPN data")
         this.data = Array.from(data);
     }
 
@@ -67,8 +103,12 @@ class NRPNKey {
 /**
  * Key for a CC parameter
  */
-class CCKey {
+class CCKey extends ParameterKey {
     constructor(control) {
+        super();
+
+        if (typeof control != "number") throw new Error("Invalid CC control")
+
         this.control = control;
     }
 
@@ -84,12 +124,8 @@ class CCKey {
 /**
  * Key for a PC parameter
  */
-class PCKey {
+class PCKey extends ParameterKey {
     getId() {
         return JSON.stringify({ program: true });
-    }
-
-    evaluateValue(value) {
-        return value;        
     }
 }

@@ -1,15 +1,20 @@
 class VirtualKemperClient extends VirtualClient {
     
     #runIntervalHandler = null;
-    protocol = null;
     #ui = null;
 
     config = null;
+    protocol = null;
     parameters = null;
+    tempo = null;
+    tuner = null;
+    morph = null;
 
     /**
      * {
-     *      productType: 2   (Player)
+     *      productType: 2            (Player),
+     *      simulateMorphBug: true    Simulates the morph bug of the Kemper (as of 02/2025) causing morph state not 
+     *                                being updated internally on morph button triggers. Remove the option when the bug is fixed.
      * }
      */
     constructor(config) {
@@ -24,6 +29,12 @@ class VirtualKemperClient extends VirtualClient {
 
         // Tempo handler
         this.tempo = new VirtualKemperTempo(this);
+
+        // Virtual tuner
+        this.tuner = new VirtualKemperTuner(this);
+
+        // Morph state handler
+        this.morph = new VirtualKemperMorph(this);
 
         // Initialize the parameters with values and types
         (new VirtualKemperClientSetup(this)).setup();
@@ -55,7 +66,10 @@ class VirtualKemperClient extends VirtualClient {
      */
     update() {
         this.protocol.update();
+
         this.tempo.update();
+        this.tuner.update();
+        this.morph.update();
     }
 
     /**
@@ -100,6 +114,7 @@ class VirtualKemperClient extends VirtualClient {
     async send(message) {
         try {
             message = message.toJs();
+            // console.log(message)
             
             // Try to parse message: Protocol
             if (this.protocol.parse(message)) return;
@@ -132,6 +147,9 @@ class VirtualKemperClient extends VirtualClient {
 
         this.parameters.destroy();
         this.tempo.destroy();
+        this.tuner.destroy();
+        this.morph.destroy();
+
         if (this.#ui) this.#ui.destroy();
     }
 

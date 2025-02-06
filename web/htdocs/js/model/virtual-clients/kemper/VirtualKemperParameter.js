@@ -7,6 +7,9 @@ class VirtualKemperParameter {
     client = null;
     config = null;
     value = null;
+    id = null;
+
+    static #nextId = 0;
 
     #callbacks = [];   // Callbacks executed on change
 
@@ -25,6 +28,8 @@ class VirtualKemperParameter {
         this.client = client;
         this.config = config || {};
 
+        if (this.config.keys && !(this.config.keys instanceof VirtualKemperParameterKeys)) throw new Error("Invalid parameter set");
+
         this.value = this.config.value ? this.config.value : 0;
         delete this.config.value;
 
@@ -34,6 +39,8 @@ class VirtualKemperParameter {
         }
 
         this.#detectFunctionCodes();
+
+        this.id = VirtualKemperParameter.#nextId++;
     }
 
     /**
@@ -78,9 +85,8 @@ class VirtualKemperParameter {
     }
 
     #parseKey(key, message) {
-        // Is it a request message for this parameter?
         if (key instanceof NRPNKey) {           
-            // Request parameter
+            // NRPN: Request parameter
             if (Tools.compareArrays(
                 message.slice(0, 8 + key.data.length),
                 [240, 0, 32, 51, this.client.config.productType, 127, this.requestFunctionCode, 0].concat(key.data)
@@ -89,30 +95,29 @@ class VirtualKemperParameter {
                 return true;
             }
 
-            // Set parameter
+            // NRPN: Set parameter
             if (Tools.compareArrays(
                 message.slice(0, 8 + key.data.length),
                 [240, 0, 32, 51, this.client.config.productType, 127, this.setFunctionCode, 0].concat(key.data)
             )) {
-                // Set parameter
-                this.setValue(key.evaluateValue(message.slice(8, 10)));
+                this.setValue(key.evaluateValue(message.slice(8, 10)), "NRPN");
                 return true;
             }
-
+        
         } else if (key instanceof CCKey) {
+            // CC: Set parameter
             if (Tools.compareArrays(
                 message.slice(0, 2),
                 [176, key.control]
             )) {
-                // Set parameter
-                this.setValue(key.evaluateValue(message[2]));
+                this.setValue(key.evaluateValue(message[2]), "CC");
                 return true;
             }
 
         } else if (key instanceof PCKey) {
+            // PC: Set parameter
             if (message[0] == 192) {
-                // Set parameter
-                this.setValue(key.evaluateValue(message[1]));
+                this.setValue(key.evaluateValue(message[1]), "PC");
                 return true;
             }
 
@@ -126,11 +131,15 @@ class VirtualKemperParameter {
     /**
      * Set the value with listeners update, if changed
      */
-    setValue(value) {
+    setValue(value, source = "NRPN") {
         if (!this.config.noBuffer && this.value == value) return;
-
-        // Set new value
-        this.value = value;
+        
+        // Set new value: If we have both NRPN and other keys, we always translate to NRPN range.
+        if (this.config.keys && this.config.keys.mixed()) {            
+            this.value = (source != "NRPN") ? (value * 128) : value;
+        } else {
+            this.value = value;
+        }        
 
         // Update UI and internal state
         for (const callback of this.#callbacks) {
@@ -149,24 +158,34 @@ class VirtualKemperParameter {
     send() {
         if (!this.config.keys.send) return;
 
+        const that = this;
+        function getMixedValue(v) {
+            if (that.config.keys && that.config.keys.mixed()) {    
+                return Math.round(that.value / 128);
+            } else {
+                return that.value;
+            }
+        }
+
         if (this.config.keys.send instanceof NRPNKey) {
             const msg = [240, 0, 32, 51, 0, 0, this.returnFunctionCode, 0].concat(
                 Array.from(this.config.keys.send.data), 
                 this.encodeValue(this.value),
                 [247]
             );
-
-            //console.log("Send NRPN", msg)
+            
+            // console.log("Send NRPN", msg)
             this.client.queueMessage(msg);
         
         } else if (this.config.keys.send instanceof CCKey) {
-            const msg = [176, this.config.keys.send.control, this.value]
+            
+            const msg = [176, this.config.keys.send.control, getMixedValue()]
             
             // console.log("Send CC", msg)
             this.client.queueMessage(msg);
 
         } else if (this.config.keys.send instanceof PCKey) {
-            const msg = [192, this.value]
+            const msg = [192, getMixedValue()]
             
             // console.log("Send PC", msg)
             this.client.queueMessage(msg);

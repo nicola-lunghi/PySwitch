@@ -37,7 +37,8 @@ class KemperParser extends Parser {
      */
     async getVirtualClient() {
         return new VirtualKemperClient({
-            productType: 2  // KPP
+            productType: 2,               // KPP
+            simulateMorphBug: true        // Simulate the morph button bug
         });
     }
 }

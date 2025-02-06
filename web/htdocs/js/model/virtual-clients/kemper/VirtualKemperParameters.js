@@ -3,10 +3,20 @@ class VirtualKemperParameters {
     #client = null;
     #data = null;
     #defaults = [];
+    #callbacks = [];
 
     constructor(client) {
         this.#client = client;
         this.#data = new Map();
+    }
+
+    /**
+     * Adds a callback after init()
+     * 
+     * callback(param) => void
+     */
+    addInitCallback(callback) {
+        this.#callbacks.push(callback);
     }
 
     /**
@@ -69,6 +79,10 @@ class VirtualKemperParameters {
             jsonKey, 
             param
         );
+
+        for (const cb of this.#callbacks) {
+            cb(param);
+        }
 
         return param;
     }

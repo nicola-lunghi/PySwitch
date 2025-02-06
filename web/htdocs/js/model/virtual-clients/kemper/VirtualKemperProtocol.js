@@ -9,7 +9,6 @@ class VirtualKemperProtocol {
 
     parameterSet = null;        // Currently active parameter set
 
-    #tunemode = null;
     #timeLeaseCounter = null;   // PeriodCounter
     #keepAliveCounter = null;    // PeriodCounter
     #keepAliveStep = 0;
@@ -50,8 +49,6 @@ class VirtualKemperProtocol {
     #sendKeepAlive(cnt) {
         const msg = [240, 0, 32, 51, this.#client.config.productType, 127, 126, 0, 127, cnt, 247];
 
-        // this.#client.log("Send keepalive message (" + cnt + ")");
-
         this.#client.queueMessage(msg);
     }    
 
@@ -72,7 +69,7 @@ class VirtualKemperProtocol {
         // const flag_echo     = !!(message[10] & 0b00000100);   // Not supported
         // const flag_nofe     = !!(message[10] & 0b00001000);   // Not supported
         // const flag_noctr    = !!(message[10] & 0b00010000);   // Not supported
-        this.#tunemode = !!(message[10] & 0b00100000);
+        // const flag_tunemode = !!(message[10] & 0b00100000);   // Not supported
 
         this.#timeLeaseCounter = new PeriodCounter(message[11] * 2000);
 
