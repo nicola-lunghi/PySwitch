@@ -237,7 +237,7 @@ class VirtualKemperClientUI {
         );
 
         // Tuner mode
-        this.#client.parameters.get(new NRPNKey([127, 126])).addChangeCallback(async function(param, value) {            
+        this.#client.parameters.get(new NRPNKey([127, 126])).addChangeCallback(async function(param, value) {          
             enableInput.prop('checked', (value == 1));
         });
         

@@ -11,6 +11,14 @@ class VirtualKemperParameter {
     #callbacks = [];   // Callbacks executed on change
     valueType = null;
 
+    // // Debug specific keys
+    // debugParamKeys = [
+    //     new NRPNKey([127, 126]),     // Tuner state
+    //     // new NRPNKey([0, 11]),        // Morph state
+    //     new NRPNKey([60, 3]),        // DLY state
+    //     new NRPNKey([50, 3]),        // A state
+    // ];
+
     /**
      * {
      *      value,                                      // Value (determines the type, too!) Default: 0
@@ -103,7 +111,7 @@ class VirtualKemperParameter {
                 message.slice(0, 8 + key.data.length),
                 [240, 0, 32, 51, this.client.config.productType, 127, this.requestFunctionCode, 0].concat(key.data)
             )) {   
-                this.send();
+                this.send();                
                 return true;
             }
 
@@ -112,7 +120,8 @@ class VirtualKemperParameter {
                 message.slice(0, 8 + key.data.length),
                 [240, 0, 32, 51, this.client.config.productType, 127, this.setFunctionCode, 0].concat(key.data)
             )) {
-                this.setValue(key.evaluateValue(message.slice(8 + key.data.length, 10 + key.data.length)), "NRPN");
+                const value = key.evaluateValue(message.slice(8 + key.data.length, 10 + key.data.length));
+                this.setValue(value);
                 return true;
             }
         
@@ -122,14 +131,15 @@ class VirtualKemperParameter {
                 message.slice(0, 2),
                 [176, key.control]
             )) {
-                this.setValue(key.evaluateValue(message[2]), "CC");
+                const value = key.evaluateValue(message[2]);
+                this.setValue(value);
                 return true;
             }
 
         } else if (key instanceof PCKey) {
             // PC: Set parameter
             if (message[0] == 192) {
-                this.setValue(key.evaluateValue(message[1]), "PC");
+                this.setValue(key.evaluateValue(message[1]));
                 return true;
             }
 
@@ -143,23 +153,20 @@ class VirtualKemperParameter {
     /**
      * Set the value with listeners update, if changed
      */
-    setValue(value, source = "NRPN") {
+    setValue(value) {
         if (!this.config.noBuffer && this.value == value) return;
 
         if (value !== null && (typeof value != this.valueType)) {
             throw new Error("Invalid value type in setValue: " + (typeof value));
         }
         
-        // Set new value: If we have both NRPN and other keys, we always translate to NRPN range.
-        if (this.config.keys && this.config.keys.mixed()) {                 
-            this.value = (source != "NRPN") ? (value * 128) : value;
-        } else {
-            this.value = value;
-        }        
+        this.value = value;
+        
+        this.#debugParam("setValue: " + this.value);
 
         // Update UI and internal state
         for (const callback of this.#callbacks) {
-            callback(this, value);
+            callback(this, this.value);
         }
         
         // Send current state, if the parameter is part of an active parameter set. All others must be requested.
@@ -174,40 +181,43 @@ class VirtualKemperParameter {
     send() {
         if (!this.config.keys.send) return;
 
-        const that = this;
-        function getMixedValue(v) {
-            if (that.config.keys && that.config.keys.mixed()) {    
-                return Math.round(that.value / 128);
-            } else {
-                return that.value;
-            }
-        }
-
         if (this.config.keys.send instanceof NRPNKey) {
             const msg = [240, 0, 32, 51, 0, 0, this.returnFunctionCode, 0].concat(
-                Array.from(this.config.keys.send.data), 
+                Array.from(this.config.keys.send.data),                 
                 this.config.keys.send.encodeValue(this.value),
                 [247]
             );
             
-            // console.log("Send NRPN", msg)
             this.client.queueMessage(msg);
+            this.#debugParam("send: (raw: " + this.value + ")" + msg);
         
         } else if (this.config.keys.send instanceof CCKey) {
+            const msg = [176, this.config.keys.send.control, this.value]
             
-            const msg = [176, this.config.keys.send.control, getMixedValue()]
-            
-            // console.log("Send CC", msg)
             this.client.queueMessage(msg);
+            this.#debugParam("send: (raw: " + this.value + ")" + msg);
 
         } else if (this.config.keys.send instanceof PCKey) {
-            const msg = [192, getMixedValue()]
+            const msg = [192, this.value]
             
-            // console.log("Send PC", msg)
             this.client.queueMessage(msg);
+            this.#debugParam("send: (raw: " + this.value + ")" + msg);
 
         } else {
             throw new Error("Invalid key type: " + (typeof this.config.keys.send));
+        }
+    }
+
+    /**
+     * Print debug info when the parameter is in debugParamKeys
+     */
+    #debugParam(msg) {
+        if (!this.config.keys || !this.debugParamKeys) return;
+
+        for (const key of this.debugParamKeys) {
+            if (key.getId() != this.config.keys.getId()) continue;
+
+            console.log(key.getDisplayName(), msg);
         }
     }
 }

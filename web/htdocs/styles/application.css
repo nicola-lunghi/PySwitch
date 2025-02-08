@@ -4,21 +4,14 @@
 
 .container .application {
     position: relative;
-    height: 100cqh;
-    width: 100cqw;
+    height: 100%;
+    width: 100%;
     overflow: hidden;
 
     container-type: size;
     
     display: block;
     background-color: white;
-
-    background-color: yellow;
-}
-
-.container .application.resizeable {
-    resize: horizontal;
-    width: unset;
 }
 
 /**********************************************/

@@ -1,21 +1,29 @@
 .container .virtual-client {
-    height: 100cqh;
-    width: 30cqw;
+    height: 100%;
+    width: 35cqw;
 
     overflow: auto;
     display: block;
 
     background-color: darkgray;
     padding: 1em;
+
+    box-shadow: inset -6px 0 6px rgba(0,0,0,0.2);
 }
 
-@media screen and (width < 600px) {
+@media all and (width <= 700px) {
     .container .virtual-client {
-        width: 100cqw;
-        height: auto;
-    }        
+        width: 100%;
+
+        box-shadow: inset 0 6px 6px rgba(0,0,0,0.2);
+    }
 }
 
+
+.container .virtual-client.resizeable {
+    resize: horizontal;
+    /* width: unset; */
+}
 
 .container .virtual-client::before {
     content: "Virtual Profiler Player";

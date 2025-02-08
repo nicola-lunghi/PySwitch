@@ -64,6 +64,10 @@ class VirtualKemperClientSetup {
                 if (that.#client.morph.rigBtnMorph && lastRigId == rigId) {
                     that.#client.morph.triggerButton();
                 }
+
+                if (lastRigId != rigId) {
+                    that.#client.parameters.get(new NRPNKey([0, 11])).setValue(0);
+                }
                 
                 lastRigId = rigId;
             }

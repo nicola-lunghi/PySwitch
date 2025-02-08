@@ -88,7 +88,6 @@ class PySwitchUI {
                         .text('Donate')
                     ),
                     
-
                     // Client connection button (class is set in the ClientConnectionButton)
                     clientButtonElement = $('<div data-toggle="tooltip"/>'),
 
@@ -260,14 +259,14 @@ class PySwitchUI {
             this.#virtualClientUI = client.getUserInterface(this.#virtualClientElement);    
             this.#virtualClientElement.show();
 
-            this.#applicationElement.toggleClass("resizeable", true);
+            this.#virtualClientElement.toggleClass("resizeable", true);
         } else {
             if (this.#virtualClientUI) {
                 this.#virtualClientUI.destroy();
             }
             this.#virtualClientElement.hide();
 
-            this.#applicationElement.toggleClass("resizeable", false);
+            this.#virtualClientElement.toggleClass("resizeable", false);
         }
     }
 

@@ -31,8 +31,7 @@ class VirtualKemperMorph {
                 this.#fadeTarget = null;
             } else {
                 const diff = this.#fadeTarget - state;
-                console.log(diff)
-
+                
                 let value;
                 if (Math.abs(diff) < this.#fadeStep) {
                     value = this.#fadeTarget;

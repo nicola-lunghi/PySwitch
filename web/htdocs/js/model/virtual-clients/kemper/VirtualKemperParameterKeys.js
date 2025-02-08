@@ -65,24 +65,24 @@ class VirtualKemperParameterKeys {
         return ret.join(", ");
     }
 
-    /**
-     * Returns if the keys are mixed type
-     */
-    mixed() {
-        let sendNRPN = (this.send instanceof NRPNKey);
-        let receiveHasNRPN = false;
-        let receiveHasOthers = false;
+    // /**
+    //  * Returns if the keys are mixed type
+    //  */
+    // mixed() {
+    //     let sendNRPN = (this.send instanceof NRPNKey);
+    //     let receiveHasNRPN = false;
+    //     let receiveHasOthers = false;
 
-        for (const r of this.receive) {
-            if (r instanceof NRPNKey) {
-                receiveHasNRPN = true;
-            } else {
-                receiveHasOthers = true;
-            }
-        }
+    //     for (const r of this.receive) {
+    //         if (r instanceof NRPNKey) {
+    //             receiveHasNRPN = true;
+    //         } else {
+    //             receiveHasOthers = true;
+    //         }
+    //     }
 
-        return ((sendNRPN && receiveHasOthers) || (!sendNRPN && receiveHasNRPN))
-    }
+    //     return ((sendNRPN && receiveHasOthers) || (!sendNRPN && receiveHasNRPN))
+    // }
 }
 
 /**************************************************************/
