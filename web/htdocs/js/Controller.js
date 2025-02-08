@@ -153,23 +153,9 @@ class Controller {
     async loadExample(path) {        
         const config = new WebConfiguration("examples/" + encodeURI(path));
             
-        // try {
-        //     console.info("If any 404 errors come up now, this is normal and tells the application to browse the contents of the example path.");
-
         await this.ui.applyConfig(config);
             
         await this.loadConfiguration(config);
-
-        // } catch(e) {
-        //     if (e.message.includes("Error fetching")) {
-        //         // No configuration found: Show browser
-        //         await this.ui.browseExample(path); 
-                   
-        //     } else {
-        //         // Error
-        //         throw e;
-        //     }
-        // }
     }
 
     /**
@@ -189,13 +175,6 @@ class Controller {
         if (!data || !data.hasOwnProperty(key)) return null;
         return data[key];
     }
-
-    // /**
-    //  * Triggered on controller selector change
-    //  */
-    // selectController(portName) {
-    //     this.routing.call(this.getControllerUrl(portName));
-    // }
 
     /**
      * Returns a href for the passed path on the current port

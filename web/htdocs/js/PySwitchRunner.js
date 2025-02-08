@@ -22,12 +22,12 @@ class PySwitchRunner {
     /**
      * Set up Pyodide and copy all sources to the Emscripten virtual file system.
      */
-    async init() {
+    async init(basePath = "") {
         if (this.#initialized) return;
 
         // Source paths
-        const localPythonPath = "python/";
-        const circuitpyPath = "circuitpy/lib/";
+        const localPythonPath = basePath + "python/";
+        const circuitpyPath = basePath + "circuitpy/lib/";
 
         // Set up pyodide
         console.log("Initialize Pyodide");

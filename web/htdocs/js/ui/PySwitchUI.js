@@ -164,7 +164,7 @@ class PySwitchUI {
             container: this.#listElement,
             headline: "Please select a configuration to load",
             providers: [
-                new ExamplesProvider(),
+                new ExamplesProvider("examples/toc.php"),
                 new PortsProvider({
                     rootText: "Connected Controllers",
                     onSelect: async function(entry) {

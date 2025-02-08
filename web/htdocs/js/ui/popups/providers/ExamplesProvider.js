@@ -1,6 +1,12 @@
 class ExamplesProvider extends BrowserProvider {
     
     #toc = null;
+    #path = null;
+
+    constructor(path) {
+        super();
+        this.#path = path;
+    }
 
     /**
      * Return TOC for all examples if not yet loaded
@@ -9,7 +15,7 @@ class ExamplesProvider extends BrowserProvider {
         if (this.#toc) return this.#toc;
 
         // Load TOC data
-        const toc = JSON.parse(await Tools.fetch("examples/toc.php"));
+        const toc = JSON.parse(await Tools.fetch(this.#path));
         
         /**
          * Select the entry
@@ -70,6 +76,9 @@ class ExamplesProvider extends BrowserProvider {
             );
 
             for(const child_def of entry.children || []) {
+                // Exclude MIDI Routing examples
+                if (child_def.name.includes("MIDI Routings")) continue;
+
                 const child = crawl(child_def, prefix + entry.name + "/");
                 child.parent = ret;
                 ret.children.push(child);
