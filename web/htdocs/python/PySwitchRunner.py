@@ -18,10 +18,14 @@ class PySwitchRunner:
         self.dom_namespace = dom_namespace
         self.update_interval_ms = update_interval_ms
         self.running = False
-        self.__protocol_state = None
+        self.protocol = None
         
     # Set up a PySwitch controller and let it run
     def run(self):
+        self.running = True
+        self.init()
+
+    def init(self):
         with patch.dict(sys.modules, {
             "micropython": MockMicropython,
             "gc": MockGC(),
@@ -68,14 +72,14 @@ class PySwitchRunner:
                 in_buf_size = 100
             )
 
-            protocol = KemperBidirectionalProtocol(
+            self.protocol = KemperBidirectionalProtocol(
                 time_lease_seconds = 30
             )
 
             # Controller instance (runs the processing loop and keeps everything together)
             self.controller = Controller(
                 led_driver = WrapNeoPixelDriver(self.dom_namespace), 
-                protocol = protocol,
+                protocol = self.protocol,
                 midi = MidiController(
                     routings = {
                         # Application: Receive MIDI messages from USB
@@ -106,31 +110,25 @@ class PySwitchRunner:
             # Prepare to run the processing loop
             self.controller.init()
                 
-        self.running = True
-
         # Local callback for set_timeout
         def tick():            
             if self.running:
                 set_timeout(tick, self.update_interval_ms)
             
-            #print(repr(self) + " tick")
+            self.tick()
 
-            self.controller.tick()
-            self.display_driver.update()
+        if self.running:
+            tick()
 
-            externalRefs.protocolState = protocol.state
+    # One tick of the controller
+    def tick(self):
+        self.controller.tick()
+        self.display_driver.update()
 
-            # # Notify when the bidirectional protocol state has been changed
-            # if protocol.state != self.__protocol_state:
-            #     self.__protocol_state = protocol.state
-
-            #     if externalRefs.stateCallback:
-            #         externalRefs.stateCallback(protocol.state);
+        externalRefs.protocolState = self.protocol.state
 
 
-        tick()
-
-    # Stop execution
+    # Stop execution of the set_timeout handler by just not renewing it
     def stop(self):        
         self.running = False
 

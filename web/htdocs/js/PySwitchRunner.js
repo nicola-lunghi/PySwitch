@@ -204,7 +204,7 @@ class PySwitchRunner {
      * Run PySwitch, terminating an existing runner before.
      * The passed inputs and display must be python code for the inputs.py and display.py files.
      */
-    async run(config) {
+    async run(config, dontTick = false) {
         console.log("Run PySwitch");
         
         // Stop if already running
@@ -224,9 +224,18 @@ class PySwitchRunner {
                 dom_namespace = "` + this.#options.domNamespace + `", 
                 update_interval_ms = "` + this.#options.updateIntervalMillis + `"
             )
-            runner.run()
+            runner.` + (dontTick ? 'init()' : 'run()') + `
             runner      # Returns the runner as a JS proxy
         `);
+    }
+
+    /**
+     * For testing, this executes a tick manually.
+     */
+    async tick() {
+        if (!this.#runner) throw new Error("No runner found");
+
+        this.#runner.tick();
     }
 
     /**

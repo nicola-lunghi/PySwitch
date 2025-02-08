@@ -8,7 +8,7 @@ class ExampleTestRunner {
         this.pyswitch = new PySwitchRunner({
             domNamespace: "pyswitch",
             updateIntervalMillis: 10
-        }, null);
+        }, "test-pyswitch-example");
     }
 
     /**
@@ -53,10 +53,17 @@ class ExampleTestRunner {
             return;
         };
 
-        // Load config files
-        const inputs_py = await Tools.fetch(this.#examplesPath + entry.config.callPath + "/inputs.py");
-        const display_py = await Tools.fetch(this.#examplesPath + entry.config.callPath + "/display.py");
+        const config = new WebConfiguration(this.#examplesPath + entry.config.callPath);
         
-        
+        // Create a temporary container element for pyswitch
+        const el = $('<div id="test-pyswitch-example" />');
+        $('body').append(el);
+
+        // Run without ticking
+        await this.pyswitch.run(await config.get(), true);
+
+        await this.pyswitch.tick();
+
+        el.remove();
     }
 }
