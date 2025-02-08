@@ -42,12 +42,15 @@ class WrapDigitalIO:
 
             self.element = document.getElementById(WrapDigitalIO.dom_namespace + "-switch-gp" + str(port))
 
+            if not self.element:
+                raise Exception("Switch " + str(port) + " not found in DOM")
+
         @property
         def value(self):
             if not self.element: 
                 return 1
             
-            dataset = self.element.dataset.to_py()
+            dataset = self.element.dataset.to_py()            
             if not dataset.hasOwnProperty("pushed"):
                 return 1
             

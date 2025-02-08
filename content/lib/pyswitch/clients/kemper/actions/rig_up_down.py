@@ -121,7 +121,6 @@ class _KemperRigChangeCallback(BinaryParameterCallback):
         next_rig_id = self.__get_next_rig(curr_rig, self.__mapping.value)
         if next_rig_id == self.__mapping.value:
             return
-        
         next_bank = int(next_rig_id / NUM_RIGS_PER_BANK)
         next_rig = next_rig_id % NUM_RIGS_PER_BANK
         

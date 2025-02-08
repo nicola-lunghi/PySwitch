@@ -159,6 +159,7 @@ class Controller(Updater): #ClientRequestListener
     # Receive MIDI messages, and in between check for switch state changes
     def __receive_midi_messages(self):
         cnt = 0
+        
         while True:            
             if self.__debug_stats:
                 self.__measurement_process_jitter.finish()
