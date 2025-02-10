@@ -256,7 +256,7 @@ class KemperRigSelectCallback(BinaryParameterCallback):
 
         # LEDs
         action.switch_color = bank_color
-        
+                
         if "preselectedBank" in self.__appl.shared and "preselectBlinkState" in self.__appl.shared:                        
             action.switch_brightness = self.__default_led_brightness_on if not self.__appl.shared["preselectBlinkState"] else self.__default_led_brightness_off
             

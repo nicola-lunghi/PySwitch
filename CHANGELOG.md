@@ -1,17 +1,25 @@
-# PySwitch v2.3.1
+# PySwitch v2.3.2
 - Bug Fixes:
     - **RIG_SELECT_AND_MORPH_STATE, RIG_UP, RIG_DOWN, BANK_SELECT, BANK_UP, BANK_DOWN**:
         - Reset the internal morph state globally (like RIG_SELECT did before already)
     - **RIG_UP, RIG_DOWN**:
         - Fixed overflow behaviour (RIG_UP at rig "125-5" now switches to "1-1" and vice versa)
     - **BANK_SELECT** with Preselect Option enabled:
-        - Do not enter preselect mode again when the bank is already selected
+        - Do not enter preselect mode again when the bank is already selected        
     - **Tuner**:
         - All buttons disable the tuner now, also if no TUNER_MODE action is contained in the preset
         - Strobe: Only show one spot on all devices, and disable by default
     - The maximum number of banks was incorrectly set to 126 (now: 125)
-- Added an option "process_overridden_actions" to TunerDisplayCallback (disabled by default). If this is enabled, the buttons keep their functionality when in tuner mode. But still, all buttons trigger switching off the tuner.
-- **BANK_SELECT** with preselect option will now also show the preselected bank in the rig name label
+    
+- Added/extended Features:
+    - Added an option "process_overridden_actions" to TunerDisplayCallback (disabled by default). If this is enabled, the buttons keep their functionality when in tuner mode. But still, all buttons trigger switching off the tuner.
+    - **BANK_SELECT** with preselect option enabled: 
+        - Will now also show the preselected bank in the rig name label
+        - All RIG_SELECT switches will blink as well until the rig is selected
+
+
+# PySwitch v2.3.1
+- Bug fix crashing the controller in certain constellations
 
 
 # PySwitch v2.3.0

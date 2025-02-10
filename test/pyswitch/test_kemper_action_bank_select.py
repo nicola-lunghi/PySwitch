@@ -733,7 +733,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
         )
 
         appl.shared = {}  # Remove preselect mark
-        
+                
         self._check_blinking(
             action = action, 
             switch = switch_2, 
@@ -744,6 +744,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             switch_rig_select = switch_1,
             rig_switch_should_blink = False
         )
+        
         self.assertEqual(len(appl.client.set_calls), 1)
 
         action.update_displays()
@@ -954,7 +955,10 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
         def update():
             cb.update()
             if action_rig_select:
-                cb_rigsel.update()
+                if rig_switch_should_blink:
+                    cb_rigsel.update()
+                else:
+                    cb_rigsel.update_displays(action_rig_select)
 
         # Off state (initial)
         update()
