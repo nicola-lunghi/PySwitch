@@ -13,13 +13,14 @@ from wrappers.wrap_adafruit_midi import *
 from wrappers.wrap_time import *
 
 class PySwitchRunner:
-    def __init__(self, container_id, dom_namespace, update_interval_ms):
+    def __init__(self, container_id, dom_namespace, update_interval_ms, coverage):
         self.container_id = container_id
 
         self.dom_namespace = dom_namespace
         self.update_interval_ms = update_interval_ms
         self.running = False
         self.protocol = None
+        self.coverage = coverage
         
     # Set up a PySwitch controller and let it run
     def run(self):
@@ -27,6 +28,12 @@ class PySwitchRunner:
         self.init()
 
     def init(self):
+        if self.coverage:
+            import coverage
+
+            cov = coverage.Coverage()
+            cov.start()
+
         with patch.dict(sys.modules, {
             "micropython": MockMicropython,
             "gc": MockGC(),
@@ -121,6 +128,11 @@ class PySwitchRunner:
 
         if self.running:
             tick()
+
+        if self.coverage:
+            cov.stop()
+            cov.save()
+            # print(cov.get_data())
 
     # One tick of the controller
     def tick(self):

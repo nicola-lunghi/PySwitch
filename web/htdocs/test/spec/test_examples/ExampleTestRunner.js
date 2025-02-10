@@ -10,7 +10,8 @@ class ExampleTestRunner {
         this.pyswitch = new PySwitchRunner(
             {
                 domNamespace: "pyswitch",
-                updateIntervalMillis: 10
+                updateIntervalMillis: 10,
+                coverage: true
             }, 
             "test-pyswitch-example"
         );
@@ -26,6 +27,22 @@ class ExampleTestRunner {
 
         // Test all examples
         await this.#testExamples();
+
+        // Show a basic coverage report in the console
+        await this.coverage();   
+    }
+
+    /**
+     * Show a coverage report in the console
+     */
+    async coverage() {
+        const cov = (await this.pyswitch.pyodide.runPython(`
+            import coverage
+            coverage.Coverage()
+        `));
+        
+        cov.load();
+        cov.report();
     }
 
     /**

@@ -9,9 +9,10 @@ class PySwitchRunner {
     /**
      * Options:
      * {
-     *     domNamespace: "pyswitch",        ID prefix for access to DOM elements from Python code. All generated elements will be prefixed with this. Mandatory.
-     *     updateIntervalMillis: 10,        Tick interval in milliseconds. On CircuitPython, the program does as much ticks as it can (in a while True loop),
-     *                                      which in a browser woult block all user interaction, so the ticks are triggered in intervals. Mandatory.
+     *      domNamespace: "pyswitch",        ID prefix for access to DOM elements from Python code. All generated elements will be prefixed with this. Mandatory.
+     *      updateIntervalMillis: 10,        Tick interval in milliseconds. On CircuitPython, the program does as much ticks as it can (in a while True loop),
+     *                                       which in a browser woult block all user interaction, so the ticks are triggered in intervals. Mandatory.
+     *      coverage: False                  Measure coverage
      * }
      */
     constructor(options, containerId) {
@@ -155,6 +156,10 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/ui/ui.py", circuitpyPath);
         await this.#loadModule("pyswitch/ui/UiController.py", circuitpyPath);
 
+        if (this.#options.coverage) {
+            await this.pyodide.loadPackage("coverage");            
+        }
+
         // Create external refs object (used to communicate with the python scripts)
         if (!window.externalRefs) {
             window.externalRefs = {};
@@ -235,7 +240,8 @@ class PySwitchRunner {
             runner = PySwitchRunner(
                 container_id = "` + this.#containerId + `", 
                 dom_namespace = "` + this.#options.domNamespace + `", 
-                update_interval_ms = "` + this.#options.updateIntervalMillis + `"
+                update_interval_ms = "` + this.#options.updateIntervalMillis + `",
+                coverage = ` + (this.#options.coverage ? "True" : "False") + `
             )
             runner.` + (dontTick ? 'init()' : 'run()') + `
             runner      # Returns the runner as a JS proxy
