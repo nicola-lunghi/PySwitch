@@ -211,7 +211,7 @@ class _KemperRigChangeCallback(BinaryParameterCallback):
                 if curr_rig_id < NUM_RIGS_PER_BANK * NUM_BANKS - 1:
                     return curr_rig_id + 1
                 else:
-                    return curr_rig_id
+                    return 0
         else:
             if self.__keep_bank:
                 if curr_rig > 0:
@@ -222,5 +222,5 @@ class _KemperRigChangeCallback(BinaryParameterCallback):
                 if curr_rig_id > 0:
                     return curr_rig_id - 1
                 else:
-                    return curr_rig_id
+                    return NUM_RIGS_PER_BANK * NUM_BANKS - 1
     

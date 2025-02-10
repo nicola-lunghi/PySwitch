@@ -40,9 +40,8 @@ class KemperBankTests extends KemperTestBase {
         if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(5, 0.2));
 
         // Overflow
-        this.runner.client.setRigId(125 * 5 - 1);
-        await this.runner.tick();
-
+        await this.runner.setRigId(125 * 5 - 1);
+        
         expect(this.runner.client.getRigId()).toBe(125 * 5 - 1);  
         expect(this.runner.getSwitchColor(switchDef)).toEqual(this.bankColor(124, 0.02));
         if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(124, 0.2));

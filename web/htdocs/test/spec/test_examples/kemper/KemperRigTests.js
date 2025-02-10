@@ -30,10 +30,10 @@ class KemperRigTests extends KemperTestBase {
         await this.runner.simulateSwitchPress(switchDef);
 
         expect(this.runner.client.getRigId()).toBe(4);
-        expect(this.runner.getSwitchColor(switchDef)).toEqual(this.bankColor(0, 0.3));
-        if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(0, 1));
-        
         if (options.keepBank) {
+            expect(this.runner.getSwitchColor(switchDef)).toEqual(this.bankColor(0, 0.3));
+            if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(0, 1));
+        
             await this.runner.simulateSwitchPress(switchDef);
 
             expect(this.runner.client.getRigId()).toBe(4);        
@@ -41,6 +41,9 @@ class KemperRigTests extends KemperTestBase {
             if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(0, 1));
 
         } else {
+            expect(this.runner.getSwitchColor(switchDef)).toEqual(this.bankColor(1, 0.3));
+            if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(1, 1));
+        
             await this.runner.simulateSwitchPress(switchDef);
 
             expect(this.runner.client.getRigId()).toBe(5);    
@@ -48,10 +51,11 @@ class KemperRigTests extends KemperTestBase {
             if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(1, 1));
         
             // Overflow
-            this.runner.client.setRigId(125 * 5 - 1);
+            await this.runner.setRigId(125 * 5 - 1);
+            expect(this.runner.client.getRigId()).toBe(624);
             await this.runner.simulateSwitchPress(switchDef);
 
-            expect(this.runner.client.getRigId()).toBe(0);    
+            expect(this.runner.client.getRigId()).toBe(0);
             expect(this.runner.getSwitchColor(switchDef)).toEqual(this.bankColor(0, 0.3));
             if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(0, 1));
         }
@@ -81,10 +85,10 @@ class KemperRigTests extends KemperTestBase {
         await this.runner.simulateSwitchPress(switchDef);
 
         expect(this.runner.client.getRigId()).toBe(20);
-        expect(this.runner.getSwitchColor(switchDef)).toEqual(this.bankColor(4, 0.3));
-        if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(4, 1));
-        
         if (options.keepBank) {
+            expect(this.runner.getSwitchColor(switchDef)).toEqual(this.bankColor(4, 0.3));
+            if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(4, 1));
+        
             await this.runner.simulateSwitchPress(switchDef);
             
             expect(this.runner.client.getRigId()).toBe(20);    
@@ -92,6 +96,9 @@ class KemperRigTests extends KemperTestBase {
             if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(4, 1));
 
         } else {
+            expect(this.runner.getSwitchColor(switchDef)).toEqual(this.bankColor(3, 0.3));
+            if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(3, 1));
+        
             await this.runner.simulateSwitchPress(switchDef);
 
             expect(this.runner.client.getRigId()).toBe(19);
@@ -99,7 +106,7 @@ class KemperRigTests extends KemperTestBase {
             if (options.labelTestCoordinates) expect(this.runner.getDisplayColorAt(options.labelTestCoordinates)).toEqual(this.bankColor(3, 1));
 
             // Overflow
-            this.runner.client.setRigId(0);
+            await this.runner.setRigId(0);
             await this.runner.simulateSwitchPress(switchDef);
             
             expect(this.runner.client.getRigId()).toBe(125 * 5 - 1);    

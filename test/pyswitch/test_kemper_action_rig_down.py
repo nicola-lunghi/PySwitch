@@ -90,7 +90,7 @@ class TestKemperActionDefinitionsRigDown(unittest.TestCase):
         # Target (no keeping bank)
         self._test_bank_colors(mapping_value = None,  keep_bank = False, exp_color = None, display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, exp_text_bank = None, exp_text_rig = None)
         
-        self._test_bank_colors(mapping_value = 0,     keep_bank = False, exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, exp_text_bank = 1, exp_text_rig = 1)
+        self._test_bank_colors(mapping_value = 0,     keep_bank = False, exp_color = BANK_COLORS[4], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, exp_text_bank = 125, exp_text_rig = 5)
         self._test_bank_colors(mapping_value = 1,     keep_bank = False, exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, exp_text_bank = 1, exp_text_rig = 1)
         self._test_bank_colors(mapping_value = 2,     keep_bank = False, exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, exp_text_bank = 1, exp_text_rig = 2)
         self._test_bank_colors(mapping_value = 3,     keep_bank = False, exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, exp_text_bank = 1, exp_text_rig = 3)
@@ -476,7 +476,7 @@ class TestKemperActionDefinitionsRigDown(unittest.TestCase):
 
         get_next_rig = action.callback._KemperRigChangeCallback__get_next_rig
 
-        self.assertEqual(get_next_rig(0, 0), 0)
+        self.assertEqual(get_next_rig(0, 0), NUM_BANKS * NUM_RIGS_PER_BANK - 1)
         self.assertEqual(get_next_rig(1, 1), 0)
         self.assertEqual(get_next_rig(2, 2), 1)
         self.assertEqual(get_next_rig(3, 3), 2)

@@ -1,8 +1,8 @@
-
 describe('Parser', function() {
-
     it('General', function() {
-		const parser = new KemperParser({});
+        const parser = new KemperParser();
+
+
     });
 });
 

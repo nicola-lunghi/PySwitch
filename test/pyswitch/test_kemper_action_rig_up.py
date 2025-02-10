@@ -104,7 +104,7 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
 
         self._test_bank_colors(mapping_value = 10,    keep_bank = False, exp_color = BANK_COLORS[2], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, exp_text_bank = 3, exp_text_rig = 2)
 
-        self._test_bank_colors(mapping_value = NUM_BANKS * NUM_RIGS_PER_BANK - 1,    keep_bank = False, exp_color = BANK_COLORS[4], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, exp_text_bank = 125, exp_text_rig = 5)
+        self._test_bank_colors(mapping_value = NUM_BANKS * NUM_RIGS_PER_BANK - 1,    keep_bank = False, exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, exp_text_bank = 1, exp_text_rig = 1)
 
         # Current (keeping bank)
         self._test_bank_colors(mapping_value = None,  keep_bank = True, exp_color = None, display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG, exp_text_bank = None, exp_text_rig = None)
@@ -485,7 +485,7 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
         self.assertEqual(get_next_rig(3, 8), 9)
         self.assertEqual(get_next_rig(4, 9), 10)
         
-        self.assertEqual(get_next_rig(NUM_RIGS_PER_BANK - 1, NUM_BANKS * NUM_RIGS_PER_BANK - 1), NUM_BANKS * NUM_RIGS_PER_BANK - 1)
+        self.assertEqual(get_next_rig(NUM_RIGS_PER_BANK - 1, NUM_BANKS * NUM_RIGS_PER_BANK - 1), 0)
     
     
     def test_get_next_rig_keep_bank(self):
