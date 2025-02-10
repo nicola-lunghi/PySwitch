@@ -5,10 +5,10 @@ class VirtualKemperTuner {
     
     running = false;
     
-    constructor(client) {
+    constructor(client, overrideTimeCallback) {
         this.#client = client;
 
-        this.#period = new PeriodCounter(20);
+        this.#period = new PeriodCounter(20, overrideTimeCallback);
     }
 
     update() {

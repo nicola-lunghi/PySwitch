@@ -8,10 +8,10 @@ class VirtualKemperMorph {
 
     rigBtnMorph = true;
     
-    constructor(client) {
+    constructor(client, overrideTimeCallback = null) {
         this.#client = client;
 
-        this.#period = new PeriodCounter(100);
+        this.#period = new PeriodCounter(100, overrideTimeCallback);
 
         this.setFadeSpeed(4);
     }

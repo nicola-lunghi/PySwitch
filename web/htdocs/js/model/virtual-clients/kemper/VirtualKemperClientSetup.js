@@ -1,7 +1,8 @@
 class VirtualKemperClientSetup {
     
     #client = null;
-
+    #numRigs = 125 * 5;
+                
     constructor(client) {
         this.#client = client;
     }
@@ -84,8 +85,8 @@ class VirtualKemperClientSetup {
             if (value == 0) {
                 let rigId = that.#client.getRigId();
                 rigId += (param.config.keys.receive[0].control == 48) ? 5 : -5;
-                if (rigId < 0) rigId = 125;
-                if (rigId > 125) rigId -= 126;
+                while (rigId < 0) rigId += that.#numRigs;
+                while (rigId > that.#numRigs - 1) rigId -= that.#numRigs;
 
                 that.#client.setRigId(rigId);
             }

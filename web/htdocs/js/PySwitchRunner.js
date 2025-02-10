@@ -47,6 +47,7 @@ class PySwitchRunner {
         await this.#loadModule("wrappers/wrap_adafruit_midi.py", localPythonPath);
         await this.#loadModule("wrappers/wrap_adafruit_led.py", localPythonPath);
         await this.#loadModule("wrappers/wrap_adafruit_display.py", localPythonPath);
+        await this.#loadModule("wrappers/wrap_time.py", localPythonPath);
         await this.#loadModule("wrappers/WrapDisplayDriver.py", localPythonPath);
         
         //////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,6 +177,18 @@ class PySwitchRunner {
     getProtocolState() {
         if (!window.externalRefs) return null;
         return window.externalRefs.protocolState;
+    }
+
+    /**
+     * Overrides current time for testing
+     * 
+     * callback() => seconds (replaces time.monotonic())
+     */
+    setTimeCallback(callback) {
+        if (!window.externalRefs) {
+            window.externalRefs = {};
+        }
+        window.externalRefs.overrideMonotonic = callback;
     }
 
     /**

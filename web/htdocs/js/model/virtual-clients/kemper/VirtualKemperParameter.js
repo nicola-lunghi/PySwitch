@@ -13,10 +13,15 @@ class VirtualKemperParameter {
 
     // // Debug specific keys
     // debugParamKeys = [
-    //     new NRPNKey([127, 126]),     // Tuner state
+    //     // new NRPNKey([127, 126]),     // Tuner state
     //     // new NRPNKey([0, 11]),        // Morph state
-    //     new NRPNKey([60, 3]),        // DLY state
-    //     new NRPNKey([50, 3]),        // A state
+    //     // new NRPNKey([60, 3]),        // DLY state
+    //     // new NRPNKey([50, 3]),        // A state
+    //     new CCKey(50),                   // Select rig
+    //     new CCKey(51),                   // Select rig
+    //     new CCKey(52),                   // Select rig
+    //     new CCKey(53),                   // Select rig
+    //     new CCKey(54),                   // Select rig
     // ];
 
     /**

@@ -13,12 +13,15 @@ class VirtualKemperProtocol {
     #keepAliveCounter = null;    // PeriodCounter
     #keepAliveStep = 0;
 
-    constructor(client) {
+    #overrideTimeCallback = null;
+
+    constructor(client, overrideTimeCallback = null) {
         this.#client = client;
+        this.#overrideTimeCallback = overrideTimeCallback;
 
         this.state = VirtualKemperProtocol.STATE_OFFLINE;
 
-        this.#keepAliveCounter = new PeriodCounter(500);
+        this.#keepAliveCounter = new PeriodCounter(500, this.#overrideTimeCallback);
     }
 
     /**
@@ -71,7 +74,7 @@ class VirtualKemperProtocol {
         // const flag_noctr    = !!(message[10] & 0b00010000);   // Not supported
         // const flag_tunemode = !!(message[10] & 0b00100000);   // Not supported
 
-        this.#timeLeaseCounter = new PeriodCounter(message[11] * 2000);
+        this.#timeLeaseCounter = new PeriodCounter(message[11] * 2000, this.#overrideTimeCallback);
 
         this.state = VirtualKemperProtocol.STATE_CONNECTED;
 

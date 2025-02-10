@@ -27,7 +27,7 @@ class Parser {
     /**
      * Must return a virtual client, or null if the config does not support a virtual client.
      */
-    async getVirtualClient() {
+    async getVirtualClient(config) {
         return null;
     }
 }

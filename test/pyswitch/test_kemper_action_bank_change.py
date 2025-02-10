@@ -91,7 +91,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
 
         self._test_bank_colors(up = up, mapping_value = 10,    exp_color = BANK_COLORS[2], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
 
-        self._test_bank_colors(up = up, mapping_value = NUM_BANKS * NUM_RIGS_PER_BANK - 1,  exp_color = BANK_COLORS[0], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
+        self._test_bank_colors(up = up, mapping_value = NUM_BANKS * NUM_RIGS_PER_BANK - 1,  exp_color = BANK_COLORS[4], display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
 
         # Target
         self._test_bank_colors(up = up, mapping_value = None,  exp_color = Colors.WHITE, display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
@@ -110,7 +110,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
 
         self._test_bank_colors(up = up, mapping_value = 10,    exp_color = BANK_COLORS[3 if up else 1], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
 
-        self._test_bank_colors(up = up, mapping_value = NUM_BANKS * NUM_RIGS_PER_BANK - 1,    exp_color = BANK_COLORS[1 if up else 4], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_bank_colors(up = up, mapping_value = NUM_BANKS * NUM_RIGS_PER_BANK - 1,    exp_color = BANK_COLORS[0 if up else 3], display_mode = RIG_SELECT_DISPLAY_TARGET_RIG)
 
 
     def _test_bank_colors(self, up, mapping_value, exp_color, display_mode):

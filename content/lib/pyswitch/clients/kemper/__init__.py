@@ -24,7 +24,7 @@ NRPN_PRODUCT_TYPE = NRPN_PRODUCT_TYPE_PROFILER_PLAYER
 NUM_RIGS_PER_BANK = 5
 
 # Defines how many banks there are
-NUM_BANKS = 126
+NUM_BANKS = 125
 
 # Bank colors
 BANK_COLORS = [

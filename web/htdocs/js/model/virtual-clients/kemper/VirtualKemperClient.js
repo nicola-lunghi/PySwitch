@@ -15,6 +15,7 @@ class VirtualKemperClient extends VirtualClient {
      *      productType: 2            (Player),
      *      simulateMorphBug: true    Simulates the morph bug of the Kemper (as of 02/2025) causing morph state not 
      *                                being updated internally on morph button triggers. Remove the option when the bug is fixed.
+     *      overrideTimeCallback:     Optional callback function replacing Date.now() for testing.
      * }
      */
     constructor(config) {
@@ -25,16 +26,16 @@ class VirtualKemperClient extends VirtualClient {
         this.parameters = new VirtualKemperParameters(this);
 
         // Bidirectional protocol
-        this.protocol = new VirtualKemperProtocol(this);
+        this.protocol = new VirtualKemperProtocol(this, config.overrideTimeCallback);
 
         // Tempo handler
-        this.tempo = new VirtualKemperTempo(this);
+        this.tempo = new VirtualKemperTempo(this, config.overrideTimeCallback);
 
         // Virtual tuner
-        this.tuner = new VirtualKemperTuner(this);
+        this.tuner = new VirtualKemperTuner(this, config.overrideTimeCallback);
 
         // Morph state handler
-        this.morph = new VirtualKemperMorph(this);
+        this.morph = new VirtualKemperMorph(this, config.overrideTimeCallback);
 
         // Initialize the parameters with values and types
         (new VirtualKemperClientSetup(this)).setup();

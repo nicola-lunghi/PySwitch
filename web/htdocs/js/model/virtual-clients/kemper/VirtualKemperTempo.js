@@ -6,8 +6,11 @@ class VirtualKemperTempo {
 
     #callbacks = [];
 
-    constructor(client) {
+    #overrideTimeCallback = null;
+
+    constructor(client, overrideTimeCallback) {
         this.#client = client;
+        this.#overrideTimeCallback = overrideTimeCallback;
 
         this.set(120);
     }
@@ -44,7 +47,7 @@ class VirtualKemperTempo {
             return;
         }
 
-        this.#period = new PeriodCounter(30000 / Math.round(bpm));
+        this.#period = new PeriodCounter(30000 / Math.round(bpm), this.#overrideTimeCallback);
 
         for (const c of this.#callbacks) {
             c(this.bpm());
@@ -68,7 +71,7 @@ class VirtualKemperTempo {
             return;
         }
 
-        this.#period = new PeriodCounter(diff / 2);
+        this.#period = new PeriodCounter(diff / 2, this.#overrideTimeCallback);
 
         for (const c of this.#callbacks) {
             c(this.bpm());

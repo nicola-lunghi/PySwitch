@@ -3,9 +3,9 @@ class VirtualClient {
     /**
      * Factory for virtual clients (which mus provide an interface similar to the MIDI wrappers)
      */
-    static async getInstance(config) {
+    static async getInstance(config, additionalOptions = {}) {
         const parser = await config.parser();
-        return parser.getVirtualClient();
+        return parser.getVirtualClient(additionalOptions);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////

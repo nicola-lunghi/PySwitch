@@ -19,6 +19,9 @@ class WrapNeoPixelDriver:
             if not led:
                 return
             
+            # Store original value for testing
+            led.dataset.color = [v for v in value]
+
             # When black, make transparent
             if value == (0, 0, 0):
                 led.style.backgroundColor = f"rgba(0, 0, 0, 0)"
@@ -32,18 +35,6 @@ class WrapNeoPixelDriver:
                 return x if x < 256 else 255
             
             value = [clip(trans(v * 3)) for v in value]
-
-            # # Change orientation towards white
-            # hsv = colorsys.rgb_to_hsv(value[0] / 255, value[1] / 255, value[2] / 255)
-            # print("---")
-            # print(hsv)
-            # value = colorsys.hsv_to_rgb(
-            #     hsv[0],
-            #     hsv[1],
-            #     1 - hsv[2]
-            # )
-            # value = [v * 255 for v in value]
-            # print(value)
 
             # When black, make transparent
             led.style.backgroundColor = f"rgb({ value[0] }, { value[1] }, { value[2] })"
