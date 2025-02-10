@@ -7,7 +7,6 @@ from adafruit_midi.program_change import ProgramChange
 _CC_BANK_INCREASE = const(48)
 _CC_BANK_DECREASE = const(49)
 _CC_RIG_INDEX_PART_1 = const(32) # The second part will be sent as program change.
-#CC_VALUE_BANK_CHANGE = const(0)
 
 
 def MAPPING_NEXT_BANK(): 

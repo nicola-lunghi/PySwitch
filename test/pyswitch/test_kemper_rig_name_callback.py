@@ -23,6 +23,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.misc import Updater
 
     from .mocks_appl import MockClient
+    from .mocks_ui import MockUiController
     
 
 class MockController2(Updater):
@@ -43,6 +44,21 @@ class TestKemperRigNameCallback(unittest.TestCase):
         self._test(True, True)
 
     def _test(self, show_name, show_rig_id):
+        self._do_test(
+            show_name = show_name,
+            show_rig_id = show_rig_id,
+            preselect = False
+        )
+
+        if show_name or show_rig_id:
+            self._do_test(
+                show_name = show_name,
+                show_rig_id = show_rig_id,
+                preselect = True
+            )
+
+
+    def _do_test(self, show_name, show_rig_id, preselect):
         cb = KemperRigNameCallback(
             show_name = show_name,
             show_rig_id = show_rig_id
@@ -61,6 +77,10 @@ class TestKemperRigNameCallback(unittest.TestCase):
             callback = cb
         )
 
+        appl = MockController2()
+        ui = MockUiController()
+        label.init(ui, appl)
+
         if show_name:
             mapping_name = [m for m in cb._Callback__mappings if m == KemperMappings.RIG_NAME()][0]
             mapping_name.value = "foo"
@@ -68,6 +88,16 @@ class TestKemperRigNameCallback(unittest.TestCase):
         if show_rig_id:
             mapping_id = [m for m in cb._Callback__mappings if m == KemperMappings.RIG_ID()][0]
             mapping_id.value = 12
+
+        if preselect:
+            appl.shared["preselectedBank"] = 2
+            cb.update()
+
+            self.assertEqual(label.text, "Bank 3")
+
+            del appl.shared["preselectedBank"]
+
+            cb.update()
 
         cb.update_label(label)
 

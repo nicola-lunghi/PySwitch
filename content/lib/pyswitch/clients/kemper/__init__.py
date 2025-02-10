@@ -81,9 +81,30 @@ class KemperRigNameCallback(Callback):
         self.__show_rig_id = show_rig_id
         if show_rig_id:
             self.__mapping_id = KemperMappings.RIG_ID()
-            self.register_mapping(self.__mapping_id)        
+            self.register_mapping(self.__mapping_id)    
+
+        self.__preselect_initialized = False    
+
+    def init(self, appl, listener = None):
+        super().init(appl, listener)
+        self.__appl = appl
+
+    def update(self):
+        super().update()
+
+        if "preselectedBank" in self.__appl.shared:
+            if not self.__preselect_initialized:
+                self.__preselect_initialized = True
+                self.parameter_changed(self.__mapping_id if hasattr(self, "_KemperRigNameCallback__mapping_id") else self.__mapping_name)
+        else:
+            if self.__preselect_initialized:
+                self.__preselect_initialized = False
 
     def update_label(self, label):
+        if "preselectedBank" in self.__appl.shared:
+            label.text = f"Bank { str(self.__appl.shared["preselectedBank"] + 1) }"
+            return
+        
         if self.__show_name:
             name = self.__mapping_name.value if self.__mapping_name.value else self.DEFAULT_TEXT
 
