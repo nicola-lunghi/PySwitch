@@ -113,6 +113,8 @@ class KemperRigSelectCallback(BinaryParameterCallback):
         self.__auto_exclude_rigs = auto_exclude_rigs
         self.__rig_btn_morph = rig_btn_morph
 
+        self.__last_blink_state = None
+
     def init(self, appl, listener = None):
         super().init(appl, listener)
 
@@ -161,7 +163,20 @@ class KemperRigSelectCallback(BinaryParameterCallback):
         self.__appl.client.set(set_mapping, value)
 
 
+    def update(self):
+        BinaryParameterCallback.update(self)
+
+        if "preselectedBank" in self.__appl.shared and "preselectBlinkState" in self.__appl.shared:
+            bs = self.__appl.shared["preselectBlinkState"]
+    
+            if self.__last_blink_state != bs:
+                self.__last_blink_state = bs
+                self.update_displays(self.__action)
+
+
     def update_displays(self, action):
+        self.__action = action
+
         if self.__mapping.value == None:
             if action.label:
                 action.label.text = ""
@@ -198,9 +213,10 @@ class KemperRigSelectCallback(BinaryParameterCallback):
                 self.__bank_off = curr_bank + 1                    
                 self._value_disable[0] = curr_bank
 
-            if "preselectedBank" in self.__appl.shared:
+            if "preselectedBank" in self.__appl.shared:                
                 del self.__appl.shared["preselectedBank"]
             
+
         if self.__bank != None:
             is_current = (curr_rig == (self.__rig - 1) and curr_bank == (self.__bank - 1))
         else:
@@ -240,11 +256,16 @@ class KemperRigSelectCallback(BinaryParameterCallback):
 
         # LEDs
         action.switch_color = bank_color
-
-        if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state and not "preselectedBank" in self.__appl.shared:
-            action.switch_brightness = self.__default_led_brightness_on
+        
+        if "preselectedBank" in self.__appl.shared and "preselectBlinkState" in self.__appl.shared:                        
+            action.switch_brightness = self.__default_led_brightness_on if not self.__appl.shared["preselectBlinkState"] else self.__default_led_brightness_off
+            
         else:
-            action.switch_brightness = self.__default_led_brightness_off
+            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state:
+                action.switch_brightness = self.__default_led_brightness_on
+            else:
+                action.switch_brightness = self.__default_led_brightness_off
+
 
     def __get_color(self, action, curr_bank, curr_rig, is_current):
         if self.__color:

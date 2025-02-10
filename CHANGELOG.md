@@ -11,6 +11,7 @@
         - Strobe: Only show one spot on all devices, and disable by default
     - The maximum number of banks was incorrectly set to 126 (now: 125)
 - Added an option "process_overridden_actions" to TunerDisplayCallback (disabled by default). If this is enabled, the buttons keep their functionality when in tuner mode. But still, all buttons trigger switching off the tuner.
+- **BANK_SELECT** with preselect option will now also show the preselected bank in the rig name label
 
 
 # PySwitch v2.3.0

@@ -24,6 +24,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.misc import Updater, Colors
 
     from lib.pyswitch.clients.kemper.actions.bank_select import *
+    from lib.pyswitch.clients.kemper.actions.rig_select import *
     from lib.pyswitch.clients.kemper.mappings.select import *
     
 
@@ -650,7 +651,12 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         action_other = MockAction()
 
-        switch_1 = MockFootswitch(actions = [action_other])
+        action_rig_select = RIG_SELECT(
+            rig = 2,
+            display_mode = display_mode
+        )
+
+        switch_1 = MockFootswitch(actions = [action_other, action_rig_select])
         switch_2 = MockFootswitch(actions = [action])
         appl = MockController2(inputs = [
             switch_1,
@@ -659,16 +665,30 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             MockInputControllerDefinition()
         ])
         action.init(appl, switch_2)
+        action_rig_select.init(appl, switch_1)
         
         mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping_rigsel = action_rig_select.callback._BinaryParameterCallback__mapping 
         
         mapping.value = 10   # Off rig
+        mapping_rigsel.value = mapping.value
+
         exp_color = BANK_COLORS[2] if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[1]
         action.update_displays()
+        action_rig_select.update()
         self.assertEqual(action.state, False)
         
-        self._check_blinking(action, switch_2, display, exp_color, False)
-
+        self._check_blinking(
+            action = action, 
+            switch = switch_2, 
+            display = display, 
+            exp_color = exp_color, 
+            should_blink = False, 
+            action_rig_select = action_rig_select,
+            switch_rig_select = switch_1,
+            rig_switch_should_blink = False
+        )
+        
         # Select rig the first time
         action.push()
         action.release()
@@ -679,21 +699,51 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             "value": [1]
         })
 
-        self._check_blinking(action, switch_2, display, exp_color, display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._check_blinking(
+            action = action, 
+            switch = switch_2, 
+            display = display, 
+            exp_color = exp_color, 
+            should_blink = (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG),
+            action_rig_select = action_rig_select,
+            switch_rig_select = switch_1,
+            rig_switch_should_blink = True
+        )
         
         mapping.value = 6   # On rig 
+        
         exp_color = BANK_COLORS[1]
         action.update_displays()
+        action_rig_select.update()
         self.assertEqual(action.state, True) 
 
-        # Select rig again 
+        # Select rig again
         action.push()
         action.release()
 
-        self._check_blinking(action, switch_2, display, exp_color, display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
-        appl.shared = {}  # Remove preselect mark
-        self._check_blinking(action, switch_2, display, exp_color, False)
+        self._check_blinking(
+            action = action, 
+            switch = switch_2, 
+            display = display, 
+            exp_color = exp_color, 
+            should_blink = (display_mode == RIG_SELECT_DISPLAY_TARGET_RIG),
+            action_rig_select = action_rig_select,
+            switch_rig_select = switch_1,
+            rig_switch_should_blink = True
+        )
 
+        appl.shared = {}  # Remove preselect mark
+        
+        self._check_blinking(
+            action = action, 
+            switch = switch_2, 
+            display = display, 
+            exp_color = exp_color, 
+            should_blink = False,
+            action_rig_select = action_rig_select,
+            switch_rig_select = switch_1,
+            rig_switch_should_blink = False
+        )
         self.assertEqual(len(appl.client.set_calls), 1)
 
         action.update_displays()
@@ -701,15 +751,26 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         # Receive other rig
         mapping.value = 20  # Off rig
+        
         exp_color = BANK_COLORS[4] if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[1]
         action.update_displays()
+        action_rig_select.update()
 
         self.assertEqual(action.state, False)
 
         self.assertEqual(len(appl.client.set_calls), 1)
 
-        self._check_blinking(action, switch_2, display, exp_color, False)
-
+        self._check_blinking(
+            action = action, 
+            switch = switch_2, 
+            display = display, 
+            exp_color = exp_color, 
+            should_blink = False,
+            action_rig_select = action_rig_select,
+            switch_rig_select = switch_1,
+            rig_switch_should_blink = False
+        )
+        
 
 ###################################################################################################################
 
@@ -852,27 +913,52 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
 
     # Checks if the LEDs are blinking
-    def _check_blinking(self, action, switch, display, exp_color, should_blink, exp_state = None):
+    def _check_blinking(self, 
+                        action, 
+                        switch, 
+                        display,
+                        exp_color, 
+                        should_blink, 
+                        exp_state = None, 
+                        action_rig_select = None, 
+                        switch_rig_select = None, 
+                        rig_switch_should_blink = False
+        ):
         cb = action.callback
 
+        if action_rig_select:
+            cb_rigsel = action_rig_select.callback
+
+        brightness_off = cb._KemperBankSelectCallback__default_led_brightness_off
+        brightness_on = cb._KemperBankSelectCallback__default_led_brightness_on
+
         if exp_state:
-            exp_brightness_off = cb._KemperBankSelectCallback__default_led_brightness_on if exp_state else cb._KemperBankSelectCallback__default_led_brightness_off
+            exp_brightness_off = brightness_on if exp_state else brightness_off
             exp_brightness_on = exp_brightness_off
 
             factor_off = 1 if exp_state else 0.2
             factor_on = factor_off
         else:
-            exp_brightness_off = cb._KemperBankSelectCallback__default_led_brightness_off
-            exp_brightness_on = cb._KemperBankSelectCallback__default_led_brightness_on if should_blink else exp_brightness_off
+            exp_brightness_off = brightness_off
+            exp_brightness_on = brightness_on if should_blink else exp_brightness_off
 
             factor_off = 0.2
             factor_on = 1 if should_blink else factor_off
 
+        rig_exp_brightness_off = brightness_off
+        rig_exp_brightness_on = brightness_on if rig_switch_should_blink else exp_brightness_off
+
         period = MockPeriodCounter()
         cb._KemperBankSelectCallback__preselect_blink_period = period
 
+        def update():
+            cb.update()
+            if action_rig_select:
+                cb_rigsel.update()
+
         # Off state (initial)
-        cb.update()
+        update()
+
         self.assertEqual(switch.brightness, exp_brightness_off)
         self.assertEqual(display.back_color, (
             int(exp_color[0] * factor_off),
@@ -880,10 +966,13 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             int(exp_color[2] * factor_off)
         ))
 
+        if action_rig_select:
+            self.assertEqual(switch_rig_select.brightness, rig_exp_brightness_on)
+
         # Blink on
         period.exceed_next_time = True
         
-        cb.update()        
+        update()
         
         self.assertEqual(switch.brightness, exp_brightness_on)
         self.assertEqual(display.back_color, (
@@ -891,11 +980,14 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             int(exp_color[1] * factor_on),
             int(exp_color[2] * factor_on)
         ))
+
+        if action_rig_select:
+            self.assertEqual(switch_rig_select.brightness, rig_exp_brightness_off)
 
         # Blink off
         period.exceed_next_time = True
                 
-        cb.update()
+        update()
 
         self.assertEqual(switch.brightness, exp_brightness_off)
         self.assertEqual(display.back_color, (
@@ -904,10 +996,13 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             int(exp_color[2] * factor_off)
         ))
 
+        if action_rig_select:
+            self.assertEqual(switch_rig_select.brightness, rig_exp_brightness_on)
+
         # Blink on
         period.exceed_next_time = True
         
-        cb.update()        
+        update()
 
         self.assertEqual(switch.brightness, exp_brightness_on)
         self.assertEqual(display.back_color, (
@@ -916,10 +1011,13 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             int(exp_color[2] * factor_on)
         ))
 
+        if action_rig_select:
+            self.assertEqual(switch_rig_select.brightness, rig_exp_brightness_off)
+
         # Blink off
         period.exceed_next_time = True
         
-        cb.update()        
+        update()
 
         self.assertEqual(switch.brightness, exp_brightness_off)
         self.assertEqual(display.back_color, (
@@ -927,6 +1025,9 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             int(exp_color[1] * factor_off),
             int(exp_color[2] * factor_off)
         ))
+
+        if action_rig_select:
+            self.assertEqual(switch_rig_select.brightness, rig_exp_brightness_on)
 
 
 

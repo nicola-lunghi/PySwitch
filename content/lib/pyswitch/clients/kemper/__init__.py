@@ -95,7 +95,11 @@ class KemperRigNameCallback(Callback):
         if "preselectedBank" in self.__appl.shared:
             if not self.__preselect_initialized:
                 self.__preselect_initialized = True
-                self.parameter_changed(self.__mapping_id if hasattr(self, "_KemperRigNameCallback__mapping_id") else self.__mapping_name)
+
+                if self.__show_name:
+                    self.parameter_changed(self.__mapping_name)
+                elif self.__show_rig_id:
+                    self.parameter_changed(self.__mapping_id)
         else:
             if self.__preselect_initialized:
                 self.__preselect_initialized = False

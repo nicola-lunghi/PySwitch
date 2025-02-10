@@ -75,7 +75,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         self.__preselect = preselect
         if preselect:
             self.__preselect_blink_period = PeriodCounter(preselect_blink_interval)
-            self.__blink_state = False
+            # self.__blink_state = False
 
         self.__action = None
 
@@ -87,11 +87,15 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         self.__default_led_brightness_on = get_option(appl.config, "ledBrightnessOn", 0.3)
         self.__appl = appl
 
+        if self.__preselect:
+            self.__appl.shared["preselectBlinkState"] = False
+
     def update(self):
         BinaryParameterCallback.update(self)
 
         if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1 and self.__preselect_blink_period.exceeded:
-            self.__blink_state = not self.__blink_state
+            # self.__blink_state = not self.__blink_state
+            self.__appl.shared["preselectBlinkState"] = not self.__appl.shared["preselectBlinkState"]
 
             self.update_displays(self.__action)
 
@@ -182,7 +186,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
             #     del self.__appl.shared["preselectedBank"]
 
         if "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1:
-            is_current = self.__blink_state
+            is_current = self.__appl.shared["preselectBlinkState"] #self.__blink_state
         else:
             is_current = (curr_bank == (self.__bank - 1))
 
