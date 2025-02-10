@@ -142,6 +142,14 @@ class ExampleTestRunner {
     }
 
     /**
+     * Sets the rig ID incl. a tick afterwards.
+     */
+    async setRigId(id) {
+        this.client.setRigId(id);
+        await this.tick();
+    }
+
+    /**
      * Simulates that a switch is pushed and released again, with ticks in between.
      */
     async simulateSwitchPress(switchDef, holdTime = 100) {
