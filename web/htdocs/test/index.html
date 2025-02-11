@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PySwitch Emulator Unit Tests</title>
+
+  <link rel="shortcut icon" type="image/png" href="lib/jasmine-5.5.0/jasmine_favicon.png">
+  <link rel="stylesheet" href="lib/jasmine-5.5.0/jasmine.css">
+
+  <script src="lib/jasmine-5.5.0/jasmine.js"></script>
+  <script src="lib/jasmine-5.5.0/jasmine-html.js"></script>
+  <script src="lib/jasmine-5.5.0/boot0.js"></script>
+  <script src="lib/jasmine-5.5.0/boot1.js"></script>
+
+  <link rel="stylesheet" href="styles/test-examples.css">
+
+  <!-- Application lib files -->
+  <script type="text/javascript" src="../lib/pyodide/pyodide.js"></script>
+  <script type="text/javascript" src="../lib/jquery-3.7.1.min.js"></script>
+
+  <!-- include source files here... -->
+  <script src="../js/misc/Tools.js"></script>
+  <script src="../js/misc/PeriodCounter.js"></script>
+  <script src="../js/PySwitchRunner.js"></script>
+  
+  <script src="../js/ui/popups/BrowserEntry.js"></script>
+  <script src="../js/ui/popups/providers/BrowserProvider.js"></script>
+  <script src="../js/ui/popups/providers/ExamplesProvider.js"></script>
+
+  <script src="../js/model/configurations/Configuration.js"></script>
+  <script src="../js/model/configurations/WebConfiguration.js"></script>
+
+  <script src="../js/model/parsers/Parser.js"></script>
+  <script src="../js/model/parsers/KemperParser.js"></script>
+
+  <script src="../js/model/virtual-clients/VirtualClient.js"></script>
+  <script src="../js/model/virtual-clients/kemper/VirtualKemperClient.js"></script>
+  <script src="../js/model/virtual-clients/kemper/VirtualKemperClientSetup.js"></script>
+  <script src="../js/model/virtual-clients/kemper/VirtualKemperMorph.js"></script>
+  <script src="../js/model/virtual-clients/kemper/VirtualKemperParameter.js"></script>
+  <script src="../js/model/virtual-clients/kemper/VirtualKemperParameterDefault.js"></script>
+  <script src="../js/model/virtual-clients/kemper/VirtualKemperParameterKeys.js"></script>
+  <script src="../js/model/virtual-clients/kemper/VirtualKemperParameters.js"></script>
+  <script src="../js/model/virtual-clients/kemper/VirtualKemperProtocol.js"></script>
+  <script src="../js/model/virtual-clients/kemper/VirtualKemperTempo.js"></script>
+  <script src="../js/model/virtual-clients/kemper/VirtualKemperTuner.js"></script>
+    
+  <!-- include spec files here... -->
+  <script src="spec/test_examples/ExampleTestRunner.js"></script>
+
+  <script src="spec/test_examples/kemper/KemperTestBase.js"></script>
+  <script src="spec/test_examples/kemper/KemperInfoProvider.js"></script>
+  <script src="spec/test_examples/kemper/KemperBankTests.js"></script>
+  <script src="spec/test_examples/kemper/KemperRigTests.js"></script>
+  <script src="spec/test_examples/kemper/KemperTunerTests.js"></script>
+
+  <script src="spec/test_parser/KemperParserTests.js"></script>
+
+  <script src="spec/test_examples.js"></script>
+  <script src="spec/test_parser.js"></script>
+    
+</head>
+
+<body>
+</body>
+</html>

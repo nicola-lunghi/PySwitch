@@ -1,5 +1,48 @@
 class KemperParser extends Parser {
+
+    #parser = null;
     
+    /**
+     * Creates the python libcst parser. Must be called at least once before 
+     * the parser is actually used. Expects the PySwitchRunner.
+     */
+    async init(runner) {
+        if (this.parser) return;        
+        this.#parser = await runner.pyodide.runPython(`            
+            from PySwitchParser import PySwitchParser
+            PySwitchParser()
+        `);    
+    }
+
+    /**
+     * Returns a CST (Concrete Syntax Tree) from the sources.
+     */
+    async parse() {
+        if (!this.#parser) throw new Error("Please call init() before");
+
+        const inputs_py = (await this.config.get()).inputs_py;
+        const display_py = (await this.config.get()).display_py;
+
+        return {
+            inputs_py: await this.#parser.parse(inputs_py),
+            display_py: await this.#parser.parse(display_py)
+        }
+    }
+
+    /**
+     * Unparse a CST tree
+     */
+    async unparse(cst) {
+        if (!this.#parser) throw new Error("Please call init() before");
+
+        return {
+            inputs_py: await this.#parser.unparse(cst.inputs_py),
+            display_py: await this.#parser.unparse(cst.display_py)
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Returns the class(es) to set on the device element
      */

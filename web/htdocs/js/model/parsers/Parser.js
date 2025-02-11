@@ -11,6 +11,14 @@ class Parser {
     }
 
     /**
+     * Returns a CST (Concrete Syntax Tree) from the sources.
+     * Expects the PySwitchRunner.
+     */
+    async parse(runner) {
+        throw new Error("Must be implemented in child classes");
+    }
+
+    /**
      * Returns the CSS class(es) to set on the device element
      */
     async getClass() {

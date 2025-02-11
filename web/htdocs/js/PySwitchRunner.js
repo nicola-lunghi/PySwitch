@@ -40,6 +40,7 @@ class PySwitchRunner {
 
         await this.#loadModule("PySwitchRunner.py", localPythonPath);
         await this.#loadModule("PySwitchDevice.py", localPythonPath);
+        await this.#loadModule("PySwitchParser.py", localPythonPath);
         await this.#loadModule("mocks.py", localPythonPath);
 
         this.pyodide.FS.mkdir("wrappers");
@@ -156,8 +157,9 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/ui/ui.py", circuitpyPath);
         await this.#loadModule("pyswitch/ui/UiController.py", circuitpyPath);
 
+        await this.pyodide.loadPackage("libcst");
         if (this.#options.coverage) {
-            await this.pyodide.loadPackage("coverage");            
+            await this.pyodide.loadPackage("coverage");
         }
 
         // Create external refs object (used to communicate with the python scripts)

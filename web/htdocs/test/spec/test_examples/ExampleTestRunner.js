@@ -128,10 +128,33 @@ class ExampleTestRunner {
         // Run the dedicated test if any has been found
         if (testSetup && testScript) {
             await this.#runExampleTest(testSetup, testScript);
-        }        
+        }
+        
+        // Run parser tests
+        await this.#testParserWithExample(config);
         
         // Remove the test element from the body again
         el.remove();
+    }
+
+    /**
+     * Tests the parser with the example
+     */
+    async #testParserWithExample(config) {
+        // Create and init parser
+        const parser = await config.parser();
+        await parser.init(this.pyswitch);
+
+        // Parse the code
+        const tree = await parser.parse();
+
+        // Unparse again
+        const unparsed = await parser.unparse(tree);
+
+        // Check if the result is the same as before
+        const data = await config.get();
+        expect(unparsed.inputs_py).toEqual(data.inputs_py);
+        expect(unparsed.display_py).toEqual(data.display_py);
     }
 
     /**
