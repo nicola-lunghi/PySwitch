@@ -1,3 +1,5 @@
+# THIS IS STILL UNDER CONSTRUCTION! JUST IGNORE FOR THE MOMENT PLEASE
+
 # PySwitch Emulator
 
 This is a web based configuration/simulation tool for PySwitch. If you just want to use it, you can access the demo of this code here:
@@ -6,7 +8,7 @@ https://pyswitch.tunetown.de
 
 ## Run locally
 
-If you want to run it locally or do any developemnt to it, you need to install Docker if not already done. Then you can just open a terminal in this folder and run this command:
+If you want to run it locally or do any development to it, you need to install Docker if not already done. Then you can just open a terminal in this folder and run this command:
 
 docker compose up -d
 
