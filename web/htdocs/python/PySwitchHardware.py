@@ -2,7 +2,6 @@ import sys
 from unittest.mock import patch
 
 import importlib
-import json
 
 from mocks import *
 from wrappers.wrap_circuitpy import *
@@ -51,5 +50,5 @@ class PySwitchHardware:
 
             ret.append(entry)
 
-        return json.dumps(ret);
+        return ret
 

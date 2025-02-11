@@ -251,10 +251,9 @@ class PySwitchUI {
         // Headline (config name)
         this.#contentHeadline.text(await config.name());
 
-        // CSS classes for the main device element and the parser container
+        // CSS classes for the main device element
         const parser = await config.parser(this.#controller.pyswitch);
-        await parser.init(this.#controller.pyswitch);
-
+        
         this.#deviceElement[0].className = await parser.getDeviceClass();
         
         // Apply the parser also to the parser UI

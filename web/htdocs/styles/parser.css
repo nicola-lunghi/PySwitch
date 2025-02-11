@@ -1,8 +1,17 @@
 .application .pyswitch-parser-frontend {
     position: absolute;
-    width: 150px;
-    height: 50px;
+}
 
-    border-radius: 10px;
-    background-color: lightgreen;
+/****************************************************************/
+
+.application .pyswitch-parser-frontend .button {
+    background-color: rgb(221, 221, 221);
+	border-color: rgb(241, 241, 241);
+    color: black;
+}
+
+.application .pyswitch-parser-frontend .button:hover {
+    background-color: rgb(190, 190, 190);
+	border-color: rgb(200, 200, 200);
+
 }

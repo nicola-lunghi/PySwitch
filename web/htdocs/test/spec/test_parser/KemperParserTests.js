@@ -18,18 +18,16 @@ class KemperParserTests {
         const config = new WebConfiguration("data/test-presets/change-action");
 
         // Create and init parser
-        const parser = await config.parser();
+        const parser = await config.parser(this.pyswitch);
         expect(parser).toBeInstanceOf(KemperParser);
-
-        await parser.init(this.pyswitch);
 
         // Parse the code
         const tree = await parser.parse();
 
-        
+        // TODO do modifications
 
         // Unparse again
-        const unparsed = await parser.unparse(tree);
+        const unparsed = await parser.unparse();
 
         console.log(unparsed.inputs_py);
 

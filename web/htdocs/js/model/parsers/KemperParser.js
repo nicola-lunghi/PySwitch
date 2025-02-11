@@ -4,16 +4,16 @@ class KemperParser extends Parser {
     static DEVICE_TYPE_MINI_6 = 20;
     static DEVICE_TYPE_10 = 30;
 
-    #parser = null;
-    #cst = null;
-    
+    #py = null;
+    #csts = null;
+
     /**
      * Creates the python libcst parser. Must be called at least once before 
      * the parser is actually used. Expects the PySwitchRunner.
      */
-    async init() {
-        if (this.#parser) return;        
-        this.#parser = await this.runner.pyodide.runPython(`            
+    async #init() {
+        if (this.#py) return;        
+        this.#py = await this.runner.pyodide.runPython(`            
             from PySwitchParser import PySwitchParser
             PySwitchParser()
         `);    
@@ -23,45 +23,62 @@ class KemperParser extends Parser {
      * Returns a CST (Concrete Syntax Tree) from the sources.
      */
     async parse() {
-        if (this.#cst) return this.#cst;
-        if (!this.#parser) throw new Error("Please call init() before");
+        if (this.#csts) return;
+        await this.#init();
 
         const inputs_py = (await this.config.get()).inputs_py;
         const display_py = (await this.config.get()).display_py;
 
-        this.#cst = {
-            inputs_py: await this.#parser.parse(inputs_py),
-            display_py: await this.#parser.parse(display_py)
+        this.#csts = {
+            inputs_py: await this.#py.parse(inputs_py),
+            display_py: await this.#py.parse(display_py)
         };
-
-        return this.#cst;        
     }
 
     /**
      * Unparse a CST tree
      */
     async unparse() {
-        if (!this.#parser) throw new Error("Please call init() before");
-        if (!this.#cst) throw new Error("Please parse() before");
+        if (!this.#csts) throw new Error("Please parse() before");
+        await this.#init();
 
         return {
-            inputs_py: await this.#parser.unparse(this.#cst.inputs_py),
-            display_py: await this.#parser.unparse(this.#cst.display_py)
+            inputs_py: await this.#py.unparse(this.#csts.inputs_py),
+            display_py: await this.#py.unparse(this.#csts.display_py)
         }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns an array containing all inputs, represented by KemperParserInput instances, which
-     * are possible on the device the config targets on.
+     * Returns an array of all actions for the given input.
+     * port must be an integer ID of the port (as defined in the board wrapper in python)
+     * If hold is true, hold actions are returned.
      */
-    async inputs() {
-        const hardwareHandler = new KemperHardware(this);
-        return hardwareHandler.get();
+    async getInputActions(port, hold = false) {
+        await this.parse();
+
+        const json = this.#py.get_actions(await this.#getHardwareImportPath(), this.#csts.inputs_py, port, hold);
+        return JSON.parse(json);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Returns the hardware definition script file name in the lib/pyswitch/hardware/devices/ folder
+     */
+    async #getHardwareImportPath() {
+        switch (await this.getDeviceType()) {
+            case KemperParser.DEVICE_TYPE_NANO_4:
+                return "pyswitch.hardware.devices.pa_midicaptain_nano_4"
+
+            case KemperParser.DEVICE_TYPE_MINI_6:
+                return "pyswitch.hardware.devices.pa_midicaptain_mini_6"
+
+            case KemperParser.DEVICE_TYPE_10:
+                return "pyswitch.hardware.devices.pa_midicaptain_10"
+        }
+    }
 
     /**
      * Returns the class(es) to set on the device element

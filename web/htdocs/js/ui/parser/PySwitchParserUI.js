@@ -2,16 +2,30 @@ class PySwitchParserUI {
 
     #controller = null;
     
-    // #inputs = null;
-
     constructor(controller) {
         this.#controller = controller;
     }
 
     /**
-     * Regenerates the UI according to the given Configuration instance
+     * Generates the UI according to the given Configuration instance
      */
     async apply(parser) {
+        // Add the parser frontend to all inputs
+        const inputContainer = $('#pyswitch-inputs');
+
+        await inputContainer.children().each(async function() {
+            const port = parseInt(this.dataset.port);
+            
+            const actions = await parser.getInputActions(port);
+            
+            $(this).append(
+                $('<div class="pyswitch-parser-frontend" />').append(
+                    $('<span class="button" />')
+                    .text(actions.length ? actions[0].name : "None")
+                )
+            )
+        });
+
         // this.#container.empty();
         // this.#inputs = [];
         

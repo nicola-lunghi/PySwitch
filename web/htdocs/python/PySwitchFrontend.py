@@ -54,6 +54,7 @@ class PySwitchFrontend:
                 element = document.createElement("div")
                 element.id = self.dom_namespace + "-switch-gp" + str(model.port)
                 element.className = self.dom_namespace + "-switch"                
+                element.dataset.port = model.port
                 inputs_container.appendChild(element)
 
                 visual_element = document.createElement("div")
@@ -64,10 +65,9 @@ class PySwitchFrontend:
                 overlay_element.className = self.dom_namespace + "-switch-overlay"
                 element.appendChild(overlay_element)
 
-                parser_element = document.createElement("div")
-                # parser_element.id = self.dom_namespace + "-switch-gp" + str(model.port) + "-frontend"
-                parser_element.className = self.dom_namespace + "-parser-frontend"
-                element.appendChild(parser_element)
+                # parser_element = document.createElement("div")
+                # parser_element.className = self.dom_namespace + "-parser-frontend"
+                # element.appendChild(parser_element)
                 
                 def on_click(event):
                     event.currentTarget.parentNode.dataset.pushed = True

@@ -142,14 +142,13 @@ class ExampleTestRunner {
      */
     async #testParserWithExample(config) {
         // Create and init parser
-        const parser = await config.parser();
-        await parser.init(this.pyswitch);
-
+        const parser = await config.parser(this.pyswitch);
+        
         // Parse the code
-        const tree = await parser.parse();
+        await parser.parse();
 
         // Unparse again
-        const unparsed = await parser.unparse(tree);
+        const unparsed = await parser.unparse();
 
         // Check if the result is the same as before
         const data = await config.get();
