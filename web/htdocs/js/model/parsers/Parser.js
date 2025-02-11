@@ -15,16 +15,31 @@ class Parser {
 
     /**
      * Returns a CST (Concrete Syntax Tree) from the sources.
-     * Expects the PySwitchRunner.
      */
     async parse() {
         throw new Error("Must be implemented in child classes");
     }
 
     /**
-     * Returns the CSS class(es) to set on the device element
+     * Unparse a CST tree
      */
-    async getClass() {
+    async unparse() {
+        throw new Error("Must be implemented in child classes");
+    }
+
+    /**
+     * Returns an array of all actions for the given input.
+     * port must be an integer ID of the port (as defined in the board wrapper in python)
+     * If hold is true, hold actions are returned.
+     */
+    async getInputActions(port, hold = false) {
+        throw new Error("Must be implemented in child classes");
+    }
+
+    /**
+     * Returns the class(es) to set on the device element
+     */
+    async getDeviceClass() {
         throw new Error("Must be implemented in child classes");
     }
 
