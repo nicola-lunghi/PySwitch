@@ -1,0 +1,8 @@
+.application .pyswitch-parser-frontend {
+    position: absolute;
+    width: 150px;
+    height: 50px;
+
+    border-radius: 10px;
+    background-color: lightgreen;
+}

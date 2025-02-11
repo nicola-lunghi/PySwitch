@@ -36,12 +36,36 @@
 .midicaptain-nano-4 #pyswitch-switch-gp9 {
     bottom: 10.9%;
     left: 7%;
-    transform: rotate(180deg); 
 }
 
 .midicaptain-nano-4 #pyswitch-switch-gp10 {
     bottom: 10.9%;
     right: 7.1%;
+}
+
+.midicaptain-nano-4 #pyswitch-switch-gp9 .pyswitch-switch-visual,
+.midicaptain-nano-4 #pyswitch-switch-gp10 .pyswitch-switch-visual {
     transform: rotate(180deg); 
 }
 
+/****************************************************************/
+
+.midicaptain-nano-4 #pyswitch-switch-gp1 .pyswitch-parser-frontend {
+    top: -100%;
+    left: 0;
+}
+
+.midicaptain-nano-4 #pyswitch-switch-gp25 .pyswitch-parser-frontend {
+    top: -100%;
+    right: 0;
+}
+
+.midicaptain-nano-4 #pyswitch-switch-gp9 .pyswitch-parser-frontend {
+    bottom: -100%;
+    left: 0;
+}
+
+.midicaptain-nano-4 #pyswitch-switch-gp10 .pyswitch-parser-frontend {
+    bottom: -100%;
+    right: 0;
+}

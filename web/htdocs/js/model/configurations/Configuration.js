@@ -25,9 +25,9 @@ class Configuration {
     /**
      * Returns a parser for the configuration
      */
-    async parser() {
+    async parser(runner) {
         await this.get();
-        return Parser.getInstance(this);
+        return Parser.getInstance(this, runner);
     }
 
     /**

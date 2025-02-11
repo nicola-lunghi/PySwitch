@@ -114,9 +114,6 @@ class Controller {
 
         this.ui.progress(0.3, "Load configuration");
 
-        // Show name of config, CSS classes etc.
-        await this.ui.applyConfig(config);
-
         // Get PySwitch version
         this.VERSION = this.VERSION.replace('?', await this.pyswitch.getVersion());
         this.ui.updateVersion()
@@ -143,19 +140,11 @@ class Controller {
         await this.pyswitch.run(await config.get());
         this.ui.message("Loaded configuration: " + (await config.name()), "S");
 
+        // Generate parser UI, show name of config, CSS classes etc.
+        await this.ui.applyConfig(config);
+
         this.ui.progress(1);
         this.currentConfig = config;
-    }
-
-    /**
-     * If the path contains a valid example, run it. If not, show the contents of path.
-     */
-    async loadExample(path) {        
-        const config = new WebConfiguration("examples/" + encodeURI(path));
-            
-        await this.ui.applyConfig(config);
-            
-        await this.loadConfiguration(config);
     }
 
     /**

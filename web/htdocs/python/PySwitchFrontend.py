@@ -4,7 +4,7 @@ from pyodide.ffi.wrappers import add_event_listener
 from pyswitch.hardware.adafruit.AdafruitSwitch import AdafruitSwitch
 
 # Builds the DOM for the device visualization
-class PySwitchDevice:
+class PySwitchFrontend:
 
     def __init__(self, container_id, dom_namespace):        
         self.container = document.getElementById(container_id)
@@ -52,22 +52,8 @@ class PySwitchDevice:
             if isinstance(model, AdafruitSwitch):
                 # Switch
                 element = document.createElement("div")
-                element.id = self.dom_namespace + "-switch-gp" + str(model._AdafruitSwitch__port)
-                element.className = self.dom_namespace + "-switch"
-
-                def on_click(event):
-                    event.currentTarget.dataset.pushed = True
-
-                def on_release(event):
-                    event.currentTarget.dataset.pushed = False
-
-                add_event_listener(element, "mousedown", on_click)
-                add_event_listener(element, "touchstart", on_click)
-                add_event_listener(element, "mouseup", on_release)
-                add_event_listener(element, "mouseout", on_release)
-                add_event_listener(element, "mouseleave", on_release)
-                add_event_listener(element, "touchend", on_release)
-
+                element.id = self.dom_namespace + "-switch-gp" + str(model.port)
+                element.className = self.dom_namespace + "-switch"                
                 inputs_container.appendChild(element)
 
                 visual_element = document.createElement("div")
@@ -77,6 +63,24 @@ class PySwitchDevice:
                 overlay_element = document.createElement("div")
                 overlay_element.className = self.dom_namespace + "-switch-overlay"
                 element.appendChild(overlay_element)
+
+                parser_element = document.createElement("div")
+                # parser_element.id = self.dom_namespace + "-switch-gp" + str(model.port) + "-frontend"
+                parser_element.className = self.dom_namespace + "-parser-frontend"
+                element.appendChild(parser_element)
+                
+                def on_click(event):
+                    event.currentTarget.parentNode.dataset.pushed = True
+
+                def on_release(event):
+                    event.currentTarget.parentNode.dataset.pushed = False
+
+                add_event_listener(overlay_element, "mousedown", on_click)
+                add_event_listener(overlay_element, "touchstart", on_click)
+                add_event_listener(overlay_element, "mouseup", on_release)
+                add_event_listener(overlay_element, "mouseout", on_release)
+                add_event_listener(overlay_element, "mouseleave", on_release)
+                add_event_listener(overlay_element, "touchend", on_release)
 
             else:
                 # Unknown type

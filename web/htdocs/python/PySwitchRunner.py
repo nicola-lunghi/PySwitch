@@ -18,10 +18,12 @@ class PySwitchRunner:
 
         self.dom_namespace = dom_namespace
         self.update_interval_ms = update_interval_ms
+        self.coverage = coverage
+
         self.running = False
         self.protocol = None
-        self.coverage = coverage
-        
+        self.frontend = None        
+
     # Set up a PySwitch controller and let it run
     def run(self):
         self.running = True
@@ -68,9 +70,9 @@ class PySwitchRunner:
             from display import Splashes
             from inputs import Inputs
 
-            from PySwitchDevice import PySwitchDevice
-            self.device = PySwitchDevice(self.container_id, self.dom_namespace)
-            self.device.init(Inputs, Splashes)
+            from PySwitchFrontend import PySwitchFrontend
+            self.frontend = PySwitchFrontend(self.container_id, self.dom_namespace)
+            self.frontend.init(Inputs, Splashes)
 
             midi_in = WrapMidiInput()
             midi_out = WrapMidiOutput()

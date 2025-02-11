@@ -50,34 +50,60 @@
     left: 87.4%;
 }
 
-/**************************************/
+/****************************************************************/
 
 .midicaptain-10 #pyswitch-switch-gp9 {
     bottom: 16.4%;
     left: 4.98%;
-    transform: rotate(180deg); 
 }
 
 .midicaptain-10 #pyswitch-switch-gp10 {
     bottom: 16.6%;
     left: 25.8%;
-    transform: rotate(180deg); 
 }
 
 .midicaptain-10 #pyswitch-switch-gp11 {
     bottom: 16.45%;
     left: 46.2%;
-    transform: rotate(180deg); 
 }
 
 .midicaptain-10 #pyswitch-switch-gp18 {
     bottom: 16.5%;
     right: 25.9%;
-    transform: rotate(180deg); 
 }
 
 .midicaptain-10 #pyswitch-switch-gp19 {
     bottom: 16.4%;
     left: 87.3%;
+}
+
+.midicaptain-10 #pyswitch-switch-gp9 .pyswitch-switch-visual,
+.midicaptain-10 #pyswitch-switch-gp10 .pyswitch-switch-visual,
+.midicaptain-10 #pyswitch-switch-gp11 .pyswitch-switch-visual,
+.midicaptain-10 #pyswitch-switch-gp18 .pyswitch-switch-visual,
+.midicaptain-10 #pyswitch-switch-gp19 .pyswitch-switch-visual {
     transform: rotate(180deg); 
 }
+
+/****************************************************************/
+
+.midicaptain-10 #pyswitch-switch-gp1 .pyswitch-parser-frontend,
+.midicaptain-10 #pyswitch-switch-gp25 .pyswitch-parser-frontend,
+.midicaptain-10 #pyswitch-switch-gp24 .pyswitch-parser-frontend,
+.midicaptain-10 #pyswitch-switch-gp23 .pyswitch-parser-frontend,
+.midicaptain-10 #pyswitch-switch-gp20 .pyswitch-parser-frontend {
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.midicaptain-10 #pyswitch-switch-gp9 .pyswitch-parser-frontend,
+.midicaptain-10 #pyswitch-switch-gp10 .pyswitch-parser-frontend,
+.midicaptain-10 #pyswitch-switch-gp11 .pyswitch-parser-frontend,
+.midicaptain-10 #pyswitch-switch-gp18 .pyswitch-parser-frontend,
+.midicaptain-10 #pyswitch-switch-gp19 .pyswitch-parser-frontend {
+    bottom: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+

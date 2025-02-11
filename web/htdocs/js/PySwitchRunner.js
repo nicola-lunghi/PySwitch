@@ -39,8 +39,9 @@ class PySwitchRunner {
         console.log("Load files to python");
 
         await this.#loadModule("PySwitchRunner.py", localPythonPath);
-        await this.#loadModule("PySwitchDevice.py", localPythonPath);
+        await this.#loadModule("PySwitchFrontend.py", localPythonPath);
         await this.#loadModule("PySwitchParser.py", localPythonPath);
+        await this.#loadModule("PySwitchHardware.py", localPythonPath);
         await this.#loadModule("mocks.py", localPythonPath);
 
         this.pyodide.FS.mkdir("wrappers");
@@ -276,7 +277,7 @@ class PySwitchRunner {
      * rscPath will be added as prefix if set for getting the files on the web server.
      */
     async #loadModule(fileName, srcPath) {
-        const code = await Tools.fetch((srcPath ? srcPath : "") + fileName); //await (await fetch((srcPath ? srcPath : "") + fileName)).text();
+        const code = await Tools.fetch((srcPath ? srcPath : "") + fileName);
         this.pyodide.FS.writeFile("/home/pyodide/" + fileName, code);
     }
 }

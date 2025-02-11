@@ -12,24 +12,24 @@ class PySwitchParser:
         cst = libcst.parse_module(source)
         # cst.visit(PySwitchCstVisitor())
 
-        for bodyline in cst.body:
-            if not isinstance(bodyline, libcst.SimpleStatementLine):
-                continue
+        # if not isinstance(bodyline, libcst.SimpleStatementLine):
+        #     continue
 
-            assign = bodyline.body[0]
-            if not isinstance(assign, libcst.Assign):
-                continue
+        # assign = bodyline.body[0]
+        # if not isinstance(assign, libcst.Assign):
+        #     continue
 
-            if assign.targets[0].target.value != "Inputs":
-                continue
+        # if assign.targets[0].target.value != "Inputs":
+        #     continue
 
-            if isinstance(assign.value, libcst.List):
-                continue
+        # if isinstance(assign.value, libcst.List):
+        #     continue
 
-            # for input in assign.value.elements:
-            #     print()
-        
+        # # for input in assign.value.elements:
+        # #     print()
+
         return cst
             
     def unparse(self, cst):
         return cst.code
+    

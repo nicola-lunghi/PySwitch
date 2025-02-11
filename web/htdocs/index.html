@@ -36,11 +36,15 @@
     <link rel="stylesheet" type="text/css" href="styles/client-select.css">
     <link rel="stylesheet" type="text/css" href="styles/pyswitch.css">
     <link rel="stylesheet" type="text/css" href="styles/virtual-clients.css">
+    <link rel="stylesheet" type="text/css" href="styles/parser.css">
     
-    <!-- Device specific CSS -->
+    <!-- Device specific CSS: PaintAudio MIDI Captain series -->
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-nano-4.css">
+
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-mini-6.css">
+
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-10.css">
+
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain.css">    <!-- Must be last for media queries to work! -->
     
     <!-- Main classes -->
@@ -56,26 +60,6 @@
     <script type="text/javascript" src="js/routing/Routing.js"></script>
     <script type="text/javascript" src="js/routing/CallbackQueue.js"></script>
     
-    <!-- User Interface -->
-    <script type="text/javascript" src="js/ui/PySwitchUi.js"></script>
-
-    <script type="text/javascript" src="js/ui/misc/Progress.js"></script>
-    <script type="text/javascript" src="js/ui/misc/Notifications.js"></script>
-    <script type="text/javascript" src="js/ui/misc/ClientConnectionButton.js"></script>
-    <!-- <script type="text/javascript" src="js/ui/misc/ResizeHandler.js"></script> -->
-
-    <!-- Popups -->
-    <script type="text/javascript" src="js/ui/popups/Popup.js"></script>
-    <script type="text/javascript" src="js/ui/popups/BrowserPopup.js"></script>
-    <script type="text/javascript" src="js/ui/popups/BrowserEntry.js"></script>
-
-    <script type="text/javascript" src="js/ui/popups/providers/BrowserProvider.js"></script>
-    <script type="text/javascript" src="js/ui/popups/providers/ExamplesProvider.js"></script>
-    <script type="text/javascript" src="js/ui/popups/providers/PortsProvider.js"></script>
-    
-    <!-- UIs for virtual clients -->
-    <script type="text/javascript" src="js/ui/virtual-clients/VirtualKemperClientUI.js"></script>
-
     <!-- Data model -->
     <script type="text/javascript" src="js/model/configurations/Configuration.js"></script>
     <script type="text/javascript" src="js/model/configurations/ControllerConfiguration.js"></script>
@@ -85,6 +69,7 @@
     <!-- Parser(s) -->
     <script type="text/javascript" src="js/model/parsers/Parser.js"></script>
     <script type="text/javascript" src="js/model/parsers/KemperParser.js"></script>
+    <script type="text/javascript" src="js/model/parsers/KemperHardware.js"></script>
 
     <!-- Detectors (used to scan for connected controllers and clients) -->
     <script type="text/javascript" src="js/model/detectors/ClientDetector.js"></script>
@@ -108,6 +93,29 @@
     <script type="text/javascript" src="js/midi/MidiListener.js"></script>
     <script type="text/javascript" src="js/midi/client/MidiBridgeHandler.js"></script>
     <script type="text/javascript" src="js/midi/device/WebMidiWrapper.js"></script>    
+
+    <!-- User Interface -->
+    <script type="text/javascript" src="js/ui/PySwitchUi.js"></script>
+
+    <script type="text/javascript" src="js/ui/misc/Progress.js"></script>
+    <script type="text/javascript" src="js/ui/misc/Notifications.js"></script>
+    <script type="text/javascript" src="js/ui/misc/ClientConnectionButton.js"></script>
+    <!-- <script type="text/javascript" src="js/ui/misc/ResizeHandler.js"></script> -->
+
+    <!-- Popups -->
+    <script type="text/javascript" src="js/ui/popups/Popup.js"></script>
+    <script type="text/javascript" src="js/ui/popups/BrowserPopup.js"></script>
+    <script type="text/javascript" src="js/ui/popups/BrowserEntry.js"></script>
+
+    <script type="text/javascript" src="js/ui/popups/providers/BrowserProvider.js"></script>
+    <script type="text/javascript" src="js/ui/popups/providers/ExamplesProvider.js"></script>
+    <script type="text/javascript" src="js/ui/popups/providers/PortsProvider.js"></script>
+    
+    <!-- UIs for virtual clients -->
+    <script type="text/javascript" src="js/ui/virtual-clients/VirtualKemperClientUI.js"></script>
+
+    <!-- UI for the parser(s) -->
+    <script type="text/javascript" src="js/ui/parser/PySwitchParserUI.js"></script>
 
 
     <script type="text/javascript">

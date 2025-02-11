@@ -227,7 +227,7 @@ class ExampleTestRunner {
 
         let color = null;
         for(const ledElement of ledElements) {
-            const rgb = JSON.parse(ledElement[0].dataset.color); //ledElement[0].style.backgroundColor.match(/\d+/g).map((item) => parseInt(item));
+            const rgb = JSON.parse(ledElement[0].dataset.color);
             
             if (color === null) {
                 color = rgb;

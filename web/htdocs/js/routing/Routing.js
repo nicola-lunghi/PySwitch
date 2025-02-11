@@ -62,7 +62,9 @@ class Routing {
             // Load/browse example configs
             this.get(/\#example\/(.*)/, that.#queue.add(that.#executeRoute(async function() {
                 const path = decodeURI(this.params['splat'][0]);                    
-                await that.#controller.loadExample(path);
+                await that.#controller.loadConfiguration(
+                    new WebConfiguration("examples/" + encodeURI(path))
+                );
             })));
         });
 

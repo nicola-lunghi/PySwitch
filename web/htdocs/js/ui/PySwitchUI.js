@@ -12,12 +12,12 @@ class PySwitchUI {
     #versionElement = null;
     #virtualClientElement = null;
     #virtualClientUI = null;
-    #applicationElement = null;
-
+    
     notifications = null;
     loadBrowser = null;
     clientBrowser = null;
     clientButton = null;
+    parserUI = null;
 
     // #resizeHandler = null;
 
@@ -68,7 +68,8 @@ class PySwitchUI {
                 .hide(),
 
                 // Application area
-                this.#applicationElement = $('<div class="application"/>').append(
+                //this.#applicationElement = 
+                $('<div class="application"/>').append(
                     
                     $('<div class="about" />').append(
                         // Version
@@ -148,6 +149,9 @@ class PySwitchUI {
 
         // Message alerts etc.
         this.notifications = new Notifications(messageElement);
+
+        // Parser UI handler
+        this.parserUI = new PySwitchParserUI(this.#controller);
 
         // // Resizer for application area
         // this.#resizeHandler = new ResizeHandler(this.#applicationElement);
@@ -247,8 +251,14 @@ class PySwitchUI {
         // Headline (config name)
         this.#contentHeadline.text(await config.name());
 
-        // CSS classes for the main device element
-        this.#deviceElement[0].className = await (await config.parser()).getClass();
+        // CSS classes for the main device element and the parser container
+        const parser = await config.parser(this.#controller.pyswitch);
+        await parser.init(this.#controller.pyswitch);
+
+        this.#deviceElement[0].className = await parser.getDeviceClass();
+        
+        // Apply the parser also to the parser UI
+        await this.parserUI.apply(parser);
     }
 
     /**
