@@ -76,7 +76,12 @@ class PySwitchUI {
                         this.#versionElement = $('<div class="version"/>').html("PySwitch Emulator")
                         .on('click', async function() {
                             try {
-                                new Popup(that.#controller, { container: that.#listElement })
+                                new Popup(
+                                    that.#controller, { 
+                                        container: that.#listElement,
+                                        wide: true
+                                    }
+                                )
                                 .show(await Tools.fetch('about.html'));
 
                             } catch (e) {
@@ -318,7 +323,5 @@ class PySwitchUI {
     message(msg, type, options) {
         this.progress(1);
         this.notifications.message(msg, type, options);
-    }
-
-    
+    }   
 }

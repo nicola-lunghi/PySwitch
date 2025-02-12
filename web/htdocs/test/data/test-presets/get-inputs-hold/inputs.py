@@ -42,7 +42,7 @@ Inputs = [
             display = DISPLAY_HEADER_2
         )],
         "foo": [
-            TUNER_MODE()
+            TUNER_MODE(foo=3)
         ]
     },
 

@@ -13,8 +13,8 @@ class VirtualKemperClientUI {
     #build() {
         this.#container.empty();
 
+        this.#buildGeneral();
         this.#buildEffectSlots();
-        this.#buildRig();
         this.#buildTuner();
 
         // Use a callback to show auto generated parameters
@@ -44,7 +44,7 @@ class VirtualKemperClientUI {
             });
 
             that.#createBox(
-                text,
+                "Slot " + text,
                 [
                     // State
                     $('<div class="label" />')
@@ -84,7 +84,7 @@ class VirtualKemperClientUI {
     /**
      * Build rig controls
      */
-    #buildRig() {
+    #buildGeneral() {
         const that = this;
 
         // Rig ID input
@@ -94,7 +94,7 @@ class VirtualKemperClientUI {
         let rigBtnMorhInput = null;
 
         this.#createBox(
-            "Rig",
+            "General",
             [
                 // Rig ID
                 $('<div class="label" />')

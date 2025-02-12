@@ -39,6 +39,8 @@ class Popup {
     show(content, headline = null) {
         this.element.empty();
 
+        this.element.toggleClass("wide", !!this.config.wide);
+
         this.element.append(
             $('<div class="content" />').append(
                 // Headline

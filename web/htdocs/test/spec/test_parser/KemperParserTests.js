@@ -51,10 +51,62 @@ class KemperParserTests {
         const parser = await config.parser(this.pyswitch);
         expect(parser).toBeInstanceOf(KemperParser);
         
-        expect(await parser.getInputActions(1)).toEqual({ actionsHold: [], actions: [{ name: "RIG_UP" }] });
-        expect(await parser.getInputActions(9)).toEqual({ actionsHold: [], actions: [{ name: "RIG_DOWN" }] });
-        expect(await parser.getInputActions(25)).toEqual({ actionsHold: [], actions: [{ name: "BANK_UP" }] });
-        expect(await parser.getInputActions(10)).toEqual({ actionsHold: [], actions: [{ name: "BANK_DOWN" }] });
+        expect(await parser.getInputActions(1)).toEqual({ 
+            actionsHold: [], 
+            actions: [{ 
+                name: "RIG_UP",
+                arguments: [
+                    {
+                        name: "display",
+                        value: "DISPLAY_HEADER_1"
+                    },
+                    {
+                        name: "text",
+                        value: '"Rig up"'
+                    }
+                ] 
+            }] 
+        });
+        expect(await parser.getInputActions(9)).toEqual({ 
+            actionsHold: [], 
+            actions: [{ 
+                name: "RIG_DOWN",
+                arguments: [
+                    {
+                        name: "display",
+                        value: "DISPLAY_FOOTER_1"
+                    },
+                    {
+                        name: "text",
+                        value: '"Rig nn"'
+                    }
+                ]
+            }] 
+        });
+        expect(await parser.getInputActions(25)).toEqual({ 
+            actionsHold: [], 
+            actions: [{ 
+                name: "BANK_UP",
+                arguments: [
+                    {
+                        name: "display",
+                        value: "DISPLAY_HEADER_2"
+                    }
+                ] 
+            }] 
+        });
+        expect(await parser.getInputActions(10)).toEqual({ 
+            actionsHold: [], 
+            actions: [{ 
+                name: "BANK_DOWN",
+                arguments: [
+                    {
+                        name: "display",
+                        value: "DISPLAY_FOOTER_2"
+                    }
+                ] 
+            }] 
+        });
     }
 
     async getInputActionsHold() {
@@ -64,9 +116,69 @@ class KemperParserTests {
         const parser = await config.parser(this.pyswitch);
         expect(parser).toBeInstanceOf(KemperParser);
 
-        expect(await parser.getInputActions(1)).toEqual({ actionsHold: [], actions: [{ name: "RIG_UP" }] });
-        expect(await parser.getInputActions(9)).toEqual({ actionsHold: [], actions: [{ name: "RIG_DOWN" }] });
-        expect(await parser.getInputActions(25)).toEqual({ actionsHold: [{ name: "TUNER_MODE" }], actions: [{ name: "BANK_UP" }] });
-        expect(await parser.getInputActions(10)).toEqual({ actionsHold: [], actions: [{ name: "BANK_DOWN" }] });
+        expect(await parser.getInputActions(1)).toEqual({ 
+            actionsHold: [], 
+            actions: [{ 
+                name: "RIG_UP",
+                arguments: [
+                    {
+                        name: "display",
+                        value: "DISPLAY_HEADER_1"
+                    },
+                    {
+                        name: "text",
+                        value: '"Rig up"'
+                    }
+                ] 
+            }] 
+        });
+        expect(await parser.getInputActions(9)).toEqual({ 
+            actionsHold: [], 
+            actions: [{ 
+                name: "RIG_DOWN",
+                arguments: [
+                    {
+                        name: "display",
+                        value: "DISPLAY_FOOTER_1"
+                    },
+                    {
+                        name: "text",
+                        value: '"Rig nn"'
+                    }
+                ]
+            }] 
+        });
+        expect(await parser.getInputActions(25)).toEqual({ 
+            actionsHold: [{ 
+                name: "TUNER_MODE",
+                arguments: [
+                    {
+                        name: "foo",
+                        value: 3
+                    }
+                ]
+            }], 
+            actions: [{ 
+                name: "BANK_UP",
+                arguments: [
+                    {
+                        name: "display",
+                        value: "DISPLAY_HEADER_2"
+                    }
+                ] 
+            }] 
+        });
+        expect(await parser.getInputActions(10)).toEqual({ 
+            actionsHold: [], 
+            actions: [{ 
+                name: "BANK_DOWN",
+                arguments: [
+                    {
+                        name: "display",
+                        value: "DISPLAY_FOOTER_2"
+                    }
+                ] 
+            }] 
+        });
     }
 }
