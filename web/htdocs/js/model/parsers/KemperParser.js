@@ -53,12 +53,11 @@ class KemperParser extends Parser {
     /**
      * Returns an array of all actions for the given input.
      * port must be an integer ID of the port (as defined in the board wrapper in python)
-     * If hold is true, hold actions are returned.
      */
-    async getInputActions(port, hold = false) {
+    async getInputActions(port) {
         await this.parse();
 
-        const json = this.#py.get_actions(await this.#getHardwareImportPath(), this.#csts.inputs_py, port, hold);
+        const json = this.#py.get_actions(await this.#getHardwareImportPath(), this.#csts.inputs_py, port);
         return JSON.parse(json);
     }
 

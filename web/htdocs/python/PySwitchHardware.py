@@ -10,7 +10,8 @@ from wrappers.wrap_adafruit_display import *
 
 class PySwitchHardware:
 
-    # Returns the input descriptors as list, loaded from the passed module
+    # Returns the input descriptors as list, loaded from the passed module.
+    # The model instances are replaced by dicts holding the class name and port if any.
     def get(self, importPath):
         with patch.dict(sys.modules, {
             "board": WrapBoard,

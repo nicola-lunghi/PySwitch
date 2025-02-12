@@ -5,13 +5,28 @@
 /****************************************************************/
 
 .application .pyswitch-parser-frontend .button {
+    font-size: 0.8em;
+}
+
+.application .pyswitch-parser-frontend .button.actions {
     background-color: rgb(221, 221, 221);
 	border-color: rgb(241, 241, 241);
     color: black;
 }
 
-.application .pyswitch-parser-frontend .button:hover {
+.application .pyswitch-parser-frontend .button.actions:hover {
     background-color: rgb(190, 190, 190);
 	border-color: rgb(200, 200, 200);
-
 }
+
+.application .pyswitch-parser-frontend .button.actions-hold {
+    background-color: rgb(92, 92, 92);
+	border-color: rgb(141, 141, 141);
+    color: white;
+}
+
+.application .pyswitch-parser-frontend .button.actions-hold:hover {
+    background-color: rgb(43, 43, 43);
+	border-color: rgb(105, 104, 104);
+}
+

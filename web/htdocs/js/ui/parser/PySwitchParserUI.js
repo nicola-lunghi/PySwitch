@@ -16,12 +16,22 @@ class PySwitchParserUI {
         await inputContainer.children().each(async function() {
             const port = parseInt(this.dataset.port);
             
-            const actions = await parser.getInputActions(port);
+            const definition = await parser.getInputActions(port);
             
+            const actions = definition.actions.map((item) =>
+                $('<span class="button actions" data-toggle="tooltip" title="Action on normal press" />')
+                .text(item.name)
+            );
+
+            const actionsHold = definition.actionsHold.map((item) =>
+                $('<span class="button actions-hold" data-toggle="tooltip" title="Action on long press" />')
+                .text(item.name)
+            );
+
             $(this).append(
-                $('<div class="pyswitch-parser-frontend" />').append(
-                    $('<span class="button" />')
-                    .text(actions.length ? actions[0].name : "None")
+                $('<div class="pyswitch-parser-frontend"  />').append(
+                    actions,
+                    actionsHold
                 )
             )
         });
