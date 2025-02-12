@@ -46,7 +46,7 @@ Inputs = [
         "assignment": PA_MIDICAPTAIN_10_SWITCH_3,
         "actions": [
             EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
                 display = DISPLAY_FOOTER_1
             )
         ]
@@ -57,7 +57,7 @@ Inputs = [
         "assignment": PA_MIDICAPTAIN_10_SWITCH_4,
         "actions": [
             EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_D,
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV,
                 display = DISPLAY_FOOTER_2
             )
         ],
