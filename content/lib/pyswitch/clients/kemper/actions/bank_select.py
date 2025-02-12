@@ -115,7 +115,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
             value_bank = [self.__bank - 1]
             if "preselectedBank" in self.__appl.shared or curr_bank != self.__bank - 1:
                 self.__appl.shared["preselectedBank"] = self.__bank - 1
-                self.__appl.shared["preselectAction"] = self
+                self.__appl.shared["preselectCallback"] = self
 
             for input in self.__appl.inputs:
                 if hasattr(input, "pixels"):

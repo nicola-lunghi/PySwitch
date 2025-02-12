@@ -1,5 +1,7 @@
 # PySwitch v2.3.3
-
+- Fixed behaviour of bank preselect:
+    - **BANK_SELECT**: Now also can override a previously made selection
+    - **BANK_UP, BANK_DOWN**: Preselect mode added. Can be used to step through banks before selection.
 
 # PySwitch v2.3.2
 - Bug Fixes:

@@ -138,7 +138,7 @@ class KemperBankChangeCallback(BinaryParameterCallback):
 
         if self.__preselect:
             self.__appl.shared["preselectBlinkState"] = False
-            self.__appl.shared["preselectAction"] = None
+            self.__appl.shared["preselectCallback"] = None
 
     def state_changed_by_user(self, action):
         if self.__preselect:
@@ -148,7 +148,7 @@ class KemperBankChangeCallback(BinaryParameterCallback):
             value = self.__get_next_bank()
             
             self.__appl.shared["preselectedBank"] = value
-            self.__appl.shared["preselectAction"] = self
+            self.__appl.shared["preselectCallback"] = self
 
             value = [value]
         else:
@@ -162,7 +162,7 @@ class KemperBankChangeCallback(BinaryParameterCallback):
         BinaryParameterCallback.update(self)
 
         # if self.__mapping.value != None:
-        if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectAction"] == self and self.__preselect_blink_period.exceeded:
+        if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectCallback"] == self and self.__preselect_blink_period.exceeded:
             self.__appl.shared["preselectBlinkState"] = not self.__appl.shared["preselectBlinkState"]
             
             self.update_displays(self.__action)
@@ -212,7 +212,7 @@ class KemperBankChangeCallback(BinaryParameterCallback):
 
         action.switch_color = bank_color
 
-        if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectAction"] == self: 
+        if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectCallback"] == self: 
             action.switch_brightness = self.__led_brightness if not self.__appl.shared["preselectBlinkState"] else self.__led_brightness_off
         else:
             action.switch_brightness = self.__led_brightness
