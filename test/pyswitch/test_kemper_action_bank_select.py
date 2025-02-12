@@ -632,11 +632,13 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 ###################################################################################################################
 
     def test_preselect(self):
-        self._test_preselect(RIG_SELECT_DISPLAY_CURRENT_RIG)
-        self._test_preselect(RIG_SELECT_DISPLAY_TARGET_RIG)
+        self._test_preselect(display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG, bank_off = None)
+        self._test_preselect(display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG, bank_off = 3)
+        self._test_preselect(display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, bank_off = None)
+        self._test_preselect(display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, bank_off = 5)
 
 
-    def _test_preselect(self, display_mode):
+    def _test_preselect(self, display_mode, bank_off):
         display = DisplayLabel(layout = {
             "font": "foo",
             "backColor": (0, 0, 0)
@@ -645,6 +647,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
         action = BANK_SELECT(
             display = display,
             bank = 2,
+            bank_off = bank_off,
             preselect = True,
             display_mode = display_mode        
         )
@@ -721,6 +724,12 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
         action.push()
         action.release()
 
+        self.assertEqual(len(appl.client.set_calls), 2)
+        self.assertEqual(appl.client.set_calls[1], {
+            "mapping": MAPPING_BANK_SELECT(),
+            "value": [1]
+        })
+
         self._check_blinking(
             action = action, 
             switch = switch_2, 
@@ -745,8 +754,6 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             rig_switch_should_blink = False
         )
         
-        self.assertEqual(len(appl.client.set_calls), 1)
-
         action.update_displays()
         self.assertEqual(action.state, True)
 
@@ -759,7 +766,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         self.assertEqual(action.state, False)
 
-        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(len(appl.client.set_calls), 2)
 
         self._check_blinking(
             action = action, 
@@ -832,85 +839,85 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 ###################################################################################################################
 
 
-    def test_preselect_bank_off(self):
-        self._test_preselect_bank_off(RIG_SELECT_DISPLAY_TARGET_RIG)
-        self._test_preselect_bank_off(RIG_SELECT_DISPLAY_CURRENT_RIG)
+    # def test_preselect_bank_off(self):
+    #     self._test_preselect_bank_off(RIG_SELECT_DISPLAY_TARGET_RIG)
+    #     self._test_preselect_bank_off(RIG_SELECT_DISPLAY_CURRENT_RIG)
 
 
-    def _test_preselect_bank_off(self, display_mode):
-        display = DisplayLabel(layout = {
-            "font": "foo",
-            "backColor": (0, 0, 0)
-        })
+    # def _test_preselect_bank_off(self, display_mode):
+    #     display = DisplayLabel(layout = {
+    #         "font": "foo",
+    #         "backColor": (0, 0, 0)
+    #     })
 
-        action = BANK_SELECT(
-            display = display,
-            bank = 2,
-            bank_off = 3,
-            preselect = True,
-            display_mode = display_mode        
-        )
+    #     action = BANK_SELECT(
+    #         display = display,
+    #         bank = 2,
+    #         bank_off = 3,
+    #         preselect = True,
+    #         display_mode = display_mode        
+    #     )
 
-        action_other = MockAction()
+    #     action_other = MockAction()
 
-        switch_1 = MockFootswitch(actions = [action_other])
-        switch_2 = MockFootswitch(actions = [action])
-        appl = MockController2(inputs = [
-            switch_1,
-            switch_2,
-            MockInputControllerDefinition()
-        ])
-        action.init(appl, switch_2)
+    #     switch_1 = MockFootswitch(actions = [action_other])
+    #     switch_2 = MockFootswitch(actions = [action])
+    #     appl = MockController2(inputs = [
+    #         switch_1,
+    #         switch_2,
+    #         MockInputControllerDefinition()
+    #     ])
+    #     action.init(appl, switch_2)
         
-        mapping = action.callback._BinaryParameterCallback__mapping 
+    #     mapping = action.callback._BinaryParameterCallback__mapping 
         
-        mapping.value = 17
-        exp_color = BANK_COLORS[3] if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[1]
-        action.update_displays()
-        self.assertEqual(action.state, False)
+    #     mapping.value = 17
+    #     exp_color = BANK_COLORS[3] if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[1]
+    #     action.update_displays()
+    #     self.assertEqual(action.state, False)
         
-        self._check_blinking(action, switch_2, display, exp_color, False)
+    #     self._check_blinking(action, switch_2, display, exp_color, False)
 
-        # Select rig the first time
-        action.push()
-        action.release()
+    #     # Select rig the first time
+    #     action.push()
+    #     action.release()
 
-        self.assertEqual(len(appl.client.set_calls), 1)
-        self.assertEqual(appl.client.set_calls[0], {
-            "mapping": MAPPING_BANK_SELECT(),
-            "value": [2]   # This is correct because push() triggers update_displays, too!
-        })
+    #     self.assertEqual(len(appl.client.set_calls), 1)
+    #     self.assertEqual(appl.client.set_calls[0], {
+    #         "mapping": MAPPING_BANK_SELECT(),
+    #         "value": [2]   # This is correct because push() triggers update_displays, too!
+    #     })
 
-        self._check_blinking(action, switch_2, display, exp_color, display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
+    #     self._check_blinking(action, switch_2, display, exp_color, display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
 
-        mapping.value = 6   # On rig again (shall not trigger a message!)
-        exp_color = BANK_COLORS[1] if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[2]
-        action.update_displays()
-        self.assertEqual(action.state, True) 
+    #     mapping.value = 6   # On rig again (shall not trigger a message!)
+    #     exp_color = BANK_COLORS[1] if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[2]
+    #     action.update_displays()
+    #     self.assertEqual(action.state, True) 
 
-        # Select rig again 
-        action.push()
-        action.release()
+    #     # Select rig again 
+    #     action.push()
+    #     action.release()
 
-        self._check_blinking(action, switch_2, display, exp_color, display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
-        appl.shared = {}  # Remove preselect mark
-        self._check_blinking(action, switch_2, display, exp_color, False)
+    #     self._check_blinking(action, switch_2, display, exp_color, display_mode == RIG_SELECT_DISPLAY_TARGET_RIG)
+    #     appl.shared = {}  # Remove preselect mark
+    #     self._check_blinking(action, switch_2, display, exp_color, False)
 
-        self.assertEqual(len(appl.client.set_calls), 1)
+    #     self.assertEqual(len(appl.client.set_calls), 1)
 
-        action.update_displays()
-        self.assertEqual(action.state, True)
+    #     action.update_displays()
+    #     self.assertEqual(action.state, True)
 
-        # Receive other rig
-        mapping.value = 20  # Not matching
-        exp_color = BANK_COLORS[4] if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[1]
-        action.update_displays()
+    #     # Receive other rig
+    #     mapping.value = 20  # Not matching
+    #     exp_color = BANK_COLORS[4] if display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[1]
+    #     action.update_displays()
 
-        self.assertEqual(action.state, False)
+    #     self.assertEqual(action.state, False)
 
-        self.assertEqual(len(appl.client.set_calls), 1)
+    #     self.assertEqual(len(appl.client.set_calls), 1)
 
-        self._check_blinking(action, switch_2, display, exp_color, False)
+    #     self._check_blinking(action, switch_2, display, exp_color, False)
 
 
     # Checks if the LEDs are blinking

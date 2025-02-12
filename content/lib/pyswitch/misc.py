@@ -3,7 +3,7 @@ from time import monotonic, localtime
 from .controller.MidiController import SystemExclusive, ControlChange, ProgramChange, MIDIUnknownEvent
 
 # PySwitch version
-PYSWITCH_VERSION = "2.3.2"
+PYSWITCH_VERSION = "2.3.3"
 
 # Default background color for display slots
 DEFAULT_LABEL_COLOR = (50, 50, 50)   

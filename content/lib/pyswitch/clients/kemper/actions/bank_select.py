@@ -9,16 +9,19 @@ from .rig_select import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGE
 # Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). 
 # Banks are indexed starting from one, range: [1..126].    
 def BANK_SELECT(bank, 
-                bank_off = None,
-                preselect = False,                              # If False, the bank is switched immediately (by sending a rig select command after bank preselect). If True, only the bank preselect is sent.
+                bank_off = None,                                # "off" bank. Will be ignored when preselect is enabled
+                preselect = False,                              # If False, the bank is switched immediately (by sending a rig select command 
+                                                                # after bank preselect). If True, only the bank preselect is sent. Ignores bank_off.
                 display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
                 display = None, 
                 id = False, 
                 use_leds = True, 
                 enable_callback = None,
-                color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+                color_callback = None,                          # Optional callback for setting the color. Footprint: 
+                                                                # def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
                 color = None,                                   # Color override (if no color callback is passed)
-                text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+                text_callback = None,                           # Optional callback for setting the text. Footprint: 
+                                                                # def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
                 text = None                                     # Text override (if no text callback is passed)
     ):
     
@@ -45,16 +48,16 @@ def BANK_SELECT(bank,
 # Callback implementation for Bank Select, showing bank colors and rig/bank info
 class KemperBankSelectCallback(BinaryParameterCallback):
     def __init__(self,
-                    mapping,
-                    bank,
-                    bank_off,
-                    text, 
-                    text_callback,
-                    color,
-                    color_callback,
-                    display_mode,
-                    preselect,
-                    preselect_blink_interval = 400
+                 mapping,
+                 bank,
+                 bank_off,
+                 text, 
+                 text_callback,
+                 color,
+                 color_callback,
+                 display_mode,
+                 preselect,
+                 preselect_blink_interval = 400
         ):
         super().__init__(
             mapping = mapping
@@ -62,7 +65,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
 
         self.__mapping = mapping
         self.__bank = bank
-        self.__bank_off = bank_off
+        self.__bank_off = bank_off if not preselect else None
         self.__text = text
         self.__text_callback = text_callback
         self.__color = color
@@ -75,7 +78,6 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         self.__preselect = preselect
         if preselect:
             self.__preselect_blink_period = PeriodCounter(preselect_blink_interval)
-            # self.__blink_state = False
 
         self.__action = None
 
@@ -94,7 +96,6 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         BinaryParameterCallback.update(self)
 
         if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1 and self.__preselect_blink_period.exceeded:
-            # self.__blink_state = not self.__blink_state
             self.__appl.shared["preselectBlinkState"] = not self.__appl.shared["preselectBlinkState"]
 
             self.update_displays(self.__action)
@@ -109,24 +110,12 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)         
 
         if self.__preselect:
-            if "preselectedBank" in self.__appl.shared:
-                # The kemper only accepts one bank preselect. All following bank preselects will be ignored.
-                # So, we also do not accept any preselects when there is already one.
-                return 
-            
             set_mapping = MAPPING_BANK_SELECT()
 
             value_bank = [self.__bank - 1]
-            if self.__bank_off != None:
-                value_bank_off = [self.__bank_off - 1]
-
-                if action.state:
-                    self.__appl.shared["preselectedBank"] = self.__bank - 1
-                else:
-                    self.__appl.shared["preselectedBank"] = self.__bank_off - 1
-            else:
-                if curr_bank != self.__bank - 1:
-                    self.__appl.shared["preselectedBank"] = self.__bank - 1
+            if "preselectedBank" in self.__appl.shared or curr_bank != self.__bank - 1:
+                self.__appl.shared["preselectedBank"] = self.__bank - 1
+                self.__appl.shared["preselectAction"] = self
 
             for input in self.__appl.inputs:
                 if hasattr(input, "pixels"):
@@ -154,7 +143,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
                 if curr_bank != self.__bank_off - 1:
                     self.__appl.client.set(set_mapping, value_bank_off)
         else:
-            if curr_bank != self.__bank - 1:
+            if "preselectedBank" in self.__appl.shared or curr_bank != self.__bank - 1:
                 self.__appl.client.set(set_mapping, value_bank)
 
         # # Request value
@@ -185,7 +174,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
             # if "preselectedBank" in self.__appl.shared:
             #     del self.__appl.shared["preselectedBank"]
 
-        if "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1:
+        if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1:
             is_current = self.__appl.shared["preselectBlinkState"] #self.__blink_state
         else:
             is_current = (curr_bank == (self.__bank - 1))
@@ -204,7 +193,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
                 action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
 
             elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                if "preselectedBank" in self.__appl.shared:
+                if self.__preselect and "preselectedBank" in self.__appl.shared:
                     action.label.back_color = bank_color if is_current else self.dim_color(bank_color, self.__default_dim_factor_off) 
                 else:
                     action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
@@ -221,7 +210,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         action.switch_color = bank_color
 
         if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-            if "preselectedBank" in self.__appl.shared:
+            if self.__preselect and "preselectedBank" in self.__appl.shared:
                 if is_current:
                     action.switch_brightness = self.__default_led_brightness_on
                 else:

@@ -1,3 +1,6 @@
+# PySwitch v2.3.3
+
+
 # PySwitch v2.3.2
 - Bug Fixes:
     - **RIG_SELECT_AND_MORPH_STATE, RIG_UP, RIG_DOWN, BANK_SELECT, BANK_UP, BANK_DOWN**:

@@ -1,9 +1,11 @@
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
 from ...kemper import NUM_RIGS_PER_BANK, BANK_COLORS, NUM_BANKS
-from ....misc import Colors, get_option
+from ....misc import Colors, get_option, PeriodCounter
 
 from ..mappings.bank import MAPPING_NEXT_BANK, MAPPING_PREVIOUS_BANK
+from ..mappings.select import MAPPING_BANK_SELECT
+
 from .rig_select import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG
 
 # Next bank (keeps rig index)
@@ -17,11 +19,12 @@ def BANK_UP(display = None,
             text_callback = None,                             # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
             color = None,                                     # Override color (if no color_callback is passed)
             color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-            display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
+            display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,    # Display mode (same as for RIG_SELECT, see definitions above)
+            preselect = False                                 # Preselect mode
     ):
     return PushButtonAction({
         "callback": KemperBankChangeCallback(
-            mapping = MAPPING_NEXT_BANK(),
+            mapping = MAPPING_NEXT_BANK() if not preselect else MAPPING_BANK_SELECT(),
             offset = 1,
             dim_factor = dim_factor,
             display_mode = display_mode,
@@ -29,7 +32,8 @@ def BANK_UP(display = None,
             color = color,
             color_callback = color_callback,
             text = text,
-            text_callback = text_callback
+            text_callback = text_callback,
+            preselect = preselect
         ),
         "mode": PushButtonAction.ONE_SHOT,
         "display": display,
@@ -49,11 +53,12 @@ def BANK_DOWN(display = None,
                 text_callback = None,                             # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
                 color = None,                                     # Override color (if no color_callback is passed)
                 color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG     # Display mode (same as for RIG_SELECT, see definitions above)
+                display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,    # Display mode (same as for RIG_SELECT, see definitions above)
+                preselect = False                                 # Preselect mode
     ):
     return PushButtonAction({
         "callback": KemperBankChangeCallback(
-            mapping = MAPPING_PREVIOUS_BANK(),
+            mapping = MAPPING_PREVIOUS_BANK() if not preselect else MAPPING_BANK_SELECT(),
             offset = -1,
             dim_factor = dim_factor,
             display_mode = display_mode,
@@ -61,7 +66,8 @@ def BANK_DOWN(display = None,
             color = color,
             color_callback = color_callback,
             text = text,
-            text_callback = text_callback
+            text_callback = text_callback,
+            preselect = preselect
         ),
         "mode": PushButtonAction.ONE_SHOT,
         "display": display,
@@ -82,12 +88,14 @@ class KemperBankChangeCallback(BinaryParameterCallback):
                     color,
                     color_callback,
                     text,
-                    text_callback
+                    text_callback,
+                    preselect,
+                    preselect_blink_interval = 400
         ):            
         super().__init__(
             mapping = mapping,
-            value_enable = 0,
-            value_disable = 0,
+            # value_enable = 0,
+            # value_disable = 0,
             comparison_mode = self.NO_STATE_CHANGE
         )
 
@@ -101,7 +109,11 @@ class KemperBankChangeCallback(BinaryParameterCallback):
         self.__offset = offset
 
         self.__text = text
-        self.__text_callback = text_callback        
+        self.__text_callback = text_callback
+        self.__preselect = preselect  
+
+        if preselect:
+            self.__preselect_blink_period = PeriodCounter(preselect_blink_interval)
 
     def init(self, appl, listener = None):
         super().init(appl, listener)
@@ -116,16 +128,48 @@ class KemperBankChangeCallback(BinaryParameterCallback):
 
         if self.__led_brightness_p == "off":
             self.__led_brightness = get_option(appl.config, "ledBrightnessOff", 0.02)
+            self.__led_brightness_off = get_option(appl.config, "ledBrightnessOn", 0.3)
         elif self.__led_brightness_p == "on":
             self.__led_brightness = get_option(appl.config, "ledBrightnessOn", 0.3)
+            self.__led_brightness_off = get_option(appl.config, "ledBrightnessOff", 0.02)
         else:
             self.__led_brightness = self.__led_brightness_p
+            self.__led_brightness_off = self.__led_brightness_p * 0.1
+
+        if self.__preselect:
+            self.__appl.shared["preselectBlinkState"] = False
+            self.__appl.shared["preselectAction"] = None
 
     def state_changed_by_user(self, action):
-        super().state_changed_by_user(action)
+        if self.__preselect:
+            if self.__mapping.value == None:
+                return
+            
+            value = self.__get_next_bank()
+            
+            self.__appl.shared["preselectedBank"] = value
+            self.__appl.shared["preselectAction"] = self
+
+            value = [value]
+        else:
+            value = 0
+
+        self.__appl.client.set(self.__mapping, value)
+        
         self.__appl.shared["morphStateOverride"] = 0
 
+    def update(self):
+        BinaryParameterCallback.update(self)
+
+        # if self.__mapping.value != None:
+        if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectAction"] == self and self.__preselect_blink_period.exceeded:
+            self.__appl.shared["preselectBlinkState"] = not self.__appl.shared["preselectBlinkState"]
+            
+            self.update_displays(self.__action)
+
     def update_displays(self, action):
+        self.__action = action
+
         if self.__mapping.value == None:
             # Fallback to default behaviour
             if action.label:
@@ -139,13 +183,17 @@ class KemperBankChangeCallback(BinaryParameterCallback):
         # Calculate bank and rig numbers in range [0...]
         bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
         rig = self.__mapping.value % NUM_RIGS_PER_BANK
-        
+        target_bank = self.__get_next_bank(bank)
+
         if self.__color_callback:
             bank_color = self.__color_callback(action, bank, rig)
         elif self.__color:
             bank_color = self.__color
         else:
-            bank_color = BANK_COLORS[bank % len(BANK_COLORS)] if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG else BANK_COLORS[(len(BANK_COLORS) + bank + self.__offset) % len(BANK_COLORS)]
+            if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
+                bank_color = BANK_COLORS[bank % len(BANK_COLORS)]  
+            else:
+                bank_color = BANK_COLORS[target_bank % len(BANK_COLORS)]
 
         # Label text
         if action.label:
@@ -155,15 +203,7 @@ class KemperBankChangeCallback(BinaryParameterCallback):
                 if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
                     action.label.text = self.__text_callback(action, bank, rig)
 
-                elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
-                    target_bank = bank + self.__offset
-                    
-                    while target_bank >= NUM_BANKS:
-                        target_bank -= NUM_BANKS
-                    
-                    while target_bank < 0:
-                        target_bank += NUM_BANKS
-
+                elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:                    
                     action.label.text = self.__text_callback(action, target_bank, rig)
                 else:
                     raise Exception() #"Invalid display mode: " + repr(display_mode))
@@ -171,4 +211,23 @@ class KemperBankChangeCallback(BinaryParameterCallback):
                 action.label.text = self.__text
 
         action.switch_color = bank_color
-        action.switch_brightness = self.__led_brightness
+
+        if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectAction"] == self: 
+            action.switch_brightness = self.__led_brightness if not self.__appl.shared["preselectBlinkState"] else self.__led_brightness_off
+        else:
+            action.switch_brightness = self.__led_brightness
+
+    def __get_next_bank(self, bank = None):
+        if "preselectedBank" in self.__appl.shared:
+            bank = self.__appl.shared["preselectedBank"]
+
+        if bank == None:
+            bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)        
+
+        value = bank + self.__offset
+        while (value < 0):
+            value += NUM_BANKS
+        while (value >= NUM_BANKS):
+            value -= NUM_BANKS
+
+        return value
