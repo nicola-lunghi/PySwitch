@@ -1,14 +1,15 @@
 import libcst
+# from libcst.display import dump
 
-from PySwitchHardware import PySwitchHardware
 from .Actions import Actions
-from .ActionRemove import ActionRemove
+from .ActionFinder import ActionFinder
+from .InputAssignment import InputAssignment
 from ..RemoveTransformer import RemoveTransformer
 
 class Input(libcst.CSTVisitor):
     def __init__(self, hw_import_path, port):
         self.port = port
-        self.hardwareDefinitions = PySwitchHardware().get(hw_import_path)
+        self.assignment = InputAssignment(hw_import_path)
 
         self.__inputs = None
         self.result = None
@@ -38,7 +39,7 @@ class Input(libcst.CSTVisitor):
             # Only dicts in the Inputs assign
             return False
         
-        if not self.__has_assignment(node):
+        if not self.assignment.has_assignment(node, self.port):
             # Only inputs assigned to the port
             return False
         
@@ -58,7 +59,8 @@ class Input(libcst.CSTVisitor):
         self.result.visit(visitor)
         return visitor.result
 
-    # Remove action at the given index
+    # Remove action at the given index. 
+    # Note that after this, you have to update the CST.
     def remove_action(self, index, hold = False):
         if not self.result:
             raise Exception("No result to remove data from")
@@ -69,7 +71,7 @@ class Input(libcst.CSTVisitor):
         target_len = len(self.actions()) - 1
 
         # Get node to remove first
-        visitor = ActionRemove(index, hold)
+        visitor = ActionFinder(index, hold)
         self.result.visit(visitor)
 
         if not visitor.result:
@@ -81,26 +83,3 @@ class Input(libcst.CSTVisitor):
 
         if len(self.actions()) != target_len:
             raise Exception("Failed to remove action: " + repr(index))
-
-    ###############################################################################################################################
-
-    # Checks if an input node has assignment to the given port
-    def __has_assignment(self, input):
-        for dictElement in input.elements:
-            if dictElement.key.value != '"assignment"':
-                continue
-
-            definition = self.__get_hw_definition(dictElement.value.value)
-
-            if not definition or "port" not in definition["data"]["model"] or definition["data"]["model"]["port"] != self.port:
-                continue            
-
-            return True
-        return False
-    
-    # For a given name, returns the hardware definition
-    def __get_hw_definition(self, name):
-        for defi in self.hardwareDefinitions:
-            if defi["name"] == name:
-                return defi
-            

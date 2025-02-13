@@ -1,6 +1,6 @@
 from ..VisitorWithStack import VisitorWithStack
 
-class ActionRemove(VisitorWithStack):
+class ActionFinder(VisitorWithStack):
     def __init__(self, index, hold = False):
         super().__init__()
 
@@ -8,7 +8,7 @@ class ActionRemove(VisitorWithStack):
         self.hold = hold
         
         self.current = 0
-        self.result = None
+        self.result = None     
         
     # Elements of the main input dict
     def visit_DictElement(self, node):
@@ -33,6 +33,9 @@ class ActionRemove(VisitorWithStack):
             return False
         
     def leave_Element(self, node):
+        if self.result:
+            return False
+        
         if len(self.stack) != 3:
             return False
 

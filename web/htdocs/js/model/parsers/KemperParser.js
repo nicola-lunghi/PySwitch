@@ -68,6 +68,18 @@ class KemperParser extends Parser {
         );
     }
 
+    /**
+     * Replaces the passed input in the current CST.
+     */
+    async replaceInput(input) {
+        await this.parse();
+        
+        this.#csts.inputs_py = this.#py.replace_input(
+            this.#csts.inputs_py,
+            input
+        );
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

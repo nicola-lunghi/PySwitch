@@ -28,6 +28,7 @@ class KemperParserTests {
         async function remove(index, hold = false) {
             const input = await parser.input(25);
             await input.remove_action(index, hold);
+            await parser.replaceInput(input);
         }
 
         await expectAsync(remove(-1)).toBeRejected();
@@ -57,6 +58,14 @@ class KemperParserTests {
                         {
                             name: "numb",
                             value: '78'
+                        },
+                        {
+                            name: "large",
+                            value: '{"d":{"e":{"f":8}}}'
+                        },
+                        {
+                            name: "arr",
+                            value: '[{"f": 8, "j": [3, 5,6]}, None, "g"]'
                         }
                     ] 
                 }
@@ -78,6 +87,14 @@ class KemperParserTests {
                         {
                             name: "numb",
                             value: '78'
+                        },
+                        {
+                            name: "large",
+                            value: '{"d":{"e":{"f":8}}}'
+                        },
+                        {
+                            name: "arr",
+                            value: '[{"f": 8, "j": [3, 5,6]}, None, "g"]'
                         }
                     ] 
                 }
