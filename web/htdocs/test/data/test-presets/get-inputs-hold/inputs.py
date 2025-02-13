@@ -29,7 +29,12 @@ Inputs = [
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [ RIG_UP(
                 display = DISPLAY_HEADER_1,
-                text = "Rig up"
+                text = "Rig up",
+                calculated_arg = value != None,
+                # dict_arg = {
+                #     "entry": 3,
+                #     "str": "somestring"
+                # }
             )                         
         ]
     },
@@ -42,7 +47,7 @@ Inputs = [
             display = DISPLAY_HEADER_2
         )],
         "foo": [
-            TUNER_MODE(foo=3)
+            TUNER_MOdDE(foo=3)
         ]
     },
 
@@ -72,8 +77,8 @@ Inputs2 = [
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [ RIG_UP(
-                display = DISPLAY_HEADER_1,
-                text = "Rig up"
+                display = DISPLAYs_HEADER_1,
+                text = "Rig ee"
             )                         
         ]
     },
@@ -83,14 +88,14 @@ Inputs2 = [
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [ BANK_UP() ],
         "actionsHold": [TUNER_MODE(
-            display = DISPLAY_HEADER_2
+            display = DISPLAY_HEADxER_2
         )]
     },
 
     # Switch A
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_B,
-        "actions": [ RIG_DOWN(display = DISPLAY_FOOTER_1, text = "Rig dn")]
+        "actions": [ RIG_DOWN(display = DISPLAY_FOOTER_1, text = "Rig as")]
     },
     
     # Switch B
@@ -101,7 +106,7 @@ Inputs2 = [
 
         "actions": 
         [ BANK_DOWN(
-                display = DISPLAY_FOOTER_2
+                display = DISPLAY_FOOTEX_2
             )
         ]
     }

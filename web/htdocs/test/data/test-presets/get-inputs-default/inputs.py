@@ -32,7 +32,9 @@ Inputs = [
         "actions": [
             BANK_UP(
                 display = DISPLAY_HEADER_2
-            )
+            ),
+            RIG_DOWN(),
+            RIG_UP(some=val, numb=78),
         ]
     },
 
@@ -41,8 +43,7 @@ Inputs = [
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
             RIG_DOWN(
-                display = DISPLAY_FOOTER_1,
-                text = "Rig dn"
+                display = DISPLAY_FOOTER_1,text="Rig dn"
             )
         ]
     },

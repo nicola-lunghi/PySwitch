@@ -40,9 +40,17 @@ class PySwitchRunner {
 
         await this.#loadModule("PySwitchRunner.py", localPythonPath);
         await this.#loadModule("PySwitchFrontend.py", localPythonPath);
-        await this.#loadModule("PySwitchParser.py", localPythonPath);
         await this.#loadModule("PySwitchHardware.py", localPythonPath);
         await this.#loadModule("mocks.py", localPythonPath);
+
+        this.pyodide.FS.mkdir("parser");
+        await this.#loadModule("parser/PySwitchParser.py", localPythonPath);
+
+        this.pyodide.FS.mkdir("parser/inputs");
+        await this.#loadModule("parser/inputs/Action.py", localPythonPath);
+        await this.#loadModule("parser/inputs/Actions.py", localPythonPath);
+        await this.#loadModule("parser/inputs/Arguments.py", localPythonPath);
+        await this.#loadModule("parser/inputs/Input.py", localPythonPath);
 
         this.pyodide.FS.mkdir("wrappers");
         await this.#loadModule("wrappers/__init__.py", localPythonPath);

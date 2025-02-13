@@ -7,6 +7,10 @@ class KemperParser extends Parser {
     #py = null;
     #csts = null;
 
+    // debug(debug) {
+    //     this.#py.debug = true
+    // }
+
     /**
      * Creates the python libcst parser. Must be called at least once before 
      * the parser is actually used. Expects the PySwitchRunner.
@@ -14,7 +18,7 @@ class KemperParser extends Parser {
     async #init() {
         if (this.#py) return;        
         this.#py = await this.runner.pyodide.runPython(`            
-            from PySwitchParser import PySwitchParser
+            from parser.PySwitchParser import PySwitchParser
             PySwitchParser()
         `);    
     }
@@ -51,14 +55,17 @@ class KemperParser extends Parser {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns an array of all actions for the given input.
+     * Returns an instance of Input.py
      * port must be an integer ID of the port (as defined in the board wrapper in python)
      */
-    async getInputActions(port) {
+    async input(port) {
         await this.parse();
 
-        const json = this.#py.get_actions(await this.#getHardwareImportPath(), this.#csts.inputs_py, port);
-        return JSON.parse(json);
+        return this.#py.input(
+            this.#csts.inputs_py,
+            await this.#getHardwareImportPath(), 
+            port
+        );
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
