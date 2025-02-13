@@ -28,11 +28,10 @@ class Parser {
     }
 
     /**
-     * Returns an array of all actions for the given input.
+     * Returns an instance of Input.py
      * port must be an integer ID of the port (as defined in the board wrapper in python)
-     * If hold is true, hold actions are returned.
      */
-    async getInputActions(port, hold = false) {
+    async input(port) {
         throw new Error("Must be implemented in child classes");
     }
 

@@ -7,6 +7,9 @@ from .inputs.Input import Input
 
 class PySwitchParser:
 
+    # def __init__(self):
+    #     self.__inputs = None
+
     # Returns a CST tree for a given source
     def parse(self, source):
         return libcst.parse_module(source)

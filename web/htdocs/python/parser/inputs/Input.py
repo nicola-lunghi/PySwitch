@@ -2,6 +2,8 @@ import libcst
 
 from PySwitchHardware import PySwitchHardware
 from .Actions import Actions
+from .ActionRemove import ActionRemove
+from ..RemoveTransformer import RemoveTransformer
 
 class Input(libcst.CSTVisitor):
     def __init__(self, hw_import_path, port):
@@ -55,6 +57,30 @@ class Input(libcst.CSTVisitor):
         visitor = Actions(hold)
         self.result.visit(visitor)
         return visitor.result
+
+    # Remove action at the given index
+    def remove_action(self, index, hold = False):
+        if not self.result:
+            raise Exception("No result to remove data from")
+        
+        if index < 0:
+            raise Exception("Invalid action index: " + repr(index))
+
+        target_len = len(self.actions()) - 1
+
+        # Get node to remove first
+        visitor = ActionRemove(index, hold)
+        self.result.visit(visitor)
+
+        if not visitor.result:
+            raise Exception("Could not find action at index: " + repr(index))
+        
+        # Remove the node with a generic remover
+        remover = RemoveTransformer(visitor.result)
+        self.result = self.result.visit(remover)
+
+        if len(self.actions()) != target_len:
+            raise Exception("Failed to remove action: " + repr(index))
 
     ###############################################################################################################################
 

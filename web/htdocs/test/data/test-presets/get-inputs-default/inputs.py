@@ -34,7 +34,7 @@ Inputs = [
                 display = DISPLAY_HEADER_2
             ),
             RIG_DOWN(),
-            RIG_UP(some=val, numb=78),
+            RIG_UP(some=val, numb=78, large={"d":{"e":{"f":8}}}, arr=[{"f": 8, "j": [3, 5,6]}, None, "g"]),
         ]
     },
 

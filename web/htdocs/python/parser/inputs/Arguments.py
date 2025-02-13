@@ -1,20 +1,11 @@
 import libcst
+from ..VisitorWithStack import VisitorWithStack
 
-class Arguments(libcst.CSTVisitor):
+class Arguments(VisitorWithStack):
     def __init__(self):
-        self.stack = []
+        super().__init__()
         self.result = []
         
-    def on_visit(self, node):
-        self.stack.append(node)
-        
-        return super().on_visit(node)
-
-    def on_leave(self, node):
-        self.stack.pop()
-
-        super().on_leave(node)
-
     def visit_Arg(self, node):
         if len(self.stack) != 2:
             return False
