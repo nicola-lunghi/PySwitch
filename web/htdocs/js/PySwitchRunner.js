@@ -46,12 +46,12 @@ class PySwitchRunner {
         this.pyodide.FS.mkdir("parser");
         await this.#loadModule("parser/PySwitchParser.py", localPythonPath);
         await this.#loadModule("parser/VisitorWithStack.py", localPythonPath);
-        await this.#loadModule("parser/RemoveTransformer.py", localPythonPath);
+        await this.#loadModule("parser/AddElementTransformer.py", localPythonPath);
         
         this.pyodide.FS.mkdir("parser/inputs");
         await this.#loadModule("parser/inputs/Action.py", localPythonPath);
         await this.#loadModule("parser/inputs/Actions.py", localPythonPath);
-        await this.#loadModule("parser/inputs/ActionFinder.py", localPythonPath);
+        //await this.#loadModule("parser/inputs/ActionFinder.py", localPythonPath);
         await this.#loadModule("parser/inputs/Arguments.py", localPythonPath);
         await this.#loadModule("parser/inputs/Input.py", localPythonPath);
         await this.#loadModule("parser/inputs/InputReplacer.py", localPythonPath);
@@ -59,7 +59,7 @@ class PySwitchRunner {
         
         this.pyodide.FS.mkdir("wrappers");
         await this.#loadModule("wrappers/__init__.py", localPythonPath);
-        await this.#loadModule("wrappers/wrap_circuitpy.py", localPythonPath);
+        await this.#loadModule("wrappers/wrap_io.py", localPythonPath);
         await this.#loadModule("wrappers/wrap_adafruit_midi.py", localPythonPath);
         await this.#loadModule("wrappers/wrap_adafruit_led.py", localPythonPath);
         await this.#loadModule("wrappers/wrap_adafruit_display.py", localPythonPath);

@@ -25,14 +25,11 @@ class KemperParserTests {
         expect(parser).toBeInstanceOf(KemperParser);
 
         // Remove from switch 2
-        async function remove(index, hold = false) {
+        async function remove(index) {
             const input = await parser.input(25);
-            await input.remove_action(index, hold);
-            await parser.replaceInput(input);
+            const actions = await input.actions(false);
+            await actions[index].remove();
         }
-
-        await expectAsync(remove(-1)).toBeRejected();
-        await expectAsync(remove(3)).toBeRejected();
 
         await remove(1);
 
@@ -154,6 +151,340 @@ class KemperParserTests {
                     }
                 ] 
             }] 
+        });
+    }
+
+    async removeActionHold() {        
+        await this.#init();
+        const config = new WebConfiguration("data/test-presets/remove-actions-hold");
+        
+        const parser = await config.parser(this.pyswitch);
+        expect(parser).toBeInstanceOf(KemperParser);
+
+        // Remove from switch 2
+        async function remove(index) {
+            const input = await parser.input(25);
+            const actions = await input.actions(true);
+            await actions[index].remove();
+        }
+
+        await this.#testAction(parser, {
+            port: 25,
+            actions: [
+                {
+                    name: "BANK_UP",
+                    arguments: []
+                }
+            ],
+            actionsHold: [
+                { 
+                    name: "TUNER_MODE",
+                    arguments: [
+                        {
+                            name: "display",
+                            value: "DISPLAY_HEADER_2"
+                        }
+                    ] 
+                },
+                { 
+                    name: "BANK_UP",
+                    arguments: [] 
+                },
+                { 
+                    name: "BANK_DOWN",
+                    arguments: [] 
+                }
+            ] 
+        });
+
+        await remove(1);
+
+        await this.#testAction(parser, {
+            port: 25,
+            actions: [
+                {
+                    name: "BANK_UP",
+                    arguments: []
+                }
+            ],
+            actionsHold: [
+                { 
+                    name: "TUNER_MODE",
+                    arguments: [
+                        {
+                            name: "display",
+                            value: "DISPLAY_HEADER_2"
+                        }
+                    ] 
+                },
+                { 
+                    name: "BANK_DOWN",
+                    arguments: [] 
+                }
+            ] 
+        });
+
+        await remove(0);
+
+        await this.#testAction(parser, {
+            port: 25,
+            actions: [
+                {
+                    name: "BANK_UP",
+                    arguments: []
+                }
+            ],
+            actionsHold: [
+                { 
+                    name: "BANK_DOWN",
+                    arguments: [] 
+                }
+            ] 
+        });
+
+        await remove(0);
+
+        await this.#testAction(parser, {
+            port: 25,
+            actions: [
+                {
+                    name: "BANK_UP",
+                    arguments: []
+                }
+            ],
+            actionsHold: [] 
+        });
+    }
+
+    async addActionNoIndex() {        
+        await this.#init();
+        const config = new WebConfiguration("data/test-presets/get-inputs-default");
+        
+        const parser = await config.parser(this.pyswitch);
+        expect(parser).toBeInstanceOf(KemperParser);
+
+        // Add to switch 1
+        async function add(action) {
+            const input = await parser.input(1);
+            await input.add_action(action, false);
+        }
+
+        await add({
+            name: "FOO_ACTION",
+            arguments: [
+                {
+                    name: "param1",
+                    value: '"StringValue"'
+                },
+                {
+                    name: "param2",
+                    value: 'NameValue'
+                },
+                {
+                    name: "param3",
+                    value: '789'
+                },
+                {
+                    name: "param4",
+                    value: '{"ff":[{4:6}, "hk"]}'
+                },
+            ]
+        });
+
+        await this.#testAction(parser, {
+            port: 1,
+            actions: [
+                {
+                    name: "RIG_UP",
+                    arguments: [
+                        {
+                            name: "display",
+                            value: "DISPLAY_HEADER_1"
+                        },
+                        {
+                            name: "text",
+                            value: '"Rig up"'
+                        }
+                    ]
+                },
+                {
+                    name: "FOO_ACTION",
+                    arguments: [
+                        {
+                            name: "param1",
+                            value: '"StringValue"'
+                        },
+                        {
+                            name: "param2",
+                            value: 'NameValue'
+                        },
+                        {
+                            name: "param3",
+                            value: '789'
+                        },
+                        {
+                            name: "param4",
+                            value: '{"ff":[{4:6}, "hk"]}'
+                        },
+                    ]
+                }
+            ]
+        });
+    }
+
+    async addActionWithIndex() {        
+        await this.#init();
+        const config = new WebConfiguration("data/test-presets/get-inputs-default");
+        
+        const parser = await config.parser(this.pyswitch);
+        expect(parser).toBeInstanceOf(KemperParser);
+
+        // Add to switch 1
+        async function add(action, index) {
+            const input = await parser.input(1);
+            await input.add_action(action, false, index);
+
+            console.log((await parser.source()).get("inputs_py"));
+        }
+
+        await add({
+            name: "FOO_ACTION",
+            arguments: [
+                {
+                    name: "param1",
+                    value: '"StringValue"'
+                },
+                {
+                    name: "param2",
+                    value: 'NameValue'
+                },
+                {
+                    name: "param3",
+                    value: '789'
+                },
+                {
+                    name: "param4",
+                    value: '{"ff":[{4:6}, "hk"]}'
+                },
+            ]
+        }, 0);
+
+        await this.#testAction(parser, {
+            port: 1,
+            actions: [                
+                {
+                    name: "FOO_ACTION",
+                    arguments: [
+                        {
+                            name: "param1",
+                            value: '"StringValue"'
+                        },
+                        {
+                            name: "param2",
+                            value: 'NameValue'
+                        },
+                        {
+                            name: "param3",
+                            value: '789'
+                        },
+                        {
+                            name: "param4",
+                            value: '{"ff":[{4:6}, "hk"]}'
+                        },
+                    ]
+                },
+                {
+                    name: "RIG_UP",
+                    arguments: [
+                        {
+                            name: "display",
+                            value: "DISPLAY_HEADER_1"
+                        },
+                        {
+                            name: "text",
+                            value: '"Rig up"'
+                        }
+                    ]
+                }
+            ]
+        });
+    }
+
+    async addActionHoldNoIndex() {        
+        await this.#init();
+        const config = new WebConfiguration("data/test-presets/get-inputs-default");
+        
+        const parser = await config.parser(this.pyswitch);
+        expect(parser).toBeInstanceOf(KemperParser);
+
+        // Add to switch 1
+        async function add(action) {
+            const input = await parser.input(1);
+            await input.add_action(action, true);
+        }
+
+        await add({
+            name: "FOO_ACTION",
+            arguments: [
+                {
+                    name: "param1",
+                    value: '"StringValue"'
+                },
+                {
+                    name: "param2",
+                    value: 'NameValue'
+                },
+                {
+                    name: "param3",
+                    value: '789'
+                },
+                {
+                    name: "param4",
+                    value: '{"ff":[{4:6}, "hk"]}'
+                },
+            ]
+        });
+
+        await this.#testAction(parser, {
+            port: 1,
+            actions: [
+                {
+                    name: "RIG_UP",
+                    arguments: [
+                        {
+                            name: "display",
+                            value: "DISPLAY_HEADER_1"
+                        },
+                        {
+                            name: "text",
+                            value: '"Rig up"'
+                        }
+                    ]
+                }
+            ],
+            actionsHold: [
+                {
+                    name: "FOO_ACTION",
+                    arguments: [
+                        {
+                            name: "param1",
+                            value: '"StringValue"'
+                        },
+                        {
+                            name: "param2",
+                            value: 'NameValue'
+                        },
+                        {
+                            name: "param3",
+                            value: '789'
+                        },
+                        {
+                            name: "param4",
+                            value: '{"ff":[{4:6}, "hk"]}'
+                        },
+                    ]
+                }
+            ]
         });
     }
 

@@ -4,80 +4,45 @@ class KemperParser extends Parser {
     static DEVICE_TYPE_MINI_6 = 20;
     static DEVICE_TYPE_10 = 30;
 
-    #py = null;
-    #csts = null;
-
-    // debug(debug) {
-    //     this.#py.debug = true
-    // }
+    #pySwitchParser = null;
 
     /**
      * Creates the python libcst parser. Must be called at least once before 
      * the parser is actually used. Expects the PySwitchRunner.
      */
     async #init() {
-        if (this.#py) return;        
-        this.#py = await this.runner.pyodide.runPython(`            
+        if (this.#pySwitchParser) return;
+        
+        this.#pySwitchParser = await this.runner.pyodide.runPython(`         
             from parser.PySwitchParser import PySwitchParser
-            PySwitchParser()
-        `);    
-    }
-
-    /**
-     * Returns a CST (Concrete Syntax Tree) from the sources.
-     */
-    async parse() {
-        if (this.#csts) return;
-        await this.#init();
+            PySwitchParser(
+                hw_import_path = "` + (await this.#getHardwareImportPath()) + `"
+            )
+        `);
 
         const inputs_py = (await this.config.get()).inputs_py;
         const display_py = (await this.config.get()).display_py;
 
-        this.#csts = {
-            inputs_py: await this.#py.parse(inputs_py),
-            display_py: await this.#py.parse(display_py)
-        };
-    }
-
-    /**
-     * Unparse a CST tree
-     */
-    async unparse() {
-        if (!this.#csts) throw new Error("Please parse() before");
-        await this.#init();
-
-        return {
-            inputs_py: await this.#py.unparse(this.#csts.inputs_py),
-            display_py: await this.#py.unparse(this.#csts.display_py)
-        }
+        await this.#pySwitchParser.from_source(inputs_py, display_py);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns an instance of Input.py
+     * Returns an instance of Input.py, which handles all operations on the input.
      * port must be an integer ID of the port (as defined in the board wrapper in python)
      */
     async input(port) {
-        await this.parse();
-
-        return this.#py.input(
-            this.#csts.inputs_py,
-            await this.#getHardwareImportPath(), 
-            port
-        );
+        await this.#init();
+        return this.#pySwitchParser.input(port);
     }
 
     /**
-     * Replaces the passed input in the current CST.
+     * Returns a (proxied) Map holding the sources of the current parser state.
      */
-    async replaceInput(input) {
-        await this.parse();
-        
-        this.#csts.inputs_py = this.#py.replace_input(
-            this.#csts.inputs_py,
-            input
-        );
+    async source() {
+        await this.#init();
+        return this.#pySwitchParser.to_source();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -17,7 +17,7 @@ class WrapNeoPixelDriver:
             led = document.getElementById(self.dom_namespace + "-led-" + str(key))
 
             if not led:
-                return
+                raise Exception("LED " + str(key) + " not found in DOM")
             
             # Store original value for testing
             led.dataset.color = [v for v in value]

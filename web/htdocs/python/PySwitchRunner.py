@@ -6,7 +6,7 @@ from js import externalRefs
 
 from mocks import *
 from wrappers.WrapDisplayDriver import *
-from wrappers.wrap_circuitpy import *
+from wrappers.wrap_io import *
 from wrappers.wrap_adafruit_display import *
 from wrappers.wrap_adafruit_led import *
 from wrappers.wrap_adafruit_midi import *
