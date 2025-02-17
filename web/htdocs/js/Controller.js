@@ -134,14 +134,16 @@ class Controller {
             }
         });
 
+        this.ui.progress(0.7, "Setup UI");
+
+        // Generate parser UI, show name of config, CSS classes etc.
+        await this.ui.applyConfig(config);
+
         this.ui.progress(0.8, "Run PySwitch");
 
         // Run local PySwitch with the config
         await this.pyswitch.run(await config.get());
         this.ui.message("Loaded configuration: " + (await config.name()), "S");
-
-        // Generate parser UI, show name of config, CSS classes etc.
-        await this.ui.applyConfig(config);
 
         this.ui.progress(1);
         this.currentConfig = config;

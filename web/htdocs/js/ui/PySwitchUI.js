@@ -17,7 +17,7 @@ class PySwitchUI {
     loadBrowser = null;
     clientBrowser = null;
     clientButton = null;
-    parserUI = null;
+    parserFrontend = null;
 
     // #resizeHandler = null;
 
@@ -156,7 +156,7 @@ class PySwitchUI {
         this.notifications = new Notifications(messageElement);
 
         // Parser UI handler
-        this.parserUI = new PySwitchParserUI(this.#controller);
+        this.parserFrontend = new PySwitchFrontend(this.#deviceElement, this.#options);
 
         // // Resizer for application area
         // this.#resizeHandler = new ResizeHandler(this.#applicationElement);
@@ -173,9 +173,15 @@ class PySwitchUI {
             container: this.#listElement,
             headline: "Please select a configuration to load",
             providers: [
+                // Templates
+                new TemplatesProvider("templates/toc.php"),
+
+                // Examples
                 new ExamplesProvider("examples/toc.php"),
+                
+                // Connected controllers
                 new PortsProvider({
-                    rootText: "Connected Controllers",
+                    rootText: "Load from a connected Controller",
                     onSelect: async function(entry) {
                         that.#controller.routing.call(that.#controller.getControllerUrl(entry.value));
                     }
@@ -256,13 +262,9 @@ class PySwitchUI {
         // Headline (config name)
         this.#contentHeadline.text(await config.name());
 
-        // CSS classes for the main device element
+        // Apply the parser to the frontend (generates all switches etc.)
         const parser = await config.parser(this.#controller.pyswitch);
-        
-        this.#deviceElement[0].className = await parser.getDeviceClass();
-        
-        // Apply the parser also to the parser UI
-        await this.parserUI.apply(parser);
+        await this.parserFrontend.apply(parser);
     }
 
     /**

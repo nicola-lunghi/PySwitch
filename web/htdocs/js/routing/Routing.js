@@ -66,6 +66,14 @@ class Routing {
                     new WebConfiguration("examples/" + encodeURI(path))
                 );
             })));
+
+            // Load/browse template configs
+            this.get(/\#template\/(.*)/, that.#queue.add(that.#executeRoute(async function() {
+                const path = decodeURI(this.params['splat'][0]);                    
+                await that.#controller.loadConfiguration(
+                    new WebConfiguration("templates/" + encodeURI(path))
+                );
+            })));
         });
 
         // Error handling

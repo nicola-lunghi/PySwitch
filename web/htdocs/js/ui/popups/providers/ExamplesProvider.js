@@ -26,6 +26,7 @@ class ExamplesProvider extends BrowserProvider {
         
         // Build hierarchy        
         function crawl(entry, prefix) {
+            // Make it a callable entry if it is a folder and does not have any subfolders
             if (entry.type == "dir" && !entry.children.filter((e) => e.type == "dir").length) {
                 // Example
                 return new BrowserEntry(

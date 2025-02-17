@@ -48,6 +48,21 @@ class KemperParser extends Parser {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * Returns hardware info for the given config
+     */
+    async getHardwareInfo() {
+        const importPath = await this.#getHardwareImportPath();
+
+        const hardwareJson = await this.runner.pyodide.runPython(`
+            import json
+            from PySwitchHardware import PySwitchHardware
+            pySwitchHardware = PySwitchHardware()
+            json.dumps(pySwitchHardware.get("` + importPath + `"))
+        `);
+        return JSON.parse(hardwareJson);
+    }
+
+    /**
      * Returns the hardware definition script file name in the lib/pyswitch/hardware/devices/ folder
      */
     async #getHardwareImportPath() {
