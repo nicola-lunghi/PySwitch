@@ -44,12 +44,14 @@ class PySwitchRunner {
         this.pyodide.FS.mkdir("parser");
         await this.#loadModule("parser/PySwitchParser.py", localPythonPath);
         await this.#loadModule("parser/PySwitchHardware.py", localPythonPath);
+        await this.#loadModule("parser/PySwitchActions.py", localPythonPath);
 
         this.pyodide.FS.mkdir("parser/misc");
         await this.#loadModule("parser/misc/VisitorsWithStack.py", localPythonPath);
         await this.#loadModule("parser/misc/AddElementTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/RemoveDictElementTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/RemoveUnusedImportTransformer.py", localPythonPath);
+        await this.#loadModule("parser/misc/CollectCommentsTransformer.py", localPythonPath);        
 
         this.pyodide.FS.mkdir("parser/inputs");
         await this.#loadModule("parser/inputs/Action.py", localPythonPath);

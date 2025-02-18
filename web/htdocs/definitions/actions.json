@@ -1,0 +1,1155 @@
+[
+    {
+        "name": "RIG_VOLUME_BOOST",
+        "parameters": [
+            {
+                "name": "boost_volume",
+                "default": null,
+                "comment": "Boost volume\nComment test line 2"
+            },
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "mode",
+                "default": "PushButtonAction.HOLD_MOMENTARY",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.PINK",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"RigBoost\"",
+                "comment": null
+            },
+            {
+                "name": "remember_off_value",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            }
+        ],
+        "comment": "Volume boost function, based on setting rig volume to a certain boost value. To \nmake sense, all rig volumes have to be zero in your rigs! You can then set the\nboost rig volume by passing a value in range [0..1] (corresponding to the range of the\nrig volume paramneter: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB)"
+    },
+    {
+        "name": "LOOPER_REC_PLAY_OVERDUB",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"Rec\"",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.RED",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            }
+        ],
+        "comment": "Play/Rec/Overdub"
+    },
+    {
+        "name": "LOOPER_STOP",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"Stop\"",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.WHITE",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            }
+        ],
+        "comment": "Stop"
+    },
+    {
+        "name": "LOOPER_ERASE",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"Erase\"",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.LIGHT_RED",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            }
+        ],
+        "comment": "Erase"
+    },
+    {
+        "name": "LOOPER_CANCEL",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"Undo\"",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.YELLOW",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            }
+        ],
+        "comment": "Cancel"
+    },
+    {
+        "name": "LOOPER_REVERSE",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"Reverse\"",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.LIGHT_GREEN",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            }
+        ],
+        "comment": "Reverse"
+    },
+    {
+        "name": "LOOPER_TRIGGER",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"Trigger\"",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.LIGHT_BLUE",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            }
+        ],
+        "comment": "Trigger"
+    },
+    {
+        "name": "LOOPER_HALF_SPEED",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"HalfSpd\"",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.ORANGE",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            }
+        ],
+        "comment": "Half speed"
+    },
+    {
+        "name": "MORPH_BUTTON",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"Morph\"",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "\"kemper\"",
+                "comment": "Can be \"kemper\" or a fixed color"
+            },
+            {
+                "name": "morph_color_base",
+                "default": "Colors.RED",
+                "comment": "Only used if color = \"kemper\""
+            },
+            {
+                "name": "morph_color_morphed",
+                "default": "Colors.BLUE",
+                "comment": "Only used if color = \"kemper\""
+            }
+        ],
+        "comment": "Morph button (faded change of morph state) with fixed color."
+    },
+    {
+        "name": "MORPH_DISPLAY",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"Morph\"",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "morph_color_base",
+                "default": "Colors.RED",
+                "comment": null
+            },
+            {
+                "name": "morph_color_morphed",
+                "default": "Colors.BLUE",
+                "comment": null
+            }
+        ],
+        "comment": "Morph display only"
+    },
+    {
+        "name": "TAP_TEMPO",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.DARK_GREEN",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            }
+        ],
+        "comment": "Tap tempo "
+    },
+    {
+        "name": "SHOW_TEMPO",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.LIGHT_GREEN",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"Tempo\"",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "led_brightness_on",
+                "default": "0.02",
+                "comment": null
+            },
+            {
+                "name": "led_brightness_off",
+                "default": "0",
+                "comment": null
+            }
+        ],
+        "comment": "Show tempo (visual feedback, will be enabled for short time every beat)"
+    },
+    {
+        "name": "EFFECT_STATE",
+        "parameters": [
+            {
+                "name": "slot_id",
+                "default": null,
+                "comment": null
+            },
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "mode",
+                "default": "PushButtonAction.HOLD_MOMENTARY",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            }
+        ],
+        "comment": "Switch an effect slot on / off"
+    },
+    {
+        "name": "BANK_UP",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "dim_factor",
+                "default": "\"off\"",
+                "comment": "Can be \"off\", \"on\" or a value in range [0..1]"
+            },
+            {
+                "name": "led_brightness",
+                "default": "\"off\"",
+                "comment": "Can be \"off\", \"on\" or a value in range [0..1]"
+            },
+            {
+                "name": "text",
+                "default": "\"Bank up\"",
+                "comment": null
+            },
+            {
+                "name": "text_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0."
+            },
+            {
+                "name": "color",
+                "default": "None",
+                "comment": "Override color (if no color_callback is passed)"
+            },
+            {
+                "name": "color_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0."
+            },
+            {
+                "name": "display_mode",
+                "default": "RIG_SELECT_DISPLAY_CURRENT_RIG",
+                "comment": "Display mode (same as for RIG_SELECT, see definitions above)"
+            },
+            {
+                "name": "preselect",
+                "default": "False",
+                "comment": "Preselect mode"
+            }
+        ],
+        "comment": "Next bank (keeps rig index)"
+    },
+    {
+        "name": "BANK_DOWN",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "dim_factor",
+                "default": "\"off\"",
+                "comment": "Can be \"off\", \"on\" or a value in range [0..1]"
+            },
+            {
+                "name": "led_brightness",
+                "default": "\"off\"",
+                "comment": "Can be \"off\", \"on\" or a value in range [0..1]"
+            },
+            {
+                "name": "text",
+                "default": "\"Bank dn\"",
+                "comment": null
+            },
+            {
+                "name": "text_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0."
+            },
+            {
+                "name": "color",
+                "default": "None",
+                "comment": "Override color (if no color_callback is passed)"
+            },
+            {
+                "name": "color_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0."
+            },
+            {
+                "name": "display_mode",
+                "default": "RIG_SELECT_DISPLAY_CURRENT_RIG",
+                "comment": "Display mode (same as for RIG_SELECT, see definitions above)"
+            },
+            {
+                "name": "preselect",
+                "default": "False",
+                "comment": "Preselect mode"
+            }
+        ],
+        "comment": "Previous bank (keeps rig index)"
+    },
+    {
+        "name": "RIG_SELECT_AND_MORPH_STATE",
+        "parameters": [
+            {
+                "name": "rig",
+                "default": null,
+                "comment": null
+            },
+            {
+                "name": "rig_off",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "bank",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "bank_off",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "color_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "display_mode",
+                "default": "RIG_SELECT_DISPLAY_TARGET_RIG",
+                "comment": null
+            },
+            {
+                "name": "morph_display",
+                "default": "None",
+                "comment": "Optional DisplayLabel to show morph color"
+            },
+            {
+                "name": "morph_use_leds",
+                "default": "True",
+                "comment": "Use the LEDs to show morph state?"
+            },
+            {
+                "name": "morph_id",
+                "default": "None",
+                "comment": "Separate ID for the morph action. Default is the same id as specified with the \"id\" parameter."
+            },
+            {
+                "name": "morph_only_when_enabled",
+                "default": "True",
+                "comment": "Only show the morph state when the \"on\" rig is selected"
+            },
+            {
+                "name": "morph_color_base",
+                "default": "Colors.RED",
+                "comment": null
+            },
+            {
+                "name": "morph_color_morphed",
+                "default": "Colors.BLUE",
+                "comment": null
+            },
+            {
+                "name": "rig_btn_morph",
+                "default": "False",
+                "comment": "If set True, second press will trigger morphing (only if no rig_off or bank_off are specified)"
+            }
+        ],
+        "comment": "Adds morph state display on one LED to the rig select action. Returns a list of actions!\nFor details on the parameters, see RIG_SELECT."
+    },
+    {
+        "name": "RIG_UP",
+        "parameters": [
+            {
+                "name": "keep_bank",
+                "default": "True",
+                "comment": "If enabled, the bank is not changed when at the first and last rigs of a bank. If disabled, \nthe banks are stepped up/down after the last/first rigs of a bank."
+            },
+            {
+                "name": "display_mode",
+                "default": "RIG_SELECT_DISPLAY_TARGET_RIG",
+                "comment": "Display mode (see definitions above)"
+            },
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "color_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0."
+            },
+            {
+                "name": "color",
+                "default": "None",
+                "comment": "Color override (if no text callback is passed)"
+            },
+            {
+                "name": "text_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0."
+            },
+            {
+                "name": "text",
+                "default": "None",
+                "comment": "Text override (if no text callback is passed)"
+            }
+        ],
+        "comment": null
+    },
+    {
+        "name": "RIG_DOWN",
+        "parameters": [
+            {
+                "name": "keep_bank",
+                "default": "True",
+                "comment": "If enabled, the bank is not changed when at the first and last rigs of a bank. If disabled, \nthe banks are stepped up/down after the last/first rigs of a bank."
+            },
+            {
+                "name": "display_mode",
+                "default": "RIG_SELECT_DISPLAY_TARGET_RIG",
+                "comment": "Display mode (see definitions above)"
+            },
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "color_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0."
+            },
+            {
+                "name": "color",
+                "default": "None",
+                "comment": "Color override (if no text callback is passed)"
+            },
+            {
+                "name": "text_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0."
+            },
+            {
+                "name": "text",
+                "default": "None",
+                "comment": "Text override (if no text callback is passed)"
+            }
+        ],
+        "comment": null
+    },
+    {
+        "name": "RIG_SELECT",
+        "parameters": [
+            {
+                "name": "rig",
+                "default": null,
+                "comment": null
+            },
+            {
+                "name": "rig_off",
+                "default": "None",
+                "comment": "If set, this defines the \"off\" rig chosen when the action is disabled. Set to \"auto\" to always remember the current rig as \"off\" rig"
+            },
+            {
+                "name": "bank",
+                "default": "None",
+                "comment": "If set, a specific bank is selected. If None, the current bank is kept"
+            },
+            {
+                "name": "bank_off",
+                "default": "None",
+                "comment": "If set, this defines the \"off\" bank to be chosen when the action is disabled. Set to \"auto\" to always remember the current bank as \"off\" bank"
+            },
+            {
+                "name": "display_mode",
+                "default": "RIG_SELECT_DISPLAY_CURRENT_RIG",
+                "comment": "Display mode (see definitions above)"
+            },
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "color_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0."
+            },
+            {
+                "name": "color",
+                "default": "None",
+                "comment": "Color override (if no text callback is passed)"
+            },
+            {
+                "name": "text_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0."
+            },
+            {
+                "name": "text",
+                "default": "None",
+                "comment": "Text override (if no text callback is passed)"
+            },
+            {
+                "name": "auto_exclude_rigs",
+                "default": "None",
+                "comment": "If rig_off is \"auto\", this can be filled with a tuple or list of rigs to exclude from \"remembering\" when disabled"
+            },
+            {
+                "name": "rig_btn_morph",
+                "default": "False",
+                "comment": "If set True, second press will trigger morphing (only if no rig_off or bank_off are specified)"
+            }
+        ],
+        "comment": "Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in\nthe current bank. Rigs are indexed starting from one, range: [1..5]."
+    },
+    {
+        "name": "TUNER_MODE",
+        "parameters": [
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "mode",
+                "default": "PushButtonAction.HOLD_MOMENTARY",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "DEFAULT_SWITCH_COLOR",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"Tuner\"",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            }
+        ],
+        "comment": "Switch tuner mode on / off"
+    },
+    {
+        "name": "BINARY_SWITCH",
+        "parameters": [
+            {
+                "name": "mapping",
+                "default": null,
+                "comment": null
+            },
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "\"\"",
+                "comment": null
+            },
+            {
+                "name": "mode",
+                "default": "PushButtonAction.HOLD_MOMENTARY",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.WHITE",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "value_on",
+                "default": "1",
+                "comment": null
+            },
+            {
+                "name": "value_off",
+                "default": "0",
+                "comment": null
+            },
+            {
+                "name": "reference_value",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "comparison_mode",
+                "default": "BinaryParameterCallback.GREATER_EQUAL",
+                "comment": null
+            }
+        ],
+        "comment": "Binary parameters (for all binary parameter mappings which support 0/1 values for on/off)"
+    },
+    {
+        "name": "EFFECT_BUTTON",
+        "parameters": [
+            {
+                "name": "num",
+                "default": null,
+                "comment": null
+            },
+            {
+                "name": "text",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "color",
+                "default": "Colors.LIGHT_GREEN",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "use_internal_state",
+                "default": "True",
+                "comment": null
+            }
+        ],
+        "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).\nNOTE: The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper does not report the state at all sadly). \nIf you dont want this behaviour, you can set \"use_internal_state = False\"."
+    },
+    {
+        "name": "BANK_SELECT",
+        "parameters": [
+            {
+                "name": "bank",
+                "default": null,
+                "comment": null
+            },
+            {
+                "name": "bank_off",
+                "default": "None",
+                "comment": "\"off\" bank. Will be ignored when preselect is enabled"
+            },
+            {
+                "name": "preselect",
+                "default": "False",
+                "comment": "If False, the bank is switched immediately (by sending a rig select command \nafter bank preselect). If True, only the bank preselect is sent. Ignores bank_off."
+            },
+            {
+                "name": "display_mode",
+                "default": "RIG_SELECT_DISPLAY_CURRENT_RIG",
+                "comment": "Display mode (see definitions above)"
+            },
+            {
+                "name": "display",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "id",
+                "default": "False",
+                "comment": null
+            },
+            {
+                "name": "use_leds",
+                "default": "True",
+                "comment": null
+            },
+            {
+                "name": "enable_callback",
+                "default": "None",
+                "comment": null
+            },
+            {
+                "name": "color_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the color. Footprint: \ndef callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0."
+            },
+            {
+                "name": "color",
+                "default": "None",
+                "comment": "Color override (if no color callback is passed)"
+            },
+            {
+                "name": "text_callback",
+                "default": "None",
+                "comment": "Optional callback for setting the text. Footprint: \ndef callback(action, bank, rig) -> String where bank and rig are int starting from 0."
+            },
+            {
+                "name": "text",
+                "default": "None",
+                "comment": "Text override (if no text callback is passed)"
+            }
+        ],
+        "comment": "Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). \nBanks are indexed starting from one, range: [1..126].    "
+    }
+]

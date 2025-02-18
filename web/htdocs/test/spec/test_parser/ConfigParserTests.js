@@ -1,6 +1,7 @@
 class ConfigParserTests {
 
     pyswitch = null;    // Shared python runner
+    runner = null;      // ConfigRunner
 
     ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -263,8 +264,78 @@ class ConfigParserTests {
     
     ///////////////////////////////////////////////////////////////////////////////////////////
 
-    async addImports() {
-        // TODO
+    async addAllImports() {
+        return;
+        await this.#init();
+        const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
+        
+        const parser = await config.parser(this.pyswitch);
+        expect(parser).toBeInstanceOf(KemperParser);
+
+        // Add some actions
+        const input1 = await parser.input(1);
+        
+        // Add all actions available
+        const actions = await parser.getAvailableActions("../");
+
+        let cnt = 0;
+        await input1.set_actions(
+            actions.map(
+                function (item) { 
+                    return {
+                        name: item.name,
+                        arguments: item.parameters.map(
+                            function (param) {
+                                return {
+                                    name: param.name,
+                                    value: param.default ? param.default : ("" + (cnt++))
+                                }
+                            }
+                        )
+                    }
+                }
+            )
+        );
+        
+        console.log((await parser.source()).get("inputs_py"));
+    }
+
+    async addOneImport() {
+        return;
+        await this.#init();
+        const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
+        
+        const parser = await config.parser(this.pyswitch);
+        expect(parser).toBeInstanceOf(KemperParser);
+
+        // Add some actions
+        const input1 = await parser.input(1);
+        
+        // Add first actions available
+        const actions = await parser.getAvailableActions("../");
+        const item = actions[0];
+
+        let cnt = 0;
+        await input1.set_actions(
+            [
+                {
+                    name: item.name,
+                    arguments: item.parameters.map(
+                        function (param) {
+                            return {
+                                name: param.name,
+                                value: param.default ? param.default : ("" + (cnt++))
+                            }
+                        }
+                    )
+                }
+            ]
+        );
+        
+        //console.log((await parser.source()).get("inputs_py"));
+
+        // Test with PySwitch
+        await this.runner.run(config)
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -801,5 +872,7 @@ class ConfigParserTests {
         );
 
         await this.pyswitch.init("../");
+
+        this.runner = new ConfigRunner(this.pyswitch);
     }
 }

@@ -7,8 +7,13 @@ from .misc.RemoveUnusedImportTransformer import RemoveUnusedImportTransformer
 class PySwitchParser:
 
     def __init__(self, hw_import_path):
+        self.__js_parser = None
         self.__hw_import_path = hw_import_path       
         self.__csts = None
+
+    # Has to be called before usage
+    def init(self, js_parser):
+        self.__js_parser = js_parser.to_py()
 
     # Set the parser data from source code
     def from_source(self, inputs_py, display_py):
@@ -47,6 +52,8 @@ class PySwitchParser:
 
         visitor = InputReplacer(input)
         self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
+        
+        self.__js_parser.update_config()
         
     # Remove unised imports on all files
     def _remove_unused_imports(self):

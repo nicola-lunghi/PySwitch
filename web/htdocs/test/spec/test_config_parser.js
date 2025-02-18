@@ -6,10 +6,6 @@ describe('Configuration Parser', function() {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
     });
 
-    // it('TODO', async function() {
-    //     await tests.process();
-    // });
-
     it('Minimal call', async function() {
         await tests.minimal();
     });
@@ -26,8 +22,12 @@ describe('Configuration Parser', function() {
         await tests.replaceActions();
     });
 
-    it('Auto-add imports', async function() {
-        await tests.addImports();
+    it('Auto-add imports (all actions)', async function() {
+        await tests.addAllImports();
+    });
+
+    it('Auto-add imports (one action)', async function() {
+        await tests.addOneImport();
     });
 
     // it('Remove actions', async function() {

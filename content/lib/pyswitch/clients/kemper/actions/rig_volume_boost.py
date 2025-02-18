@@ -9,7 +9,9 @@ from ..mappings.rig import MAPPING_RIG_VOLUME
 # make sense, all rig volumes have to be zero in your rigs! You can then set the
 # boost rig volume by passing a value in range [0..1] (corresponding to the range of the
 # rig volume paramneter: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB)
-def RIG_VOLUME_BOOST(boost_volume, 
+def RIG_VOLUME_BOOST(boost_volume,                              # Boost volume
+                                                                # Comment test line 2
+                                                                
                      display = None, 
                      mode = PushButtonAction.HOLD_MOMENTARY, 
                      color = Colors.PINK, 

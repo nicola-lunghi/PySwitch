@@ -23,6 +23,13 @@ class Configuration {
     }
 
     /**
+     * Set new data.
+     */
+    set(data) {
+        this.#data = data;
+    }
+
+    /**
      * Returns a parser for the configuration
      */
     async parser(runner) {

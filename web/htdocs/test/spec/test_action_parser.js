@@ -1,4 +1,4 @@
-describe('Actions Parser', function() {
+describe('Parser for available actions', function() {
     
     const tests = new ActionParserTests();
 
@@ -6,44 +6,11 @@ describe('Actions Parser', function() {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;
     });
 
-    it('Minimal call', async function() {
-        // await tests.minimal();
+    it('Get available actions', async function() {
+        // console.error("Action parser tests are deactivated!");
+        // return;  // TODO!
+
+        await tests.getAvailableActions();
     });
-
-    // it('Get input actions for a port (default)', async function() {
-    //     await tests.getInputActionsDefault();
-    // });
-
-    // it('Get input actions for a port (hold)', async function() {
-    //     await tests.getInputActionsHold();
-    // });
-
-    // it('Replace actions', async function() {
-    //     await tests.replaceActions();
-    // });
-
-    // it('Auto-add imports', async function() {
-    //     await tests.addImports();
-    // });
-
-    // it('Remove actions', async function() {
-    //     await tests.removeAction();
-    // });
-
-    // it('Remove actions (hold)', async function() {
-    //     await tests.removeActionHold();
-    // });
-
-    // it('Append action', async function() {
-    //     await tests.addActionNoIndex();
-    // });
-
-    // it('Add action at index', async function() {
-    //     await tests.addActionWithIndex();
-    // });
-
-    // it('Append hold action', async function() {
-    //     await tests.addActionHoldNoIndex();
-    // });
 });
 

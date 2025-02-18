@@ -2,10 +2,11 @@ class ExampleTestRunner {
 
     pyswitch = null;
     client = null;
-    
-    #examplesPath = "../examples";               // Path to the examples folder
-    #timeMillis = 0;                             // Current time in milliseconds for the simulations
+    runner = null;
+    hardware = null;
 
+    #examplesPath = "../examples";               // Path to the examples folder
+    
     constructor() {
         this.pyswitch = new PySwitchRunner(
             {
@@ -15,6 +16,8 @@ class ExampleTestRunner {
             }, 
             "test-pyswitch-example"
         );
+
+        this.runner = new ConfigRunner(this.pyswitch);
     }
 
     /**
@@ -77,152 +80,104 @@ class ExampleTestRunner {
 
         const config = new WebConfiguration(this.#examplesPath + entry.config.callPath);
         
-        // Create a temporary container element for pyswitch
-        const el = $('<div id="test-pyswitch-example" />');
-        $('body').append(el);
+        const that = this;        
+        await this.runner.run(config, async function() {
+            // Do some further initial ticks to get the bidirectional protocol connected
+            let i = 0;
+            while(i++ < 100) {
+                await that.runner.tick();
+            }
 
-        // Reset virtual simulation time
-        this.#timeMillis = 0;
+            // Check if there is a test script. If so, execute it.
+            function getTestScript() {
+                for(const file of entry.config.toc ? entry.config.toc.children : []) {
+                    if (file.name == ".test.js") {
+                        return that.#examplesPath + entry.config.callPath + "/" + file.name;
+                    }                    
+                }
+                return null;
+            }
 
-        // Set up virtual client
-        const that = this;
-        this.client = await VirtualClient.getInstance(config, {
-            overrideTimeCallback: function() {
-                return that.#timeMillis;
+            const testScriptUrl = getTestScript();
+
+            await new Promise(r => setTimeout(r, 5));  // Some break to make the canvas visible
+
+            if (testScriptUrl) {
+                await that.#runExampleTest(config, await Tools.fetch(testScriptUrl));
             }
         });
-        if (!this.client) {
-            throw new Error(config.name + " does not support a virtual client device");
-        }
-
-        // Set client as MIDI wrapper to connect it to PySwitch
-        this.pyswitch.setMidiWrapper(this.client);
-
-        // Override current time
-        this.pyswitch.setTimeCallback(function() {
-            return that.#timeMillis / 1000;
-        });
-
-        // Run without ticking at first
-        await this.pyswitch.run(await config.get(), true);
-
-        // Do some initial ticks to get the bidirectional protocol connected
-        let i = 0;
-        while(i++ < 100) {
-            await this.tick();
-        }
-
-        // Check if there is a test script: Tests must also have a mappings file, providing the mapping 
-        // of the device inputs, in the parent folder.
-        let testScript = null;
-        let testSetup = null;
-        
-        try {
-            testSetup = await Tools.fetch(this.#examplesPath + entry.config.callPath + "/../.test-mappings.js");
-            testScript = await Tools.fetch(this.#examplesPath + entry.config.callPath + "/.test.js");            
-
-        } catch (e) {
-            // No test script
-        }
-
-        // Run the dedicated test if any has been found
-        if (testSetup && testScript) {
-            await this.#runExampleTest(testSetup, testScript);
-        }
-        
-        // Run parser tests
-        await this.#testParserWithExample(config);
-        
-        // Remove the test element from the body again
-        el.remove();
-    }
-
-    /**
-     * Tests the parser with the example
-     */
-    async #testParserWithExample(config) {
-        // Create and init parser
-        const parser = await config.parser(this.pyswitch);
-        
-        // Parse the code
-        await parser.parse();
-
-        // Unparse again
-        const unparsed = await parser.unparse();
-
-        // Check if the result is the same as before
-        const data = await config.get();
-        expect(unparsed.inputs_py).toEqual(data.inputs_py);
-        expect(unparsed.display_py).toEqual(data.display_py);
     }
 
     /**
      * Performs each example's test case (eval)
      */
-    async #runExampleTest(testSetup, testScript) {
-        // Get mappings first
-        const mappings = eval(testSetup);
-        
+    async #runExampleTest(config, testScript) {
+        // Get hardware info first
+        const parser = await config.parser(this.pyswitch);
+        this.hardware = await parser.getHardwareInfo();
+
         // Get the testing function and run it
         const test = eval(testScript);
-        await test(mappings, this);
+        await test(this);
     }
 
-    // Functions to be used by the test scripts ///////////////////////////////////////////////
+    // Functions to be used by the test scripts ///////////////////////////////////////////////////////////////////////
 
     /**
-     * Execute one tick for a given amount of milliseconds (default is one second).
+     * Returns a hardware mapping by name. Only usable after (or during) #runExampleTest has been called
      */
-    async tick(stepMillis = 100) {
-        this.#timeMillis += stepMillis;
-
-        await this.pyswitch.tick();
-        await this.client.update();
+    mapping(mappingName) {
+        for(const input of this.hardware) {
+            if (input.name == mappingName) {
+                return input;
+            }
+        }
+        throw new Error("Mapping for input " + mappingName + " not found");
     }
 
     /**
      * Sets the rig ID incl. a tick afterwards.
      */
     async setRigId(id) {
-        this.client.setRigId(id);
-        await this.tick();
+        this.runner.client.setRigId(id);
+        await this.runner.tick();
     }
 
     /**
      * Simulates that a switch is pushed and released again, with ticks in between.
      */
-    async simulateSwitchPress(switchDef, holdTime = 100) {
-        await this.tick();
+    async simulateSwitchPress(input, holdTime = 100) {
+        await this.runner.tick();
         
-        this.setSwitch(switchDef, true);
-        await this.tick(holdTime);
+        this.setSwitch(input, true);
+        await this.runner.tick(holdTime);
 
-        this.setSwitch(switchDef, false);
-        await this.tick();
+        this.setSwitch(input, false);
+        await this.runner.tick();
     }
 
     /**
      * Sets a switches state
      */
-    setSwitch(switchDef, pushed) {
-        const switchElement = this.#getSwitchElement(switchDef);
-        switchElement[0].dataset.pushed = pushed ? "true" : null;
+    setSwitch(input, pushed) {
+        const inputElement = this.#getInputElement(input);
+        inputElement[0].dataset.pushed = pushed ? "true" : null;
     }
 
     /**
      * Gets a switch state
      */
-    switchPushed(switchDef) {
-        const switchElement = this.#getSwitchElement(switchDef);
-        return switchElement[0].dataset.pushed == "true";
+    switchPushed(input) {
+        const inputElement = this.#getInputElement(input);
+        return inputElement[0].dataset.pushed == "true";
     }    
 
     /**
      * Gets the color of a switch. If the switch has multiple colors, this 
      * will throw. Use getSwitchColors() instead for those.
      */
-    getSwitchColor(switchDef) {
-        const ledElements = this.#getLedElements(switchDef);
+    getSwitchColor(input) {
+        const ledElements = this.#getLedElements(input);
 
         let color = null;
         for(const ledElement of ledElements) {
@@ -254,18 +209,19 @@ class ExampleTestRunner {
     /**
      * Returns the switch element for a switch ID as defined in the mappings.
      */
-    #getSwitchElement(switchDef) {
-        const switchElement = $("#pyswitch-switch-" + switchDef.port);
-        if (switchElement.attr('id') != "pyswitch-switch-" + switchDef.port) throw new Error("Switch " + switchDef.port + " not found");
-        return switchElement;
+    #getInputElement(input) {
+        const port = input.data.model.port;
+        const inputElement = $("#pyswitch-switch-gp" + port);
+        if (inputElement.attr('id') != "pyswitch-switch-gp" + port) throw new Error("Switch " + port + " not found");
+        return inputElement;
     }
 
     /**
      * Returns the LED element for a pixel ID as defined in the mappings.
      */
-    #getLedElements(switchDef) {
+    #getLedElements(input) {
         const ret = [];
-        for (const led of switchDef.pixels) {
+        for (const led of input.data.pixels) {
             const ledElement = $("#pyswitch-led-" + led);
             if (ledElement.attr('id') != "pyswitch-led-" + led) throw new Error("LED " + led + " not found");
             ret.push(ledElement);

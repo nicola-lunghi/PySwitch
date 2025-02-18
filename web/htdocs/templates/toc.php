@@ -6,7 +6,7 @@
 function fillArrayWithFileNodes(DirectoryIterator $dir) {
     $data = array();
     foreach ($dir as $node) {
-        if (str_starts_with($node->getFilename(), ".")) continue;
+        //if (str_starts_with($node->getFilename(), ".")) continue;
         
         if ($node->isDir() && !$node->isDot()) {
             array_push($data, (object)array(

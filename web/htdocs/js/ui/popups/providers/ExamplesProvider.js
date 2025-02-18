@@ -34,7 +34,8 @@ class ExamplesProvider extends BrowserProvider {
                     {
                         value: entry.name,                        
                         callPath: prefix + entry.name,
-                        onSelect: onSelect
+                        onSelect: onSelect,
+                        toc: entry
                     }                    
                 );
             }

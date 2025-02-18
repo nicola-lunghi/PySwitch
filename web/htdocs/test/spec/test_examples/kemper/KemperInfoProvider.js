@@ -9,7 +9,7 @@ class KemperInfoProvider {
     }
 
     /**
-     * Get general info from the kemper client script
+     * Get general info from the kemper client script (like number of banks/rigs, colors etc.)
      */
     async init() {
         this.data = (await this.#runner.pyswitch.pyodide.runPython(`

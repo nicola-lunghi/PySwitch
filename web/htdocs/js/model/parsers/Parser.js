@@ -14,6 +14,7 @@ class Parser {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #pySwitchParser = null;
+    #availableActions = null;
 
     config = null;    // Configuration instance
 
@@ -23,13 +24,6 @@ class Parser {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Returns a device handler for the configuration
-     */
-    async device() {
-        return Device.getInstance(this.config);
-    }
 
     /**
      * Must return a ClientDetector instance for the configuration
@@ -64,6 +58,8 @@ class Parser {
             )
         `);
 
+        this.#pySwitchParser.init(this);
+
         const inputs_py = (await this.config.get()).inputs_py;
         const display_py = (await this.config.get()).display_py;
 
@@ -83,13 +79,32 @@ class Parser {
 
     /**
      * Returns a (proxied) Map holding the sources of the current parser state.
-     */
+     *
     async source() {
         await this.#init();
         return this.#pySwitchParser.to_source();
     }
+    
+    /**
+     * Updates the underlying config from the current CSTs. Called by python code after updates to the trees.
+     */
+    update_config() {
+        const src = this.#pySwitchParser.to_source().toJs();
+
+        this.config.set({
+            inputs_py: src.get("inputs_py"),
+            display_py: src.get("display_py")
+        });
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Returns a device handler for the configuration
+     */
+    async device() {
+        return Device.getInstance(this.config);
+    }
 
     /**
      * Returns hardware info (available inputs) for the given config
@@ -105,5 +120,68 @@ class Parser {
         `);
 
         return JSON.parse(hardwareJson);
+    }
+
+    /**
+     * Returns a list of all available actions.
+     */
+    async getAvailableActions(basePath = "") {
+        if (this.#availableActions) return this.#availableActions;
+
+        // Try to load the buffered version first
+        this.#availableActions = JSON.parse(await Tools.fetch(basePath + "definitions/actions.json"));
+        return this.#availableActions;
+    }
+
+    /**
+     * Generates the list of available actions using libCST and returns it (without setting 
+     * the local buffer! this is mainly called by tests)
+     */
+    async generateAvailableActions(basePath = "") {
+        // Get TOC of clients
+        const toc = JSON.parse(await Tools.fetch(basePath + "circuitpy/lib/pyswitch/clients/toc.php"));
+
+        /**
+         * Returns a direct child by name 
+         */
+        function getChild(node, name) {
+            for(const child of node.children || []) {
+                if (child.name == name) return child;
+            }
+            throw new Error("Child " + name + " not found");
+        }
+
+        // Get actions dir node
+        const actions = getChild(getChild(toc, "kemper"), "actions");
+
+        // Get python paths for all files (the files are already located in the Pyodide FS, so python 
+        // can just open them to get their contents)
+        const importPaths = [];
+
+        function crawl(node, prefix = "pyswitch/clients/kemper/actions") {
+            if (node.type == "file") {
+                if (node.name.endsWith(".py") && !node.name.startsWith("__")) {
+                    importPaths.push(prefix);
+                }                
+                return;
+            }
+
+            for (const child of node.children) {
+                crawl(child, prefix + (prefix ? "/" : "") + child.name);
+            }
+        }
+        crawl(actions);
+
+        // Tell the python code which files to examine, process it and return the decoded result.
+        const actionsJson = await this.runner.pyodide.runPython(`
+            import json
+            from parser.PySwitchActions import PySwitchActions
+            pySwitchActions = PySwitchActions(
+                import_paths = json.loads('` + JSON.stringify(importPaths) + `')
+            )
+            json.dumps(pySwitchActions.get())
+        `);
+
+        return JSON.parse(actionsJson);
     }
 }

@@ -100,6 +100,8 @@ class PySwitchFrontend {
      * Adds the parser frontend
      */
     async #initParserFrontend(parser, model, inputElement) {
+        if (!inputElement) return;
+        
         // Parser UI
         const input = await parser.input(model.port);
         if (!input) return;

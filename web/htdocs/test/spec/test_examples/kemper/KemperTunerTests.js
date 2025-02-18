@@ -1,17 +1,12 @@
 class KemperTunerTests extends KemperTestBase {
 
-    /**
-     * {
-     *      switchDefinitions: Array of switch definitions
-     * }
-     */
-    async testTriggeredFromClient(options = {}) {
+    async testTriggeredFromClient() {
         const that = this;
 
         function getSwitchColors() {
             const ret = [];
-            for (const switchDef of options.switchDefinitions) {
-                ret.push(that.runner.getSwitchColor(switchDef));
+            for (const input of that.runner.hardware) {
+                ret.push(that.runner.getSwitchColor(input));
             }  
             return ret;  
         }
@@ -30,15 +25,15 @@ class KemperTunerTests extends KemperTestBase {
         const oldDisplayColors = getDisplayCornerColors();
             
         // Enable tuner
-        this.runner.client.parameters.get(new NRPNKey([127, 126])).setValue(1);
-        await this.runner.tick();
+        this.runner.runner.client.parameters.get(new NRPNKey([127, 126])).setValue(1);
+        await this.runner.runner.tick();
 
         expect(getSwitchColors()).toEqual(oldSwitchColors.map((item) => [0, 0, 0]));
         expect(getDisplayCornerColors()).toEqual(oldDisplayColors.map((item) => [0, 0, 0]));
 
         // Disable tuner
-        this.runner.client.parameters.get(new NRPNKey([127, 126])).setValue(3);
-        await this.runner.tick();
+        this.runner.runner.client.parameters.get(new NRPNKey([127, 126])).setValue(3);
+        await this.runner.runner.tick();
 
         expect(getSwitchColors()).toEqual(oldSwitchColors);
         expect(getDisplayCornerColors()).toEqual(oldDisplayColors);
