@@ -51,7 +51,16 @@ class PySwitchActions(libcst.CSTVisitor):
                 ret.append({
                     "name": statement.name.value,
                     "parameters": get_params(statement),
-                    "comment": get_comments(statement, 0)
+                    "comment": get_comments(statement, 0),
+                    "importPath": path.replace("/", ".").removesuffix(".py")
                 })
+
+        # Add static entries: PushButtonAction
+        ret.append({
+            "name": "PushButtonAction",
+            "parameters": [],
+            "comment": "",
+            "importPath": "pyswitch.controller.actions"
+        })
 
         return ret

@@ -265,14 +265,12 @@ class ConfigParserTests {
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     async addAllImports() {
-        return;
         await this.#init();
         const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
         
         const parser = await config.parser(this.pyswitch);
         expect(parser).toBeInstanceOf(KemperParser);
 
-        // Add some actions
         const input1 = await parser.input(1);
         
         // Add all actions available
@@ -282,6 +280,9 @@ class ConfigParserTests {
         await input1.set_actions(
             actions.map(
                 function (item) { 
+                    if (item.name == "RIG_SELECT_AND_MORPH_STATE") return null; // TODO
+                    if (item.name == "PushButtonAction") return null; // TODO
+
                     return {
                         name: item.name,
                         arguments: item.parameters.map(
@@ -294,21 +295,22 @@ class ConfigParserTests {
                         )
                     }
                 }
-            )
+            ).filter((item) => item != null)
         );
         
-        console.log((await parser.source()).get("inputs_py"));
+        console.log((await parser.config.get()).inputs_py);
+
+        // Test with PySwitch
+        await this.runner.run(config)
     }
 
     async addOneImport() {
-        return;
         await this.#init();
         const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
         
         const parser = await config.parser(this.pyswitch);
         expect(parser).toBeInstanceOf(KemperParser);
 
-        // Add some actions
         const input1 = await parser.input(1);
         
         // Add first actions available
@@ -332,7 +334,7 @@ class ConfigParserTests {
             ]
         );
         
-        //console.log((await parser.source()).get("inputs_py"));
+        // console.log((await parser.config.get()).inputs_py);
 
         // Test with PySwitch
         await this.runner.run(config)

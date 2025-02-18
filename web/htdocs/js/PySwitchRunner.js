@@ -41,6 +41,9 @@ class PySwitchRunner {
         await this.#loadModule("PySwitchRunner.py", localPythonPath);
         await this.#loadModule("mocks.py", localPythonPath);
 
+        this.pyodide.FS.mkdir("definitions");
+        await this.#loadModule("definitions/actions.json", basePath);
+
         this.pyodide.FS.mkdir("parser");
         await this.#loadModule("parser/PySwitchParser.py", localPythonPath);
         await this.#loadModule("parser/PySwitchHardware.py", localPythonPath);
@@ -51,7 +54,8 @@ class PySwitchRunner {
         await this.#loadModule("parser/misc/AddElementTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/RemoveDictElementTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/RemoveUnusedImportTransformer.py", localPythonPath);
-        await this.#loadModule("parser/misc/CollectCommentsTransformer.py", localPythonPath);        
+        await this.#loadModule("parser/misc/CollectCommentsTransformer.py", localPythonPath);
+        await this.#loadModule("parser/misc/AddImportsTransformer.py", localPythonPath);
 
         this.pyodide.FS.mkdir("parser/inputs");
         await this.#loadModule("parser/inputs/Action.py", localPythonPath);
