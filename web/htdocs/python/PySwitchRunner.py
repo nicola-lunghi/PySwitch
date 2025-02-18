@@ -70,10 +70,6 @@ class PySwitchRunner:
             from display import Splashes
             from inputs import Inputs
 
-            # from PySwitchFrontend import PySwitchFrontend
-            # self.frontend = PySwitchFrontend(self.container_id, self.dom_namespace)
-            # self.frontend.init(Inputs, Splashes)
-
             midi_in = WrapMidiInput()
             midi_out = WrapMidiOutput()
 

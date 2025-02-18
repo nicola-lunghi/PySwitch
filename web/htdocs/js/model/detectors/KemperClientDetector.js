@@ -4,7 +4,7 @@ const NRPN_PRODUCT_TYPE_PROFILER_PLAYER = 0x02;
 const NRPN_PRODUCT_TYPE = NRPN_PRODUCT_TYPE_PROFILER_PLAYER;
 
 
-class KemperDetector extends ClientDetector {
+class KemperClientDetector extends ClientDetector {
     
     /**
      * Tests if a Kemper device is listening. Returns the listener generated (has to detached!)

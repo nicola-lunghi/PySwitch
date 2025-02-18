@@ -1,14 +1,17 @@
 class Parser {
 
-    static getInstance(config, runner) {
+    static async getInstance(config, runner) {
+        const data = await config.get();
+
+        if (data.inputs_py.includes("pyswitch.clients.kemper")) {
+            return new KemperParser(config, runner);
+        }
+
+        console.warn("Unknown client type, defaulting to Kemper");
         return new KemperParser(config, runner);
     }
 
-    /////////////////////////////////////////////////////////////
-
-    static DEVICE_TYPE_NANO_4 = 10;
-    static DEVICE_TYPE_MINI_6 = 20;
-    static DEVICE_TYPE_10 = 30;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #pySwitchParser = null;
 
@@ -19,6 +22,15 @@ class Parser {
         this.runner = runner;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Returns a device handler for the configuration
+     */
+    async device() {
+        return Device.getInstance(this.config);
+    }
+
     /**
      * Must return a ClientDetector instance for the configuration
      */
@@ -27,9 +39,10 @@ class Parser {
     }
 
     /**
-     * Can return a virtual client, or null if the config does not support a virtual client.
+     * Can return a virtual client, or null if the parsers config does not support a virtual client.
+     * config is an options object for the virtual client.
      */
-    async getVirtualClient(config) {
+    async getVirtualClient(config = {}) {
         return null;
     }    
 
@@ -42,10 +55,12 @@ class Parser {
     async #init() {
         if (this.#pySwitchParser) return;
         
+        const device = await this.device();
+
         this.#pySwitchParser = await this.runner.pyodide.runPython(`         
             from parser.PySwitchParser import PySwitchParser
             PySwitchParser(
-                hw_import_path = "` + (await this.#getHardwareImportPath()) + `"
+                hw_import_path = "` + device.getHardwareImportPath() + `"
             )
         `);
 
@@ -54,6 +69,8 @@ class Parser {
 
         await this.#pySwitchParser.from_source(inputs_py, display_py);
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Returns an instance of Input.py, which handles all operations on the input.
@@ -75,68 +92,18 @@ class Parser {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns hardware info for the given config
+     * Returns hardware info (available inputs) for the given config
      */
     async getHardwareInfo() {
-        const importPath = await this.#getHardwareImportPath();
-
+        const device = await this.device();
+        
         const hardwareJson = await this.runner.pyodide.runPython(`
             import json
-            from PySwitchHardware import PySwitchHardware
+            from parser.PySwitchHardware import PySwitchHardware
             pySwitchHardware = PySwitchHardware()
-            json.dumps(pySwitchHardware.get("` + importPath + `"))
+            json.dumps(pySwitchHardware.get("` + device.getHardwareImportPath() + `"))
         `);
+
         return JSON.parse(hardwareJson);
-    }
-
-    /**
-     * Returns the hardware definition script file name in the lib/pyswitch/hardware/devices/ folder
-     */
-    async #getHardwareImportPath() {
-        switch (await this.getDeviceType()) {
-            case KemperParser.DEVICE_TYPE_NANO_4:
-                return "pyswitch.hardware.devices.pa_midicaptain_nano_4"
-
-            case KemperParser.DEVICE_TYPE_MINI_6:
-                return "pyswitch.hardware.devices.pa_midicaptain_mini_6"
-
-            case KemperParser.DEVICE_TYPE_10:
-                return "pyswitch.hardware.devices.pa_midicaptain_10"
-        }
-    }
-
-    /**
-     * Returns the class(es) to set on the device element
-     */
-    async getDeviceClass() {
-        switch (await this.getDeviceType()) {
-            case KemperParser.DEVICE_TYPE_NANO_4:
-                return "midicaptain midicaptain-nano-4";
-
-            case KemperParser.DEVICE_TYPE_MINI_6:
-                return "midicaptain midicaptain-mini-6";
-
-            case KemperParser.DEVICE_TYPE_10:
-                return "midicaptain midicaptain-10";
-        }
-    }
-    
-    /**
-     * Returns the device type
-     */
-    async getDeviceType() {
-        const data = await this.config.get();
-
-        if (data.inputs_py.includes("pyswitch.hardware.devices.pa_midicaptain_nano_4")) {
-            return KemperParser.DEVICE_TYPE_NANO_4;
-        }
-        if (data.inputs_py.includes("pyswitch.hardware.devices.pa_midicaptain_mini_6")) {
-            return KemperParser.DEVICE_TYPE_MINI_6;
-        }
-        if (data.inputs_py.includes("pyswitch.hardware.devices.pa_midicaptain_10")) {
-            return KemperParser.DEVICE_TYPE_10;
-        }
-        
-        throw new Error("Unknown device type");
     }
 }

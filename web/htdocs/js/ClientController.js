@@ -1,4 +1,4 @@
-class PySwitchClient {
+class ClientController {
 
     #controller = null;
 

@@ -1,4 +1,4 @@
-from PySwitchHardware import PySwitchHardware
+from ..PySwitchHardware import PySwitchHardware
 
 class InputAssignment:
     def __init__(self, hw_import_path):

@@ -1,4 +1,4 @@
-class PySwitchDevice {
+class DeviceController {
 
     #controller = null;           // PySwitch runner
     bridge = null;                // MIDI bridge handler (connects to the Controller running PyMidiBridge, and is reused for connecting to the client, too)

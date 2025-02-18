@@ -2,6 +2,7 @@ import libcst
 
 from .inputs.Input import Input
 from .inputs.InputReplacer import InputReplacer
+from .misc.RemoveUnusedImportTransformer import RemoveUnusedImportTransformer
 
 class PySwitchParser:
 
@@ -21,6 +22,8 @@ class PySwitchParser:
         if not self.__csts:
             raise Exception("No data loaded")
         
+        self._remove_unused_imports()
+
         return {
             "inputs_py": self.__csts["inputs_py"].code,
             "display_py": self.__csts["display_py"].code
@@ -45,3 +48,12 @@ class PySwitchParser:
         visitor = InputReplacer(input)
         self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
         
+    # Remove unised imports on all files
+    def _remove_unused_imports(self):
+        self._remove_unused_import_for_file("inputs_py")
+        self._remove_unused_import_for_file("display_py")
+
+    def _remove_unused_import_for_file(self, file):
+        wrapper = libcst.metadata.MetadataWrapper(self.__csts[file])
+        visitor = RemoveUnusedImportTransformer(wrapper)
+        self.__csts[file] = wrapper.module.visit(visitor)

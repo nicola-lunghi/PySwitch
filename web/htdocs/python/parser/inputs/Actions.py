@@ -1,5 +1,4 @@
 import libcst
-
 from .Action import Action
 
 class Actions(libcst.CSTVisitor):

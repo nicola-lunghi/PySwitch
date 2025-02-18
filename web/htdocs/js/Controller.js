@@ -46,8 +46,8 @@ class Controller {
         this.midi = new MidiHandler();
 
         this.pyswitch = new PySwitchRunner(options, options.domNamespace + "-device");    
-        this.device = new PySwitchDevice(this);
-        this.client = new PySwitchClient(this);
+        this.device = new DeviceController(this);
+        this.client = new ClientController(this);
     }
 
     /**

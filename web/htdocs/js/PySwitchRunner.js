@@ -39,15 +39,18 @@ class PySwitchRunner {
         console.log("Load files to python");
 
         await this.#loadModule("PySwitchRunner.py", localPythonPath);
-        // await this.#loadModule("PySwitchFrontend.py", localPythonPath);
-        await this.#loadModule("PySwitchHardware.py", localPythonPath);
         await this.#loadModule("mocks.py", localPythonPath);
 
         this.pyodide.FS.mkdir("parser");
         await this.#loadModule("parser/PySwitchParser.py", localPythonPath);
-        await this.#loadModule("parser/VisitorWithStack.py", localPythonPath);
-        await this.#loadModule("parser/AddElementTransformer.py", localPythonPath);
-        
+        await this.#loadModule("parser/PySwitchHardware.py", localPythonPath);
+
+        this.pyodide.FS.mkdir("parser/misc");
+        await this.#loadModule("parser/misc/VisitorsWithStack.py", localPythonPath);
+        await this.#loadModule("parser/misc/AddElementTransformer.py", localPythonPath);
+        await this.#loadModule("parser/misc/RemoveDictElementTransformer.py", localPythonPath);
+        await this.#loadModule("parser/misc/RemoveUnusedImportTransformer.py", localPythonPath);
+
         this.pyodide.FS.mkdir("parser/inputs");
         await this.#loadModule("parser/inputs/Action.py", localPythonPath);
         await this.#loadModule("parser/inputs/Actions.py", localPythonPath);
@@ -172,6 +175,7 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/ui/UiController.py", circuitpyPath);
 
         await this.pyodide.loadPackage("libcst");
+        
         if (this.#options.coverage) {
             await this.pyodide.loadPackage("coverage");
         }

@@ -50,8 +50,8 @@
     <!-- Main classes -->
     <script type="text/javascript" src="js/Controller.js"></script>
     <script type="text/javascript" src="js/PySwitchRunner.js"></script>
-    <script type="text/javascript" src="js/PySwitchDevice.js"></script>
-    <script type="text/javascript" src="js/PySwitchClient.js"></script>
+    <script type="text/javascript" src="js/ClientController.js"></script>
+    <script type="text/javascript" src="js/DeviceController.js"></script>
     
     <script type="text/javascript" src="js/misc/Tools.js"></script>
     <script type="text/javascript" src="js/misc/PeriodCounter.js"></script>
@@ -68,11 +68,14 @@
     <!-- Parser(s) -->
     <script type="text/javascript" src="js/model/parsers/Parser.js"></script>
     <script type="text/javascript" src="js/model/parsers/KemperParser.js"></script>
-    <script type="text/javascript" src="js/model/parsers/KemperHardware.js"></script>
+
+    <!-- Devices -->
+    <script type="text/javascript" src="js/model/devices/Device.js"></script>
+    <script type="text/javascript" src="js/model/devices/PaintAudioDevice.js"></script>
 
     <!-- Detectors (used to scan for connected controllers and clients) -->
     <script type="text/javascript" src="js/model/detectors/ClientDetector.js"></script>
-    <script type="text/javascript" src="js/model/detectors/KemperDetector.js"></script>
+    <script type="text/javascript" src="js/model/detectors/KemperClientDetector.js"></script>
 
     <!-- Virtual clients (emulating a Kemper for example) -->
     <script type="text/javascript" src="js/model/virtual-clients/VirtualClient.js"></script>
@@ -97,7 +100,6 @@
     <script type="text/javascript" src="js/ui/PySwitchUi.js"></script>
     <script type="text/javascript" src="js/ui/PySwitchFrontent.js"></script>
 
-    <script type="text/javascript" src="js/ui/misc/Progress.js"></script>
     <script type="text/javascript" src="js/ui/misc/Notifications.js"></script>
     <script type="text/javascript" src="js/ui/misc/ClientConnectionButton.js"></script>
     <!-- <script type="text/javascript" src="js/ui/misc/ResizeHandler.js"></script> -->

@@ -1,5 +1,5 @@
 import libcst
-from ..VisitorWithStack import VisitorWithStack
+from ..misc.VisitorsWithStack import VisitorWithStack
 
 class Arguments(VisitorWithStack):
     def __init__(self):

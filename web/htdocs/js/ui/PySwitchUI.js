@@ -19,8 +19,6 @@ class PySwitchUI {
     clientButton = null;
     parserFrontend = null;
 
-    // #resizeHandler = null;
-
     /**
      * Options:
      * {
@@ -157,9 +155,6 @@ class PySwitchUI {
 
         // Parser UI handler
         this.parserFrontend = new PySwitchFrontend(this.#deviceElement, this.#options);
-
-        // // Resizer for application area
-        // this.#resizeHandler = new ResizeHandler(this.#applicationElement);
     }
 
     /**

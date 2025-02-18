@@ -12,7 +12,8 @@ class PySwitchFrontend {
      * Initialize to a given set of inputs and splashes
      */
     async apply(parser) {
-        this.#container[0].className = await parser.getDeviceClass();
+        const device = await parser.device();
+        this.#container[0].className = device.getDeviceClass();
 
         // Clear contents and create container
         this.#container.empty();
@@ -76,8 +77,8 @@ class PySwitchFrontend {
                 );
                 break;
 
-            default:
-                throw new Error("Input type unknown: " + model.type);
+            // default:
+            //     throw new Error("Input type unknown: " + model.type);
         }
 
         // LEDs (can be added to any type, theoretically)

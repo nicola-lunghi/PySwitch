@@ -2,7 +2,8 @@ import libcst
 
 from .Actions import Actions
 from .InputAssignment import InputAssignment
-from ..AddElementTransformer import AddElementTransformer
+from ..misc.AddElementTransformer import AddElementTransformer
+from ..misc.RemoveDictElementTransformer import RemoveDictElementTransformer
 
 class Input(libcst.CSTVisitor):
     def __init__(self, parser, hw_import_path, port):        
@@ -15,7 +16,6 @@ class Input(libcst.CSTVisitor):
     # Inputs
     def visit_Assign(self, node):
         if self.result:
-            # Already have a result
             return False
                 
         if node.targets[0].target.value != "Inputs":
@@ -29,18 +29,14 @@ class Input(libcst.CSTVisitor):
     # Main Dict of one input
     def visit_Dict(self, node):
         if self.result:
-            # Already have a result
             return False
                 
         if not self.__inputs:
-            # Only dicts in the Inputs assign
             return False
         
         if not self.assignment.has_assignment(node, self.port):
-            # Only inputs assigned to the port
             return False
         
-        # self.__print("Assigned input found")
         self.result = node
 
         return False
@@ -56,87 +52,195 @@ class Input(libcst.CSTVisitor):
         self.result.visit(visitor)
         return visitor.result
 
-    ###############################################################################################################################
-
-    # Remove an action, from the actions or the actionsHold trees. Called by Action.remove (which is 
-    # the one to call if you use the parser from JS!)
-    def remove_action(self, action_node):
+    # Overwrites all actions from the passed definition list
+    def set_actions(self, actions, hold = False):
         if not self.result:
-            raise Exception("No result to remove data from")
+            raise Exception("No result loaded to modify")
         
-        # We want to check if the operation has been successful
-        target_len = len(self.actions()) - 1
-        target_len_hold = len(self.actions(True)) - 1
+        # Remove old actions list
+        remover = RemoveDictElementTransformer(
+            node = self.result,
+            key = '"actions"' if not hold else '"actionsHold"'
+        )
+        self.result = self.result.visit(remover)
         
-        # Remove the node
-        self.result = self.result.deep_remove(action_node)
+        # Add new actions list
+        elements = [
+            libcst.Element(
+                value = libcst.Call(
+                    func = libcst.Name(
+                        value = definition.name,                        
+                    ),
 
-        if not (len(self.actions()) != target_len or len(self.actions(True)) != target_len_hold):
-            raise Exception("Failed to remove action")
-        
-        # Tell the parser to replace the new state of this input in its CST buffers
-        self.__parser.update_input(self)
-
-    ###############################################################################################################################
-
-    # Adds an action to the input. If index is None, the action is  
-    # appended to the end of the list.
-    def add_action(self, definition, hold = False, index = None):
-        if not self.result:
-            raise Exception("No result to remove data from")
-        
-        # We want to check if the operation has been successful
-        target_len = len(self.actions()) + 1
-        target_len_hold = len(self.actions(True)) + 1
-
-        # Get the parent dict entry (actions or actionsHold)
-        visitor = Actions(self, hold)
-        self.result.visit(visitor)
-    
-        new_element = libcst.Element(
-            value = libcst.Call(
-                func = libcst.Name(
-                    value = definition.name
-                ),
-                args = [
-                    libcst.Arg(
-                        keyword = libcst.Name(
-                            value = a.name
+                    whitespace_before_args = libcst.ParenthesizedWhitespace(
+                        first_line = libcst.TrailingWhitespace(
+                            whitespace = libcst.SimpleWhitespace(value=''),
+                            comment = None,
+                            newline = libcst.Newline(),
                         ),
-                        value = libcst.parse_expression(a.value)
+                        empty_lines=[],
+                        indent=True,
+                        last_line = libcst.SimpleWhitespace(value='                ')
+                    ),
+
+                    args = [
+                        libcst.Arg(
+                            keyword = libcst.Name(
+                                value = a.name
+                            ),
+                            value = libcst.parse_expression(a.value),
+                            whitespace_after_arg = libcst.ParenthesizedWhitespace(
+                                first_line = libcst.TrailingWhitespace(
+                                    whitespace = libcst.SimpleWhitespace(value=''),
+                                    comment = None,
+                                    newline = libcst.Newline(),
+                                ),
+                                empty_lines=[],
+                                indent=True,
+                                last_line = libcst.SimpleWhitespace(value='            ')
+                            )
+                        )
+                        for a in definition.arguments
+                    ]
+                ),
+
+                comma = libcst.Comma(
+                    whitespace_after = libcst.ParenthesizedWhitespace(
+                        first_line = libcst.TrailingWhitespace(
+                            whitespace = libcst.SimpleWhitespace(value=''),
+                            comment = None,
+                            newline = libcst.Newline(),
+                        ),
+                        empty_lines=[],
+                        indent=True,
+                        last_line = libcst.SimpleWhitespace(value='            ')
                     )
-                    for a in definition.arguments]
+                )
+
+            )
+            for definition in actions
+        ]
+        
+        adder = AddElementTransformer(
+            node = self.result,
+            new_element = libcst.DictElement(
+                key = libcst.SimpleString(
+                    value = '"actions"' if not hold else '"actionsHold"'
+                ),
+                value = libcst.List(
+                    elements = elements,
+                    
+                    lbracket = libcst.LeftSquareBracket(
+                        whitespace_after = libcst.ParenthesizedWhitespace(
+                            first_line = libcst.TrailingWhitespace(
+                                whitespace = libcst.SimpleWhitespace(value=''),
+                                newline = libcst.Newline()
+                            ),
+                            indent=True,
+                            last_line = libcst.SimpleWhitespace(value='            ')
+                        )
+                    ),
+
+                    rbracket = libcst.RightSquareBracket(
+                        whitespace_before = libcst.ParenthesizedWhitespace(
+                            first_line = libcst.TrailingWhitespace(
+                                whitespace = libcst.SimpleWhitespace(value=''),
+                                newline = libcst.Newline()
+                            ),
+                            indent=True,
+                            last_line = libcst.SimpleWhitespace(value='        ')
+                        )
+                    )
+                )
             )
         )
-    
-        if not visitor.actions_list:
-            # Actions entry not present: Create one
-            adder = AddElementTransformer(
-                node = self.result,
-                new_element = libcst.DictElement(
-                    key = libcst.SimpleString(
-                        value = '"actions"' if not hold else '"actionsHold"'
-                    ),
-                    value = libcst.List(
-                        elements = [
-                            new_element
-                        ]
-                    )
-                ),
-                index = index
-            )
-        else:
-            # Add to existing actions list
-            adder = AddElementTransformer(
-                node = visitor.actions_list,
-                new_element = new_element,
-                index = index
-            )
-            
+
         self.result = self.result.visit(adder)
-        
-        if not (len(self.actions()) != target_len or len(self.actions(True)) != target_len_hold):
-            raise Exception("Failed to add action")
-        
+
         # Tell the parser to replace the new state of this input in its CST buffers
         self.__parser.update_input(self)
+
+    # ###############################################################################################################################
+
+    # # Remove an action, from the actions or the actionsHold trees. Called by Action.remove (which is 
+    # # the one to call if you use the parser from JS!)
+    # def remove_action(self, action_node):
+    #     if not self.result:
+    #         raise Exception("No result to remove data from")
+        
+    #     # We want to check if the operation has been successful
+    #     target_len = len(self.actions()) - 1
+    #     target_len_hold = len(self.actions(True)) - 1
+        
+    #     # Remove the node
+    #     self.result = self.result.deep_remove(action_node)
+
+    #     if not (len(self.actions()) != target_len or len(self.actions(True)) != target_len_hold):
+    #         raise Exception("Failed to remove action")
+        
+    #     # Tell the parser to replace the new state of this input in its CST buffers
+    #     self.__parser.update_input(self)
+
+    # ###############################################################################################################################
+
+    # # Adds an action to the input. If index is None, the action is  
+    # # appended to the end of the list.
+    # def add_action(self, definition, hold = False, index = None):
+    #     if not self.result:
+    #         raise Exception("No result to add data to")
+        
+    #     # We want to check if the operation has been successful
+    #     target_len = len(self.actions()) + 1
+    #     target_len_hold = len(self.actions(True)) + 1
+
+    #     # Get the parent dict entry (actions or actionsHold)
+    #     visitor = Actions(self, hold)
+    #     self.result.visit(visitor)
+    
+    #     new_element = libcst.Element(
+    #         value = libcst.Call(
+    #             func = libcst.Name(
+    #                 value = definition.name
+    #             ),
+    #             args = [
+    #                 libcst.Arg(
+    #                     keyword = libcst.Name(
+    #                         value = a.name
+    #                     ),
+    #                     value = libcst.parse_expression(a.value)
+    #                 )
+    #                 for a in definition.arguments]
+    #         )
+    #     )
+    
+    #     if not visitor.actions_list:
+    #         # Actions entry not present: Create one
+    #         adder = AddElementTransformer(
+    #             node = self.result,
+    #             new_element = libcst.DictElement(
+    #                 key = libcst.SimpleString(
+    #                     value = '"actions"' if not hold else '"actionsHold"'
+    #                 ),
+    #                 value = libcst.List(
+    #                     elements = [
+    #                         new_element
+    #                     ]
+    #                 )
+    #             ),
+    #             index = index
+    #         )
+    #     else:
+    #         # Add to existing actions list
+    #         adder = AddElementTransformer(
+    #             node = visitor.actions_list,
+    #             new_element = new_element,
+    #             index = index
+    #         )
+            
+    #     self.result = self.result.visit(adder)
+        
+    #     if not (len(self.actions()) != target_len or len(self.actions(True)) != target_len_hold):
+    #         raise Exception("Failed to add action")
+        
+    #     # Tell the parser to replace the new state of this input in its CST buffers
+    #     self.__parser.update_input(self)
