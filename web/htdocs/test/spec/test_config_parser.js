@@ -34,6 +34,10 @@ describe('Configuration Parser', function() {
         await tests.addDisplayImports();
     });
 
+    it('Display name: Generic', async function() {
+        await tests.displayNameGeneric();
+    });
+
     it('Display name: RIG_SELECT', async function() {
         await tests.displayNameRigSelect();
     });
@@ -42,8 +46,8 @@ describe('Configuration Parser', function() {
         await tests.displayNameRigSelectToggle();
     });
 
-    it('Display name: Generic', async function() {
-        await tests.displayNameGeneric();
+    it('Display name: Bank Select', async function() {
+        await tests.displayNameBankSelect();
     });
 
     // it('Remove actions', async function() {

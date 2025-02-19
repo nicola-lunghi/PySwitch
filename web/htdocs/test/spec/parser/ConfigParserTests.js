@@ -431,6 +431,80 @@ class ConfigParserTests extends TestBase {
         )        
     }
 
+    async displayNameBankSelect() {
+        await this.#checkActionMeta(
+            "BANK_SELECT",
+            {
+                name: "BANK_SELECT",
+                arguments: [
+                    {
+                        name: "bank",
+                        value: "2"
+                    }
+                ]
+            },
+            "Select Bank 1",   // Default
+            "Select Bank 2"    // With actual value
+        );
+
+        await this.#checkActionMeta(
+            "BANK_SELECT",
+            {
+                name: "BANK_SELECT",
+                arguments: [
+                    {
+                        name: "bank",
+                        value: "2"
+                    },
+                    {
+                        name: "bank_off",
+                        value: "4"
+                    }
+                ]
+            },
+            "Select Bank 1",      // Default
+            "Toggle Banks 2/4"    // With actual value
+        );
+
+        await this.#checkActionMeta(
+            "BANK_SELECT",
+            {
+                name: "BANK_SELECT",
+                arguments: [
+                    {
+                        name: "bank",
+                        value: "3"
+                    },
+                    {
+                        name: "preselect",
+                        value: "True"
+                    }
+                ]
+            },
+            "Select Bank 1",      // Default
+            "Preselect Bank 3"    // With actual value
+        );
+
+        await this.#checkActionMeta(
+            "BANK_SELECT",
+            {
+                name: "BANK_SELECT",
+                arguments: [
+                    {
+                        name: "bank",
+                        value: "3"
+                    },
+                    {
+                        name: "preselect",
+                        value: "False"
+                    }
+                ]
+            },
+            "Select Bank 1",      // Default
+            "Select Bank 3"    // With actual value
+        )
+    }
+
     async #checkActionMeta(name, action, expNameDefault, expNameCurrent) {
         await this.#doCheckActionMeta(name, action, expNameDefault, expNameCurrent, false);
         await this.#doCheckActionMeta(name, action, expNameDefault, expNameCurrent, true);

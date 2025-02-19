@@ -11,6 +11,7 @@ class Meta extends MetaBase {
         // All actions/mappings not handled here will show with their technical function names.
         switch (this.entity.name) {
             case "RIG_SELECT": return this.#getDisplayNameRigSelect(actionDefinition)
+            case "BANK_SELECT": return this.#getDisplayNameBankSelect(actionDefinition)
         }
         
         return this.underscoreToDisplayName(this.entity.name);
@@ -28,5 +29,23 @@ class Meta extends MetaBase {
         }
 
         return this.replaceParameterTokens(actionDefinition, "Select Rig {rig}");
+    }
+
+    /**
+     * Special implementation for bank select
+     */
+    #getDisplayNameBankSelect(actionDefinition) {
+        const bank_off = this.getArgument(actionDefinition, "bank_off");
+        const preselect = this.getArgument(actionDefinition, "preselect");
+        
+        if (actionDefinition && !(bank_off == "None" || bank_off == null)) {
+            return this.replaceParameterTokens(actionDefinition, "Toggle Banks {bank}/{bank_off}");
+        }
+
+        if (actionDefinition && (preselect && (preselect.value == "True"))) {
+            return this.replaceParameterTokens(actionDefinition, "Preselect Bank {bank}");
+        }
+
+        return this.replaceParameterTokens(actionDefinition, "Select Bank {bank}");
     }
 }
