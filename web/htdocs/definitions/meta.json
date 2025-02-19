@@ -2,6 +2,7 @@
     "parameters": [
         {
             "entityName": "default",
+            "comment": "This defines default parameter types and values, used for all parameters of the same name, if no more specific definition exists.",
             "parameters": [
                 {
                     "name": "display_mode",
@@ -18,9 +19,79 @@
                     ]
                 },
                 {
-                    "name": "mapping",
-                    "type": "provider",
-                    "provider": "MappingProvider"
+                    "name": [
+                        "rig",
+                        "rig_off"
+                    ],
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_RIGS_PER_BANK"
+                    }
+                },
+                {
+                    "name": [
+                        "bank",
+                        "bank_off"
+                    ],
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_BANKS"
+                    }
+                },
+                {
+                    "name": "preselect",
+                    "type": "bool"
+                },
+                {
+                    "name": "use_leds",
+                    "type": "bool"
+                },
+                {
+                    "name": "color",
+                    "type": "color"
+                },
+
+
+                {
+                    "name": "slot_id",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Slot A",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_A"
+                        },
+                        {
+                            "name": "Slot B",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_B"
+                        },
+                        {
+                            "name": "Slot C",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_C"
+                        },
+                        {
+                            "name": "Slot D",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_D"
+                        },
+
+                        {
+                            "name": "Slot X",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_X"
+                        },
+                        {
+                            "name": "Slot MOD",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_MOD"
+                        },
+                        {
+                            "name": "Slot DLY",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_DLY"
+                        },
+                        {
+                            "name": "Slot REV",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_REV"
+                        }
+                    ]
                 }
             ]
         }

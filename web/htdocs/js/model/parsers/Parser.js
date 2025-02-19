@@ -14,7 +14,9 @@ class Parser {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #pySwitchParser = null;
+
     #availableActions = null;
+    #availableMappings = null;
 
     config = null;    // Configuration instance
 
@@ -115,65 +117,83 @@ class Parser {
     }
 
     /**
-     * Returns a list of all available actions.
+     * Returns a list of all available actions, with mixed in meta information
      */
     async getAvailableActions(basePath = "") {
         if (this.#availableActions) return this.#availableActions;
 
         // This just loads the buffered version. To create the list, see the parser tests.
         this.#availableActions = JSON.parse(await Tools.fetch(basePath + "definitions/actions.json"));
+        
+        // Put in meta info where exists
+        await this.#mixInMetaInformation(basePath, this.#availableActions);
+        
         return this.#availableActions;
     }
 
-    // /**
-    //  * Generates the list of available actions using libCST and returns it (without setting 
-    //  * the local buffer! this is mainly called by tests)
-    //  */
-    // async generateAvailableActions(basePath = "") {
-    //     // Get TOC of clients
-    //     const toc = JSON.parse(await Tools.fetch(basePath + "circuitpy/lib/pyswitch/clients/toc.php"));
+    /**
+     * Returns a list of all available actions, with mixed in meta information
+     */
+    async getAvailableMappings(basePath = "") {
+        if (this.#availableMappings) return this.#availableMappings;
 
-    //     /**
-    //      * Returns a direct child by name 
-    //      */
-    //     function getChild(node, name) {
-    //         for(const child of node.children || []) {
-    //             if (child.name == name) return child;
-    //         }
-    //         throw new Error("Child " + name + " not found");
-    //     }
+        // This just loads the buffered version. To create the list, see the parser tests.
+        this.#availableMappings = JSON.parse(await Tools.fetch(basePath + "definitions/mappings.json"));
 
-    //     // Get actions dir node
-    //     const actions = getChild(getChild(toc, "kemper"), "actions");
+        // Put in meta info where exists
+        await this.#mixInMetaInformation(basePath, this.#availableMappings);
 
-    //     // Get python paths for all files (the files are already located in the Pyodide FS, so python 
-    //     // can just open them to get their contents)
-    //     const importPaths = [];
+        return this.#availableMappings;
+    }
 
-    //     function crawl(node, prefix = "pyswitch/clients/kemper/actions") {
-    //         if (node.type == "file") {
-    //             if (node.name.endsWith(".py") && !node.name.startsWith("__")) {
-    //                 importPaths.push(prefix);
-    //             }                
-    //             return;
-    //         }
+    /**
+     * For a list of function descriptors, this adds meta descriptor information (unbuffered)
+     */
+    async #mixInMetaInformation(basePath, functions) {
+        const meta = JSON.parse(await Tools.fetch(basePath + "definitions/meta.json"));
 
-    //         for (const child of node.children) {
-    //             crawl(child, prefix + (prefix ? "/" : "") + child.name);
-    //         }
-    //     }
-    //     crawl(actions);
+        /**
+         * Searches a parameter meta definition for the given function name and parameter name. 
+         * No default resolving here.
+         */
+        function searchParameterDefinition(funcName, paramName) {
+            for (const definition of meta.parameters) {
+                if (definition.entityName == funcName) {
+                    for (const param of definition.parameters) {
+                        if (param.name == paramName) {
+                            
+                            return param;
+                        }
+                    }                    
+                }
+            }
+            return null;
+        }
 
-    //     // Tell the python code which files to examine, process it and return the decoded result.
-    //     const actionsJson = await this.runner.pyodide.runPython(`
-    //         import json
-    //         from parser.FunctionExtractor import FunctionExtractor
-    //         pySwitchActions = FunctionExtractor(
-    //             import_paths = json.loads('` + JSON.stringify(importPaths) + `')
-    //         )
-    //         json.dumps(pySwitchActions.get())
-    //     `);
+        /**
+         * Tries to find meta info for a parameter, resolving to default if not found
+         */
+        function getParameterMeta(func, param) {
+            // Search for specific definition first
+            let def = searchParameterDefinition(func.name, param.name);
 
-    //     return JSON.parse(actionsJson);
-    // }
+            if (!def) {
+                // Search for default
+                def = searchParameterDefinition("default", param.name);
+            }
+
+            return def;
+        }
+
+        // Scan function definitions
+        for (const func of functions) {
+            for (const param of func.parameters) {
+                // See if we have any meta information for the parameter
+                const pmeta = getParameterMeta(func, param);
+                if (!pmeta) continue;
+
+                param.meta = pmeta;
+            }
+        }
+    }
 }

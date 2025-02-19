@@ -12,7 +12,9 @@ class PySwitchParser:
         self.__js_parser = None
         self.__hw_import_path = hw_import_path       
         self.__csts = None
+
         self.__available_actions = None
+        self.__available_mappings = None
 
     # Has to be called before usage
     def init(self, js_parser):
@@ -77,45 +79,60 @@ class PySwitchParser:
     # Adds all possible imports (actions etc.) Does no config update!
     def _add_all_possible_imports(self):
         if not self.__available_actions:
-            # Load actions definitions from file
-            with open('definitions/actions.json') as f: available_actions_json = f.read()
-            
-            # Decode and add additional potentially needed imports besides the actions.
-            self.__available_actions = json.loads(available_actions_json) + [
-                # Additional imports: Colors
-                {
-                    "name": "Colors",
-                    "importPath": "pyswitch.misc"
-                },
-                {
-                    "name": "DEFAULT_SWITCH_COLOR",
-                    "importPath": "pyswitch.misc"
-                },
+            self.__available_actions = self._generate_action_imports()
 
-                # RIG_SELECT display modes
-                {
-                    "name": "RIG_SELECT_DISPLAY_CURRENT_RIG",
-                    "importPath": "pyswitch.clients.kemper.actions.rig_select"
-                },
-                {
-                    "name": "RIG_SELECT_DISPLAY_TARGET_RIG",
-                    "importPath": "pyswitch.clients.kemper.actions.rig_select"
-                },
-
-                # Callbacks
-                {
-                    "name": "BinaryParameterCallback",
-                    "importPath": "pyswitch.controller.callbacks"
-                },
-
-                # PushButtonAction
-                {
-                    "name": "PushButtonAction",
-                    "importPath": "pyswitch.controller.actions"
-                },
-            ]
-
-        visitor = AddImportsTransformer(self.__available_actions)
+        if not self.__available_mappings:
+            self.__available_mappings = self._generate_mapping_imports()    
+        
+        # Add all imports
+        visitor = AddImportsTransformer(self.__available_actions + self.__available_mappings)
         self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
             
+    # Generates all imports for actions
+    def _generate_action_imports(self):
+        # Load actions definitions from file
+        with open('definitions/actions.json') as f: available_actions_json = f.read()
+        
+        # Decode and add additional potentially needed imports besides the actions.
+        return json.loads(available_actions_json) + [
+            # Additional imports: Colors
+            {
+                "name": "Colors",
+                "importPath": "pyswitch.misc"
+            },
+            {
+                "name": "DEFAULT_SWITCH_COLOR",
+                "importPath": "pyswitch.misc"
+            },
+
+            # RIG_SELECT display modes
+            {
+                "name": "RIG_SELECT_DISPLAY_CURRENT_RIG",
+                "importPath": "pyswitch.clients.kemper.actions.rig_select"
+            },
+            {
+                "name": "RIG_SELECT_DISPLAY_TARGET_RIG",
+                "importPath": "pyswitch.clients.kemper.actions.rig_select"
+            },
+
+            # Callbacks
+            {
+                "name": "BinaryParameterCallback",
+                "importPath": "pyswitch.controller.callbacks"
+            },
+
+            # PushButtonAction
+            {
+                "name": "PushButtonAction",
+                "importPath": "pyswitch.controller.actions"
+            },
+        ]
+    
+    # Generates all imports for mappings
+    def _generate_mapping_imports(self):
+        # Load actions definitions from file
+        with open('definitions/mappings.json') as f: available_mappings_json = f.read()
+        
+        # Decode and add additional potentially needed imports besides the actions.
+        return json.loads(available_mappings_json)
 

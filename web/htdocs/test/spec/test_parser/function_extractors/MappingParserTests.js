@@ -1,17 +1,17 @@
-class ActionParserTests extends FunctionParserTestBase {
+class MappingParserTests extends FunctionParserTestBase {
 
-    async getAvailableActions() {
+    async getAvailableMappings() {
         await this.init();
         
         const basePath = "../";
         const that = this;
 
         await this.checkDefinitions(
-            "actions.json",
+            "mappings.json",
 
             // Load from buffer file
             async function() {
-                return JSON.parse(await Tools.fetch(basePath + "definitions/actions.json"));
+                return JSON.parse(await Tools.fetch(basePath + "definitions/mappings.json"));
             },
 
             // Generate from scratch
@@ -20,28 +20,28 @@ class ActionParserTests extends FunctionParserTestBase {
         
                 return extractor.get({
                     tocPath: basePath + "circuitpy/lib/pyswitch/clients/toc.php",
-                    subPath: "kemper/actions",
-                    targetPath: "pyswitch/clients/kemper/actions"
+                    subPath: "kemper/mappings",
+                    targetPath: "pyswitch/clients/kemper/mappings"
                 })
             }
         )
     }
 
-    async getAvailableActionsMeta() {
+    async getAvailableMappingsMeta() {
         const config = new MockConfiguration("", "");
         const parser = await config.parser(this.pyswitch);
         
         await this.checkDefinitions(
-            "actions-with-meta.json",
+            "mappings-with-meta.json",
 
             // Load from buffer file
             async function() {
-                return JSON.parse(await Tools.fetch("data/definitions/actions-with-meta.json"));
+                return JSON.parse(await Tools.fetch("data/definitions/mappings-with-meta.json"));
             },
 
             // Generate from scratch
             async function() {
-                return await parser.getAvailableActions("../");
+                return await parser.getAvailableMappings("../");
             }
         )
     }

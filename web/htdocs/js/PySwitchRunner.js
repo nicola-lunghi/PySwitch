@@ -44,6 +44,7 @@ class PySwitchRunner {
 
         this.pyodide.FS.mkdir("definitions");
         await this.#loadModule("definitions/actions.json", basePath);
+        await this.#loadModule("definitions/mappings.json", basePath);
 
         this.pyodide.FS.mkdir("parser");
         await this.#loadModule("parser/PySwitchParser.py", localPythonPath);
