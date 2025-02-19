@@ -882,7 +882,7 @@
                 "meta": {}
             }
         ],
-        "comment": "Adds morph state display on one LED to the rig select action. Returns a list of actions!\nFor details on the parameters, see RIG_SELECT.",
+        "comment": "Adds morph state display on one LED to the rig select action.\nFor details on the parameters, see RIG_SELECT.",
         "importPath": "pyswitch.clients.kemper.actions.rig_select_and_morph_state"
     },
     {

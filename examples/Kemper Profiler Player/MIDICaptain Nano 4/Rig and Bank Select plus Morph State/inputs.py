@@ -21,37 +21,37 @@ Inputs = [
     # Switch 1
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
-        "actions": 
-            # Note that for RIG_SELECT_AND_MORPH you have to omit the [] brackets as this function returns a list by its own!
+        "actions": [
             RIG_SELECT_AND_MORPH_STATE(
                 rig = 1,                
                 display = DISPLAY_HEADER_1,
                 morph_only_when_enabled = True
-            )        
+            )
+        ]     
     },
 
     # Switch 2
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_2,
-        "actions": 
-            # Note that for RIG_SELECT_AND_MORPH you have to omit the [] brackets as this function returns a list by its own!
+        "actions": [
             RIG_SELECT_AND_MORPH_STATE(
                 rig = 2,                
                 display = DISPLAY_HEADER_2,
                 morph_only_when_enabled = True
             )
+        ]
     },
 
     # Switch A
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_A,
-        "actions": 
-            # Note that for RIG_SELECT_AND_MORPH you have to omit the [] brackets as this function returns a list by its own!
+        "actions": [
             RIG_SELECT_AND_MORPH_STATE(
                 rig = 3,
                 display = DISPLAY_FOOTER_1,
                 morph_only_when_enabled = True
-            ),
+            )
+        ],
 
         "actionsHold": [
             BANK_DOWN(
@@ -63,13 +63,13 @@ Inputs = [
     # Switch B
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_B,
-        "actions": 
-            # Note that for RIG_SELECT_AND_MORPH you have to omit the [] brackets as this function returns a list by its own!
+        "actions": [
             RIG_SELECT_AND_MORPH_STATE(
                 rig = 4,
                 display = DISPLAY_FOOTER_2,
                 morph_only_when_enabled = True
-            ),
+            )
+        ],
 
         "actionsHold": [
             BANK_UP(

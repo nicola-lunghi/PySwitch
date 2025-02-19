@@ -9,7 +9,7 @@ from ..mappings.morph import MAPPING_MORPH_PEDAL
 from ..mappings.select import MAPPING_RIG_SELECT
 
 
-# Adds morph state display on one LED to the rig select action. Returns a list of actions!
+# Adds morph state display on one LED to the rig select action.
 # For details on the parameters, see RIG_SELECT.
 def RIG_SELECT_AND_MORPH_STATE(rig, 
                                rig_off = None, 

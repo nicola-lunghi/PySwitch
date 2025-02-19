@@ -17,7 +17,7 @@ from pyswitch.clients.kemper.actions.binary_switch import BINARY_SWITCH
 from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
 
 from pyswitch.clients.kemper.mappings.pedals import MAPPING_VOLUME_PEDAL, MAPPING_WAH_PEDAL
-from pyswitch.clients.kemper.mappings.morph import MAPPING_MORPH_PEDAL
+# from pyswitch.clients.kemper.mappings.morph import MAPPING_MORPH_PEDAL
 from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_GAIN, MAPPING_AMP_STATE
 
 from pyswitch.controller.AnalogAction import AnalogAction
@@ -136,46 +136,56 @@ Inputs = [
     # Switch A
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_A,
-        "actions": RIG_SELECT_AND_MORPH_STATE(
-            rig = 1,
-            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
-        )    
+        "actions": [
+            RIG_SELECT_AND_MORPH_STATE(
+                rig = 1,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ]
     },
 
     # Switch B
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_B,
-        "actions": RIG_SELECT_AND_MORPH_STATE(
-            rig = 2,
-            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
-        )
+        "actions": [
+            RIG_SELECT_AND_MORPH_STATE(
+                rig = 2,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ]
     },
 
     # Switch C
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_C,
-        "actions": RIG_SELECT_AND_MORPH_STATE(
-            rig = 3,
-            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
-        )
+        "actions": [
+            RIG_SELECT_AND_MORPH_STATE(
+                rig = 3,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ]
     },
 
     # Switch D
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_D,
-        "actions": RIG_SELECT_AND_MORPH_STATE(
-            rig = 4,
-            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
-        )
+        "actions": [
+            RIG_SELECT_AND_MORPH_STATE(
+                rig = 4,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ]
     },
 
     # Switch down
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_DOWN,
-        "actions": RIG_SELECT_AND_MORPH_STATE(
-            rig = 5,
-            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
-        ),
+        "actions": [
+            RIG_SELECT_AND_MORPH_STATE(
+                rig = 5,
+                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
+            )
+        ],
         "actionsHold": [
             BANK_DOWN()
         ]    
