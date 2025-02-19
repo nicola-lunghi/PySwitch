@@ -1427,9 +1427,7 @@
         ],
         "comment": "Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in\nthe current bank. Rigs are indexed starting from one, range: [1..5].",
         "importPath": "pyswitch.clients.kemper.actions.rig_select",
-        "meta": {
-            "displayName": "Select Rig {rig}"
-        }
+        "meta": {}
     },
     {
         "name": "TUNER_MODE",
@@ -1643,9 +1641,7 @@
         ],
         "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).\nNOTE: The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). \nIf you dont want this behaviour, you can set \"use_internal_state = False\".",
         "importPath": "pyswitch.clients.kemper.actions.effect_button",
-        "meta": {
-            "displayName": "Effect Button {num}"
-        }
+        "meta": {}
     },
     {
         "name": "BANK_SELECT",

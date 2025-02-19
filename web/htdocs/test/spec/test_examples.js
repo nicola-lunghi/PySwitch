@@ -5,8 +5,8 @@ describe('Examples with Parser Identity', function() {
     });
 
     it('Examples (high level test)', async function() {
-        console.error("Examples tests are deactivated!");
-        return;  // TODO!
+        // console.error("Examples tests are deactivated!");
+        // return;  // TODO!
 
         await (new ExampleTestRunner().process());   
     });

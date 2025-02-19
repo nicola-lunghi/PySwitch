@@ -35,18 +35,18 @@ class ParserFrontendInput {
                     return action
                 }
             }
-            throw new Error("No definition found for " + name + ". Perhaps the actions.json definition is outdated?");
+            return null;
         }
 
         function getItemText(item) {
             const definition = getActionDefinition(item.name);
-            if (definition.meta) {
-                return definition.meta.getDisplayName({
-                    name: item.name,
-                    arguments: JSON.parse(item.arguments())
-                });
-            }
-            return item.name
+            if (!definition) return item.name;
+            
+            const meta = new Meta(definition);
+            return meta.getDisplayName({
+                name: item.name,
+                arguments: JSON.parse(item.arguments())
+            });            
         }
 
         this.#inputElement.append(

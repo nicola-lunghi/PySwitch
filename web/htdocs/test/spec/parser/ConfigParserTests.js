@@ -363,7 +363,53 @@ class ConfigParserTests extends TestBase {
 
     ///////////////////////////////////////////////////////////////////////////////////////////
 
-    async displayName() {
+    async displayNameRigSelect() {
+        await this.#checkActionMeta(
+            "RIG_SELECT",
+            {
+                name: "RIG_SELECT",
+                arguments: [
+                    {
+                        name: "rig",
+                        value: "2"
+                    },
+                    {
+                        name: "display",
+                        value: "DISPLAY_HEADER_2"
+                    }
+                ]
+            },
+            "Select Rig 1",   // Default
+            "Select Rig 2"    // With actual value
+        )
+    }
+
+    async displayNameRigSelectToggle() {
+        await this.#checkActionMeta(
+            "RIG_SELECT",
+            {
+                name: "RIG_SELECT",
+                arguments: [
+                    {
+                        name: "rig",
+                        value: "2"
+                    },
+                    {
+                        name: "rig_off",
+                        value: "4"
+                    },
+                    {
+                        name: "display",
+                        value: "DISPLAY_HEADER_2"
+                    }
+                ]
+            },
+            "Select Rig 1",      // Default
+            "Toggle Rigs 2/4"    // With actual value
+        )        
+    }
+
+    async #checkActionMeta(name, action, expNameDefault, expNameCurrent) {
         await this.init();
         const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
         
@@ -374,30 +420,19 @@ class ConfigParserTests extends TestBase {
         
         await input1.set_actions(
             [
-                {
-                    name: "RIG_SELECT",
-                    arguments: [
-                        {
-                            name: "rig",
-                            value: "2"
-                        },
-                        {
-                            name: "display",
-                            value: "DISPLAY_HEADER_2"
-                        }
-                    ]
-                }
+                action
             ]
         );
         
+        const available = await parser.getAvailableActions("../");
+
         function searchAction(name) {
             for (const action of available) {
                 if (action.name == name) return action;
             }
         }
 
-        const available = await parser.getAvailableActions("../");
-        const action = searchAction("RIG_SELECT");
+        const action2 = searchAction(name);
 
         const actions = await input1.actions();
         const current = {
@@ -405,9 +440,10 @@ class ConfigParserTests extends TestBase {
             arguments: JSON.parse(actions[0].arguments())
         };
         
-        action.meta.getDisplayName(current)
-        expect(action.meta.getDisplayName()).toBe("Select Rig 1");
-        expect(action.meta.getDisplayName(current)).toBe("Select Rig 2");
+        const meta = new Meta(action2);
+
+        expect(meta.getDisplayName()).toBe(expNameDefault);
+        expect(meta.getDisplayName(current)).toBe(expNameCurrent);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -901,7 +937,7 @@ class ConfigParserTests extends TestBase {
      *              ]
      *          }
      *      ],
-     *      actionsHold: [...]
+     *      actionsHold: [...] 
      * }
      */
     async #testAction(parser, config) {

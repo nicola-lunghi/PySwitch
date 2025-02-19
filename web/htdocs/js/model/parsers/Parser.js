@@ -195,7 +195,8 @@ class Parser {
             if (def) {
                 def = structuredClone(def);
                 delete def.entityName;    
-                delete def.parameters;    
+                delete def.parameters; 
+                delete def.comment;    
             }
 
             return new FunctionMeta(def, func);

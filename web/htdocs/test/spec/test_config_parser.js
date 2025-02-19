@@ -34,8 +34,12 @@ describe('Configuration Parser', function() {
         await tests.addDisplayImports();
     });
 
-    it('Display name token replacement', async function() {
-        await tests.displayName();
+    it('Display name: RIG_SELECT', async function() {
+        await tests.displayNameRigSelect();
+    });
+
+    it('Display name: RIG_SELECT (with rig_off)', async function() {
+        await tests.displayNameRigSelectToggle();
     });
 
     // it('Remove actions', async function() {
