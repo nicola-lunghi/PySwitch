@@ -280,7 +280,7 @@ class ConfigParserTests extends TestBase {
             ).filter((item) => item != null)
         );
         
-        console.log((await parser.config.get()).inputs_py);
+        // console.log((await parser.config.get()).inputs_py);
 
         // Test with PySwitch
         await this.runner.run(config)

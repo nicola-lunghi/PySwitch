@@ -5,7 +5,7 @@
             {
                 "name": "boost_volume",
                 "default": null,
-                "comment": "Boost volume\nComment test line 2"
+                "comment": "Boost volume: A value in range [0..1] (corresponding to the range of the\nrig volume parameter of the Kemper: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB etc.)"
             },
             {
                 "name": "display",
@@ -48,7 +48,7 @@
                 "comment": null
             }
         ],
-        "comment": "Volume boost function, based on setting rig volume to a certain boost value. To \nmake sense, all rig volumes have to be zero in your rigs! You can then set the\nboost rig volume by passing a value in range [0..1] (corresponding to the range of the\nrig volume paramneter: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB)",
+        "comment": "Volume boost function, based on setting rig volume to a certain boost value. You can then set the\nboost rig volume by passing ",
         "importPath": "pyswitch.clients.kemper.actions.rig_volume_boost"
     },
     {
@@ -1067,7 +1067,7 @@
             {
                 "name": "num",
                 "default": null,
-                "comment": null
+                "comment": "Number of the Effect Button (1 to 4)"
             },
             {
                 "name": "text",
@@ -1102,10 +1102,10 @@
             {
                 "name": "use_internal_state",
                 "default": "True",
-                "comment": null
+                "comment": "If enabled, the state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). "
             }
         ],
-        "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).\nNOTE: The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper does not report the state at all sadly). \nIf you dont want this behaviour, you can set \"use_internal_state = False\".",
+        "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).\nNOTE: The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). \nIf you dont want this behaviour, you can set \"use_internal_state = False\".",
         "importPath": "pyswitch.clients.kemper.actions.effect_button"
     },
     {
