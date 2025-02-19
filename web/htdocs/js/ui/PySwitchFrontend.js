@@ -3,7 +3,7 @@ class PySwitchFrontend {
     #controller = null;
     #options = null;
     #container = null;
-    #parserFrontend = null;
+    parserFrontend = null;
 
     constructor(controller, container, options) {
         this.#controller = controller;
@@ -17,9 +17,9 @@ class PySwitchFrontend {
      * Initialize to a given set of inputs and splashes
      */
     async apply(parser) {
-        if (this.#parserFrontend) {
-            await this.#parserFrontend.destroy();
-            this.#parserFrontend = null;
+        if (this.parserFrontend) {
+            await this.parserFrontend.destroy();
+            this.parserFrontend = null;
         }
 
         const device = await parser.device();
@@ -34,7 +34,7 @@ class PySwitchFrontend {
         );
 
         // Create parser frontend
-        this.#parserFrontend = new ParserFrontend(this.#controller, parser, this.#options.basePath);
+        this.parserFrontend = new ParserFrontend(this.#controller, parser, this.#options.basePath);
 
         // Add switches and LEDs
         await this.#initInputs(parser);
@@ -106,6 +106,6 @@ class PySwitchFrontend {
         }
 
         // Parser frontend
-        await this.#parserFrontend.addInput(model, inputElement);
+        await this.parserFrontend.addInput(model, inputElement);
     }
 }

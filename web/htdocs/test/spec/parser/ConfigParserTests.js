@@ -363,6 +363,28 @@ class ConfigParserTests extends TestBase {
 
     ///////////////////////////////////////////////////////////////////////////////////////////
 
+    async displayNameGeneric() {
+        await this.#checkActionMeta(
+            "BANK_UP",
+            {
+                name: "BANK_UP",
+                arguments: []
+            },
+            "Bank Up",   // Default
+            "Bank Up"    // With actual value
+        );
+
+        await this.#checkActionMeta(
+            "BANK_DOWN",
+            {
+                name: "BANK_DOWN",
+                arguments: []
+            },
+            "Bank Down",   // Default
+            "Bank Down"    // With actual value
+        );
+    }
+
     async displayNameRigSelect() {
         await this.#checkActionMeta(
             "RIG_SELECT",
@@ -410,6 +432,11 @@ class ConfigParserTests extends TestBase {
     }
 
     async #checkActionMeta(name, action, expNameDefault, expNameCurrent) {
+        await this.#doCheckActionMeta(name, action, expNameDefault, expNameCurrent, false);
+        await this.#doCheckActionMeta(name, action, expNameDefault, expNameCurrent, true);
+    }
+
+    async #doCheckActionMeta(name, action, expNameDefault, expNameCurrent, hold) {
         await this.init();
         const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
         
@@ -421,7 +448,8 @@ class ConfigParserTests extends TestBase {
         await input1.set_actions(
             [
                 action
-            ]
+            ],
+            hold
         );
         
         const available = await parser.getAvailableActions("../");
@@ -434,7 +462,7 @@ class ConfigParserTests extends TestBase {
 
         const action2 = searchAction(name);
 
-        const actions = await input1.actions();
+        const actions = await input1.actions(hold);
         const current = {
             name: actions[0].name,
             arguments: JSON.parse(actions[0].arguments())

@@ -42,4 +42,9 @@ class MetaBase {
         }
         return null;
     }
+
+    underscoreToDisplayName(str) {
+        const splt = str.split("_");
+        return splt.map((token) => token.charAt(0).toUpperCase() + token.substring(1).toLowerCase()).join(" ");
+    }
 }

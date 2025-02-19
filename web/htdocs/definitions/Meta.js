@@ -13,7 +13,7 @@ class Meta extends MetaBase {
             case "RIG_SELECT": return this.#getDisplayNameRigSelect(actionDefinition)
         }
         
-        return this.entity.name;
+        return this.underscoreToDisplayName(this.entity.name);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////

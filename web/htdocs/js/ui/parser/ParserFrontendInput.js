@@ -63,7 +63,7 @@ class ParserFrontendInput {
                     actionsHold.map((item) =>
                         $('<div class="action-item" />').append(
                             $('<div class="action-item-content button actions-hold" data-toggle="tooltip" title="Action on long press" />')
-                            .text(item.name)
+                            .text(getItemText(item))
                         )
                         .data('handler', item)
                         .data('hold', true)

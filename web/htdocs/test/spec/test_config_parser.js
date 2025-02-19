@@ -42,6 +42,10 @@ describe('Configuration Parser', function() {
         await tests.displayNameRigSelectToggle();
     });
 
+    it('Display name: Generic', async function() {
+        await tests.displayNameGeneric();
+    });
+
     // it('Remove actions', async function() {
     //     await tests.removeAction();
     // });
