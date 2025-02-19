@@ -1,5 +1,6 @@
 class PySwitchRunner {
 
+    pyodide = null;
     #options = null;
     #runner = null;
 
@@ -47,7 +48,7 @@ class PySwitchRunner {
         this.pyodide.FS.mkdir("parser");
         await this.#loadModule("parser/PySwitchParser.py", localPythonPath);
         await this.#loadModule("parser/PySwitchHardware.py", localPythonPath);
-        await this.#loadModule("parser/PySwitchActions.py", localPythonPath);
+        await this.#loadModule("parser/FunctionExtractor.py", localPythonPath);
 
         this.pyodide.FS.mkdir("parser/misc");
         await this.#loadModule("parser/misc/VisitorsWithStack.py", localPythonPath);
@@ -60,7 +61,6 @@ class PySwitchRunner {
         this.pyodide.FS.mkdir("parser/inputs");
         await this.#loadModule("parser/inputs/Action.py", localPythonPath);
         await this.#loadModule("parser/inputs/Actions.py", localPythonPath);
-        //await this.#loadModule("parser/inputs/ActionFinder.py", localPythonPath);
         await this.#loadModule("parser/inputs/Arguments.py", localPythonPath);
         await this.#loadModule("parser/inputs/Input.py", localPythonPath);
         await this.#loadModule("parser/inputs/InputReplacer.py", localPythonPath);

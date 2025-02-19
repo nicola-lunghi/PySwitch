@@ -1,9 +1,8 @@
 import libcst
-import time
 
 from .misc.CollectCommentsTransformer import CollectCommentsTransformer
 
-class PySwitchActions(libcst.CSTVisitor):
+class FunctionExtractor(libcst.CSTVisitor):
 
     def __init__(self, import_paths):
         self.import_paths = import_paths
@@ -40,7 +39,7 @@ class PySwitchActions(libcst.CSTVisitor):
 
                 return params
 
-            # Check all statements for funtion definitions
+            # Check all statements for function definitions
             for statement in cst.body:
                 if not isinstance(statement, libcst.FunctionDef):
                     continue
@@ -54,13 +53,5 @@ class PySwitchActions(libcst.CSTVisitor):
                     "comment": get_comments(statement, 0),
                     "importPath": path.replace("/", ".").removesuffix(".py")
                 })
-
-        # Add static entries: PushButtonAction
-        ret.append({
-            "name": "PushButtonAction",
-            "parameters": [],
-            "comment": "",
-            "importPath": "pyswitch.controller.actions"
-        })
 
         return ret

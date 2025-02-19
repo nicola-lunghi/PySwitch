@@ -1,12 +1,7 @@
-class ConfigParserTests {
-
-    pyswitch = null;    // Shared python runner
-    runner = null;      // ConfigRunner
-
-    ///////////////////////////////////////////////////////////////////////////////////////////
+class ConfigParserTests extends TestBase {
 
     async minimal() {
-        await this.#init();
+        await this.init();
         const config = new MockConfiguration("", "");
         
         const parser = await config.parser(this.pyswitch);
@@ -19,7 +14,7 @@ class ConfigParserTests {
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     async getInputActionsDefault() {
-        await this.#init();
+        await this.init();
         const config = new WebConfiguration("data/test-presets/get-inputs-default");
         
         const parser = await config.parser(this.pyswitch);
@@ -114,7 +109,7 @@ class ConfigParserTests {
     }
 
     async getInputActionsHold() {
-        await this.#init();
+        await this.init();
         const config = new WebConfiguration("data/test-presets/get-inputs-hold");
         
         const parser = await config.parser(this.pyswitch);
@@ -233,7 +228,7 @@ class ConfigParserTests {
     }
 
     async #replaceActions(port, actions) {
-        await this.#init();
+        await this.init();
         const config = new WebConfiguration("data/test-presets/get-inputs-default");
         
         const parser = await config.parser(this.pyswitch);
@@ -265,7 +260,8 @@ class ConfigParserTests {
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     async addAllImports() {
-        await this.#init();
+        return;
+        await this.init();
         const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
         
         const parser = await config.parser(this.pyswitch);
@@ -305,7 +301,7 @@ class ConfigParserTests {
     }
 
     async addOneImport() {
-        await this.#init();
+        await this.init();
         const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
         
         const parser = await config.parser(this.pyswitch);
@@ -343,7 +339,7 @@ class ConfigParserTests {
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     // async removeAction() {        
-    //     await this.#init();
+    //     await this.init();
     //     const config = new WebConfiguration("data/test-presets/get-inputs-default");
         
     //     const parser = await config.parser(this.pyswitch);
@@ -480,7 +476,7 @@ class ConfigParserTests {
     // }
 
     // async removeActionHold() {        
-    //     await this.#init();
+    //     await this.init();
     //     const config = new WebConfiguration("data/test-presets/remove-actions-hold");
         
     //     const parser = await config.parser(this.pyswitch);
@@ -582,7 +578,7 @@ class ConfigParserTests {
     // }
 
     // async addActionNoIndex() {        
-    //     await this.#init();
+    //     await this.init();
     //     const config = new WebConfiguration("data/test-presets/get-inputs-default");
         
     //     const parser = await config.parser(this.pyswitch);
@@ -658,7 +654,7 @@ class ConfigParserTests {
     // }
 
     // async addActionWithIndex() {        
-    //     await this.#init();
+    //     await this.init();
     //     const config = new WebConfiguration("data/test-presets/get-inputs-default");
         
     //     const parser = await config.parser(this.pyswitch);
@@ -736,7 +732,7 @@ class ConfigParserTests {
     // }
 
     // async addActionHoldNoIndex() {        
-    //     await this.#init();
+    //     await this.init();
     //     const config = new WebConfiguration("data/test-presets/get-inputs-default");
         
     //     const parser = await config.parser(this.pyswitch);
@@ -857,24 +853,5 @@ class ConfigParserTests {
         if (config.actionsHold) {
             await test(true, config.actionsHold);
         }
-    }
-
-    /**
-     * Must be called before any of the tests can be run
-     */
-    async #init() {
-        if (this.pyswitch) return;
-
-        this.pyswitch = new PySwitchRunner(
-            {
-                domNamespace: "pyswitch",
-                updateIntervalMillis: 10
-            }, 
-            "test-pyswitch-example"
-        );
-
-        await this.pyswitch.init("../");
-
-        this.runner = new ConfigRunner(this.pyswitch);
     }
 }

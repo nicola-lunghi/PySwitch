@@ -80,6 +80,7 @@ class PySwitchParser:
             # Load actions definitions from file
             with open('definitions/actions.json') as f: available_actions_json = f.read()
             
+            # Decode and add additional potentially needed imports besides the actions.
             self.__available_actions = json.loads(available_actions_json) + [
                 # Additional imports: Colors
                 {
@@ -105,7 +106,13 @@ class PySwitchParser:
                 {
                     "name": "BinaryParameterCallback",
                     "importPath": "pyswitch.controller.callbacks"
-                }
+                },
+
+                # PushButtonAction
+                {
+                    "name": "PushButtonAction",
+                    "importPath": "pyswitch.controller.actions"
+                },
             ]
 
         visitor = AddImportsTransformer(self.__available_actions)

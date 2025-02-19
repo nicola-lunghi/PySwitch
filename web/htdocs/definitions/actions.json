@@ -1174,11 +1174,5 @@
         ],
         "comment": "Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). \nBanks are indexed starting from one, range: [1..126].    ",
         "importPath": "pyswitch.clients.kemper.actions.bank_select"
-    },
-    {
-        "name": "PushButtonAction",
-        "parameters": [],
-        "comment": "",
-        "importPath": "pyswitch.controller.actions"
     }
 ]

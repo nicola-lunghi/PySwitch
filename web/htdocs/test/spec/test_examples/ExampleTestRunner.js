@@ -1,32 +1,18 @@
-class ExampleTestRunner {
+class ExampleTestRunner extends TestBase {
 
-    pyswitch = null;
     client = null;
-    runner = null;
     hardware = null;
 
     #examplesPath = "../examples";               // Path to the examples folder
     
-    constructor() {
-        this.pyswitch = new PySwitchRunner(
-            {
-                domNamespace: "pyswitch",
-                updateIntervalMillis: 10,
-                coverage: true
-            }, 
-            "test-pyswitch-example"
-        );
-
-        this.runner = new ConfigRunner(this.pyswitch);
-    }
-
     /**
      * Process the tests. This loads a TOC of all tests and executes one after another, 
      * with behavioural mocks testing the functionality.
      */
     async process() {
-        // Init pyodide
-        await this.pyswitch.init("../");
+        await this.init({
+            coverage: true
+        });
 
         // Test all examples
         await this.#testExamples();

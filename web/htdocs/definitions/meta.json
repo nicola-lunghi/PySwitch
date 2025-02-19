@@ -1,0 +1,28 @@
+{
+    "parameters": [
+        {
+            "entityName": "default",
+            "parameters": [
+                {
+                    "name": "display_mode",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Target Rig",
+                            "value": "RIG_SELECT_DISPLAY_TARGET_RIG"
+                        },
+                        {
+                            "name": "Current Rig",
+                            "value": "RIG_SELECT_DISPLAY_CURRENT_RIG"
+                        }
+                    ]
+                },
+                {
+                    "name": "mapping",
+                    "type": "provider",
+                    "provider": "MappingProvider"
+                }
+            ]
+        }
+    ]
+}

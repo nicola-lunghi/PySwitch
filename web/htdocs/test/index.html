@@ -32,6 +32,7 @@
 
   <script src="../js/model/parsers/Parser.js"></script>
   <script src="../js/model/parsers/KemperParser.js"></script>
+  <script src="../js/model/parsers/FunctionExtractor.js"></script>
 
   <script src="../js/model/devices/Device.js"></script>
   <script src="../js/model/devices/PaintAudioDevice.js"></script>
@@ -53,6 +54,9 @@
   <!-- include spec files here... -->
   <script type="text/javascript" src="lib/FileSaver/FileSaver.min.js"></script>
 
+  <script src="spec/misc/ConfigRunner.js"></script>
+  <script src="spec/misc/TestBase.js"></script>
+
   <script src="spec/test_examples/ExampleTestRunner.js"></script>
 
   <script src="spec/test_examples/kemper/KemperTestBase.js"></script>
@@ -62,11 +66,11 @@
   <script src="spec/test_examples/kemper/KemperTunerTests.js"></script>
 
   <script src="spec/test_parser/ConfigParserTests.js"></script>
-  <script src="spec/test_parser/ActionParserTests.js"></script>
+  
+  <script src="spec/test_parser/function_extractors/FunctionParserTestBase.js"></script>
+  <script src="spec/test_parser/function_extractors/ActionParserTests.js"></script>
   
   <script src="spec/mocks/MockConfiguration.js"></script>
-
-  <script src="spec/misc/ConfigRunner.js"></script>
 
   <script src="spec/test_examples.js"></script>
   <script src="spec/test_config_parser.js"></script>

@@ -86,9 +86,9 @@ class Input(libcst.CSTVisitor):
                     args = [
                         libcst.Arg(
                             keyword = libcst.Name(
-                                value = a.name
+                                value = definition.arguments[a].name
                             ),
-                            value = libcst.parse_expression(a.value),
+                            value = libcst.parse_expression(definition.arguments[a].value),
                             whitespace_after_arg = libcst.ParenthesizedWhitespace(
                                 first_line = libcst.TrailingWhitespace(
                                     whitespace = libcst.SimpleWhitespace(value=''),
@@ -97,10 +97,12 @@ class Input(libcst.CSTVisitor):
                                 ),
                                 empty_lines=[],
                                 indent=True,
-                                last_line = libcst.SimpleWhitespace(value='            ')
+                                last_line = libcst.SimpleWhitespace(
+                                    value = '                ' if (a < len(definition.arguments) - 1) else '            '
+                                )
                             )
                         )
-                        for a in definition.arguments
+                        for a in range(len(definition.arguments))
                     ]
                 ),
 
