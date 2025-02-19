@@ -137,6 +137,11 @@
             ]
         },
         {
+            "entityName": "RIG_SELECT",
+            "displayName": "Select Rig {rig}",
+            "parameters": []
+        },
+        {
             "entityName": "RIG_SELECT_AND_MORPH_STATE",
             "returnType": "list",
             "parameters": []

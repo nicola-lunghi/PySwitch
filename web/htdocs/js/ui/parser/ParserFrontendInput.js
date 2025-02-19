@@ -41,7 +41,10 @@ class ParserFrontendInput {
         function getItemText(item) {
             const definition = getActionDefinition(item.name);
             if (definition.meta) {
-                return definition.meta.getDisplayName(item);
+                return definition.meta.getDisplayName({
+                    name: item.name,
+                    arguments: JSON.parse(item.arguments())
+                });
             }
             return item.name
         }

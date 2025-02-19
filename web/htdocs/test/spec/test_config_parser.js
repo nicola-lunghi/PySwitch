@@ -34,6 +34,10 @@ describe('Configuration Parser', function() {
         await tests.addDisplayImports();
     });
 
+    it('Display name token replacement', async function() {
+        await tests.displayName();
+    });
+
     // it('Remove actions', async function() {
     //     await tests.removeAction();
     // });

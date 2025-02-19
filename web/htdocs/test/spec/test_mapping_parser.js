@@ -7,15 +7,15 @@ describe('Parser for available mappings', function() {
     });
 
     it('Get available mappings', async function() {
-        console.error("Mapping parser tests are deactivated!");
-        return;  // TODO!
+        // console.error("Mapping parser tests are deactivated!");
+        // return;  // TODO!
 
         await tests.getAvailableMappings();
     });
 
     it('Metadata', async function() {
-        console.error("Mapping parser tests are deactivated!");
-        return;  // TODO!
+        // console.error("Mapping parser tests are deactivated!");
+        // return;  // TODO!
 
         await tests.getAvailableMappingsMeta();
     });

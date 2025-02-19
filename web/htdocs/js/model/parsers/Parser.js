@@ -191,11 +191,6 @@ class Parser {
             // Search for specific definition first
             let def = searchFunctionDefinition(func.name);
 
-            // if (!def) {
-            //     // Search for default
-            //     def = searchFunctionDefinition("default");
-            // }
-
             // Strip parameters (waste of memory)
             if (def) {
                 def = structuredClone(def);
@@ -223,11 +218,11 @@ class Parser {
 
         // Scan function definitions
         for (const func of functions) {
-            func.meta = getFunctionMeta(func);
-
             for (const param of func.parameters) {
                 param.meta = getParameterMeta(func, param);
             }
+
+            func.meta = getFunctionMeta(func);
         }
     }
 }

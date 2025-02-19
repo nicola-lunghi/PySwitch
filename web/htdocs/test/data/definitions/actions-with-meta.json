@@ -1427,7 +1427,9 @@
         ],
         "comment": "Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in\nthe current bank. Rigs are indexed starting from one, range: [1..5].",
         "importPath": "pyswitch.clients.kemper.actions.rig_select",
-        "meta": {}
+        "meta": {
+            "displayName": "Select Rig {rig}"
+        }
     },
     {
         "name": "TUNER_MODE",
