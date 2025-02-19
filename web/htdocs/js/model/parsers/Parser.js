@@ -155,20 +155,55 @@ class Parser {
         const meta = JSON.parse(await Tools.fetch(basePath + "definitions/meta.json"));
 
         /**
+         * Searches a function meta definition for the given function name.
+         * No default resolving here.
+         */
+        function searchFunctionDefinition(funcName) {
+            for (const definition of meta.parameters) {
+                if (definition.entityName == funcName) {
+                    return definition;
+                }
+            }
+            return null;
+        }
+
+        /**
          * Searches a parameter meta definition for the given function name and parameter name. 
          * No default resolving here.
          */
         function searchParameterDefinition(funcName, paramName) {
-            for (const definition of meta.parameters) {
-                if (definition.entityName == funcName) {
-                    for (const param of definition.parameters) {
-                        if (param.name == paramName) {                            
-                            return param;
-                        }
-                    }                    
+            const definition = searchFunctionDefinition(funcName);
+            if (!definition) return null;
+
+            for (const param of definition.parameters) {
+                if (param.name == paramName) {                            
+                    return param;
                 }
-            }
+            }                    
+
             return null;
+        }
+
+        /**
+         * Returns function metadata
+         */
+        function getFunctionMeta(func) {
+            // Search for specific definition first
+            let def = searchFunctionDefinition(func.name);
+
+            // if (!def) {
+            //     // Search for default
+            //     def = searchFunctionDefinition("default");
+            // }
+
+            // Strip parameters (waste of memory)
+            if (def) {
+                def = structuredClone(def);
+                delete def.entityName;    
+                delete def.parameters;    
+            }
+
+            return new FunctionMeta(def, func);
         }
 
         /**
@@ -188,6 +223,8 @@ class Parser {
 
         // Scan function definitions
         for (const func of functions) {
+            func.meta = getFunctionMeta(func);
+
             for (const param of func.parameters) {
                 param.meta = getParameterMeta(func, param);
             }

@@ -27,14 +27,32 @@ class ParserFrontendInput {
 
         const actions = await input.actions();
         const actionsHold = await input.actions(true);
+        const availableActions = await this.#parserFrontend.parser.getAvailableActions(this.#parserFrontend.basePath);
         
+        function getActionDefinition(name) {
+            for (const action of availableActions) {
+                if (action.name == name) {
+                    return action
+                }
+            }
+            throw new Error("No definition found for " + name + ". Perhaps the actions.json definition is outdated?");
+        }
+
+        function getItemText(item) {
+            const definition = getActionDefinition(item.name);
+            if (definition.meta) {
+                return definition.meta.getDisplayName(item);
+            }
+            return item.name
+        }
+
         this.#inputElement.append(
             $('<div class="pyswitch-parser-frontend" />').append(
                 this.#gridElement = $('<div class="action-grid" />').append(
                     actions.map((item) =>
                         $('<div class="action-item" />').append(
                             $('<div class="action-item-content button actions" data-toggle="tooltip" title="Action on normal press" />')
-                            .text(item.name)
+                            .text(getItemText(item))
                         )
                         .data('handler', item)
                         .data('hold', false)

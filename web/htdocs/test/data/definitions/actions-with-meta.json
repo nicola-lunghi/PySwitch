@@ -6,7 +6,14 @@
                 "name": "boost_volume",
                 "default": null,
                 "comment": "Boost volume: A value in range [0..1] (corresponding to the range of the\nrig volume parameter of the Kemper: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB etc.)",
-                "meta": {}
+                "meta": {
+                    "name": "boost_volume",
+                    "type": "float",
+                    "range": {
+                        "min": 0,
+                        "max": 1
+                    }
+                }
             },
             {
                 "name": "display",
@@ -24,7 +31,10 @@
                 "name": "color",
                 "default": "Colors.PINK",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "id",
@@ -36,7 +46,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "text",
@@ -58,7 +71,8 @@
             }
         ],
         "comment": "Volume boost function, based on setting rig volume to a certain boost value. You can then set the\nboost rig volume by passing ",
-        "importPath": "pyswitch.clients.kemper.actions.rig_volume_boost"
+        "importPath": "pyswitch.clients.kemper.actions.rig_volume_boost",
+        "meta": {}
     },
     {
         "name": "LOOPER_REC_PLAY_OVERDUB",
@@ -79,7 +93,10 @@
                 "name": "color",
                 "default": "Colors.RED",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "id",
@@ -91,7 +108,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -101,7 +121,8 @@
             }
         ],
         "comment": "Play/Rec/Overdub",
-        "importPath": "pyswitch.clients.kemper.actions.looper"
+        "importPath": "pyswitch.clients.kemper.actions.looper",
+        "meta": {}
     },
     {
         "name": "LOOPER_STOP",
@@ -122,7 +143,10 @@
                 "name": "color",
                 "default": "Colors.WHITE",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "id",
@@ -134,7 +158,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -144,7 +171,8 @@
             }
         ],
         "comment": "Stop",
-        "importPath": "pyswitch.clients.kemper.actions.looper"
+        "importPath": "pyswitch.clients.kemper.actions.looper",
+        "meta": {}
     },
     {
         "name": "LOOPER_ERASE",
@@ -165,7 +193,10 @@
                 "name": "color",
                 "default": "Colors.LIGHT_RED",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "id",
@@ -177,7 +208,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -187,7 +221,8 @@
             }
         ],
         "comment": "Erase",
-        "importPath": "pyswitch.clients.kemper.actions.looper"
+        "importPath": "pyswitch.clients.kemper.actions.looper",
+        "meta": {}
     },
     {
         "name": "LOOPER_CANCEL",
@@ -208,7 +243,10 @@
                 "name": "color",
                 "default": "Colors.YELLOW",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "id",
@@ -220,7 +258,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -230,7 +271,8 @@
             }
         ],
         "comment": "Cancel",
-        "importPath": "pyswitch.clients.kemper.actions.looper"
+        "importPath": "pyswitch.clients.kemper.actions.looper",
+        "meta": {}
     },
     {
         "name": "LOOPER_REVERSE",
@@ -251,7 +293,10 @@
                 "name": "color",
                 "default": "Colors.LIGHT_GREEN",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "id",
@@ -263,7 +308,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -273,7 +321,8 @@
             }
         ],
         "comment": "Reverse",
-        "importPath": "pyswitch.clients.kemper.actions.looper"
+        "importPath": "pyswitch.clients.kemper.actions.looper",
+        "meta": {}
     },
     {
         "name": "LOOPER_TRIGGER",
@@ -294,7 +343,10 @@
                 "name": "color",
                 "default": "Colors.LIGHT_BLUE",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "id",
@@ -306,7 +358,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -316,7 +371,8 @@
             }
         ],
         "comment": "Trigger",
-        "importPath": "pyswitch.clients.kemper.actions.looper"
+        "importPath": "pyswitch.clients.kemper.actions.looper",
+        "meta": {}
     },
     {
         "name": "LOOPER_HALF_SPEED",
@@ -337,7 +393,10 @@
                 "name": "color",
                 "default": "Colors.ORANGE",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "id",
@@ -349,7 +408,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -359,7 +421,8 @@
             }
         ],
         "comment": "Half speed",
-        "importPath": "pyswitch.clients.kemper.actions.looper"
+        "importPath": "pyswitch.clients.kemper.actions.looper",
+        "meta": {}
     },
     {
         "name": "MORPH_BUTTON",
@@ -386,7 +449,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -398,7 +464,10 @@
                 "name": "color",
                 "default": "\"kemper\"",
                 "comment": "Can be \"kemper\" or a fixed color",
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "morph_color_base",
@@ -414,7 +483,8 @@
             }
         ],
         "comment": "Morph button (faded change of morph state) with fixed color.",
-        "importPath": "pyswitch.clients.kemper.actions.morph"
+        "importPath": "pyswitch.clients.kemper.actions.morph",
+        "meta": {}
     },
     {
         "name": "MORPH_DISPLAY",
@@ -441,7 +511,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -463,7 +536,8 @@
             }
         ],
         "comment": "Morph display only",
-        "importPath": "pyswitch.clients.kemper.actions.morph"
+        "importPath": "pyswitch.clients.kemper.actions.morph",
+        "meta": {}
     },
     {
         "name": "TAP_TEMPO",
@@ -478,7 +552,10 @@
                 "name": "color",
                 "default": "Colors.DARK_GREEN",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "id",
@@ -490,7 +567,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -500,7 +580,8 @@
             }
         ],
         "comment": "Tap tempo ",
-        "importPath": "pyswitch.clients.kemper.actions.tempo"
+        "importPath": "pyswitch.clients.kemper.actions.tempo",
+        "meta": {}
     },
     {
         "name": "SHOW_TEMPO",
@@ -515,7 +596,10 @@
                 "name": "color",
                 "default": "Colors.LIGHT_GREEN",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "text",
@@ -533,7 +617,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -555,7 +642,8 @@
             }
         ],
         "comment": "Show tempo (visual feedback, will be enabled for short time every beat)",
-        "importPath": "pyswitch.clients.kemper.actions.tempo"
+        "importPath": "pyswitch.clients.kemper.actions.tempo",
+        "meta": {}
     },
     {
         "name": "EFFECT_STATE",
@@ -564,7 +652,44 @@
                 "name": "slot_id",
                 "default": null,
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "slot_id",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Slot A",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_A"
+                        },
+                        {
+                            "name": "Slot B",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_B"
+                        },
+                        {
+                            "name": "Slot C",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_C"
+                        },
+                        {
+                            "name": "Slot D",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_D"
+                        },
+                        {
+                            "name": "Slot X",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_X"
+                        },
+                        {
+                            "name": "Slot MOD",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_MOD"
+                        },
+                        {
+                            "name": "Slot DLY",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_DLY"
+                        },
+                        {
+                            "name": "Slot REV",
+                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_REV"
+                        }
+                    ]
+                }
             },
             {
                 "name": "display",
@@ -588,7 +713,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -598,7 +726,8 @@
             }
         ],
         "comment": "Switch an effect slot on / off",
-        "importPath": "pyswitch.clients.kemper.actions.effect_state"
+        "importPath": "pyswitch.clients.kemper.actions.effect_state",
+        "meta": {}
     },
     {
         "name": "BANK_UP",
@@ -619,7 +748,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -655,7 +787,10 @@
                 "name": "color",
                 "default": "None",
                 "comment": "Override color (if no color_callback is passed)",
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "color_callback",
@@ -667,17 +802,34 @@
                 "name": "display_mode",
                 "default": "RIG_SELECT_DISPLAY_CURRENT_RIG",
                 "comment": "Display mode (same as for RIG_SELECT, see definitions above)",
-                "meta": {}
+                "meta": {
+                    "name": "display_mode",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Target Rig",
+                            "value": "RIG_SELECT_DISPLAY_TARGET_RIG"
+                        },
+                        {
+                            "name": "Current Rig",
+                            "value": "RIG_SELECT_DISPLAY_CURRENT_RIG"
+                        }
+                    ]
+                }
             },
             {
                 "name": "preselect",
                 "default": "False",
                 "comment": "Preselect mode",
-                "meta": {}
+                "meta": {
+                    "name": "preselect",
+                    "type": "bool"
+                }
             }
         ],
         "comment": "Next bank (keeps rig index)",
-        "importPath": "pyswitch.clients.kemper.actions.bank_up_down"
+        "importPath": "pyswitch.clients.kemper.actions.bank_up_down",
+        "meta": {}
     },
     {
         "name": "BANK_DOWN",
@@ -698,7 +850,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -734,7 +889,10 @@
                 "name": "color",
                 "default": "None",
                 "comment": "Override color (if no color_callback is passed)",
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "color_callback",
@@ -746,17 +904,34 @@
                 "name": "display_mode",
                 "default": "RIG_SELECT_DISPLAY_CURRENT_RIG",
                 "comment": "Display mode (same as for RIG_SELECT, see definitions above)",
-                "meta": {}
+                "meta": {
+                    "name": "display_mode",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Target Rig",
+                            "value": "RIG_SELECT_DISPLAY_TARGET_RIG"
+                        },
+                        {
+                            "name": "Current Rig",
+                            "value": "RIG_SELECT_DISPLAY_CURRENT_RIG"
+                        }
+                    ]
+                }
             },
             {
                 "name": "preselect",
                 "default": "False",
                 "comment": "Preselect mode",
-                "meta": {}
+                "meta": {
+                    "name": "preselect",
+                    "type": "bool"
+                }
             }
         ],
         "comment": "Previous bank (keeps rig index)",
-        "importPath": "pyswitch.clients.kemper.actions.bank_up_down"
+        "importPath": "pyswitch.clients.kemper.actions.bank_up_down",
+        "meta": {}
     },
     {
         "name": "RIG_SELECT_AND_MORPH_STATE",
@@ -765,25 +940,53 @@
                 "name": "rig",
                 "default": null,
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "rig",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_RIGS_PER_BANK"
+                    }
+                }
             },
             {
                 "name": "rig_off",
                 "default": "None",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "rig_off",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_RIGS_PER_BANK"
+                    }
+                }
             },
             {
                 "name": "bank",
                 "default": "None",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "bank",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_BANKS"
+                    }
+                }
             },
             {
                 "name": "bank_off",
                 "default": "None",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "bank_off",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_BANKS"
+                    }
+                }
             },
             {
                 "name": "display",
@@ -801,7 +1004,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -819,7 +1025,10 @@
                 "name": "color",
                 "default": "None",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "text_callback",
@@ -837,7 +1046,20 @@
                 "name": "display_mode",
                 "default": "RIG_SELECT_DISPLAY_TARGET_RIG",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "display_mode",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Target Rig",
+                            "value": "RIG_SELECT_DISPLAY_TARGET_RIG"
+                        },
+                        {
+                            "name": "Current Rig",
+                            "value": "RIG_SELECT_DISPLAY_CURRENT_RIG"
+                        }
+                    ]
+                }
             },
             {
                 "name": "morph_display",
@@ -883,7 +1105,10 @@
             }
         ],
         "comment": "Adds morph state display on one LED to the rig select action.\nFor details on the parameters, see RIG_SELECT.",
-        "importPath": "pyswitch.clients.kemper.actions.rig_select_and_morph_state"
+        "importPath": "pyswitch.clients.kemper.actions.rig_select_and_morph_state",
+        "meta": {
+            "returnType": "list"
+        }
     },
     {
         "name": "RIG_UP",
@@ -898,7 +1123,20 @@
                 "name": "display_mode",
                 "default": "RIG_SELECT_DISPLAY_TARGET_RIG",
                 "comment": "Display mode (see definitions above)",
-                "meta": {}
+                "meta": {
+                    "name": "display_mode",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Target Rig",
+                            "value": "RIG_SELECT_DISPLAY_TARGET_RIG"
+                        },
+                        {
+                            "name": "Current Rig",
+                            "value": "RIG_SELECT_DISPLAY_CURRENT_RIG"
+                        }
+                    ]
+                }
             },
             {
                 "name": "display",
@@ -916,7 +1154,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -934,7 +1175,10 @@
                 "name": "color",
                 "default": "None",
                 "comment": "Color override (if no text callback is passed)",
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "text_callback",
@@ -950,7 +1194,8 @@
             }
         ],
         "comment": null,
-        "importPath": "pyswitch.clients.kemper.actions.rig_up_down"
+        "importPath": "pyswitch.clients.kemper.actions.rig_up_down",
+        "meta": {}
     },
     {
         "name": "RIG_DOWN",
@@ -965,7 +1210,20 @@
                 "name": "display_mode",
                 "default": "RIG_SELECT_DISPLAY_TARGET_RIG",
                 "comment": "Display mode (see definitions above)",
-                "meta": {}
+                "meta": {
+                    "name": "display_mode",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Target Rig",
+                            "value": "RIG_SELECT_DISPLAY_TARGET_RIG"
+                        },
+                        {
+                            "name": "Current Rig",
+                            "value": "RIG_SELECT_DISPLAY_CURRENT_RIG"
+                        }
+                    ]
+                }
             },
             {
                 "name": "display",
@@ -983,7 +1241,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -1001,7 +1262,10 @@
                 "name": "color",
                 "default": "None",
                 "comment": "Color override (if no text callback is passed)",
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "text_callback",
@@ -1017,7 +1281,8 @@
             }
         ],
         "comment": null,
-        "importPath": "pyswitch.clients.kemper.actions.rig_up_down"
+        "importPath": "pyswitch.clients.kemper.actions.rig_up_down",
+        "meta": {}
     },
     {
         "name": "RIG_SELECT",
@@ -1026,31 +1291,72 @@
                 "name": "rig",
                 "default": null,
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "rig",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_RIGS_PER_BANK"
+                    }
+                }
             },
             {
                 "name": "rig_off",
                 "default": "None",
                 "comment": "If set, this defines the \"off\" rig chosen when the action is disabled. Set to \"auto\" to always remember the current rig as \"off\" rig",
-                "meta": {}
+                "meta": {
+                    "name": "rig_off",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_RIGS_PER_BANK"
+                    }
+                }
             },
             {
                 "name": "bank",
                 "default": "None",
                 "comment": "If set, a specific bank is selected. If None, the current bank is kept",
-                "meta": {}
+                "meta": {
+                    "name": "bank",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_BANKS"
+                    }
+                }
             },
             {
                 "name": "bank_off",
                 "default": "None",
                 "comment": "If set, this defines the \"off\" bank to be chosen when the action is disabled. Set to \"auto\" to always remember the current bank as \"off\" bank",
-                "meta": {}
+                "meta": {
+                    "name": "bank_off",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_BANKS"
+                    }
+                }
             },
             {
                 "name": "display_mode",
                 "default": "RIG_SELECT_DISPLAY_CURRENT_RIG",
                 "comment": "Display mode (see definitions above)",
-                "meta": {}
+                "meta": {
+                    "name": "display_mode",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Target Rig",
+                            "value": "RIG_SELECT_DISPLAY_TARGET_RIG"
+                        },
+                        {
+                            "name": "Current Rig",
+                            "value": "RIG_SELECT_DISPLAY_CURRENT_RIG"
+                        }
+                    ]
+                }
             },
             {
                 "name": "display",
@@ -1068,7 +1374,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -1086,7 +1395,10 @@
                 "name": "color",
                 "default": "None",
                 "comment": "Color override (if no text callback is passed)",
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "text_callback",
@@ -1114,7 +1426,8 @@
             }
         ],
         "comment": "Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in\nthe current bank. Rigs are indexed starting from one, range: [1..5].",
-        "importPath": "pyswitch.clients.kemper.actions.rig_select"
+        "importPath": "pyswitch.clients.kemper.actions.rig_select",
+        "meta": {}
     },
     {
         "name": "TUNER_MODE",
@@ -1135,7 +1448,10 @@
                 "name": "color",
                 "default": "DEFAULT_SWITCH_COLOR",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "text",
@@ -1153,7 +1469,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -1163,7 +1482,8 @@
             }
         ],
         "comment": "Switch tuner mode on / off",
-        "importPath": "pyswitch.clients.kemper.actions.tuner"
+        "importPath": "pyswitch.clients.kemper.actions.tuner",
+        "meta": {}
     },
     {
         "name": "BINARY_SWITCH",
@@ -1172,7 +1492,10 @@
                 "name": "mapping",
                 "default": null,
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "mapping",
+                    "default": "MAPPING_ROTARY_SPEED(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD)"
+                }
             },
             {
                 "name": "display",
@@ -1196,7 +1519,10 @@
                 "name": "color",
                 "default": "Colors.WHITE",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "id",
@@ -1208,7 +1534,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -1242,7 +1571,8 @@
             }
         ],
         "comment": "Binary parameters (for all binary parameter mappings which support 0/1 values for on/off)",
-        "importPath": "pyswitch.clients.kemper.actions.binary_switch"
+        "importPath": "pyswitch.clients.kemper.actions.binary_switch",
+        "meta": {}
     },
     {
         "name": "EFFECT_BUTTON",
@@ -1251,7 +1581,14 @@
                 "name": "num",
                 "default": null,
                 "comment": "Number of the Effect Button (1 to 4)",
-                "meta": {}
+                "meta": {
+                    "name": "num",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": 4
+                    }
+                }
             },
             {
                 "name": "text",
@@ -1269,7 +1606,10 @@
                 "name": "color",
                 "default": "Colors.LIGHT_GREEN",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "id",
@@ -1281,7 +1621,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -1297,7 +1640,10 @@
             }
         ],
         "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).\nNOTE: The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). \nIf you dont want this behaviour, you can set \"use_internal_state = False\".",
-        "importPath": "pyswitch.clients.kemper.actions.effect_button"
+        "importPath": "pyswitch.clients.kemper.actions.effect_button",
+        "meta": {
+            "displayName": "Effect Button {num}"
+        }
     },
     {
         "name": "BANK_SELECT",
@@ -1306,25 +1652,55 @@
                 "name": "bank",
                 "default": null,
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "bank",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_BANKS"
+                    }
+                }
             },
             {
                 "name": "bank_off",
                 "default": "None",
                 "comment": "\"off\" bank. Will be ignored when preselect is enabled",
-                "meta": {}
+                "meta": {
+                    "name": "bank_off",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_BANKS"
+                    }
+                }
             },
             {
                 "name": "preselect",
                 "default": "False",
                 "comment": "If False, the bank is switched immediately (by sending a rig select command \nafter bank preselect). If True, only the bank preselect is sent. Ignores bank_off.",
-                "meta": {}
+                "meta": {
+                    "name": "preselect",
+                    "type": "bool"
+                }
             },
             {
                 "name": "display_mode",
                 "default": "RIG_SELECT_DISPLAY_CURRENT_RIG",
                 "comment": "Display mode (see definitions above)",
-                "meta": {}
+                "meta": {
+                    "name": "display_mode",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Target Rig",
+                            "value": "RIG_SELECT_DISPLAY_TARGET_RIG"
+                        },
+                        {
+                            "name": "Current Rig",
+                            "value": "RIG_SELECT_DISPLAY_CURRENT_RIG"
+                        }
+                    ]
+                }
             },
             {
                 "name": "display",
@@ -1342,7 +1718,10 @@
                 "name": "use_leds",
                 "default": "True",
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "name": "use_leds",
+                    "type": "bool"
+                }
             },
             {
                 "name": "enable_callback",
@@ -1360,7 +1739,10 @@
                 "name": "color",
                 "default": "None",
                 "comment": "Color override (if no color callback is passed)",
-                "meta": {}
+                "meta": {
+                    "name": "color",
+                    "type": "color"
+                }
             },
             {
                 "name": "text_callback",
@@ -1376,6 +1758,7 @@
             }
         ],
         "comment": "Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). \nBanks are indexed starting from one, range: [1..126].    ",
-        "importPath": "pyswitch.clients.kemper.actions.bank_select"
+        "importPath": "pyswitch.clients.kemper.actions.bank_select",
+        "meta": {}
     }
 ]

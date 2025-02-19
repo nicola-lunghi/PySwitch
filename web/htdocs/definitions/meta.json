@@ -124,6 +124,7 @@
         },
         {
             "entityName": "EFFECT_BUTTON",
+            "displayName": "Effect Button {num}",
             "parameters": [
                 {
                     "name": "num",

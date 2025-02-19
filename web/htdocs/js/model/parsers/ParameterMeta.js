@@ -8,6 +8,10 @@ class ParameterMeta {
         this.#parameter = parameter;
     }   
 
+    toJSON() {
+        return this.#meta || {}
+    }
+
     /**
      * Determines the default value for the parameter
      */

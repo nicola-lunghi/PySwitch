@@ -21,7 +21,7 @@ class ConfigRunner {
         $('body').append(el);
 
         // Set up frontend
-        const frontend = new PySwitchFrontend(null, el, { domNamespace: "pyswitch" });
+        const frontend = new PySwitchFrontend(null, el, { domNamespace: "pyswitch", basePath: "../" });
         await frontend.apply(await config.parser(this.pyswitch));
 
         // Reset virtual simulation time
