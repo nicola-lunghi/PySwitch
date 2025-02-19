@@ -154,7 +154,7 @@ class PySwitchUI {
         this.notifications = new Notifications(messageElement);
 
         // Parser UI handler
-        this.frontend = new PySwitchFrontend(this.#deviceElement, this.#options);
+        this.frontend = new PySwitchFrontend(this.#controller, this.#deviceElement, this.#options);
     }
 
     /**

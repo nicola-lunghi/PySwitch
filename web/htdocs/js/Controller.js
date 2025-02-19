@@ -150,6 +150,24 @@ class Controller {
     }
 
     /**
+     * Restarts the current configuration
+     */
+    async restart() {
+        if (!this.currentConfig) {
+            console.warn("No config to restart");
+            return;
+        }
+
+        // Recreate UI
+        await this.ui.applyConfig(this.currentConfig);
+
+        // Restart configuration
+        await this.pyswitch.run(await this.currentConfig.get());
+        
+        this.ui.message("Reloaded configuration: " + (await this.currentConfig.name()), "S");
+    }
+
+    /**
      * Set a variable in local storage
      */
     setState(key, value) {

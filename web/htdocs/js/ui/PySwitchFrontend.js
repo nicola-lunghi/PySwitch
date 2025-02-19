@@ -1,20 +1,24 @@
 class PySwitchFrontend {
     
+    #controller = null;
     #options = null;
     #container = null;
+    #parserFrontend = null;
 
-    parserFrontends = null;
-
-    constructor(container, options) {
+    constructor(controller, container, options) {
+        this.#controller = controller;
         this.#container = container;
-        this.#options = options;
+        this.#options = options;        
     }
 
     /**
      * Initialize to a given set of inputs and splashes
      */
     async apply(parser) {
-        this.parserFrontends = [];
+        if (this.#parserFrontend) {
+            await this.#parserFrontend.destroy();
+            this.#parserFrontend = null;
+        }
 
         const device = await parser.device();
         this.#container[0].className = device.getDeviceClass();
@@ -26,6 +30,9 @@ class PySwitchFrontend {
             $('<img id="' + this.#options.domNamespace + '-background" />'),
             $('<canvas id="' + this.#options.domNamespace + '-display" />')
         );
+
+        // Create parser frontend
+        this.#parserFrontend = new ParserFrontend(this.#controller, parser);
 
         // Add switches and LEDs
         await this.#initInputs(parser);
@@ -43,14 +50,14 @@ class PySwitchFrontend {
 
         // Create all inputs
         for (const input of hw) {
-            await this.#createInput(parser, inputsContainer, input)            
+            await this.#createInput(inputsContainer, input)            
         }
     }
 
     /**
      * Crate one input from a HW definition
      */
-    async #createInput(parser, inputsContainer, inputDefinition) {
+    async #createInput(inputsContainer, inputDefinition) {
         const model = inputDefinition.data.model;
 
         let visualElement = null;
@@ -97,9 +104,6 @@ class PySwitchFrontend {
         }
 
         // Parser frontend
-        const frontend = new ParserFrontend(this);
-        this.parserFrontends.push(frontend);
-        
-        await frontend.init(parser, model, inputElement);        
+        await this.#parserFrontend.addInput(model, inputElement);
     }
 }

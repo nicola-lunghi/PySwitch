@@ -53,7 +53,7 @@ class Input(libcst.CSTVisitor):
         return visitor.result
 
     # Overwrites all actions from the passed definition list
-    def set_actions(self, actions, hold = False):
+    def set_actions(self, actions, hold = False, noUpdate = False):
         if not self.result:
             raise Exception("No result loaded to modify")
         
@@ -160,7 +160,7 @@ class Input(libcst.CSTVisitor):
         self.result = self.result.visit(adder)
 
         # Tell the parser to replace the new state of this input in its CST buffers
-        self.__parser.update_input(self)
+        self.__parser.update_input(self, noUpdate)
 
     # ###############################################################################################################################
 

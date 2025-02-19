@@ -82,9 +82,11 @@ class Parser {
     /**
      * Updates the underlying config from the current CSTs. Called by python code after updates to the trees.
      */
-    update_config() {
+    updateConfig() {
         const src = this.#pySwitchParser.to_source().toJs();
-
+        
+        // console.log(src.get("inputs_py"))
+        
         this.config.set({
             inputs_py: src.get("inputs_py"),
             display_py: src.get("display_py")

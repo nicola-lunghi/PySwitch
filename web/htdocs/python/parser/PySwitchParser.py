@@ -5,6 +5,7 @@ from .inputs.Input import Input
 from .inputs.InputReplacer import InputReplacer
 from .misc.RemoveUnusedImportTransformer import RemoveUnusedImportTransformer
 from .misc.AddImportsTransformer import AddImportsTransformer
+from .misc.AssignmentExtractor import AssignmentExtractor
 
 class PySwitchParser:
 
@@ -53,14 +54,15 @@ class PySwitchParser:
     ########################################################################################
 
     # Update the CSTs from the passed input. Only called internally.
-    def update_input(self, input):
+    def update_input(self, input, noUpdate = False):
         if not self.__csts:
             raise Exception("No data loaded")
 
         visitor = InputReplacer(input)
         self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
         
-        self.__js_parser.update_config()
+        if not noUpdate:
+            self.__js_parser.updateConfig()
 
     ########################################################################################
         
@@ -84,8 +86,16 @@ class PySwitchParser:
         if not self.__available_mappings:
             self.__available_mappings = self._generate_mapping_imports()    
         
+        display_assignments = [
+            { 
+                "name": assign, 
+                "importPath": "display" 
+            } 
+            for assign in AssignmentExtractor().get(self.__csts["display_py"])
+        ]
+
         # Add all imports
-        visitor = AddImportsTransformer(self.__available_actions + self.__available_mappings)
+        visitor = AddImportsTransformer(self.__available_actions + self.__available_mappings + display_assignments)
         self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
             
     # Generates all imports for actions

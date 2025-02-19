@@ -1,0 +1,69 @@
+class ParserFrontend {
+
+    inputs = [];   // Array of parser frontends
+    parser = null;
+
+    #controller = null;
+    #toUpdate = [];    // Queue for parser frontends which had changes recently.
+
+    constructor(controller, parser) {
+        this.#controller = controller;
+        this.parser = parser;
+    }
+
+    async destroy() {
+        for(const f of this.inputs) {
+            await f.destroy();
+        }
+    }
+
+    /**
+     * Adds a new frontend for an input
+     */
+    async addInput(model, inputElement) {
+        if (!inputElement) return;
+
+        const frontend = new ParserFrontendInput(this, model, inputElement);
+        await frontend.init();
+
+        this.inputs.push(frontend);
+    }
+
+    /**
+     * Schedules an input frontend for updating the config
+     */
+    scheduleForUpdate(input) {
+        if (this.#toUpdate.includes(input)) return;
+
+        this.#toUpdate.push(input);
+    }
+
+    /**
+     * Update the data model from the input frontends in the queue. Includes exception handling
+     * as this is eventually called without await.
+     */
+    async updateConfig() {
+        try {
+            await this.#doUpdateConfig();
+
+        } catch (e) {
+            this.#controller.handle(e);
+        }
+    }
+
+    /**
+     * Implementation for updateConfig
+     */
+    async #doUpdateConfig() {
+        while (this.#toUpdate.length > 0) {
+            const inputToUpdate = this.#toUpdate.shift();
+            await inputToUpdate.updateInput();
+        }
+
+        // All set_actions calls have suppressed updating until now, so we need to do this here
+        this.parser.updateConfig();
+
+        // Restart the emulated controller
+        await this.#controller.restart();
+    }
+}

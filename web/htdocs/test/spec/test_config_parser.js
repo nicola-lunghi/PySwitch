@@ -30,6 +30,10 @@ describe('Configuration Parser', function() {
         await tests.addOneImport();
     });
 
+    it('Auto-add imports (display.py)', async function() {
+        await tests.addDisplayImports();
+    });
+
     // it('Remove actions', async function() {
     //     await tests.removeAction();
     // });

@@ -310,6 +310,39 @@ class ConfigParserTests extends TestBase {
         await this.runner.run(config)
     }
 
+    async addDisplayImports() {
+        await this.init();
+        const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
+        
+        const parser = await config.parser(this.pyswitch);
+        expect(parser).toBeInstanceOf(KemperParser);
+
+        const input1 = await parser.input(1);
+        
+        await input1.set_actions(
+            [
+                {
+                    name: "RIG_SELECT",
+                    arguments: [
+                        {
+                            name: "rig",
+                            value: "1"
+                        },
+                        {
+                            name: "display",
+                            value: "DISPLAY_HEADER_2"
+                        }
+                    ]
+                }
+            ]
+        );
+        
+        // console.log((await parser.config.get()).inputs_py);
+
+        // Test with PySwitch
+        await this.runner.run(config)
+    }
+
     /**
      * Helper for import tests: Returns an action definition for setting, 
      * from a given action definition loaded by the parser.

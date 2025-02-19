@@ -1,19 +1,16 @@
 import libcst
 
-from .misc.CollectCommentsTransformer import CollectCommentsTransformer
+from .CollectCommentsTransformer import CollectCommentsTransformer
 
-class FunctionExtractor(libcst.CSTVisitor):
+class FunctionExtractor:
 
     def __init__(self, import_paths):
         self.import_paths = import_paths
-        self.__actions = None
 
-    # Returns a list of all available actions in PySwitch
+    # Returns a list of all public functions defined on module level
     def get(self):
-        if self.__actions:
-            return self.__actions
-        
         ret = []
+
         for path in self.import_paths:
             with open(path) as f: content = f.read()
 

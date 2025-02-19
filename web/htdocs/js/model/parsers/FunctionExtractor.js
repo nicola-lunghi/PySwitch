@@ -58,7 +58,7 @@ class FunctionExtractor {
         // Tell the python code which files to examine, process it and return the decoded result.
         const functionsJson = await this.pyswitch.pyodide.runPython(`
             import json
-            from parser.FunctionExtractor import FunctionExtractor
+            from parser.misc.FunctionExtractor import FunctionExtractor
 
             functionExtractor = FunctionExtractor(
                 import_paths = json.loads('` + JSON.stringify(importPaths) + `')
