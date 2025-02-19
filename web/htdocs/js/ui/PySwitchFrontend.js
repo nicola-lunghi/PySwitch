@@ -1,7 +1,9 @@
 class PySwitchFrontend {
-
+    
     #options = null;
     #container = null;
+
+    parserFrontends = null;
 
     constructor(container, options) {
         this.#container = container;
@@ -12,6 +14,8 @@ class PySwitchFrontend {
      * Initialize to a given set of inputs and splashes
      */
     async apply(parser) {
+        this.parserFrontends = [];
+
         const device = await parser.device();
         this.#container[0].className = device.getDeviceClass();
 
@@ -24,13 +28,13 @@ class PySwitchFrontend {
         );
 
         // Add switches and LEDs
-        await this.#initSwitches(parser);
+        await this.#initInputs(parser);
     }
 
     /**
-     * Creates DOM elements for all switches and LEDs. Expects the Inputs list from inputs.py.
+     * Creates DOM elements for all inputs and LEDs.
      */
-    async #initSwitches(parser) {
+    async #initInputs(parser) {
         const hw = await parser.getHardwareInfo();
         
         // Create container for all inputs
@@ -39,7 +43,7 @@ class PySwitchFrontend {
 
         // Create all inputs
         for (const input of hw) {
-            await this.#createInput(parser, inputsContainer, input);
+            await this.#createInput(parser, inputsContainer, input)            
         }
     }
 
@@ -93,33 +97,9 @@ class PySwitchFrontend {
         }
 
         // Parser frontend
-        await this.#initParserFrontend(parser, model, inputElement);
-    }
-
-    /**
-     * Adds the parser frontend
-     */
-    async #initParserFrontend(parser, model, inputElement) {
-        if (!inputElement) return;
+        const frontend = new ParserFrontend(this);
+        this.parserFrontends.push(frontend);
         
-        // Parser UI
-        const input = await parser.input(model.port);
-        if (!input) return;
-
-        const actions = await input.actions();
-        const actionsHold = await input.actions(true);
-        
-        inputElement.append(
-            $('<div class="pyswitch-parser-frontend"  />').append(
-                actions.map((item) =>
-                    $('<span class="button actions" data-toggle="tooltip" title="Action on normal press" />')
-                    .text(item.name)
-                ),
-                actionsHold.map((item) =>
-                    $('<span class="button actions-hold" data-toggle="tooltip" title="Action on long press" />')
-                    .text(item.name)
-                )
-            )
-        )
+        await frontend.init(parser, model, inputElement);        
     }
 }

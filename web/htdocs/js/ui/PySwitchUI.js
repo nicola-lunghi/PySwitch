@@ -17,7 +17,7 @@ class PySwitchUI {
     loadBrowser = null;
     clientBrowser = null;
     clientButton = null;
-    parserFrontend = null;
+    frontend = null;
 
     /**
      * Options:
@@ -154,7 +154,7 @@ class PySwitchUI {
         this.notifications = new Notifications(messageElement);
 
         // Parser UI handler
-        this.parserFrontend = new PySwitchFrontend(this.#deviceElement, this.#options);
+        this.frontend = new PySwitchFrontend(this.#deviceElement, this.#options);
     }
 
     /**
@@ -258,8 +258,8 @@ class PySwitchUI {
         this.#contentHeadline.text(await config.name());
 
         // Apply the parser to the frontend (generates all switches etc.)
-        const parser = await config.parser(this.#controller.pyswitch);
-        await this.parserFrontend.apply(parser);
+        const parser = await config.parser(this.#controller.pyswitch);        
+        await this.frontend.apply(parser);
     }
 
     /**
