@@ -88,7 +88,7 @@ class Input(libcst.CSTVisitor):
                             keyword = libcst.Name(
                                 value = definition.arguments[a].name
                             ),
-                            value = libcst.parse_expression(definition.arguments[a].value),
+                            value = libcst.parse_expression(definition.arguments[a].value), # if definition.arguments[a].value != "" else libcst.SimpleString(value = '""'),
                             whitespace_after_arg = libcst.ParenthesizedWhitespace(
                                 first_line = libcst.TrailingWhitespace(
                                     whitespace = libcst.SimpleWhitespace(value=''),

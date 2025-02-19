@@ -126,6 +126,12 @@ class PySwitchParser:
                 "name": "PushButtonAction",
                 "importPath": "pyswitch.controller.actions"
             },
+
+            # Effect slot definitions
+            {
+                "name": "KemperEffectSlot",
+                "importPath": "pyswitch.clients.kemper"
+            },
         ]
     
     # Generates all imports for mappings

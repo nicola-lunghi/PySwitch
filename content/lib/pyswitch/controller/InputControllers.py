@@ -41,8 +41,8 @@ class SwitchController:
 
         self.__hold_active = False
 
-        self.__actions = get_option(config, "actions", [])
-        self.__actions_hold = get_option(config, "actionsHold", [])
+        self.__actions = _flatten_actions(get_option(config, "actions", []))
+        self.__actions_hold = _flatten_actions(get_option(config, "actionsHold", []))
         
         # Init actions
         for action in self.__actions + self.__actions_hold:
@@ -247,10 +247,10 @@ class ContinuousController:
         self.__input.init()
 
         self.__pot = hasattr(self.__input, "value")
-        self.__actions = get_option(config, "actions", [])
+        self.actions = _flatten_actions(get_option(config, "actions", []))
         
         # Init actions
-        for action in self.__actions:
+        for action in self.actions:
             action.init(appl)
 
             if isinstance(action, Updateable):             
@@ -265,12 +265,23 @@ class ContinuousController:
             # Encoder
             value = self.__input.position
 
-        for action in self.__actions:
+        for action in self.actions:
             if not action.enabled:
                 continue
 
             action.process(value)
 
+
+##############################################################################################################################
+
+def _flatten_actions(actions):
+    ret = []
+    for action in actions:
+        if isinstance(action, list):
+            ret += action
+        else:
+            ret.append(action)
+    return ret
 
 ##############################################################################################################################
 

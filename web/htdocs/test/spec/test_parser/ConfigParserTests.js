@@ -260,7 +260,6 @@ class ConfigParserTests extends TestBase {
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     async addAllImports() {
-        return;
         await this.init();
         const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
         
@@ -272,24 +271,11 @@ class ConfigParserTests extends TestBase {
         // Add all actions available
         const actions = await parser.getAvailableActions("../");
 
-        let cnt = 0;
+        const that = this;
         await input1.set_actions(
             actions.map(
                 function (item) { 
-                    if (item.name == "RIG_SELECT_AND_MORPH_STATE") return null; // TODO
-                    if (item.name == "PushButtonAction") return null; // TODO
-
-                    return {
-                        name: item.name,
-                        arguments: item.parameters.map(
-                            function (param) {
-                                return {
-                                    name: param.name,
-                                    value: param.default ? param.default : ("" + (cnt++))
-                                }
-                            }
-                        )
-                    }
+                    return that.#composeAction(item)
                 }
             ).filter((item) => item != null)
         );
@@ -311,22 +297,10 @@ class ConfigParserTests extends TestBase {
         
         // Add first actions available
         const actions = await parser.getAvailableActions("../");
-        const item = actions[0];
 
-        let cnt = 0;
         await input1.set_actions(
             [
-                {
-                    name: item.name,
-                    arguments: item.parameters.map(
-                        function (param) {
-                            return {
-                                name: param.name,
-                                value: param.default ? param.default : ("" + (cnt++))
-                            }
-                        }
-                    )
-                }
+                this.#composeAction(actions[0])
             ]
         );
         
@@ -334,6 +308,24 @@ class ConfigParserTests extends TestBase {
 
         // Test with PySwitch
         await this.runner.run(config)
+    }
+
+    /**
+     * Helper for import tests: Returns an action definition for setting, 
+     * from a given action definition loaded by the parser.
+     */
+    #composeAction(item) {
+        return {
+            name: item.name,
+            arguments: item.parameters.map(
+                function (param) {
+                    return {
+                        name: param.name,
+                        value: param.meta.getDefaultValue()
+                    }
+                }
+            )
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////

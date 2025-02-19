@@ -150,3 +150,33 @@ class TestControllerInput(unittest.TestCase):
         self.assertEqual(action_2.process_calls, [100, 101, 102])
         
 
+    def test_actions_deep(self):
+        pot = MockPotentiometer()
+        
+        action_1 = MockAnalogAction()
+        action_2 = MockAnalogAction()
+        action_3 = MockAnalogAction()
+        action_4 = MockAnalogAction()
+
+        appl = MockController2()
+
+        input = ContinuousController(appl, {
+            "assignment": {
+                "model": pot,
+            },
+            "actions": [
+                [ 
+                    action_1,
+                    action_2,
+                    action_3
+                ],
+                action_4
+            ]
+        })
+
+        self.assertEqual(input.actions, [
+            action_1,
+            action_2,
+            action_3,
+            action_4
+        ])

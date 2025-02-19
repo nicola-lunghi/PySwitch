@@ -141,7 +141,7 @@ class Parser {
         this.#availableMappings = JSON.parse(await Tools.fetch(basePath + "definitions/mappings.json"));
 
         // Put in meta info where exists
-        await this.#mixInMetaInformation(basePath, this.#availableMappings);
+        await this.#mixInMetaInformation(basePath, this.#availableMappings);        
 
         return this.#availableMappings;
     }
@@ -160,8 +160,7 @@ class Parser {
             for (const definition of meta.parameters) {
                 if (definition.entityName == funcName) {
                     for (const param of definition.parameters) {
-                        if (param.name == paramName) {
-                            
+                        if (param.name == paramName) {                            
                             return param;
                         }
                     }                    
@@ -182,17 +181,13 @@ class Parser {
                 def = searchParameterDefinition("default", param.name);
             }
 
-            return def;
+            return new ParameterMeta(def, param);
         }
 
         // Scan function definitions
         for (const func of functions) {
             for (const param of func.parameters) {
-                // See if we have any meta information for the parameter
-                const pmeta = getParameterMeta(func, param);
-                if (!pmeta) continue;
-
-                param.meta = pmeta;
+                param.meta = getParameterMeta(func, param);
             }
         }
     }

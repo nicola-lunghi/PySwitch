@@ -75,6 +75,48 @@ class TestControllerSwitch(unittest.TestCase):
         self.assertEqual(action_1.num_release_calls, 1)
         self.assertEqual(action_2.num_release_calls, 1)
 
+
+    def test_actions_deep(self):
+        appl = MockController2(num_leds=5)
+        switch_1 = MockSwitch()
+        
+        action_1 = MockAction()
+        action_2 = MockAction()
+        action_3 = MockAction()
+        action_4 = MockAction()
+        action_5 = MockAction()
+        action_6 = MockAction()
+
+        fs = SwitchController(appl, {
+            "assignment": {
+                "model": switch_1,
+                "pixels": (2, 4)                
+            },
+            "actions": [
+                action_1,
+                [ 
+                    action_2, 
+                    action_3 
+                ],
+                action_4
+            ],
+            "actionsHold": [
+                [ 
+                    action_5, 
+                    action_6 
+                ]
+            ]
+        })
+
+        self.assertEqual(fs.actions, [
+            action_1,
+            action_2,
+            action_3,
+            action_4,
+            action_5,
+            action_6
+        ])
+
     ####################################################################
 
     def test_actions_disabled(self):
