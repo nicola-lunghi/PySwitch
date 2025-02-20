@@ -1,0 +1,40 @@
+
+.container .button {
+    display: inline-block;
+    padding: 0.4em 0.8em;
+    margin-bottom: 0;
+    /* font-weight: 400; */
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 0.3em;
+
+    background-color: #337ab7;
+	border-color: #2e6da4;
+    color: white;
+
+    transition: background-color 0.1s, border-color 0.1s;
+}
+
+.container .button:hover {
+    background-color: #6994ba;
+    border-color: #8d9daa;
+}
+
+/****************************************************************/
+
+/* .container .button.active {
+    background-color: #e3e3e3;
+	border-color: #b3b3b3;
+    color: black
+} */

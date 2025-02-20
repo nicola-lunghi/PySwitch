@@ -1,0 +1,58 @@
+.container .tabs {
+    position: relative;
+
+    background-color: rgb(110, 110, 110);
+
+    /* box-shadow: inset -6px 0 6px rgba(0,0,0,0.2); */
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: min-content auto;
+
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+@media all and (width <= 900px) {
+    .container .tabs {
+        resize: none;
+        width: unset !important;
+
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 30;
+
+        resize: none;
+    }
+}
+
+/******************************************************************/
+
+.container .tabs .header {
+    height: 100px;
+}
+
+.container .tabs .content {
+    
+}
+
+.container .tabs .close-tabs {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+}
+
+/******************************************************************/
+
+.container .tabs .button {
+    background-color: unset;
+	border: none;
+    color: white;
+}
+
+.container .tabs .button:hover {
+    color: #d3d3d3;
+    background-color: rgba(247, 247, 247, 0.2);
+}

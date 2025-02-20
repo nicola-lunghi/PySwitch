@@ -11,6 +11,8 @@ class PySwitchUI {
     #versionElement = null;
     #virtualClientElement = null;
     #virtualClientUI = null;
+    #tabsElement = null;
+    #showTabsButton = null;
     container = null;
     
     notifications = null;
@@ -61,9 +63,25 @@ class PySwitchUI {
         const that = this;
         containerElement.append(
             this.container = $('<div class="container"/>').append(
-                // Virtual client if enabled
-                this.#virtualClientElement = $('<div class="virtual-client"/>')
-                .hide(),
+                // Tabs area
+                this.#tabsElement = $('<div class="tabs" />').append(
+                    $('<div class="header" />'),
+                    $('<div class="content" />').append(
+                        // Virtual client if enabled
+                        this.#virtualClientElement = $('<div class="virtual-client"/>')
+                        .hide(),
+                    ),
+
+                    // Show/hide tabs (only visible in mobile mode)
+                    $('<div class="button transparent-white close-tabs fas fa-times"/>')
+                    .on('click', async function() {
+                        try {
+                            that.showTabs(false);
+                        } catch (e) {
+                            that.#controller.handle(e);
+                        }
+                    }),
+                ),
 
                 // Application area
                 //this.#applicationElement = 
@@ -103,6 +121,16 @@ class PySwitchUI {
 
                     // Buttons
                     $('<div class="buttons" />').append(
+                        // Show/hide tabs
+                        this.#showTabsButton = $('<div class="button fas fa-ellipsis-v"/>')
+                        .on('click', async function() {
+                            try {
+                                that.showTabs(!that.#tabsElement.is(":visible"))
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
+                        }),
+
                         // Load
                         $('<div class="button button-primary"/>')
                         .text("Load")
@@ -157,6 +185,38 @@ class PySwitchUI {
 
         // Parser UI handler
         this.frontend = new PySwitchFrontend(this.#controller, this.#deviceElement, this.#options);
+
+        // Show or hide tabs
+        this.showTabs(!!this.#controller.getState('showTabs'));
+        
+        // Make tabs resizable (using jquery UI)
+        this.#tabsElement.resizable({ 
+            handles: "e",
+            stop: function() {
+
+                that.#controller.setState('tabsWidth', that.#tabsElement.width());
+            }
+        });
+    }
+
+    /**
+     * Show/hide tabs area
+     */
+    showTabs(show) {
+        if (show) {
+            const width = this.#controller.getState('tabsWidth');
+            if (width) {
+                this.#tabsElement.width(width);
+            }
+
+            this.#tabsElement.show();
+            this.#showTabsButton.hide();
+        } else {
+            this.#tabsElement.hide();
+            this.#showTabsButton.show();
+        }
+
+        this.#controller.setState('showTabs', !!show)
     }
 
     /**
@@ -280,21 +340,21 @@ class PySwitchUI {
     }
 
     /**
-     * Shows the passed virtual client.
+     * Shows the passed virtual client as a tab.
      */
     showVirtualClient(client) {
         if (client) {
             this.#virtualClientUI = client.getUserInterface(this.#virtualClientElement);    
             this.#virtualClientElement.show();
 
-            this.#virtualClientElement.toggleClass("resizeable", true);
+            //this.#virtualClientElement.toggleClass("resizeable", true);
         } else {
             if (this.#virtualClientUI) {
                 this.#virtualClientUI.destroy();
             }
             this.#virtualClientElement.hide();
 
-            this.#virtualClientElement.toggleClass("resizeable", false);
+            //this.#virtualClientElement.toggleClass("resizeable", false);
         }
     }
 

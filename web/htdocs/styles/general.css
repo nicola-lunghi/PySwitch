@@ -19,11 +19,11 @@
     container-name: container;
 }
 
-@media all and (width <= 700px) {
+/* @media all and (width <= 700px) {
     .container {
         flex-direction: column-reverse;
     }
-}
+} */
 
 .container * {
 	box-sizing: border-box;
