@@ -78,7 +78,7 @@ class VirtualKemperProtocol {
 
         this.state = VirtualKemperProtocol.STATE_CONNECTED;
 
-        this.#client.log("Received bidirectional " + (flag_init ? "init" : "keep-alive") + " message");
+        // this.#client.log("Received bidirectional " + (flag_init ? "init" : "keep-alive") + " message");
 
         if (flag_init) {
             // Send initial set of parameters

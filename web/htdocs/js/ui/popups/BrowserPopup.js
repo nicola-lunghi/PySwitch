@@ -2,6 +2,9 @@ class BrowserPopup extends Popup {
 
     #last = null;
     #toc = null;
+    #infoPanel = null;
+    #infoPanelContent = null;
+    #infoPanelOnClick = null;
 
     /**
      * config: {
@@ -60,6 +63,18 @@ class BrowserPopup extends Popup {
     }
 
     /**
+     * Toggle visibility of the info panel
+     */
+    showInfoPanel(content, onClick = null) {
+        this.#infoPanelContent.html(content);
+        this.#infoPanelOnClick = onClick;
+
+        this.#infoPanel.toggleClass('clickable', !!onClick);
+
+        this.#infoPanel.show();                
+    }
+
+    /**
      * Sort the listing of entries (Schwartzian transform). Returns the sorted array.
      * https://stackoverflow.com/questions/45661247/implement-async-await-in-sort-function-of-arrays-javascript
      */
@@ -112,28 +127,49 @@ class BrowserPopup extends Popup {
     async #buildContent(items, entry) {
         const that = this;
         
-        return [
-            !(entry && entry.parent) ? null :
-            $('<div class="path"/>').append(
-                // Back button
-                $('<span class="fa fa-chevron-left"/>')
+        return $('<div class="browser-content" />').append(
+            [
+                $('<div class="path"/>').append(
+                    !(entry && entry.parent) ? null :
+                    [
+                        // Back button
+                        $('<span class="fa fa-chevron-left"/>')
+                        .on('click', async function() {
+                            try {
+                                await that.browse(entry.parent);
+
+                            } catch (e) {
+                                that.controller.handle(e);
+                            }
+                        }),
+
+                        // Path display
+                        $('<span />').append(await entry.getHierarchicalPath())
+                    ]
+                ),
+
+                // Listing
+                $('<div class="table-container" />').append(
+                    $('<table/>').append(
+                        $('<tbody/>').append(items)
+                    )
+                ),
+
+                // Info panel
+                this.#infoPanel = $('<div class="info-panel" />').append(
+                    this.#infoPanelContent = $('<div />')
+                )
                 .on('click', async function() {
-                    try {
-                        await that.browse(entry.parent);
+                    await that.#onInfoPanelClick();
+                })
+                .hide()
+            ]
+        )
+    }
 
-                    } catch (e) {
-                        that.controller.handle(e);
-                    }
-                }),
-
-                // Path display
-                $('<span />').append(await entry.getHierarchicalPath())
-            ),
-
-            // Listing
-            $('<table/>').append(
-                $('<tbody/>').append(items)
-            )
-        ]
+    async #onInfoPanelClick() {
+        if (this.#infoPanelOnClick) {
+            await this.#infoPanelOnClick();
+        }
     }
 }

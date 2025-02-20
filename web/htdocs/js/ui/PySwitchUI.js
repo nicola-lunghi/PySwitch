@@ -75,12 +75,17 @@ class PySwitchUI {
                         .on('click', async function() {
                             try {
                                 new Popup(
-                                    that.#controller, { 
+                                    that.#controller, 
+                                    { 
                                         container: that.#listElement,
-                                        wide: true
+                                        fullscreen: true
                                     }
                                 )
-                                .show(await Tools.fetch('about.html'));
+                                .show(
+                                    $('<div class="about-content" />').append(
+                                        await Tools.fetch('about.html')
+                                    )
+                                );
 
                             } catch (e) {
                                 that.#controller.handle(e);
@@ -165,6 +170,7 @@ class PySwitchUI {
 
         // A browser for loading configurations, triggered by the load button
         this.loadBrowser = new BrowserPopup(this.#controller, {
+            wide: true,
             container: this.#listElement,
             headline: "Please select a configuration to load",
             providers: [

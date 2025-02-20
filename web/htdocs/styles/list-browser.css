@@ -1,14 +1,16 @@
 .container .list-browser {
     position: absolute;
 
-    top: 10vh;
-    bottom: 10vh;
-    right: 50%;
+    top: 50%;
     left: 50%;
-    max-width: 800px;
+    
     width: 90vw;
+    max-width: 500px;
 
-    transform: translate(-50%, 0);
+    height: 90vh;
+    max-height: 400px;
+    
+    transform: translate(-50%, -50%);
 
     z-index: 100;
 
@@ -20,16 +22,161 @@
 }
 
 .container .list-browser.wide {
-    top: 5vh;
-    bottom: 5vh;
-    max-width: unset;
+    max-width: 1400px;
+    max-height: 1200px;
 }
+
+.container .list-browser.fullscreen {
+    top: 3vh;
+    bottom: 3vh;
+    left: 3vh;
+    right: 3vh;
+    max-width: unset;
+    width: unset;
+    max-height: unset;
+    height: unset;
+    transform: unset;
+
+}
+
+/**************************************************************/
 
 .container .list-browser .content {
     overflow-x: hidden;
-    overflow-y: auto;
+    /*overflow-y: auto; */
     width: 100%;
     height: 100%;
+
+    display: grid;
+
+    grid-template-columns: auto;
+    grid-template-rows: min-content auto;
+
+    container-type: size;
+    container-name: popup-content;
+}
+
+/**************************************************************/
+
+.container .list-browser .headline {
+    margin-bottom: 0.7em;
+    font-weight: bold;
+}
+
+.container .list-browser .path {
+    margin-bottom: 0.7em;
+    color: gray;
+}
+
+/**************************************************************/
+
+.container .list-browser .browser-content {
+    display: grid;
+
+    grid-template-columns: min-content auto;
+    grid-template-rows: min-content auto;
+    justify-items: stretch;
+
+    min-height: 100%;
+}
+
+@container popup-content (max-width: 650px) {
+    .container .list-browser .browser-content {
+        grid-template-columns: auto;
+        grid-template-rows: min-content min-content auto;
+    }
+}
+
+/**************************************************************/
+
+.container .list-browser .browser-content .path {
+    grid-column: 1 / 3;
+    grid-row: 1;
+}
+
+.container .list-browser .browser-content .table-container {
+    grid-column: 1;
+    grid-row: 2;
+    /* height: min-content; */
+    /* width: min-content; */
+    overflow-y: auto;    
+}
+
+.container .list-browser .browser-content table {
+    margin-bottom: 0.7em;
+}
+
+.container .list-browser .browser-content .info-panel {
+    grid-column: 2;
+    grid-row: 2;
+
+    border: 1px solid gray;
+    border-radius: 1em;
+    padding: 1em;
+
+    overflow: auto;
+
+    background-color: rgba(0,0,0,0.01);
+}
+
+.container .list-browser .browser-content .info-panel.clickable {
+    cursor: pointer;
+}
+
+.container .list-browser .browser-content .info-panel > * {
+    overflow: auto;
+    width: 100%;
+    height: 100%;
+}
+
+.container .list-browser .browser-content .info-panel > * > *:first-child {
+    margin-block-start: 0;
+}
+
+.container .list-browser .browser-content .info-panel table {
+    border-spacing: unset;
+    border-collapse: collapse;
+}
+
+.container .list-browser .browser-content .info-panel tr {
+    border-top: 1px solid #d8dee4;
+}
+
+.container .list-browser .browser-content .info-panel tr:nth-child(2n) {
+    background-color: #e8e8e8;
+}
+
+.container .list-browser .browser-content .info-panel th,
+.container .list-browser .browser-content .info-panel td {
+    padding: 6px 13px;
+    border: 1px solid #d0d7de;
+}
+
+@container popup-content (max-width: 650px) {
+    .container .list-browser .browser-content .path {
+        grid-column: 1;
+        grid-row: 1;
+    }
+    
+    .container .list-browser .browser-content .table-container {
+        grid-column: 1;
+        grid-row: 2;
+        overflow-y: unset;
+    }
+    
+    .container .list-browser .browser-content .info-panel {
+        grid-column: 1;
+        grid-row: 3;
+        background-color: yellow;
+        min-height: 100cqh;
+    }    
+}
+
+/**************************************************************/
+
+.container .list-browser table {
+    border-spacing: 0.7em 0.1em;
+    border-collapse: separate;
 }
 
 .container .list-browser .listing-link {
@@ -42,27 +189,12 @@
     text-decoration: underline;
 }
 
-.container .list-browser table {
-    border-spacing: 0.7em 0.1em;
-    border-collapse: separate;
-}
-
 .container .list-browser td {
     white-space: pre;    
 }
 
 .container .list-browser tr.highlighted .listing-link {
     color: rgb(150, 150, 150);
-}
-
-.container .list-browser .headline {
-    margin-bottom: 0.7em;
-    font-weight: bold;
-}
-
-.container .list-browser .path {
-    margin-bottom: 0.7em;
-    color: gray;
 }
 
 .container .list-browser .path > *:first-child{

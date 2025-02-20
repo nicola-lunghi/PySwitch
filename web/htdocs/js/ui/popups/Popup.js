@@ -40,6 +40,7 @@ class Popup {
         this.element.empty();
 
         this.element.toggleClass("wide", !!this.config.wide);
+        this.element.toggleClass("fullscreen", !!this.config.fullscreen);
 
         this.element.append(
             $('<div class="content" />').append(
@@ -49,10 +50,8 @@ class Popup {
                 .text(headline),
 
                 // Content
-                $('<div class="user-content" />').append(
-                    content
-                ),
-
+                content,
+                
                 // Close button
                 $('<span class="fa fa-times close-button"/>')
                 .on('click', async function() {
