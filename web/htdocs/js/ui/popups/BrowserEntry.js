@@ -74,7 +74,7 @@ class BrowserEntry {
                         await that.#browser.browse(that);
 
                     } catch (e) {
-                        that.#browser.controller.handle(e);
+                        console.error(e);
                     }
                 })
             ]
@@ -118,7 +118,7 @@ class BrowserEntry {
                                 await that.#browser.browse(that);
 
                             } catch (e) {
-                                that.#browser.controller.handle(e);
+                                console.error(e);
                             }
                         })
                     )

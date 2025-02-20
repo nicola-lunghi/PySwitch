@@ -32,23 +32,58 @@
 /******************************************************************/
 
 .container .tabs .header {
-    height: 100px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start; /* left */
+    align-items: stretch;
+    /* overflow-y: auto; */
 }
 
 .container .tabs .content {
-    
-}
-
-.container .tabs .close-tabs {
-    position: absolute;
-    top: 1em;
-    right: 1em;
+    background-color: #afafaf;
 }
 
 /******************************************************************/
 
-.container .tabs .button {
+.container .tabs .header .header-item {
+    background-color: #787878;
+    color: rgb(199, 199, 199);
+    padding: 0.5em 1em 0.5em 1em;
+    cursor: pointer;
+    margin-top: 0.5em;
+    margin-left: 0.5em;
+    border-radius: 0.5em 0.5em 0 0;
+    transition: background-color 0.2s, color 0.2s;
+    white-space: pre;
+}
+
+.container .tabs .header .header-item:hover {
+    background-color: #878787;
+}
+
+.container .tabs .header .header-item.active {
+    background-color: #afafaf;
+    color: black;
+}
+
+.container .tabs .header .close-tabs {
+    order: 100000;
+    margin-left: auto;
+    margin-right: 0;
+    margin-top: 0.2em;   
+    align-self: center; 
     background-color: unset;
+}
+
+.container .tabs .header .close-tabs:hover {
+    background-color: unset;
+    color: white;
+}
+
+/******************************************************************/
+
+/* .container .tabs .button {
+    background-color: rgb(110, 110, 110);
 	border: none;
     color: white;
 }
@@ -56,4 +91,4 @@
 .container .tabs .button:hover {
     color: #d3d3d3;
     background-color: rgba(247, 247, 247, 0.2);
-}
+} */

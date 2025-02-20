@@ -9,7 +9,7 @@ class PySwitchUI {
     #contentHeadline = null;
     #deviceElement = null;
     #versionElement = null;
-    #virtualClientElement = null;
+    #virtualClientTab = null;
     #virtualClientUI = null;
     container = null;
     
@@ -65,25 +65,7 @@ class PySwitchUI {
         containerElement.append(
             this.container = $('<div class="container"/>').append(
                 // Tabs area
-                tabsElement = $('<div class="tabs" />').append(
-                    $('<div class="header" />'),
-                    $('<div class="content" />').append(
-                        // Virtual client if enabled
-                        this.#virtualClientElement = $('<div class="virtual-client"/>')
-                        .hide(),
-                    ),
-
-                    // Show/hide tabs (only visible in mobile mode)
-                    $('<div class="button transparent-white close-tabs fas fa-times"/>')
-                    .on('click', async function() {
-                        try {
-                            that.tabs.hide();
-                        
-                        } catch (e) {
-                            that.#controller.handle(e);
-                        }
-                    }),
-                ),
+                tabsElement = $('<div class="tabs" />'),
 
                 // Application area
                 //this.#applicationElement = 
@@ -316,18 +298,37 @@ class PySwitchUI {
      * Shows the passed virtual client as a tab.
      */
     showVirtualClient(client) {
+        if (this.#virtualClientTab) {
+            this.tabs.remove(this.#virtualClientTab);
+            this.#virtualClientTab = null;
+        }
+
+        if (this.#virtualClientUI) {
+            this.#virtualClientUI.destroy();
+            this.#virtualClientUI = null;
+        }
+        
         if (client) {
-            this.#virtualClientUI = client.getUserInterface(this.#virtualClientElement);    
-            this.#virtualClientElement.show();
+            let virtualClientElement = null;
 
-            //this.#virtualClientElement.toggleClass("resizeable", true);
-        } else {
-            if (this.#virtualClientUI) {
-                this.#virtualClientUI.destroy();
-            }
-            this.#virtualClientElement.hide();
+            // Add tabs
+            this.tabs.add(
+                this.#virtualClientTab = new Tab(
+                    // Virtual client if enabled
+                    virtualClientElement = $('<div class="virtual-client"/>'),
+                    "Virtual Kemper"
+                )
+            );
 
-            //this.#virtualClientElement.toggleClass("resizeable", false);
+            // TODO foo
+            this.tabs.add(
+                new Tab(
+                    $('<div style="background-color: red" />'),
+                    "Foo Tab"
+                )
+            );
+
+            this.#virtualClientUI = client.getUserInterface(virtualClientElement);    
         }
     }
 

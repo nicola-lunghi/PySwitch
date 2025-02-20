@@ -142,7 +142,7 @@ class ClientController {
             // Show user interface, if any
             this.#controller.ui.showVirtualClient(virtualClient);
 
-            this.#controller.ui.message("Connected to " + virtualClient.name, "S");
+            this.#controller.ui.message("Connecting to " + virtualClient.name, "I");
             return;
         } else {
             this.#controller.ui.showVirtualClient(null);
@@ -161,7 +161,7 @@ class ClientController {
         );
 
         // Report states etc.
-        this.#controller.ui.message("Connected to client at " + port.name, "S");
+        this.#controller.ui.message("Connecting to client at " + port.name, "I");
 
         this.current = portName;
     }

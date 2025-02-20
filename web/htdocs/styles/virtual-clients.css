@@ -8,12 +8,12 @@
     padding: 1em;
 }
 
-.container .virtual-client::before {
+/* .container .virtual-client::before {
     content: "Virtual Profiler Player";
     display: block;
     font-weight: bold;
     margin-bottom: 1em;
-}
+} */
 
 .container .virtual-client .box {
     display: inline-grid;
