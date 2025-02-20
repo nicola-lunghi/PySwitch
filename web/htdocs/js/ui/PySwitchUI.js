@@ -323,7 +323,7 @@ class PySwitchUI {
             // TODO foo
             this.tabs.add(
                 new Tab(
-                    $('<div style="background-color: red" />'),
+                    $('<div style="background-color: red; width: 100%; height: 100%" />'),
                     "Foo Tab"
                 )
             );
