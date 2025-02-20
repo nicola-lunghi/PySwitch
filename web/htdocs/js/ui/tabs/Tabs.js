@@ -62,6 +62,8 @@ class Tabs {
     add(tab) {        
         if (!tab) return;
         
+        tab.init(this);
+        
         this.#content.append(tab.container);
 
         this.#header.append(
@@ -132,10 +134,6 @@ class Tabs {
      * Sets a specific tab active
      */
     setActive(tab) {
-        if (this.active) {
-            this.active.deactivate();
-        }
-
         this.active = tab;
         this.#updateActive();
     }
@@ -148,7 +146,7 @@ class Tabs {
             if (tab == this.active) {
                 tab.activate();
             } else {
-                tab.activate();
+                tab.deactivate();
             }
         }
     }

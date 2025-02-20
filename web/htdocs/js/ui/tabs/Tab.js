@@ -4,15 +4,24 @@ class Tab {
     container = null;
     header = null;
 
+    #tabs = null;
+
     constructor(container, name) {
         this.container = container;
         this.name = name;
     }
 
     /**
+     * Must be called before usage
+     */
+    init(tabs) {
+        this.#tabs = tabs;
+    }
+
+    /**
      * Generates the header element
      */
-    getHeader(name) {
+    getHeader() {
         if (this.header) return this.header;
 
         const that = this;
@@ -32,16 +41,18 @@ class Tab {
     }
 
     select() {
-        // TODO
+        this.#tabs.setActive(this);
     }
 
     deactivate() {
         if (!this.header) return;
         this.header.removeClass("active");
+        this.container.hide();
     }
 
     activate() {
         if (!this.header) return;
         this.header.addClass("active");
+        this.container.show();
     }
 }
