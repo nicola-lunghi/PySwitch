@@ -160,7 +160,12 @@ class BrowserPopup extends Popup {
                     this.#infoPanelContent = $('<div />')
                 )
                 .on('click', async function() {
-                    await that.#onInfoPanelClick();
+                    try {
+                        await that.#onInfoPanelClick();
+                        
+                    } catch (e) {
+                        console.error(e);
+                    }
                 })
                 .hide()
             ]

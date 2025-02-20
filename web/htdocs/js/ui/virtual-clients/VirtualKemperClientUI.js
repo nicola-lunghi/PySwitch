@@ -53,7 +53,12 @@ class VirtualKemperClientUI {
                     inputState
                     .prop('checked', paramState.value != 0)
                     .on('change', function() {
-                        paramState.setValue(this.checked ? 1 : 0)
+                        try {
+                            paramState.setValue(this.checked ? 1 : 0)
+
+                        } catch (e) {
+                            console.error(e);
+                        }                        
                     }),
 
                     // Type
@@ -63,7 +68,12 @@ class VirtualKemperClientUI {
                     inputType
                     .val(paramType.value)
                     .on('change', function() {
-                        paramType.setValue(parseInt($(this).val()));
+                        try {
+                            paramType.setValue(parseInt($(this).val()));
+
+                        } catch (e) {
+                            console.error(e);
+                        } 
                     })
                 ]
             )
@@ -103,8 +113,12 @@ class VirtualKemperClientUI {
                 rigIdInput = $('<input type="text" autocomplete="off">')
                 .val(that.#client.getRigId())
                 .on('change', function() {
-                    const rigId = parseInt($(this).val());
-                    that.#client.setRigId(rigId);
+                    try {
+                        const rigId = parseInt($(this).val());
+                        that.#client.setRigId(rigId);
+                    } catch (e) {
+                        console.error(e);
+                    } 
                 }),
 
                 // Tempo (BPM)
@@ -114,8 +128,12 @@ class VirtualKemperClientUI {
                 tempoInput = $('<input type="text" autocomplete="off">')
                 .val(that.#client.tempo.bpm())
                 .on('change', function() {
-                    const tempo = parseInt($(this).val());
-                    that.#client.tempo.set(tempo ? tempo : null);
+                    try {
+                        const tempo = parseInt($(this).val());
+                        that.#client.tempo.set(tempo ? tempo : null);
+                    } catch (e) {
+                        console.error(e);
+                    } 
                 }),
 
                 // Morph state
@@ -125,8 +143,12 @@ class VirtualKemperClientUI {
                 morphInput = $('<input type="range" min="0" max="16383">')
                 .val(that.#client.parameters.get(new NRPNKey([0, 11])).value)
                 .on('input', function() {
-                    const value = parseInt($(this).val());
-                    that.#client.parameters.get(new NRPNKey([0, 11])).setValue(value);
+                    try {
+                        const value = parseInt($(this).val());
+                        that.#client.parameters.get(new NRPNKey([0, 11])).setValue(value);
+                    } catch (e) {
+                        console.error(e);
+                    } 
                 }),
 
                 // Rig Btn Morph
@@ -136,7 +158,11 @@ class VirtualKemperClientUI {
                 rigBtnMorhInput = $('<input type="checkbox" autocomplete="off">')
                 .prop("checked", that.#client.morph.rigBtnMorh)
                 .on('change', function() {
-                    that.#client.morph.rigBtnMorph = this.checked;
+                    try {
+                        that.#client.morph.rigBtnMorph = this.checked;
+                    } catch (e) {
+                        console.error(e);
+                    } 
                 })
             ]
         );
@@ -208,7 +234,11 @@ class VirtualKemperClientUI {
                 enableInput = $('<input type="checkbox" autocomplete="off">')
                 .prop('checked', that.#client.parameters.get(new NRPNKey([127, 126])).value == 1)
                 .on('change', function() {
-                    that.#client.parameters.get(new NRPNKey([127, 126])).setValue(this.checked ? 1 : 3)
+                    try {
+                        that.#client.parameters.get(new NRPNKey([127, 126])).setValue(this.checked ? 1 : 3)
+                    } catch (e) {
+                        console.error(e);
+                    } 
                 }),
 
                 // Note
@@ -218,9 +248,13 @@ class VirtualKemperClientUI {
                 noteInput = $('<input type="text" autocomplete="off">')
                 .val(notes[0][this.#client.parameters.get(new NRPNKey([127, 126])).value % 12])
                 .on('change', function() {
-                    const value = $(this).val();
-                    const noteCode = detectNote(value);
-                    that.#client.parameters.get(new NRPNKey([125, 84])).setValue(noteCode);
+                    try {
+                        const value = $(this).val();
+                        const noteCode = detectNote(value);
+                        that.#client.parameters.get(new NRPNKey([125, 84])).setValue(noteCode);
+                    } catch (e) {
+                        console.error(e);
+                    } 
                 }),
 
                 // Deviance
@@ -230,8 +264,12 @@ class VirtualKemperClientUI {
                 devianceInput = $('<input type="range" min="0" max="16383">')
                 .val(that.#client.parameters.get(new NRPNKey([124, 15])).value)
                 .on('input', function() {
-                    const value = parseInt($(this).val());
-                    that.#client.parameters.get(new NRPNKey([124, 15])).setValue(value);
+                    try {
+                        const value = parseInt($(this).val());
+                        that.#client.parameters.get(new NRPNKey([124, 15])).setValue(value);
+                    } catch (e) {
+                        console.error(e);
+                    } 
                 })
             ]
         );

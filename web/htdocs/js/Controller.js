@@ -107,20 +107,20 @@ class Controller {
     async loadConfiguration(config) {
         this.currentConfig = null;
 
+        // Initialize PySwitch (this starts Pyodide and copies all necessary sources to the Emscripten virtual file system)
         this.ui.progress(0.1, "Initialize emulator");
 
-        // Initialize PySwitch (this starts Pyodide and copies all necessary sources to the Emscripten virtual file system)
         await this.pyswitch.init();
 
-        this.ui.progress(0.3, "Load configuration");
-
         // Get PySwitch version
+        this.ui.progress(0.4, "Initialize emulator");
+
         this.VERSION = this.VERSION.replace('?', await this.pyswitch.getVersion());
         this.ui.updateVersion()
 
-        this.ui.progress(0.6, "Initialize client device");
-        
         // Initialize client (scan for devices)
+        this.ui.progress(0.5, "Initialize client device");
+        
         await this.client.init(config);
 
         const that = this;
@@ -134,19 +134,25 @@ class Controller {
             }
         });
 
-        this.ui.progress(0.7, "Setup UI");
+        // Stop the engine
+        this.ui.progress(0.6, "Stop engine");
+
+        await this.pyswitch.stop();
 
         // Generate parser UI, show name of config, CSS classes etc.
+        this.ui.progress(0.7, "Setup UI");
+
         await this.ui.applyConfig(config);
 
+        // Run local PySwitch with the config
         this.ui.progress(0.8, "Run PySwitch");
 
-        // Run local PySwitch with the config
         await this.pyswitch.run(await config.get());
-        this.ui.message("Loaded configuration: " + (await config.name()), "S");
 
         this.ui.progress(1);
         this.currentConfig = config;
+
+        this.ui.message("Loaded configuration: " + (await config.name()), "S");
     }
 
     /**
@@ -157,6 +163,9 @@ class Controller {
             console.warn("No config to restart");
             return;
         }
+
+        // Stop the engine
+        await this.pyswitch.stop();
 
         // Recreate UI
         await this.ui.applyConfig(this.currentConfig);

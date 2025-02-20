@@ -1,6 +1,6 @@
 class Popup {
 
-    element = null;    // Content element
+    element = null;        // Content element
     #container = null;  
     config = null;
 
@@ -29,7 +29,6 @@ class Popup {
         this.element = null;
 
         $(window).off('.' + this.#id);
-        // this.element.off('click.' + this.#id);
     }
 
     /**

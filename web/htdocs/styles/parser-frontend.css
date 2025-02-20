@@ -34,7 +34,19 @@
 
 .application .pyswitch-parser-frontend .action-grid .action-item-content {
     position: relative;
-    margin: 0.3em;    
+    margin: 0.3em;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto;
+    /* grid-gap: 0.2em; */
+}
+
+.application .pyswitch-parser-frontend .action-grid .action-item-content > *:first-child {
+    border-radius: 0.3em 0 0 0.3em;
+}
+
+.application .pyswitch-parser-frontend .action-grid .action-item-content > *:last-child {
+    border-radius: 0 0.3em 0.3em 0;
 }
 
 /****************************************************************/
@@ -68,6 +80,10 @@
 
 /****************************************************************/
 
-.application .pyswitch-parser-frontend .button.fixed {
+.application .pyswitch-parser-frontend .button.add-action {
     background-color: unset;
 }
+
+/* .application .pyswitch-parser-frontend .button.remove-action {
+    background-color: unset;
+} */

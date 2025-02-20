@@ -21,12 +21,16 @@ class PySwitchRunner:
         self.coverage = coverage
 
         self.running = False
+        self.triggerStop = False
+
         self.protocol = None
         self.frontend = None        
 
     # Set up a PySwitch controller and let it run
     def run(self):
         self.running = True
+        self.triggerStop = False
+
         self.init()
 
     def init(self):
@@ -119,10 +123,12 @@ class PySwitchRunner:
                 
         # Local callback for set_timeout
         def tick():            
-            if self.running:
+            if not self.triggerStop:
                 set_timeout(tick, self.update_interval_ms)
-            
-            self.tick()
+
+                self.tick()
+            else:
+                self.running = False
 
         if self.running:
             tick()
@@ -142,7 +148,7 @@ class PySwitchRunner:
 
     # Stop execution of the set_timeout handler by just not renewing it
     def stop(self):        
-        self.running = False
+        self.triggerStop = True
 
 
     

@@ -247,16 +247,38 @@ class PySwitchRunner {
     }
 
     /**
+     * Stop if already running
+     */
+    async stop() {
+        if (this.#runner) {
+            this.#runner.stop()
+
+            while(true) {
+                if (!this.#runner.running) break;
+                await new Promise(r => setTimeout(r, this.#options.updateIntervalMillis / 4));
+            }   
+             
+            this.#runner = null;
+        }        
+    }
+
+    /**
+     * Is the PySwitch engine running?
+     */
+    isRunning() {
+        if (!this.#runner) return false;
+        console.log(this.#runner.running)
+        return this.#runner.running;
+    }
+
+    /**
      * Run PySwitch, terminating an existing runner before.
      * The passed inputs and display must be python code for the inputs.py and display.py files.
      */
     async run(config, dontTick = false) {
         console.log("Run PySwitch");
         
-        // Stop if already running
-        if (this.#runner) {
-            this.#runner.stop()
-        }        
+        await this.stop();
 
         // Copy the configuration to the virtual FS
         this.pyodide.FS.writeFile("/home/pyodide/inputs.py", config.inputs_py);

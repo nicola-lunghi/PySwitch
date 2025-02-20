@@ -1,7 +1,6 @@
 class ParserFrontendInput {
 
     #grid = null;
-
     #controller = null;
     #parserFrontend = null;
     #model = null;
@@ -15,6 +14,9 @@ class ParserFrontendInput {
         this.#inputElement = inputElement;
     }
 
+    /**
+     * Destroy the input
+     */
     async destroy() {
         if (this.#grid) await this.#grid.destroy();
     }
@@ -23,6 +25,14 @@ class ParserFrontendInput {
      * Adds the parser frontend for one input
      */
     async init() {
+        await this.#initDom();
+        await this.#initGrid();
+    }
+
+    /**
+     * Init the UI
+     */
+    async #initDom() {
         // Parser UI
         const input = await this.#parserFrontend.parser.input(this.#model.port);
         if (!input) return;
@@ -31,6 +41,8 @@ class ParserFrontendInput {
         const actionsHold = await input.actions(true);
         const availableActions = await this.#parserFrontend.parser.getAvailableActions(this.#parserFrontend.basePath);
         
+        const that = this;
+
         function getActionDefinition(name) {
             for (const action of availableActions) {
                 if (action.name == name) {
@@ -51,40 +63,72 @@ class ParserFrontendInput {
             });            
         }
 
+        function getActionElements(a, buttonClass, hold, tooltip) {
+            return a.map((item) =>
+                $('<div class="action-item" />').append(
+                    $('<div class="action-item-content" />')
+                    .append(
+                        $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
+                        .text(getItemText(item)),
+
+                        $('<span class="button ' + buttonClass + ' remove-action fas fa-times" data-toggle="tooltip" title="Remove action" />')
+                        .on('click', async function() {
+                            try {                                        
+                                await that.removeAction(input, $(this).parent().parent());
+
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
+                        })
+                    )                    
+                )
+                .data('handler', item)
+                .data('hold', hold)
+            )
+        }
+
         this.#inputElement.append(
             $('<div class="pyswitch-parser-frontend" />').append(                
                 this.#gridElement = $('<div class="action-grid" />').append(
                     // Actions
-                    actions.map((item) =>
-                        $('<div class="action-item" />').append(
-                            $('<div class="action-item-content button actions" data-toggle="tooltip" title="Action on normal press" />')
-                            .text(getItemText(item))
-                        )
-                        .data('handler', item)
-                        .data('hold', false)
+                    getActionElements(
+                        actions,
+                        "actions",
+                        false,
+                        "Action on normal press"
                     ),
 
                     // Hold actions
-                    actionsHold.map((item) =>
-                        $('<div class="action-item" />').append(
-                            $('<div class="action-item-content button actions-hold" data-toggle="tooltip" title="Action on long press" />')
-                            .text(getItemText(item))
-                        )
-                        .data('handler', item)
-                        .data('hold', true)
+                    getActionElements(
+                        actionsHold,
+                        "actions-hold",
+                        true,
+                        "Action on long press"
                     ),
 
-                    // Add action
+                    // Add action button
                     $('<div class="action-item" />').append(
                         $('<div class="action-item-content button actions add-action fixed fas fa-plus" data-toggle="tooltip" title="Add an action" />')                        
                         .on('click', async function() {
-                            await that.addAction(input);
+                            try {
+                                await that.addAction(input);
+
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
                         })
                     )
                 )
             )
         )
+    }
 
+    /**
+     * Init the grid (Muuri)
+     */
+    async #initGrid() {
+        if (!this.#gridElement) return;
+        
         // Init grid
         const that = this;
         this.#grid = new Muuri(this.#gridElement[0], {
@@ -96,7 +140,7 @@ class ParserFrontendInput {
             // dragContainer: document.body,
 
             dragSort: function () {
-                return that.#parserFrontend.inputs.map((item) => item.#grid);
+                return that.#parserFrontend.inputs.filter((item) => !!item.#grid).map((item) => item.#grid);
             },
             
             dragStartPredicate: function (item, e) {
@@ -172,15 +216,11 @@ class ParserFrontendInput {
         // Grid events: On drag end we just schedule this grid for updating the config
         this.#grid.on('dragEnd', async function(item, event) {            
             that.#parserFrontend.scheduleForUpdate(that);
-
-            // that.#grid.synchronize();
         });
 
         // On release end (which is after dragEnd), we also schedule the input and trigger the update.
         this.#grid.on('dragReleaseEnd', async function(item, event) {
             that.#parserFrontend.scheduleForUpdate(that);
-
-            // that.#grid.synchronize();            
             
             // No await!
             that.#parserFrontend.updateConfig();
@@ -188,7 +228,7 @@ class ParserFrontendInput {
     }
 
     /**
-     * Updates the parser data model from the current state
+     * Updates the parser data model from the current DOM state
      */
     async updateInput() {
         const input = await this.#parserFrontend.parser.input(this.#model.port);
@@ -241,6 +281,37 @@ class ParserFrontendInput {
         });
 
         await browser.browse();
+    }
+
+    /**
+     * Removes an action from the passed input (proxy)
+     */
+    async removeAction(input, itemElement) {
+        const inputName = input.display_name();
+        
+        if (!confirm("Do you want to delete the action from " + inputName + "?")) {
+            this.#controller.ui.message("Action canceled", "I")
+            return;
+        }
+
+        const muuriItem = this.#grid.getItem(itemElement[0]);
+        if (!muuriItem) throw new Error("Item not found")
+
+        this.#grid.remove(
+            [muuriItem], 
+            { 
+                removeElements: true 
+            }
+        );
+        
+        const that = this;
+        setTimeout(
+            async function() {
+                await that.updateInput();
+                await that.#parserFrontend.updateConfig();    
+            }, 
+            100
+        );
     }
 
     /**
