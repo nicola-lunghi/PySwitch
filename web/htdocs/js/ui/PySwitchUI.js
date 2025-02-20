@@ -11,8 +11,6 @@ class PySwitchUI {
     #versionElement = null;
     #virtualClientElement = null;
     #virtualClientUI = null;
-    #tabsElement = null;
-    #showTabsButton = null;
     container = null;
     
     notifications = null;
@@ -20,6 +18,7 @@ class PySwitchUI {
     clientBrowser = null;
     clientButton = null;
     frontend = null;
+    tabs = null;
 
     /**
      * Options:
@@ -58,13 +57,15 @@ class PySwitchUI {
 
         let messageElement = null;
         let clientButtonElement = null;
+        let tabsElement = null;
+        let showTabsButton = null;
         
         // Settings panel
         const that = this;
         containerElement.append(
             this.container = $('<div class="container"/>').append(
                 // Tabs area
-                this.#tabsElement = $('<div class="tabs" />').append(
+                tabsElement = $('<div class="tabs" />').append(
                     $('<div class="header" />'),
                     $('<div class="content" />').append(
                         // Virtual client if enabled
@@ -76,7 +77,8 @@ class PySwitchUI {
                     $('<div class="button transparent-white close-tabs fas fa-times"/>')
                     .on('click', async function() {
                         try {
-                            that.showTabs(false);
+                            that.tabs.hide();
+                        
                         } catch (e) {
                             that.#controller.handle(e);
                         }
@@ -122,10 +124,10 @@ class PySwitchUI {
                     // Buttons
                     $('<div class="buttons" />').append(
                         // Show/hide tabs
-                        this.#showTabsButton = $('<div class="button fas fa-ellipsis-v"/>')
+                        showTabsButton = $('<div class="button fas fa-ellipsis-v"/>')
                         .on('click', async function() {
                             try {
-                                that.showTabs(!that.#tabsElement.is(":visible"))
+                                that.tabs.toggle();
                             } catch (e) {
                                 that.#controller.handle(e);
                             }
@@ -187,36 +189,7 @@ class PySwitchUI {
         this.frontend = new PySwitchFrontend(this.#controller, this.#deviceElement, this.#options);
 
         // Show or hide tabs
-        this.showTabs(!!this.#controller.getState('showTabs'));
-        
-        // Make tabs resizable (using jquery UI)
-        this.#tabsElement.resizable({ 
-            handles: "e",
-            stop: function() {
-
-                that.#controller.setState('tabsWidth', that.#tabsElement.width());
-            }
-        });
-    }
-
-    /**
-     * Show/hide tabs area
-     */
-    showTabs(show) {
-        if (show) {
-            const width = this.#controller.getState('tabsWidth');
-            if (width) {
-                this.#tabsElement.width(width);
-            }
-
-            this.#tabsElement.show();
-            this.#showTabsButton.hide();
-        } else {
-            this.#tabsElement.hide();
-            this.#showTabsButton.show();
-        }
-
-        this.#controller.setState('showTabs', !!show)
+        this.tabs = new Tabs(this.#controller, tabsElement, showTabsButton);
     }
 
     /**

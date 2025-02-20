@@ -1,5 +1,6 @@
 .container .tabs {
     position: relative;
+    width: 35cqw;  /* initial width, before resizing */
 
     background-color: rgb(110, 110, 110);
 
