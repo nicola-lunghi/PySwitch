@@ -2,9 +2,11 @@ class TemplatesProvider extends BrowserProvider {
     
     #toc = null;
     #path = null;
+    #controller = null;
 
-    constructor(path) {
+    constructor(controller, path) {
         super();
+        this.#controller = controller;
         this.#path = path;
     }
 
@@ -17,11 +19,13 @@ class TemplatesProvider extends BrowserProvider {
         // Load TOC data
         const toc = JSON.parse(await Tools.fetch(this.#path));
         
+        const that = this;
+
         /**
          * Select the entry
          */
         function onSelect(entry) {
-            browser.controller.routing.call(encodeURI("template" + entry.config.callPath));
+            that.#controller.routing.call(encodeURI("template" + entry.config.callPath));
         }
         
         // Build hierarchy        

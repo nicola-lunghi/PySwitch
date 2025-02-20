@@ -2,12 +2,14 @@ class ParserFrontendInput {
 
     #grid = null;
 
+    #controller = null;
     #parserFrontend = null;
     #model = null;
     #inputElement = null;
     #gridElement = null;
 
-    constructor(parserFrontend, model, inputElement) {
+    constructor(controller, parserFrontend, model, inputElement) {
+        this.#controller = controller;
         this.#parserFrontend = parserFrontend;
         this.#model = model;
         this.#inputElement = inputElement;
@@ -50,8 +52,9 @@ class ParserFrontendInput {
         }
 
         this.#inputElement.append(
-            $('<div class="pyswitch-parser-frontend" />').append(
+            $('<div class="pyswitch-parser-frontend" />').append(                
                 this.#gridElement = $('<div class="action-grid" />').append(
+                    // Actions
                     actions.map((item) =>
                         $('<div class="action-item" />').append(
                             $('<div class="action-item-content button actions" data-toggle="tooltip" title="Action on normal press" />')
@@ -60,6 +63,8 @@ class ParserFrontendInput {
                         .data('handler', item)
                         .data('hold', false)
                     ),
+
+                    // Hold actions
                     actionsHold.map((item) =>
                         $('<div class="action-item" />').append(
                             $('<div class="action-item-content button actions-hold" data-toggle="tooltip" title="Action on long press" />')
@@ -67,6 +72,14 @@ class ParserFrontendInput {
                         )
                         .data('handler', item)
                         .data('hold', true)
+                    ),
+
+                    // Add action
+                    $('<div class="action-item" />').append(
+                        $('<div class="action-item-content button actions add-action fixed fas fa-plus" data-toggle="tooltip" title="Add an action" />')                        
+                        .on('click', async function() {
+                            await that.addAction(input);
+                        })
                     )
                 )
             )
@@ -86,9 +99,30 @@ class ParserFrontendInput {
                 return that.#parserFrontend.inputs.map((item) => item.#grid);
             },
             
-            dragStartPredicate: {
-                distance: 20,
-                delay: 50
+            dragStartPredicate: function (item, e) {
+                // Fix some items
+                if ($(item.getElement()).find('.fixed').length > 0) return false;
+
+                if (e.deltaTime > 50 && e.distance > 20) {
+                    return Muuri.ItemDrag.defaultStartPredicate(item, e);
+                }
+            },
+
+            dragSortPredicate: function (item) {
+                const result = Muuri.ItemDrag.defaultSortPredicate(item, {
+                    action: 'swap',
+                    threshold: 50
+                });
+
+                if (result) {
+                    // Get target item
+                    const target = $(item.getElement()).parent().children().eq(result.index);
+                    if (target.find('.fixed').length > 0) {
+                        return false;
+                    }
+                }
+
+                return result;
             },
 
             /**
@@ -116,7 +150,11 @@ class ParserFrontendInput {
                     if (itemWidth > w) w = itemWidth;
                     
                     h = item.getHeight() + m.top + m.bottom;
-                    
+                 
+                    // if ($(item.getElement()).find('.fixed').length > 0) {
+                    //     // TODO align fixed items to the right
+                    // }
+
                     layout.slots.push(0, y);
                 }
 
@@ -175,6 +213,34 @@ class ParserFrontendInput {
         // Set the inputs accordingly (no update)
         await input.set_actions(newActions, false, true);
         await input.set_actions(newActionsHold, true, true);
+    }
+
+    /**
+     * Adds an action to the passed input (proxy)
+     */
+    async addAction(input) {
+        const that = this;
+
+        const inputName = input.display_name();
+
+        // A browser to select client connections (to Kemper etc.), triggered by the client select button
+        const browser = this.#controller.ui.getBrowserPopup({
+            headline: "Please select an action to add to " + inputName,
+            wide: true,
+            providers: [
+                
+            ],
+            // postProcess: function(entry, generatedElement) {
+            //     // Highlight currently selected client
+            //     const client = that.#controller.getState("client");
+
+            //     if (client == entry.value) {
+            //         generatedElement.addClass('highlighted');
+            //     }
+            // }
+        });
+
+        await browser.browse();
     }
 
     /**

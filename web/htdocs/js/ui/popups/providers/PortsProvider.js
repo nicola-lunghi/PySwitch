@@ -2,6 +2,7 @@ class PortsProvider extends BrowserProvider {
 
     #toc = null;
     #config = null;
+    #controller = null;
 
     /**
      * {
@@ -13,8 +14,9 @@ class PortsProvider extends BrowserProvider {
      *      rootText:           Text for the root entry (optional, can be a callback(entry) => string)
      * }
      */
-    constructor(config) {
+    constructor(controller, config) {
         super();
+        this.#controller = controller;
         this.#config = config;
     }
 
@@ -24,7 +26,7 @@ class PortsProvider extends BrowserProvider {
     async getToc(browser) {
         if (this.#toc) return this.#toc;
 
-        const controllers = await browser.controller.midi.getMatchingPortPairs();
+        const controllers = await this.#controller.midi.getMatchingPortPairs();
 
         this.#toc = new BrowserEntry(
             browser,

@@ -1,22 +1,19 @@
 class Popup {
 
-    controller = null;
-    element = null;
-    
-    #id = null;
+    element = null;    // Content element
+    #container = null;  
     config = null;
+
+    #id = null;            // Only used for handlers
 
     /**
      * config: {
      *      container:   Container DOM element (can be shared!)
      * }
      */
-    constructor(controller, config) {
-        this.controller = controller;
+    constructor(config) {
         this.config = config || {};
 
-        this.element = this.config.container;
-        
         this.#id = Tools.uuid();
     }
 
@@ -24,45 +21,48 @@ class Popup {
      * Hide: Remove all closing event handlers
      */
     hide() {
-        this.controller.ui.progress(1);
+        if (this.#container) {
+            this.#container.remove();
+        }        
 
-        this.element.hide();
-        this.element.empty();
+        this.#container = null;
+        this.element = null;
 
         $(window).off('.' + this.#id);
-        this.element.off('click.' + this.#id);
+        // this.element.off('click.' + this.#id);
     }
 
     /**
      * Show the browser: Also adds some event handlers to close it on ESC and clicking outside
      */
     show(content, headline = null) {
-        this.element.empty();
+        this.hide();
 
-        this.element.toggleClass("wide", !!this.config.wide);
-        this.element.toggleClass("fullscreen", !!this.config.fullscreen);
-
-        this.element.append(
-            $('<div class="content" />').append(
-                // Headline
-                !headline ? null :
-                $('<div class="headline"/>')
-                .text(headline),
-
-                // Content
-                content,
-                
-                // Close button
-                $('<span class="fa fa-times close-button"/>')
-                .on('click', async function() {
-                    that.hide();
-                })
+        this.config.container.append(
+            this.#container = $('<div class="list-block" />').append(
+                this.element = $('<div class="list-browser"/>')
+                    .toggleClass("wide", !!this.config.wide)
+                    .toggleClass("fullscreen", !!this.config.fullscreen)
+                    .append(
+                        $('<div class="content" />').append(
+                            // Headline
+                            !headline ? null :
+                            $('<div class="headline"/>')
+                            .text(headline),
+            
+                            // Content
+                            content,
+                            
+                            // Close button
+                            $('<span class="fa fa-times close-button"/>')
+                            .on('click', async function() {
+                                that.hide();
+                            })
+                        )
+                    )
             )
         );
 
-        this.controller.ui.block();
-        this.element.show();
-        
         // ESC to close
         const that = this;
         $(window).on('keydown.' + this.#id, async function(event) {

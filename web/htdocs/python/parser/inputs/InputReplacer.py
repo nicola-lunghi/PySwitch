@@ -33,7 +33,7 @@ class InputReplacer(libcst.CSTTransformer):
             # Only dicts in the Inputs assign
             return updated_node
         
-        if not self.input.assignment.has_assignment(updated_node, self.input.port):
+        if not self.input.assignment_handler.get(updated_node, self.input.port):
             # Only inputs assigned to the port of the input to be replaced
             return updated_node
         

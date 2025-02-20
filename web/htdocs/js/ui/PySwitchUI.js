@@ -7,11 +7,11 @@ class PySwitchUI {
     #progressMessage = null;        // Messages for progress
     #progressBarContainer = null;
     #contentHeadline = null;
-    #listElement = null;
     #deviceElement = null;
     #versionElement = null;
     #virtualClientElement = null;
     #virtualClientUI = null;
+    container = null;
     
     notifications = null;
     loadBrowser = null;
@@ -35,7 +35,7 @@ class PySwitchUI {
      * Reset the UI
      */
     async reset() {
-        this.#listElement.hide();
+        // this.listElement.hide();
     }
 
     /**
@@ -60,7 +60,7 @@ class PySwitchUI {
         // Settings panel
         const that = this;
         containerElement.append(
-            $('<div class="container"/>').append(
+            this.container = $('<div class="container"/>').append(
                 // Virtual client if enabled
                 this.#virtualClientElement = $('<div class="virtual-client"/>')
                 .hide(),
@@ -74,13 +74,10 @@ class PySwitchUI {
                         this.#versionElement = $('<div class="version"/>').html("PySwitch Emulator")
                         .on('click', async function() {
                             try {
-                                new Popup(
-                                    that.#controller, 
-                                    { 
-                                        container: that.#listElement,
-                                        fullscreen: true
-                                    }
-                                )
+                                that.getPopup({ 
+                                    container: that.container,
+                                    fullscreen: true
+                                })
                                 .show(
                                     $('<div class="about-content" />').append(
                                         await Tools.fetch('about.html')
@@ -139,9 +136,9 @@ class PySwitchUI {
 
                 /////////////////////////////////////////////////////////////////////////////////////
 
-                // List browsers and popups (shared)
-                this.#listElement = $('<div class="list-browser"/>')
-                .hide(),
+                // // List browsers and popups (shared)
+                // this.listElement = $('<div class="list-browser"/>')
+                // .hide(),
 
                 // Messages
                 messageElement = $('<div class="messages"/>')
@@ -163,25 +160,40 @@ class PySwitchUI {
     }
 
     /**
+     * Returns a new simple Popup instance
+     */
+    getPopup(config = {}) {
+        if (!config.container) config.container = this.container;
+        return new Popup(config);        
+    }
+
+    /**
+     * Returns a new BrowserPopup instance
+     */
+    getBrowserPopup(config = {}) {
+        if (!config.container) config.container = this.container;
+        return new BrowserPopup(config);        
+    }
+
+    /**
      * Init browser for loading configurations
      */
     #initLoadBrowser() {
         const that = this;
 
         // A browser for loading configurations, triggered by the load button
-        this.loadBrowser = new BrowserPopup(this.#controller, {
+        this.loadBrowser = this.getBrowserPopup({
             wide: true,
-            container: this.#listElement,
             headline: "Please select a configuration to load",
             providers: [
                 // Templates
-                new TemplatesProvider("templates/toc.php"),
+                new TemplatesProvider(this.#controller, "templates/toc.php"),
 
                 // Examples
-                new ExamplesProvider("examples/toc.php"),
+                new ExamplesProvider(this.#controller, "examples/toc.php"),
                 
                 // Connected controllers
-                new PortsProvider({
+                new PortsProvider(this.#controller, {
                     rootText: "Load from a connected Controller",
                     onSelect: async function(entry) {
                         that.#controller.routing.call(that.#controller.getControllerUrl(entry.value));
@@ -206,11 +218,10 @@ class PySwitchUI {
         const that = this;
 
         // A browser to select client connections (to Kemper etc.), triggered by the client select button
-        this.clientBrowser = new BrowserPopup(this.#controller, {
-            container: this.#listElement,
+        this.clientBrowser = this.getBrowserPopup({
             headline: "Please select a client device to control",
             providers: [
-                new PortsProvider({
+                new PortsProvider(this.#controller, {
                     onSelect: async function(entry) {
                         that.#controller.setState("client", entry.value);
                         await that.#controller.client.init(that.#controller.currentConfig);

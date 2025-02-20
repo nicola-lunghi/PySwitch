@@ -8,11 +8,15 @@ from ..misc.RemoveDictElementTransformer import RemoveDictElementTransformer
 class Input(libcst.CSTVisitor):
     def __init__(self, parser, hw_import_path, port):        
         self.port = port
-        self.assignment = InputAssignment(hw_import_path)
+        
+        self.assignment = None
         self.result = None
+
         self.__parser = parser
         self.__inputs = None
         
+        self.assignment_handler = InputAssignment(hw_import_path)
+
     # Inputs
     def visit_Assign(self, node):
         if self.result:
@@ -34,14 +38,25 @@ class Input(libcst.CSTVisitor):
         if not self.__inputs:
             return False
         
-        if not self.assignment.has_assignment(node, self.port):
+        assignment = self.assignment_handler.get(node, self.port)
+        if not assignment:
             return False
         
+        self.assignment = assignment
         self.result = node
 
         return False
     
     ###############################################################################################################################
+
+    # Returns the display name
+    def display_name(self):
+        name = self.assignment["data"]["name"] if "name" in self.assignment["data"] else ( "GP" + str(self.assignment["data"]["model"]["port"]) )
+
+        if self.assignment["data"]["model"]["type"] == "AdafruitSwitch":
+            return "Switch " + str(name)
+        else:
+            return str(name)
 
     # Returns a list containing a result list of nodes, represented by Action instances
     def actions(self, hold = False):

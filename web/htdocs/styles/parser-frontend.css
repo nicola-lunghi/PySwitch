@@ -6,8 +6,8 @@
 
 .application .pyswitch-parser-frontend .action-grid {
     position: relative;
-    min-height: 2em;
-    min-width: 3em;
+    /* min-height: 2em;
+    min-width: 3em; */
     background-color: rgb(176 176 176);
     border-radius: 0.5em;
     transition: width 0.2s, height 0.2s;
@@ -18,7 +18,6 @@
     position: absolute;
     z-index: 1;   
     /* background-color: greenyellow; */
-    /* width: 100%; */
 }
 
 .application .pyswitch-parser-frontend .action-grid .action-item.muuri-item-dragging {
@@ -35,8 +34,6 @@
 
 .application .pyswitch-parser-frontend .action-grid .action-item-content {
     position: relative;
-    /* width: 100%;
-    height: 100%; */
     margin: 0.3em;    
 }
 
@@ -69,3 +66,8 @@
 	/* border-color: rgb(105, 104, 104); */
 }
 
+/****************************************************************/
+
+.application .pyswitch-parser-frontend .button.fixed {
+    background-color: unset;
+}

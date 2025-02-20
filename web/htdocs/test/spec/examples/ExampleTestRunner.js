@@ -38,7 +38,7 @@ class ExampleTestRunner extends TestBase {
      * Scans examples using the popup classes, and tests each one of the callable ones
      */
     async #testExamples() {
-        const toc = await (new ExamplesProvider(this.#examplesPath + "/toc.php")).getToc();
+        const toc = await (new ExamplesProvider(null, this.#examplesPath + "/toc.php")).getToc();
         
         const that = this;
         async function crawl(entry) {

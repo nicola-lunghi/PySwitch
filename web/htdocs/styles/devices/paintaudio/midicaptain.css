@@ -2,14 +2,11 @@
     width: 90cqw;    
 }
 
-@container (orientation: landscape) {
+/* @container (orientation: landscape) {
     .midicaptain {
-        width: max-content;
-        max-width: unset;
-
-        height: 60cqh;        
+        max-width: unset;        
     }
-}
+} */
 
 .midicaptain #pyswitch-inputs {
     position: absolute;

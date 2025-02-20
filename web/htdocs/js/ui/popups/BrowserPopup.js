@@ -14,8 +14,8 @@ class BrowserPopup extends Popup {
      *      postProcess: Optional callback to alter the generated DOM: postProcess(entry, generatedElement) => void
      * }
      */
-    constructor(controller, config) {
-        super(controller, config);
+    constructor(config) {
+        super(config);
     }
 
     /**
@@ -139,7 +139,7 @@ class BrowserPopup extends Popup {
                                 await that.browse(entry.parent);
 
                             } catch (e) {
-                                that.controller.handle(e);
+                                console.error(e);
                             }
                         }),
 
