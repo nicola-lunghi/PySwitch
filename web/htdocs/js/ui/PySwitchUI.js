@@ -20,6 +20,11 @@ class PySwitchUI {
     frontend = null;
     tabs = null;
 
+    editors = {
+        inputs: null,
+        display: null
+    }
+
     /**
      * Options:
      * {
@@ -172,21 +177,6 @@ class PySwitchUI {
 
         // Show or hide tabs
         this.tabs = new Tabs(this.#controller, tabsElement, showTabsButton);
-
-        // Editors
-        this.#setupEditor();
-    }
-
-    /**
-     * Create the code editors
-     */
-    #setupEditor() {
-        // this.tabs.add(
-        //     new Tab(
-        //         $('<div style="background-color: red; width: 100%; height: 100%" />'),
-        //         "Foo Tab"
-        //     )
-        // );
     }
 
     /**
@@ -307,6 +297,19 @@ class PySwitchUI {
         // Apply the parser to the frontend (generates all switches etc.)
         const parser = await config.parser(this.#controller.pyswitch);        
         await this.frontend.apply(parser);
+
+        // Add tabs for the editors: First remove old editors
+        if (this.editors.inputs) this.editors.inputs.destroy();
+        if (this.editors.display) this.editors.display.destroy();
+
+        const code = await config.get();
+        console.log(code)
+        this.editors.inputs = new CodeEditor("inputs.py", code.inputs_py);
+        this.editors.display = new CodeEditor("display.py", code.display_py);
+
+        this.tabs.add(this.editors.inputs, 0);
+        this.tabs.add(this.editors.display, 1);
+
     }
 
     /**

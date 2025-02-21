@@ -41,6 +41,8 @@
 
 .container .tabs .content {
     background-color: #afafaf;
+    container-type: size;
+    overflow: auto;
 }
 
 /******************************************************************/

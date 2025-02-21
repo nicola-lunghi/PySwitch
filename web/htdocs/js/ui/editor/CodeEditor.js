@@ -1,13 +1,13 @@
-class CodeEditor {
+class CodeEditor extends Tab {
 
-    #editorElement = null;
     #editor = null;
     #dirty = false;
     
-    constructor(editorElement) {
-        this.#editorElement = editorElement;
-
+    constructor(name, content = "") {
+        super($('<div class="code-editor" />'), name);
         this.#init();
+
+        this.setContent(content);
     }
 
     /**
@@ -17,9 +17,9 @@ class CodeEditor {
         const that = this;
 
         // Editor
-		this.#editor = CodeMirror(this.#editorElement[0], {
+		this.#editor = CodeMirror(this.container[0], {
 			mode: "python",
-            gutters: ["CodeMirror-lint-markers"],
+            // gutters: ["CodeMirror-lint-markers"],
             lineNumbers: true,
             // lint: {
             //     getAnnotations: function(source/*, options, editor*/) {                    
@@ -59,20 +59,11 @@ class CodeEditor {
 	}
 
     #setDirty() {
-        //this.#ui.setDirty();
         this.#dirty = true;
     }
 
     isDirty() {
         return this.#dirty;
-    }
-
-    show() {
-        $(this.#editorElement).show();
-    }
-
-    hide() {
-        $(this.#editorElement).hide();
     }
 
     getContent() {

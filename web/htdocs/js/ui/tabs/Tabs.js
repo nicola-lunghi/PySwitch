@@ -59,7 +59,7 @@ class Tabs {
     /**
      * Add a new Tab instance
      */
-    add(tab) {        
+    add(tab, index = null) {          // TODO
         if (!tab) return;
         
         tab.init(this);
