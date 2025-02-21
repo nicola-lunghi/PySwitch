@@ -44,6 +44,11 @@ class ClientController {
 
                 //console.log("Found client: ", connection);
                 await that.#connect(connection.name, config);
+            },
+
+            // onFailure
+            async function() {
+                await that.#connect("virtual", config);
             }
         );
     }

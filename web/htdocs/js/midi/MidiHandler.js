@@ -41,9 +41,9 @@ class MidiHandler {
      * Scans for devices. The scan callback can add ConnectionAttempt instances to a map which are terminated of finish() returns true.
      * 
      * id: Scan ID to manag attempts
-     * connect(portName, attempts) => connection   // Must try to connect, and return a descriptor object of successful
-     * finish(connection, attempts) => void        // Called when an attempt has succeeded
-     * failure() => void                           // Called when the all attempts failed
+     * connect(portName, attempts) => connection      // Must try to connect, and return a descriptor object of successful
+     * onSuccess(connection, attempts) => void        // Called when an attempt has succeeded
+     * onFailure() => void                            // Called when all attempts failed
      */
     scan(connect, onSuccess = null, onFailure = null) {
         // Get all in/out pairs sharing the same name
