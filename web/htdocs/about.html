@@ -10,7 +10,7 @@
             <b>Load configuration files from any connected controller</b> running PySwitch (like a MIDI Captain) via MIDI into the emulator
         </li>
         <li>
-            Edit the configuration in a user friendly way with a <b>Graphical User Interface</b>
+            <b>Edit the configuration</b> in a user friendly way with a <b>Graphical User Interface</b>
         </li>
         <li>
             <b>Save updated configuration files</b> directly to the connected controller via MIDI
@@ -30,12 +30,15 @@
         <li>
             Scan for connected controllers and clients automatically
         </li>
+        <li>
+            Edit the code in sync with the graphical editor: You can use your own implementations, they will not be destroyed by the code generator.
+        </li>
     </ul>
     <br>
     When you start up the application the first time, it will automatically scan all available MIDI ports for connected controllers. If one is found, it will automatically load its configuration.
     <br>
     <br>
-    After a connection has been loaded, the application scans for available clients to control. The first one found (for example a Kemper Profiler Player) will be connected. You can override this by clicking on the button at the bottom right and selecting a device manually.
+    After a connection has been loaded, the application scans for available clients to control. The first one found (for example a Kemper Profiler Player) will be connected, or, if none has been found, a virtual Kemper Player is used. You can override this by clicking on the button at the bottom right and selecting a device manually.
     <br>
     <br>
     If you like using it, please consider donating:
