@@ -29,6 +29,9 @@ class Tab {
         }
     }
 
+    refresh() {
+    }
+    
     /**
      * Generates the header element
      */

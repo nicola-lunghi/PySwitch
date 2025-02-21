@@ -303,7 +303,6 @@ class PySwitchUI {
         if (this.editors.display) this.editors.display.destroy();
 
         const code = await config.get();
-        console.log(code)
         this.editors.inputs = new CodeEditor("inputs.py", code.inputs_py);
         this.editors.display = new CodeEditor("display.py", code.display_py);
 
