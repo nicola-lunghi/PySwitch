@@ -4,7 +4,7 @@ class CodeEditor extends Tab {
     #dirty = false;
     #editorElement = null;
     
-    constructor(name, content = "") {
+    constructor(name) {
         const editorElement = $('<div class="code-editor" />');
         super(
             $('<div class="code-editor-container" />').append(
@@ -16,7 +16,7 @@ class CodeEditor extends Tab {
         this.#editorElement = editorElement;
         this.#init();
 
-        this.setContent(content);
+        // this.setContent(content);
     }
 
     /**
@@ -72,12 +72,8 @@ class CodeEditor extends Tab {
     }
 
     refresh() {
-        const that = this;
         const content = this.getContent();
-
-        setTimeout(function() {
-            that.setContent(content);
-        }, 0);
+        this.setContent(content);
     }
 
     isDirty() {
@@ -88,8 +84,15 @@ class CodeEditor extends Tab {
        return this.#editor.getValue();
     }
 
-    setContent(content) {
-        this.#editor.setValue(content); 
-        this.#dirty = false;       
+    setContent(content, dontUseTimeout = false) {
+        if (dontUseTimeout) {
+            this.#editor.setValue(content); 
+            this.#dirty = false;           
+        } else {
+            const that = this;
+            setTimeout(function() {
+                that.setContent(content, true);
+            }, 0);            
+        }
     }
 }

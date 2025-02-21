@@ -298,17 +298,20 @@ class PySwitchUI {
         const parser = await config.parser(this.#controller.pyswitch);        
         await this.frontend.apply(parser);
 
-        // Add tabs for the editors: First remove old editors
-        if (this.editors.inputs) this.editors.inputs.destroy();
-        if (this.editors.display) this.editors.display.destroy();
-
+        // Create editor tabs if not yet done
+        if (!this.editors.inputs) {
+            this.editors.inputs = new CodeEditor("inputs.py");
+            this.tabs.add(this.editors.inputs, 0);
+        }
+        if (!this.editors.display) {
+            this.editors.display = new CodeEditor("display.py");
+            this.tabs.add(this.editors.display, 1);
+        }
+        
+        // Set new content on editors
         const code = await config.get();
-        this.editors.inputs = new CodeEditor("inputs.py", code.inputs_py);
-        this.editors.display = new CodeEditor("display.py", code.display_py);
-
-        this.tabs.add(this.editors.inputs, 0);
-        this.tabs.add(this.editors.display, 1);
-
+        this.editors.inputs.setContent(code.inputs_py);
+        this.editors.display.setContent(code.display_py);
     }
 
     /**
