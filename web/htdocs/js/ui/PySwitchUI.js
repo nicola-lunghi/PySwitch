@@ -110,19 +110,8 @@ class PySwitchUI {
 
                     // Buttons
                     $('<div class="buttons" />').append(
-                        // Show/hide tabs
-                        showTabsButton = $('<div class="button fas fa-ellipsis-v"/>')
-                        .on('click', async function() {
-                            try {
-                                that.tabs.toggle();
-                            } catch (e) {
-                                that.#controller.handle(e);
-                            }
-                        }),
-
                         // Load
-                        $('<div class="button button-primary"/>')
-                        .text("Load")
+                        $('<div class="appl-button fas fa-folder-open" data-toggle="tooltip" title="Open configuration..." />')
                         .on("click", async function() {
                             try {
                                 await that.loadBrowser.browse();
@@ -130,7 +119,28 @@ class PySwitchUI {
                             } catch (e) {
                                 that.#controller.handle(e);
                             }
-                        })  
+                        })  ,
+
+                        // Save
+                        $('<div class="appl-button fas fa-save" data-toggle="tooltip" title="Save configuration..." />')
+                        .on("click", async function() {
+                            try {
+                                // TODO
+
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
+                        })  ,
+
+                        // Show/hide tabs
+                        showTabsButton = $('<div class="appl-button fas fa-code" data-toggle="tooltip" title="Show code"/>')
+                        .on('click', async function() {
+                            try {
+                                that.tabs.toggle();
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
+                        }),
                     ),
 
                     // Header, showing the current config name

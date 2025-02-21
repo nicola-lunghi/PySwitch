@@ -114,7 +114,12 @@ class Tabs {
         this.#container.show();
         this.#showTabsButton.hide();
 
-        this.#setState('show', true);        
+        this.#setState('show', true);  
+        
+        // When a tab is shown, the editors need refreshing
+        if (this.active) {
+            this.active.refresh();
+        }
     }
 
     /**

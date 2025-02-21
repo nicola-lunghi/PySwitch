@@ -290,7 +290,7 @@ class ParserFrontendInput {
         const inputName = input.display_name();
         
         if (!confirm("Do you want to delete the action from " + inputName + "?")) {
-            this.#controller.ui.message("Action canceled", "I")
+            // this.#controller.ui.message("Action canceled", "I")
             return;
         }
 
