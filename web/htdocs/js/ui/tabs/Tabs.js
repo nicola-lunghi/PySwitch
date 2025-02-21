@@ -79,7 +79,10 @@ class Tabs {
      */
     remove(tab) {
         if (!tab) return;
-        tab.container.remove();
+
+        tab.destroy();
+
+        if (tab == self.active) self.active = null;
         
         const index = this.#tabs.indexOf(tab);
         if (index > -1) { 

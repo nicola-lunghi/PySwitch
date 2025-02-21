@@ -19,6 +19,17 @@ class Tab {
     }
 
     /**
+     * Destroy the tab
+     */
+    destroy() {
+        this.container.remove();
+        
+        if (this.header) {
+            this.header.remove()
+        }
+    }
+
+    /**
      * Generates the header element
      */
     getHeader() {
@@ -58,5 +69,9 @@ class Tab {
         }
         
         this.container.show();
+    }
+
+    remove() {
+        this.#tabs.remove(this);
     }
 }

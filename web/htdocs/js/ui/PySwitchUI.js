@@ -172,6 +172,21 @@ class PySwitchUI {
 
         // Show or hide tabs
         this.tabs = new Tabs(this.#controller, tabsElement, showTabsButton);
+
+        // Editors
+        this.#setupEditor();
+    }
+
+    /**
+     * Create the code editors
+     */
+    #setupEditor() {
+        // this.tabs.add(
+        //     new Tab(
+        //         $('<div style="background-color: red; width: 100%; height: 100%" />'),
+        //         "Foo Tab"
+        //     )
+        // );
     }
 
     /**
@@ -311,20 +326,12 @@ class PySwitchUI {
         if (client) {
             let virtualClientElement = null;
 
-            // Add tabs
+            // Add tab
             this.tabs.add(
                 this.#virtualClientTab = new Tab(
                     // Virtual client if enabled
                     virtualClientElement = $('<div class="virtual-client"/>'),
                     "Virtual Kemper"
-                )
-            );
-
-            // TODO foo
-            this.tabs.add(
-                new Tab(
-                    $('<div style="background-color: red; width: 100%; height: 100%" />'),
-                    "Foo Tab"
                 )
             );
 
