@@ -45,14 +45,18 @@ class Tab {
     }
 
     deactivate() {
-        if (!this.header) return;
-        this.header.removeClass("active");
+        if (this.header) {
+            this.header.removeClass("active");
+        }
+        
         this.container.hide();
     }
 
     activate() {
-        if (!this.header) return;
-        this.header.addClass("active");
+        if (this.header) {
+            this.header.addClass("active");
+        }
+        
         this.container.show();
     }
 }

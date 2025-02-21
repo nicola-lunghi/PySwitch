@@ -85,6 +85,18 @@ class Tabs {
         if (index > -1) { 
             this.#tabs.splice(index, 1); 
         }
+
+        this.#update();
+    }
+
+    /**
+     * Get a tab by name, or null if not found
+     */
+    getTabByName(name) {
+        for (const tab of this.#tabs) {
+            if (tab.name == name) return tab;
+        }
+        return null;
     }
 
     /**
@@ -136,6 +148,8 @@ class Tabs {
     setActive(tab) {
         this.active = tab;
         this.#updateActive();
+
+        this.#setState('current', tab.name);
     }
 
     /**
@@ -156,8 +170,22 @@ class Tabs {
      */
     #update() {
         if (this.#tabs.length > 0 && !this.active) {
-            this.setActive(this.#tabs[0]);
+            const current = this.#getState('current');
+            if (current) {
+                const tab = this.getTabByName(current);
+
+                if (tab) {
+                    this.setActive(tab);
+                    return;
+                }
+
+            } else {
+                this.setActive(this.#tabs[0]);
+                return;
+            }            
         }
+
+        this.#updateActive();        
     }
 
     /**
