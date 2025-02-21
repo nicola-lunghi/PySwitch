@@ -34,7 +34,6 @@ class PySwitchParser:
             raise Exception("No data loaded")
         
         self._add_all_possible_imports()
-
         self._remove_unused_imports()
 
         return {

@@ -8,13 +8,16 @@ class RemoveUnusedImportTransformer(libcst.CSTTransformer):
 
         self.unused_imports = defaultdict(set)
         
+        imported = []
         for scope in scopes:
             for assignment in scope.assignments:
                 node = assignment.node
 
-                if isinstance(assignment, libcst.metadata.Assignment) and isinstance(node, (libcst.Import, libcst.ImportFrom)):
-                    if len(assignment.references) == 0:
+                if isinstance(assignment, libcst.metadata.Assignment) and isinstance(node, (libcst.Import, libcst.ImportFrom)):                    
+                    if len(assignment.references) == 0 or assignment.name in imported:                        
                         self.unused_imports[node].add(assignment.name)
+                    else:
+                        imported.append(assignment.name)
 
     def _leave_import_alike(self, original_node, updated_node):
         if original_node not in self.unused_imports:
