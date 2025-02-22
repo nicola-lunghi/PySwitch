@@ -4,7 +4,8 @@ class ConfigParserTests extends TestBase {
         await this.init();
         const config = new MockConfiguration("", "");
         
-        const parser = await config.parser(this.pyswitch);
+        await config.init(this.pyswitch);
+        const parser = config.parser;
         expect(parser).toBeInstanceOf(KemperParser);
 
         await expectAsync(parser.input(1)).toBeRejected();
@@ -17,7 +18,9 @@ class ConfigParserTests extends TestBase {
         await this.init();
         const config = new WebConfiguration("data/test-presets/get-inputs-default");
         
-        const parser = await config.parser(this.pyswitch);
+        await config.init(this.pyswitch);
+        const parser = config.parser;
+
         expect(parser).toBeInstanceOf(KemperParser);
         
         await this.#testAction(parser, {
@@ -112,7 +115,8 @@ class ConfigParserTests extends TestBase {
         await this.init();
         const config = new WebConfiguration("data/test-presets/get-inputs-hold");
         
-        const parser = await config.parser(this.pyswitch);
+        await config.init(this.pyswitch);
+        const parser = config.parser;
         expect(parser).toBeInstanceOf(KemperParser);
         
         await this.#testAction(parser, {
@@ -231,7 +235,8 @@ class ConfigParserTests extends TestBase {
         await this.init();
         const config = new WebConfiguration("data/test-presets/get-inputs-default");
         
-        const parser = await config.parser(this.pyswitch);
+        await config.init(this.pyswitch);
+        const parser = config.parser;
         expect(parser).toBeInstanceOf(KemperParser);
 
         const input = await parser.input(port);
@@ -261,9 +266,9 @@ class ConfigParserTests extends TestBase {
 
     async addOneImport() {
         await this.init();
-        const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
-        
-        const parser = await config.parser(this.pyswitch);
+        const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
+        await config.init(this.pyswitch);
+        const parser = config.parser;
         expect(parser).toBeInstanceOf(KemperParser);
 
         const input1 = await parser.input(1);
@@ -285,9 +290,10 @@ class ConfigParserTests extends TestBase {
 
     async addAllImports() {
         await this.init();
-        const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
+        const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
         
-        const parser = await config.parser(this.pyswitch);
+        await config.init(this.pyswitch);
+        const parser = config.parser;
         expect(parser).toBeInstanceOf(KemperParser);
 
         const input1 = await parser.input(1);
@@ -312,9 +318,10 @@ class ConfigParserTests extends TestBase {
 
     async addDisplayImports() {
         await this.init();
-        const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
+        const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
         
-        const parser = await config.parser(this.pyswitch);
+        await config.init(this.pyswitch);
+        const parser = config.parser;
         expect(parser).toBeInstanceOf(KemperParser);
 
         const input1 = await parser.input(1);
@@ -401,7 +408,7 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Rig 1",   // Default
+            "Select Rig",   // Default
             "Select Rig 2"    // With actual value
         )
     }
@@ -426,7 +433,7 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Rig 1",      // Default
+            "Select Rig",      // Default
             "Toggle Rigs 2/4"    // With actual value
         )        
     }
@@ -443,7 +450,7 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Bank 1",   // Default
+            "Select Bank",   // Default
             "Select Bank 2"    // With actual value
         );
 
@@ -462,7 +469,7 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Bank 1",      // Default
+            "Select Bank",      // Default
             "Toggle Banks 2/4"    // With actual value
         );
 
@@ -481,7 +488,7 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Bank 1",      // Default
+            "Select Bank",      // Default
             "Preselect Bank 3"    // With actual value
         );
 
@@ -500,7 +507,7 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Bank 1",      // Default
+            "Select Bank",      // Default
             "Select Bank 3"    // With actual value
         )
     }
@@ -512,9 +519,10 @@ class ConfigParserTests extends TestBase {
 
     async #doCheckActionMeta(name, action, expNameDefault, expNameCurrent, hold) {
         await this.init();
-        const config = new WebConfiguration("../templates/MIDI Captain Nano 4");
+        const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
         
-        const parser = await config.parser(this.pyswitch);
+        await config.init(this.pyswitch);
+        const parser = config.parser;
         expect(parser).toBeInstanceOf(KemperParser);
 
         const input1 = await parser.input(1);

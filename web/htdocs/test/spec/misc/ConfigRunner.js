@@ -23,7 +23,8 @@ class ConfigRunner {
 
         // Set up frontend
         this.frontend = new PySwitchFrontend(null, el, { domNamespace: "pyswitch", basePath: "../" });
-        await this.frontend.apply(await config.parser(this.pyswitch));
+        await config.init(this.pyswitch);
+        await this.frontend.apply(config.parser);
 
         // Reset virtual simulation time
         this.timeMillis = 0;

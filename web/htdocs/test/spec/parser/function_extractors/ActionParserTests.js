@@ -29,7 +29,8 @@ class ActionParserTests extends FunctionParserTestBase {
 
     async getAvailableActionsMeta() {
         const config = new MockConfiguration("", "");
-        const parser = await config.parser(this.pyswitch);
+        await config.init(this.pyswitch);
+        const parser = config.parser;
         
         await this.checkDefinitions(
             "actions-with-meta.json",

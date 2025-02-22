@@ -29,7 +29,8 @@ class MappingParserTests extends FunctionParserTestBase {
 
     async getAvailableMappingsMeta() {
         const config = new MockConfiguration("", "");
-        const parser = await config.parser(this.pyswitch);
+        await config.init(this.pyswitch);
+        const parser = config.parser;
         
         await this.checkDefinitions(
             "mappings-with-meta.json",

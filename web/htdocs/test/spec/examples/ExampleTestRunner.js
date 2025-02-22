@@ -99,7 +99,8 @@ class ExampleTestRunner extends TestBase {
      */
     async #runExampleTest(config, testScript) {
         // Get hardware info first
-        const parser = await config.parser(this.pyswitch);
+        await config.init(this.pyswitch);
+        const parser = config.parser;
         this.hardware = await parser.getHardwareInfo();
 
         // Get the testing function and run it
