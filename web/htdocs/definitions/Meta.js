@@ -28,6 +28,10 @@ class Meta extends MetaBase {
             return this.replaceParameterTokens(actionDefinition, "Toggle Rigs {rig}/{rig_off}");
         }
 
+        if (!actionDefinition) {
+            return "Select Rig";  
+        }
+
         return this.replaceParameterTokens(actionDefinition, "Select Rig {rig}");
     }
 
@@ -38,11 +42,15 @@ class Meta extends MetaBase {
         const bank_off = this.getArgument(actionDefinition, "bank_off");
         const preselect = this.getArgument(actionDefinition, "preselect");
         
-        if (actionDefinition && !(bank_off == "None" || bank_off == null)) {
+        if (!actionDefinition) {
+            return "Select Bank";  
+        }
+
+        if (!(bank_off == "None" || bank_off == null)) {
             return this.replaceParameterTokens(actionDefinition, "Toggle Banks {bank}/{bank_off}");
         }
 
-        if (actionDefinition && (preselect && (preselect.value == "True"))) {
+        if (preselect && (preselect.value == "True")) {
             return this.replaceParameterTokens(actionDefinition, "Preselect Bank {bank}");
         }
 

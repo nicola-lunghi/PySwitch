@@ -180,7 +180,9 @@ class Controller {
         // Restart configuration
         await this.pyswitch.run(await this.currentConfig.get());
         
-        this.ui.message(message ? message : ("Reloaded configuration: " + (await this.currentConfig.name())), "S");
+        if (message != "none") {
+            this.ui.message(message ? message : ("Reloaded configuration: " + (await this.currentConfig.name())), "S");
+        }
     }
 
     /**

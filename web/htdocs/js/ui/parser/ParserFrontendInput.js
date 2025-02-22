@@ -265,10 +265,11 @@ class ParserFrontendInput {
 
         // A browser to select client connections (to Kemper etc.), triggered by the client select button
         const browser = this.#controller.ui.getBrowserPopup({
+            additionalClasses: "select-actions",
             headline: "Please select an action to add to " + inputName,
             wide: true,
             providers: [
-                
+                new ActionsProvider(this.#controller, this.#parserFrontend.parser)
             ],
             // postProcess: function(entry, generatedElement) {
             //     // Highlight currently selected client

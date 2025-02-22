@@ -66,6 +66,6 @@ class ParserFrontend {
         this.parser.updateConfig();
 
         // Restart the emulated controller
-        await this.#controller.restart();
+        await this.#controller.restart("none");
     }
 }

@@ -8,7 +8,8 @@ class Popup {
 
     /**
      * config: {
-     *      container:   Container DOM element (can be shared!)
+     *      container:           Container DOM element
+     *      additionalClasses:   Optional CSS classes for the popup element
      * }
      */
     constructor(config) {
@@ -41,7 +42,7 @@ class Popup {
             this.#container = $('<div class="list-block" />').append(
                 this.element = $('<div class="list-browser"/>')
                     .toggleClass("wide", !!this.config.wide)
-                    .toggleClass("fullscreen", !!this.config.fullscreen)
+                    .toggleClass("fullscreen", !!this.config.fullscreen)                    
                     .append(
                         $('<div class="content" />').append(
                             // Headline
@@ -61,6 +62,10 @@ class Popup {
                     )
             )
         );
+
+        if (this.config.additionalClasses) {
+            this.element.addClass(this.config.additionalClasses);
+        }
 
         // ESC to close
         const that = this;

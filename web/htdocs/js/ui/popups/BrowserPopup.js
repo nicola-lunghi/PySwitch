@@ -8,7 +8,7 @@ class BrowserPopup extends Popup {
 
     /**
      * config: {
-     *      container:   Container DOM element (can be shared!)
+     *      container:   Container DOM element
      *      headline:    Header text   
      *      providers:   Array of provider instances,
      *      postProcess: Optional callback to alter the generated DOM: postProcess(entry, generatedElement) => void
