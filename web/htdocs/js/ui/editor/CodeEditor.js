@@ -5,18 +5,17 @@ class CodeEditor extends Tab {
     #editorElement = null;
     
     constructor(name) {
-        const editorElement = $('<div class="code-editor" />');
+        let editorElement = null;
         super(
             $('<div class="code-editor-container" />').append(
-                editorElement
+                // Editor content
+                 editorElement = $('<div class="code-editor" />')
             ), 
             name
         );
 
         this.#editorElement = editorElement;
         this.#init();
-
-        // this.setContent(content);
     }
 
     /**
@@ -44,6 +43,7 @@ class CodeEditor extends Tab {
 		});
 
         this.#initGlobalShortcuts();
+
     }
 
     /**

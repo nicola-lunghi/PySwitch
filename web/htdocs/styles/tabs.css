@@ -96,3 +96,14 @@
     color: black;
 }
 
+/******************************************************************/
+/* 
+.container .tabs .content .buttons {
+    position: absolute;
+    top: 0.2em;
+    right: 0.2em;
+    z-index: 1000;
+}
+
+.container .tabs .content .buttons > * {
+} */
