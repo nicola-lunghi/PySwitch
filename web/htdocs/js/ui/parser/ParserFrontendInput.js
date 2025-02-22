@@ -111,7 +111,7 @@ class ParserFrontendInput {
                         $('<div class="action-item-content button actions add-action fixed fas fa-plus" data-toggle="tooltip" title="Add an action" />')                        
                         .on('click', async function() {
                             try {
-                                await that.addAction(input);
+                                await that.promptAddAction(input);
 
                             } catch (e) {
                                 that.#controller.handle(e);
@@ -258,8 +258,34 @@ class ParserFrontendInput {
     /**
      * Adds an action to the passed input (proxy)
      */
-    async addAction(input) {
+    async addAction(actionDefinition, input, hold = false) {
+        // Build actions definitions
+        const newActions = this.#getItemHandlers(hold)
+            .map((item) => { return {
+                name: item.name,
+                arguments: JSON.parse(item.arguments())
+            }});
+        
+        // Add new action
+        newActions.push(actionDefinition);
+        
+        // Update config
         const that = this;
+        setTimeout(
+            async function() {
+                await input.set_actions(newActions, hold, true);
+
+                await that.#parserFrontend.updateConfig();    
+            }, 
+            100
+        );
+    }
+
+    /**
+     * Shows the add action dialog
+     */
+    async promptAddAction(input) {
+        // const that = this;
 
         const inputName = input.display_name();
 
@@ -269,7 +295,7 @@ class ParserFrontendInput {
             headline: "Please select an action to add to " + inputName,
             wide: true,
             providers: [
-                new ActionsProvider(this.#controller, this.#parserFrontend.parser)
+                new ActionsProvider(this.#controller, this, this.#parserFrontend.parser, input)
             ],
             // postProcess: function(entry, generatedElement) {
             //     // Highlight currently selected client

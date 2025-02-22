@@ -3,11 +3,15 @@ class ActionsProvider extends BrowserProvider {
     #toc = null;
     #parser = null;
     #controller = null;
+    #frontend = null;
+    #input = null;
     
-    constructor(controller, parser) {        
+    constructor(controller, frontend, parser, input) {
         super();
         this.#controller = controller;
+        this.#frontend = frontend;
         this.#parser = parser;
+        this.#input = input;
     }
 
     /**
@@ -65,8 +69,16 @@ class ActionsProvider extends BrowserProvider {
                         text: meta.getDisplayName(),
                         value: action.name,
                         parent: this.#toc,
-                        onSelect: async function() {
-                            
+                        onSelect: async function(entry) {
+                            await that.#frontend.addAction({
+                                name: entry.config.model.name,
+                                arguments: entry.config.model.parameters.map((item) => { 
+                                    return {
+                                        name: item.name,
+                                        value: item.meta.getDefaultValue()
+                                    }
+                                })
+                            }, that.#input);
                         },
                         model: action
                     }
