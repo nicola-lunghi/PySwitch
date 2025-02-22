@@ -26,18 +26,26 @@ class Tabs {
         // DOM
         this.#container.append(
             $('<div class="header" />').append(
+                // Header (tab headers)
                 this.#header = $('<div class="header-tabs" />'),
-                    this.#headerButtons = $('<div class="header-buttons" />').append(
-                    // Show/hide tabs (only visible in mobile mode)
-                    $('<div class="close-tabs fas fa-times"/>')
-                    .on('click', async function() {
-                        try {
-                            that.hide();
-                        
-                        } catch (e) {
-                            that.#controller.handle(e);
-                        }
-                    })
+
+                // Header buttons
+                $('<div class="header-buttons" />').append(
+                    // Tab specific buttons
+                    this.#headerButtons = $('<span />'),
+
+                    $('<span />').append(
+                        // Show/hide tabs button
+                        $('<div class="close-tabs fas fa-times"/>')
+                        .on('click', async function() {
+                            try {
+                                that.hide();
+                            
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
+                        })
+                    )
                 )
             ),
             this.#content = $('<div class="content" />'),
@@ -83,6 +91,7 @@ class Tabs {
      */
     remove(tab) {
         if (!tab) return;
+        if (!tab.confirmIfDirty()) return;
 
         tab.destroy();
 
@@ -104,6 +113,13 @@ class Tabs {
             if (tab.name == name) return tab;
         }
         return null;
+    }
+
+    confirmIfDirty() {
+        for (const tab of this.#tabs) {
+            if (!tab.confirmIfDirty()) return false;
+        }
+        return true;
     }
 
     /**
@@ -158,15 +174,21 @@ class Tabs {
      * Sets a specific tab active
      */
     setActive(tab) {
+        if (!tab) throw new Error('No tab passed');
+
         this.active = tab;
         this.#updateActive();
 
         this.#setState('current', tab.name);
 
         // When a tab is shown, the editors need refreshing
-        if (this.active) {
-            this.active.refresh();
-        }
+        this.active.refresh();
+
+        // Replace buttons
+        this.#headerButtons.empty();
+        this.#headerButtons.append(
+            this.active.getButtons()
+        )
     }
 
     /**

@@ -105,6 +105,8 @@ class Controller {
      * Run PySwitch with a specific configuration.
      */
     async loadConfiguration(config) {
+        if (!this.ui.confirmIfDirty()) return;
+
         this.currentConfig = null;
 
         // Initialize PySwitch (this starts Pyodide and copies all necessary sources to the Emscripten virtual file system)
@@ -112,8 +114,13 @@ class Controller {
 
         await this.pyswitch.init();
 
+        // Init configuration
+        this.ui.progress(0.4, "Initialize configuration");
+
+        await config.init(this.pyswitch);
+
         // Get PySwitch version
-        this.ui.progress(0.4, "Initialize emulator");
+        this.ui.progress(0.4, "Initialize UI");
 
         this.VERSION = this.VERSION.replace('?', await this.pyswitch.getVersion());
         this.ui.updateVersion()
@@ -158,7 +165,7 @@ class Controller {
     /**
      * Restarts the current configuration
      */
-    async restart() {
+    async restart(message = null) {
         if (!this.currentConfig) {
             console.warn("No config to restart");
             return;
@@ -173,7 +180,7 @@ class Controller {
         // Restart configuration
         await this.pyswitch.run(await this.currentConfig.get());
         
-        this.ui.message("Reloaded configuration: " + (await this.currentConfig.name()), "S");
+        this.ui.message(message ? message : ("Reloaded configuration: " + (await this.currentConfig.name())), "S");
     }
 
     /**

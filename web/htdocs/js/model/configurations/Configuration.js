@@ -2,9 +2,18 @@ class Configuration {
 
     #data = null;
     #name = null;
+    parser = null;
     
     constructor(name = "") {
         this.#name = name;
+    }
+
+    /**
+     * Init the parser
+     */
+    async init(runner) {
+        await this.get();
+        this.parser = await Parser.getInstance(this, runner);
     }
 
     /**
@@ -27,14 +36,6 @@ class Configuration {
      */
     set(data) {
         this.#data = data;
-    }
-
-    /**
-     * Returns a parser for the configuration
-     */
-    async parser(runner) {
-        await this.get();
-        return Parser.getInstance(this, runner);
     }
 
     /**

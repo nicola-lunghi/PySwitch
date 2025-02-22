@@ -3,18 +3,25 @@ class CodeEditor extends Tab {
     #editor = null;
     #dirty = false;
     #editorElement = null;
+    #applyButton = null;
+    #configFieldName = null;
+    #config = null;
+    #controller = null;
     
-    constructor(name) {
+    constructor(controller, tabName, configFieldName) {
         let editorElement = null;
         super(
             $('<div class="code-editor-container" />').append(
                 // Editor content
                  editorElement = $('<div class="code-editor" />')
             ), 
-            name
+            tabName
         );
 
+        this.#controller = controller;
+        this.#configFieldName = configFieldName;
         this.#editorElement = editorElement;
+
         this.#init();
     }
 
@@ -43,7 +50,49 @@ class CodeEditor extends Tab {
 		});
 
         this.#initGlobalShortcuts();
+    }
 
+    /**
+     * Generates custom buttons for the tab, if any
+     */
+    getButtons() {
+        const that = this;
+
+        return [
+            this.#applyButton = $('<div class="fas fa-check" data-toggle="tooltip" title="Apply code" />')
+            .toggleClass("inactive", !this.isDirty())
+            .on('click', async function() {
+                try {
+                    await that.apply();
+
+                } catch (e) {
+                    that.#controller.handle(e);
+                }
+            })              
+        ];
+    }
+
+    /**
+     * Sets a parser instance to get/set code
+     */
+    async setConfig(config) {
+        const content = (await config.get())[this.#configFieldName];
+        this.#resetDirtyState();
+        this.#setContent(content);
+        this.#config = config;
+    }
+    
+    /**
+     * Apply changes to the config
+     */
+    async apply() {
+        // if (!this.isDirty()) return;
+
+        await this.#config.parser.updateFromSource(this.#configFieldName, this.#getContent());
+        
+        await this.#controller.restart("Changes successfully applied");
+
+        this.#resetDirtyState();
     }
 
     /**
@@ -67,32 +116,81 @@ class CodeEditor extends Tab {
 		// });
 	}
 
+    /**
+     * Set the editor dirty
+     */
     #setDirty() {
         this.#dirty = true;
+        if (this.#applyButton) {
+            this.#applyButton.removeClass('inactive');
+        }
     }
 
-    refresh() {
-        const content = this.getContent();
-        this.setContent(content);
+    /**
+     * Reset dirty state
+     */
+    #resetDirtyState() {
+        this.#dirty = false;    
+        if (this.#applyButton) {    
+            this.#applyButton.addClass('inactive');
+        }
     }
 
+    /**
+     * Are there unapplied changes?
+     */
     isDirty() {
         return this.#dirty;
     }
 
-    getContent() {
+    /**
+     * If dirty, asks the user to confirm the action he wants to take.
+     */
+    confirmIfDirty() {
+        if (!this.isDirty()) return true;
+        return confirm(this.name + " has unapplied changes, do you want to discard them?");
+    }
+
+    /**
+     * Returns the current code
+     */
+    #getContent() {
        return this.#editor.getValue();
     }
 
-    setContent(content, dontUseTimeout = false) {
+    /**
+     * Sets the code, optionally using setTimeout to perform the changes
+     * which is sometimes necessary.
+     */
+    #setContent(content, dontUseTimeout = false) {
         if (dontUseTimeout) {
+            const dirtyState = this.isDirty();
+            
             this.#editor.setValue(content); 
-            this.#dirty = false;           
+
+            if (dirtyState) {
+                this.#setDirty();
+            }else {
+                this.#resetDirtyState();
+            }
         } else {
             const that = this;
             setTimeout(function() {
-                that.setContent(content, true);
+                try {
+                    that.#setContent(content, true);
+
+                } catch (e) {
+                    that.#controller.handle(e);
+                }                
             }, 0);            
         }
+    }
+
+    /**
+     * Refresh editor element after focus changes. Does not reset dirty state!
+     */
+    refresh() {
+        const content = this.#getContent();
+        this.#setContent(content);
     }
 }

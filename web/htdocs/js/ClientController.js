@@ -78,7 +78,7 @@ class ClientController {
 
         return new Promise(async function(resolve, reject) {
             // Get a detector fir the config
-            const detector = await (await config.parser()).getClientDetector();
+            const detector = await config.parser.getClientDetector();
             
             function cleanup() {
                 if (attempts) {

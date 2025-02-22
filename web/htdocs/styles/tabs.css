@@ -59,19 +59,37 @@
     right: 0;
     top: 0;
     bottom: 0;
+    display: flex;
 }
 
 .container .tabs .header-buttons > * {
-    height: 100%;
     background-color: rgb(110, 110, 110);
+    height: 100%;
+    display: inline-block;
+}
+
+.container .tabs .header-buttons > *:last-child {
+    padding-right: 1em;
+}
+
+.container .tabs .header-buttons > * > * {
+    height: 100%;    
     color: rgb(199, 199, 199);
     cursor: pointer;
-    padding: 0.8em 1em 0.1em 1em;
+    padding: 0.8em 0 0.1em 1em;
     cursor: pointer;
 }
 
-.container .tabs .header-buttons > *:hover {
+.container .tabs .header-buttons > * > *:hover {
     color: white;
+}
+
+.container .tabs .header-buttons > * > .inactive {
+    color: rgb(146, 146, 146);
+}
+
+.container .tabs .header-buttons > * > .inactive:hover {
+    color: rgb(146, 146, 146);
 }
 
 /******************************************************************/
@@ -96,14 +114,3 @@
     color: black;
 }
 
-/******************************************************************/
-/* 
-.container .tabs .content .buttons {
-    position: absolute;
-    top: 0.2em;
-    right: 0.2em;
-    z-index: 1000;
-}
-
-.container .tabs .content .buttons > * {
-} */

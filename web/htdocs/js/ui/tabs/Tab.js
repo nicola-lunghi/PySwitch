@@ -54,6 +54,20 @@ class Tab {
         return this.header;
     }
 
+    /**
+     * Generates custom buttons for the tab, if any
+     */
+    getButtons() {
+        return null;
+    }
+
+    /**
+     * If dirty, asks the user to confirm the action he wants to take.
+     */
+    confirmIfDirty() {
+        return true;
+    }
+
     select() {
         this.#tabs.setActive(this);
     }

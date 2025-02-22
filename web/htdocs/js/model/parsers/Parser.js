@@ -1,6 +1,8 @@
 class Parser {
 
     static async getInstance(config, runner) {
+        if (!runner) throw new Error("No runner passed");
+
         const data = await config.get();
 
         if (data.inputs_py.includes("pyswitch.clients.kemper")) {
@@ -92,6 +94,23 @@ class Parser {
             display_py: src.get("display_py")
         });
     }
+
+    /**
+     * Update the config with new code for a single file and reset the parser
+     */
+    async updateFromSource(fileName, code) {
+        const data = await this.config.get();
+        data[fileName] = code;
+        await this.updateFromData(data);
+    }
+
+    /**
+     * Update the config with new code for all files and reset the parser
+     */
+    async updateFromData(data) {
+        this.config.set(data);
+        await this.#pySwitchParser.from_source(data.inputs_py, data.display_py);
+    }    
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
