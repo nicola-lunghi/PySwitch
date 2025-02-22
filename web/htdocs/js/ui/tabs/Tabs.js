@@ -6,6 +6,7 @@ class Tabs {
     
     #content = null;
     #header = null;
+    #headerButtons = null;
     
     #tabs = [];
     active = null;               // Active Tab instance
@@ -24,17 +25,20 @@ class Tabs {
     init() {
         // DOM
         this.#container.append(
-            this.#header = $('<div class="header" />').append(
-                // Show/hide tabs (only visible in mobile mode)
-                $('<div class="header-item close-tabs fas fa-times"/>')
-                .on('click', async function() {
-                    try {
-                        that.hide();
-                    
-                    } catch (e) {
-                        that.#controller.handle(e);
-                    }
-                })
+            $('<div class="header" />').append(
+                this.#header = $('<div class="header-tabs" />'),
+                    this.#headerButtons = $('<div class="header-buttons" />').append(
+                    // Show/hide tabs (only visible in mobile mode)
+                    $('<div class="close-tabs fas fa-times"/>')
+                    .on('click', async function() {
+                        try {
+                            that.hide();
+                        
+                        } catch (e) {
+                            that.#controller.handle(e);
+                        }
+                    })
+                )
             ),
             this.#content = $('<div class="content" />'),
         )
