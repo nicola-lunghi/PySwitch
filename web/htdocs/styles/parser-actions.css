@@ -1,6 +1,10 @@
 
-.container .list-browser.select-actions .info-panel > * {
+.container .select-actions .info-panel > * {
     overflow-x: hidden;
+}
+
+.container .select-actions .table-container {
+    margin-right: 0.8em;
 }
 
 .container .select-actions .listing-link {
@@ -12,12 +16,12 @@
     margin-right: 1em;    
 }
 
-.container .list-browser.select-actions .listing-link:hover {    
+.container .select-actions .listing-link:hover {    
     filter: brightness(0.9);
     text-decoration: none;
 }
 
-.container .list-browser.select-actions tr.selected .listing-link {
+.container .select-actions tr.selected .listing-link {
     filter: brightness(0.7);
 }
 

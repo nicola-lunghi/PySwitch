@@ -14,6 +14,10 @@
     font-weight: bold;
 }
 
+.container .action-properties .action-header:first-child {
+    font-weight: bolder;
+}
+
 .container .action-properties .action-comment {
     white-space: pre-wrap;
     margin-left: 0.5em;
@@ -24,12 +28,12 @@
     margin-left: 0.5em;
 }
 
-.container .action-properties .action-buttons {
+/* .container .action-properties .action-buttons {
     position: absolute;
     right: 1em;
     bottom: 1em;
     width: unset;
-}
+} */
 
 /**********************************************************************************/
 

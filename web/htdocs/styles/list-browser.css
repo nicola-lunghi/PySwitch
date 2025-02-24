@@ -110,7 +110,7 @@
     grid-row: 2;
 
     overflow-y: auto;   
-    overflow-x: hidden;; 
+    overflow-x: hidden;
 }
 
 .container .list-browser .browser-content table {

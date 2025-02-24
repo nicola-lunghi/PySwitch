@@ -12,10 +12,12 @@ class ActionProperties {
      * Generate the DOM for the properties panel
      */
     async get() {
+        const meta = new Meta(this.#model);
+
         return $('<div class="action-properties" />').append(
             // Comment
             $('<div class="action-header" />')
-            .text("Description:"),
+            .text(meta.getDisplayName()),
             
             $('<div class="action-comment" />')
             .html(this.#getActionComment()),
