@@ -54,7 +54,7 @@ class PySwitchUI {
     /**
      * Build the DOM tree
      */
-    build() {
+    async build() {
         const containerElement = $(this.#options.containerElementSelector);
         if (!containerElement) {
             throw new Error("Container " + this.#options.containerElementSelector + " not found");
@@ -114,7 +114,8 @@ class PySwitchUI {
                         $('<div class="appl-button fas fa-folder-open" data-toggle="tooltip" title="Open configuration..." />')
                         .on("click", async function() {
                             try {
-                                await that.loadBrowser.browse();
+                                that.loadBrowser.config.selectedValue = that.#controller.currentConfig ? (await that.#controller.currentConfig.name()) : null;
+                                await that.loadBrowser.browse();                                
 
                             } catch (e) {
                                 that.#controller.handle(e);
@@ -137,6 +138,7 @@ class PySwitchUI {
                         .on('click', async function() {
                             try {
                                 that.tabs.toggle();
+
                             } catch (e) {
                                 that.#controller.handle(e);
                             }
@@ -173,8 +175,8 @@ class PySwitchUI {
         );
 
         // Browsers
-        this.#initLoadBrowser();
-        this.#initClientBrowser();
+        await this.#initLoadBrowser();
+        await this.#initClientBrowser();
 
         // Client state button
         this.clientButton = new ClientConnectionButton(this.#controller, clientButtonElement);      
@@ -208,7 +210,7 @@ class PySwitchUI {
     /**
      * Init browser for loading configurations
      */
-    #initLoadBrowser() {
+    async #initLoadBrowser() {
         const that = this;
 
         // A browser for loading configurations, triggered by the load button
@@ -229,22 +231,14 @@ class PySwitchUI {
                         that.#controller.routing.call(that.#controller.getControllerUrl(entry.value));
                     }
                 })
-            ],
-            postProcess: async function(entry, generatedElement) {
-                // Highlight currently selected config
-                const currentName = that.#controller.currentConfig ? (await that.#controller.currentConfig.name()) : null;
-                
-                if (that.#controller.currentConfig && (entry.value == currentName)) {
-                    generatedElement.addClass('highlighted');
-                }    
-            }
+            ]
         }); 
     }
 
     /**
      * Init browser for client connection select
      */
-    #initClientBrowser() {
+    async #initClientBrowser() {
         const that = this;
 
         // A browser to select client connections (to Kemper etc.), triggered by the client select button
@@ -285,15 +279,7 @@ class PySwitchUI {
                         }
                     ]
                 })
-            ],
-            postProcess: function(entry, generatedElement) {
-                // Highlight currently selected client
-                const client = that.#controller.getState("client");
-
-                if (client == entry.value) {
-                    generatedElement.addClass('highlighted');
-                }
-            }
+            ]
         });
     }
 

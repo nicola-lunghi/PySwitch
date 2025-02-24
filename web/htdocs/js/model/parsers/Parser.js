@@ -44,6 +44,20 @@ class Parser {
         return null;
     }    
 
+    /**
+     * Can resolve tokens related to value ranges etc.
+     */
+    async resolveValueToken(value) {
+        return value;
+    }
+
+    /**
+     * Returns a sort string for the passed action definition
+     */
+    getActionSortString(action) {
+        return action.meta.getCategory();
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

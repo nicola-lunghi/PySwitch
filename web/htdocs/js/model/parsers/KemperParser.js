@@ -21,4 +21,39 @@ class KemperParser extends Parser {
             }
         );
     }
+
+    /**
+     * Can resolve tokens related to value ranges etc.
+     */
+    async resolveValueToken(value) {
+        switch(value) {
+            case "NUM_BANKS": return 125;
+            case "NUM_RIGS_PER_BANK": return 5;
+        }
+
+        return value;        
+    }
+
+    /**
+     * Returns a sort string for the passed action definition
+     */
+    getActionSortString(action) {
+        if (action.name == "BINARY_SWITCH") {
+            return "ZZZZZ";
+        }
+
+        const category = action.meta.getCategory();
+        
+        const meta = new Meta(action);
+
+        switch (category) {
+            case "rig": return "a" + meta.getDisplayName();
+            case "bank": return "b" + meta.getDisplayName();
+            case "effects": return "e";
+            case "tuner": return "f";
+            case "none": return "m";
+            case "looper": return "w";
+        }        
+        return category;
+    }
 }

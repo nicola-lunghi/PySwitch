@@ -23,7 +23,29 @@ class ActionsProvider extends BrowserProvider {
 
         const actions = await this.#parser.getAvailableActions();
 
-        this.#toc = new BrowserEntry(browser);
+        this.#toc = new BrowserEntry(
+            browser,
+            {
+                childLayout: [
+                    {
+                        get: async function(entry) {
+                            // Listing entry link
+                            return $('<span class="listing-link" />')
+                                .addClass("category-" + entry.config.model.meta.getCategory())
+                                .text(await entry.getText())
+                                .on('click', async function() {
+                                    try {
+                                        await browser.browse(entry);
+
+                                    } catch (e) {
+                                        console.error(e);
+                                    }
+                                });
+                        }
+                    }
+                ]
+            }
+        );
 
         for (const action of actions) {
             const meta = new Meta(action);
@@ -36,12 +58,13 @@ class ActionsProvider extends BrowserProvider {
                         value: action.name,
                         parent: this.#toc,
                         onSelect: this.#config.onSelect,
-                        model: action
+                        model: action,
+                        sortString: this.#parser.getActionSortString(action)
                     }
                 )
             )
         }
 
         return this.#toc;
-    }
+    }    
 }

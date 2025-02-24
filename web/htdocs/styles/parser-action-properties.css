@@ -1,5 +1,73 @@
 .container .action-properties {
     width: 100%;
-    height: 100%;
-    background-color: yellow;
+    position: relative;
 }
+
+.container .action-properties > * {
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+/**********************************************************************************/
+
+.container .action-properties .action-header {
+    font-weight: bold;
+}
+
+.container .action-properties .action-comment {
+    white-space: pre-wrap;
+    margin-left: 0.5em;
+}
+
+.container .action-properties .action-parameters {
+    border-spacing: 0;
+    margin-left: 0.5em;
+}
+
+.container .action-properties .action-buttons {
+    position: absolute;
+    right: 1em;
+    bottom: 1em;
+    width: unset;
+}
+
+/**********************************************************************************/
+
+.container .action-properties .action-parameters table {
+    border-spacing: 0;
+    max-width: 100cqw;
+}
+
+.container .action-properties .action-parameters td:last-child {
+    white-space: unset;
+    color: gray;
+}
+
+.container .action-properties .action-parameters td {
+    border-bottom: 1px solid lightgray;
+    padding: 0.3em;
+    vertical-align: top;
+}
+
+.container .action-properties .action-parameters td:first-child {
+    padding-left: 0;
+}
+
+
+.container .action-properties .action-parameters tr:last-child td {
+    border-bottom: none;
+}
+
+/**********************************************************************************/
+
+.container .action-properties select {
+    font-size: 0.88888em;
+}
+
+.container .action-properties input[type=text] {
+    width: 15em;
+}
+
+/**********************************************************************************/
+
+

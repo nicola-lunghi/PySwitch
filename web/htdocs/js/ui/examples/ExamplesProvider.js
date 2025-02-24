@@ -75,7 +75,7 @@ class ExamplesProvider extends BrowserProvider {
                                                         silent: true
                                                     });
         
-                                                    content = $('<span class="clickable" />')
+                                                    content = $('<span class="clickable markdown" />')
                                                         .html(await marked.parse(await Tools.fetch(url)))
                                                         .on('click', async function() {
                                                             window.open(url, '_blank');

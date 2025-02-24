@@ -134,7 +134,7 @@ class BrowserEntry {
 
                 default:
                     td.append(
-                        col.get(this)
+                        await col.get(this)
                     );
                     break;
             }

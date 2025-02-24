@@ -1,0 +1,58 @@
+
+.container .list-browser.select-actions .info-panel > * {
+    overflow-x: hidden;
+}
+
+.container .select-actions .listing-link {
+    background-color: rgb(250, 250, 250);
+    border: 1px solid gray;
+    border-radius: 0.5em;
+    display: block;
+    padding: 0.5em 1em;
+    margin-right: 1em;    
+}
+
+.container .list-browser.select-actions .listing-link:hover {    
+    filter: brightness(0.9);
+    text-decoration: none;
+}
+
+.container .list-browser.select-actions tr.selected .listing-link {
+    filter: brightness(0.7);
+}
+
+/* .container .select-actions .listing-link.category-none {
+} */
+
+.container .select-actions .listing-link.category-rig {
+    background-color: rgb(217, 252, 183);
+}
+
+.container .select-actions .listing-link.category-bank {
+    background-color: rgb(255, 205, 205);
+}
+
+.container .select-actions .listing-link.category-effects {
+    background-color: rgb(255, 255, 170);
+}
+
+.container .select-actions .listing-link.category-utilities {
+    background-color: rgb(205, 222, 255);
+}
+
+.container .select-actions .listing-link.category-looper {
+    background-color: rgb(244, 205, 255);
+}
+
+.container .select-actions .listing-link.category-morph {
+    background-color: rgb(205, 250, 255);
+}
+
+.container .select-actions .listing-link.category-tempo {
+    background-color: rgb(205, 255, 205);
+}
+
+.container .select-actions .listing-link.category-tuner {
+    background-color: rgb(255, 228, 205);
+}
+

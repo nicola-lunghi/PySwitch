@@ -1,17 +1,22 @@
 class BrowserPopup extends Popup {
 
-    #last = null;
     #toc = null;
+
+    #buttons = null;
     #infoPanel = null;
     #infoPanelContent = null;
     #infoPanelOnClick = null;
+    
+    #last = null;
+    #currentItems = null;
 
     /**
      * config: {
-     *      container:   Container DOM element
-     *      headline:    Header text   
-     *      providers:   Array of provider instances,
-     *      postProcess: Optional callback to alter the generated DOM: postProcess(entry, generatedElement) => void
+     *      container:                Container DOM element
+     *      headline:                 Header text   
+     *      providers:                Array of provider instances,
+     *      selectedValue:            If set, the entry with this value will be selected until this value is changed. 
+     *                                For temporary selection use setSelected() or setSelectedValue().
      *      dontCloseOnSelect: false
      * }
      */
@@ -43,24 +48,27 @@ class BrowserPopup extends Popup {
         listing = await this.#sort(listing);
 
         // Create DOM items for the children
-        const items = [];
+        this.#currentItems = [];
         for(const e of listing) {
             const el = await e.getElement(entry.config.childLayout);            
 
-            if (this.config.postProcess) {
-                await this.config.postProcess(e, el);
-            }
-
-            items.push(el);
+            this.#currentItems.push({
+                entry: e,
+                element: el
+            });
         }
 
         this.#last = entry;
 
         // Build DOM and show the browser
         this.show(
-            await this.#buildContent(items, entry),
+            await this.#buildContent(entry),
             this.config.headline
         );
+
+        if (this.config.selectedValue) {
+            this.setSelectedValue(this.config.selectedValue);
+        }
     }
 
     /**
@@ -70,6 +78,34 @@ class BrowserPopup extends Popup {
         this.#infoPanelContent.empty();
         this.#infoPanelContent.append(content);        
         this.#infoPanel.show();                
+    }
+
+    /**
+     * Set selection by value
+     */
+    setSelectedValue(value) {
+        for (const item of this.#currentItems) {
+            item.element.toggleClass("selected", item.entry.value == value);
+        }
+    }
+
+    /**
+     * Set selection by entry
+     */
+    setSelected(entry) {
+        for (const item of this.#currentItems) {
+            item.element.toggleClass("selected", item.entry == entry);
+        }
+    }
+
+    /**
+     * Adds some buttons, replacing the old ones
+     */
+    setButtons(buttons) {
+        if (!this.#buttons) throw new Error("Popup not initialized with show()");
+
+        this.#buttons.empty();
+        this.#buttons.append(buttons);
     }
 
     /**
@@ -122,7 +158,7 @@ class BrowserPopup extends Popup {
     /**
      * Build the DOM (returns content for Popup)
      */
-    async #buildContent(items, entry) {
+    async #buildContent(entry) {
         const that = this;
         
         return $('<div class="browser-content" />').append(
@@ -149,23 +185,30 @@ class BrowserPopup extends Popup {
                 // Listing
                 $('<div class="table-container" />').append(
                     $('<table/>').append(
-                        $('<tbody/>').append(items)
+                        $('<tbody/>').append(
+                            this.#currentItems.map((item) => item.element)
+                        )
                     )
                 ),
 
                 // Info panel
-                this.#infoPanel = $('<div class="info-panel" />').append(
-                    this.#infoPanelContent = $('<div />')
+                $('<div class="right-side" />').append(
+                    this.#infoPanel = $('<div class="info-panel" />').append(
+                        this.#infoPanelContent = $('<div />')
+                    )
+                    .on('click', async function() {
+                        try {
+                            await that.#onInfoPanelClick();
+                            
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    })
+                    .hide(),
+                    
+                    // Buttons
+                    this.#buttons = $('<div class="buttons" />')
                 )
-                .on('click', async function() {
-                    try {
-                        await that.#onInfoPanelClick();
-                        
-                    } catch (e) {
-                        console.error(e);
-                    }
-                })
-                .hide()
             ]
         )
     }

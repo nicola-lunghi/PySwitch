@@ -5,6 +5,10 @@
             "comment": "This defines default parameter types and values, used for all parameters of the same name, if no more specific definition exists.",
             "parameters": [
                 {
+                    "name": "id",
+                    "type": "any"
+                },
+                {
                     "name": "display_mode",
                     "type": "select",
                     "values": [
@@ -31,7 +35,8 @@
                     "type": "int",
                     "range": {
                         "min": 1,
-                        "max": "NUM_RIGS_PER_BANK"
+                        "max": "NUM_RIGS_PER_BANK",
+                        "none": true
                     }
                 },
                 {
@@ -47,16 +52,9 @@
                     "type": "int",
                     "range": {
                         "min": 1,
-                        "max": "NUM_BANKS"
+                        "max": "NUM_BANKS",
+                        "none": true
                     }
-                },
-                {
-                    "name": "preselect",
-                    "type": "bool"
-                },
-                {
-                    "name": "use_leds",
-                    "type": "bool"
                 },
                 {
                     "name": "color",
@@ -64,8 +62,13 @@
                 },
 
                 {
-                    "name": "mapping",
-                    "default": "MAPPING_ROTARY_SPEED(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD)"
+                    "name": "value_on",
+                    "type": "any"
+                },
+
+                {
+                    "name": "value_off",
+                    "type": "any"
                 },
 
                 {
@@ -106,24 +109,100 @@
                             "value": "KemperEffectSlot.EFFECT_SLOT_ID_REV"
                         }
                     ]
+                },
+
+                {
+                    "name": "mode",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Latch",
+                            "value": "PushButtonAction.LATCH"
+                        },
+                        {
+                            "name": "Latch (momentary on long press)",
+                            "value": "PushButtonAction.HOLD_MOMENTARY"
+                        },
+                        {
+                            "name": "Momentary",
+                            "value": "PushButtonAction.MOMENTARY"
+                        },
+                        {
+                            "name": "Momentary (inverse)",
+                            "value": "PushButtonAction.MOMENTARY_INVERSE"
+                        },
+                        {
+                            "name": "Enable only",
+                            "value": "PushButtonAction.ENABLE"
+                        },
+                        {
+                            "name": "Disable only",
+                            "value": "PushButtonAction.DISABLE"
+                        },
+                        {
+                            "name": "One Shot",
+                            "value": "PushButtonAction.ONE_SHOT"
+                        }
+                    ]
+                },
+
+                {
+                    "name": "comparison_mode",
+                    "type": "select",
+                    "values": [
+                        {
+                            "name": "Equal",
+                            "value": "BinaryParameterCallback.EQUAL"
+                        },
+                        {
+                            "name": "Greater than",
+                            "value": "BinaryParameterCallback.GREATER"
+                        },
+                        {
+                            "name": "Greater or equal",
+                            "value": "BinaryParameterCallback.GREATER_EQUAL"
+                        },
+                        {
+                            "name": "Less than",
+                            "value": "BinaryParameterCallback.LESS"
+                        },
+                        {
+                            "name": "Less or equal",
+                            "value": "BinaryParameterCallback.LESS_EQUAL"
+                        },
+                        {
+                            "name": "Do not change state",
+                            "value": "BinaryParameterCallback.NO_STATE_CHANGE"
+                        }
+                    ]
                 }
             ]
         },
+
+
         {
-            "entityName": "RIG_VOLUME_BOOST",
-            "parameters": [
-                {
-                    "name": "boost_volume",
-                    "type": "float",
-                    "range": {
-                        "min": 0,
-                        "max": 1
-                    }
-                }
-            ]
+            "entityName": "BANK_SELECT",
+            "category": "bank",
+            "parameters": []
+        },
+        {
+            "entityName": "BANK_UP",
+            "category": "bank",
+            "parameters": []
+        },
+        {
+            "entityName": "BANK_DOWN",
+            "category": "bank",
+            "parameters": []
+        },
+        {
+            "entityName": "EFFECT_STATE",
+            "category": "effects",
+            "parameters": []
         },
         {
             "entityName": "EFFECT_BUTTON",
+            "category": "effects",
             "parameters": [
                 {
                     "name": "num",
@@ -136,9 +215,107 @@
             ]
         },
         {
-            "entityName": "RIG_SELECT_AND_MORPH_STATE",
-            "returnType": "list",
+            "entityName": "LOOPER_REC_PLAY_OVERDUB",
+            "category": "looper",
             "parameters": []
+        },
+        {
+            "entityName": "LOOPER_STOP",
+            "category": "looper",
+            "parameters": []
+        },
+        {
+            "entityName": "LOOPER_ERASE",
+            "category": "looper",
+            "parameters": []
+        },
+        {
+            "entityName": "LOOPER_CANCEL",
+            "category": "looper",
+            "parameters": []
+        },
+        {
+            "entityName": "LOOPER_REVERSE",
+            "category": "looper",
+            "parameters": []
+        },
+        {
+            "entityName": "LOOPER_TRIGGER",
+            "category": "looper",
+            "parameters": []
+        },
+        {
+            "entityName": "LOOPER_HALF_SPEED",
+            "category": "looper",
+            "parameters": []
+        },
+        {
+            "entityName": "MORPH_BUTTON",
+            "category": "morph",
+            "parameters": []
+        },
+        {
+            "entityName": "MORPH_DISPLAY",
+            "category": "morph",
+            "parameters": []
+        },
+        {
+            "entityName": "RIG_SELECT_AND_MORPH_STATE",
+            "category": "rig",
+            "parameters": []
+        },
+        {
+            "entityName": "RIG_SELECT",
+            "category": "rig",
+            "parameters": []
+        },
+        {
+            "entityName": "RIG_UP",
+            "category": "rig",
+            "parameters": []
+        },
+        {
+            "entityName": "RIG_DOWN",
+            "category": "rig",
+            "parameters": []
+        },
+        {
+            "entityName": "RIG_VOLUME_BOOST",
+            "category": "rig",
+            "parameters": [
+                {
+                    "name": "boost_volume",
+                    "type": "float",
+                    "range": {
+                        "min": 0,
+                        "max": 1
+                    }
+                }
+            ]
+        },
+        {
+            "entityName": "TAP_TEMPO",
+            "category": "tempo",
+            "parameters": []
+        },
+        {
+            "entityName": "SHOW_TEMPO",
+            "category": "tempo",
+            "parameters": []
+        },
+        {
+            "entityName": "TUNER_MODE",
+            "category": "tuner",
+            "parameters": []
+        },
+        {
+            "entityName": "BINARY_SWITCH",
+            "parameters": [
+                {
+                    "name": "mapping",
+                    "default": "MAPPING_ROTARY_SPEED(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD)"
+                }
+            ]
         }
     ]
 }

@@ -1,0 +1,26 @@
+.container .markdown {
+    overflow: auto;
+}
+
+.container .markdown > *:first-child {
+    margin-block-start: 0;
+}
+
+.container .markdown table {
+    border-spacing: unset;
+    border-collapse: collapse;
+}
+
+.container .markdown tr {
+    border-top: 1px solid #d8dee4;
+}
+
+.container .markdown tr:nth-child(2n) {
+    background-color: #e8e8e8;
+}
+
+.container .markdown th,
+.container .markdown td {
+    padding: 6px 13px;
+    border: 1px solid #d0d7de;
+}

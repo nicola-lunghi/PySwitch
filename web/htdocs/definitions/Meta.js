@@ -12,6 +12,7 @@ class Meta extends MetaBase {
         switch (this.entity.name) {
             case "RIG_SELECT": return this.#getDisplayNameRigSelect(actionDefinition)
             case "BANK_SELECT": return this.#getDisplayNameBankSelect(actionDefinition)
+            case "BINARY_SWITCH": return "Other"
         }
         
         return this.underscoreToDisplayName(this.entity.name);

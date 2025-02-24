@@ -108,26 +108,37 @@
 .container .list-browser .browser-content .table-container {
     grid-column: 1;
     grid-row: 2;
-    /* height: min-content; */
-    /* width: min-content; */
-    overflow-y: auto;    
+
+    overflow-y: auto;   
+    overflow-x: hidden;; 
 }
 
 .container .list-browser .browser-content table {
     margin-bottom: 0.7em;
 }
 
-.container .list-browser .browser-content .info-panel {
+.container .list-browser .browser-content .right-side {
     grid-column: 2;
     grid-row: 2;
 
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto min-content;
+}
+
+.container .list-browser .browser-content .buttons {
+}
+
+/**********************************************************************/
+
+.container .list-browser .browser-content .info-panel {
     border: 1px solid gray;
     border-radius: 1em;
     padding: 1em;
 
     overflow: auto;
 
-    background-color: rgba(0,0,0,0.01);
+    background-color: rgb(250, 250, 250);
 }
 
 .container .list-browser .browser-content .info-panel.clickable {
@@ -140,28 +151,7 @@
     height: 100%;
 }
 
-.container .list-browser .browser-content .info-panel > * > *:first-child {
-    margin-block-start: 0;
-}
-
-.container .list-browser .browser-content .info-panel table {
-    border-spacing: unset;
-    border-collapse: collapse;
-}
-
-.container .list-browser .browser-content .info-panel tr {
-    border-top: 1px solid #d8dee4;
-}
-
-.container .list-browser .browser-content .info-panel tr:nth-child(2n) {
-    background-color: #e8e8e8;
-}
-
-.container .list-browser .browser-content .info-panel th,
-.container .list-browser .browser-content .info-panel td {
-    padding: 6px 13px;
-    border: 1px solid #d0d7de;
-}
+/**********************************************************************/
 
 @container popup-content (max-width: 650px) {
     .container .list-browser .browser-content .path {
@@ -175,10 +165,9 @@
         overflow-y: unset;
     }
     
-    .container .list-browser .browser-content .info-panel {
+    .container .list-browser .browser-content .right-side {
         grid-column: 1;
         grid-row: 3;
-        background-color: yellow;
         min-height: 100cqh;
     }    
 }
@@ -204,7 +193,7 @@
     white-space: pre;    
 }
 
-.container .list-browser tr.highlighted .listing-link {
+.container .list-browser tr.selected .listing-link {
     color: rgb(150, 150, 150);
 }
 

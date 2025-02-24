@@ -6,12 +6,16 @@
                 "name": "num",
                 "default": null,
                 "comment": null,
-                "meta": {}
+                "meta": {
+                    "data": {}
+                }
             }
         ],
         "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).",
         "importPath": "pyswitch.clients.kemper.mappings.effects",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_DELAY_MIX",
@@ -21,195 +25,241 @@
                 "default": null,
                 "comment": null,
                 "meta": {
-                    "name": "slot_id",
-                    "type": "select",
-                    "values": [
-                        {
-                            "name": "Slot A",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_A"
-                        },
-                        {
-                            "name": "Slot B",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_B"
-                        },
-                        {
-                            "name": "Slot C",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_C"
-                        },
-                        {
-                            "name": "Slot D",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_D"
-                        },
-                        {
-                            "name": "Slot X",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_X"
-                        },
-                        {
-                            "name": "Slot MOD",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_MOD"
-                        },
-                        {
-                            "name": "Slot DLY",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_DLY"
-                        },
-                        {
-                            "name": "Slot REV",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_REV"
-                        }
-                    ]
+                    "data": {
+                        "name": "slot_id",
+                        "type": "select",
+                        "values": [
+                            {
+                                "name": "Slot A",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_A"
+                            },
+                            {
+                                "name": "Slot B",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_B"
+                            },
+                            {
+                                "name": "Slot C",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_C"
+                            },
+                            {
+                                "name": "Slot D",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_D"
+                            },
+                            {
+                                "name": "Slot X",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_X"
+                            },
+                            {
+                                "name": "Slot MOD",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_MOD"
+                            },
+                            {
+                                "name": "Slot DLY",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_DLY"
+                            },
+                            {
+                                "name": "Slot REV",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_REV"
+                            }
+                        ]
+                    }
                 }
             }
         ],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.effects",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_AMP_NAME",
         "parameters": [],
         "comment": "Amp name (request only)",
         "importPath": "pyswitch.clients.kemper.mappings.amp",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_AMP_STATE",
         "parameters": [],
         "comment": "Amp on/off",
         "importPath": "pyswitch.clients.kemper.mappings.amp",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_AMP_GAIN",
         "parameters": [],
         "comment": "Amp gain",
         "importPath": "pyswitch.clients.kemper.mappings.amp",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_NEXT_BANK",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.bank",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_PREVIOUS_BANK",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.bank",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_RIG_COMMENT",
         "parameters": [],
         "comment": "Rig comment (request only)",
         "importPath": "pyswitch.clients.kemper.mappings.rig",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_RIG_DATE",
         "parameters": [],
         "comment": "Rig date (request only)",
         "importPath": "pyswitch.clients.kemper.mappings.rig",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_RIG_VOLUME",
         "parameters": [],
         "comment": "Rig volume",
         "importPath": "pyswitch.clients.kemper.mappings.rig",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_LOOPER_REC_PLAY_OVERDUB",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.looper",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_LOOPER_STOP",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.looper",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_LOOPER_TRIGGER",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.looper",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_LOOPER_REVERSE",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.looper",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_LOOPER_HALF_SPEED",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.looper",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_LOOPER_CANCEL",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.looper",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_LOOPER_ERASE",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.looper",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_MORPH_BUTTON",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.morph",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_MORPH_PEDAL",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.morph",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_TAP_TEMPO",
         "parameters": [],
         "comment": "Switch tuner mode on/off (no receive possible!)",
         "importPath": "pyswitch.clients.kemper.mappings.tempo",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_TEMPO_DISPLAY",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.tempo",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_CABINET_NAME",
         "parameters": [],
         "comment": "Cab name (request only)",
         "importPath": "pyswitch.clients.kemper.mappings.cabinet",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_CABINET_STATE",
         "parameters": [],
         "comment": "Cab on/off",
         "importPath": "pyswitch.clients.kemper.mappings.cabinet",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_FREEZE",
@@ -219,55 +269,61 @@
                 "default": null,
                 "comment": null,
                 "meta": {
-                    "name": "slot_id",
-                    "type": "select",
-                    "values": [
-                        {
-                            "name": "Slot A",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_A"
-                        },
-                        {
-                            "name": "Slot B",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_B"
-                        },
-                        {
-                            "name": "Slot C",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_C"
-                        },
-                        {
-                            "name": "Slot D",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_D"
-                        },
-                        {
-                            "name": "Slot X",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_X"
-                        },
-                        {
-                            "name": "Slot MOD",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_MOD"
-                        },
-                        {
-                            "name": "Slot DLY",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_DLY"
-                        },
-                        {
-                            "name": "Slot REV",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_REV"
-                        }
-                    ]
+                    "data": {
+                        "name": "slot_id",
+                        "type": "select",
+                        "values": [
+                            {
+                                "name": "Slot A",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_A"
+                            },
+                            {
+                                "name": "Slot B",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_B"
+                            },
+                            {
+                                "name": "Slot C",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_C"
+                            },
+                            {
+                                "name": "Slot D",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_D"
+                            },
+                            {
+                                "name": "Slot X",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_X"
+                            },
+                            {
+                                "name": "Slot MOD",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_MOD"
+                            },
+                            {
+                                "name": "Slot DLY",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_DLY"
+                            },
+                            {
+                                "name": "Slot REV",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_REV"
+                            }
+                        ]
+                    }
                 }
             }
         ],
         "comment": "Freeze for slots",
         "importPath": "pyswitch.clients.kemper.mappings.freeze",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_FREEZE_ALL_GLOBAL",
         "parameters": [],
         "comment": "Freeze (global) for all reverb and delay modules (no feedback from kemper!)",
         "importPath": "pyswitch.clients.kemper.mappings.freeze",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_RIG_SELECT",
@@ -277,25 +333,31 @@
                 "default": null,
                 "comment": null,
                 "meta": {
-                    "name": "rig",
-                    "type": "int",
-                    "range": {
-                        "min": 1,
-                        "max": "NUM_RIGS_PER_BANK"
+                    "data": {
+                        "name": "rig",
+                        "type": "int",
+                        "range": {
+                            "min": 1,
+                            "max": "NUM_RIGS_PER_BANK"
+                        }
                     }
                 }
             }
         ],
         "comment": "Selects a rig of the current bank. Rig index must be in range [0..4]",
         "importPath": "pyswitch.clients.kemper.mappings.select",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_BANK_SELECT",
         "parameters": [],
         "comment": "Pre-selects a bank.",
         "importPath": "pyswitch.clients.kemper.mappings.select",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_BANK_AND_RIG_SELECT",
@@ -305,74 +367,94 @@
                 "default": null,
                 "comment": null,
                 "meta": {
-                    "name": "rig",
-                    "type": "int",
-                    "range": {
-                        "min": 1,
-                        "max": "NUM_RIGS_PER_BANK"
+                    "data": {
+                        "name": "rig",
+                        "type": "int",
+                        "range": {
+                            "min": 1,
+                            "max": "NUM_RIGS_PER_BANK"
+                        }
                     }
                 }
             }
         ],
         "comment": "Selects a rig of a specific bank. Rig index must be in range [0..4]",
         "importPath": "pyswitch.clients.kemper.mappings.select",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_WAH_PEDAL",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.pedals",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_VOLUME_PEDAL",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.pedals",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_PITCH_PEDAL",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.pedals",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_DELAY_MIX_PEDAL",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.pedals",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_DELAY_FEEDBACK_PEDAL",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.pedals",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_REVERB_MIX_PEDAL",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.pedals",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_REVERB_TIME_PEDAL",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.pedals",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_VOLUME_OUTPUT_PEDAL",
         "parameters": [],
         "comment": null,
         "importPath": "pyswitch.clients.kemper.mappings.pedals",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     },
     {
         "name": "MAPPING_ROTARY_SPEED",
@@ -382,47 +464,51 @@
                 "default": null,
                 "comment": null,
                 "meta": {
-                    "name": "slot_id",
-                    "type": "select",
-                    "values": [
-                        {
-                            "name": "Slot A",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_A"
-                        },
-                        {
-                            "name": "Slot B",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_B"
-                        },
-                        {
-                            "name": "Slot C",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_C"
-                        },
-                        {
-                            "name": "Slot D",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_D"
-                        },
-                        {
-                            "name": "Slot X",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_X"
-                        },
-                        {
-                            "name": "Slot MOD",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_MOD"
-                        },
-                        {
-                            "name": "Slot DLY",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_DLY"
-                        },
-                        {
-                            "name": "Slot REV",
-                            "value": "KemperEffectSlot.EFFECT_SLOT_ID_REV"
-                        }
-                    ]
+                    "data": {
+                        "name": "slot_id",
+                        "type": "select",
+                        "values": [
+                            {
+                                "name": "Slot A",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_A"
+                            },
+                            {
+                                "name": "Slot B",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_B"
+                            },
+                            {
+                                "name": "Slot C",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_C"
+                            },
+                            {
+                                "name": "Slot D",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_D"
+                            },
+                            {
+                                "name": "Slot X",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_X"
+                            },
+                            {
+                                "name": "Slot MOD",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_MOD"
+                            },
+                            {
+                                "name": "Slot DLY",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_DLY"
+                            },
+                            {
+                                "name": "Slot REV",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_REV"
+                            }
+                        ]
+                    }
                 }
             }
         ],
         "comment": "Rotary speed (fast/slow)",
         "importPath": "pyswitch.clients.kemper.mappings.rotary",
-        "meta": {}
+        "meta": {
+            "data": {}
+        }
     }
 ]

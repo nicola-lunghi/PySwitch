@@ -428,7 +428,7 @@
                 "comment": null
             }
         ],
-        "comment": "Tap tempo ",
+        "comment": "Tap tempo",
         "importPath": "pyswitch.clients.kemper.actions.tempo"
     },
     {
@@ -588,7 +588,7 @@
             {
                 "name": "display",
                 "default": "None",
-                "comment": null
+                "comment": "Reference to a DisplayLabel"
             },
             {
                 "name": "id",
@@ -1105,7 +1105,7 @@
                 "comment": "If enabled, the state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). "
             }
         ],
-        "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).\nNOTE: The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). \nIf you dont want this behaviour, you can set \"use_internal_state = False\".",
+        "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).\n#\nNOTE: The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). \nIf you dont want this behaviour, you can set \"use_internal_state = False\".",
         "importPath": "pyswitch.clients.kemper.actions.effect_button"
     },
     {
@@ -1114,12 +1114,12 @@
             {
                 "name": "bank",
                 "default": null,
-                "comment": null
+                "comment": "Bank to select"
             },
             {
                 "name": "bank_off",
                 "default": "None",
-                "comment": "\"off\" bank. Will be ignored when preselect is enabled"
+                "comment": "\"off\" bank, to toggle between banks. Will be ignored when preselect is enabled."
             },
             {
                 "name": "preselect",
@@ -1129,47 +1129,47 @@
             {
                 "name": "display_mode",
                 "default": "RIG_SELECT_DISPLAY_CURRENT_RIG",
-                "comment": "Display mode (see definitions above)"
+                "comment": "Display mode"
             },
             {
                 "name": "display",
                 "default": "None",
-                "comment": null
+                "comment": "Reference to a DisplayLabel"
             },
             {
                 "name": "id",
                 "default": "False",
-                "comment": null
+                "comment": "ID for paging / enable callbacks"
             },
             {
                 "name": "use_leds",
                 "default": "True",
-                "comment": null
+                "comment": "Use the switch LEDs"
             },
             {
                 "name": "enable_callback",
                 "default": "None",
-                "comment": null
+                "comment": "Optional callback to enable/disable the action depeinding on things"
             },
             {
                 "name": "color_callback",
                 "default": "None",
-                "comment": "Optional callback for setting the color. Footprint: \ndef callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0."
+                "comment": "Optional callback for setting the color. Scheme: \ndef callback(action, bank, rig) -> (r, g, b) where bank and rig are integers starting from 0."
             },
             {
                 "name": "color",
                 "default": "None",
-                "comment": "Color override (if no color callback is passed)"
+                "comment": "Static color (if no color callback is passed)"
             },
             {
                 "name": "text_callback",
                 "default": "None",
-                "comment": "Optional callback for setting the text. Footprint: \ndef callback(action, bank, rig) -> String where bank and rig are int starting from 0."
+                "comment": "Callback for setting the text. Scheme: \ndef callback(action, bank, rig) -> String where bank and rig are integers starting from 0."
             },
             {
                 "name": "text",
                 "default": "None",
-                "comment": "Text override (if no text callback is passed)"
+                "comment": "Static text (if no text callback is passed)"
             }
         ],
         "comment": "Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). \nBanks are indexed starting from one, range: [1..126].    ",

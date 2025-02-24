@@ -8,21 +8,21 @@ from .rig_select import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGE
 
 # Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). 
 # Banks are indexed starting from one, range: [1..126].    
-def BANK_SELECT(bank, 
-                bank_off = None,                                # "off" bank. Will be ignored when preselect is enabled
+def BANK_SELECT(bank,                                           # Bank to select
+                bank_off = None,                                # "off" bank, to toggle between banks. Will be ignored when preselect is enabled.
                 preselect = False,                              # If False, the bank is switched immediately (by sending a rig select command 
                                                                 # after bank preselect). If True, only the bank preselect is sent. Ignores bank_off.
-                display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
-                display = None, 
-                id = False, 
-                use_leds = True, 
-                enable_callback = None,
-                color_callback = None,                          # Optional callback for setting the color. Footprint: 
-                                                                # def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                color = None,                                   # Color override (if no color callback is passed)
-                text_callback = None,                           # Optional callback for setting the text. Footprint: 
-                                                                # def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                text = None                                     # Text override (if no text callback is passed)
+                display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode
+                display = None,                                 # Reference to a DisplayLabel
+                id = False,                                     # ID for paging / enable callbacks
+                use_leds = True,                                # Use the switch LEDs
+                enable_callback = None,                         # Optional callback to enable/disable the action depeinding on things
+                color_callback = None,                          # Optional callback for setting the color. Scheme: 
+                                                                # def callback(action, bank, rig) -> (r, g, b) where bank and rig are integers starting from 0.
+                color = None,                                   # Static color (if no color callback is passed)
+                text_callback = None,                           # Callback for setting the text. Scheme: 
+                                                                # def callback(action, bank, rig) -> String where bank and rig are integers starting from 0.
+                text = None                                     # Static text (if no text callback is passed)
     ):
     
     return PushButtonAction({

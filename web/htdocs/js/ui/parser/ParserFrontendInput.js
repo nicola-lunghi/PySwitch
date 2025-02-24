@@ -195,10 +195,6 @@ class ParserFrontendInput {
                     
                     h = item.getHeight() + m.top + m.bottom;
                  
-                    // if ($(item.getElement()).find('.fixed').length > 0) {
-                    //     // TODO align fixed items to the right
-                    // }
-
                     layout.slots.push(0, y);
                 }
 
@@ -285,7 +281,7 @@ class ParserFrontendInput {
      * Shows the add action dialog
      */
     async promptAddAction(input) {
-        // const that = this;
+        const that = this;
 
         const inputName = input.display_name();
 
@@ -300,22 +296,19 @@ class ParserFrontendInput {
                     this.#parserFrontend.parser,
                     {
                         onSelect: async function(entry) {
-                            // const content = entry.config.model.comment ? entry.config.model.comment : "No info available";
                             browser.showInfoPanel(
-                                await (new ActionProperties(entry.config.model)).get()
-                            ); //content.replace("\n", "<br><br>"));
+                                await (
+                                    new ActionProperties(
+                                        that.#parserFrontend.parser,
+                                        entry.config.model
+                                    )
+                                ).get()
+                            );
+                            browser.setSelected(entry)
                         }
                     }
                 )
             ]
-            // postProcess: function(entry, generatedElement) {
-            //     // Highlight currently selected client
-            //     const client = that.#controller.getState("client");
-
-            //     if (client == entry.value) {
-            //         generatedElement.addClass('highlighted');
-            //     }
-            // }
         });
 
         await browser.browse();

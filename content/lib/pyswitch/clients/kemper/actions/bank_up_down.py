@@ -43,18 +43,18 @@ def BANK_UP(display = None,
     })
 
 # Previous bank (keeps rig index)
-def BANK_DOWN(display = None, 
-                id = False, 
-                use_leds = True, 
-                enable_callback = None,
-                dim_factor = "off",                               # Can be "off", "on" or a value in range [0..1]
-                led_brightness = "off",                           # Can be "off", "on" or a value in range [0..1]
-                text = "Bank dn", 
-                text_callback = None,                             # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
-                color = None,                                     # Override color (if no color_callback is passed)
-                color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
-                display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,    # Display mode (same as for RIG_SELECT, see definitions above)
-                preselect = False                                 # Preselect mode
+def BANK_DOWN(display = None,                                   # Reference to a DisplayLabel
+              id = False, 
+              use_leds = True, 
+              enable_callback = None,
+              dim_factor = "off",                               # Can be "off", "on" or a value in range [0..1]
+              led_brightness = "off",                           # Can be "off", "on" or a value in range [0..1]
+              text = "Bank dn", 
+              text_callback = None,                             # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+              color = None,                                     # Override color (if no color_callback is passed)
+              color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+              display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,    # Display mode (same as for RIG_SELECT, see definitions above)
+              preselect = False                                 # Preselect mode
     ):
     return PushButtonAction({
         "callback": KemperBankChangeCallback(

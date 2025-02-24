@@ -1,14 +1,14 @@
 class FunctionMeta {
 
-    #meta = null;         // Function metadata
+    data = null;          // Function metadata
     #function = null;     // Function descriptor
 
     constructor(meta, func) {
-        this.#meta = meta;
+        this.data = meta || {};
         this.#function = func;
     }   
 
-    toJSON() {
-        return this.#meta || {}
+    getCategory() {
+        return this.data.category ? this.data.category : "none";
     }
 }
