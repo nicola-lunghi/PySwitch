@@ -48,7 +48,7 @@
                 "comment": null
             }
         ],
-        "comment": "Volume boost function, based on setting rig volume to a certain boost value. You can then set the\nboost rig volume by passing ",
+        "comment": "Volume boost function, based on setting rig volume to a certain boost value.",
         "importPath": "pyswitch.clients.kemper.actions.rig_volume_boost"
     },
     {
@@ -85,7 +85,7 @@
                 "comment": null
             }
         ],
-        "comment": "Play/Rec/Overdub",
+        "comment": "Looper: Play/Rec/Overdub",
         "importPath": "pyswitch.clients.kemper.actions.looper"
     },
     {
@@ -122,7 +122,7 @@
                 "comment": null
             }
         ],
-        "comment": "Stop",
+        "comment": "Looper: Stop",
         "importPath": "pyswitch.clients.kemper.actions.looper"
     },
     {
@@ -159,7 +159,7 @@
                 "comment": null
             }
         ],
-        "comment": "Erase",
+        "comment": "Looper: Erase",
         "importPath": "pyswitch.clients.kemper.actions.looper"
     },
     {
@@ -196,7 +196,7 @@
                 "comment": null
             }
         ],
-        "comment": "Cancel",
+        "comment": "Looper: Cancel",
         "importPath": "pyswitch.clients.kemper.actions.looper"
     },
     {
@@ -233,7 +233,7 @@
                 "comment": null
             }
         ],
-        "comment": "Reverse",
+        "comment": "Looper: Reverse",
         "importPath": "pyswitch.clients.kemper.actions.looper"
     },
     {
@@ -307,7 +307,7 @@
                 "comment": null
             }
         ],
-        "comment": "Half speed",
+        "comment": "Looper: Half speed",
         "importPath": "pyswitch.clients.kemper.actions.looper"
     },
     {
@@ -354,7 +354,7 @@
                 "comment": "Only used if color = \"kemper\""
             }
         ],
-        "comment": "Morph button (faded change of morph state) with fixed color.",
+        "comment": "Morph button (faded change of morph state)",
         "importPath": "pyswitch.clients.kemper.actions.morph"
     },
     {
@@ -396,7 +396,7 @@
                 "comment": null
             }
         ],
-        "comment": "Morph display only",
+        "comment": "Morph state (display/LEDs only)",
         "importPath": "pyswitch.clients.kemper.actions.morph"
     },
     {
@@ -475,7 +475,7 @@
                 "comment": null
             }
         ],
-        "comment": "Show tempo (visual feedback, will be enabled for short time every beat)",
+        "comment": "Show tempo (blinks on every beat)",
         "importPath": "pyswitch.clients.kemper.actions.tempo"
     },
     {
@@ -810,7 +810,7 @@
                 "comment": "Text override (if no text callback is passed)"
             }
         ],
-        "comment": null,
+        "comment": "Select next rig",
         "importPath": "pyswitch.clients.kemper.actions.rig_up_down"
     },
     {
@@ -867,7 +867,7 @@
                 "comment": "Text override (if no text callback is passed)"
             }
         ],
-        "comment": null,
+        "comment": "Select previous rig",
         "importPath": "pyswitch.clients.kemper.actions.rig_up_down"
     },
     {
@@ -1058,7 +1058,7 @@
                 "comment": null
             }
         ],
-        "comment": "Binary parameters (for all binary parameter mappings which support 0/1 values for on/off)",
+        "comment": "Generic action which can be used for all binary (on/off or similar) parameter mappings",
         "importPath": "pyswitch.clients.kemper.actions.binary_switch"
     },
     {

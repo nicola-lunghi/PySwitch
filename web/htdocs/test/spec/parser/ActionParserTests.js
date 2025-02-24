@@ -1,17 +1,17 @@
-class MappingParserTests extends FunctionParserTestBase {
+class ActionParserTests extends FunctionParserTestBase {
 
-    async getAvailableMappings() {
+    async getAvailableActions() {
         await this.init();
         
         const basePath = "../";
         const that = this;
 
         await this.checkDefinitions(
-            "mappings.json",
+            "actions.json",
 
             // Load from buffer file
             async function() {
-                return JSON.parse(await Tools.fetch(basePath + "definitions/mappings.json"));
+                return JSON.parse(await Tools.fetch(basePath + "definitions/actions.json"));
             },
 
             // Generate from scratch
@@ -20,29 +20,31 @@ class MappingParserTests extends FunctionParserTestBase {
         
                 return extractor.get({
                     tocPath: basePath + "circuitpy/lib/pyswitch/clients/toc.php",
-                    subPath: "kemper/mappings",
-                    targetPath: "pyswitch/clients/kemper/mappings"
+                    subPath: "kemper/actions",
+                    targetPath: "pyswitch/clients/kemper/actions"
                 })
             }
         )
     }
 
-    async getAvailableMappingsMeta() {
+    async getAvailableActionsMeta() {
+        await this.init();
+        
         const config = new MockConfiguration("", "");
         await config.init(this.pyswitch);
         const parser = config.parser;
         
         await this.checkDefinitions(
-            "mappings-with-meta.json",
+            "actions-with-meta.json",
 
             // Load from buffer file
             async function() {
-                return JSON.parse(await Tools.fetch("data/definitions/mappings-with-meta.json"));
+                return JSON.parse(await Tools.fetch("data/definitions/actions-with-meta.json"));
             },
 
             // Generate from scratch
             async function() {
-                return await parser.getAvailableMappings("../");
+                return await parser.getAvailableActions("../");
             }
         )
     }

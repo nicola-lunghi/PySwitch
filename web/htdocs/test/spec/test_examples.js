@@ -8,7 +8,7 @@ describe('Examples with Parser Identity', function() {
         // console.error("Examples tests are deactivated!");
         // return;  // TODO!
 
-        await (new ExampleTestRunner().process());   
+        await (new ExampleTestRunner("../examples").process());   
     });
 });
 

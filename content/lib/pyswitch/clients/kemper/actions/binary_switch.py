@@ -2,7 +2,7 @@ from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
 from ....misc import Colors
 
-# Binary parameters (for all binary parameter mappings which support 0/1 values for on/off)
+# Generic action which can be used for all binary (on/off or similar) parameter mappings
 def BINARY_SWITCH(mapping, 
                   display = None, 
                   text = "", 

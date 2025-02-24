@@ -292,11 +292,22 @@ class ParserFrontendInput {
         // A browser to select client connections (to Kemper etc.), triggered by the client select button
         const browser = this.#controller.ui.getBrowserPopup({
             additionalClasses: "select-actions",
-            headline: "Please select an action to add to " + inputName,
+            headline: "Add an action to " + inputName,
             wide: true,
+            dontCloseOnSelect: true,
             providers: [
-                new ActionsProvider(this.#controller, this, this.#parserFrontend.parser, input)
-            ],
+                new ActionsProvider(
+                    this.#parserFrontend.parser,
+                    {
+                        onSelect: async function(entry) {
+                            // const content = entry.config.model.comment ? entry.config.model.comment : "No info available";
+                            browser.showInfoPanel(
+                                await (new ActionProperties(entry.config.model)).get()
+                            ); //content.replace("\n", "<br><br>"));
+                        }
+                    }
+                )
+            ]
             // postProcess: function(entry, generatedElement) {
             //     // Highlight currently selected client
             //     const client = that.#controller.getState("client");
@@ -308,6 +319,7 @@ class ParserFrontendInput {
         });
 
         await browser.browse();
+        browser.showInfoPanel("Please select an action to add");
     }
 
     /**

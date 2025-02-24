@@ -54,6 +54,7 @@
     <link rel="stylesheet" type="text/css" href="styles/virtual-clients.css">
     <link rel="stylesheet" type="text/css" href="styles/parser-frontend.css">
     <link rel="stylesheet" type="text/css" href="styles/editor.css">
+    <link rel="stylesheet" type="text/css" href="styles/parser-action-properties.css">
     
     <!-- Device specific CSS: PaintAudio MIDI Captain series -->
     <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-nano-4.css">
@@ -114,34 +115,40 @@
     <script type="text/javascript" src="js/midi/MidiHandler.js"></script>
     <script type="text/javascript" src="js/midi/MidiListener.js"></script>
     <script type="text/javascript" src="js/midi/client/MidiBridgeHandler.js"></script>
-    <script type="text/javascript" src="js/midi/device/WebMidiWrapper.js"></script>    
+    <script type="text/javascript" src="js/midi/device/WebMidiWrapper.js"></script>        
 
     <!-- User Interface -->
     <script type="text/javascript" src="js/ui/PySwitchUi.js"></script>
     <script type="text/javascript" src="js/ui/PySwitchFrontend.js"></script>
 
-    <script type="text/javascript" src="js/ui/tabs/Tabs.js"></script>
-    <script type="text/javascript" src="js/ui/tabs/Tab.js"></script>
-
-    <script type="text/javascript" src="js/ui/parser/ParserFrontend.js"></script>
-    <script type="text/javascript" src="js/ui/parser/ParserFrontendInput.js"></script>
-
-    <script type="text/javascript" src="js/ui/misc/Notifications.js"></script>
-    <script type="text/javascript" src="js/ui/misc/ClientConnectionButton.js"></script>
-
-    <script type="text/javascript" src="js/ui/editor/CodeEditor.js"></script>
-
     <!-- Popups -->
     <script type="text/javascript" src="js/ui/popups/Popup.js"></script>
     <script type="text/javascript" src="js/ui/popups/BrowserPopup.js"></script>
     <script type="text/javascript" src="js/ui/popups/BrowserEntry.js"></script>
+    <script type="text/javascript" src="js/ui/popups/BrowserProvider.js"></script>
 
-    <script type="text/javascript" src="js/ui/popups/providers/BrowserProvider.js"></script>
-    <script type="text/javascript" src="js/ui/popups/providers/ExamplesProvider.js"></script>
-    <script type="text/javascript" src="js/ui/popups/providers/TemplatesProvider.js"></script>
-    <script type="text/javascript" src="js/ui/popups/providers/PortsProvider.js"></script>
-    <script type="text/javascript" src="js/ui/popups/providers/ActionsProvider.js"></script>
-    
+    <!-- Tabs -->
+    <script type="text/javascript" src="js/ui/tabs/Tabs.js"></script>
+    <script type="text/javascript" src="js/ui/tabs/Tab.js"></script>
+
+    <!-- Parser frontend -->
+    <script type="text/javascript" src="js/ui/parser/ParserFrontend.js"></script>
+    <script type="text/javascript" src="js/ui/parser/ParserFrontendInput.js"></script>
+    <script type="text/javascript" src="js/ui/parser/ActionProperties.js"></script>
+    <script type="text/javascript" src="js/ui/parser/ActionsProvider.js"></script>
+
+    <!-- Code editor -->
+    <script type="text/javascript" src="js/ui/editor/CodeEditor.js"></script>
+
+    <!-- Data providers for loading -->
+    <script type="text/javascript" src="js/ui/examples/ExamplesProvider.js"></script>
+    <script type="text/javascript" src="js/ui/examples/TemplatesProvider.js"></script>
+
+    <!-- Other stuff -->
+    <script type="text/javascript" src="js/ui/misc/Notifications.js"></script>
+    <script type="text/javascript" src="js/ui/misc/ClientConnectionButton.js"></script>
+    <script type="text/javascript" src="js/ui/misc/PortsProvider.js"></script>
+
     <!-- UIs for virtual clients -->
     <script type="text/javascript" src="js/ui/virtual-clients/VirtualKemperClientUI.js"></script>
 

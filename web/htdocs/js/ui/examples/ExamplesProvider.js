@@ -65,30 +65,31 @@ class ExamplesProvider extends BrowserProvider {
                                     .on('click', async function() {
                                         try {
                                             let content = null;
-                                            let onClick = null;
                                             
                                             if (entry.config.callPath) {
                                                 const url = 'examples' + entry.config.callPath + '/README.md';
 
                                                 try {                                       
-                                                    content = await Tools.fetch(url);
-                                                    onClick = async function() {
-                                                        window.open(url, '_blank');
-                                                    }
+                                                    marked.use({
+                                                        async: true,
+                                                        silent: true
+                                                    });
+        
+                                                    content = $('<span class="clickable" />')
+                                                        .html(await marked.parse(await Tools.fetch(url)))
+                                                        .on('click', async function() {
+                                                            window.open(url, '_blank');
+                                                        })
     
                                                 } catch (e2) {
                                                     content = "Error loading README";
                                                 }
+                                                
                                             } else {
                                                 content = "No information available";
                                             }
         
-                                            marked.use({
-                                                async: true,
-                                                silent: true
-                                            });
-
-                                            browser.showInfoPanel(await marked.parse(content), onClick);
+                                            browser.showInfoPanel(content);
 
                                         } catch (e) {
                                             that.#controller.handle(e);

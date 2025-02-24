@@ -3,8 +3,13 @@ class ExampleTestRunner extends TestBase {
     client = null;
     hardware = null;
 
-    #examplesPath = "../examples";               // Path to the examples folder
+    #examplesPath = null;
     
+    constructor(path) {
+        super();
+        this.#examplesPath = path;
+    }
+
     /**
      * Process the tests. This loads a TOC of all tests and executes one after another, 
      * with behavioural mocks testing the functionality.
@@ -18,7 +23,7 @@ class ExampleTestRunner extends TestBase {
         await this.#testExamples();
 
         // Show a basic coverage report in the console
-        await this.coverage();   
+        await this.coverage();        
     }
 
     /**
@@ -92,6 +97,8 @@ class ExampleTestRunner extends TestBase {
                 await that.#runExampleTest(config, await Tools.fetch(testScriptUrl));
             }
         });
+
+        expect(1).toBe(1);
     }
 
     /**

@@ -4,7 +4,7 @@ from ....misc import Colors
 
 from ..mappings.morph import MAPPING_MORPH_BUTTON, MAPPING_MORPH_PEDAL
 
-# Morph button (faded change of morph state) with fixed color.
+# Morph button (faded change of morph state)
 def MORPH_BUTTON(display = None, 
                  text = "Morph", 
                  id = False, 
@@ -32,7 +32,7 @@ def MORPH_BUTTON(display = None,
         "enableCallback": enable_callback
     })
 
-# Morph display only
+# Morph state (display/LEDs only)
 def MORPH_DISPLAY(display = None, 
                   text = "Morph", 
                   id = False, 

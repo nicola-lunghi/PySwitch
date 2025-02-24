@@ -12,6 +12,7 @@ class BrowserPopup extends Popup {
      *      headline:    Header text   
      *      providers:   Array of provider instances,
      *      postProcess: Optional callback to alter the generated DOM: postProcess(entry, generatedElement) => void
+     *      dontCloseOnSelect: false
      * }
      */
     constructor(config) {
@@ -30,7 +31,7 @@ class BrowserPopup extends Popup {
 
         // If we are at a leaf, call if and return
         if (entry.isCallable()) {
-            this.hide();
+            if (!this.config.dontCloseOnSelect) this.hide();
             await entry.call();
             return;
         }
@@ -65,12 +66,9 @@ class BrowserPopup extends Popup {
     /**
      * Toggle visibility of the info panel
      */
-    showInfoPanel(content, onClick = null) {
-        this.#infoPanelContent.html(content);
-        this.#infoPanelOnClick = onClick;
-
-        this.#infoPanel.toggleClass('clickable', !!onClick);
-
+    showInfoPanel(content) {
+        this.#infoPanelContent.empty();
+        this.#infoPanelContent.append(content);        
         this.#infoPanel.show();                
     }
 

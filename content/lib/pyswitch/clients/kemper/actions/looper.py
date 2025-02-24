@@ -5,7 +5,7 @@ from ....misc import Colors
 from ..mappings.looper import MAPPING_LOOPER_REC_PLAY_OVERDUB, MAPPING_LOOPER_STOP, MAPPING_LOOPER_ERASE, MAPPING_LOOPER_CANCEL, MAPPING_LOOPER_TRIGGER, MAPPING_LOOPER_HALF_SPEED, MAPPING_LOOPER_REVERSE
 
 
-# Play/Rec/Overdub
+# Looper: Play/Rec/Overdub
 def LOOPER_REC_PLAY_OVERDUB(display = None, 
                             text = "Rec", 
                             color = Colors.RED, 
@@ -25,7 +25,7 @@ def LOOPER_REC_PLAY_OVERDUB(display = None,
         "enableCallback": enable_callback
     })
 
-# Stop
+# Looper: Stop
 def LOOPER_STOP(display = None, 
                 text = "Stop", 
                 color = Colors.WHITE, 
@@ -45,7 +45,7 @@ def LOOPER_STOP(display = None,
         "enableCallback": enable_callback
     })
 
-# Erase
+# Looper: Erase
 def LOOPER_ERASE(display = None, 
                 text = "Erase", 
                 color = Colors.LIGHT_RED, 
@@ -65,7 +65,7 @@ def LOOPER_ERASE(display = None,
         "enableCallback": enable_callback
     })
 
-# Cancel
+# Looper: Cancel
 def LOOPER_CANCEL(display = None, 
                 text = "Undo", 
                 color = Colors.YELLOW, 
@@ -85,7 +85,7 @@ def LOOPER_CANCEL(display = None,
         "enableCallback": enable_callback
     })
 
-# Reverse
+# Looper: Reverse
 def LOOPER_REVERSE(display = None, 
                 text = "Reverse", 
                 color = Colors.LIGHT_GREEN, 
@@ -125,7 +125,7 @@ def LOOPER_TRIGGER(display = None,
         "enableCallback": enable_callback
     })
 
-# Half speed
+# Looper: Half speed
 def LOOPER_HALF_SPEED(display = None, 
                 text = "HalfSpd", 
                 color = Colors.ORANGE, 

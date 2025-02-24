@@ -20,7 +20,7 @@ def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = 
         "enableCallback": enable_callback
     })
 
-# Show tempo (visual feedback, will be enabled for short time every beat)
+# Show tempo (blinks on every beat)
 def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, text = "Tempo", id = False, use_leds = True, enable_callback = None, led_brightness_on = 0.02, led_brightness_off = 0):
     return PushButtonAction({
         "callback": BinaryParameterCallback(

@@ -6,7 +6,7 @@ from ....misc import get_option, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR
 from ..mappings.select import MAPPING_RIG_SELECT, MAPPING_BANK_AND_RIG_SELECT
 from .rig_select import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG
 
-
+# Select next rig
 def RIG_UP(keep_bank = True,                               # If enabled, the bank is not changed when at the first and last rigs of a bank. If disabled, 
                                                            # the banks are stepped up/down after the last/first rigs of a bank.
            display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,   # Display mode (see definitions above)
@@ -38,7 +38,7 @@ def RIG_UP(keep_bank = True,                               # If enabled, the ban
         "enableCallback": enable_callback
     })  
 
-
+# Select previous rig
 def RIG_DOWN(keep_bank = True,                               # If enabled, the bank is not changed when at the first and last rigs of a bank. If disabled, 
                                                              # the banks are stepped up/down after the last/first rigs of a bank.
              display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,   # Display mode (see definitions above)
