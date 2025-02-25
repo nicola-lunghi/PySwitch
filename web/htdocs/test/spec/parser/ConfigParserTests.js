@@ -550,7 +550,7 @@ class ConfigParserTests extends TestBase {
             arguments: JSON.parse(actions[0].arguments())
         };
         
-        const meta = new Meta(action2);
+        const meta = action2.meta;
 
         expect(meta.getDisplayName()).toBe(expNameDefault);
         expect(meta.getDisplayName(current)).toBe(expNameCurrent);

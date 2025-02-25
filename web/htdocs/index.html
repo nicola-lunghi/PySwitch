@@ -58,15 +58,6 @@
     <link rel="stylesheet" type="text/css" href="styles/parser-actions.css">
     <link rel="stylesheet" type="text/css" href="styles/markdown.css">
     
-    <!-- Device specific CSS: PaintAudio MIDI Captain series -->
-    <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-nano-4.css">
-
-    <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-mini-6.css">
-
-    <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain-10.css">
-
-    <link rel="stylesheet" type="text/css" href="styles/devices/paintaudio/midicaptain.css">    <!-- Must be last for media queries to work! -->
-
     <!-- Main classes -->
     <script type="text/javascript" src="js/Controller.js"></script>
     <script type="text/javascript" src="js/PySwitchRunner.js"></script>
@@ -81,38 +72,19 @@
     <script type="text/javascript" src="js/routing/CallbackQueue.js"></script>
     
     <!-- Data model -->
+    <script type="text/javascript" src="js/model/Device.js"></script>
+    <script type="text/javascript" src="js/model/VirtualClient.js"></script>
+    
     <script type="text/javascript" src="js/model/configurations/Configuration.js"></script>
     <script type="text/javascript" src="js/model/configurations/ControllerConfiguration.js"></script>
     <script type="text/javascript" src="js/model/configurations/WebConfiguration.js"></script>
 
     <!-- Parser(s) -->
-    <script type="text/javascript" src="js/model/parsers/Parser.js"></script>
-    <script type="text/javascript" src="js/model/parsers/KemperParser.js"></script>
-    <script type="text/javascript" src="js/model/parsers/FunctionMeta.js"></script>
-    <script type="text/javascript" src="js/model/parsers/ParameterMeta.js"></script>
-    <script type="text/javascript" src="js/model/parsers/MetaBase.js"></script>
-    <script type="text/javascript" src="js/model/parsers/ParameterRange.js"></script>
-
-    <!-- Devices -->
-    <script type="text/javascript" src="js/model/devices/Device.js"></script>
-    <script type="text/javascript" src="js/model/devices/PaintAudioDevice.js"></script>
-
-    <!-- Detectors (used to scan for connected controllers and clients) -->
-    <script type="text/javascript" src="js/model/detectors/ClientDetector.js"></script>
-    <script type="text/javascript" src="js/model/detectors/KemperClientDetector.js"></script>
-
-    <!-- Virtual clients (emulating a Kemper for example) -->
-    <script type="text/javascript" src="js/model/virtual-clients/VirtualClient.js"></script>
-    <script type="text/javascript" src="js/model/virtual-clients/kemper/VirtualKemperParameter.js"></script>
-    <script type="text/javascript" src="js/model/virtual-clients/kemper/VirtualKemperParameterDefault.js"></script>
-    <script type="text/javascript" src="js/model/virtual-clients/kemper/VirtualKemperParameters.js"></script>
-    <script type="text/javascript" src="js/model/virtual-clients/kemper/VirtualKemperClient.js"></script>
-    <script type="text/javascript" src="js/model/virtual-clients/kemper/VirtualKemperProtocol.js"></script>
-    <script type="text/javascript" src="js/model/virtual-clients/kemper/VirtualKemperClientSetup.js"></script>
-    <script type="text/javascript" src="js/model/virtual-clients/kemper/VirtualKemperParameterKeys.js"></script>
-    <script type="text/javascript" src="js/model/virtual-clients/kemper/VirtualKemperTempo.js"></script>
-    <script type="text/javascript" src="js/model/virtual-clients/kemper/VirtualKemperTuner.js"></script>
-    <script type="text/javascript" src="js/model/virtual-clients/kemper/VirtualKemperMorph.js"></script>
+    <script type="text/javascript" src="js/model/parser/Parser.js"></script>
+    <script type="text/javascript" src="js/model/parser/FunctionMeta.js"></script>
+    <script type="text/javascript" src="js/model/parser/ParameterMeta.js"></script>
+    <script type="text/javascript" src="js/model/parser/ParameterRange.js"></script>
+    <script type="text/javascript" src="js/model/parser/ClientDetector.js"></script>
 
     <!-- MIDI related classes -->
     <script type="text/javascript" src="js/midi/MidiHandler.js"></script>
@@ -151,13 +123,35 @@
     <script type="text/javascript" src="js/ui/misc/Notifications.js"></script>
     <script type="text/javascript" src="js/ui/misc/ClientConnectionButton.js"></script>
     <script type="text/javascript" src="js/ui/misc/PortsProvider.js"></script>
+   
+    <!-- Clients: Kemper -->
+    <script type="text/javascript" src="clients/kemper/KemperClientDetector.js"></script>
+    <script type="text/javascript" src="clients/kemper/KemperParser.js"></script>
+    <script type="text/javascript" src="clients/kemper/KemperFunctionMeta.js"></script>
+    <script type="text/javascript" src="clients/kemper/KemperParameterMeta.js"></script>
+    
+    <!-- Virtual Kemper client -->
+    <script type="text/javascript" src="clients/kemper/virtual/VirtualKemperParameter.js"></script>
+    <script type="text/javascript" src="clients/kemper/virtual/VirtualKemperParameterDefault.js"></script>
+    <script type="text/javascript" src="clients/kemper/virtual/VirtualKemperParameters.js"></script>
+    <script type="text/javascript" src="clients/kemper/virtual/VirtualKemperClient.js"></script>
+    <script type="text/javascript" src="clients/kemper/virtual/VirtualKemperProtocol.js"></script>
+    <script type="text/javascript" src="clients/kemper/virtual/VirtualKemperClientSetup.js"></script>
+    <script type="text/javascript" src="clients/kemper/virtual/VirtualKemperParameterKeys.js"></script>
+    <script type="text/javascript" src="clients/kemper/virtual/VirtualKemperTempo.js"></script>
+    <script type="text/javascript" src="clients/kemper/virtual/VirtualKemperTuner.js"></script>
+    <script type="text/javascript" src="clients/kemper/virtual/VirtualKemperMorph.js"></script>
+    
+    <script type="text/javascript" src="clients/kemper/virtual/VirtualKemperClientUI.js"></script>
 
-    <!-- UIs for virtual clients -->
-    <script type="text/javascript" src="js/ui/virtual-clients/VirtualKemperClientUI.js"></script>
+    <!-- Devices: Paintaudio -->
+    <script type="text/javascript" src="devices/paintaudio/PaintAudioDevice.js"></script>
 
-    <!-- Meta Definition class(es) -->
-    <script type="text/javascript" src="definitions/Meta.js"></script>
-
+    <link rel="stylesheet" type="text/css" href="devices/paintaudio/styles/midicaptain-nano-4.css">
+    <link rel="stylesheet" type="text/css" href="devices/paintaudio/styles/midicaptain-mini-6.css">
+    <link rel="stylesheet" type="text/css" href="devices/paintaudio/styles/midicaptain-10.css">
+    <link rel="stylesheet" type="text/css" href="devices/paintaudio/styles/midicaptain.css">    <!-- Must be last for media queries to work! -->
+   
 
     <script type="text/javascript">
         window.onload = function() {

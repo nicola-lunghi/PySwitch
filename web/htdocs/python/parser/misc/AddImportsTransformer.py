@@ -13,7 +13,7 @@ class AddImportsTransformer(libcst.CSTTransformer):
         self.__done = True
         
         new_statements = [
-            libcst.parse_statement("from " + definition["importPath"] + " import " + definition["name"] + "\n")                
+            libcst.parse_statement("from " + definition["importPath"] + " import " + (definition["importName"] if "importName" in definition else definition["name"]) + "\n")
             for definition in self.import_paths
         ]
 

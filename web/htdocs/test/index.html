@@ -32,33 +32,38 @@
   <script src="../js/model/configurations/WebConfiguration.js"></script>
 
   <script src="../js/model/parsers/Parser.js"></script>
-  <script src="../js/model/parsers/KemperParser.js"></script>
   <script src="../js/model/parsers/FunctionExtractor.js"></script>
+  <script src="../js/model/parsers/ClassAttributeExtractor.js"></script>
   <script src="../js/model/parsers/ParameterMeta.js"></script>
+  <script src="../js/model/parsers/ParameterRange.js"></script>
   <script src="../js/model/parsers/FunctionMeta.js"></script>
-  <script src="../js/model/parsers/MetaBase.js"></script>
-
-  <script src="../js/model/devices/Device.js"></script>
-  <script src="../js/model/devices/PaintAudioDevice.js"></script>
-
-  <script src="../js/model/virtual-clients/VirtualClient.js"></script>
-  <script src="../js/model/virtual-clients/kemper/VirtualKemperClient.js"></script>
-  <script src="../js/model/virtual-clients/kemper/VirtualKemperClientSetup.js"></script>
-  <script src="../js/model/virtual-clients/kemper/VirtualKemperMorph.js"></script>
-  <script src="../js/model/virtual-clients/kemper/VirtualKemperParameter.js"></script>
-  <script src="../js/model/virtual-clients/kemper/VirtualKemperParameterDefault.js"></script>
-  <script src="../js/model/virtual-clients/kemper/VirtualKemperParameterKeys.js"></script>
-  <script src="../js/model/virtual-clients/kemper/VirtualKemperParameters.js"></script>
-  <script src="../js/model/virtual-clients/kemper/VirtualKemperProtocol.js"></script>
-  <script src="../js/model/virtual-clients/kemper/VirtualKemperTempo.js"></script>
-  <script src="../js/model/virtual-clients/kemper/VirtualKemperTuner.js"></script>
-
+  
+  <script src="../js/model/Device.js"></script>
+  
   <script src="../js/ui/PySwitchFrontend.js"></script>
 
   <script src="../js/ui/parser/ParserFrontend.js"></script>
   <script src="../js/ui/parser/ParserFrontendInput.js"></script>
     
-  <script src="../definitions/Meta.js"></script>
+  <!-- clients-->
+  <script src="../clients/kemper/KemperParser.js"></script>
+  <script src="../clients/kemper/KemperFunctionMeta.js"></script>
+  <script src="../clients/kemper/KemperParameterMeta.js"></script>
+
+  <script src="../clients/kemper/virtual/VirtualClient.js"></script>
+  <script src="../clients/kemper/virtual/kemper/VirtualKemperClient.js"></script>
+  <script src="../clients/kemper/virtual/kemper/VirtualKemperClientSetup.js"></script>
+  <script src="../clients/kemper/virtual/kemper/VirtualKemperMorph.js"></script>
+  <script src="../clients/kemper/virtual/kemper/VirtualKemperParameter.js"></script>
+  <script src="../clients/kemper/virtual/kemper/VirtualKemperParameterDefault.js"></script>
+  <script src="../clients/kemper/virtual/kemper/VirtualKemperParameterKeys.js"></script>
+  <script src="../clients/kemper/virtual/kemper/VirtualKemperParameters.js"></script>
+  <script src="../clients/kemper/virtual/kemper/VirtualKemperProtocol.js"></script>
+  <script src="../clients/kemper/virtual/kemper/VirtualKemperTempo.js"></script>
+  <script src="../clients/kemper/virtual/kemper/VirtualKemperTuner.js"></script>
+
+  <!-- Devices -->
+  <script src="../devices/paintaudio/PaintAudioDevice.js"></script>
 
   <!-- include spec files here... -->
   <script type="text/javascript" src="lib/FileSaver/FileSaver.min.js"></script>

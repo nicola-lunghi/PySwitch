@@ -50,6 +50,10 @@ class PySwitchParser:
         self.__csts["inputs_py"].visit(visitor)
         return visitor if visitor.result != None else None
     
+    # Returns a JSON encoded list of assignments in display.py
+    def displays(self):
+        return json.dumps(AssignmentExtractor().get(self.__csts["display_py"]))
+
     ########################################################################################
 
     # Update the CSTs from the passed input. Only called internally.

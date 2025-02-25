@@ -66,6 +66,7 @@
 
 .container .action-properties select {
     font-size: 0.88888em;
+    max-width: 15em;
 }
 
 .container .action-properties input[type=text] {

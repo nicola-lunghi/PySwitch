@@ -1,15 +1,13 @@
 /**
- * This class defines the action/mapping specific meta information. For new actions/mappings, 
- * add stuff here, too, to get good looking output.
+ * Metadata for functions (kemper overrides)
  */
-class Meta extends MetaBase {
+class KemperFunctionMeta extends FunctionMeta {
 
     /**
      * Returns the display name for specific actions
      */
     getDisplayName(actionDefinition) {
-        // All actions/mappings not handled here will show with their technical function names.
-        switch (this.entity.name) {
+        switch (this.functionDefinition.name) {
             case "RIG_SELECT": return this.#getDisplayNameRigSelect(actionDefinition)
             case "RIG_SELECT_AND_MORPH_STATE": return this.#getDisplayNameRigSelectAndMorphState(actionDefinition)
             case "BANK_SELECT": return this.#getDisplayNameBankSelect(actionDefinition)
@@ -18,7 +16,7 @@ class Meta extends MetaBase {
             case "BINARY_SWITCH": return "Other"
         }
         
-        return this.underscoreToDisplayName(this.entity.name);
+        return super.getDisplayName(actionDefinition);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -114,5 +112,42 @@ class Meta extends MetaBase {
         }
 
         return "Effect State";
+    }
+
+    /**
+     * Gets the name of a argument in the given definition
+     */
+    getArgument(definition, name) {
+        if (!definition) return null;
+        
+        for (const arg of definition.arguments) {
+            if (arg.name == name) return arg;
+        }
+        return null;
+    }
+
+    /**
+     * Replaces all tokens for parameters
+     */
+    replaceParameterTokens(actionDefinition, str) {
+        function getReplaceValue(param) {
+            for (const def of (actionDefinition ? (actionDefinition.arguments || []) : [])) {
+                if (def.name == param.name) {
+                    return def.value;
+                }
+            }
+
+            return param.meta.getDefaultValue();
+        }
+
+        function replaceToken(str, token, value) {
+            return str.replace("{" + token + "}", "" + value);
+        }
+
+        for (const param of this.functionDefinition.parameters) {
+            str = replaceToken(str, param.name, getReplaceValue(param))
+        }
+
+        return str;
     }
 }

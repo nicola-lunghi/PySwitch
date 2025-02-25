@@ -54,12 +54,10 @@ class ActionsProvider extends BrowserProvider {
         );
 
         for (const action of actions) {
-            const meta = new Meta(action);
-
             const entry = new BrowserEntry(
                 browser,
                 {
-                    text: meta.getDisplayName(),
+                    text: action.meta.getDisplayName(),
                     value: action.name,
                     parent: this.#toc,
                     onSelect: this.#config.onSelect,

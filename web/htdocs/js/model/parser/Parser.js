@@ -105,8 +105,6 @@ class Parser {
     updateConfig() {
         const src = this.#pySwitchParser.to_source().toJs();
         
-        // console.log(src.get("inputs_py"))
-        
         this.config.set({
             inputs_py: src.get("inputs_py"),
             display_py: src.get("display_py")
@@ -156,6 +154,15 @@ class Parser {
     }
 
     /**
+     * Returns all available display labels
+     */
+    async getAvailableDisplays() {
+        const displays = JSON.parse(this.#pySwitchParser.displays());
+
+        return displays.filter((item) => item != "Splashes");
+    }
+
+    /**
      * Returns a list of all available actions, with mixed in meta information
      */
     async getAvailableActions(basePath = "") {
@@ -189,6 +196,7 @@ class Parser {
      * For a list of function descriptors, this adds meta descriptor information (unbuffered)
      */
     async #mixInMetaInformation(basePath, functions) {
+        const that = this;
         const meta = JSON.parse(await Tools.fetch(basePath + "definitions/meta.json"));
 
         /**
@@ -236,7 +244,7 @@ class Parser {
                 delete def.comment;    
             }
 
-            return new FunctionMeta(def, func);
+            return that.createFunctionMeta(def, func);
         }
 
         /**
@@ -251,7 +259,7 @@ class Parser {
                 def = searchParameterDefinition("default", param.name);
             }
 
-            return new ParameterMeta(def, param);
+            return that.createParameterMeta(def, param);
         }
 
         // Scan function definitions
@@ -262,5 +270,13 @@ class Parser {
 
             func.meta = getFunctionMeta(func);
         }
+    }
+
+    createParameterMeta(meta, paramDef) {
+        return new ParameterMeta(this, meta, paramDef);
+    }
+
+    createFunctionMeta(meta, funcDef) {
+        return new FunctionMeta(meta, funcDef);
     }
 }

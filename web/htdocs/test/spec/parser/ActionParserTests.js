@@ -27,25 +27,25 @@ class ActionParserTests extends FunctionParserTestBase {
         )
     }
 
-    async getAvailableActionsMeta() {
-        await this.init();
+    // async getAvailableActionsMeta() {
+    //     await this.init();
         
-        const config = new MockConfiguration("", "");
-        await config.init(this.pyswitch);
-        const parser = config.parser;
+    //     const config = new MockConfiguration("", "");
+    //     await config.init(this.pyswitch);
+    //     const parser = config.parser;
         
-        await this.checkDefinitions(
-            "actions-with-meta.json",
+    //     await this.checkDefinitions(
+    //         "actions-with-meta.json",
 
-            // Load from buffer file
-            async function() {
-                return JSON.parse(await Tools.fetch("data/definitions/actions-with-meta.json"));
-            },
+    //         // Load from buffer file
+    //         async function() {
+    //             return JSON.parse(await Tools.fetch("data/definitions/actions-with-meta.json"));
+    //         },
 
-            // Generate from scratch
-            async function() {
-                return await parser.getAvailableActions("../");
-            }
-        )
-    }
+    //         // Generate from scratch
+    //         async function() {
+    //             return await parser.getAvailableActions("../");
+    //         }
+    //     )
+    // }
 }

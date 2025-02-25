@@ -22,8 +22,6 @@ class ActionProperties {
         this.#advancedRows = [];
         this.#inputs = new Map();
 
-        const meta = new Meta(this.#model);
-
         let holdInput = null;
 
         const that = this;
@@ -77,7 +75,7 @@ class ActionProperties {
         const ret = $('<div class="action-properties" />').append(
             // Comment
             $('<div class="action-header" />')
-            .text(meta.getDisplayName()),
+            .text(this.#model.meta.getDisplayName()),
             
             $('<div class="action-comment" />')
             .html(this.#getActionComment()),
@@ -142,15 +140,23 @@ class ActionProperties {
     }
 
     /**
-     * Returns an action definition which can be added to the config
+     * Returns an action definition which can be added to the config.
      */
     createActionDefinition() {
         const that = this;
 
         return {
             name: this.#model.name,
-            arguments: this.#model.parameters.map(
-                function (param) {
+            arguments: this.#model.parameters
+                .filter((param) => {
+                    const input = that.#inputs.get(param);
+                    if (!input) throw new Error("No input for param " + param.name + " found");
+        
+                    const value = that.#getInputValue(input, param);
+
+                    return !param.hasOwnProperty("default") || (value != param.default);
+                })
+                .map((param) => {
                     const input = that.#inputs.get(param);
                     if (!input) throw new Error("No input for param " + param.name + " found");
         
@@ -158,8 +164,7 @@ class ActionProperties {
                         name: param.name,
                         value: that.#getInputValue(input, param)
                     };
-                }
-            )
+                })
         }
     }
 
@@ -243,9 +248,10 @@ class ActionProperties {
                 return this.#getNumberInput(param);
 
             case 'select':
-                if (param.meta.data.values) {
+                const values = await param.meta.getValues();
+                if (values) {
                     return $('<select />').append(
-                        param.meta.data.values.map((option) => 
+                        values.map((option) => 
                             $('<option value="' + option.value + '" />')
                             .text(option.name)
                         )                        
@@ -316,14 +322,13 @@ class ActionProperties {
      * Create a numeric input (int)
      */
     async #getNumberInput(param) {
-        const range = new ParameterRange(this.#parser, param.meta.data.range);
+        const range = param.meta.range();
+        if (!range) {
+            return $('<input type="number" />')
+                .val(param.meta.getDefaultValue());
+        }
 
-        // return $('<input type="number" />')
-        //     .attr('min', await range.min())
-        //     .attr('max', await range.max())
-        //     .val(param.meta.getDefaultValue());
-
-        const values = await Promise.all(await range.getValues());
+        const values = await param.meta.getValues();
 
         return $('<select />').append(
             values.map((option) => 

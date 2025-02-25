@@ -15,7 +15,7 @@ class FunctionExtractor {
      * as a descriptor object.
      * 
      * options: {
-     *      tocPath is the URL of the toc.php script
+     *      tocPath is the URL of the toc.php script.
      *      subPath is a path inside the toc to start at
      *      targetPath is the target path inside the pyodide FS to the files containing the function definitions
      * }
@@ -59,6 +59,24 @@ class FunctionExtractor {
         }
         crawl(actions);
 
+        return this.getFromPaths(importPaths);
+    }
+
+    // /**
+    //  * Get functions from a string of source code
+    //  */
+    // async getFromCode(code) {
+    //     // Copy the file to the pyodide FS
+    //     const file = "temp-functions.py";
+    //     this.pyswitch.pyodide.FS.writeFile("/home/pyodide/" + file, code);
+
+    //     return this.getFromPaths([file]);
+    // }
+
+    /**
+     * Get functions from a list of file paths
+     */
+    async getFromPaths(importPaths) {
         // Tell the python code which files to examine, process it and return the decoded result.
         const functionsJson = await this.pyswitch.pyodide.runPython(`
             import json
@@ -70,7 +88,7 @@ class FunctionExtractor {
             
             json.dumps(functionExtractor.get())
         `);
-
+        
         return JSON.parse(functionsJson);
     }
 }

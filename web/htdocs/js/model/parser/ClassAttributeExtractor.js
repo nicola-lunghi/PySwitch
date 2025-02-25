@@ -1,0 +1,36 @@
+/**
+ * Adapter to the python based ClassAttributeExtractor (which can extract all attributes of a class)
+ */
+class ClassAttributeExtractor {
+
+    pyswitch = null  // PySwitchRunner instance
+
+    constructor(pyswitch) {
+        this.pyswitch = pyswitch;
+    }
+
+    /**
+     * options: {
+     *      file: The file to parse,
+     *      className
+     *      importPath
+     * }
+     */
+    async get(options) {
+        // Tell the python code which files to examine, process it and return the decoded result.
+        const resultJson = await this.pyswitch.pyodide.runPython(`
+            import json
+            from parser.misc.ClassAttributeExtractor import ClassAttributeExtractor
+
+            classAttributeExtractor = ClassAttributeExtractor(
+                file = '` + options.file + `',
+                className = '` + options.className + `',
+                importPath = '` + options.importPath + `',
+            )
+            
+            json.dumps(classAttributeExtractor.get())
+        `);
+        
+        return JSON.parse(resultJson);
+    }
+}

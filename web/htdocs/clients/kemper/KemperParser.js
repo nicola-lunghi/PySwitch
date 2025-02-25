@@ -47,16 +47,22 @@ class KemperParser extends Parser {
 
         const category = action.meta.getCategory();
         
-        const meta = new Meta(action);
-
         switch (category) {
-            case "rig": return "a" + meta.getDisplayName();
-            case "bank": return "b" + meta.getDisplayName();
+            case "rig": return "a" + action.meta.getDisplayName();
+            case "bank": return "b" + action.meta.getDisplayName();
             case "effects": return "e";
             case "tuner": return "f";
             case "none": return "m";
             case "looper": return "w";
         }        
         return category;
+    }
+
+    createParameterMeta(meta, paramDef) {
+        return new KemperParameterMeta(this, meta, paramDef);
+    }
+
+    createFunctionMeta(meta, funcDef) {
+        return new KemperFunctionMeta(meta, funcDef);
     }
 }

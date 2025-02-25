@@ -62,6 +62,7 @@ class PySwitchRunner {
         await this.#loadModule("parser/misc/CollectCommentsTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/AddImportsTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/FunctionExtractor.py", localPythonPath);
+        await this.#loadModule("parser/misc/ClassAttributeExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/AssignmentExtractor.py", localPythonPath);
 
         this.pyodide.FS.mkdir("parser/inputs");

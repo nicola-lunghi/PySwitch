@@ -1,6 +1,6 @@
 
 .midicaptain-10 {    
-    max-width: 1100px;
+    max-width: 1000px;
 }
 
 .midicaptain-10 #pyswitch-background {
@@ -13,6 +13,11 @@
     top: 49.5%;
     left: 39.8%;
     width: 8%;
+    transition: all 0.2s;
+}
+
+.midicaptain-10 #pyswitch-display:hover {
+    transform: translate(-50%, -50%) scale(2);
 }
 
 /****************************************************************/
@@ -92,9 +97,9 @@
 .midicaptain-10 #pyswitch-switch-gp24 .pyswitch-parser-frontend,
 .midicaptain-10 #pyswitch-switch-gp23 .pyswitch-parser-frontend,
 .midicaptain-10 #pyswitch-switch-gp20 .pyswitch-parser-frontend {
-    top: -100%;
+    top: -40%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -100%);
 }
 
 .midicaptain-10 #pyswitch-switch-gp9 .pyswitch-parser-frontend,
@@ -102,8 +107,8 @@
 .midicaptain-10 #pyswitch-switch-gp11 .pyswitch-parser-frontend,
 .midicaptain-10 #pyswitch-switch-gp18 .pyswitch-parser-frontend,
 .midicaptain-10 #pyswitch-switch-gp19 .pyswitch-parser-frontend {
-    bottom: -100%;
+    bottom: -50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, 100%);
 }
 

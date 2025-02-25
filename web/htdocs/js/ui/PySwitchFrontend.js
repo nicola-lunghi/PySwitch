@@ -32,8 +32,7 @@ class PySwitchFrontend {
         this.#container.empty();
         
         this.#container.append(
-            $('<img id="' + this.#options.domNamespace + '-background" />'),
-            $('<canvas id="' + this.#options.domNamespace + '-display" />')
+            $('<img id="' + this.#options.domNamespace + '-background" />')
         );
 
         // Create parser frontend
@@ -41,6 +40,10 @@ class PySwitchFrontend {
 
         // Add switches and LEDs
         await this.#initInputs(parser);
+
+        this.#container.append(
+            $('<canvas id="' + this.#options.domNamespace + '-display" />')
+        );
     }
 
     /**

@@ -13,11 +13,11 @@ describe('Parser for available mappings', function() {
         await tests.getAvailableMappings();
     });
 
-    it('Metadata', async function() {
-        // console.error("Mapping parser tests are deactivated!");
-        // return;  // TODO!
+    // it('Metadata', async function() {
+    //     // console.error("Mapping parser tests are deactivated!");
+    //     // return;  // TODO!
 
-        await tests.getAvailableMappingsMeta();
-    });
+    //     await tests.getAvailableMappingsMeta();
+    // });
 });
 

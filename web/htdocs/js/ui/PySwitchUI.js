@@ -84,15 +84,7 @@ class PySwitchUI {
                         this.#versionElement = $('<div class="version"/>').html("PySwitch Emulator")
                         .on('click', async function() {
                             try {
-                                that.getPopup({ 
-                                    container: that.container,
-                                    fullscreen: true
-                                })
-                                .show(
-                                    $('<div class="about-content" />').append(
-                                        await Tools.fetch('about.html')
-                                    )
-                                );
+                                await that.showAbout();
 
                             } catch (e) {
                                 that.#controller.handle(e);
@@ -192,6 +184,30 @@ class PySwitchUI {
 
         // Show or hide tabs
         this.tabs = new Tabs(this.#controller, tabsElement, showTabsButton);
+
+        // if (!this.#controller.getState('suppressInfoPopup')) {
+        //     await this.showAbout();
+        // }
+    }
+
+    /**
+     * Show the about popup
+     */
+    async showAbout() {
+        const that = this;
+
+        this.getPopup({ 
+            container: this.container,
+            fullscreen: true,
+            onClose: function() {
+                that.#controller.setState('suppressInfoPopup', true);
+            }
+        })
+        .show(
+            $('<div class="about-content" />').append(
+                await Tools.fetch('about.html')
+            )
+        );
     }
 
     /**
@@ -337,7 +353,7 @@ class PySwitchUI {
                 this.#virtualClientTab = new Tab(
                     // Virtual client if enabled
                     virtualClientElement = $('<div class="virtual-client"/>'),
-                    "Virtual Kemper"
+                    "Virtual Client"
                 )
             );
 

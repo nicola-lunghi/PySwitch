@@ -1,6 +1,6 @@
 
 .midicaptain-nano-4 {        
-    max-width: 700px;
+    max-width: 550px;
 }
 
 .midicaptain-nano-4 #pyswitch-background {
@@ -13,7 +13,13 @@
     top: 49.3%;
     left: 50.04%;
     width: 19.7%;
+    transition: all 0.2s;
 }
+
+.midicaptain-nano-4 #pyswitch-display:hover {
+    transform: translate(-50%, -50%) scale(1.5);
+}
+
 
 /****************************************************************/
 
@@ -51,21 +57,25 @@
 /****************************************************************/
 
 .midicaptain-nano-4 #pyswitch-switch-gp1 .pyswitch-parser-frontend {
-    top: -100%;
+    top: -50%;
     left: 0;
+    transform: translateY(-100%);
 }
 
 .midicaptain-nano-4 #pyswitch-switch-gp25 .pyswitch-parser-frontend {
-    top: -100%;
+    top: -50%;
     right: 0;
+    transform: translateY(-100%);
 }
 
 .midicaptain-nano-4 #pyswitch-switch-gp9 .pyswitch-parser-frontend {
-    bottom: -100%;
+    bottom: -50%;
     left: 0;
+    transform: translateY(100%);
 }
 
 .midicaptain-nano-4 #pyswitch-switch-gp10 .pyswitch-parser-frontend {
-    bottom: -100%;
+    bottom: -50%;
     right: 0;
+    transform: translateY(100%);
 }

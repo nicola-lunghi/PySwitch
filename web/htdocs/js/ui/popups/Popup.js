@@ -14,6 +14,7 @@ class Popup {
      *      container:                Container DOM element
      *      additionalClasses:        Optional CSS classes for the popup element
      *      onReturnKey:              Callback when the user hits the Return key
+     *      onClose:                  Called on hide
      * }
      */
     constructor(config) {
@@ -60,6 +61,10 @@ class Popup {
                             // Close button
                             $('<span class="fa fa-times close-button"/>')
                             .on('click', async function() {
+                                if (that.config.onClose) {
+                                    await that.config.onClose();
+                                }
+                        
                                 that.hide();
                             })
                         )

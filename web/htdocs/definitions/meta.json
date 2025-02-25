@@ -16,7 +16,7 @@
                 },
                 {
                     "name": "display",
-                    "type": "any",
+                    "type": "select",
                     "comment": "DisplayLabel identifier (must be defined in display.py)"
                 },
                 {
@@ -361,6 +361,15 @@
             "category": "rig",
             "parameters": [
                 {
+                    "name": "bank",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": "NUM_BANKS",
+                        "none": true
+                    }
+                },
+                {
                     "name": "auto_exclude_rigs",
                     "type": "any",
                     "advanced": true
@@ -422,7 +431,23 @@
             "parameters": [
                 {
                     "name": "mapping",
-                    "default": "MAPPING_ROTARY_SPEED(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD)"
+                    "type": "select",
+                    "default": "MAPPING_ROTARY_SPEED(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD)",
+                    "comment": "Mapping to be used."
+                }
+            ]
+        },
+
+        {
+            "entityName": "MAPPING_EFFECT_BUTTON",
+            "parameters": [
+                {
+                    "name": "num",
+                    "type": "int",
+                    "range": {
+                        "min": 1,
+                        "max": 4
+                    }
                 }
             ]
         }
