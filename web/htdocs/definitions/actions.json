@@ -750,7 +750,7 @@
             {
                 "name": "rig_btn_morph",
                 "default": "False",
-                "comment": "If set True, second press will trigger morphing (only if no rig_off or bank_off are specified)"
+                "comment": "If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified."
             }
         ],
         "comment": "Adds morph state display on one LED to the rig select action.\nFor details on the parameters, see RIG_SELECT.",
@@ -946,7 +946,7 @@
             {
                 "name": "rig_btn_morph",
                 "default": "False",
-                "comment": "If set True, second press will trigger morphing (only if no rig_off or bank_off are specified)"
+                "comment": "If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified."
             }
         ],
         "comment": "Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in\nthe current bank. Rigs are indexed starting from one, range: [1..5].",
@@ -1058,7 +1058,7 @@
                 "comment": null
             }
         ],
-        "comment": "Generic action which can be used for all binary (on/off or similar) parameter mappings",
+        "comment": "Generic switch action which can be used for all parameter mappings",
         "importPath": "pyswitch.clients.kemper.actions.binary_switch"
     },
     {

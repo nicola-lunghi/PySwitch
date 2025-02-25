@@ -1478,7 +1478,7 @@
             {
                 "name": "rig_btn_morph",
                 "default": "False",
-                "comment": "If set True, second press will trigger morphing (only if no rig_off or bank_off are specified)",
+                "comment": "If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified.",
                 "meta": {
                     "data": {}
                 }
@@ -1881,7 +1881,7 @@
             {
                 "name": "rig_btn_morph",
                 "default": "False",
-                "comment": "If set True, second press will trigger morphing (only if no rig_off or bank_off are specified)",
+                "comment": "If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified.",
                 "meta": {
                     "data": {}
                 }
@@ -2179,7 +2179,7 @@
                 }
             }
         ],
-        "comment": "Generic action which can be used for all binary (on/off or similar) parameter mappings",
+        "comment": "Generic switch action which can be used for all parameter mappings",
         "importPath": "pyswitch.clients.kemper.actions.binary_switch",
         "meta": {
             "data": {}
