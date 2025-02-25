@@ -26,7 +26,7 @@ class KemperParser extends Parser {
     }
 
     /**
-     * Can resolve tokens related to value ranges etc.
+     * Can resolve tokens related to value ranges etc. in meta.json
      */
     async resolveValueToken(value) {
         switch(value) {
@@ -56,10 +56,6 @@ class KemperParser extends Parser {
             case "looper": return "w";
         }        
         return category;
-    }
-
-    createParameterMeta(meta, paramDef) {
-        return new KemperParameterMeta(this, meta, paramDef);
     }
 
     createFunctionMeta(meta, funcDef) {
