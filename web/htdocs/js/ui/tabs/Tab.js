@@ -1,3 +1,6 @@
+/**
+ * Represents one tab
+ */
 class Tab {
 
     name = null;

@@ -1,3 +1,7 @@
+/**
+ * Represents a configuration, consisting of the files inputs.py and display.py.
+ * Child classes must provide the more specific loading implementations.
+ */
 class Configuration {
 
     #data = null;

@@ -7,7 +7,7 @@ from ..mappings.select import MAPPING_BANK_AND_RIG_SELECT, MAPPING_BANK_SELECT
 from .rig_select import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG
 
 # Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). 
-# Banks are indexed starting from one, range: [1..126].    
+# Banks are indexed starting from one, range: [1..126].
 def BANK_SELECT(bank,                                           # Bank to select
                 bank_off = None,                                # "off" bank, to toggle between banks. Will be ignored when preselect is enabled.
                 preselect = False,                              # If False, the bank is switched immediately (by sending a rig select command 

@@ -1,3 +1,6 @@
+/**
+ * Button showing client connection state
+ */
 class ClientConnectionButton {
 
     #element = null;

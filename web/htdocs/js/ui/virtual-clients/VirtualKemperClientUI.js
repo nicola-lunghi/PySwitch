@@ -1,3 +1,6 @@
+/**
+ * User interface for the virtual Kemper client
+ */
 class VirtualKemperClientUI {
 
     #container = null;

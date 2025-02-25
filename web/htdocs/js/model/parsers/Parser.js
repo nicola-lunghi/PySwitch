@@ -1,3 +1,7 @@
+/**
+ * Parser base class. Implements the basic parsing (using python helpers a lot), while the
+ * child class(es) add client specific information.
+ */
 class Parser {
 
     static async getInstance(config, runner) {

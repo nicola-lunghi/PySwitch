@@ -1,3 +1,6 @@
+/**
+ * Data provider for add/edit actions (to be used in BrowserPopups)
+ */
 class ActionsProvider extends BrowserProvider {
 
     #toc = null;

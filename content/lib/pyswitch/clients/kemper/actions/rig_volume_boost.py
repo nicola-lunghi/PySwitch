@@ -14,7 +14,7 @@ def RIG_VOLUME_BOOST(boost_volume,                              # Boost volume: 
                      id = False, 
                      use_leds = True, 
                      text = "RigBoost", 
-                     remember_off_value = True, 
+                     remember_off_value = True,                 # If set, the boost will return to the former rig volume at disabling
                      enable_callback = None
     ):
     return PushButtonAction({

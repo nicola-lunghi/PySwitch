@@ -1,3 +1,6 @@
+/**
+ * Parameter metadata
+ */
 class ParameterMeta {
 
     data = null;          // Parameter metadata

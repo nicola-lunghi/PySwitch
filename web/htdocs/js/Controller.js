@@ -1,3 +1,6 @@
+/**
+ * Main application controller
+ */
 class Controller {
 
     VERSION = "?.0";            // For productive releases, the first three numbers should always match the PySwitch version. The last is the UI version.

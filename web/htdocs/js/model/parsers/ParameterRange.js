@@ -1,3 +1,6 @@
+/**
+ * Parameter range
+ */
 class ParameterRange {
 
     #parser = null;

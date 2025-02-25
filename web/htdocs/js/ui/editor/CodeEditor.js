@@ -1,3 +1,6 @@
+/**
+ * Code editor tab
+ */
 class CodeEditor extends Tab {
 
     #editor = null;

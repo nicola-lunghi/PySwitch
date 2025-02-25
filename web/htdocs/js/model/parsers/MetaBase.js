@@ -1,3 +1,6 @@
+/**
+ * Base class for the Meta class in definitions
+ */
 class MetaBase {
 
     entity = null;

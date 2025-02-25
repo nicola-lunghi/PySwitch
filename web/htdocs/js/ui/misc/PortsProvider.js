@@ -1,3 +1,6 @@
+/**
+ * Data provider for popups for choosing from MIDI ports
+ */
 class PortsProvider extends BrowserProvider {
 
     #toc = null;

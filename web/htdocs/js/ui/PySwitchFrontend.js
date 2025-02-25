@@ -1,3 +1,6 @@
+/**
+ * Implements the PySwitch frontend (switches, LEDs etc.)
+ */
 class PySwitchFrontend {
     
     #controller = null;

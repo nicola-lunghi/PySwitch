@@ -1,3 +1,6 @@
+/**
+ * Implementations for PaintAudio devices
+ */
 class PaintAudioDevice extends Device {
 
     #filename = null;

@@ -1,3 +1,6 @@
+/**
+ * User interface controller
+ */
 class PySwitchUI {
 
     #controller = null;

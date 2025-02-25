@@ -1,3 +1,6 @@
+/**
+ * Configuration loaded from a connected controller (via JsMidiBridge)
+ */
 class ControllerConfiguration extends Configuration {
 
     #controller = null;

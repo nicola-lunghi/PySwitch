@@ -1,3 +1,6 @@
+/**
+ * Virtual Kemper.
+ */
 class VirtualKemperClient extends VirtualClient {
     
     #runIntervalHandler = null;

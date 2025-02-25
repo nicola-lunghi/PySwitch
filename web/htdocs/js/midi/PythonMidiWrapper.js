@@ -1,4 +1,7 @@
-class WebMidiWrapper {
+/**
+ * Wrapper to communicate with python (adafruit midi) wrappers.
+ */
+class PythonMidiWrapper {
 
     messageQueue = [];   // Queue of raw MIDI bytes. Will be filled here message by message, and fetched from the python midi wrappers
 

@@ -1,3 +1,6 @@
+/**
+ * Generic popup
+ */
 class Popup {
 
     element = null;        // Content element
@@ -8,8 +11,9 @@ class Popup {
 
     /**
      * config: {
-     *      container:           Container DOM element
-     *      additionalClasses:   Optional CSS classes for the popup element
+     *      container:                Container DOM element
+     *      additionalClasses:        Optional CSS classes for the popup element
+     *      onReturnKey:              Callback when the user hits the Return key
      * }
      */
     constructor(config) {
@@ -70,9 +74,15 @@ class Popup {
         // ESC to close
         const that = this;
         $(window).on('keydown.' + this.#id, async function(event) {
-            if(event.key === "Escape") {
+            if (event.key === "Escape") {
                 event.preventDefault();
                 that.hide();
+            }
+            
+            if (event.key === "Enter") {
+                if (that.config.onReturnKey) {
+                    await that.config.onReturnKey();
+                }
             }
         });
 

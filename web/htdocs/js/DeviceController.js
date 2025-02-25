@@ -1,3 +1,6 @@
+/**
+ * Manages connection to controller devices (like a MidiCaptain controller)
+ */
 class DeviceController {
 
     #controller = null;           // PySwitch runner

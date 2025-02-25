@@ -1,3 +1,7 @@
+/**
+ * Adapter to the python based function extractor (which can extract all available functions 
+ * on root level in a python script)
+ */
 class FunctionExtractor {
 
     pyswitch = null  // PySwitchRunner instance

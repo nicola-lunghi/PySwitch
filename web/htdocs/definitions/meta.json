@@ -2,14 +2,26 @@
     "parameters": [
         {
             "entityName": "default",
-            "comment": "This defines default parameter types and values, used for all parameters of the same name, if no more specific definition exists.",
             "parameters": [
                 {
                     "name": "id",
-                    "type": "any"
+                    "advanced": true,
+                    "type": "any",
+                    "comment": "This ID can be used for Paging or custom callbacks, to enable/disable the action."
+                },
+                {
+                    "name": "use_leds",
+                    "type": "bool",
+                    "comment": "If disabled, the action will not use the LEDs of the switch"
+                },
+                {
+                    "name": "display",
+                    "type": "any",
+                    "comment": "DisplayLabel identifier (must be defined in display.py)"
                 },
                 {
                     "name": "display_mode",
+                    "comment": "Decides how the colors and texts are determined.",
                     "type": "select",
                     "values": [
                         {
@@ -63,12 +75,53 @@
 
                 {
                     "name": "value_on",
-                    "type": "any"
+                    "type": "any",
+                    "advanced": true
                 },
 
                 {
                     "name": "value_off",
+                    "type": "any",
+                    "advanced": true
+                },
+
+                {
+                    "name": "reference_value",
+                    "type": "any",
+                    "advanced": true
+                },
+
+                {
+                    "name": "enable_callback",
+                    "advanced": true,
+                    "type": "any",
+                    "comment": "Callback instance to control dynamically whether the action should be enabled."
+                },
+
+                {
+                    "name": "text_callback",
+                    "advanced": true,
                     "type": "any"
+                },
+
+                {
+                    "name": "color_callback",
+                    "advanced": true,
+                    "type": "any"
+                },
+
+                {
+                    "name": "dim_factor",
+                    "advanced": true,
+                    "type": "any",
+                    "comment": "Dim factor for the display"
+                },
+
+                {
+                    "name": "led_brightness",
+                    "advanced": true,
+                    "type": "any",
+                    "comment": "Brightness factor for the LED(s)"
                 },
 
                 {
@@ -114,6 +167,7 @@
                 {
                     "name": "mode",
                     "type": "select",
+                    "comment": "Mode of operation",
                     "values": [
                         {
                             "name": "Latch",
@@ -149,6 +203,8 @@
                 {
                     "name": "comparison_mode",
                     "type": "select",
+                    "comment": "For incoming parameter values, this decides how the new values will be compared to the reference value (or on value) to update the state of the action",
+                    "advanced": true,
                     "values": [
                         {
                             "name": "Equal",
@@ -211,6 +267,11 @@
                         "min": 1,
                         "max": 4
                     }
+                },
+                {
+                    "name": "use_internal_state",
+                    "type": "bool",
+                    "advanced": true
                 }
             ]
         },
@@ -262,12 +323,49 @@
         {
             "entityName": "RIG_SELECT_AND_MORPH_STATE",
             "category": "rig",
-            "parameters": []
+            "parameters": [
+                {
+                    "name": "morph_display",
+                    "type": "any",
+                    "advanced": true
+                },
+                {
+                    "name": "morph_use_leds",
+                    "type": "bool",
+                    "advanced": true
+                },
+                {
+                    "name": "morph_id",
+                    "type": "any",
+                    "advanced": true
+                },
+                {
+                    "name": "morph_only_when_enabled",
+                    "type": "bool",
+                    "advanced": true
+                },
+                {
+                    "name": "morph_color_base",
+                    "type": "color",
+                    "advanced": true
+                },
+                {
+                    "name": "morph_color_morphed",
+                    "type": "color",
+                    "advanced": true
+                }
+            ]
         },
         {
             "entityName": "RIG_SELECT",
             "category": "rig",
-            "parameters": []
+            "parameters": [
+                {
+                    "name": "auto_exclude_rigs",
+                    "type": "any",
+                    "advanced": true
+                }
+            ]
         },
         {
             "entityName": "RIG_UP",
@@ -301,7 +399,18 @@
         {
             "entityName": "SHOW_TEMPO",
             "category": "tempo",
-            "parameters": []
+            "parameters": [
+                {
+                    "name": "led_brightness_on",
+                    "type": "float",
+                    "advanced": true
+                },
+                {
+                    "name": "led_brightness_off",
+                    "type": "float",
+                    "advanced": true
+                }
+            ]
         },
         {
             "entityName": "TUNER_MODE",

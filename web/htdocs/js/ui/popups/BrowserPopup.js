@@ -1,3 +1,6 @@
+/**
+ * Popup for browsing TOCs
+ */
 class BrowserPopup extends Popup {
 
     #toc = null;
@@ -18,6 +21,7 @@ class BrowserPopup extends Popup {
      *      selectedValue:            If set, the entry with this value will be selected until this value is changed. 
      *                                For temporary selection use setSelected() or setSelectedValue().
      *      dontCloseOnSelect: false
+     *      onReturnKey:              Callback when the user hits the Return key
      * }
      */
     constructor(config) {

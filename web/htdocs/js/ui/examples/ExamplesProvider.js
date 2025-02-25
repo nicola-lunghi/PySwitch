@@ -1,3 +1,6 @@
+/**
+ * Provider for browser popups, loading the examples.
+ */
 class ExamplesProvider extends BrowserProvider {
     
     #toc = null;

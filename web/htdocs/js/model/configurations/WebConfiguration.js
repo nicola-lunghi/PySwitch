@@ -1,3 +1,6 @@
+/**
+ * Configuration loaded from the web
+ */
 class WebConfiguration extends Configuration {
 
     #path = null;

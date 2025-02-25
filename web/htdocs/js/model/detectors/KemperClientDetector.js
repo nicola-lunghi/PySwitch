@@ -3,7 +3,9 @@ const KEMPER_MANUFACTURER_ID = [0x00, 0x20, 0x33];
 const NRPN_PRODUCT_TYPE_PROFILER_PLAYER = 0x02;
 const NRPN_PRODUCT_TYPE = NRPN_PRODUCT_TYPE_PROFILER_PLAYER;
 
-
+/**
+ * Detects if a Kemper device is listening
+ */
 class KemperClientDetector extends ClientDetector {
     
     /**

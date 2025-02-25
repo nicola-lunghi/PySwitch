@@ -1,3 +1,6 @@
+/**
+ * Base class for data providers which should be used with BrowserPopup
+ */
 class BrowserProvider {
     
     /**

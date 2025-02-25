@@ -1,3 +1,6 @@
+/**
+ * Kemper specific implementations for the parser
+ */
 class KemperParser extends Parser {
 
     /**

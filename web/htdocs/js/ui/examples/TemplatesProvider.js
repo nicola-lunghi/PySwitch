@@ -1,3 +1,6 @@
+/**
+ * Provider for browser popups, loading the templates for creating new configurations.
+ */
 class TemplatesProvider extends BrowserProvider {
     
     #toc = null;

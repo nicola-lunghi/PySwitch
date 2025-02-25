@@ -1,3 +1,6 @@
+/**
+ * Metadata for functions
+ */
 class FunctionMeta {
 
     data = null;          // Function metadata

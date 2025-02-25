@@ -1,3 +1,6 @@
+/**
+ * Implements tabs handling
+ */
 class Tabs {
 
     #controller = null;

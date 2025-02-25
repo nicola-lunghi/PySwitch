@@ -1,3 +1,6 @@
+/**
+ * Listener for MidiHandler
+ */
 class MidiListener {
     
     id = null;

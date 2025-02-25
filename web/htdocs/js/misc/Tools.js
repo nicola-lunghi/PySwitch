@@ -21,7 +21,7 @@ class Tools {
     }
 
     /**
-	 * Compare two arrays (i know, could be done more js-like but works)
+	 * Shallow compare two arrays (i know, could be done more js-like but works)
 	 */
 	static compareArrays(a, b) {
 		if (a.length != b.length) {

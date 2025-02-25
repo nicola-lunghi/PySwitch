@@ -1,18 +1,25 @@
+/**
+ * Implements the parameter editor
+ */
 class ActionProperties {
     
     #parser = null;
     #model = null;
     #inputs = null;
+    #oldProperties = null;
+    #advancedRows = null;
 
-    constructor(parser, model) {
+    constructor(parser, model, oldProperties = null) {
         this.#parser = parser;
-        this.#model = model;        
+        this.#model = model;
+        this.#oldProperties = oldProperties;   
     }
 
     /**
      * Generate the DOM for the properties panel
      */
     async get() {
+        this.#advancedRows = [];
         this.#inputs = new Map();
 
         const meta = new Meta(this.#model);
@@ -20,6 +27,53 @@ class ActionProperties {
         let holdInput = null;
 
         const that = this;
+        const parameters = await Promise.all(
+            this.#model.parameters
+            .map(
+                async (param) => {
+                    const input = await this.#createInput(param);
+
+                    that.#inputs.set(param, input);
+
+                    // Take over old values from the old props object, if different from the default
+                    if (that.#oldProperties) {
+                        const oldParam = that.#oldProperties.getParameterModel(param.name);
+                        const oldValue = that.#oldProperties.getParameterValue(param.name);
+                        
+                        if (oldValue !== null && oldValue != oldParam.meta.getDefaultValue()) {
+                            that.#setInputValue(input, param, oldValue);
+                        }   
+                    }
+
+                    const row = $('<tr />').append(
+                        // Parameter Name
+                        $('<td />').append(
+                            $('<span />').text(param.name)
+                        ),
+
+                        // Input
+                        $('<td />').append(
+                            input
+                        ),
+
+                        // Comment
+                        $('<td />').append(
+                            await this.#getParameterComment(param)
+                        )
+                    );
+
+                    if (param.meta.data.advanced) {
+                        that.#advancedRows.push(row);
+                        row.hide();
+                    }
+
+                    return row;
+                }
+            )
+        );
+
+        let tbody = null;
+
         const ret = $('<div class="action-properties" />').append(
             // Comment
             $('<div class="action-header" />')
@@ -34,7 +88,7 @@ class ActionProperties {
             
             $('<div class="action-parameters" />').append(
                 $('<table />').append(
-                    $('<tbody />').append(
+                    tbody = $('<tbody />').append(
 
                         // Hold option
                         $('<tr />').append(
@@ -53,39 +107,36 @@ class ActionProperties {
                         ),
 
                         // Action parameters
-                        await Promise.all(
-                            this.#model.parameters
-                            .map(
-                                async (param) => {
-                                    const input = await this.#getInput(param);
-
-                                    that.#inputs.set(param, input);
-
-                                    return $('<tr />').append(
-                                        // Parameter Name
-                                        $('<td />').append(
-                                            $('<span />').text(param.name)
-                                        ),
-                
-                                        // Input
-                                        $('<td />').append(
-                                            input
-                                        ),
-                
-                                        // Comment
-                                        $('<td />').append(
-                                            await this.#getParameterComment(param)
-                                        )
-                                    );
-                                }
-                            )
-                        )
+                        parameters
                     )
                 )
             )
         );
 
+        if (this.#advancedRows.length > 0) {
+            let advRow = null;
+            tbody.append(
+                advRow = $('<tr />').append(
+                    $('<td colspan="3" />').append(
+                        $('<span class="show-advanced" />')
+                        .text("Show all...")
+                        .on('click', async function() {
+                            for (const row of that.#advancedRows) {
+                                row.show();
+                            }
+
+                            advRow.hide();
+                        })
+                    )
+                )
+            )
+        }
+
         this.#inputs.set("hold", holdInput);
+
+        if (this.#oldProperties) {
+            this.setHold(this.#oldProperties.hold());            
+        }
 
         return ret;
     }
@@ -125,16 +176,9 @@ class ActionProperties {
     setArguments(args) {
         const that = this;
 
-        function getParam(name) {
-            for (const param of that.#model.parameters) {
-                if (param.name == name) return param;
-            }
-            throw new Error("Parameter " + name + " not found");
-        }
-
         for (const arg of args) {
             // Get parameter definition first
-            const param = getParam(arg.name);
+            const param = this.getParameterModel(arg.name);
             const input = that.#inputs.get(param);
             if (!input) throw new Error("No input for param " + param.name + " found");
 
@@ -147,6 +191,16 @@ class ActionProperties {
      */
     setHold(hold) {
         this.#inputs.get("hold").prop('checked', !!hold)
+    }
+
+    /**
+     * Searches a parameter mode by name
+     */
+    getParameterModel(name) {
+        for (const param of this.#model.parameters) {
+            if (param.name == name) return param;
+        }
+        return null;
     }
 
     /**
@@ -165,6 +219,7 @@ class ActionProperties {
      * Determine parameter comment
      */
     #getParameterComment(param) {
+        if (param.meta.data.comment) return param.meta.data.comment;
         if (!param.comment) return "";
         return param.comment;
     }
@@ -172,7 +227,7 @@ class ActionProperties {
     /**
      * Generates the DOM for one parameter
      */
-    async #getInput(param) {
+    async #createInput(param) {
         let type = param.meta.data.type;
 
         if (!type) {
@@ -202,6 +257,19 @@ class ActionProperties {
 
         return $('<input type="text" />')
         .val(param.meta.getDefaultValue());
+    }
+
+    /**
+     * Returns a parameter value by name
+     */
+    getParameterValue(name) {
+        const param = this.getParameterModel(name);
+        if (!param) return null;
+
+        const input = this.#inputs.get(param);
+        if (!input) return null;
+
+        return this.#getInputValue(input, param);        
     }
 
     /**

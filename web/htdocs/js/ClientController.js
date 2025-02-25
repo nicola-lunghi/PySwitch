@@ -1,3 +1,6 @@
+/**
+ * Manages connection to client devices (like Kemper)
+ */
 class ClientController {
 
     #controller = null;
@@ -160,9 +163,9 @@ class ClientController {
             return;
         }
 
-        // Set a Web MIDI wrapper to connect the ports to PySwitch
+        // Set a MIDI wrapper to connect the ports to PySwitch
         this.#controller.pyswitch.setMidiWrapper(
-            new WebMidiWrapper(this.#controller.midi, port.input, port.output)
+            new PythonMidiWrapper(this.#controller.midi, port.input, port.output)
         );
 
         // Report states etc.

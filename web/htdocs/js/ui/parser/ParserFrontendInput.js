@@ -1,3 +1,6 @@
+/**
+ * Parser frontend for one input (shows actions for one input)
+ */
 class ParserFrontendInput {
 
     #grid = null;
@@ -326,11 +329,26 @@ class ParserFrontendInput {
         async function onSelect(entry) {
             props = new ActionProperties(
                 that.#parserFrontend.parser,
-                entry.config.model
+                entry.config.model,
+                props
             );
 
             browser.showInfoPanel(await props.get());
             browser.setSelected(entry)
+        }
+
+        async function commit() {
+            if (!props) {
+                alert("Please select an action first");
+                return;
+            }
+
+            const action = props.createActionDefinition();
+            const hold = props.hold();
+
+            await onCommit(action, hold);
+
+            browser.hide();
         }
 
         // A browser to select client connections (to Kemper etc.), triggered by the client select button
@@ -339,6 +357,7 @@ class ParserFrontendInput {
             headline: headline,
             wide: true,
             dontCloseOnSelect: true,
+            onReturnKey: commit,
             providers: [
                 actionsProvider = new ActionsProvider(
                     this.#parserFrontend.parser,
@@ -364,17 +383,7 @@ class ParserFrontendInput {
             .text(buttonText)
             .on('click', async function() {
                 try {
-                    if (!props) {
-                        alert("Please select an action first");
-                        return;
-                    }
-
-                    const action = props.createActionDefinition();
-                    const hold = props.hold();
-
-                    await onCommit(action, hold);
-
-                    browser.hide();
+                    await commit();
 
                 } catch(e) {
                     that.#controller.handle(e);
@@ -464,25 +473,6 @@ class ParserFrontendInput {
             }, 
             100
         );
-
-        // const muuriItem = this.#grid.getItem(itemElement[0]);
-        // if (!muuriItem) throw new Error("Item not found")
-
-        // this.#grid.remove(
-        //     [muuriItem], 
-        //     { 
-        //         removeElements: true 
-        //     }
-        // );
-        
-        // const that = this;
-        // setTimeout(
-        //     async function() {
-        //         await that.updateInput();
-        //         await that.#parserFrontend.updateConfig();    
-        //     }, 
-        //     100
-        // );
     }
 
     /**

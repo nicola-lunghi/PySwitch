@@ -1,3 +1,6 @@
+/**
+ * Base class for virtual clients
+ */
 class VirtualClient {
 
     /**

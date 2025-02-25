@@ -1,3 +1,6 @@
+/**
+ * TOC entry for the browser popup
+ */
 class BrowserEntry {
 
     value = null;

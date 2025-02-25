@@ -1,3 +1,6 @@
+/**
+ * Parser frontend (shows all actions etc.)
+ */
 class ParserFrontend {
 
     inputs = [];   // Array of parser frontends

@@ -40,7 +40,7 @@
             {
                 "name": "remember_off_value",
                 "default": "True",
-                "comment": null
+                "comment": "If set, the boost will return to the former rig volume at disabling"
             },
             {
                 "name": "enable_callback",
@@ -1105,7 +1105,7 @@
                 "comment": "If enabled, the state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). "
             }
         ],
-        "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).\n#\nNOTE: The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). \nIf you dont want this behaviour, you can set \"use_internal_state = False\".",
+        "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).\nNOTE: The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). \nIf you dont want this behaviour, you can set \"use_internal_state = False\".",
         "importPath": "pyswitch.clients.kemper.actions.effect_button"
     },
     {
@@ -1172,7 +1172,7 @@
                 "comment": "Static text (if no text callback is passed)"
             }
         ],
-        "comment": "Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). \nBanks are indexed starting from one, range: [1..126].    ",
+        "comment": "Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). \nBanks are indexed starting from one, range: [1..126].",
         "importPath": "pyswitch.clients.kemper.actions.bank_select"
     }
 ]

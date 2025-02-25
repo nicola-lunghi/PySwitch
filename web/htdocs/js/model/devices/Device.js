@@ -1,3 +1,6 @@
+/**
+ * Base class for controller devices
+ */
 class Device {
 
     /**

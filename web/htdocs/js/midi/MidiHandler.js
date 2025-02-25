@@ -1,3 +1,6 @@
+/**
+ * Implements the MIDI device scanning algorithms
+ */
 class MidiHandler {
 
     midiAccess = null;

@@ -1,3 +1,6 @@
+/**
+ * Manages running PySwitch on Pyodide
+ */
 class PySwitchRunner {
 
     pyodide = null;
