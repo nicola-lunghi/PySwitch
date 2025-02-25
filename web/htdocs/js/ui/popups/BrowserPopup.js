@@ -105,7 +105,13 @@ class BrowserPopup extends Popup {
         if (!this.#buttons) throw new Error("Popup not initialized with show()");
 
         this.#buttons.empty();
-        this.#buttons.append(buttons);
+
+        if (buttons) {
+            this.#buttons.append(buttons);
+            this.#buttons.show();
+        } else {
+            this.#buttons.hide();
+        }
     }
 
     /**
@@ -207,7 +213,7 @@ class BrowserPopup extends Popup {
                     .hide(),
                     
                     // Buttons
-                    this.#buttons = $('<div class="buttons" />')
+                    this.#buttons = $('<div class="buttons" />').hide()
                 )
             ]
         )

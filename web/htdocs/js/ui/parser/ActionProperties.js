@@ -54,12 +54,6 @@ class ActionProperties {
                     )
                 )
             )
-            
-            // // Buttons
-            // $('<div class="action-buttons" />').append(
-            //     $('<div class="button" />')
-            //     .text("Add")
-            // )            
         )
     }
 

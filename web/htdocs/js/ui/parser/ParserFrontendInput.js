@@ -313,6 +313,17 @@ class ParserFrontendInput {
 
         await browser.browse();
         browser.showInfoPanel("Please select an action to add");
+        browser.setButtons(
+            $('<div class="button" />')
+            .text("Add")
+            .on('click', async function() {
+                try {
+
+                } catch(e) {
+                    that.#controller.handle(e);
+                }
+            })
+        );
     }
 
     /**

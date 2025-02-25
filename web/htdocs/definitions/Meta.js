@@ -12,6 +12,7 @@ class Meta extends MetaBase {
         switch (this.entity.name) {
             case "RIG_SELECT": return this.#getDisplayNameRigSelect(actionDefinition)
             case "BANK_SELECT": return this.#getDisplayNameBankSelect(actionDefinition)
+            case "EFFECT_BUTTON": return this.#getDisplayNameEffectButton(actionDefinition)
             case "BINARY_SWITCH": return "Other"
         }
         
@@ -56,5 +57,17 @@ class Meta extends MetaBase {
         }
 
         return this.replaceParameterTokens(actionDefinition, "Select Bank {bank}");
+    }
+
+    /**
+     * Special implementation for effect buttons
+     */
+    #getDisplayNameEffectButton(actionDefinition) {
+        const num = this.getArgument(actionDefinition, "num");
+        if (actionDefinition && num) {
+            return this.replaceParameterTokens(actionDefinition, "Effect Button {num}");
+        }
+
+        return "Effect Button";
     }
 }
