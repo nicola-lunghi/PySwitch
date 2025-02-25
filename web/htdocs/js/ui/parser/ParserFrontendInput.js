@@ -68,13 +68,30 @@ class ParserFrontendInput {
                 $('<div class="action-item" />').append(
                     $('<div class="action-item-content" />')
                     .append(
+                        // Action
                         $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
-                        .text(getItemText(item)),
-
-                        $('<span class="button ' + buttonClass + ' remove-action fas fa-times" data-toggle="tooltip" title="Remove action" />')
+                        .text(getItemText(item))
                         .on('click', async function() {
                             try {                                        
-                                await that.removeAction(input, $(this).parent().parent());
+                                await that.promptEditAction(input, item, hold);
+
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
+                        }),
+
+                        // Remove button
+                        $('<span class="button ' + buttonClass + ' remove-action fas fa-times" data-toggle="tooltip" title="Remove action" />')
+                        .on('click', async function() {
+                            try {
+                                const action = $(this).parent().parent().data('handler');
+                                
+                                const inputName = input.display_name();        
+                                if (!confirm("Do you want to delete " + action.name + " from " + inputName + "?")) {
+                                    return;
+                                }
+                                                                              
+                                await that.removeAction(input, action);
 
                             } catch (e) {
                                 that.#controller.handle(e);
@@ -252,9 +269,126 @@ class ParserFrontendInput {
     }
 
     /**
+     * Shows the add action dialog
+     */
+    async promptAddAction(input) {
+        const inputName = input.display_name();
+        const that = this;
+
+        const browser = await this.#promptAction(
+            input,
+            async function(action, hold) {
+                await that.addAction(input, action, hold);
+            },
+            "Add an action to " + inputName,
+            "Add"
+        );
+
+        browser.showInfoPanel("Please select an action to add");
+    }
+
+    /**
+     * Shows the edit action dialog
+     */
+    async promptEditAction(input, action, hold) {
+        const inputName = input.display_name();
+        const that = this;
+
+        const browser = await this.#promptAction(
+            input,
+            async function(actionNew, holdNew) {
+                if (hold == holdNew) {
+                    await that.replaceAction(input, action, actionNew);
+                } else {
+                    await that.removeAction(input, action);
+                    await that.addAction(input, actionNew, holdNew);
+                }                
+            },
+            "Edit/replace action \"" + action.name + "\" of " + inputName,
+            "Apply",
+            {
+                name: action.name,
+                arguments: JSON.parse(action.arguments()),
+                hold: hold
+            }
+        );
+    }
+
+    /**
+     * Shows the action edit/create dialog
+     */
+    async #promptAction(input, onCommit, headline, buttonText, preselectAction = null) {
+        const that = this;
+
+        let props = null;
+        let actionsProvider = null;
+
+        async function onSelect(entry) {
+            props = new ActionProperties(
+                that.#parserFrontend.parser,
+                entry.config.model
+            );
+
+            browser.showInfoPanel(await props.get());
+            browser.setSelected(entry)
+        }
+
+        // A browser to select client connections (to Kemper etc.), triggered by the client select button
+        const browser = this.#controller.ui.getBrowserPopup({
+            additionalClasses: "select-actions",
+            headline: headline,
+            wide: true,
+            dontCloseOnSelect: true,
+            providers: [
+                actionsProvider = new ActionsProvider(
+                    this.#parserFrontend.parser,
+                    {
+                        onSelect: onSelect,
+                        preselectActionName: preselectAction ? preselectAction.name : null
+                    }
+                )
+            ]
+        });
+
+        await browser.browse();
+
+        if (preselectAction && actionsProvider.preselectEntry) {
+            await onSelect(actionsProvider.preselectEntry);
+
+            props.setArguments(preselectAction.arguments);
+            props.setHold(preselectAction.hold)            
+        }
+
+        browser.setButtons(
+            $('<div class="button" />')
+            .text(buttonText)
+            .on('click', async function() {
+                try {
+                    if (!props) {
+                        alert("Please select an action first");
+                        return;
+                    }
+
+                    const action = props.createActionDefinition();
+                    const hold = props.hold();
+
+                    await onCommit(action, hold);
+
+                    browser.hide();
+
+                } catch(e) {
+                    that.#controller.handle(e);
+                }
+            })
+        );
+
+        return browser;
+    }
+
+    /**
      * Adds an action to the passed input (proxy)
      */
-    async addAction(actionDefinition, input, hold = false) {
+    async addAction(input, actionDefinition, hold = false) {
         // Build actions definitions
         const newActions = this.#getItemHandlers(hold)
             .map((item) => { return {
@@ -278,83 +412,94 @@ class ParserFrontendInput {
     }
 
     /**
-     * Shows the add action dialog
+     * Replaces an action. 
      */
-    async promptAddAction(input) {
-        const that = this;
+    async replaceAction(input, actionToReplace, actionDefinition) {
+        const hold = this.#getHold(actionToReplace);
 
-        const inputName = input.display_name();
+        const newActions = this.#getItemHandlers(hold)
+            .map((item) => { 
+                if (item == actionToReplace) return actionDefinition;
 
-        // A browser to select client connections (to Kemper etc.), triggered by the client select button
-        const browser = this.#controller.ui.getBrowserPopup({
-            additionalClasses: "select-actions",
-            headline: "Add an action to " + inputName,
-            wide: true,
-            dontCloseOnSelect: true,
-            providers: [
-                new ActionsProvider(
-                    this.#parserFrontend.parser,
-                    {
-                        onSelect: async function(entry) {
-                            browser.showInfoPanel(
-                                await (
-                                    new ActionProperties(
-                                        that.#parserFrontend.parser,
-                                        entry.config.model
-                                    )
-                                ).get()
-                            );
-                            browser.setSelected(entry)
-                        }
-                    }
-                )
-            ]
-        });
-
-        await browser.browse();
-        browser.showInfoPanel("Please select an action to add");
-        browser.setButtons(
-            $('<div class="button" />')
-            .text("Add")
-            .on('click', async function() {
-                try {
-
-                } catch(e) {
-                    that.#controller.handle(e);
+                return {
+                    name: item.name,
+                    arguments: JSON.parse(item.arguments())
                 }
-            })
-        );
-    }
-
-    /**
-     * Removes an action from the passed input (proxy)
-     */
-    async removeAction(input, itemElement) {
-        const inputName = input.display_name();
-        
-        if (!confirm("Do you want to delete the action from " + inputName + "?")) {
-            // this.#controller.ui.message("Action canceled", "I")
-            return;
-        }
-
-        const muuriItem = this.#grid.getItem(itemElement[0]);
-        if (!muuriItem) throw new Error("Item not found")
-
-        this.#grid.remove(
-            [muuriItem], 
-            { 
-                removeElements: true 
-            }
-        );
-        
+            });
+                
+        // Update config
         const that = this;
         setTimeout(
             async function() {
-                await that.updateInput();
+                await input.set_actions(newActions, hold, true);
+
                 await that.#parserFrontend.updateConfig();    
             }, 
             100
         );
+    }
+    
+    /**
+     * Removes an action from the passed input (proxy)
+     */
+    async removeAction(input, action) {
+        const hold = this.#getHold(action);
+
+        const newActions = this.#getItemHandlers(hold)
+            .filter((item) => item != action)
+            .map((item) => { 
+                return {
+                    name: item.name,
+                    arguments: JSON.parse(item.arguments())
+                }
+            });
+                
+        // Update config
+        const that = this;
+        setTimeout(
+            async function() {
+                await input.set_actions(newActions, hold, true);
+
+                await that.#parserFrontend.updateConfig();    
+            }, 
+            100
+        );
+
+        // const muuriItem = this.#grid.getItem(itemElement[0]);
+        // if (!muuriItem) throw new Error("Item not found")
+
+        // this.#grid.remove(
+        //     [muuriItem], 
+        //     { 
+        //         removeElements: true 
+        //     }
+        // );
+        
+        // const that = this;
+        // setTimeout(
+        //     async function() {
+        //         await that.updateInput();
+        //         await that.#parserFrontend.updateConfig();    
+        //     }, 
+        //     100
+        // );
+    }
+
+    /**
+     * Returns if the action is a hold action
+     */
+    #getHold(action) {
+        const actions = this.#getItemHandlers(false);
+        for (const a of actions) {
+            if (a == action) return false;
+        }
+
+        const actionsHold = this.#getItemHandlers(true);
+        for (const a of actionsHold) {
+            if (a == action) return true;
+        }
+
+        throw new Error("Action not contained: " + action.name);
     }
 
     /**

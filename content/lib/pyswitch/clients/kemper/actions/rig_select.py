@@ -27,7 +27,7 @@ def RIG_SELECT(rig,
                text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
                text = None,                                    # Text override (if no text callback is passed)
                auto_exclude_rigs = None,                       # If rig_off is "auto", this can be filled with a tuple or list of rigs to exclude from "remembering" when disabled
-               rig_btn_morph = False                           # If set True, second press will trigger morphing (only if no rig_off or bank_off are specified)
+               rig_btn_morph = False                           # If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified.
     ):
     
     # Finally we can create the action definition ;)

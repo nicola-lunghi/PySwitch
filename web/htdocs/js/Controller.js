@@ -105,6 +105,8 @@ class Controller {
      * Run PySwitch with a specific configuration.
      */
     async loadConfiguration(config) {
+        this.ui.notifications.reset();
+
         if (!this.ui.confirmIfDirty()) return;
 
         this.currentConfig = null;
@@ -166,6 +168,8 @@ class Controller {
      * Restarts the current configuration
      */
     async restart(message = null) {
+        this.ui.notifications.reset();
+        
         if (!this.currentConfig) {
             console.warn("No config to restart");
             return;

@@ -3,10 +3,13 @@ class ActionsProvider extends BrowserProvider {
     #toc = null;
     #parser = null;
     #config = null;
+
+    preselectEntry = null;
     
     /**
      * {
-     *      onSelect
+     *      onSelect,
+     *      preselectActionName
      * }
      */
     constructor(parser, config) {
@@ -50,18 +53,24 @@ class ActionsProvider extends BrowserProvider {
         for (const action of actions) {
             const meta = new Meta(action);
 
+            const entry = new BrowserEntry(
+                browser,
+                {
+                    text: meta.getDisplayName(),
+                    value: action.name,
+                    parent: this.#toc,
+                    onSelect: this.#config.onSelect,
+                    model: action,
+                    sortString: this.#parser.getActionSortString(action)
+                }
+            )
+
+            if (this.#config.preselectActionName && (action.name == this.#config.preselectActionName)) {
+                this.preselectEntry = entry;
+            } 
+
             this.#toc.children.push(
-                new BrowserEntry(
-                    browser,
-                    {
-                        text: meta.getDisplayName(),
-                        value: action.name,
-                        parent: this.#toc,
-                        onSelect: this.#config.onSelect,
-                        model: action,
-                        sortString: this.#parser.getActionSortString(action)
-                    }
-                )
+                entry
             )
         }
 

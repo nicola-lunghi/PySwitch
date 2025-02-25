@@ -34,6 +34,10 @@ class Notifications {
     	);
 	}
 
+	reset() {
+		this.#messageElement.empty();
+	}
+
 	/**
 	 * Show a message to the user. Default type is "E" for error, other supported types are I(nfo), W(arning), and S(uccess).
 	 * 

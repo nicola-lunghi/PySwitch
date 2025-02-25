@@ -2,19 +2,25 @@ class ActionProperties {
     
     #parser = null;
     #model = null;
+    #inputs = null;
 
     constructor(parser, model) {
         this.#parser = parser;
-        this.#model = model;
+        this.#model = model;        
     }
 
     /**
      * Generate the DOM for the properties panel
      */
     async get() {
+        this.#inputs = new Map();
+
         const meta = new Meta(this.#model);
 
-        return $('<div class="action-properties" />').append(
+        let holdInput = null;
+
+        const that = this;
+        const ret = $('<div class="action-properties" />').append(
             // Comment
             $('<div class="action-header" />')
             .text(meta.getDisplayName()),
@@ -29,9 +35,32 @@ class ActionProperties {
             $('<div class="action-parameters" />').append(
                 $('<table />').append(
                     $('<tbody />').append(
+
+                        // Hold option
+                        $('<tr />').append(
+                            $('<td />').append(
+                                $('<span />').text("hold")
+                            ),
+    
+                            // Input
+                            $('<td />').append(
+                                holdInput = $('<input type="checkbox" />')
+                                .prop('checked', false)
+                            ),
+    
+                            // Comment
+                            $('<td />').text("")
+                        ),
+
+                        // Action parameters
                         await Promise.all(
-                            this.#model.parameters.map(
+                            this.#model.parameters
+                            .map(
                                 async (param) => {
+                                    const input = await this.#getInput(param);
+
+                                    that.#inputs.set(param, input);
+
                                     return $('<tr />').append(
                                         // Parameter Name
                                         $('<td />').append(
@@ -40,7 +69,7 @@ class ActionProperties {
                 
                                         // Input
                                         $('<td />').append(
-                                            await this.#getInput(param)
+                                            input
                                         ),
                 
                                         // Comment
@@ -54,7 +83,70 @@ class ActionProperties {
                     )
                 )
             )
-        )
+        );
+
+        this.#inputs.set("hold", holdInput);
+
+        return ret;
+    }
+
+    /**
+     * Returns an action definition which can be added to the config
+     */
+    createActionDefinition() {
+        const that = this;
+
+        return {
+            name: this.#model.name,
+            arguments: this.#model.parameters.map(
+                function (param) {
+                    const input = that.#inputs.get(param);
+                    if (!input) throw new Error("No input for param " + param.name + " found");
+        
+                    return {
+                        name: param.name,
+                        value: that.#getInputValue(input, param)
+                    };
+                }
+            )
+        }
+    }
+
+    /**
+     * Returns if the user selected hold or not (JS bool, no python value)
+     */
+    hold() {
+        return !!this.#inputs.get("hold").prop('checked')
+    }
+
+    /**
+     * Sets the input values to the passed arguments list's values
+     */
+    setArguments(args) {
+        const that = this;
+
+        function getParam(name) {
+            for (const param of that.#model.parameters) {
+                if (param.name == name) return param;
+            }
+            throw new Error("Parameter " + name + " not found");
+        }
+
+        for (const arg of args) {
+            // Get parameter definition first
+            const param = getParam(arg.name);
+            const input = that.#inputs.get(param);
+            if (!input) throw new Error("No input for param " + param.name + " found");
+
+            this.#setInputValue(input, param, arg.value);
+        }
+    }
+
+    /**
+     * Sets the hold input
+     */
+    setHold(hold) {
+        this.#inputs.get("hold").prop('checked', !!hold)
     }
 
     /**
@@ -110,6 +202,46 @@ class ActionProperties {
 
         return $('<input type="text" />')
         .val(param.meta.getDefaultValue());
+    }
+
+    /**
+     * Converts the input values to action argument values
+     */
+    #getInputValue(input, param) {
+        let type = param.meta.data.type;
+
+        if (!type) {
+            type = this.#deriveType(param);
+        }
+
+        switch(type) {
+            case "bool": return input.prop('checked') ? "True" : "False";
+        }        
+
+        let value = input.val();
+        if (value == "") value = param.meta.getDefaultValue();
+
+        return value;        
+    }
+
+    /**
+     * Sets the input value according to an argumen/parameter value
+     */
+    #setInputValue(input, param, value) {
+        let type = param.meta.data.type;
+
+        if (!type) {
+            type = this.#deriveType(param);
+        }
+
+        switch(type) {
+            case "bool": 
+                input.prop('checked', value == "True");
+                break;
+
+            default:
+                input.val(value);
+        }      
     }
 
     /**

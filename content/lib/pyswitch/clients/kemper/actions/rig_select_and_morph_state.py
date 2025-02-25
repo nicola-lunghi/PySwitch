@@ -30,7 +30,7 @@ def RIG_SELECT_AND_MORPH_STATE(rig,
                                morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
                                morph_color_base = Colors.RED,                  
                                morph_color_morphed = Colors.BLUE,
-                               rig_btn_morph = False                           # If set True, second press will trigger morphing (only if no rig_off or bank_off are specified)
+                               rig_btn_morph = False                           # If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified.
 
 ):
     rig_select = RIG_SELECT(
