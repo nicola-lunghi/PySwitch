@@ -91,7 +91,8 @@
 }
 
 /*****************************************************************/
-/*****************************************************************/
 
-.container .select-actions .info-panel {
+.container .application .pyswitch-parser-frontend .button.warn {
+    background-color: #ffaf10;
 }
+

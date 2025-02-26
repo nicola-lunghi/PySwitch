@@ -6,17 +6,16 @@ class ParserFrontendInput {
     #grid = null;
     #controller = null;
     #parserFrontend = null;
-    #model = null;
     #inputElement = null;
     #gridElement = null;
 
     input = null;           // Input handler
 
-    constructor(controller, parserFrontend, model, inputElement) {
+    constructor(controller, parserFrontend, input, inputElement) {
         this.#controller = controller;
         this.#parserFrontend = parserFrontend;
-        this.#model = model;
         this.#inputElement = inputElement;
+        this.input = input;
     }
 
     /**
@@ -24,12 +23,15 @@ class ParserFrontendInput {
      */
     async destroy() {
         if (this.#grid) await this.#grid.destroy();
+        this.input = null;
     }
 
     /**
      * Adds the parser frontend for one input
      */
     async init() {
+        if (!this.input) return;
+
         await this.#initDom();
         await this.#initGrid();
     }
@@ -39,9 +41,6 @@ class ParserFrontendInput {
      */
     async #initDom() {
         // Parser UI
-        this.input = await this.#parserFrontend.parser.input(this.#model.port);
-        if (!this.input) return;
-
         const actions = await this.input.actions();
         const actionsHold = await this.input.actions(true);
 
@@ -74,8 +73,17 @@ class ParserFrontendInput {
             });            
         }
 
-        console.log(this.#parserFrontend.check.messages);
+        function hasWarnings(item) {
+            for (const msg of that.#parserFrontend.check.messages) {
+                if (!msg.type != "W") continue;
 
+                for (const usage of msg.actions || []) {
+                    if (usage.name == item.name && usage.client == item.client) return true;
+                }
+            }
+            return false;
+        }
+        
         function getActionElements(a, buttonClass, hold, tooltip) {
             return a.map(
                 (item) => {                    
@@ -84,7 +92,7 @@ class ParserFrontendInput {
                         .append(
                             // Action
                             $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
-                            //.toggleClass("warn", item.)
+                            .toggleClass("warn", hasWarnings(item))
                             .text(getItemText(item))
                             .on('click', async function() {
                                 try {                                        
@@ -260,8 +268,7 @@ class ParserFrontendInput {
      * Updates the parser data model from the current DOM state
      */
     async updateInput() {
-        // const input = await this.#parserFrontend.parser.input(this.#model.port);
-        // if (!input) throw new Error("Input not found for port " + this.#model.port);
+        if (!this.input) throw new Error("No input");
 
         // Build actions definitions
         const newActions = this.#getItemHandlers(false)
