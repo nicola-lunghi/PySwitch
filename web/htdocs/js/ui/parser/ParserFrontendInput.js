@@ -10,6 +10,8 @@ class ParserFrontendInput {
     #inputElement = null;
     #gridElement = null;
 
+    input = null;           // Input handler
+
     constructor(controller, parserFrontend, model, inputElement) {
         this.#controller = controller;
         this.#parserFrontend = parserFrontend;
@@ -37,11 +39,11 @@ class ParserFrontendInput {
      */
     async #initDom() {
         // Parser UI
-        const input = await this.#parserFrontend.parser.input(this.#model.port);
-        if (!input) return;
+        this.input = await this.#parserFrontend.parser.input(this.#model.port);
+        if (!this.input) return;
 
-        const actions = await input.actions();
-        const actionsHold = await input.actions(true);
+        const actions = await this.input.actions();
+        const actionsHold = await this.input.actions(true);
 
         const that = this;
 
@@ -72,7 +74,7 @@ class ParserFrontendInput {
             });            
         }
 
-        // console.log(await this.#parserFrontend.parser.messages());
+        console.log(this.#parserFrontend.check.messages);
 
         function getActionElements(a, buttonClass, hold, tooltip) {
             return a.map(
@@ -86,7 +88,7 @@ class ParserFrontendInput {
                             .text(getItemText(item))
                             .on('click', async function() {
                                 try {                                        
-                                    await that.promptEditAction(input, item, hold);
+                                    await that.promptEditAction(item, hold);
 
                                 } catch (e) {
                                     that.#controller.handle(e);
@@ -99,12 +101,12 @@ class ParserFrontendInput {
                                 try {
                                     const action = $(this).parent().parent().data('handler');
                                     
-                                    const inputName = input.display_name();        
+                                    const inputName = that.input.display_name();        
                                     if (!confirm("Do you want to delete " + action.name + " from " + inputName + "?")) {
                                         return;
                                     }
                                                                                 
-                                    await that.removeAction(input, action);
+                                    await that.removeAction(action);
 
                                 } catch (e) {
                                     that.#controller.handle(e);
@@ -142,7 +144,7 @@ class ParserFrontendInput {
                         $('<div class="action-item-content button actions add-action fixed fas fa-plus" data-toggle="tooltip" title="Add an action" />')                        
                         .on('click', async function() {
                             try {
-                                await that.promptAddAction(input);
+                                await that.promptAddAction();
 
                             } catch (e) {
                                 that.#controller.handle(e);
@@ -258,8 +260,8 @@ class ParserFrontendInput {
      * Updates the parser data model from the current DOM state
      */
     async updateInput() {
-        const input = await this.#parserFrontend.parser.input(this.#model.port);
-        if (!input) throw new Error("Input not found for port " + this.#model.port);
+        // const input = await this.#parserFrontend.parser.input(this.#model.port);
+        // if (!input) throw new Error("Input not found for port " + this.#model.port);
 
         // Build actions definitions
         const newActions = this.#getItemHandlers(false)
@@ -275,21 +277,20 @@ class ParserFrontendInput {
             }});
 
         // Set the inputs accordingly (no update)
-        await input.set_actions(newActions, false, true);
-        await input.set_actions(newActionsHold, true, true);
+        await this.input.set_actions(newActions, false, true);
+        await this.input.set_actions(newActionsHold, true, true);
     }
 
     /**
      * Shows the add action dialog
      */
-    async promptAddAction(input) {
-        const inputName = input.display_name();
+    async promptAddAction() {
+        const inputName = this.input.display_name();
         const that = this;
 
         const browser = await this.#promptAction(
-            input,
             async function(action, hold) {
-                await that.addAction(input, action, hold);
+                await that.addAction(action, hold);
             },
             "Add an action to " + inputName,
             "Add"
@@ -301,18 +302,17 @@ class ParserFrontendInput {
     /**
      * Shows the edit action dialog
      */
-    async promptEditAction(input, action, hold) {
-        const inputName = input.display_name();
+    async promptEditAction(action, hold) {
+        const inputName = this.input.display_name();
         const that = this;
 
-        const browser = await this.#promptAction(
-            input,
+        await this.#promptAction(
             async function(actionNew, holdNew) {
                 if (hold == holdNew) {
-                    await that.replaceAction(input, action, actionNew);
+                    await that.replaceAction(action, actionNew);
                 } else {
-                    await that.removeAction(input, action);
-                    await that.addAction(input, actionNew, holdNew);
+                    await that.removeAction(action);
+                    await that.addAction(actionNew, holdNew);
                 }                
             },
             "Edit/replace action \"" + action.name + "\" of " + inputName,
@@ -328,7 +328,7 @@ class ParserFrontendInput {
     /**
      * Shows the action edit/create dialog
      */
-    async #promptAction(input, onCommit, headline, buttonText, preselectAction = null) {
+    async #promptAction(onCommit, headline, buttonText, preselectAction = null) {
         const that = this;
 
         let props = null;
@@ -404,7 +404,7 @@ class ParserFrontendInput {
     /**
      * Adds an action to the passed input (proxy)
      */
-    async addAction(input, actionDefinition, hold = false) {
+    async addAction(actionDefinition, hold = false) {
         // Build actions definitions
         const newActions = this.#getItemHandlers(hold)
             .map((item) => { 
@@ -422,7 +422,7 @@ class ParserFrontendInput {
         const that = this;
         setTimeout(
             async function() {
-                await input.set_actions(newActions, hold, true);
+                await that.input.set_actions(newActions, hold, true);
 
                 await that.#parserFrontend.updateConfig();    
             }, 
@@ -433,7 +433,7 @@ class ParserFrontendInput {
     /**
      * Replaces an action. 
      */
-    async replaceAction(input, actionToReplace, actionDefinition) {
+    async replaceAction(actionToReplace, actionDefinition) {
         const hold = this.#getHold(actionToReplace);
 
         const newActions = this.#getItemHandlers(hold)
@@ -451,7 +451,7 @@ class ParserFrontendInput {
         const that = this;
         setTimeout(
             async function() {
-                await input.set_actions(newActions, hold, true);
+                await that.input.set_actions(newActions, hold, true);
 
                 await that.#parserFrontend.updateConfig();    
             }, 
@@ -462,7 +462,7 @@ class ParserFrontendInput {
     /**
      * Removes an action from the passed input (proxy)
      */
-    async removeAction(input, action) {
+    async removeAction(action) {
         const hold = this.#getHold(action);
 
         const newActions = this.#getItemHandlers(hold)
@@ -479,7 +479,7 @@ class ParserFrontendInput {
         const that = this;
         setTimeout(
             async function() {
-                await input.set_actions(newActions, hold, true);
+                await that.input.set_actions(newActions, hold, true);
 
                 await that.#parserFrontend.updateConfig();    
             }, 

@@ -7,7 +7,6 @@ from .misc.RemoveUnusedImportTransformer import RemoveUnusedImportTransformer
 from .misc.AddImportsTransformer import AddImportsTransformer
 from .misc.AssignmentExtractor import AssignmentExtractor
 from .misc.ImportExtractor import ImportExtractor
-from .misc.ParameterValueExtractor import ParameterValueExtractor
 
 class PySwitchParser:
 

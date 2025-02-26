@@ -5,6 +5,7 @@ class ParserFrontend {
 
     inputs = [];   // Array of parser frontends
     parser = null;
+    check = null;
 
     #controller = null;
     #toUpdate = [];    // Queue for parser frontends which had changes recently.
@@ -12,6 +13,8 @@ class ParserFrontend {
     constructor(controller, parser) {
         this.#controller = controller;
         this.parser = parser;
+
+        this.check = new ParserFrontendChecks(this);
     }
 
     async destroy() {
@@ -35,6 +38,8 @@ class ParserFrontend {
      * Must be called after all inputs have been added
      */
     async init() {
+        await this.check.process();
+
         for(const f of this.inputs) {
             await f.init();
         }

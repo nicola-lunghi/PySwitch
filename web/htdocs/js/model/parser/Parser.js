@@ -124,6 +124,8 @@ class Parser {
      * Returns all available display labels
      */
     async getAvailableDisplays() {
+        await this.#init();
+        
         const displays = JSON.parse(this.#pySwitchParser.displays());
 
         return displays.filter((item) => item != "Splashes");
