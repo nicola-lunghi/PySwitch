@@ -7,6 +7,7 @@ from .misc.RemoveUnusedImportTransformer import RemoveUnusedImportTransformer
 from .misc.AddImportsTransformer import AddImportsTransformer
 from .misc.AssignmentExtractor import AssignmentExtractor
 from .misc.ImportExtractor import ImportExtractor
+from .misc.ParameterValueExtractor import ParameterValueExtractor
 
 class PySwitchParser:
 
@@ -20,6 +21,7 @@ class PySwitchParser:
         self.__available_mappings = None
 
         self.__displays = None
+        # self.messages = []
 
     # Has to be called before usage
     def init(self, js_parser):
@@ -33,6 +35,8 @@ class PySwitchParser:
         }
 
         self.__displays = None
+
+        # self._check()
 
     # Returns a dict holding the sources for the current configuration
     def to_source(self):
@@ -58,12 +62,12 @@ class PySwitchParser:
     
     # Returns a JSON encoded list of assignments in display.py
     def displays(self):
-        if self._displays:
-            return self._displays
+        if self.__displays:
+            return self.__displays
             
-        self._displays = json.dumps(AssignmentExtractor().get(self.__csts["display_py"]))
+        self.__displays = json.dumps(AssignmentExtractor().get(self.__csts["display_py"]))
 
-        return self._displays
+        return self.__displays
 
     ########################################################################################
 
@@ -74,6 +78,8 @@ class PySwitchParser:
 
         visitor = InputReplacer(input)
         self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
+
+        # self._check()
 
         if not noUpdate:
             self.__js_parser.updateConfig()
@@ -182,4 +188,28 @@ class PySwitchParser:
         visitor = ImportExtractor(action.name)
         self.__csts["inputs_py"].visit(visitor)
         return visitor.result
+
+    #######################################################################################
+
+    # # Checks the current CSTs and collects messages
+    # def _check(self):
+    #     pass
+    #     self.messages = []
+
+    #     self._check_double_displays()
+
+    # # Check for DisplayLabels assigned twice
+    # def _check_double_displays(self):
+    #     displays = self.displays()
+
+    #     for display in displays:
+    #         visitor = ParameterValueExtractor(display)
+    #         self.__csts["inputs_py"].visit(visitor)
+
+    #         if len(visitor.result) > 1:
+    #             self.messages.append(
+    #                 {
+
+    #                 }
+    #             )
 

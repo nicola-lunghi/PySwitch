@@ -58,6 +58,9 @@ class PySwitchFrontend {
         for (const input of hw) {
             await this.#createInput(inputsContainer, input)            
         }
+
+        // Init all frontend inputs
+        await this.parserFrontend.init();
     }
 
     /**
@@ -75,7 +78,6 @@ class PySwitchFrontend {
                     // Switch element
                     inputElement = $('<div id="' + this.#options.domNamespace + '-switch-gp' + model.port + '" />')
                     .addClass(this.#options.domNamespace + '-switch')
-                    // .data('port', model.port)
                     .append(
                         // Visual switch parts (LEDs)
                         visualElement = $('<div />')

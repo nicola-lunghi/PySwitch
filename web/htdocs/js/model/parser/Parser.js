@@ -57,6 +57,13 @@ class Parser {
         return this.#pySwitchParser.input(port);
     }
     
+    // /**
+    //  * Returns current messages of the parser
+    //  */
+    // async messages() {
+    //     return this.#pySwitchParser.messages.toJs();
+    // }
+
     /**
      * Updates the underlying config from the current CSTs. Called by python code after updates to the trees.
      */

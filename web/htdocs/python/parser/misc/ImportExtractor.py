@@ -3,7 +3,7 @@ import libcst
 class ImportExtractor(libcst.CSTVisitor):
         
     def __init__(self, name):
-        self.importName = name
+        self.import_name = name
         self.result = None
 
     def _visit_import_alike(self, node):
@@ -20,7 +20,7 @@ class ImportExtractor(libcst.CSTVisitor):
             else:
                 name_value = name.name.value
             
-            if name_value == self.importName:
+            if name_value == self.import_name:
                 self.result = libcst.parse_module("").code_for_node(node)
 
         return False

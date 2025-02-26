@@ -26,10 +26,18 @@ class ParserFrontend {
     async addInput(model, inputElement) {
         if (!inputElement) return;
 
-        const frontend = new ParserFrontendInput(this.#controller, this, model, inputElement);
-        await frontend.init();
+        this.inputs.push(
+            new ParserFrontendInput(this.#controller, this, model, inputElement)
+        );
+    }
 
-        this.inputs.push(frontend);
+    /**
+     * Must be called after all inputs have been added
+     */
+    async init() {
+        for(const f of this.inputs) {
+            await f.init();
+        }
     }
 
     /**

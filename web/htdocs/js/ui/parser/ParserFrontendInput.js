@@ -72,44 +72,49 @@ class ParserFrontendInput {
             });            
         }
 
+        // console.log(await this.#parserFrontend.parser.messages());
+
         function getActionElements(a, buttonClass, hold, tooltip) {
-            return a.map((item) =>
-                $('<div class="action-item" />').append(
-                    $('<div class="action-item-content" />')
-                    .append(
-                        // Action
-                        $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
-                        .text(getItemText(item))
-                        .on('click', async function() {
-                            try {                                        
-                                await that.promptEditAction(input, item, hold);
+            return a.map(
+                (item) => {                    
+                    return $('<div class="action-item" />').append(
+                        $('<div class="action-item-content" />')
+                        .append(
+                            // Action
+                            $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
+                            //.toggleClass("warn", item.)
+                            .text(getItemText(item))
+                            .on('click', async function() {
+                                try {                                        
+                                    await that.promptEditAction(input, item, hold);
 
-                            } catch (e) {
-                                that.#controller.handle(e);
-                            }
-                        }),
-
-                        // Remove button
-                        $('<span class="button ' + buttonClass + ' remove-action fas fa-times" data-toggle="tooltip" title="Remove action" />')
-                        .on('click', async function() {
-                            try {
-                                const action = $(this).parent().parent().data('handler');
-                                
-                                const inputName = input.display_name();        
-                                if (!confirm("Do you want to delete " + action.name + " from " + inputName + "?")) {
-                                    return;
+                                } catch (e) {
+                                    that.#controller.handle(e);
                                 }
-                                                                              
-                                await that.removeAction(input, action);
+                            }),
 
-                            } catch (e) {
-                                that.#controller.handle(e);
-                            }
-                        })
-                    )                    
-                )
-                .data('handler', item)
-                .data('hold', hold)
+                            // Remove button
+                            $('<span class="button ' + buttonClass + ' remove-action fas fa-times" data-toggle="tooltip" title="Remove action" />')
+                            .on('click', async function() {
+                                try {
+                                    const action = $(this).parent().parent().data('handler');
+                                    
+                                    const inputName = input.display_name();        
+                                    if (!confirm("Do you want to delete " + action.name + " from " + inputName + "?")) {
+                                        return;
+                                    }
+                                                                                
+                                    await that.removeAction(input, action);
+
+                                } catch (e) {
+                                    that.#controller.handle(e);
+                                }
+                            })
+                        )                    
+                    )
+                    .data('handler', item)
+                    .data('hold', hold)
+                }
             )
         }
 
