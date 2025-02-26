@@ -8,11 +8,9 @@ class ParserFrontend {
 
     #controller = null;
     #toUpdate = [];    // Queue for parser frontends which had changes recently.
-    basePath = null;
 
-    constructor(controller, parser, basePath) {
+    constructor(controller, parser) {
         this.#controller = controller;
-        this.basePath = basePath;
         this.parser = parser;
     }
 

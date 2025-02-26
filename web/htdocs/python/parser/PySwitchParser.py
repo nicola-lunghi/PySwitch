@@ -6,13 +6,15 @@ from .inputs.InputReplacer import InputReplacer
 from .misc.RemoveUnusedImportTransformer import RemoveUnusedImportTransformer
 from .misc.AddImportsTransformer import AddImportsTransformer
 from .misc.AssignmentExtractor import AssignmentExtractor
+from .misc.ImportExtractor import ImportExtractor
 
 class PySwitchParser:
 
-    def __init__(self, hw_import_path):
+    def __init__(self, hw_import_path, available_clients_json):
         self.__js_parser = None
         self.__hw_import_path = hw_import_path       
         self.__csts = None
+        self.clients = json.loads(available_clients_json)
 
         self.__available_actions = None
         self.__available_mappings = None
@@ -106,8 +108,14 @@ class PySwitchParser:
         # Load actions definitions from file
         with open('definitions/actions.json') as f: available_actions_json = f.read()
         
-        # Decode and add additional potentially needed imports besides the actions.
-        return json.loads(available_actions_json) + [
+        clients = json.loads(available_actions_json)
+        actions = []
+
+        for client in clients:
+            actions = actions + client["actions"]
+
+        # Add additional potentially needed imports besides the actions.
+        return actions + [
             # Additional imports: Colors
             {
                 "name": "Colors",
@@ -152,6 +160,17 @@ class PySwitchParser:
         # Load actions definitions from file
         with open('definitions/mappings.json') as f: available_mappings_json = f.read()
         
-        # Decode and add additional potentially needed imports besides the actions.
-        return json.loads(available_mappings_json)
+        clients = json.loads(available_mappings_json)
+        mappings = []
+
+        for client in clients:
+            mappings = mappings + client["mappings"]
+
+        return mappings
+
+    # Determine the client for an Action instance
+    def determine_import_statement(self, action):
+        visitor = ImportExtractor(action.name)
+        self.__csts["inputs_py"].visit(visitor)
+        return visitor.result
 

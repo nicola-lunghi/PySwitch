@@ -6,7 +6,7 @@ class KemperFunctionMeta extends FunctionMeta {
     /**
      * Returns the display name for specific actions
      */
-    getDisplayName(actionDefinition) {
+    getShortDisplayName(actionDefinition) {
         switch (this.functionDefinition.name) {
             case "RIG_SELECT": return this.#getDisplayNameRigSelect(actionDefinition)
             case "RIG_SELECT_AND_MORPH_STATE": return this.#getDisplayNameRigSelectAndMorphState(actionDefinition)
@@ -16,7 +16,7 @@ class KemperFunctionMeta extends FunctionMeta {
             case "BINARY_SWITCH": return "Other"
         }
         
-        return super.getDisplayName(actionDefinition);
+        return super.getShortDisplayName(actionDefinition);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////

@@ -12,8 +12,6 @@ class PySwitchFrontend {
         this.#controller = controller;
         this.#container = container;
         this.#options = options;    
-        
-        if (!this.#options.basePath) this.#options.basePath = ""
     }
 
     /**
@@ -36,7 +34,7 @@ class PySwitchFrontend {
         );
 
         // Create parser frontend
-        this.parserFrontend = new ParserFrontend(this.#controller, parser, this.#options.basePath);
+        this.parserFrontend = new ParserFrontend(this.#controller, parser);
 
         // Add switches and LEDs
         await this.#initInputs(parser);

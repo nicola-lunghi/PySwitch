@@ -4,19 +4,6 @@
  */
 class Parser {
 
-    static async getInstance(config, runner) {
-        if (!runner) throw new Error("No runner passed");
-
-        const data = await config.get();
-
-        if (data.inputs_py.includes("pyswitch.clients.kemper")) {
-            return new KemperParser(config, runner);
-        }
-
-        console.warn("Unknown client type, defaulting to Kemper");
-        return new KemperParser(config, runner);
-    }
-
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #pySwitchParser = null;
@@ -25,44 +12,13 @@ class Parser {
     #availableMappings = null;
 
     config = null;    // Configuration instance
+    basePath = null;
 
-    constructor(config, runner) {
+    constructor(config, runner, basePath = "") {
         this.config = config;
         this.runner = runner;
+        this.basePath = basePath;
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Must return a ClientDetector instance for the configuration
-     */
-    async getClientDetector() {
-        throw new Error("Must be implemented in child classes");
-    }
-
-    /**
-     * Can return a virtual client, or null if the parsers config does not support a virtual client.
-     * config is an options object for the virtual client.
-     */
-    async getVirtualClient(config = {}) {
-        return null;
-    }    
-
-    /**
-     * Can resolve tokens related to value ranges etc.
-     */
-    async resolveValueToken(value) {
-        return value;
-    }
-
-    /**
-     * Returns a sort string for the passed action definition
-     */
-    getActionSortString(action) {
-        return action.meta.getCategory();
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Creates the python libcst parser. Must be called at least once before 
@@ -72,11 +28,13 @@ class Parser {
         if (this.#pySwitchParser) return;
         
         const device = await this.device();
+        const clients = (await Client.getAvailable(this.basePath)).map((item) => item.id);
 
         this.#pySwitchParser = await this.runner.pyodide.runPython(`         
             from parser.PySwitchParser import PySwitchParser
             PySwitchParser(
-                hw_import_path = "` + device.getHardwareImportPath() + `"
+                hw_import_path         = "` + device.getHardwareImportPath() + `",
+                available_clients_json = '` + JSON.stringify(clients) + `',
             )
         `);
 
@@ -131,7 +89,7 @@ class Parser {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns a device handler for the configuration
+     * Returns a device handler for the configuration (a config can only have one device)
      */
     async device() {
         return Device.getInstance(this.config);
@@ -153,6 +111,8 @@ class Parser {
         return JSON.parse(hardwareJson);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Returns all available display labels
      */
@@ -165,29 +125,51 @@ class Parser {
     /**
      * Returns a list of all available actions, with mixed in meta information
      */
-    async getAvailableActions(basePath = "") {
+    async getAvailableActions() {
         if (this.#availableActions) return this.#availableActions;
 
         // This just loads the buffered version. To create the list, see the parser tests.
-        this.#availableActions = JSON.parse(await Tools.fetch(basePath + "definitions/actions.json"));
+        this.#availableActions = JSON.parse(await Tools.fetch(this.basePath + "definitions/actions.json"));
         
         // Put in meta info where exists
-        await this.#mixInMetaInformation(basePath, this.#availableActions);
+        for (const client of this.#availableActions) {
+            await this.#mixInMetaInformation(client.actions, ClientFactory.getInstance(client.client));
+        }
         
         return this.#availableActions;
     }
 
     /**
+     * Returns an actions definition or null if not found
+     */
+    async getActionDefinition(name, clientId) {
+        const clients = await this.getAvailableActions();
+
+        for (const client of clients) {
+            if (!client.id == clientId) continue;
+
+            for (const action of client.actions) {
+                if (action.name == name) {
+                    return action
+                }
+            }    
+        }
+        return null;
+    }
+
+    /**
      * Returns a list of all available actions, with mixed in meta information
      */
-    async getAvailableMappings(basePath = "") {
+    async getAvailableMappings() {
         if (this.#availableMappings) return this.#availableMappings;
 
         // This just loads the buffered version. To create the list, see the parser tests.
-        this.#availableMappings = JSON.parse(await Tools.fetch(basePath + "definitions/mappings.json"));
+        this.#availableMappings = JSON.parse(await Tools.fetch(this.basePath + "definitions/mappings.json"));
 
         // Put in meta info where exists
-        await this.#mixInMetaInformation(basePath, this.#availableMappings);        
+        for (const client of this.#availableMappings) {
+            await this.#mixInMetaInformation(client.mappings, ClientFactory.getInstance(client.client));
+        }
 
         return this.#availableMappings;
     }
@@ -195,19 +177,23 @@ class Parser {
     /**
      * For a list of function descriptors, this adds meta descriptor information (unbuffered)
      */
-    async #mixInMetaInformation(basePath, functions) {
+    async #mixInMetaInformation(functions, client) {
         const that = this;
-        const meta = JSON.parse(await Tools.fetch(basePath + "definitions/meta.json"));
+        const meta = JSON.parse(await Tools.fetch(this.basePath + "definitions/meta.json"));
 
         /**
          * Searches a function meta definition for the given function name.
          * No default resolving here.
          */
         function searchFunctionDefinition(funcName) {
-            for (const definition of meta.parameters) {
-                if (definition.entityName == funcName) {
-                    return definition;
-                }
+            for (const clientDef of meta) {
+                if (clientDef.client != client.id) continue;
+
+                for (const definition of clientDef.entities) {
+                    if (definition.entityName == funcName) {
+                        return definition;
+                    }
+                }    
             }
             return null;
         }
@@ -232,7 +218,7 @@ class Parser {
         /**
          * Returns function metadata
          */
-        function getFunctionMeta(func) {
+        async function getFunctionMeta(func) {
             // Search for specific definition first
             let def = searchFunctionDefinition(func.name);
 
@@ -244,13 +230,13 @@ class Parser {
                 delete def.comment;    
             }
 
-            return that.createFunctionMeta(def, func);
+            return client.createFunctionMeta(that, def, func);
         }
 
         /**
          * Tries to find meta info for a parameter, resolving to default if not found
          */
-        function getParameterMeta(func, param) {
+        async function getParameterMeta(func, param) {
             // Search for specific definition first
             let def = searchParameterDefinition(func.name, param.name);
 
@@ -259,24 +245,16 @@ class Parser {
                 def = searchParameterDefinition("default", param.name);
             }
 
-            return that.createParameterMeta(def, param);
+            return client.createParameterMeta(that, def, param);
         }
 
         // Scan function definitions
         for (const func of functions) {
             for (const param of func.parameters) {
-                param.meta = getParameterMeta(func, param);
+                param.meta = await getParameterMeta(func, param);
             }
 
-            func.meta = getFunctionMeta(func);
+            func.meta = await getFunctionMeta(func);
         }
-    }
-
-    createParameterMeta(meta, paramDef) {
-        return new ParameterMeta(this, meta, paramDef);
-    }
-
-    createFunctionMeta(meta, funcDef) {
-        return new FunctionMeta(meta, funcDef);
     }
 }

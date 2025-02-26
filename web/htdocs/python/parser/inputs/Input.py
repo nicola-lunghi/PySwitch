@@ -12,7 +12,7 @@ class Input(libcst.CSTVisitor):
         self.assignment = None
         self.result = None
 
-        self.__parser = parser
+        self.parser = parser
         self.__inputs = None
         
         self.assignment_handler = InputAssignment(hw_import_path)
@@ -175,7 +175,7 @@ class Input(libcst.CSTVisitor):
         self.result = self.result.visit(adder)
 
         # Tell the parser to replace the new state of this input in its CST buffers
-        self.__parser.update_input(self, noUpdate)
+        self.parser.update_input(self, noUpdate)
 
     # ###############################################################################################################################
 
@@ -196,7 +196,7 @@ class Input(libcst.CSTVisitor):
     #         raise Exception("Failed to remove action")
         
     #     # Tell the parser to replace the new state of this input in its CST buffers
-    #     self.__parser.update_input(self)
+    #     self.parser.update_input(self)
 
     # ###############################################################################################################################
 
@@ -260,4 +260,4 @@ class Input(libcst.CSTVisitor):
     #         raise Exception("Failed to add action")
         
     #     # Tell the parser to replace the new state of this input in its CST buffers
-    #     self.__parser.update_input(self)
+    #     self.parser.update_input(self)

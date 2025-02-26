@@ -22,12 +22,10 @@ class ActionsProvider extends BrowserProvider {
     }
 
     /**
-     * Return TOC for the controllers
+     * Return TOC for the actions
      */
     async getToc(browser) {
         if (this.#toc) return this.#toc;
-
-        const actions = await this.#parser.getAvailableActions();
 
         this.#toc = new BrowserEntry(
             browser,
@@ -53,26 +51,30 @@ class ActionsProvider extends BrowserProvider {
             }
         );
 
-        for (const action of actions) {
-            const entry = new BrowserEntry(
-                browser,
-                {
-                    text: action.meta.getDisplayName(),
-                    value: action.name,
-                    parent: this.#toc,
-                    onSelect: this.#config.onSelect,
-                    model: action,
-                    sortString: this.#parser.getActionSortString(action)
-                }
-            )
+        const clients = await this.#parser.getAvailableActions();
+        
+        for (const client of clients) {
+            for (const action of client.actions) {
+                const entry = new BrowserEntry(
+                    browser,
+                    {
+                        text: action.meta.getDisplayName(),
+                        value: action.name,
+                        parent: this.#toc,
+                        onSelect: this.#config.onSelect,
+                        model: action,
+                        sortString: await action.meta.client.getActionSortString(action)
+                    }
+                )
 
-            if (this.#config.preselectActionName && (action.name == this.#config.preselectActionName)) {
-                this.preselectEntry = entry;
-            } 
+                if (this.#config.preselectActionName && (action.name == this.#config.preselectActionName)) {
+                    this.preselectEntry = entry;
+                } 
 
-            this.#toc.children.push(
-                entry
-            )
+                this.#toc.children.push(
+                    entry
+                )
+            }
         }
 
         return this.#toc;

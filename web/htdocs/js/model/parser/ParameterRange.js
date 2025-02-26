@@ -3,20 +3,18 @@
  */
 class ParameterRange {
 
-    #parser = null;
-    #rangeDefinition = null;
+    #parameterMeta = null;
 
-    constructor(parser, rangeDefinition) {
-        this.#parser = parser;
-        this.#rangeDefinition = rangeDefinition || {};
+    constructor(parameterMeta) {
+        this.#parameterMeta = parameterMeta;
     }
 
     async min() {        
-        return this.#resolve(this.#rangeDefinition.min);        
+        return this.#resolve(this.#parameterMeta.data.range.min);        
     }
 
     async max() {
-        return this.#resolve(this.#rangeDefinition.max);        
+        return this.#resolve(this.#parameterMeta.data.range.max);        
     }
 
     /**
@@ -25,7 +23,7 @@ class ParameterRange {
     async getValues() {
         const values = [];
         
-        if (this.#rangeDefinition.none) {
+        if (this.#parameterMeta.data.range.none) {
             values.push({
                 name: "None",
                 value: "None"
@@ -49,6 +47,6 @@ class ParameterRange {
      * Resolve tokens
      */
     async #resolve(value) {        
-        return this.#parser.resolveValueToken(value);
+        return this.#parameterMeta.client.resolveValueToken(value);
     }
 }

@@ -22,7 +22,7 @@ class ClientController {
         if (savedClient == "auto" || !savedClient) {
             await this.#scan(config);
         } else {
-            await this.#connect(savedClient, config);
+            await this.#connect(savedClient);
         }
     }
             
@@ -51,7 +51,7 @@ class ClientController {
 
             // onFailure
             async function() {
-                await that.#connect("virtual", config);
+                await that.#connect("virtual-" + (await ClientFactory.estimateClient(config)), config);
             }
         );
     }
@@ -80,8 +80,10 @@ class ClientController {
         const output = findPort(this.#controller.midi.midiAccess.outputs);
 
         return new Promise(async function(resolve, reject) {
-            // Get a detector fir the config
-            const detector = await config.parser.getClientDetector();
+            // Get a detector for the config
+            const clientId = await ClientFactory.estimateClient(config);
+            const client = ClientFactory.getInstance(clientId);
+            const detector = await client.getClientDetector();
             
             function cleanup() {
                 if (attempts) {
@@ -127,17 +129,21 @@ class ClientController {
     /**
      * Connect to a client directly
      */
-    async #connect(portName, config) {
+    async #connect(portName) {
         // First throw out the old MIDI wrapper, if any
         this.#controller.pyswitch.setMidiWrapper(null);
         this.current = null;
 
         // In case its a virtual client, use that one        
-        if (portName == "virtual") {
+        if (portName.startsWith("virtual")) {
             // Create virtual client
-            const virtualClient = await VirtualClient.getInstance(config);
+            const clientId = portName.substring(8);
+            const client = ClientFactory.getInstance(clientId);
+            const virtualClient = await client.getVirtualClient();
+            
             if (!virtualClient) {
-                this.#controller.ui.message((await config.name()) + " does not support a virtual client device", "W");
+                this.#controller.ui.message("Client " + clientId + " does not support a virtual client device", "W");
+                this.#controller.ui.showVirtualClient(null);
                 return;
             }
 

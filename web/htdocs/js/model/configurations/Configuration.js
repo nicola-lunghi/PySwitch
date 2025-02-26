@@ -15,9 +15,10 @@ class Configuration {
     /**
      * Init the parser
      */
-    async init(runner) {
+    async init(runner, basePath = "") {
         await this.get();
-        this.parser = await Parser.getInstance(this, runner);
+        
+        this.parser = new Parser(this, runner, basePath);
     }
 
     /**

@@ -42,24 +42,31 @@ class ParserFrontendInput {
 
         const actions = await input.actions();
         const actionsHold = await input.actions(true);
-        const availableActions = await this.#parserFrontend.parser.getAvailableActions(this.#parserFrontend.basePath);
-        
+
         const that = this;
 
-        function getActionDefinition(name) {
-            for (const action of availableActions) {
-                if (action.name == name) {
-                    return action
+        const clients = await this.#parserFrontend.parser.getAvailableActions();
+
+        function getActionDefinition(name, clientId) {
+            for (const client of clients) {
+                if (client.client != clientId) continue;
+
+                for (const action of client.actions) {
+                    if (action.name == name) return action;
                 }
             }
             return null;
         }
 
         function getItemText(item) {
-            const definition = getActionDefinition(item.name);
-            if (!definition) return item.name;
+            const action = getActionDefinition(
+                item.name, 
+                item.client
+            );
             
-            return definition.meta.getDisplayName({
+            if (!action) return item.name;
+            
+            return action.meta.getShortDisplayName({
                 name: item.name,
                 arguments: JSON.parse(item.arguments())
             });            
@@ -72,6 +79,7 @@ class ParserFrontendInput {
                     .append(
                         // Action
                         $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
+                        //.toggleClass("warn", item.)
                         .text(getItemText(item))
                         .on('click', async function() {
                             try {                                        
@@ -262,9 +270,6 @@ class ParserFrontendInput {
                 arguments: JSON.parse(item.arguments())
             }});
 
-        // console.log(newActions)
-        // console.log(newActionsHold)
-
         // Set the inputs accordingly (no update)
         await input.set_actions(newActions, false, true);
         await input.set_actions(newActionsHold, true, true);
@@ -327,7 +332,6 @@ class ParserFrontendInput {
 
         async function onSelect(entry) {
             props = new ActionProperties(
-                that.#parserFrontend.parser,
                 entry.config.model,
                 props
             );
@@ -399,10 +403,13 @@ class ParserFrontendInput {
     async addAction(input, actionDefinition, hold = false) {
         // Build actions definitions
         const newActions = this.#getItemHandlers(hold)
-            .map((item) => { return {
-                name: item.name,
-                arguments: JSON.parse(item.arguments())
-            }});
+            .map((item) => { 
+                return {
+                    name: item.name,
+                    client: item.client,
+                    arguments: JSON.parse(item.arguments())
+                }
+            });
         
         // Add new action
         newActions.push(actionDefinition);
@@ -431,6 +438,7 @@ class ParserFrontendInput {
 
                 return {
                     name: item.name,
+                    client: item.client,
                     arguments: JSON.parse(item.arguments())
                 }
             });
@@ -458,6 +466,7 @@ class ParserFrontendInput {
             .map((item) => { 
                 return {
                     name: item.name,
+                    client: item.client,
                     arguments: JSON.parse(item.arguments())
                 }
             });

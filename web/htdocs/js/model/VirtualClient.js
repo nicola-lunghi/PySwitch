@@ -3,15 +3,6 @@
  */
 class VirtualClient {
 
-    /**
-     * Factory for virtual clients (which mus provide an interface similar to the MIDI wrappers)
-     */
-    static async getInstance(config, additionalOptions = {}) {
-        return config.parser.getVirtualClient(additionalOptions);
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
-
     name = null;
     messageQueue = [];   // Queue of raw MIDI bytes. Will be filled here message by message, and fetched from the python midi wrappers
     ui = null;           // Set by the 

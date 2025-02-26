@@ -5,8 +5,10 @@ class FunctionMeta {
 
     data = null;                   // Function metadata
     functionDefinition = null;     // Function descriptor
+    client = null;
 
-    constructor(meta, functionDefinition) {
+    constructor(parser, client, meta, functionDefinition) {
+        this.client = client;
         this.data = meta || {};
         this.functionDefinition = functionDefinition;
     }   
@@ -19,10 +21,17 @@ class FunctionMeta {
      * Returns the display name for specific actions
      */
     getDisplayName(actionDefinition) {
+        return this.client.getDisplayName() + ": " + this.getShortDisplayName(actionDefinition);
+    }
+
+    /**
+     * Returns the display name for specific actions
+     */
+    getShortDisplayName(actionDefinition) {
         return this.underscoreToDisplayName(this.functionDefinition.name);
     }
 
-     /**
+    /**
      * Converts underscore names to more readable ones
      */
      underscoreToDisplayName(str) {

@@ -260,6 +260,38 @@ class PySwitchUI {
     async #initClientBrowser() {
         const that = this;
 
+        const additionalEntries = [                        
+            {
+                value: "auto",
+                text: function(/*entry*/) {
+                    const client = that.#controller.getState("client");
+                    const currentDeviceText = (client == "auto") ? (" (" + (that.#controller.client.current ? that.#controller.client.current : "None found") + ")") : "";
+
+                    return "Auto-detect client device" + currentDeviceText;
+                },
+                sortString: "___01"
+            },
+            {
+                value: "Not connected",
+                text: "Not connected",
+                sortString: "___02"
+            }
+        ];
+
+        const clients = await Client.getAvailable();
+        for (const client of clients) {
+            const vc = await client.getVirtualClient();
+            if (!vc) continue;
+                    
+            additionalEntries.push({
+                value: "virtual-" + client.id,
+                text: async function(/*entry*/) {
+                    return vc.name;
+                },
+                sortString: "ZZZZZZZ" + vc.name
+            });
+        }
+
         // A browser to select client connections (to Kemper etc.), triggered by the client select button
         this.clientBrowser = this.getBrowserPopup({
             headline: "Please select a client device to control",
@@ -269,34 +301,7 @@ class PySwitchUI {
                         that.#controller.setState("client", entry.value);
                         await that.#controller.client.init(that.#controller.currentConfig);
                     },
-                    additionalEntries: [                        
-                        {
-                            value: "auto",
-                            text: function(/*entry*/) {
-                                const client = that.#controller.getState("client");
-                                const currentDeviceText = (client == "auto") ? (" (" + (that.#controller.client.current ? that.#controller.client.current : "None found") + ")") : "";
-
-                                return "Auto-detect client device" + currentDeviceText;
-                            },
-                            sortString: "___01"
-                        },
-                        {
-                            value: "Not connected",
-                            text: "Not connected",
-                            sortString: "___02"
-                        },
-                        {
-                            value: "virtual",
-                            text: async function(/*entry*/) {
-                                const vc = (await VirtualClient.getInstance(that.#controller.currentConfig));
-                                if (!vc) {
-                                    return "Virtual client (not supported for " + (await that.#controller.currentConfig.name()) + ")";
-                                }
-                                return vc.name;
-                            },
-                            sortString: "ZZZZZZZ"
-                        }
-                    ]
+                    additionalEntries: additionalEntries
                 })
             ]
         });

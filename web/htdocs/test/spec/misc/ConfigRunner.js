@@ -22,8 +22,8 @@ class ConfigRunner {
         $('body').append(el);
 
         // Set up frontend
-        this.frontend = new PySwitchFrontend(null, el, { domNamespace: "pyswitch", basePath: "../" });
-        await config.init(this.pyswitch);
+        this.frontend = new PySwitchFrontend(null, el, { domNamespace: "pyswitch" });
+        await config.init(this.pyswitch, "../");
         await this.frontend.apply(config.parser);
 
         // Reset virtual simulation time
@@ -31,7 +31,10 @@ class ConfigRunner {
 
         // Set up virtual client
         const that = this;
-        this.client = await VirtualClient.getInstance(config, {
+        const clientId = await ClientFactory.estimateClient(config);
+        const client = ClientFactory.getInstance(clientId);
+        
+        this.client = await client.getVirtualClient({ // await (await config.parser.getEstimatedClient()).getVirtualClient({
             overrideTimeCallback: function() {
                 return that.timeMillis;
             }

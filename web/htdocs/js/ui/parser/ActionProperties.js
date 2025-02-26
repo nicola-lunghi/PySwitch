@@ -3,15 +3,13 @@
  */
 class ActionProperties {
     
-    #parser = null;
-    #model = null;
+    #action = null;
     #inputs = null;
     #oldProperties = null;
     #advancedRows = null;
 
-    constructor(parser, model, oldProperties = null) {
-        this.#parser = parser;
-        this.#model = model;
+    constructor(model, oldProperties = null) {
+        this.#action = model;
         this.#oldProperties = oldProperties;   
     }
 
@@ -26,7 +24,7 @@ class ActionProperties {
 
         const that = this;
         const parameters = await Promise.all(
-            this.#model.parameters
+            this.#action.parameters
             .map(
                 async (param) => {
                     const input = await this.#createInput(param);
@@ -75,7 +73,7 @@ class ActionProperties {
         const ret = $('<div class="action-properties" />').append(
             // Comment
             $('<div class="action-header" />')
-            .text(this.#model.meta.getDisplayName()),
+            .text(this.#action.meta.getDisplayName()),
             
             $('<div class="action-comment" />')
             .html(this.#getActionComment()),
@@ -146,8 +144,8 @@ class ActionProperties {
         const that = this;
 
         return {
-            name: this.#model.name,
-            arguments: this.#model.parameters
+            name: this.#action.name,
+            arguments: this.#action.parameters
                 .filter((param) => {
                     const input = that.#inputs.get(param);
                     if (!input) throw new Error("No input for param " + param.name + " found");
@@ -202,7 +200,7 @@ class ActionProperties {
      * Searches a parameter mode by name
      */
     getParameterModel(name) {
-        for (const param of this.#model.parameters) {
+        for (const param of this.#action.parameters) {
             if (param.name == name) return param;
         }
         return null;
@@ -212,8 +210,8 @@ class ActionProperties {
      * Determine the comment for the action
      */
     #getActionComment() {
-        if (!this.#model.comment) return "No information available";
-        let comment = "" + this.#model.comment;
+        if (!this.#action.comment) return "No information available";
+        let comment = "" + this.#action.comment;
 
         if (comment.slice(-1) != ".") comment += ".";
 

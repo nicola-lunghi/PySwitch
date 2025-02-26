@@ -4,9 +4,8 @@ class ConfigParserTests extends TestBase {
         await this.init();
         const config = new MockConfiguration("", "");
         
-        await config.init(this.pyswitch);
+        await config.init(this.pyswitch, "../");
         const parser = config.parser;
-        expect(parser).toBeInstanceOf(KemperParser);
 
         await expectAsync(parser.input(1)).toBeRejected();
         await expectAsync(parser.input(25)).toBeRejected();
@@ -18,13 +17,12 @@ class ConfigParserTests extends TestBase {
         await this.init();
         const config = new WebConfiguration("data/test-presets/get-inputs-default");
         
-        await config.init(this.pyswitch);
+        await config.init(this.pyswitch, "../");
         const parser = config.parser;
-
-        expect(parser).toBeInstanceOf(KemperParser);
         
         await this.#testAction(parser, {
             port: 1,
+            client: "kemper",
             actions: [{
                 name: "RIG_UP",
                 arguments: [
@@ -42,6 +40,7 @@ class ConfigParserTests extends TestBase {
 
         await this.#testAction(parser, {
             port: 25,
+            client: "kemper",
             actions: [
                 { 
                     name: "BANK_UP",
@@ -82,6 +81,7 @@ class ConfigParserTests extends TestBase {
 
         await this.#testAction(parser, {
             port: 9,
+            client: "kemper",
             actions: [{ 
                 name: "RIG_DOWN",
                 arguments: [
@@ -99,6 +99,7 @@ class ConfigParserTests extends TestBase {
 
         await this.#testAction(parser, {
             port: 10,
+            client: "kemper",
             actions: [{ 
                 name: "BANK_DOWN",
                 arguments: [
@@ -115,12 +116,12 @@ class ConfigParserTests extends TestBase {
         await this.init();
         const config = new WebConfiguration("data/test-presets/get-inputs-hold");
         
-        await config.init(this.pyswitch);
+        await config.init(this.pyswitch, "../");
         const parser = config.parser;
-        expect(parser).toBeInstanceOf(KemperParser);
         
         await this.#testAction(parser, {
             port: 1,
+            client: "kemper",
             actions: [{ 
                 name: "RIG_UP",
                 arguments: [
@@ -142,6 +143,7 @@ class ConfigParserTests extends TestBase {
 
         await this.#testAction(parser, {
             port: 25,
+            client: "kemper",
             actionsHold: [{ 
                 name: "TUNER_MODE",
                 arguments: [
@@ -159,6 +161,7 @@ class ConfigParserTests extends TestBase {
 
         await this.#testAction(parser, {
             port: 9,
+            client: "kemper",
             actions: [{ 
                 name: "RIG_DOWN",
                 arguments: [
@@ -176,6 +179,7 @@ class ConfigParserTests extends TestBase {
 
         await this.#testAction(parser, {
             port: 10,
+            client: "kemper",
             actions: [{ 
                 name: "BANK_DOWN",
                 arguments: [
@@ -212,7 +216,8 @@ class ConfigParserTests extends TestBase {
                         }
                     ] 
                 }
-            ]
+            ],
+            "local"
         );
 
         await this.#replaceActions(
@@ -222,22 +227,23 @@ class ConfigParserTests extends TestBase {
                     name: "SOME_ACTION",
                     arguments: [] 
                 }
-            ]
+            ],
+            "local"
         );
 
         await this.#replaceActions(
             9, 
-            []
+            [],
+            "local"
         );
     }
 
-    async #replaceActions(port, actions) {
+    async #replaceActions(port, actions, clientId) {
         await this.init();
         const config = new WebConfiguration("data/test-presets/get-inputs-default");
         
-        await config.init(this.pyswitch);
+        await config.init(this.pyswitch, "../");
         const parser = config.parser;
-        expect(parser).toBeInstanceOf(KemperParser);
 
         const input = await parser.input(port);
         
@@ -249,6 +255,7 @@ class ConfigParserTests extends TestBase {
 
         await this.#testAction(parser, {
             port: port,
+            client: clientId,
             actions: actions
         });
 
@@ -257,6 +264,7 @@ class ConfigParserTests extends TestBase {
 
         await this.#testAction(parser, {
             port: port,
+            client: clientId,
             actions: actions,
             actionsHold: actions
         });
@@ -267,62 +275,69 @@ class ConfigParserTests extends TestBase {
     async addOneImport() {
         await this.init();
         const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
-        await config.init(this.pyswitch);
+        await config.init(this.pyswitch, "../");
         const parser = config.parser;
-        expect(parser).toBeInstanceOf(KemperParser);
 
         const input1 = await parser.input(1);
         
         // Add first actions available
-        const actions = await parser.getAvailableActions("../");
+        const clients = await parser.getAvailableActions();
+        const action = clients[0].actions[0];
+        const client = clients[0].client;
 
         await input1.set_actions(
             [
-                this.#composeAction(actions[0])
+                this.#composeAction(action, client)
             ]
         );
         
         // console.log((await parser.config.get()).inputs_py);
 
         // Test with PySwitch
-        await this.runner.run(config)
+        await this.runner.run(config);
+
+        expect(1).toBe(1);
     }
 
     async addAllImports() {
         await this.init();
         const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
         
-        await config.init(this.pyswitch);
+        await config.init(this.pyswitch, "../");
         const parser = config.parser;
-        expect(parser).toBeInstanceOf(KemperParser);
 
         const input1 = await parser.input(1);
         
         // Add all actions available
-        const actions = await parser.getAvailableActions("../");
+        const clients = await parser.getAvailableActions();
+        
+        const actions = [];
+        for (const client of clients) {
+            for (const action of client.actions) {
+                actions.push(
+                    this.#composeAction(action, client.client)
+                )
+            }
+        }
 
-        const that = this;
         await input1.set_actions(
-            actions.map(
-                function (item) { 
-                    return that.#composeAction(item)
-                }
-            ).filter((item) => item != null)
+            actions.filter((item) => item != null)
         );
         
         // console.log((await parser.config.get()).inputs_py);
 
         // Test with PySwitch
-        await this.runner.run(config)
+        await this.runner.run(config);
+
+        expect(1).toBe(1);
     }
 
     async addDisplayImports() {
         await this.init();
         const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
         
-        await config.init(this.pyswitch);
+        await config.init(this.pyswitch, "../");
         const parser = config.parser;
-        expect(parser).toBeInstanceOf(KemperParser);
 
         const input1 = await parser.input(1);
         
@@ -347,17 +362,20 @@ class ConfigParserTests extends TestBase {
         // console.log((await parser.config.get()).inputs_py);
 
         // Test with PySwitch
-        await this.runner.run(config)
+        await this.runner.run(config);
+
+        expect(1).toBe(1);
     }
 
     /**
      * Helper for import tests: Returns an action definition for setting, 
      * from a given action definition loaded by the parser.
      */
-    #composeAction(item) {
+    #composeAction(item, client) {
         return {
             name: item.name,
-            arguments: item.parameters.map(
+            client: client,
+            arguments: item.parameters.map(                
                 function (param) {
                     return {
                         name: param.name,
@@ -375,20 +393,22 @@ class ConfigParserTests extends TestBase {
             "BANK_UP",
             {
                 name: "BANK_UP",
+                client: "kemper",
                 arguments: []
             },
-            "Bank Up",   // Default
-            "Bank Up"    // With actual value
+            "Kemper: Bank Up",   // Default
+            "Kemper: Bank Up"    // With actual value
         );
 
         await this.#checkActionMeta(
             "BANK_DOWN",
             {
                 name: "BANK_DOWN",
+                client: "kemper",
                 arguments: []
             },
-            "Bank Down",   // Default
-            "Bank Down"    // With actual value
+            "Kemper: Bank Down",   // Default
+            "Kemper: Bank Down"    // With actual value
         );
     }
 
@@ -397,6 +417,7 @@ class ConfigParserTests extends TestBase {
             "RIG_SELECT",
             {
                 name: "RIG_SELECT",
+                client: "kemper",
                 arguments: [
                     {
                         name: "rig",
@@ -408,8 +429,8 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Rig",   // Default
-            "Select Rig 2"    // With actual value
+            "Kemper: Select Rig",   // Default
+            "Kemper: Select Rig 2"    // With actual value
         )
     }
 
@@ -418,6 +439,7 @@ class ConfigParserTests extends TestBase {
             "RIG_SELECT",
             {
                 name: "RIG_SELECT",
+                client: "kemper",
                 arguments: [
                     {
                         name: "rig",
@@ -433,8 +455,8 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Rig",      // Default
-            "Toggle Rigs 2/4"    // With actual value
+            "Kemper: Select Rig",      // Default
+            "Kemper: Toggle Rigs 2/4"    // With actual value
         )        
     }
 
@@ -443,6 +465,7 @@ class ConfigParserTests extends TestBase {
             "BANK_SELECT",
             {
                 name: "BANK_SELECT",
+                client: "kemper",
                 arguments: [
                     {
                         name: "bank",
@@ -450,14 +473,15 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Bank",   // Default
-            "Select Bank 2"    // With actual value
+            "Kemper: Select Bank",   // Default
+            "Kemper: Select Bank 2"    // With actual value
         );
 
         await this.#checkActionMeta(
             "BANK_SELECT",
             {
                 name: "BANK_SELECT",
+                client: "kemper",
                 arguments: [
                     {
                         name: "bank",
@@ -469,14 +493,15 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Bank",      // Default
-            "Toggle Banks 2/4"    // With actual value
+            "Kemper: Select Bank",      // Default
+            "Kemper: Toggle Banks 2/4"    // With actual value
         );
 
         await this.#checkActionMeta(
             "BANK_SELECT",
             {
                 name: "BANK_SELECT",
+                client: "kemper",
                 arguments: [
                     {
                         name: "bank",
@@ -488,14 +513,15 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Bank",      // Default
-            "Preselect Bank 3"    // With actual value
+            "Kemper: Select Bank",      // Default
+            "Kemper: Preselect Bank 3"    // With actual value
         );
 
         await this.#checkActionMeta(
             "BANK_SELECT",
             {
                 name: "BANK_SELECT",
+                client: "kemper",
                 arguments: [
                     {
                         name: "bank",
@@ -507,8 +533,8 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             },
-            "Select Bank",      // Default
-            "Select Bank 3"    // With actual value
+            "Kemper: Select Bank",      // Default
+            "Kemper: Select Bank 3"    // With actual value
         )
     }
 
@@ -521,12 +547,10 @@ class ConfigParserTests extends TestBase {
         await this.init();
         const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
         
-        await config.init(this.pyswitch);
+        await config.init(this.pyswitch, "../");
         const parser = config.parser;
-        expect(parser).toBeInstanceOf(KemperParser);
 
         const input1 = await parser.input(1);
-        
         await input1.set_actions(
             [
                 action
@@ -534,12 +558,16 @@ class ConfigParserTests extends TestBase {
             hold
         );
         
-        const available = await parser.getAvailableActions("../");
+        const clients = await parser.getAvailableActions();
 
         function searchAction(name) {
-            for (const action of available) {
-                if (action.name == name) return action;
+            for (const client of clients) {
+                if (client.client != action.client) continue;
+                for (const action2 of client.actions) {
+                    if (action2.name == name) return action2;
+                }
             }
+            throw new Error();
         }
 
         const action2 = searchAction(name);
@@ -1036,6 +1064,7 @@ class ConfigParserTests extends TestBase {
      * Tests a single action, controlled by the config object:
      * {
      *      port,
+     *      client,             // Client ID
      *      actions: [
      *          {
      *              name: "name",
@@ -1064,6 +1093,7 @@ class ConfigParserTests extends TestBase {
     
                 expect(action.name).toBe(expAction.name);
                 expect(JSON.parse(action.arguments())).toEqual(expAction.arguments);
+                expect(action.client).toBe(config.client);
             }
         }
 

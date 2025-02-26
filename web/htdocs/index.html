@@ -73,7 +73,9 @@
     
     <!-- Data model -->
     <script type="text/javascript" src="js/model/Device.js"></script>
+    <script type="text/javascript" src="js/model/Client.js"></script>
     <script type="text/javascript" src="js/model/VirtualClient.js"></script>
+    <script type="text/javascript" src="js/model/ClientDetector.js"></script>
     
     <script type="text/javascript" src="js/model/configurations/Configuration.js"></script>
     <script type="text/javascript" src="js/model/configurations/ControllerConfiguration.js"></script>
@@ -84,7 +86,6 @@
     <script type="text/javascript" src="js/model/parser/FunctionMeta.js"></script>
     <script type="text/javascript" src="js/model/parser/ParameterMeta.js"></script>
     <script type="text/javascript" src="js/model/parser/ParameterRange.js"></script>
-    <script type="text/javascript" src="js/model/parser/ClientDetector.js"></script>
 
     <!-- MIDI related classes -->
     <script type="text/javascript" src="js/midi/MidiHandler.js"></script>
@@ -124,9 +125,11 @@
     <script type="text/javascript" src="js/ui/misc/ClientConnectionButton.js"></script>
     <script type="text/javascript" src="js/ui/misc/PortsProvider.js"></script>
    
+    <script type="text/javascript" src="clients/ClientFactory.js"></script>
+
     <!-- Clients: Kemper -->
+    <script type="text/javascript" src="clients/kemper/KemperClient.js"></script>
     <script type="text/javascript" src="clients/kemper/KemperClientDetector.js"></script>
-    <script type="text/javascript" src="clients/kemper/KemperParser.js"></script>
     <script type="text/javascript" src="clients/kemper/KemperFunctionMeta.js"></script>
     
     <!-- Virtual Kemper client -->

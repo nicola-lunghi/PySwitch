@@ -3,18 +3,22 @@
  */
 class ParameterMeta {
 
+    client = null;
     data = null;          // Parameter metadata
     parameter = null;    // Parameter descriptor
     parser = null;
     #range = null;
 
-    constructor(parser, meta, parameter) {
+    constructor(parser, client, meta, parameter) {
+        this.client = client;
         this.data = meta || {};
         this.parameter = parameter;
         this.parser = parser;
 
+        if (!this.parser) throw new Error("No parser passed")
+
         if (this.data.range) {
-            this.#range = new ParameterRange(parser, this.data.range);
+            this.#range = new ParameterRange(this);
         }
     }   
 
@@ -52,8 +56,6 @@ class ParameterMeta {
      * Generates the mapping list for input
      */
     async #generateMappingOptions() {
-        const mappings = await this.parser.getAvailableMappings();
-
         async function getMappingVariants(mapping) {
             if (mapping.parameters.length == 0) {
                 return [
@@ -90,9 +92,13 @@ class ParameterMeta {
             return ret;
         }
 
+        const clients = await this.parser.getAvailableMappings();
+
         let ret = [];
-        for(const mapping of mappings) {
-            ret = ret.concat(await getMappingVariants(mapping))
+        for (const client of clients) {
+            for(const mapping of client.mappings) {
+                ret = ret.concat(await getMappingVariants(mapping))
+            }
         }
         return ret;
     }

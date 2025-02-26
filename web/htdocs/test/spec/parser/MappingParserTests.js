@@ -18,22 +18,35 @@ class MappingParserTests extends FunctionParserTestBase {
             async function() {
                 const extractor = new FunctionExtractor(that.pyswitch);
 
-                const mappings = await extractor.get({
-                    tocPath: basePath + "circuitpy/lib/pyswitch/clients/toc.php",
-                    subPath: "kemper/mappings",
-                    targetPath: "pyswitch/clients/kemper/mappings"
-                })
+                const clients = await Client.getAvailable(basePath);
 
-                // Add mappings from __init__.py
-                const __init__extractor = new ClassAttributeExtractor(that.pyswitch);
+                const ret = [];
+                for (const client of clients) {
+                    let mappings = await extractor.get({
+                        tocPath: basePath + "circuitpy/lib/pyswitch/clients/toc.php",
+                        subPath: client.id + "/mappings",
+                        targetPath: "pyswitch/clients/" + client.id + "/mappings"
+                    })
 
-                const init_mappings = await __init__extractor.get({
-                    file: "pyswitch/clients/kemper/__init__.py",
-                    importPath: "pyswitch.clients.kemper",
-                    className: "KemperMappings"
-                });
+                    // Add mappings from __init__.py
+                    if (client.getInitMappingsClassName()) {
+                        const __init__extractor = new ClassAttributeExtractor(that.pyswitch);
 
-                return mappings.concat(init_mappings);
+                        const init_mappings = await __init__extractor.get({
+                            file: "pyswitch/clients/" + client.id + "/__init__.py",
+                            importPath: "pyswitch.clients." + client.id,
+                            className: client.getInitMappingsClassName()
+                        });
+
+                        mappings = mappings.concat(init_mappings);
+                    }
+                    
+                    ret.push({
+                        client: client.id,
+                        mappings: mappings
+                    })
+                }
+                return ret;
             }
         )
     }

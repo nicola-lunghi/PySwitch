@@ -1,10 +1,24 @@
 /**
- * Kemper specific implementations for the parser
+ * CLient implementations for Kemper devices
  */
-class KemperParser extends Parser {
+class KemperClient extends Client {
+    
+    /**
+     * Returns a display name for the client
+     */
+    getDisplayName() {
+        return "Kemper";
+    }
+    
+    /**
+     * Factory for FunctionMeta instances
+     */
+    async createFunctionMeta(parser, meta, funcDef) {
+        return new KemperFunctionMeta(parser, this, meta, funcDef);
+    }
 
     /**
-     * Returns a ClientDetector instance for the configuration
+     * Returns a ClientDetector instance for the client, or none if not implemented
      */
     async getClientDetector() {
         return new KemperClientDetector();        
@@ -13,14 +27,14 @@ class KemperParser extends Parser {
     /**
      * Must return a virtual client
      */
-    async getVirtualClient(config = {}) {
+    async getVirtualClient(options) {
         return new VirtualKemperClient(
             {
                 ...{
                     productType: 2,               // KPP
-                    simulateMorphBug: true        // Simulate the morph button bug
+                    simulateMorphBug: true        // Simulate the morph button bug                
                 },
-                ...config
+                ...options
             }
         );
     }
@@ -40,7 +54,7 @@ class KemperParser extends Parser {
     /**
      * Returns a sort string for the passed action definition
      */
-    getActionSortString(action) {
+    async getActionSortString(action) {
         if (action.name == "BINARY_SWITCH") {
             return "ZZZZZ";
         }
@@ -58,7 +72,10 @@ class KemperParser extends Parser {
         return category;
     }
 
-    createFunctionMeta(meta, funcDef) {
-        return new KemperFunctionMeta(meta, funcDef);
+    /**
+     * If the client has action implementations in __init__.py, this can return the class name for them.
+     */
+    getInitMappingsClassName() {
+        return "KemperMappings";
     }
 }

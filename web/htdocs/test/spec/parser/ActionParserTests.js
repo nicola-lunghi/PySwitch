@@ -18,11 +18,35 @@ class ActionParserTests extends FunctionParserTestBase {
             async function() {
                 const extractor = new FunctionExtractor(that.pyswitch);
         
-                return extractor.get({
-                    tocPath: basePath + "circuitpy/lib/pyswitch/clients/toc.php",
-                    subPath: "kemper/actions",
-                    targetPath: "pyswitch/clients/kemper/actions"
-                })
+                const clients = await Client.getAvailable(basePath);
+
+                const ret = [];
+                for (const client of clients) {
+                    let actions = await extractor.get({
+                        tocPath: basePath + "circuitpy/lib/pyswitch/clients/toc.php",
+                        subPath: client.id + "/actions",
+                        targetPath: "pyswitch/clients/" + client.id + "/actions"
+                    });
+
+                    // Add actions from __init__.py
+                    if (client.getInitActionsClassName()) {
+                        const __init__extractor = new ClassAttributeExtractor(that.pyswitch);
+
+                        const init_actions = await __init__extractor.get({
+                            file: "pyswitch/clients/" + client.id + "/__init__.py",
+                            importPath: "pyswitch.clients." + client.id,
+                            className: client.getInitActionsClassName()
+                        });
+
+                        actions = actions.concat(init_actions);
+                    }
+
+                    ret.push({
+                        client: client.id,
+                        actions: actions
+                    })
+                }
+                return ret;
             }
         )
     }

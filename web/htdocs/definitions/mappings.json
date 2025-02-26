@@ -1,328 +1,333 @@
 [
     {
-        "name": "MAPPING_EFFECT_BUTTON",
-        "parameters": [
+        "client": "kemper",
+        "mappings": [
             {
-                "name": "num",
-                "default": null,
-                "comment": null
-            }
-        ],
-        "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).",
-        "importPath": "pyswitch.clients.kemper.mappings.effects"
-    },
-    {
-        "name": "MAPPING_DELAY_MIX",
-        "parameters": [
+                "name": "MAPPING_EFFECT_BUTTON",
+                "parameters": [
+                    {
+                        "name": "num",
+                        "default": null,
+                        "comment": null
+                    }
+                ],
+                "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).",
+                "importPath": "pyswitch.clients.kemper.mappings.effects"
+            },
             {
-                "name": "slot_id",
-                "default": null,
-                "comment": null
-            }
-        ],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.effects"
-    },
-    {
-        "name": "MAPPING_AMP_NAME",
-        "parameters": [],
-        "comment": "Amp name (request only)",
-        "importPath": "pyswitch.clients.kemper.mappings.amp"
-    },
-    {
-        "name": "MAPPING_AMP_STATE",
-        "parameters": [],
-        "comment": "Amp on/off",
-        "importPath": "pyswitch.clients.kemper.mappings.amp"
-    },
-    {
-        "name": "MAPPING_AMP_GAIN",
-        "parameters": [],
-        "comment": "Amp gain",
-        "importPath": "pyswitch.clients.kemper.mappings.amp"
-    },
-    {
-        "name": "MAPPING_NEXT_BANK",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.bank"
-    },
-    {
-        "name": "MAPPING_PREVIOUS_BANK",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.bank"
-    },
-    {
-        "name": "MAPPING_RIG_COMMENT",
-        "parameters": [],
-        "comment": "Rig comment (request only)",
-        "importPath": "pyswitch.clients.kemper.mappings.rig"
-    },
-    {
-        "name": "MAPPING_RIG_DATE",
-        "parameters": [],
-        "comment": "Rig date (request only)",
-        "importPath": "pyswitch.clients.kemper.mappings.rig"
-    },
-    {
-        "name": "MAPPING_RIG_VOLUME",
-        "parameters": [],
-        "comment": "Rig volume",
-        "importPath": "pyswitch.clients.kemper.mappings.rig"
-    },
-    {
-        "name": "MAPPING_LOOPER_REC_PLAY_OVERDUB",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.looper"
-    },
-    {
-        "name": "MAPPING_LOOPER_STOP",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.looper"
-    },
-    {
-        "name": "MAPPING_LOOPER_TRIGGER",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.looper"
-    },
-    {
-        "name": "MAPPING_LOOPER_REVERSE",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.looper"
-    },
-    {
-        "name": "MAPPING_LOOPER_HALF_SPEED",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.looper"
-    },
-    {
-        "name": "MAPPING_LOOPER_CANCEL",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.looper"
-    },
-    {
-        "name": "MAPPING_LOOPER_ERASE",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.looper"
-    },
-    {
-        "name": "MAPPING_MORPH_BUTTON",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.morph"
-    },
-    {
-        "name": "MAPPING_MORPH_PEDAL",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.morph"
-    },
-    {
-        "name": "MAPPING_TAP_TEMPO",
-        "parameters": [],
-        "comment": "Switch tuner mode on/off (no receive possible!)",
-        "importPath": "pyswitch.clients.kemper.mappings.tempo"
-    },
-    {
-        "name": "MAPPING_TEMPO_DISPLAY",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.tempo"
-    },
-    {
-        "name": "MAPPING_CABINET_NAME",
-        "parameters": [],
-        "comment": "Cab name (request only)",
-        "importPath": "pyswitch.clients.kemper.mappings.cabinet"
-    },
-    {
-        "name": "MAPPING_CABINET_STATE",
-        "parameters": [],
-        "comment": "Cab on/off",
-        "importPath": "pyswitch.clients.kemper.mappings.cabinet"
-    },
-    {
-        "name": "MAPPING_FREEZE",
-        "parameters": [
+                "name": "MAPPING_DELAY_MIX",
+                "parameters": [
+                    {
+                        "name": "slot_id",
+                        "default": null,
+                        "comment": null
+                    }
+                ],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.effects"
+            },
             {
-                "name": "slot_id",
-                "default": null,
-                "comment": null
-            }
-        ],
-        "comment": "Freeze for slots",
-        "importPath": "pyswitch.clients.kemper.mappings.freeze"
-    },
-    {
-        "name": "MAPPING_FREEZE_ALL_GLOBAL",
-        "parameters": [],
-        "comment": "Freeze (global) for all reverb and delay modules (no feedback from kemper!)",
-        "importPath": "pyswitch.clients.kemper.mappings.freeze"
-    },
-    {
-        "name": "MAPPING_RIG_SELECT",
-        "parameters": [
+                "name": "MAPPING_AMP_NAME",
+                "parameters": [],
+                "comment": "Amp name (request only)",
+                "importPath": "pyswitch.clients.kemper.mappings.amp"
+            },
             {
-                "name": "rig",
-                "default": null,
-                "comment": null
-            }
-        ],
-        "comment": "Selects a rig of the current bank. Rig index must be in range [0..4]",
-        "importPath": "pyswitch.clients.kemper.mappings.select"
-    },
-    {
-        "name": "MAPPING_BANK_SELECT",
-        "parameters": [],
-        "comment": "Pre-selects a bank.",
-        "importPath": "pyswitch.clients.kemper.mappings.select"
-    },
-    {
-        "name": "MAPPING_BANK_AND_RIG_SELECT",
-        "parameters": [
+                "name": "MAPPING_AMP_STATE",
+                "parameters": [],
+                "comment": "Amp on/off",
+                "importPath": "pyswitch.clients.kemper.mappings.amp"
+            },
             {
-                "name": "rig",
-                "default": null,
-                "comment": null
-            }
-        ],
-        "comment": "Selects a rig of a specific bank. Rig index must be in range [0..4]",
-        "importPath": "pyswitch.clients.kemper.mappings.select"
-    },
-    {
-        "name": "MAPPING_WAH_PEDAL",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.pedals"
-    },
-    {
-        "name": "MAPPING_VOLUME_PEDAL",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.pedals"
-    },
-    {
-        "name": "MAPPING_PITCH_PEDAL",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.pedals"
-    },
-    {
-        "name": "MAPPING_DELAY_MIX_PEDAL",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.pedals"
-    },
-    {
-        "name": "MAPPING_DELAY_FEEDBACK_PEDAL",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.pedals"
-    },
-    {
-        "name": "MAPPING_REVERB_MIX_PEDAL",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.pedals"
-    },
-    {
-        "name": "MAPPING_REVERB_TIME_PEDAL",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.pedals"
-    },
-    {
-        "name": "MAPPING_VOLUME_OUTPUT_PEDAL",
-        "parameters": [],
-        "comment": null,
-        "importPath": "pyswitch.clients.kemper.mappings.pedals"
-    },
-    {
-        "name": "MAPPING_ROTARY_SPEED",
-        "parameters": [
+                "name": "MAPPING_AMP_GAIN",
+                "parameters": [],
+                "comment": "Amp gain",
+                "importPath": "pyswitch.clients.kemper.mappings.amp"
+            },
             {
-                "name": "slot_id",
-                "default": null,
-                "comment": null
-            }
-        ],
-        "comment": "Rotary speed (fast/slow)",
-        "importPath": "pyswitch.clients.kemper.mappings.rotary"
-    },
-    {
-        "name": "KemperMappings.EFFECT_STATE",
-        "parameters": [
+                "name": "MAPPING_NEXT_BANK",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.bank"
+            },
             {
-                "name": "slot_id",
-                "default": null,
-                "comment": null
-            }
-        ],
-        "comment": "Effect slot enable/disable",
-        "importPath": "pyswitch.clients.kemper",
-        "importName": "KemperMappings"
-    },
-    {
-        "name": "KemperMappings.EFFECT_TYPE",
-        "parameters": [
+                "name": "MAPPING_PREVIOUS_BANK",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.bank"
+            },
             {
-                "name": "slot_id",
-                "default": null,
-                "comment": null
+                "name": "MAPPING_RIG_COMMENT",
+                "parameters": [],
+                "comment": "Rig comment (request only)",
+                "importPath": "pyswitch.clients.kemper.mappings.rig"
+            },
+            {
+                "name": "MAPPING_RIG_DATE",
+                "parameters": [],
+                "comment": "Rig date (request only)",
+                "importPath": "pyswitch.clients.kemper.mappings.rig"
+            },
+            {
+                "name": "MAPPING_RIG_VOLUME",
+                "parameters": [],
+                "comment": "Rig volume",
+                "importPath": "pyswitch.clients.kemper.mappings.rig"
+            },
+            {
+                "name": "MAPPING_LOOPER_REC_PLAY_OVERDUB",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.looper"
+            },
+            {
+                "name": "MAPPING_LOOPER_STOP",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.looper"
+            },
+            {
+                "name": "MAPPING_LOOPER_TRIGGER",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.looper"
+            },
+            {
+                "name": "MAPPING_LOOPER_REVERSE",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.looper"
+            },
+            {
+                "name": "MAPPING_LOOPER_HALF_SPEED",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.looper"
+            },
+            {
+                "name": "MAPPING_LOOPER_CANCEL",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.looper"
+            },
+            {
+                "name": "MAPPING_LOOPER_ERASE",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.looper"
+            },
+            {
+                "name": "MAPPING_MORPH_BUTTON",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.morph"
+            },
+            {
+                "name": "MAPPING_MORPH_PEDAL",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.morph"
+            },
+            {
+                "name": "MAPPING_TAP_TEMPO",
+                "parameters": [],
+                "comment": "Switch tuner mode on/off (no receive possible!)",
+                "importPath": "pyswitch.clients.kemper.mappings.tempo"
+            },
+            {
+                "name": "MAPPING_TEMPO_DISPLAY",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.tempo"
+            },
+            {
+                "name": "MAPPING_CABINET_NAME",
+                "parameters": [],
+                "comment": "Cab name (request only)",
+                "importPath": "pyswitch.clients.kemper.mappings.cabinet"
+            },
+            {
+                "name": "MAPPING_CABINET_STATE",
+                "parameters": [],
+                "comment": "Cab on/off",
+                "importPath": "pyswitch.clients.kemper.mappings.cabinet"
+            },
+            {
+                "name": "MAPPING_FREEZE",
+                "parameters": [
+                    {
+                        "name": "slot_id",
+                        "default": null,
+                        "comment": null
+                    }
+                ],
+                "comment": "Freeze for slots",
+                "importPath": "pyswitch.clients.kemper.mappings.freeze"
+            },
+            {
+                "name": "MAPPING_FREEZE_ALL_GLOBAL",
+                "parameters": [],
+                "comment": "Freeze (global) for all reverb and delay modules (no feedback from kemper!)",
+                "importPath": "pyswitch.clients.kemper.mappings.freeze"
+            },
+            {
+                "name": "MAPPING_RIG_SELECT",
+                "parameters": [
+                    {
+                        "name": "rig",
+                        "default": null,
+                        "comment": null
+                    }
+                ],
+                "comment": "Selects a rig of the current bank. Rig index must be in range [0..4]",
+                "importPath": "pyswitch.clients.kemper.mappings.select"
+            },
+            {
+                "name": "MAPPING_BANK_SELECT",
+                "parameters": [],
+                "comment": "Pre-selects a bank.",
+                "importPath": "pyswitch.clients.kemper.mappings.select"
+            },
+            {
+                "name": "MAPPING_BANK_AND_RIG_SELECT",
+                "parameters": [
+                    {
+                        "name": "rig",
+                        "default": null,
+                        "comment": null
+                    }
+                ],
+                "comment": "Selects a rig of a specific bank. Rig index must be in range [0..4]",
+                "importPath": "pyswitch.clients.kemper.mappings.select"
+            },
+            {
+                "name": "MAPPING_WAH_PEDAL",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.pedals"
+            },
+            {
+                "name": "MAPPING_VOLUME_PEDAL",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.pedals"
+            },
+            {
+                "name": "MAPPING_PITCH_PEDAL",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.pedals"
+            },
+            {
+                "name": "MAPPING_DELAY_MIX_PEDAL",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.pedals"
+            },
+            {
+                "name": "MAPPING_DELAY_FEEDBACK_PEDAL",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.pedals"
+            },
+            {
+                "name": "MAPPING_REVERB_MIX_PEDAL",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.pedals"
+            },
+            {
+                "name": "MAPPING_REVERB_TIME_PEDAL",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.pedals"
+            },
+            {
+                "name": "MAPPING_VOLUME_OUTPUT_PEDAL",
+                "parameters": [],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper.mappings.pedals"
+            },
+            {
+                "name": "MAPPING_ROTARY_SPEED",
+                "parameters": [
+                    {
+                        "name": "slot_id",
+                        "default": null,
+                        "comment": null
+                    }
+                ],
+                "comment": "Rotary speed (fast/slow)",
+                "importPath": "pyswitch.clients.kemper.mappings.rotary"
+            },
+            {
+                "name": "KemperMappings.EFFECT_STATE",
+                "parameters": [
+                    {
+                        "name": "slot_id",
+                        "default": null,
+                        "comment": null
+                    }
+                ],
+                "comment": "Effect slot enable/disable",
+                "importPath": "pyswitch.clients.kemper",
+                "importName": "KemperMappings"
+            },
+            {
+                "name": "KemperMappings.EFFECT_TYPE",
+                "parameters": [
+                    {
+                        "name": "slot_id",
+                        "default": null,
+                        "comment": null
+                    }
+                ],
+                "comment": "Effect slot type (request only)",
+                "importPath": "pyswitch.clients.kemper",
+                "importName": "KemperMappings"
+            },
+            {
+                "name": "KemperMappings.RIG_NAME",
+                "parameters": [],
+                "comment": "Rig name (request only)",
+                "importPath": "pyswitch.clients.kemper",
+                "importName": "KemperMappings"
+            },
+            {
+                "name": "KemperMappings.TUNER_MODE_STATE",
+                "parameters": [],
+                "comment": "Switch tuner mode on/off (no receive possible when not in bidirectional mode)",
+                "importPath": "pyswitch.clients.kemper",
+                "importName": "KemperMappings"
+            },
+            {
+                "name": "KemperMappings.TUNER_NOTE",
+                "parameters": [],
+                "comment": "Tuner note (only sent in bidirectional mode)",
+                "importPath": "pyswitch.clients.kemper",
+                "importName": "KemperMappings"
+            },
+            {
+                "name": "KemperMappings.TUNER_DEVIANCE",
+                "parameters": [],
+                "comment": "Tuner deviance from \"in tune\" (only sent in bidirectional mode)",
+                "importPath": "pyswitch.clients.kemper",
+                "importName": "KemperMappings"
+            },
+            {
+                "name": "KemperMappings.BIDIRECTIONAL_SENSING",
+                "parameters": [],
+                "comment": "Used for state sensing in bidirection communication",
+                "importPath": "pyswitch.clients.kemper",
+                "importName": "KemperMappings"
+            },
+            {
+                "name": "KemperMappings.RIG_ID",
+                "parameters": [],
+                "comment": "Rig ID",
+                "importPath": "pyswitch.clients.kemper",
+                "importName": "KemperMappings"
             }
-        ],
-        "comment": "Effect slot type (request only)",
-        "importPath": "pyswitch.clients.kemper",
-        "importName": "KemperMappings"
-    },
-    {
-        "name": "KemperMappings.RIG_NAME",
-        "parameters": [],
-        "comment": "Rig name (request only)",
-        "importPath": "pyswitch.clients.kemper",
-        "importName": "KemperMappings"
-    },
-    {
-        "name": "KemperMappings.TUNER_MODE_STATE",
-        "parameters": [],
-        "comment": "Switch tuner mode on/off (no receive possible when not in bidirectional mode)",
-        "importPath": "pyswitch.clients.kemper",
-        "importName": "KemperMappings"
-    },
-    {
-        "name": "KemperMappings.TUNER_NOTE",
-        "parameters": [],
-        "comment": "Tuner note (only sent in bidirectional mode)",
-        "importPath": "pyswitch.clients.kemper",
-        "importName": "KemperMappings"
-    },
-    {
-        "name": "KemperMappings.TUNER_DEVIANCE",
-        "parameters": [],
-        "comment": "Tuner deviance from \"in tune\" (only sent in bidirectional mode)",
-        "importPath": "pyswitch.clients.kemper",
-        "importName": "KemperMappings"
-    },
-    {
-        "name": "KemperMappings.BIDIRECTIONAL_SENSING",
-        "parameters": [],
-        "comment": "Used for state sensing in bidirection communication",
-        "importPath": "pyswitch.clients.kemper",
-        "importName": "KemperMappings"
-    },
-    {
-        "name": "KemperMappings.RIG_ID",
-        "parameters": [],
-        "comment": "Rig ID",
-        "importPath": "pyswitch.clients.kemper",
-        "importName": "KemperMappings"
+        ]
     }
 ]
