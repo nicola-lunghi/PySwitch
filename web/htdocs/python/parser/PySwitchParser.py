@@ -19,6 +19,8 @@ class PySwitchParser:
         self.__available_actions = None
         self.__available_mappings = None
 
+        self.__displays = None
+
     # Has to be called before usage
     def init(self, js_parser):
         self.__js_parser = js_parser.to_py()
@@ -29,6 +31,8 @@ class PySwitchParser:
             "inputs_py": libcst.parse_module(inputs_py),
             "display_py": libcst.parse_module(display_py)
         }
+
+        self.__displays = None
 
     # Returns a dict holding the sources for the current configuration
     def to_source(self):
@@ -54,7 +58,12 @@ class PySwitchParser:
     
     # Returns a JSON encoded list of assignments in display.py
     def displays(self):
-        return json.dumps(AssignmentExtractor().get(self.__csts["display_py"]))
+        if self._displays:
+            return self._displays
+            
+        self._displays = json.dumps(AssignmentExtractor().get(self.__csts["display_py"]))
+
+        return self._displays
 
     ########################################################################################
 
@@ -65,7 +74,7 @@ class PySwitchParser:
 
         visitor = InputReplacer(input)
         self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
-        
+
         if not noUpdate:
             self.__js_parser.updateConfig()
 

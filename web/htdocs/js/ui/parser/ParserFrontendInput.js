@@ -79,7 +79,6 @@ class ParserFrontendInput {
                     .append(
                         // Action
                         $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
-                        //.toggleClass("warn", item.)
                         .text(getItemText(item))
                         .on('click', async function() {
                             try {                                        
