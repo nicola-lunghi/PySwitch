@@ -18,9 +18,9 @@
 }
 	
 .container .messages td > div {
-	
+	max-width: 90vw;
 	width: fit-content;
-	white-space: pre;
+	white-space: pre-wrap;
 }
 
 /***************************************************************/
