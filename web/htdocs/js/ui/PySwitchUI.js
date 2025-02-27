@@ -362,7 +362,7 @@ class PySwitchUI {
                 this.#virtualClientTab = new Tab(
                     // Virtual client if enabled
                     virtualClientElement = $('<div class="virtual-client"/>'),
-                    "Virtual Client"
+                    client.name ? client.name : "Virtual Client"
                 )
             );
 

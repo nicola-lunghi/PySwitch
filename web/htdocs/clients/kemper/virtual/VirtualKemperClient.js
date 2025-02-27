@@ -22,7 +22,7 @@ class VirtualKemperClient extends VirtualClient {
      * }
      */
     constructor(options) {
-        super("Virtual Kemper Profiler Player");
+        super("Virtual Kemper");
         this.options = options || {};
 
         // Parameter storage
