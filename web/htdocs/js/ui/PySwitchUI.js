@@ -280,6 +280,7 @@ class PySwitchUI {
                 new PortsProvider(this.#controller, {
                     rootText: "Connected Controllers",
                     onSelect: async function(entry) {
+                        that.saveBrowser.hide();
                         await that.#controller.device.saveConfig(that.#controller.currentConfig, entry.value);
                     }
                 }),

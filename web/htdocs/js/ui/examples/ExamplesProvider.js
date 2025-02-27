@@ -121,7 +121,7 @@ class ExamplesProvider extends BrowserProvider {
         }
 
         const examples = crawl(toc, "");
-        examples.text = "PySwitch Examples";
+        examples.text = "Examples";
 
         // Add "Default PySwitch" option at root level
         examples.children.unshift(

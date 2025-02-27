@@ -169,7 +169,7 @@ class DeviceController {
             bridge.onSendProgress = async function(data) {            
                 if (data.type == "error") return;
 
-                that.#controller.ui.progress((data.chunk + 1) / data.numChunks, "Writing chunk " + data.chunk + " of " + data.numChunks);
+                that.#controller.ui.progress((data.chunk + 1) / data.numChunks, "Writing " + data.path); // + ": Writing chunk " + data.chunk + " of " + data.numChunks);
 
                 if (data.chunk + 1 == data.numChunks) {
                     that.#controller.ui.notifications.message("Successfully saved " + data.path, "S");
