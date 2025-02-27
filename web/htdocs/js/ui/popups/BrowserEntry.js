@@ -14,16 +14,16 @@ class BrowserEntry {
 
     /**
      * {
-     *      value:       Entry value
-     *      text:        Entry text (default: use value). Cal also be a function(entry) => string
-     *      parent:      Reference to parent entry
-     *      onSelect:    Optional onSelect(entry) => void
-     *      sortString:  Optional string to use for sorting (if not set, the text or value is used, in this order)
-     *      childLayout: Optional: Array of column definitions. If not specified, only one column with the listing link is generated. Entry format:
-     *                   {
-     *                      type:        "link", "typeIcon". If not set, get must be passed.
-     *                      get:         callback(entry) => DOM Element, used if no (or an invalid) type is set
-     *                   }
+     *      value:         Entry value
+     *      text:          Entry text (default: use value). Cal also be a function(entry) => string
+     *      parent:        Reference to parent entry
+     *      onSelect:      Optional onSelect(entry) => void
+     *      sortString:    Optional string to use for sorting (if not set, the text or value is used, in this order)
+     *      childLayout:   Optional: Array of column definitions. If not specified, only one column with the listing link is generated. Entry format:
+     *                     {
+     *                        type:        "link", "typeIcon". If not set, get must be passed.
+     *                        get:         callback(entry) => DOM Element, used if no (or an invalid) type is set
+     *                     }
      * }
      */
     constructor(browser, data = {}) {
@@ -76,7 +76,7 @@ class BrowserEntry {
                         await that.#browser.browse(that);
 
                     } catch (e) {
-                        console.error(e);
+                        that.#handle(e);
                     }
                 })
             ]
@@ -120,7 +120,7 @@ class BrowserEntry {
                                 await that.#browser.browse(that);
 
                             } catch (e) {
-                                console.error(e);
+                                that.#handle(e);
                             }
                         })
                     )
@@ -157,5 +157,17 @@ class BrowserEntry {
      */
     async call() {        
         await this.data.onSelect(this);
+    }
+
+    /**
+     * Error handling
+     */
+    #handle(e) {
+        if (this.#browser.options.errorHandler) {
+            this.#browser.options.errorHandler.handle(e);
+            return;
+        }
+
+        console.error(e);
     }
 }

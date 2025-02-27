@@ -26,11 +26,11 @@ class ControllerConfiguration extends Configuration {
             display_py: await this.#controller.device.loadFile("/display.py")
         };
 
-        // Also start a check that compares PySwitch versions of the controller and local
-        const that = this;
-        setTimeout(function() {
-            new PySwitchVersionCheck(that.#controller).check();
-        }, 100);        
+        // // Also start a check that compares PySwitch versions of the controller and local
+        // const that = this;
+        // setTimeout(function() {
+        //     new PySwitchVersionCheck(that.#controller).check();
+        // }, 100);        
 
         return data;
     }

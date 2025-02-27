@@ -1,20 +1,11 @@
-##############################################################################################################################################
-# 
-# Definition of actions for switches
-#
-##############################################################################################################################################
- 
 from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
-
-#from pyswitch.misc import Colors
-
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
-
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG, RIG_SELECT_DISPLAY_CURRENT_RIG
 from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP
 
 
-# Custom callback to get label text. Bank and rig come with values starting at zero (rig is in range [0..4] and bank in range [0..x] depending on your player level)
+# Custom callback to get label text. Bank and rig come with values starting at zero (rig is in 
+# range [0..4] and bank in range [0..x] depending on your player level)
 def get_custom_text(action, bank, rig):
     if bank == 0:
         return "Homer " + repr(rig + 1)
@@ -27,11 +18,10 @@ def get_custom_text(action, bank, rig):
     elif bank == 4:
         return "Maggie " + repr(rig + 1)
     else:
-        # Standard behaviour for all other banks
         return "Rig " + repr(bank + 1) + "-" + repr(rig + 1)
 
 
-# Defines the switch assignments
+
 Inputs = [
 
     # Switch 1

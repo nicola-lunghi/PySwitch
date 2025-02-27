@@ -1,24 +1,14 @@
-##############################################################################################################################################
-# 
-# Definition of actions for switches
-#
-##############################################################################################################################################
- 
 from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
-
 from pyswitch.misc import Colors
 from pyswitch.controller.actions import PushButtonAction
 from pyswitch.controller.callbacks import BinaryParameterCallback
-
 from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
-
 from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 from pyswitch.clients.kemper.mappings.freeze import MAPPING_FREEZE
 
 
-# Defines the switch assignments
 Inputs = [
 
     # Switch 1
@@ -69,7 +59,7 @@ Inputs = [
                 color = Colors.LIGHT_GREEN,
                 use_leds = False
             ),
-            SHOW_TEMPO()    # Shows beats with the LED(s)
+            SHOW_TEMPO()
         ]
     }
 ]

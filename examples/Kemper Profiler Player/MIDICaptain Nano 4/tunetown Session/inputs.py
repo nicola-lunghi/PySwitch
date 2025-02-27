@@ -1,26 +1,14 @@
-##############################################################################################################################################
-# 
-# Definition of actions for switches
-#
-##############################################################################################################################################
- 
 from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
-
 from pyswitch.misc import Colors
-
 from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
-
 from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 from pyswitch.clients.kemper.actions.binary_switch import BINARY_SWITCH
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
-
 from pyswitch.clients.kemper.mappings.freeze import MAPPING_FREEZE
 
-##############################################################################################################################################
 
-# Defines the switch assignments
 Inputs = [
 
     # Switch 1
@@ -28,7 +16,7 @@ Inputs = [
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             TAP_TEMPO(use_leds = False),
-            SHOW_TEMPO()    # Shows beats with the LED(s)
+            SHOW_TEMPO()
         ],
         "actionsHold": [
             TUNER_MODE(
@@ -42,7 +30,6 @@ Inputs = [
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            # Freeze on/off
             BINARY_SWITCH(
                 mapping = MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY),
                 display = DISPLAY_HEADER_2,

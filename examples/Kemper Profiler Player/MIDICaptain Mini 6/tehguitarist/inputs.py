@@ -1,21 +1,11 @@
-##############################################################################################################################################
-# 
-# Definition of actions for switches
-#
-##############################################################################################################################################
- 
 from pyswitch.hardware.devices.pa_midicaptain_mini_6 import *
-
 from pyswitch.misc import Colors
 from pyswitch.controller.callbacks import Callback
 from pyswitch.clients.kemper import KemperEffectSlot, KemperMappings
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_HEADER_3, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_FOOTER_3
-
 from pyswitch.clients.kemper.actions.tempo import SHOW_TEMPO
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
-
-##############################################################################################################################################
 
 # Allow change of switch behaviour based on rig name
 class _EnableCallback(Callback):
@@ -35,9 +25,7 @@ class _EnableCallback(Callback):
 # Create an instance of the class which can be shared by all actions which use the callback
 _enable_callback = _EnableCallback()
 
-##############################################################################################################################################
 
-# Defines the switch assignments
 Inputs = [
 
     # Switch 1 | Drive (Slot D)/FX (Slot X)

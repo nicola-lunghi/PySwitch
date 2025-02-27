@@ -15,6 +15,7 @@ class Popup {
      *      additionalClasses:        Optional CSS classes for the popup element
      *      onReturnKey:              Callback when the user hits the Return key
      *      onClose:                  Called on hide
+     *      errorHandler:             Optional error handler. must provide a handle(ex) => void method.
      * }
      */
     constructor(options) {

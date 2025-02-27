@@ -1,35 +1,22 @@
-##############################################################################################################################################
-# 
-# Definition of actions for switches
-#
-##############################################################################################################################################
- 
 from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
-
 from pyswitch.misc import Colors
-
 from pyswitch.controller.pager import PagerAction
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_PAGE
-
 from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
-
 from pyswitch.clients.kemper.actions.looper import LOOPER_REC_PLAY_OVERDUB, LOOPER_STOP, LOOPER_ERASE, LOOPER_CANCEL, LOOPER_REVERSE
 
-##############################################################################################################################################
-
-# Define some page IDs
 _PAGE_1 = 10
 _PAGE_2 = 20
 
-# Paging controller. 
+
 _pager = PagerAction(
     pages = [
         {
             "id": _PAGE_1, 
             "color": Colors.BLACK,
-            "text": "                                                              Looper"  # Cheap trick to get this aligned right....
+            "text": "                                                              Looper"
         },
         {
             "id": _PAGE_2, 
@@ -42,9 +29,7 @@ _pager = PagerAction(
     }
 )
 
-##############################################################################################################################################
 
-# Defines the switch assignments
 Inputs = [
 
     # Switch 1
@@ -52,7 +37,7 @@ Inputs = [
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             TAP_TEMPO(use_leds = False),
-            SHOW_TEMPO()    # Shows beats with the LED(s)
+            SHOW_TEMPO()
         ],
         "actionsHold": [
             TUNER_MODE(

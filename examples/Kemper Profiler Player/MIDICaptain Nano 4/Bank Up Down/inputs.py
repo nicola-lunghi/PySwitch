@@ -1,19 +1,10 @@
-##############################################################################################################################################
-# 
-# Definition of actions for switches
-#
-##############################################################################################################################################
- 
 from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
-
 from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
-
 from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 
 
-# Defines the switch assignments
 Inputs = [
 
     # Switch 1

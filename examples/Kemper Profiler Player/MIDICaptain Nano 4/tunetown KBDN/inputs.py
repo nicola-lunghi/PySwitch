@@ -1,24 +1,13 @@
-##############################################################################################################################################
-# 
-# Definition of actions for switches
-#
-##############################################################################################################################################
- 
 from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
-
 from pyswitch.misc import Colors
-
 from pyswitch.clients.kemper import KemperEffectSlot
-
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
-
 from pyswitch.clients.kemper.actions.morph import MORPH_DISPLAY
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
 
 
-# Defines the switch assignments
 Inputs = [
 
     # Switch 1

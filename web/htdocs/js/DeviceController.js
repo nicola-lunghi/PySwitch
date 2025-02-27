@@ -73,17 +73,6 @@ class DeviceController {
         const bridge = connection.bridge;
         const that = this;
 
-        // // Progress (send)
-        // bridge.onSendProgress = async function(data) {            
-        //     if (data.type == "error") return;
-
-        //     that.#controller.ui.progress((data.chunk + 1) / data.numChunks, "Writing chunk " + data.chunk + " of " + data.numChunks);
-
-        //     if (data.chunk + 1 == data.numChunks) {
-        //         console.info("Successfully saved " + data.path);
-        //     }
-        // };
-
         // Receive start
         bridge.onReceiveStart = async function(data) {
             that.#controller.ui.progress(0, "Loading " + data.path);
@@ -108,6 +97,22 @@ class DeviceController {
         
         this.#connection = connection;
         console.log("Connected to controller " + portName);
+    }
+
+    /**
+     * Saves the passed Configuration to the given port
+     */
+    async saveConfig(config, portName) {
+        console.log("Saving configuration to " + portName);
+
+        await this.connect(portName);
+
+        const code = await config.get();
+
+        await this.saveFile('inputs.py', code.inputs_py);
+        await this.saveFile('display.py', code.display_py);
+
+        this.#controller.ui.notifications.message("Successfully saved configuration to " + portName, "S");
     }
 
     /**
@@ -144,6 +149,40 @@ class DeviceController {
             }  
     
             await bridge.request(path, BRIDGE_CHUNK_SIZE_REQUEST);
+        })        
+    }
+
+    /**
+     * Saves the passed content to the passed file on the connected device
+     */
+    async saveFile(path, content) {
+        if (!this.#connection) {
+            throw new Error("No controller connected");
+        }
+
+        const bridge = this.#connection.bridge;
+        const that = this;
+        return new Promise(async function(resolve, reject) {
+            bridge.throwExceptionsOnReceive = true;
+
+            // Progress (send)
+            bridge.onSendProgress = async function(data) {            
+                if (data.type == "error") return;
+
+                that.#controller.ui.progress((data.chunk + 1) / data.numChunks, "Writing chunk " + data.chunk + " of " + data.numChunks);
+
+                if (data.chunk + 1 == data.numChunks) {
+                    that.#controller.ui.notifications.message("Successfully saved " + data.path, "S");
+                    resolve();
+                }
+            };
+
+            bridge.onError = async function(message) {
+                console.error(message);
+                reject(message)
+            }  
+    
+            await bridge.sendString(path, content, BRIDGE_CHUNK_SIZE_SEND);
         })        
     }
 }

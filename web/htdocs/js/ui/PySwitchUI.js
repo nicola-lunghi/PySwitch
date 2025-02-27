@@ -21,6 +21,7 @@ class PySwitchUI {
 
     notifications = null;
     loadBrowser = null;
+    saveBrowser = null;
     clientBrowser = null;
     clientButton = null;
     frontend = null;
@@ -113,7 +114,7 @@ class PySwitchUI {
                         .on("click", async function() {
                             try {
                                 that.loadBrowser.options.selectedValue = that.#controller.currentConfig ? (await that.#controller.currentConfig.name()) : null;
-                                await that.loadBrowser.browse();                                
+                                await that.loadBrowser.browse();
 
                             } catch (e) {
                                 that.#controller.handle(e);
@@ -124,7 +125,7 @@ class PySwitchUI {
                         $('<div class="appl-button fas fa-save" data-toggle="tooltip" title="Save configuration..." />')
                         .on("click", async function() {
                             try {
-                                // TODO
+                                await that.saveBrowser.browse();
 
                             } catch (e) {
                                 that.#controller.handle(e);
@@ -163,10 +164,6 @@ class PySwitchUI {
 
                 /////////////////////////////////////////////////////////////////////////////////////
 
-                // // List browsers and popups (shared)
-                // this.listElement = $('<div class="list-browser"/>')
-                // .hide(),
-
                 // Messages
                 messageElement = $('<div class="messages"/>')
             )
@@ -174,6 +171,7 @@ class PySwitchUI {
 
         // Browsers
         await this.#initLoadBrowser();
+        await this.#initSaveBrowser();
         await this.#initClientBrowser();
 
         // Client state button
@@ -218,6 +216,7 @@ class PySwitchUI {
      */
     getPopup(options = {}) {
         if (!options.container) options.container = this.container;
+        if (!options.errorHandler) options.errorHandler = this.#controller;
         return new Popup(options);        
     }
 
@@ -226,6 +225,7 @@ class PySwitchUI {
      */
     getBrowserPopup(options = {}) {
         if (!options.container) options.container = this.container;
+        if (!options.errorHandler) options.errorHandler = this.#controller;
         return new BrowserPopup(options);        
     }
 
@@ -248,9 +248,31 @@ class PySwitchUI {
                 
                 // Connected controllers
                 new PortsProvider(this.#controller, {
-                    rootText: "Load from a connected Controller",
+                    rootText: "Connected Controllers",
                     onSelect: async function(entry) {
                         that.#controller.routing.call(that.#controller.getControllerUrl(entry.value));
+                    }
+                })
+            ]
+        }); 
+    }
+
+    /**
+     * Init browser for loading configurations
+     */
+    async #initSaveBrowser() {
+        const that = this;
+
+        // A browser for loading configurations, triggered by the load button
+        this.saveBrowser = this.getBrowserPopup({
+            wide: true,
+            headline: "Please select a destination to store the current configuration",
+            providers: [
+                // Connected controllers
+                new PortsProvider(this.#controller, {
+                    rootText: "Connected Controllers",
+                    onSelect: async function(entry) {
+                        await that.#controller.device.saveConfig(that.#controller.currentConfig, entry.value);
                     }
                 })
             ]

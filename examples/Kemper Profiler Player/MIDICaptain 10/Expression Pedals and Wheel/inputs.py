@@ -1,30 +1,18 @@
-##############################################################################################################################################
-# 
-# Definition of actions for switches DB Version
-#
-##############################################################################################################################################
- 
 from pyswitch.hardware.devices.pa_midicaptain_10 import *
-
 from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_HEADER_3
-
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT_DISPLAY_TARGET_RIG
 from pyswitch.clients.kemper.actions.rig_select_and_morph_state import RIG_SELECT_AND_MORPH_STATE
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 from pyswitch.clients.kemper.actions.binary_switch import BINARY_SWITCH
 from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
-
 from pyswitch.clients.kemper.mappings.pedals import MAPPING_VOLUME_PEDAL, MAPPING_WAH_PEDAL
-# from pyswitch.clients.kemper.mappings.morph import MAPPING_MORPH_PEDAL
 from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_GAIN, MAPPING_AMP_STATE
-
 from pyswitch.controller.AnalogAction import AnalogAction
 from pyswitch.controller.EncoderAction import EncoderAction
 
 
-# Defines the switch assignments and other inputs
 Inputs = [
     # Pedal 1
     {
@@ -191,4 +179,3 @@ Inputs = [
         ]    
     },
 ]
-

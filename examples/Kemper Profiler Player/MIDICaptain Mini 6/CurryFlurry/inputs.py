@@ -1,17 +1,9 @@
-##############################################################################################################################################
-# 
-# Definition of actions for switches
-#
-##############################################################################################################################################
- 
 from pyswitch.hardware.devices.pa_midicaptain_mini_6 import *
-
 from pyswitch.clients.kemper.actions.rig_select_and_morph_state import RIG_SELECT_AND_MORPH_STATE, RIG_SELECT_DISPLAY_TARGET_RIG
 from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
 from pyswitch.clients.kemper.actions.effect_button import EFFECT_BUTTON
 
 
-# Defines the switch assignments
 Inputs = [
 
     # Switch 1
@@ -38,7 +30,6 @@ Inputs = [
                 rig = 5,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
 
-                # Remove/comment out the next two lines to make the LED use the kemper original colors (red <> blue) for morph state
                 morph_color_base = (0, 0, 0),
                 morph_color_morphed = (255, 255, 255),   # r, g, b
                 rig_btn_morph = True
@@ -67,7 +58,6 @@ Inputs = [
                 rig = 1,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
 
-                # Remove/comment out the next two lines to make the LED use the kemper original colors (red <> blue) for morph state
                 morph_color_base = (0, 0, 0),
                 morph_color_morphed = (255, 255, 255),   # r, g, b
                 rig_btn_morph = True
@@ -83,7 +73,6 @@ Inputs = [
                 rig = 2,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
 
-                # Remove/comment out the next two lines to make the LED use the kemper original colors (red <> blue) for morph state
                 morph_color_base = (0, 0, 0),
                 morph_color_morphed = (255, 255, 255),   # r, g, b
                 rig_btn_morph = True
@@ -99,7 +88,6 @@ Inputs = [
                 rig = 3,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
 
-                # Remove/comment out the next two lines to make the LED use the kemper original colors (red <> blue) for morph state
                 morph_color_base = (0, 0, 0),
                 morph_color_morphed = (255, 255, 255),   # r, g, b
                 rig_btn_morph = True
