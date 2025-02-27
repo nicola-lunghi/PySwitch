@@ -4,7 +4,7 @@
 class PortsProvider extends BrowserProvider {
 
     #toc = null;
-    #config = null;
+    #options = null;
     #controller = null;
 
     /**
@@ -17,10 +17,10 @@ class PortsProvider extends BrowserProvider {
      *      rootText:           Text for the root entry (optional, can be a callback(entry) => string)
      * }
      */
-    constructor(controller, config) {
+    constructor(controller, options) {
         super();
         this.#controller = controller;
-        this.#config = config;
+        this.#options = options;
     }
 
     /**
@@ -34,7 +34,7 @@ class PortsProvider extends BrowserProvider {
         this.#toc = new BrowserEntry(
             browser,
             {
-                text: this.#config.rootText
+                text: this.#options.rootText
             }
         );
 
@@ -45,16 +45,16 @@ class PortsProvider extends BrowserProvider {
                     {
                         value: c.name,
                         parent: this.#toc,
-                        onSelect: this.#config.onSelect
+                        onSelect: this.#options.onSelect
                     }
                 )
             )
         }
 
         // Additional entries
-        for (const e of this.#config.additionalEntries || []) {
+        for (const e of this.#options.additionalEntries || []) {
             e.parent = this.#toc;
-            if (!e.onSelect) e.onSelect = this.#config.onSelect;
+            if (!e.onSelect) e.onSelect = this.#options.onSelect;
 
             this.#toc.children.push(
                 new BrowserEntry(browser, e)

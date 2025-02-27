@@ -7,7 +7,7 @@ class VirtualKemperParameterDefault extends VirtualKemperParameter {
         // Is it a request message for this parameter?
         if (!Tools.compareArrays(
             message.slice(0, 8),
-            [240, 0, 32, 51, this.client.config.productType, 127, this.requestFunctionCode, 0]
+            [240, 0, 32, 51, this.client.options.productType, 127, this.requestFunctionCode, 0]
         )) return false;
 
         // Requested an unknown parameter: Create it

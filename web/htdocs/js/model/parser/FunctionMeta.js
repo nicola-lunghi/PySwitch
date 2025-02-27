@@ -18,16 +18,18 @@ class FunctionMeta {
     }
 
     /**
-     * Returns the display name for specific actions
+     * Returns the display name for specific actions. If an action call proxy is passed, the 
+     * argument values can be used to show more specific names.
      */
-    getDisplayName(actionDefinition) {
-        return this.client.getDisplayName() + ": " + this.getShortDisplayName(actionDefinition);
+    getDisplayName(actionCallProxy = null) {
+        return this.client.getDisplayName() + ": " + this.getShortDisplayName(actionCallProxy);
     }
 
     /**
-     * Returns the display name for specific actions
+     * Returns the display name for specific actions. If an action call proxy is passed, the 
+     * argument values can be used to show more specific names.
      */
-    getShortDisplayName(actionDefinition) {
+    getShortDisplayName(actionCallProxy = null) {
         return this.underscoreToDisplayName(this.functionDefinition.name);
     }
 

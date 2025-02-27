@@ -573,10 +573,7 @@ class ConfigParserTests extends TestBase {
         const action2 = searchAction(name);
 
         const actions = await input1.actions(hold);
-        const current = {
-            name: actions[0].name,
-            arguments: JSON.parse(actions[0].arguments())
-        };
+        const current = actions[0];
         
         const meta = action2.meta;
 

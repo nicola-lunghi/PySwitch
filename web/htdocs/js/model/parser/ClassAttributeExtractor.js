@@ -3,10 +3,10 @@
  */
 class ClassAttributeExtractor {
 
-    pyswitch = null  // PySwitchRunner instance
+    #runner = null  // PySwitchRunner instance
 
-    constructor(pyswitch) {
-        this.pyswitch = pyswitch;
+    constructor(runner) {
+        this.#runner = runner;
     }
 
     /**
@@ -18,7 +18,7 @@ class ClassAttributeExtractor {
      */
     async get(options) {
         // Tell the python code which files to examine, process it and return the decoded result.
-        const resultJson = await this.pyswitch.pyodide.runPython(`
+        const resultJson = await this.#runner.pyodide.runPython(`
             import json
             from parser.misc.ClassAttributeExtractor import ClassAttributeExtractor
 

@@ -12,12 +12,15 @@ class Tabs {
     #headerButtons = null;
     
     #tabs = [];
+    #state = null;
     active = null;               // Active Tab instance
 
     constructor(controller, container, showTabsButton) {
         this.#controller = controller;
         this.#container = container;
         this.#showTabsButton = showTabsButton;
+
+        this.#state = new LocalState("pyswitch", "tabs");
 
         this.init();
     }
@@ -59,12 +62,12 @@ class Tabs {
         this.#container.resizable({ 
             handles: "e",
             stop: function() {
-                that.#setState('width', that.#container.width());
+                that.#state.set('width', that.#container.width());
             }
         });
 
         // Set state according to local storage (defaults to hidden)
-        if (this.#getState('show')) {
+        if (this.#state.get('show')) {
             this.show();
         } else {
             this.hide();
@@ -74,7 +77,7 @@ class Tabs {
     /**
      * Add a new Tab instance
      */
-    add(tab, index = null) {          // TODO
+    add(tab, index = null) {          // TODO Index not respected currently
         if (!tab) return;
         
         tab.init(this);
@@ -129,7 +132,7 @@ class Tabs {
      * Show tabs
      */
     show() {
-        const width = this.#getState('width');
+        const width = this.#state.get('width');
         if (width) {
             this.#container.width(width);
         }
@@ -137,7 +140,7 @@ class Tabs {
         this.#container.show();
         this.#showTabsButton.hide();
 
-        this.#setState('show', true);  
+        this.#state.set('show', true);  
         
         // When a tab is shown, the editors need refreshing
         if (this.active) {
@@ -152,7 +155,7 @@ class Tabs {
         this.#container.hide();
         this.#showTabsButton.show();
 
-        this.#setState('show', false);
+        this.#state.set('show', false);
     }
 
     /**
@@ -182,7 +185,7 @@ class Tabs {
         this.active = tab;
         this.#updateActive();
 
-        this.#setState('current', tab.name);
+        this.#state.set('current', tab.name);
 
         // When a tab is shown, the editors need refreshing
         this.active.refresh();
@@ -212,7 +215,7 @@ class Tabs {
      */
     #update() {
         if (this.#tabs.length > 0 && !this.active) {
-            const current = this.#getState('current');
+            const current = this.#state.get('current');
             if (current) {
                 const tab = this.getTabByName(current);
 
@@ -229,21 +232,4 @@ class Tabs {
 
         this.#updateActive();        
     }
-
-    /**
-     * Set value on the tabs state object in local storage
-     */
-    #setState(name, value) {
-        const state = this.#controller.getState('tabs') || {};
-        state[name] = value;
-        this.#controller.setState('tabs', state);
-    }
-
-    /**
-     * Get a value from the tabs state object in local storage
-     */
-    #getState(name) {
-        const state = this.#controller.getState('tabs') || {};        
-        return state[name]
-    }    
 }

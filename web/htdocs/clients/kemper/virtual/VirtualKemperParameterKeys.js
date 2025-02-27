@@ -8,9 +8,9 @@ class VirtualKemperParameterKeys {
      *      receive:  Key instance(s) for receiving data. Can be an array. If not set, the send key will be used.
      * }
      */
-    constructor(config) {
-        this.send = config.send;
-        this.receive = config.receive;
+    constructor(options) {
+        this.send = options.send;
+        this.receive = options.receive;
 
         // Ensure that receiveKey is an Array
         if (this.receive) {

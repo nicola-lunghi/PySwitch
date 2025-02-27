@@ -4,7 +4,7 @@
 class Device {
 
     /**
-     * Returns the device handler
+     * Returns the device handler from the passed Configuration instance
      */
     static async getInstance(config) {
         const data = await config.get();

@@ -28,7 +28,7 @@ class ExamplesProvider extends BrowserProvider {
          * Select the entry
          */
         function onSelect(entry) {
-            that.#controller.routing.call(encodeURI("example" + entry.config.callPath));
+            that.#controller.routing.call(encodeURI("example" + entry.data.callPath));
         }
         
         // Build hierarchy        
@@ -69,8 +69,8 @@ class ExamplesProvider extends BrowserProvider {
                                         try {
                                             let content = null;
                                             
-                                            if (entry.config.callPath) {
-                                                const url = 'examples' + entry.config.callPath + '/README.md';
+                                            if (entry.data.callPath) {
+                                                const url = 'examples' + entry.data.callPath + '/README.md';
 
                                                 try {                                       
                                                     marked.use({

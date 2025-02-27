@@ -5,6 +5,7 @@ class PySwitchUI {
 
     #controller = null;
     #options = null;
+    
     #block = null;
     #progressBar = null;            // Progress bar inner element (the one to resize)
     #progressMessage = null;        // Messages for progress
@@ -12,10 +13,12 @@ class PySwitchUI {
     #contentHeadline = null;
     #deviceElement = null;
     #versionElement = null;
-    #virtualClientTab = null;
-    #virtualClientUI = null;
-    container = null;
     
+    #virtualClientTab = null;
+    #virtualClientUI = null;    
+    
+    container = null;
+
     notifications = null;
     loadBrowser = null;
     clientBrowser = null;
@@ -109,7 +112,7 @@ class PySwitchUI {
                         $('<div class="appl-button fas fa-folder-open" data-toggle="tooltip" title="Open configuration..." />')
                         .on("click", async function() {
                             try {
-                                that.loadBrowser.config.selectedValue = that.#controller.currentConfig ? (await that.#controller.currentConfig.name()) : null;
+                                that.loadBrowser.options.selectedValue = that.#controller.currentConfig ? (await that.#controller.currentConfig.name()) : null;
                                 await that.loadBrowser.browse();                                
 
                             } catch (e) {
@@ -140,7 +143,7 @@ class PySwitchUI {
                         }),
                     ),
 
-                    // Header, showing the current config name
+                    // Header, showing the current Configuration name
                     this.#contentHeadline = $('<div class="headline"/>'),
                 ),
 
@@ -200,7 +203,7 @@ class PySwitchUI {
             container: this.container,
             fullscreen: true,
             onClose: function() {
-                that.#controller.setState('suppressInfoPopup', true);
+                // that.#controller.setState('suppressInfoPopup', true);
             }
         })
         .show(
@@ -213,17 +216,17 @@ class PySwitchUI {
     /**
      * Returns a new simple Popup instance
      */
-    getPopup(config = {}) {
-        if (!config.container) config.container = this.container;
-        return new Popup(config);        
+    getPopup(options = {}) {
+        if (!options.container) options.container = this.container;
+        return new Popup(options);        
     }
 
     /**
      * Returns a new BrowserPopup instance
      */
-    getBrowserPopup(config = {}) {
-        if (!config.container) config.container = this.container;
-        return new BrowserPopup(config);        
+    getBrowserPopup(options = {}) {
+        if (!options.container) options.container = this.container;
+        return new BrowserPopup(options);        
     }
 
     /**
@@ -264,7 +267,7 @@ class PySwitchUI {
             {
                 value: "auto",
                 text: function(/*entry*/) {
-                    const client = that.#controller.getState("client");
+                    const client = that.#controller.client.state.get("selectedClient");
                     const currentDeviceText = (client == "auto") ? (" (" + (that.#controller.client.current ? that.#controller.client.current : "None found") + ")") : "";
 
                     return "Auto-detect client device" + currentDeviceText;
@@ -298,7 +301,8 @@ class PySwitchUI {
             providers: [
                 new PortsProvider(this.#controller, {
                     onSelect: async function(entry) {
-                        that.#controller.setState("client", entry.value);
+                        that.#controller.client.state.set("selectedClient", entry.value);
+                        
                         await that.#controller.client.init(that.#controller.currentConfig);
                     },
                     additionalEntries: additionalEntries

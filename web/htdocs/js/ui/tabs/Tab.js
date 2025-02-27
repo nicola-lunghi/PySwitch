@@ -32,6 +32,9 @@ class Tab {
         }
     }
 
+    /**
+     * Refresh tab if needed
+     */
     refresh() {
     }
     
@@ -71,10 +74,16 @@ class Tab {
         return true;
     }
 
+    /**
+     * Select the tab
+     */
     select() {
         this.#tabs.setActive(this);
     }
 
+    /**
+     * Deactivate the tab (not selected)
+     */
     deactivate() {
         if (this.header) {
             this.header.removeClass("active");
@@ -83,6 +92,9 @@ class Tab {
         this.container.hide();
     }
 
+    /**
+     * Activate the tab (selected)
+     */
     activate() {
         if (this.header) {
             this.header.addClass("active");
@@ -91,6 +103,9 @@ class Tab {
         this.container.show();
     }
 
+    /**
+     * Remove the tab
+     */
     remove() {
         this.#tabs.remove(this);
     }

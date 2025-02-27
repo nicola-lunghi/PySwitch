@@ -23,10 +23,10 @@ class ParserFrontend {
     /**
      * Adds a new frontend for an input
      */
-    async addInput(model, inputElement) {
+    async addInput(port, inputElement) {
         if (!inputElement) return;
 
-        const input = await this.parser.input(model.port);
+        const input = await this.parser.input(port);
         
         this.inputs.push(
             new ParserFrontendInput(this.#controller, this, input, inputElement)
@@ -43,7 +43,7 @@ class ParserFrontend {
     }
 
     /**
-     * Schedules an input frontend for updating the config
+     * Schedules an input frontend for updating the Configuration
      */
     scheduleForUpdate(input) {
         if (this.#toUpdate.includes(input)) return;
@@ -52,7 +52,7 @@ class ParserFrontend {
     }
 
     /**
-     * Update the data model from the input frontends in the queue. Includes exception handling
+     * Update the Configuration data from the input frontends. Includes exception handling
      * as this is eventually called without await.
      */
     async updateConfig() {

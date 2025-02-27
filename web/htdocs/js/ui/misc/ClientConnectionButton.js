@@ -31,7 +31,7 @@ class ClientConnectionButton {
         .on("click", async function() {
             try {
                 await that.#controller.ui.clientBrowser.browse();
-                that.#controller.ui.clientBrowser.setSelectedValue(that.#controller.getState("client"));
+                that.#controller.ui.clientBrowser.setSelectedValue(that.#controller.client.state.get("selectedClient"));
 
             } catch (e) {
                 that.#controller.handle(e);

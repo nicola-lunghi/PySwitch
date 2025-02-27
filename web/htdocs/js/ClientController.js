@@ -5,19 +5,22 @@ class ClientController {
 
     #controller = null;
 
+    state = null;
     current = null;     // Name of the currently connected client
 
     constructor(controller) {
         this.#controller = controller;
+        
+        this.state = new LocalState("pyswitch", "client");
     }
     
     /**
-     * Initialize client to the given config instance.
+     * Initialize client to the given Configuration instance.
      */
     async init(config) {
         if (!config) return;
 
-        const savedClient = this.#controller.getState("client");
+        const savedClient = this.state.get("selectedClient");
 
         if (savedClient == "auto" || !savedClient) {
             await this.#scan(config);
@@ -27,7 +30,7 @@ class ClientController {
     }
             
     /**
-     * Scans for clients of the given config.
+     * Scans for clients of the given Configuration instance.
      */
     async #scan(config) {
         const that = this;
@@ -57,7 +60,7 @@ class ClientController {
     }
 
     /**
-     * Checks if the passed port is connected to a valid client for the current configuration. If yes, returns
+     * Checks if the passed port is connected to a valid client for the Configuration. If yes, returns
      * a connection object.
      */
     async #scanPort(config, portName, attempts, timeoutMillis = 1000) {
@@ -127,7 +130,7 @@ class ClientController {
     }
 
     /**
-     * Connect to a client directly
+     * Connect to a client directly by port name (can be virtual)
      */
     async #connect(portName) {
         // First throw out the old MIDI wrapper, if any

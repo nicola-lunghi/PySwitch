@@ -28,7 +28,7 @@ class TemplatesProvider extends BrowserProvider {
          * Select the entry
          */
         function onSelect(entry) {
-            that.#controller.routing.call(encodeURI("template" + entry.config.callPath));
+            that.#controller.routing.call(encodeURI("template" + entry.data.callPath));
         }
         
         // Build hierarchy        
@@ -78,7 +78,7 @@ class TemplatesProvider extends BrowserProvider {
         this.#toc = crawl(toc, "");
         
         this.#toc.text = "Create new...";
-        this.#toc.config.sortString = "_____________";
+        this.#toc.data.sortString = "_____________";
         
         return this.#toc;
     }

@@ -4,18 +4,16 @@
  */
 class Parser {
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    config = null;                   // Configuration instance
+    runner = null;                   // PySwitchRunner instance
+    basePath = null;                 // Base path for fetching data via HTTP
+    checks = null;                   // Checks handler
 
-    #pySwitchParser = null;
+    #pySwitchParser = null;          // Proxy to the python PySwitchParser instance
 
-    #availableActions = null;
-    #availableMappings = null;
-
-    config = null;    // Configuration instance
-    basePath = null;
-    checks = null;
-
-    #bufferHardwareInfo = null;
+    #availableActions = null;        // Buffer
+    #availableMappings = null;       // Buffer
+    #bufferHardwareInfo = null;      // Buffer
 
     constructor(config, runner, basePath = "") {
         this.config = config;
@@ -153,7 +151,7 @@ class Parser {
     }
 
     /**
-     * Returns an actions definition or null if not found
+     * Returns an actions definition by name/clientId or null if not found
      */
     async getActionDefinition(name, clientId) {
         const clients = await this.getAvailableActions();

@@ -13,7 +13,7 @@ class Controller {
     client = null;              // Client handler (like Kemper Player)
     pyswitch = null;            // PySwitch runner (in browser)
 
-    currentConfig = null;
+    currentConfig = null;       // Currently loaded Configuration instance
     
     /**
      * Options:
@@ -105,7 +105,7 @@ class Controller {
     }
 
     /**
-     * Run PySwitch with a specific configuration.
+     * Run PySwitch with a specific Configuration instance.
      */
     async loadConfiguration(config) {
         this.ui.notifications.reset();
@@ -190,24 +190,6 @@ class Controller {
         if (message != "none") {
             this.ui.message(message ? message : ("Reloaded configuration: " + (await this.currentConfig.name())), "S");
         }
-    }
-
-    /**
-     * Set a variable in local storage
-     */
-    setState(key, value) {
-        const data = JSON.parse(localStorage.getItem("pyswitch") || "{}");
-        data[key] = value;
-        localStorage.setItem("pyswitch", JSON.stringify(data));
-    }
-
-    /**
-     * Read local storage
-     */
-    getState(key) {
-        const data = JSON.parse(localStorage.getItem("pyswitch") || "{}");
-        if (!data || !data.hasOwnProperty(key)) return null;
-        return data[key];
     }
 
     /**

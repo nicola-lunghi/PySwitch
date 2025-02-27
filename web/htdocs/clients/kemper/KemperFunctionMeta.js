@@ -6,17 +6,17 @@ class KemperFunctionMeta extends FunctionMeta {
     /**
      * Returns the display name for specific actions
      */
-    getShortDisplayName(actionDefinition) {
+    getShortDisplayName(actionCallProxy = null) {
         switch (this.functionDefinition.name) {
-            case "RIG_SELECT": return this.#getDisplayNameRigSelect(actionDefinition)
-            case "RIG_SELECT_AND_MORPH_STATE": return this.#getDisplayNameRigSelectAndMorphState(actionDefinition)
-            case "BANK_SELECT": return this.#getDisplayNameBankSelect(actionDefinition)
-            case "EFFECT_BUTTON": return this.#getDisplayNameEffectButton(actionDefinition)
-            case "EFFECT_STATE": return this.#getDisplayNameEffectState(actionDefinition)
+            case "RIG_SELECT": return this.#getDisplayNameRigSelect(actionCallProxy)
+            case "RIG_SELECT_AND_MORPH_STATE": return this.#getDisplayNameRigSelectAndMorphState(actionCallProxy)
+            case "BANK_SELECT": return this.#getDisplayNameBankSelect(actionCallProxy)
+            case "EFFECT_BUTTON": return this.#getDisplayNameEffectButton(actionCallProxy)
+            case "EFFECT_STATE": return this.#getDisplayNameEffectState(actionCallProxy)
             case "BINARY_SWITCH": return "Other"
         }
         
-        return super.getShortDisplayName(actionDefinition);
+        return super.getShortDisplayName(actionCallProxy);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -24,64 +24,64 @@ class KemperFunctionMeta extends FunctionMeta {
     /**
      * Special implementation for rig select
      */
-    #getDisplayNameRigSelect(actionDefinition) {
-        const rig_off = this.getArgument(actionDefinition, "rig_off");
-        if (actionDefinition && !(rig_off == null || rig_off.value == "None")) {
-            return this.replaceParameterTokens(actionDefinition, "Toggle Rigs {rig}/{rig_off}");
+    #getDisplayNameRigSelect(actionCallProxy = null) {
+        const rig_off = this.#getArgument(actionCallProxy, "rig_off");
+        if (actionCallProxy && !(rig_off == null || rig_off.value == "None")) {
+            return this.#replaceParameterTokens(actionCallProxy, "Toggle Rigs {rig}/{rig_off}");
         }
 
-        if (!actionDefinition) {
+        if (!actionCallProxy) {
             return "Select Rig";  
         }
 
-        return this.replaceParameterTokens(actionDefinition, "Select Rig {rig}");
+        return this.#replaceParameterTokens(actionCallProxy, "Select Rig {rig}");
     }
 
     /**
      * Special implementation for rig select and morph state
      */
-    #getDisplayNameRigSelectAndMorphState(actionDefinition) {
-        const rig_off = this.getArgument(actionDefinition, "rig_off");
-        if (actionDefinition && !(rig_off == null || rig_off.value == "None")) {
-            return this.replaceParameterTokens(actionDefinition, "Toggle Rigs {rig}/{rig_off} & Morph Display");
+    #getDisplayNameRigSelectAndMorphState(actionCallProxy = null) {
+        const rig_off = this.#getArgument(actionCallProxy, "rig_off");
+        if (actionCallProxy && !(rig_off == null || rig_off.value == "None")) {
+            return this.#replaceParameterTokens(actionCallProxy, "Toggle Rigs {rig}/{rig_off} & Morph Display");
         }
 
-        if (!actionDefinition) {
+        if (!actionCallProxy) {
             return "Select Rig & Morph Display";  
         }
 
-        return this.replaceParameterTokens(actionDefinition, "Select Rig {rig} & Morph Display");
+        return this.#replaceParameterTokens(actionCallProxy, "Select Rig {rig} & Morph Display");
     }
 
     /**
      * Special implementation for bank select
      */
-    #getDisplayNameBankSelect(actionDefinition) {
-        const bank_off = this.getArgument(actionDefinition, "bank_off");
-        const preselect = this.getArgument(actionDefinition, "preselect");
+    #getDisplayNameBankSelect(actionCallProxy = null) {
+        const bank_off = this.#getArgument(actionCallProxy, "bank_off");
+        const preselect = this.#getArgument(actionCallProxy, "preselect");
         
-        if (!actionDefinition) {
+        if (!actionCallProxy) {
             return "Select Bank";  
         }
 
         if (!(bank_off == null || bank_off.value == "None")) {
-            return this.replaceParameterTokens(actionDefinition, "Toggle Banks {bank}/{bank_off}");
+            return this.#replaceParameterTokens(actionCallProxy, "Toggle Banks {bank}/{bank_off}");
         }
 
         if (preselect && (preselect.value == "True")) {
-            return this.replaceParameterTokens(actionDefinition, "Preselect Bank {bank}");
+            return this.#replaceParameterTokens(actionCallProxy, "Preselect Bank {bank}");
         }
 
-        return this.replaceParameterTokens(actionDefinition, "Select Bank {bank}");
+        return this.#replaceParameterTokens(actionCallProxy, "Select Bank {bank}");
     }
 
     /**
      * Special implementation for effect buttons
      */
-    #getDisplayNameEffectButton(actionDefinition) {
-        const num = this.getArgument(actionDefinition, "num");
-        if (actionDefinition && num) {
-            return this.replaceParameterTokens(actionDefinition, "Effect Button {num}");
+    #getDisplayNameEffectButton(actionCallProxy = null) {
+        const num = this.#getArgument(actionCallProxy, "num");
+        if (actionCallProxy && num) {
+            return this.#replaceParameterTokens(actionCallProxy, "Effect Button {num}");
         }
 
         return "Effect Button";
@@ -90,9 +90,9 @@ class KemperFunctionMeta extends FunctionMeta {
     /**
      * Special implementation for effect state
      */
-    #getDisplayNameEffectState(actionDefinition) {
-        const slot_id = this.getArgument(actionDefinition, "slot_id");
-        if (actionDefinition && slot_id) {
+    #getDisplayNameEffectState(actionCallProxy = null) {
+        const slot_id = this.#getArgument(actionCallProxy, "slot_id");
+        if (actionCallProxy && slot_id) {
             function getSlotName(id) {
                 switch (id) {
                     case "KemperEffectSlot.EFFECT_SLOT_ID_A": return "A";
@@ -117,10 +117,12 @@ class KemperFunctionMeta extends FunctionMeta {
     /**
      * Gets the name of a argument in the given definition
      */
-    getArgument(definition, name) {
-        if (!definition) return null;
+    #getArgument(actionCallProxy = null, name) {
+        if (!actionCallProxy) return null;
         
-        for (const arg of definition.arguments) {
+        const args = JSON.parse(actionCallProxy.arguments());
+
+        for (const arg of args) {
             if (arg.name == name) return arg;
         }
         return null;
@@ -129,9 +131,9 @@ class KemperFunctionMeta extends FunctionMeta {
     /**
      * Replaces all tokens for parameters
      */
-    replaceParameterTokens(actionDefinition, str) {
+    #replaceParameterTokens(actionCallProxy = null, str) {
         function getReplaceValue(param) {
-            for (const def of (actionDefinition ? (actionDefinition.arguments || []) : [])) {
+            for (const def of (actionCallProxy ? (JSON.parse(actionCallProxy.arguments()) || []) : [])) {
                 if (def.name == param.name) {
                     return def.value;
                 }

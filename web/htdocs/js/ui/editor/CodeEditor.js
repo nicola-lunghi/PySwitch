@@ -3,12 +3,12 @@
  */
 class CodeEditor extends Tab {
 
-    #editor = null;
-    #dirty = false;
-    #editorElement = null;
-    #applyButton = null;
-    #configFieldName = null;
-    #config = null;
+    #configFieldName = null;    // Name of the Configuration file (display_py for example)
+    #editor = null;             // CodeMirror instance
+    #dirty = false;             // Dirty state
+    #editorElement = null;      // Editor container DOM element
+    #applyButton = null;        // Apply Button DOM element
+    #config = null;             // Configuration instance (set with setConfig())
     #controller = null;
     
     constructor(controller, tabName, configFieldName) {
@@ -76,7 +76,7 @@ class CodeEditor extends Tab {
     }
 
     /**
-     * Sets a parser instance to get/set code
+     * Sets a Configuration instance to get/set code
      */
     async setConfig(config) {
         const content = (await config.get())[this.#configFieldName];

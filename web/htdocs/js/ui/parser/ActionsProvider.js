@@ -5,7 +5,7 @@ class ActionsProvider extends BrowserProvider {
 
     #toc = null;
     #parser = null;
-    #config = null;
+    #options = null;
 
     preselectEntry = null;
     
@@ -15,10 +15,10 @@ class ActionsProvider extends BrowserProvider {
      *      preselectActionName
      * }
      */
-    constructor(parser, config) {
+    constructor(parser, options) {
         super();
         this.#parser = parser;
-        this.#config = config;
+        this.#options = options;
     }
 
     /**
@@ -35,7 +35,7 @@ class ActionsProvider extends BrowserProvider {
                         get: async function(entry) {
                             // Listing entry link
                             return $('<span class="listing-link" />')
-                                .addClass("category-" + entry.config.model.meta.getCategory())
+                                .addClass("category-" + entry.data.actionDefinition.meta.getCategory())
                                 .text(await entry.getText())
                                 .on('click', async function() {
                                     try {
@@ -61,13 +61,13 @@ class ActionsProvider extends BrowserProvider {
                         text: action.meta.getDisplayName(),
                         value: action.name,
                         parent: this.#toc,
-                        onSelect: this.#config.onSelect,
-                        model: action,
+                        onSelect: this.#options.onSelect,
+                        actionDefinition: action,
                         sortString: await action.meta.client.getActionSortString(action)
                     }
                 )
 
-                if (this.#config.preselectActionName && (action.name == this.#config.preselectActionName)) {
+                if (this.#options.preselectActionName && (action.name == this.#options.preselectActionName)) {
                     this.preselectEntry = entry;
                 } 
 

@@ -55,8 +55,8 @@ class PySwitchFrontend {
         this.#container.append(inputsContainer);
 
         // Create all inputs
-        for (const input of hw) {
-            await this.#createInput(inputsContainer, input)            
+        for (const inputDefinition of hw) {
+            await this.#createInput(inputsContainer, inputDefinition)            
         }
 
         // Init all frontend inputs
@@ -112,6 +112,6 @@ class PySwitchFrontend {
         }
 
         // Parser frontend
-        await this.parserFrontend.addInput(model, inputElement);
+        await this.parserFrontend.addInput(model.port, inputElement);
     }
 }

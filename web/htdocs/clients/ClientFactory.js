@@ -6,9 +6,9 @@ class ClientFactory {
     /**
      * Factory for client handlers
      */
-    static getInstance(id) {
-        switch (id) {
-            case "kemper": return new KemperClient(id)
+    static getInstance(clientId) {
+        switch (clientId) {
+            case "kemper": return new KemperClient(clientId)
         }
         return null;
     }

@@ -5,7 +5,6 @@ class VirtualClient {
 
     name = null;
     messageQueue = [];   // Queue of raw MIDI bytes. Will be filled here message by message, and fetched from the python midi wrappers
-    ui = null;           // Set by the 
     
     constructor(name) {
         this.name = name;

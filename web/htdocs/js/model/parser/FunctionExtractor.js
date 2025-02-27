@@ -4,10 +4,10 @@
  */
 class FunctionExtractor {
 
-    pyswitch = null  // PySwitchRunner instance
+    #runner = null  // PySwitchRunner instance
 
-    constructor(pyswitch) {
-        this.pyswitch = pyswitch;
+    constructor(runner) {
+        this.#runner = runner;
     }
 
     /**
@@ -68,7 +68,7 @@ class FunctionExtractor {
     // async getFromCode(code) {
     //     // Copy the file to the pyodide FS
     //     const file = "temp-functions.py";
-    //     this.pyswitch.pyodide.FS.writeFile("/home/pyodide/" + file, code);
+    //     this.#runner.pyodide.FS.writeFile("/home/pyodide/" + file, code);
 
     //     return this.getFromPaths([file]);
     // }
@@ -78,7 +78,7 @@ class FunctionExtractor {
      */
     async getFromPaths(importPaths) {
         // Tell the python code which files to examine, process it and return the decoded result.
-        const functionsJson = await this.pyswitch.pyodide.runPython(`
+        const functionsJson = await this.#runner.pyodide.runPython(`
             import json
             from parser.misc.FunctionExtractor import FunctionExtractor
 

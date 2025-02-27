@@ -54,16 +54,16 @@ class KemperClient extends Client {
     /**
      * Returns a sort string for the passed action definition
      */
-    async getActionSortString(action) {
-        if (action.name == "BINARY_SWITCH") {
+    async getActionSortString(actionDefinition) {
+        if (actionDefinition.name == "BINARY_SWITCH") {
             return "ZZZZZ";
         }
 
-        const category = action.meta.getCategory();
+        const category = actionDefinition.meta.getCategory();
         
         switch (category) {
-            case "rig": return "a" + action.meta.getDisplayName();
-            case "bank": return "b" + action.meta.getDisplayName();
+            case "rig": return "a" + actionDefinition.meta.getDisplayName();
+            case "bank": return "b" + actionDefinition.meta.getDisplayName();
             case "effects": return "e";
             case "tuner": return "f";
             case "none": return "m";

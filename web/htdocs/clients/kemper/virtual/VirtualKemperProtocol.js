@@ -50,7 +50,7 @@ class VirtualKemperProtocol {
      * Sends a keep-alive message
      */
     #sendKeepAlive(cnt) {
-        const msg = [240, 0, 32, 51, this.#client.config.productType, 127, 126, 0, 127, cnt, 247];
+        const msg = [240, 0, 32, 51, this.#client.options.productType, 127, 126, 0, 127, cnt, 247];
 
         this.#client.queueMessage(msg);
     }    
@@ -61,7 +61,7 @@ class VirtualKemperProtocol {
     parse(message) {
         if (!Tools.compareArrays(
             message.slice(0, 9),
-            [240, 0, 32, 51, this.#client.config.productType, 127].concat([126, 0, 64])
+            [240, 0, 32, 51, this.#client.options.productType, 127].concat([126, 0, 64])
         )) return false;
 
         // Decode 

@@ -52,7 +52,7 @@ class VirtualKemperMorph {
      * Triggered when morph button is pushed.
      */
     triggerButton() {
-        if (this.#client.config.simulateMorphBug) return;
+        if (this.#client.options.simulateMorphBug) return;
 
         const state = this.#client.parameters.get(new NRPNKey([0, 11])).value;        
 

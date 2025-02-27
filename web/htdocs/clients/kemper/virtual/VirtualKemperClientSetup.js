@@ -49,7 +49,7 @@ class VirtualKemperClientSetup {
         let lastRigId = null;
 
         function onRigIdChange(param, value) {
-            const rig = param.config.keys.receive[0].control - 50;
+            const rig = param.options.keys.receive[0].control - 50;
             const bankPreselect = that.#client.parameters.get(new CCKey(47)).value;
             
             // Reset bank preselect
@@ -84,7 +84,7 @@ class VirtualKemperClientSetup {
         function onBankChange(param, value) {
             if (value == 0) {
                 let rigId = that.#client.getRigId();
-                rigId += (param.config.keys.receive[0].control == 48) ? 5 : -5;
+                rigId += (param.options.keys.receive[0].control == 48) ? 5 : -5;
                 while (rigId < 0) rigId += that.#numRigs;
                 while (rigId > that.#numRigs - 1) rigId -= that.#numRigs;
 

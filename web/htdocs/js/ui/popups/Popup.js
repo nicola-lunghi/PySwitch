@@ -5,20 +5,20 @@ class Popup {
 
     element = null;        // Content element
     #container = null;  
-    config = null;
+    options = null;
 
     #id = null;            // Only used for handlers
 
     /**
-     * config: {
+     * {
      *      container:                Container DOM element
      *      additionalClasses:        Optional CSS classes for the popup element
      *      onReturnKey:              Callback when the user hits the Return key
      *      onClose:                  Called on hide
      * }
      */
-    constructor(config) {
-        this.config = config || {};
+    constructor(options) {
+        this.options = options || {};
 
         this.#id = Tools.uuid();
     }
@@ -43,11 +43,11 @@ class Popup {
     show(content, headline = null) {
         this.hide();
 
-        this.config.container.append(
+        this.options.container.append(
             this.#container = $('<div class="list-block" />').append(
                 this.element = $('<div class="list-browser"/>')
-                    .toggleClass("wide", !!this.config.wide)
-                    .toggleClass("fullscreen", !!this.config.fullscreen)                    
+                    .toggleClass("wide", !!this.options.wide)
+                    .toggleClass("fullscreen", !!this.options.fullscreen)                    
                     .append(
                         $('<div class="content" />').append(
                             // Headline
@@ -61,8 +61,8 @@ class Popup {
                             // Close button
                             $('<span class="fa fa-times close-button"/>')
                             .on('click', async function() {
-                                if (that.config.onClose) {
-                                    await that.config.onClose();
+                                if (that.options.onClose) {
+                                    await that.options.onClose();
                                 }
                         
                                 that.hide();
@@ -72,8 +72,8 @@ class Popup {
             )
         );
 
-        if (this.config.additionalClasses) {
-            this.element.addClass(this.config.additionalClasses);
+        if (this.options.additionalClasses) {
+            this.element.addClass(this.options.additionalClasses);
         }
 
         // ESC to close
@@ -85,8 +85,8 @@ class Popup {
             }
             
             if (event.key === "Enter") {
-                if (that.config.onReturnKey) {
-                    await that.config.onReturnKey();
+                if (that.options.onReturnKey) {
+                    await that.options.onReturnKey();
                 }
             }
         });

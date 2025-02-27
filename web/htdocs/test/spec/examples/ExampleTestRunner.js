@@ -64,12 +64,12 @@ class ExampleTestRunner extends TestBase {
      * Tests one BrowserEntry which contains an example
      */
     async #testExample(entry) {
-        if (!entry.config.callPath) {
+        if (!entry.data.callPath) {
             console.warn("Skip example without callPath: ", entry);
             return;
         };
 
-        const config = new WebConfiguration(this.#examplesPath + entry.config.callPath);
+        const config = new WebConfiguration(this.#examplesPath + entry.data.callPath);
         
         const that = this;        
         await this.runner.run(config, async function() {
@@ -81,9 +81,9 @@ class ExampleTestRunner extends TestBase {
 
             // Check if there is a test script. If so, execute it.
             function getTestScript() {
-                for(const file of entry.config.toc ? entry.config.toc.children : []) {
+                for(const file of entry.data.toc ? entry.data.toc.children : []) {
                     if (file.name == ".test.js") {
-                        return that.#examplesPath + entry.config.callPath + "/" + file.name;
+                        return that.#examplesPath + entry.data.callPath + "/" + file.name;
                     }                    
                 }
                 return null;

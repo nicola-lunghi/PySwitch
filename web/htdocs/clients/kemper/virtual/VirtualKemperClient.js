@@ -6,7 +6,7 @@ class VirtualKemperClient extends VirtualClient {
     #runIntervalHandler = null;
     #ui = null;
 
-    config = null;
+    options = null;
     protocol = null;
     parameters = null;
     tempo = null;
@@ -21,24 +21,24 @@ class VirtualKemperClient extends VirtualClient {
      *      overrideTimeCallback:     Optional callback function replacing Date.now() for testing.
      * }
      */
-    constructor(config) {
+    constructor(options) {
         super("Virtual Kemper Profiler Player");
-        this.config = config || {};
+        this.options = options || {};
 
         // Parameter storage
         this.parameters = new VirtualKemperParameters(this);
 
         // Bidirectional protocol
-        this.protocol = new VirtualKemperProtocol(this, config.overrideTimeCallback);
+        this.protocol = new VirtualKemperProtocol(this, options.overrideTimeCallback);
 
         // Tempo handler
-        this.tempo = new VirtualKemperTempo(this, config.overrideTimeCallback);
+        this.tempo = new VirtualKemperTempo(this, options.overrideTimeCallback);
 
         // Virtual tuner
-        this.tuner = new VirtualKemperTuner(this, config.overrideTimeCallback);
+        this.tuner = new VirtualKemperTuner(this, options.overrideTimeCallback);
 
         // Morph state handler
-        this.morph = new VirtualKemperMorph(this, config.overrideTimeCallback);
+        this.morph = new VirtualKemperMorph(this, options.overrideTimeCallback);
 
         // Initialize the parameters with values and types
         (new VirtualKemperClientSetup(this)).setup();

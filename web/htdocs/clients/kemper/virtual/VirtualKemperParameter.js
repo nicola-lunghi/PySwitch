@@ -5,7 +5,7 @@ class VirtualKemperParameter {
     returnFunctionCode = null;
     
     client = null;
-    config = null;
+    options = null;
     value = null;
 
     #callbacks = [];   // Callbacks executed on change
@@ -35,18 +35,18 @@ class VirtualKemperParameter {
      *      setFunctionCode
      * }
      */
-    constructor(client, config) {
+    constructor(client, options) {
         this.client = client;
-        this.config = config || {};
+        this.options = options || {};
 
-        if (this.config.keys && !(this.config.keys instanceof VirtualKemperParameterKeys)) throw new Error("Invalid parameter set");
+        if (this.options.keys && !(this.options.keys instanceof VirtualKemperParameterKeys)) throw new Error("Invalid parameter set");
 
-        this.value = this.config.value ? this.config.value : 0;
-        delete this.config.value;
+        this.value = this.options.value ? this.options.value : 0;
+        delete this.options.value;
 
-        if (this.config.callback) {
-            this.addChangeCallback(this.config.callback);
-            delete this.config.callback;
+        if (this.options.callback) {
+            this.addChangeCallback(this.options.callback);
+            delete this.options.callback;
         }
 
         this.#detectFunctionCodes();
@@ -57,7 +57,7 @@ class VirtualKemperParameter {
      * Name for display
      */
     getDisplayName() {
-        if (this.config.keys) return this.config.keys.getDisplayName();
+        if (this.options.keys) return this.options.keys.getDisplayName();
         return "??";
     }
 
@@ -74,15 +74,15 @@ class VirtualKemperParameter {
     #detectFunctionCodes() {
         switch (typeof this.value) {
             case "number":
-                this.requestFunctionCode = this.config.requestFunctionCode ? this.config.requestFunctionCode : 65;    // 0x41
-                this.returnFunctionCode = this.config.returnFunctionCode ? this.config.returnFunctionCode : 1;
-                this.setFunctionCode = this.config.setFunctionCode ? this.config.setFunctionCode : 1;
+                this.requestFunctionCode = this.options.requestFunctionCode ? this.options.requestFunctionCode : 65;    // 0x41
+                this.returnFunctionCode = this.options.returnFunctionCode ? this.options.returnFunctionCode : 1;
+                this.setFunctionCode = this.options.setFunctionCode ? this.options.setFunctionCode : 1;
                 break;
 
             case "string":
-                this.requestFunctionCode = this.config.requestFunctionCode ? this.config.requestFunctionCode : 67;    // 0x43
-                this.returnFunctionCode = this.config.returnFunctionCode ? this.config.returnFunctionCode : 3;
-                this.setFunctionCode = this.config.setFunctionCode ? this.config.setFunctionCode : 3;
+                this.requestFunctionCode = this.options.requestFunctionCode ? this.options.requestFunctionCode : 67;    // 0x43
+                this.returnFunctionCode = this.options.returnFunctionCode ? this.options.returnFunctionCode : 3;
+                this.setFunctionCode = this.options.setFunctionCode ? this.options.setFunctionCode : 3;
                 break;
 
             default:
@@ -102,7 +102,7 @@ class VirtualKemperParameter {
      */
     parse(message) {        
         // Try to parse with all keys
-        for (const key of this.config.keys.receive) {
+        for (const key of this.options.keys.receive) {
             if (this.#parseKey(key, message)) return true;
         }
 
@@ -114,7 +114,7 @@ class VirtualKemperParameter {
             // NRPN: Request parameter
             if (Tools.compareArrays(
                 message.slice(0, 8 + key.data.length),
-                [240, 0, 32, 51, this.client.config.productType, 127, this.requestFunctionCode, 0].concat(key.data)
+                [240, 0, 32, 51, this.client.options.productType, 127, this.requestFunctionCode, 0].concat(key.data)
             )) {   
                 this.send();                
                 return true;
@@ -123,7 +123,7 @@ class VirtualKemperParameter {
             // NRPN: Set parameter
             if (Tools.compareArrays(
                 message.slice(0, 8 + key.data.length),
-                [240, 0, 32, 51, this.client.config.productType, 127, this.setFunctionCode, 0].concat(key.data)
+                [240, 0, 32, 51, this.client.options.productType, 127, this.setFunctionCode, 0].concat(key.data)
             )) {
                 const value = key.evaluateValue(message.slice(8 + key.data.length, 10 + key.data.length));
                 this.setValue(value);
@@ -159,7 +159,7 @@ class VirtualKemperParameter {
      * Set the value with listeners update, if changed
      */
     setValue(value) {
-        if (!this.config.noBuffer && this.value == value) return;
+        if (!this.options.noBuffer && this.value == value) return;
 
         if (value !== null && (typeof value != this.valueType)) {
             throw new Error("Invalid value type in setValue: " + (typeof value));
@@ -175,7 +175,7 @@ class VirtualKemperParameter {
         }
         
         // Send current state, if the parameter is part of an active parameter set. All others must be requested.
-        if (this.config.parameterSets && this.config.parameterSets.includes(this.client.protocol.parameterSet)) {
+        if (this.options.parameterSets && this.options.parameterSets.includes(this.client.protocol.parameterSet)) {
             this.send();
         }
     }
@@ -184,32 +184,32 @@ class VirtualKemperParameter {
      * Send a single parameter (numeric or string)
      */
     send() {
-        if (!this.config.keys.send) return;
+        if (!this.options.keys.send) return;
 
-        if (this.config.keys.send instanceof NRPNKey) {
+        if (this.options.keys.send instanceof NRPNKey) {
             const msg = [240, 0, 32, 51, 0, 0, this.returnFunctionCode, 0].concat(
-                Array.from(this.config.keys.send.data),                 
-                this.config.keys.send.encodeValue(this.value),
+                Array.from(this.options.keys.send.data),                 
+                this.options.keys.send.encodeValue(this.value),
                 [247]
             );
             
             this.client.queueMessage(msg);
             this.#debugParam("send: (raw: " + this.value + ")" + msg);
         
-        } else if (this.config.keys.send instanceof CCKey) {
-            const msg = [176, this.config.keys.send.control, this.value]
+        } else if (this.options.keys.send instanceof CCKey) {
+            const msg = [176, this.options.keys.send.control, this.value]
             
             this.client.queueMessage(msg);
             this.#debugParam("send: (raw: " + this.value + ")" + msg);
 
-        } else if (this.config.keys.send instanceof PCKey) {
+        } else if (this.options.keys.send instanceof PCKey) {
             const msg = [192, this.value]
             
             this.client.queueMessage(msg);
             this.#debugParam("send: (raw: " + this.value + ")" + msg);
 
         } else {
-            throw new Error("Invalid key type: " + (typeof this.config.keys.send));
+            throw new Error("Invalid key type: " + (typeof this.options.keys.send));
         }
     }
 
@@ -217,10 +217,10 @@ class VirtualKemperParameter {
      * Print debug info when the parameter is in debugParamKeys
      */
     #debugParam(msg) {
-        if (!this.config.keys || !this.debugParamKeys) return;
+        if (!this.options.keys || !this.debugParamKeys) return;
 
         for (const key of this.debugParamKeys) {
-            if (key.getId() != this.config.keys.getId()) continue;
+            if (key.getId() != this.options.keys.getId()) continue;
 
             console.log(key.getDisplayName(), msg);
         }

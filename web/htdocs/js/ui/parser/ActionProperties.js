@@ -3,15 +3,15 @@
  */
 class ActionProperties {
     
-    #action = null;
+    #actionDefinition = null;
     #inputs = null;
     #oldProperties = null;
     #advancedRows = null;
     #parser = null;
 
-    constructor(parser, model, oldProperties = null) {
+    constructor(parser, actionDefinition, oldProperties = null) {
         this.#parser = parser;
-        this.#action = model;
+        this.#actionDefinition = actionDefinition;
         this.#oldProperties = oldProperties;   
     }
 
@@ -30,7 +30,7 @@ class ActionProperties {
         function takeOverValues(input, param) {
             if (!that.#oldProperties) return;
                 
-            const oldParam = that.#oldProperties.getParameterModel(param.name);
+            const oldParam = that.#oldProperties.getParameterDefinition(param.name);
             const oldValue = that.#oldProperties.getParameterValue(param.name);
             
             if (oldValue !== null && oldValue != oldParam.meta.getDefaultValue()) {
@@ -40,7 +40,7 @@ class ActionProperties {
 
         const that = this;
         const parameters = await Promise.all(
-            this.#action.parameters
+            this.#actionDefinition.parameters
             .sort(function(a, b) {
                 return (a.meta.data.advanced ? 1 : 0) + (b.meta.data.advanced ? -1 : 0);
             })
@@ -85,7 +85,7 @@ class ActionProperties {
         const ret = $('<div class="action-properties" />').append(
             // Comment
             $('<div class="action-header" />')
-            .text(this.#action.meta.getDisplayName()),
+            .text(this.#actionDefinition.meta.getDisplayName()),
             
             $('<div class="action-comment" />')
             .html(this.#getActionComment()),
@@ -151,14 +151,14 @@ class ActionProperties {
     }
 
     /**
-     * Returns an action definition which can be added to the config.
+     * Returns an action definition which can be added to the Configuration.
      */
     createActionDefinition() {
         const that = this;
 
         return {
-            name: this.#action.name,
-            arguments: this.#action.parameters
+            name: this.#actionDefinition.name,
+            arguments: this.#actionDefinition.parameters
                 .filter((param) => {
                     const input = that.#inputs.get(param);
                     if (!input) throw new Error("No input for param " + param.name + " found");
@@ -194,7 +194,7 @@ class ActionProperties {
 
         for (const arg of args) {
             // Get parameter definition first
-            const param = this.getParameterModel(arg.name);
+            const param = this.getParameterDefinition(arg.name);
             const input = that.#inputs.get(param);
             if (!input) throw new Error("No input for param " + param.name + " found");
 
@@ -212,8 +212,8 @@ class ActionProperties {
     /**
      * Searches a parameter mode by name
      */
-    getParameterModel(name) {
-        for (const param of this.#action.parameters) {
+    getParameterDefinition(name) {
+        for (const param of this.#actionDefinition.parameters) {
             if (param.name == name) return param;
         }
         return null;
@@ -223,8 +223,8 @@ class ActionProperties {
      * Determine the comment for the action
      */
     #getActionComment() {
-        if (!this.#action.comment) return "No information available";
-        let comment = "" + this.#action.comment;
+        if (!this.#actionDefinition.comment) return "No information available";
+        let comment = "" + this.#actionDefinition.comment;
 
         if (comment.slice(-1) != ".") comment += ".";
 
@@ -303,7 +303,7 @@ class ActionProperties {
     //  * Parameter has changed
     //  */
     // async #onChange(param, input) {
-    //     const messages = await this.#parser.checks.messagesForAction(this.#action);
+    //     const messages = await this.#parser.checks.messagesForAction(this.#actionDefinition);
     //     input.removeClass("warn");
 
     //     for (const msg of messages) {
@@ -320,7 +320,7 @@ class ActionProperties {
      * Returns a parameter value by name
      */
     getParameterValue(name) {
-        const param = this.getParameterModel(name);
+        const param = this.getParameterDefinition(name);
         if (!param) return null;
 
         const input = this.#inputs.get(param);

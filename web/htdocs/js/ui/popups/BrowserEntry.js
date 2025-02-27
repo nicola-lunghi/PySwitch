@@ -3,14 +3,13 @@
  */
 class BrowserEntry {
 
-    value = null;
-    text = null;
-    parent = null;
-    
-    children = [];
+    value = null;       // Value for selection
+    text = null;        // Display text
+    parent = null;      // Parent BrowserEntry
+    children = [];      // Child BrowserEntry list
+    data = null;        // Options (plus arbitrary application data if needed)
 
     #browser = null;
-    config = null;
     
 
     /**
@@ -27,22 +26,22 @@ class BrowserEntry {
      *                   }
      * }
      */
-    constructor(browser, config = {}) {
+    constructor(browser, data = {}) {
         this.#browser = browser;
-        this.config = config;
+        this.data = data;
 
-        this.value = config.value;
-        this.text = config.text;
-        this.parent = config.parent;
+        this.value = data.value;
+        this.text = data.text;
+        this.parent = data.parent;
 
         // These must be accessed by their direct attributes! (could have been changed from outside)
-        config.value = null;
-        config.text = null;
-        config.parent = null;
+        data.value = null;
+        data.text = null;
+        data.parent = null;
 
         // Default layout
-        if (!this.config.childLayout) {
-            this.config.childLayout = [
+        if (!this.data.childLayout) {
+            this.data.childLayout = [
                 {
                     type: "typeIcon"
                 },
@@ -88,7 +87,7 @@ class BrowserEntry {
      * Returns the sort string to be used to compare this entry to its siblings
      */
     async getSortString() {
-        return this.config.sortString ? this.config.sortString : this.getText();
+        return this.data.sortString ? this.data.sortString : this.getText();
     }
 
     /**
@@ -150,13 +149,13 @@ class BrowserEntry {
      * Is the entry callable?
      */
     isCallable() {
-        return !!this.config.onSelect;
+        return !!this.data.onSelect;
     }
 
     /**
      * Calls the entry
      */
     async call() {        
-        await this.config.onSelect(this);
+        await this.data.onSelect(this);
     }
 }

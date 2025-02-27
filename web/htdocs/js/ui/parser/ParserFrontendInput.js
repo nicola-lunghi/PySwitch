@@ -67,10 +67,7 @@ class ParserFrontendInput {
             
             if (!action) return item.name;
             
-            return action.meta.getShortDisplayName({
-                name: item.name,
-                arguments: JSON.parse(item.arguments())
-            });            
+            return action.meta.getShortDisplayName(item);
         }
 
         const messages = await this.#parserFrontend.parser.checks.messages();
@@ -267,7 +264,7 @@ class ParserFrontendInput {
     }
 
     /**
-     * Updates the parser data model from the current DOM state
+     * Updates the parser from the current DOM state
      */
     async updateInput() {
         if (!this.input) throw new Error("No input");
@@ -349,7 +346,7 @@ class ParserFrontendInput {
         async function onSelect(entry) {
             props = new ActionProperties(
                 that.#parserFrontend.parser,
-                entry.config.model,
+                entry.data.actionDefinition,
                 props
             );
 

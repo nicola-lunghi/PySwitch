@@ -54,8 +54,8 @@ class ParserChecks {
     /**
      * Returns an array of usages containing the display as an argument (buffered)
      */
-    async getDisplayUsages(displayName) {
-        if (this.#usages.has(displayName)) return this.#usages.get(displayName);
+    async getDisplayUsages(displayId) {
+        if (this.#usages.has(displayId)) return this.#usages.get(displayId);
 
         /**
          * Returns an array of actions containing the display as an argument
@@ -68,12 +68,12 @@ class ParserChecks {
             const ret = [];
             for (const action of actions || []) {
                 for (const arg of JSON.parse(action.arguments())) {                
-                    if (arg.value == displayName) {
+                    if (arg.value == displayId) {
                         ret.push({
                             input, input,
                             name: action.name,
                             client: action.client,
-                            display: displayName
+                            display: displayId
                         });
                     }                                        
                 }
@@ -94,7 +94,7 @@ class ParserChecks {
             usages = usages.concat(contained, containedHold);
         }
 
-        this.#usages.set(displayName, usages);
+        this.#usages.set(displayId, usages);
 
         return usages;        
     }

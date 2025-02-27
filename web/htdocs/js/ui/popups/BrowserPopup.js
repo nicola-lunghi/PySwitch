@@ -14,7 +14,7 @@ class BrowserPopup extends Popup {
     #currentItems = null;
 
     /**
-     * config: {
+     * {
      *      container:                Container DOM element
      *      headline:                 Header text   
      *      providers:                Array of provider instances,
@@ -24,8 +24,8 @@ class BrowserPopup extends Popup {
      *      onReturnKey:              Callback when the user hits the Return key
      * }
      */
-    constructor(config) {
-        super(config);
+    constructor(options) {
+        super(options);
     }
 
     /**
@@ -40,7 +40,7 @@ class BrowserPopup extends Popup {
 
         // If we are at a leaf, call if and return
         if (entry.isCallable()) {
-            if (!this.config.dontCloseOnSelect) this.hide();
+            if (!this.options.dontCloseOnSelect) this.hide();
             await entry.call();
             return;
         }
@@ -54,7 +54,7 @@ class BrowserPopup extends Popup {
         // Create DOM items for the children
         this.#currentItems = [];
         for(const e of listing) {
-            const el = await e.getElement(entry.config.childLayout);            
+            const el = await e.getElement(entry.data.childLayout);            
 
             this.#currentItems.push({
                 entry: e,
@@ -67,11 +67,11 @@ class BrowserPopup extends Popup {
         // Build DOM and show the browser
         this.show(
             await this.#buildContent(entry),
-            this.config.headline
+            this.options.headline
         );
 
-        if (this.config.selectedValue) {
-            this.setSelectedValue(this.config.selectedValue);
+        if (this.options.selectedValue) {
+            this.setSelectedValue(this.options.selectedValue);
         }
     }
 
@@ -148,15 +148,15 @@ class BrowserPopup extends Popup {
         if (this.#toc) return this.#toc;
 
         // One provider: Use this as root
-        if (this.config.providers.length == 1) {
-            this.#toc = await this.config.providers[0].getToc(this);
+        if (this.options.providers.length == 1) {
+            this.#toc = await this.options.providers[0].getToc(this);
             return this.#toc;
         }
 
         // Multiple providers: Create new root and add all provider roots as children
         this.#toc = new BrowserEntry(this);
 
-        for(const p of this.config.providers) {
+        for(const p of this.options.providers) {
             const child = await p.getToc(this);
             child.parent = this.#toc;
             this.#toc.children.push(child);

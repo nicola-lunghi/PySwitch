@@ -14,7 +14,7 @@ class Client {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    id = null;
+    id = null;            // Client ID
 
     constructor(id) {
         this.id = id;
@@ -58,7 +58,7 @@ class Client {
     /**
      * Returns a sort string for the passed action definition
      */
-    async getActionSortString(action) {
+    async getActionSortString(actionDefinition) {
         return action.name;
     }
 

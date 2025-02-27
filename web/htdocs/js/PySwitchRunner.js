@@ -3,12 +3,12 @@
  */
 class PySwitchRunner {
 
-    pyodide = null;
-    #options = null;
-    #runner = null;
+    pyodide = null;         // Pyodide instance, can be used to run code.
 
+    #runner = null;         // Internal runner instance (python Proxy)
     #containerId = null;    // ID of the container to be used by python scripts
     #initialized = false;
+    #options = null;
 
     /**
      * Options:
@@ -40,7 +40,7 @@ class PySwitchRunner {
         
         // Load all files by GETing them and storing them to the virtual FS.
         // TODO this could be optimized
-        console.log("Load files to python");
+        console.log("Load files to Pyodide");
 
         await this.#loadModule("PySwitchRunner.py", localPythonPath);
         await this.#loadModule("mocks.py", localPythonPath);
@@ -278,8 +278,7 @@ class PySwitchRunner {
     }
 
     /**
-     * Run PySwitch, terminating an existing runner before.
-     * The passed inputs and display must be python code for the inputs.py and display.py files.
+     * Run PySwitch, terminating an existing runner before. Expects a Configuration instance.
      */
     async run(config, dontTick = false) {
         console.log("Run PySwitch");
