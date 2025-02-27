@@ -42,7 +42,7 @@ class ActionsProvider extends BrowserProvider {
                                         await browser.browse(entry);
 
                                     } catch (e) {
-                                        console.error(e);
+                                        browser.handle(e);
                                     }
                                 });
                         }

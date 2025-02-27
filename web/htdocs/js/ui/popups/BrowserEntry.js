@@ -53,15 +53,53 @@ class BrowserEntry {
     }
 
     /**
-     * Returns a path inside the hierarchy, as an array of DOM elements.
+     * Returns a path inside the hierarchy, as an array of values (or texts if no value defined)
      */
     async getHierarchicalPath() {
+        return (
+                this.parent 
+            ? 
+                (await this.parent.getHierarchicalPath())
+            : 
+                []
+        ).concat(
+            [
+                await this.getText()                
+            ]
+        );
+    }
+
+    /**
+     * Resolves a path generated with getHierarchicalPath(). Returns the targeted entry if found, the nearest one, or this if not found.
+     */
+    async resolvePath(path) {
+        // Ignore first entry as this is the lowest one (this one)
+        let current = this;
+        for (let i = 1; i < path.length; ++i) {
+            const token = path[i];
+            
+            for (const child of current.children) {
+                const text = await child.getText();
+                if (text == token) {
+                    current = child;
+                    break;
+                }
+            }
+        }
+
+        return current;
+    }
+
+    /**
+     * Returns a path inside the hierarchy, as an array of DOM elements.
+     */
+    async getHierarchicalPathHTML() {
         const that = this;
 
         return (
                 this.parent 
             ? 
-                (await this.parent.getHierarchicalPath()).concat([
+                (await this.parent.getHierarchicalPathHTML()).concat([
                     $('<span/>')
                     .text("/")
                 ]) 
@@ -76,7 +114,7 @@ class BrowserEntry {
                         await that.#browser.browse(that);
 
                     } catch (e) {
-                        that.#handle(e);
+                        that.#browser.handle(e);
                     }
                 })
             ]
@@ -120,7 +158,7 @@ class BrowserEntry {
                                 await that.#browser.browse(that);
 
                             } catch (e) {
-                                that.#handle(e);
+                                that.#browser.handle(e);
                             }
                         })
                     )
@@ -157,17 +195,5 @@ class BrowserEntry {
      */
     async call() {        
         await this.data.onSelect(this);
-    }
-
-    /**
-     * Error handling
-     */
-    #handle(e) {
-        if (this.#browser.options.errorHandler) {
-            this.#browser.options.errorHandler.handle(e);
-            return;
-        }
-
-        console.error(e);
     }
 }

@@ -183,7 +183,7 @@
 /**************************************************************/
 
 .container .list-browser table {
-    border-spacing: 0.7em 0.1em;
+    border-spacing: 0.3em 0.1em;
     border-collapse: separate;
 }
 
@@ -248,19 +248,19 @@
     color: lightgreen;
 }
 
-.container .list-browser td > .fa-info {
+.container .list-browser td > .clickable {
     cursor: pointer;
     width: 1.7em;
     height: 1.7em;
     text-align: center;
-    font-size: 0.6em;
+    font-size: 0.8em;
     
     padding: 0.4em;
     padding-left: 0.4em;
     border-radius: 0.5em;
 }
 
-.container .list-browser td > .fa-info:hover {
+.container .list-browser td > .clickable:hover {
     background-color: lightgray;
 }
 

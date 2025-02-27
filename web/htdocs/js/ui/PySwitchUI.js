@@ -255,9 +255,10 @@ class PySwitchUI {
                 }),
 
                 // Presets
-                new LocalPresetsProvider({
+                new LocalPresetsProvider(this.#controller, {
                     onSelect: async function(entry) {
                         // Open existing preset
+                        that.#controller.routing.call(encodeURI("preset/" + entry.value));
                     }
                 })
             ]
@@ -284,14 +285,42 @@ class PySwitchUI {
                 }),
 
                 // Presets
-                new LocalPresetsProvider({
+                new LocalPresetsProvider(this.#controller, {
                     newPresetsEntry: true,
                     onSelect: async function(entry) {
+                        let data = null;
+                        try {
+                            data = await that.#controller.currentConfig.get();
+
+                        } catch(e) {
+                            console.log(e);
+                            throw new Error("No data to save");
+                        }
+
                         if (entry.data.newPreset) {
                             // Create new preset
+                            let presetId = null;
+                            
+                            while (!presetId || that.#controller.presets.has(presetId)) {
+                                presetId = prompt("Name for the new preset:");
+                                if (!presetId) return; // Canceled by user
+                            }
+
+                            await that.#controller.presets.set(presetId, data);
+
+                            that.#controller.ui.notifications.message("Successfully created preset " + presetId, "S");
+
+                            that.#controller.routing.call(encodeURI("preset/" + presetId));
+
                         } else {
-                            // Overwrite existing preset
-                        }
+                            if (!confirm("Do you want to overwrite preset " + entry.text + "?")) return;
+
+                            await that.#controller.presets.set(entry.value, data);
+
+                            that.#controller.ui.notifications.message("Successfully saved preset " + entry.text, "S");
+
+                            that.#controller.routing.call(encodeURI("preset/" + entry.value));
+                        }                        
                     }
                 })
             ]

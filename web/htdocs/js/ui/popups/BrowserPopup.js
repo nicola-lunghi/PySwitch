@@ -11,6 +11,7 @@ class BrowserPopup extends Popup {
     #infoPanelOnClick = null;
     
     #last = null;
+    #lastPath = null;
     #currentItems = null;
 
     /**
@@ -35,13 +36,18 @@ class BrowserPopup extends Popup {
         // Load data
         const toc = await this.#getData();
 
-        // Show root if no element is passed
-        if (!entry) entry = this.#last ? this.#last : toc;
+        // Try to resolve the last opened path. If not successful, show root.
+        if (!entry && this.#lastPath) {
+            const last = await toc.resolvePath(this.#lastPath);
+            if (last) entry = last;
+        }
+
+        if (!entry) entry = toc;
 
         // If we are at a leaf, call if and return
         if (entry.isCallable()) {
-            if (!this.options.dontCloseOnSelect) this.hide();
             await entry.call();
+            if (!this.options.dontCloseOnSelect) this.hide();
             return;
         }
 
@@ -62,7 +68,7 @@ class BrowserPopup extends Popup {
             });
         }
 
-        this.#last = entry;
+        this.#lastPath = await entry.getHierarchicalPath();
 
         // Build DOM and show the browser
         this.show(
@@ -145,7 +151,7 @@ class BrowserPopup extends Popup {
      * Returns a TOC of all providers, if not done
      */
     async #getData() {
-        if (this.#toc) return this.#toc;
+        //if (this.#toc) return this.#toc;
 
         // One provider: Use this as root
         if (this.options.providers.length == 1) {
@@ -183,12 +189,12 @@ class BrowserPopup extends Popup {
                                 await that.browse(entry.parent);
 
                             } catch (e) {
-                                console.error(e);
+                                that.handle(e);
                             }
                         }),
 
                         // Path display
-                        $('<span />').append(await entry.getHierarchicalPath())
+                        $('<span />').append(await entry.getHierarchicalPathHTML())
                     ]
                 ),
 
@@ -211,7 +217,7 @@ class BrowserPopup extends Popup {
                             await that.#onInfoPanelClick();
                             
                         } catch (e) {
-                            console.error(e);
+                            that.handle(e);
                         }
                     })
                     .hide(),
@@ -228,4 +234,17 @@ class BrowserPopup extends Popup {
             await this.#infoPanelOnClick();
         }
     }
+
+    /**
+     * Error handling
+     */
+    handle(e) {
+        if (this.options.errorHandler) {
+            this.options.errorHandler.handle(e);
+            return;
+        }
+
+        console.error(e);
+    }
+
 }

@@ -78,6 +78,14 @@ class Routing {
                     new WebConfiguration("templates/" + encodeURI(path))
                 );
             })));
+
+            // Load/browse preset configs
+            this.get(/\#preset\/(.*)/, that.#queue.add(that.#executeRoute(async function() {
+                const id = decodeURI(this.params['splat'][0]);                    
+                await that.#controller.loadConfiguration(
+                    new PresetConfiguration(that.#controller.presets, decodeURI(id))
+                );
+            })));
         });
 
         // Error handling

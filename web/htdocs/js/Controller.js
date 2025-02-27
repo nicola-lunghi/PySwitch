@@ -11,6 +11,7 @@ class Controller {
     midi = null;                // MIDI handler
     device = null;              // Device handler (Controller, like Midi Captain)
     client = null;              // Client handler (like Kemper Player)
+    presets = null;             // Presets handler
     pyswitch = null;            // PySwitch runner (in browser)
 
     currentConfig = null;       // Currently loaded Configuration instance
@@ -51,6 +52,7 @@ class Controller {
         this.pyswitch = new PySwitchRunner(options, options.domNamespace + "-device");    
         this.device = new DeviceController(this);
         this.client = new ClientController(this);
+        this.presets = new Presets();
     }
 
     /**

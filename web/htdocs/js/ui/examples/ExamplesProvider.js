@@ -63,8 +63,7 @@ class ExamplesProvider extends BrowserProvider {
                         {
                             get: function(entry) {
                                 return !entry.isCallable() ? null : 
-                                    $('<span class="fa"/>')
-                                    .addClass("fa-info")
+                                    $('<span class="clickable fa fa-info"/>')
                                     .on('click', async function() {
                                         try {
                                             let content = null;
