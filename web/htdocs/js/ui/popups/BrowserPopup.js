@@ -126,7 +126,7 @@ class BrowserPopup extends Popup {
         // Get an array with [sortString, entry] instead of each entry
         const comparableArray = await Promise.all(
             listing.map(
-                async x => [await x.getSortString(), x]
+                async entry => [await entry.getSortString(), entry]
             )
         );
 

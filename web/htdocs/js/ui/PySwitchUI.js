@@ -252,6 +252,13 @@ class PySwitchUI {
                     onSelect: async function(entry) {
                         that.#controller.routing.call(that.#controller.getControllerUrl(entry.value));
                     }
+                }),
+
+                // Presets
+                new LocalPresetsProvider({
+                    onSelect: async function(entry) {
+                        // Open existing preset
+                    }
                 })
             ]
         }); 
@@ -273,6 +280,18 @@ class PySwitchUI {
                     rootText: "Connected Controllers",
                     onSelect: async function(entry) {
                         await that.#controller.device.saveConfig(that.#controller.currentConfig, entry.value);
+                    }
+                }),
+
+                // Presets
+                new LocalPresetsProvider({
+                    newPresetsEntry: true,
+                    onSelect: async function(entry) {
+                        if (entry.data.newPreset) {
+                            // Create new preset
+                        } else {
+                            // Overwrite existing preset
+                        }
                     }
                 })
             ]

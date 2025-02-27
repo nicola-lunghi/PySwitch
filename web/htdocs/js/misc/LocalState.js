@@ -4,15 +4,15 @@
 class LocalState {
 
     #storageId = null;
-    #stateObjectId = null;
+    #subObjectId = null;
 
     /**
      * storageId is the ID of the local storage cookie.
-     * stateObjectId is the sub-object name.
+     * stateObjectId is the sub-object name. If not set, the keys will be placed in the root object.
      */
-    constructor(storageId, stateObjectId) {
-        this.#stateObjectId = stateObjectId;
+    constructor(storageId, subObjectId = null) {
         this.#storageId = storageId;
+        this.#subObjectId = subObjectId;
     }
 
     /**
@@ -21,8 +21,12 @@ class LocalState {
     set(key, value) {
         const data = JSON.parse(localStorage.getItem(this.#storageId) || "{}");
         
-        if (!data.hasOwnProperty(this.#stateObjectId)) data[this.#stateObjectId] = {};
-        data[this.#stateObjectId][key] = value;
+        if (this.#subObjectId) {
+            if (!data.hasOwnProperty(this.#subObjectId)) data[this.#subObjectId] = {};
+            data[this.#subObjectId][key] = value;
+        } else {
+            data[key] = value;
+        }
         
         localStorage.setItem(this.#storageId, JSON.stringify(data));
     }
@@ -33,9 +37,15 @@ class LocalState {
     get(key) {
         const data = JSON.parse(localStorage.getItem(this.#storageId) || "{}");
 
-        if (!data.hasOwnProperty(this.#stateObjectId) || 
-            !data[this.#stateObjectId].hasOwnProperty(key)) return null;
+        if (this.#subObjectId) {
+            if (!data.hasOwnProperty(this.#subObjectId) || 
+                !data[this.#subObjectId].hasOwnProperty(key)) return null;
 
-        return data[this.#stateObjectId][key];
+            return data[this.#subObjectId][key];
+        } else {
+            if (!data.hasOwnProperty(key)) return null;
+            
+            return data[key];
+        }
     }
 }
