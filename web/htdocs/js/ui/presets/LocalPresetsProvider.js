@@ -31,7 +31,7 @@ class LocalPresetsProvider extends BrowserProvider {
         const toc = new BrowserEntry(
             browser,
             {
-                text: "Presets",
+                text: "Local Presets",
                 childLayout: [
                     // Type icon
                     {
