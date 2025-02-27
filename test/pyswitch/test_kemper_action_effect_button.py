@@ -1,0 +1,166 @@
+import sys
+import unittest
+from unittest.mock import patch   # Necessary workaround! Needs to be separated.
+
+from .mocks_lib import *
+
+# Import subject under test
+with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
+    "displayio": MockDisplayIO(),
+    "adafruit_display_text": MockAdafruitDisplayText(),
+    "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+    "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+    "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
+    "gc": MockGC()
+}):
+    from lib.pyswitch.ui.elements import DisplayLabel
+    from lib.pyswitch.controller.callbacks import BinaryParameterCallback
+    from lib.pyswitch.misc import Updater
+    
+    from .mocks_appl import *
+    from .mocks_callback import *
+
+    from lib.pyswitch.clients.kemper.actions.binary_switch import *
+    from lib.pyswitch.clients.kemper.actions.effect_state import *
+    from lib.pyswitch.clients.kemper.actions.tempo import *
+    from lib.pyswitch.clients.kemper.actions.effect_button import *
+    from lib.pyswitch.clients.kemper.actions.morph import *
+    from lib.pyswitch.clients.kemper.actions.looper import *
+    from lib.pyswitch.clients.kemper.actions.rig_volume_boost import *
+    from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
+
+    from lib.pyswitch.clients.kemper.mappings.tempo import *
+    from lib.pyswitch.clients.kemper.mappings.morph import *
+    from lib.pyswitch.clients.kemper.mappings.looper import *
+    
+
+class MockController2(Updater):
+    def __init__(self):
+        Updater.__init__(self)
+        self.client = MockClient()
+        self.config = {}
+        self.shared = {}
+
+
+class MockFootswitch:
+    def __init__(self, pixels = [0, 1, 2], actions = []):
+        self.pixels = pixels
+        self.actions = actions
+
+        self.colors = [(0, 0, 0) for i in pixels]
+        self.brightnesses = [0 for i in pixels]
+
+    @property
+    def color(self):
+        return self.colors[0]
+    
+    @color.setter
+    def color(self, color):
+        self.colors = [color for i in self.colors]
+
+
+    @property
+    def brightness(self):
+        return self.brightnesses[0]
+    
+    @brightness.setter
+    def brightness(self, brightness):
+        self.brightnesses = [brightness for i in self.brightnesses]
+
+
+
+class TestKemperActionEffectButton(unittest.TestCase):
+
+    def test_effect_button(self):
+        self._test_effect_button(1, None, "FX I")
+        self._test_effect_button(2, None, "FX II")
+        self._test_effect_button(3, None, "FX III")
+        self._test_effect_button(4, None, "FX IIII")
+        self._test_effect_button(5, None, None)
+
+        self._test_effect_button(1, "foo", "foo")
+        self._test_effect_button(4, "foo", "foo")
+
+    def _test_effect_button(self, num, text, exp_text):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        action = EFFECT_BUTTON(
+            num = num,
+            display = display, 
+            color = (4, 5, 6), 
+            text = text,
+            id = 67, 
+            use_leds = True, 
+            enable_callback = ecb
+        )
+
+        cb = action.callback
+        self.assertIsInstance(cb, BinaryParameterCallback)
+        self.assertIsInstance(action, PushButtonAction)
+
+        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_EFFECT_BUTTON(num))
+        self.assertEqual(cb._BinaryParameterCallback__text, exp_text)
+        self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
+
+        self.assertEqual(action.label, display)
+        self.assertEqual(action.id, 67)
+        self.assertEqual(action.uses_switch_leds, True)
+        self.assertEqual(action._Action__enable_callback, ecb)
+
+
+    def test_reset_on_rig_change(self):
+        action = EFFECT_BUTTON(
+            num = 1            
+        )
+
+        appl = MockController2()
+        switch = MockFootswitch(actions = [action])
+        action.init(appl, switch)
+
+        cb = action.callback
+        mapping = cb._BinaryParameterCallback__mapping
+        mapping_rig = cb._KemperEffectButtonCallback__rig_mapping
+
+        cb.parameter_changed(mapping_rig)  # Trigger condition for False state
+        cb.parameter_changed(mapping)      # Trigger condition for wrong mapping_rig
+
+        mapping.value = 0
+        mapping_rig.value = 8
+
+        self.assertEqual(action.state, False)
+
+        action.push()
+        action.release()
+        
+        self.assertEqual(action.state, True)
+
+        action.push()
+        action.release()
+
+        self.assertEqual(action.state, False)
+
+        action.push()
+        action.release()
+        
+        self.assertEqual(action.state, True)
+
+        cb.parameter_changed(mapping_rig)
+
+        self.assertEqual(action.state, False)
+
+        action.push()
+        action.release()
+        
+        self.assertEqual(action.state, True)
+
+        mapping_rig.value = 11
+        cb.parameter_changed(mapping_rig)
+
+        self.assertEqual(action.state, False)

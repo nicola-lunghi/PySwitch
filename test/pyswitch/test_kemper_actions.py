@@ -125,47 +125,6 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(action._Action__enable_callback, ecb)
 
 
-    def test_effect_button(self):
-        self._test_effect_button(1, None, "FX I")
-        self._test_effect_button(2, None, "FX II")
-        self._test_effect_button(3, None, "FX III")
-        self._test_effect_button(4, None, "FX IIII")
-        self._test_effect_button(5, None, None)
-
-        self._test_effect_button(1, "foo", "foo")
-        self._test_effect_button(4, "foo", "foo")
-
-    def _test_effect_button(self, num, text, exp_text):
-        display = DisplayLabel(layout = {
-            "font": "foo"
-        })
-
-        ecb = MockEnabledCallback()
-
-        action = EFFECT_BUTTON(
-            num = num,
-            display = display, 
-            color = (4, 5, 6), 
-            text = text,
-            id = 67, 
-            use_leds = True, 
-            enable_callback = ecb
-        )
-
-        cb = action.callback
-        self.assertIsInstance(cb, BinaryParameterCallback)
-        self.assertIsInstance(action, PushButtonAction)
-
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_EFFECT_BUTTON(num))
-        self.assertEqual(cb._BinaryParameterCallback__text, exp_text)
-        self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
-
-        self.assertEqual(action.label, display)
-        self.assertEqual(action.id, 67)
-        self.assertEqual(action.uses_switch_leds, True)
-        self.assertEqual(action._Action__enable_callback, ecb)
-
-
     def test_morph_button(self):
         display = DisplayLabel(layout = {
             "font": "foo"

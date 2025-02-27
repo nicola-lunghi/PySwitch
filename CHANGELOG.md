@@ -1,3 +1,6 @@
+# PySwitch v2.3.4
+- Reset state of the Effect Button actions on rig changes
+
 # PySwitch v2.3.3
 - Fixed behaviour of bank preselect:
     - **BANK_SELECT**: Now also can override a previously made selection

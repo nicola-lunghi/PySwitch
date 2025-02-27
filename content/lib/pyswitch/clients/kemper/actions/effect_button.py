@@ -3,6 +3,7 @@ from ....controller.callbacks import BinaryParameterCallback
 from ....misc import Colors
 
 from ..mappings.effects import MAPPING_EFFECT_BUTTON
+from .. import KemperMappings
 
 # Effect Button I-IIII (set only). num must be a number (1 to 4).
 
@@ -28,7 +29,7 @@ def EFFECT_BUTTON(num,                           # Number of the Effect Button (
             text = "FX IIII"
 
     return PushButtonAction({
-        "callback": BinaryParameterCallback(
+        "callback": _KemperEffectButtonCallback(
             mapping = MAPPING_EFFECT_BUTTON(num),
             text = text,
             color = color,
@@ -40,3 +41,46 @@ def EFFECT_BUTTON(num,                           # Number of the Effect Button (
         "useSwitchLeds": use_leds,
         "enableCallback": enable_callback
     })
+
+
+# Special callback which listens for changing rig ID to reset effect state
+class _KemperEffectButtonCallback(BinaryParameterCallback):
+    
+    def __init__(self, 
+                 mapping,
+                 text,
+                 color,
+                 use_internal_state
+    ):
+        super().__init__(
+            mapping = mapping,
+            text = text,
+            color = color,
+            comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE,
+            use_internal_state = use_internal_state
+        )
+
+        self.__rig_mapping = KemperMappings.RIG_ID()
+        self.register_mapping(self.__rig_mapping)
+        
+        self.__action = None
+
+    def update_displays(self, action):
+        super().update_displays(action)
+        self.__action = action
+
+    def parameter_changed(self, mapping):
+        super().parameter_changed(mapping)
+
+        if not self.__action:
+            return
+        
+        if mapping != self.__rig_mapping:
+            return
+
+        if self.__action.state:
+            self.__action.feedback_state(False)
+            self.update_displays(self.__action)
+
+
+
