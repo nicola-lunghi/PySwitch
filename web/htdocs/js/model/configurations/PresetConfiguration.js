@@ -4,16 +4,16 @@
 class PresetConfiguration extends Configuration {
 
     #id = null;
-    #presets = null;
+    #controller = null;
     
-    constructor(presets, id, title = null) {
+    constructor(controller, id, title = null) {
         if (!title) {
             title = id;
         }
 
         super(title);
         this.#id = id;
-        this.#presets = presets;
+        this.#controller = controller;
 
     }
 
@@ -21,7 +21,14 @@ class PresetConfiguration extends Configuration {
      * Loads config files from storage
      */
     async load() {
-        if (!this.#presets.has(this.#id)) throw new Error("Preset " + this.#id + " not found");
-        return this.#presets.get(this.#id);
+        if (!this.#controller.presets.has(this.#id)) throw new Error("Preset " + this.#id + " not found");
+        return this.#controller.presets.get(this.#id);
+    }
+
+    /**
+     * Save the data to the location of the configuration
+     */
+    async save() {
+        await this.#controller.presets.set(this.#id, await this.get());
     }
 }

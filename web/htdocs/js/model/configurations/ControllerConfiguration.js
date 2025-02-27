@@ -34,4 +34,11 @@ class ControllerConfiguration extends Configuration {
 
         return data;
     }
+
+    /**
+     * Save the data to the location of the configuration
+     */
+    async save() {
+        await this.#controller.device.saveConfig(this, this.#portName);
+    }
 }

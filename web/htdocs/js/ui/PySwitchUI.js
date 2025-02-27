@@ -280,8 +280,20 @@ class PySwitchUI {
                 new PortsProvider(this.#controller, {
                     rootText: "Connected Controllers",
                     onSelect: async function(entry) {
+                        let data = null;
+                        try {
+                            data = await that.#controller.currentConfig.get();
+
+                        } catch(e) {
+                            console.log(e);
+                            throw new Error("No data to save");
+                        }
+
                         that.saveBrowser.hide();
-                        await that.#controller.device.saveConfig(that.#controller.currentConfig, entry.value);
+
+                        const dummyConfig = new ControllerConfiguration(that.#controller, entry.value);
+                        dummyConfig.set(data);
+                        await dummyConfig.save();                        
                     }
                 }),
 
@@ -298,30 +310,24 @@ class PySwitchUI {
                             throw new Error("No data to save");
                         }
 
+                        let presetId = null;
                         if (entry.data.newPreset) {
-                            // Create new preset
-                            let presetId = null;
-                            
+                            // Create new preset                            
                             while (!presetId || that.#controller.presets.has(presetId)) {
                                 presetId = prompt("Name for the new preset:");
                                 if (!presetId) return; // Canceled by user
                             }
-
-                            await that.#controller.presets.set(presetId, data);
-
-                            that.#controller.ui.notifications.message("Successfully created preset " + presetId, "S");
-
-                            that.#controller.routing.call(encodeURI("preset/" + presetId));
-
                         } else {
-                            if (!confirm("Do you want to overwrite preset " + entry.text + "?")) return;
+                            presetId = entry.text;
+                            if (!confirm("Do you want to overwrite preset " + presetId + "?")) return;
+                        }
 
-                            await that.#controller.presets.set(entry.value, data);
+                        const dummyConfig = new PresetConfiguration(that.#controller, presetId);
+                        dummyConfig.set(data);
+                        await dummyConfig.save();
 
-                            that.#controller.ui.notifications.message("Successfully saved preset " + entry.text, "S");
-
-                            that.#controller.routing.call(encodeURI("preset/" + entry.value));
-                        }                        
+                        that.#controller.ui.notifications.message("Successfully saved preset " + presetId, "S");
+                        that.#controller.routing.call(encodeURI("preset/" + presetId));
                     }
                 })
             ]

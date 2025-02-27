@@ -60,10 +60,16 @@ class Configuration {
     ///////////////////////////////////////////////////////////////////
 
     /**
-     * Must load data and return it
+     * Must load data and return it (only called internally!)
      */
     async load() {
         throw new Error("Must be implemented in child classes");
     }
 
+    /**
+     * Save the data to the location of the configuration
+     */
+    async save() {
+        throw new Error("Saving not supported for this type of configuration");
+    }
 }
