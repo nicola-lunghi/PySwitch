@@ -17,6 +17,10 @@ class Input(libcst.CSTVisitor):
         
         self.assignment_handler = InputAssignment(hw_import_path)
 
+        # Buffers
+        self.__actions = {}
+        self.__display_name = None
+
     # Inputs
     def visit_Assign(self, node):
         if self.result:
@@ -51,21 +55,31 @@ class Input(libcst.CSTVisitor):
 
     # Returns the display name
     def display_name(self):
+        if self.__display_name:
+            return self.__display_name
+        
         name = self.assignment["data"]["name"] if "name" in self.assignment["data"] else ( "GP" + str(self.assignment["data"]["model"]["port"]) )
 
         if self.assignment["data"]["model"]["type"] == "AdafruitSwitch":
-            return "Switch " + str(name)
+            self.__display_name = "Switch " + str(name)
         else:
-            return str(name)
+            self.__display_name = str(name)
+
+        return self.__display_name
 
     # Returns a list containing a result list of nodes, represented by Action instances
     def actions(self, hold = False):
         if not self.result:
             raise Exception("No result to get data from")
 
+        if hold in self.__actions:
+            return self.__actions[hold]
+
         visitor = Actions(self, hold)
         self.result.visit(visitor)
-        return visitor.result
+        self.__actions[hold] = visitor.result
+
+        return self.__actions[hold]
 
     # Overwrites all actions from the passed definition list
     def set_actions(self, actions, hold = False, noUpdate = False):
@@ -173,6 +187,9 @@ class Input(libcst.CSTVisitor):
         )
 
         self.result = self.result.visit(adder)
+
+        # Reset buffer
+        self.__actions = None
 
         # Tell the parser to replace the new state of this input in its CST buffers
         self.parser.update_input(self, noUpdate)

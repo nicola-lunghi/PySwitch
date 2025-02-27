@@ -7,8 +7,10 @@ class ActionProperties {
     #inputs = null;
     #oldProperties = null;
     #advancedRows = null;
+    #parser = null;
 
-    constructor(model, oldProperties = null) {
+    constructor(parser, model, oldProperties = null) {
+        this.#parser = parser;
         this.#action = model;
         this.#oldProperties = oldProperties;   
     }
@@ -22,6 +24,20 @@ class ActionProperties {
 
         let holdInput = null;
 
+        /**
+         * Take over old values from the old props object, if different from the default
+         */
+        function takeOverValues(input, param) {
+            if (!that.#oldProperties) return;
+                
+            const oldParam = that.#oldProperties.getParameterModel(param.name);
+            const oldValue = that.#oldProperties.getParameterValue(param.name);
+            
+            if (oldValue !== null && oldValue != oldParam.meta.getDefaultValue()) {
+                that.#setInputValue(input, param, oldValue);
+            }
+        }
+
         const that = this;
         const parameters = await Promise.all(
             this.#action.parameters
@@ -32,14 +48,7 @@ class ActionProperties {
                     that.#inputs.set(param, input);
 
                     // Take over old values from the old props object, if different from the default
-                    if (that.#oldProperties) {
-                        const oldParam = that.#oldProperties.getParameterModel(param.name);
-                        const oldValue = that.#oldProperties.getParameterValue(param.name);
-                        
-                        if (oldValue !== null && oldValue != oldParam.meta.getDefaultValue()) {
-                            that.#setInputValue(input, param, oldValue);
-                        }   
-                    }
+                    takeOverValues(input, param);
 
                     const row = $('<tr />').append(
                         // Parameter Name
@@ -109,6 +118,7 @@ class ActionProperties {
             )
         );
 
+        // Advanced parameters
         if (this.#advancedRows.length > 0) {
             let advRow = null;
             tbody.append(
@@ -128,8 +138,8 @@ class ActionProperties {
             )
         }
 
+        // Hold input
         this.#inputs.set("hold", holdInput);
-
         if (this.#oldProperties) {
             this.setHold(this.#oldProperties.hold());            
         }
@@ -237,13 +247,30 @@ class ActionProperties {
             type = this.#deriveType(param);
         }
 
+        // const that = this;
+
+        // async function onChange(input) {
+        //     try {
+        //         await that.#onChange(param, $(input));
+
+        //     } catch(e) {
+        //         console.error(e);
+        //     }
+        // }
+
         switch(type) {
             case "bool":                
                 return $('<input type="checkbox" />')
                 .prop('checked', param.meta.getDefaultValue() == "True")
+                // .on('change', async function() {
+                //     await onChange(this);
+                // })
 
             case "int":                
-                return this.#getNumberInput(param);
+                return this.#getNumberInput(param)
+                // .on('change', async function() {
+                //     await onChange(this);
+                // })
 
             case 'select':
                 const values = await param.meta.getValues();
@@ -253,15 +280,38 @@ class ActionProperties {
                             $('<option value="' + option.value + '" />')
                             .text(option.name)
                         )                        
-                    )
+                    )                    
                     .val(param.meta.getDefaultValue())
+                    // .on('change', async function() {
+                    //     await onChange(this);
+                    // })
                 }
                 break;               
         }        
 
         return $('<input type="text" />')
-        .val(param.meta.getDefaultValue());
+        .val(param.meta.getDefaultValue())
+        // .on('change', async function() {
+        //     await onChange(this);
+        // })
     }
+
+    // /**
+    //  * Parameter has changed
+    //  */
+    // async #onChange(param, input) {
+    //     const messages = await this.#parser.checks.messagesForAction(this.#action);
+    //     input.removeClass("warn");
+
+    //     for (const msg of messages) {
+    //         if (msg.type != "W") continue;
+
+    //         if (msg.parameter == param.name) {
+    //             input.addClass("warn");
+    //             return;
+    //         }
+    //     }
+    // }
 
     /**
      * Returns a parameter value by name

@@ -8,23 +8,30 @@ from .misc.AddImportsTransformer import AddImportsTransformer
 from .misc.AssignmentExtractor import AssignmentExtractor
 from .misc.ImportExtractor import ImportExtractor
 
+
 class PySwitchParser:
 
     def __init__(self, hw_import_path, available_clients_json):
-        self.__js_parser = None
         self.__hw_import_path = hw_import_path       
+        self.__js_parser = None
         self.__csts = None
+        
         self.clients = json.loads(available_clients_json)
 
+        # Buffers
         self.__available_actions = None
         self.__available_mappings = None
-
-        self.__displays = None
-        # self.messages = []
+        
+        self.reset_buffers()
 
     # Has to be called before usage
     def init(self, js_parser):
         self.__js_parser = js_parser.to_py()
+
+    # Reset buffers
+    def reset_buffers(self):
+        self.__displays = None
+        self.__inputs = {}
 
     # Set the parser data from source code
     def from_source(self, inputs_py, display_py):
@@ -33,9 +40,7 @@ class PySwitchParser:
             "display_py": libcst.parse_module(display_py)
         }
 
-        self.__displays = None
-
-        # self._check()
+        self.reset_buffers()
 
     # Returns a dict holding the sources for the current configuration
     def to_source(self):
@@ -55,9 +60,16 @@ class PySwitchParser:
         if not self.__csts:
             raise Exception("No data loaded")
         
+        if port in self.__inputs:
+            return self.__inputs[port]
+        
         visitor = Input(self, self.__hw_import_path, port)
         self.__csts["inputs_py"].visit(visitor)
-        return visitor if visitor.result != None else None
+        ret = visitor if visitor.result != None else None
+
+        self.__inputs[port] = ret
+
+        return ret
     
     # Returns a JSON encoded list of assignments in display.py
     def displays(self):
@@ -78,7 +90,8 @@ class PySwitchParser:
         visitor = InputReplacer(input)
         self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
 
-        # self._check()
+        # Reset buffer
+        self.__inputs = {}
 
         if not noUpdate:
             self.__js_parser.updateConfig()
@@ -187,28 +200,4 @@ class PySwitchParser:
         visitor = ImportExtractor(action.name)
         self.__csts["inputs_py"].visit(visitor)
         return visitor.result
-
-    #######################################################################################
-
-    # # Checks the current CSTs and collects messages
-    # def _check(self):
-    #     pass
-    #     self.messages = []
-
-    #     self._check_double_displays()
-
-    # # Check for DisplayLabels assigned twice
-    # def _check_double_displays(self):
-    #     displays = self.displays()
-
-    #     for display in displays:
-    #         visitor = ParameterValueExtractor(display)
-    #         self.__csts["inputs_py"].visit(visitor)
-
-    #         if len(visitor.result) > 1:
-    #             self.messages.append(
-    #                 {
-
-    #                 }
-    #             )
 

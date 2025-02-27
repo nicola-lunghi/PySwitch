@@ -33,15 +33,26 @@ class ParameterMeta {
      * If possible, returns a list of values, null if not possible.
      */
     async getValues() {
+        function formatUsages(usages) {
+            if (usages.length == 0) return "";
+            const usagemap = usages.map((item) => item.input.display_name());
+            return " (" + usagemap.join(", ") + ")";
+        }
+
         if (this.parameter.name == "display") {
-            return (await this.parser.getAvailableDisplays())
-                .concat(["None"])
-                .map((item) => {
-                    return {
-                        name: item,
-                        value: item
-                    };
-                })
+            return Promise.all(
+                (await this.parser.getAvailableDisplays())
+                    .map(async (item) => {
+                        return {
+                            name: item + formatUsages(await this.parser.checks.getDisplayUsages(item)),
+                            value: item
+                        };
+                    })
+                    .concat([{
+                        name: "None",
+                        value: "None"
+                    }])
+                )
         }
 
         if (this.parameter.name == "mapping") {

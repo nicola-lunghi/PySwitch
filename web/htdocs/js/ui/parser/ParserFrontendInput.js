@@ -73,9 +73,11 @@ class ParserFrontendInput {
             });            
         }
 
-        function hasWarnings(item) {
-            for (const msg of that.#parserFrontend.check.messages) {
-                if (!msg.type != "W") continue;
+        const messages = await this.#parserFrontend.parser.checks.messages();
+
+        function hasMessages(item, type) {
+            for (const msg of messages) {
+                if (msg.type != type) continue;
 
                 for (const usage of msg.actions || []) {
                     if (usage.name == item.name && usage.client == item.client) return true;
@@ -92,7 +94,7 @@ class ParserFrontendInput {
                         .append(
                             // Action
                             $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
-                            .toggleClass("warn", hasWarnings(item))
+                            .toggleClass("warn", hasMessages(item, "W"))
                             .text(getItemText(item))
                             .on('click', async function() {
                                 try {                                        
@@ -341,8 +343,12 @@ class ParserFrontendInput {
         let props = null;
         let actionsProvider = null;
 
+        /**
+         * Select an action (show its Properties)
+         */
         async function onSelect(entry) {
             props = new ActionProperties(
+                that.#parserFrontend.parser,
                 entry.config.model,
                 props
             );
@@ -351,6 +357,9 @@ class ParserFrontendInput {
             browser.setSelected(entry)
         }
 
+        /**
+         * Commit popup
+         */
         async function commit() {
             if (!props) {
                 alert("Please select an action first");
@@ -385,6 +394,7 @@ class ParserFrontendInput {
 
         await browser.browse();
 
+        // Preselected entry, if any
         if (preselectAction && actionsProvider.preselectEntry) {
             await onSelect(actionsProvider.preselectEntry);
 
@@ -392,6 +402,7 @@ class ParserFrontendInput {
             props.setHold(preselectAction.hold)            
         }
 
+        // Commit button
         browser.setButtons(
             $('<div class="button" />')
             .text(buttonText)

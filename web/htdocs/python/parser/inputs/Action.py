@@ -9,14 +9,23 @@ class Action:
 
         self.client = self._determine_client()
 
+        # Buffers
+        self.__arguments = None
+
     # Returns a json encoded list of arguments of the node, represented by dicts.
     def arguments(self):
+        if self.__arguments:
+            return self.__arguments
+        
         visitor = Arguments()
         self.node.value.visit(visitor)
-        return json.dumps(visitor.result)
+        self.__arguments = json.dumps(visitor.result)
+
+        return self.__arguments
 
     # Removes the action from the tree.
     def remove(self):
+        self.__arguments = None
         self.input.remove_action(self.node)
 
     # Determine the client

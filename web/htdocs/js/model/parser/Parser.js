@@ -13,11 +13,16 @@ class Parser {
 
     config = null;    // Configuration instance
     basePath = null;
+    checks = null;
+
+    #bufferHardwareInfo = null;
 
     constructor(config, runner, basePath = "") {
         this.config = config;
         this.runner = runner;
         this.basePath = basePath;
+
+        this.checks = new ParserChecks(this);
     }
 
     /**
@@ -57,13 +62,6 @@ class Parser {
         return this.#pySwitchParser.input(port);
     }
     
-    // /**
-    //  * Returns current messages of the parser
-    //  */
-    // async messages() {
-    //     return this.#pySwitchParser.messages.toJs();
-    // }
-
     /**
      * Updates the underlying config from the current CSTs. Called by python code after updates to the trees.
      */
@@ -74,6 +72,8 @@ class Parser {
             inputs_py: src.get("inputs_py"),
             display_py: src.get("display_py")
         });
+
+        this.checks.reset();
     }
 
     /**
@@ -91,6 +91,7 @@ class Parser {
     async updateFromData(data) {
         this.config.set(data);
         await this.#pySwitchParser.from_source(data.inputs_py, data.display_py);
+        this.checks.reset();
     }    
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,9 +104,11 @@ class Parser {
     }
 
     /**
-     * Returns hardware info (available inputs) for the given config
+     * Returns hardware info (available inputs) for the given config (buffered)
      */
     async getHardwareInfo() {
+        if (this.#bufferHardwareInfo) return this.#bufferHardwareInfo;
+
         const device = await this.device();
         
         const hardwareJson = await this.runner.pyodide.runPython(`
@@ -115,7 +118,8 @@ class Parser {
             json.dumps(pySwitchHardware.get("` + device.getHardwareImportPath() + `"))
         `);
 
-        return JSON.parse(hardwareJson);
+        this.#bufferHardwareInfo = JSON.parse(hardwareJson);
+        return this.#bufferHardwareInfo;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
