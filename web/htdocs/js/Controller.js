@@ -168,11 +168,19 @@ class Controller {
     }
 
     /**
+     * Stops any current run
+     */
+    async stop() {
+        // Stop the engine
+        await this.pyswitch.stop();
+    }
+
+    /**
      * Restarts the current configuration
      */
     async restart(message = null) {
         this.ui.notifications.reset();
-        
+
         if (!this.currentConfig) {
             console.warn("No config to restart");
             return;

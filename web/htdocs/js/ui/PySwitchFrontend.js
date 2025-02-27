@@ -7,11 +7,22 @@ class PySwitchFrontend {
     #options = null;
     #container = null;
     parserFrontend = null;
+    #elementsToRemove = [];    // Elements to be removed on reset
 
     constructor(controller, container, options) {
         this.#controller = controller;
         this.#container = container;
         this.#options = options;    
+    }
+
+    /**
+     * Remove all controls and the display (to signal that a new UI is coming up)
+     */
+    reset() {
+        for (const item of this.#elementsToRemove) {
+            item.remove();
+        }
+        this.#elementsToRemove = [];
     }
 
     /**
@@ -28,6 +39,7 @@ class PySwitchFrontend {
 
         // Clear contents and create container
         this.#container.empty();
+        this.#elementsToRemove = [];
         
         this.#container.append(
             $('<img id="' + this.#options.domNamespace + '-background" />')
@@ -39,9 +51,11 @@ class PySwitchFrontend {
         // Add switches and LEDs
         await this.#initInputs(parser);
 
+        let canvasElement = null;
         this.#container.append(
-            $('<canvas id="' + this.#options.domNamespace + '-display" />')
+            canvasElement = $('<canvas id="' + this.#options.domNamespace + '-display" />')
         );
+        this.#elementsToRemove.push(canvasElement);
     }
 
     /**
@@ -53,7 +67,7 @@ class PySwitchFrontend {
         // Create container for all inputs
         const inputsContainer = $('<div id="' + this.#options.domNamespace + '-inputs" />');
         this.#container.append(inputsContainer);
-
+        
         // Create all inputs
         for (const inputDefinition of hw) {
             await this.#createInput(inputsContainer, inputDefinition)            
@@ -109,6 +123,10 @@ class PySwitchFrontend {
                     .addClass(this.#options.domNamespace + "-led")
                 )
             }
+        }
+
+        if (visualElement) {
+            this.#elementsToRemove.push(visualElement);
         }
 
         // Parser frontend
