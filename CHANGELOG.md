@@ -1,5 +1,6 @@
 # PySwitch v2.3.4
 - Reset state of the Effect Button actions on rig changes
+- Bug Fix in the Kemper Bidirectional Protocol Implementation: Send init beacon even if we already received keep-alive messages from a former connection. This makes re-connecting easier in development and the new Emulator currently being developed.
 
 # PySwitch v2.3.3
 - Fixed behaviour of bank preselect:

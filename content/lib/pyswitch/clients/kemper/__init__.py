@@ -717,6 +717,7 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         self.debug = False   # This is set by the BidirectionalClient constructor
         self.__count_relevant_messages = 0
         self.__has_been_running = False
+        self.__init_sent = False
         
     # Called before usage, with a midi handler.
     def init(self, midi, client):
@@ -746,9 +747,8 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
                 if self.__has_been_running:
                     self.__client.notify_connection_lost()                    
 
-                self.__send_beacon(
-                    init = True
-                )
+                self.__init_sent = True
+                self.__send_beacon(init = True)
 
         elif self.state == self._STATE_RUNNING:
             if self.sensing_period.exceeded:
@@ -765,6 +765,9 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
 
     # Receive sensing messages and re-init (with init = 1 again) when they stop appearing for longer then 1 second
     def receive(self, midi_message):
+        if not self.__init_sent:
+            return
+        
         if not isinstance(midi_message, SystemExclusive):
             return False
                
