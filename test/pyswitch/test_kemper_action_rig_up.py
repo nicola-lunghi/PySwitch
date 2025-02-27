@@ -29,11 +29,11 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.mappings.select import *
 
 class MockController2(Updater):
-   def __init__(self):
-       Updater.__init__(self)
-       self.client = MockClient()
-       self.config = {}
-       self.shared = {}
+    def __init__(self):
+        Updater.__init__(self)
+        self.client = MockClient()
+        self.config = {}
+        self.shared = {}
 
 
 class MockFootswitch:

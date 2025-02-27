@@ -29,12 +29,12 @@ with patch.dict(sys.modules, {
     
 
 class MockController2(Updater):
-   def __init__(self, inputs = []):
-       Updater.__init__(self)
-       self.client = MockClient()
-       self.config = {}
-       self.shared = {}
-       self.inputs = inputs
+    def __init__(self, inputs = []):
+        Updater.__init__(self)
+        self.client = MockClient()
+        self.config = {}
+        self.shared = {}
+        self.inputs = inputs
 
 
 class MockFootswitch:
