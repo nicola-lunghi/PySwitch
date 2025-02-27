@@ -8,7 +8,7 @@
                     {
                         "name": "boost_volume",
                         "default": null,
-                        "comment": "Boost volume: A value in range [0..1] (corresponding to the range of the\nrig volume parameter of the Kemper: 0.5 is 0dB, 0.75 is +6dB, 1.0 is +12dB etc.)"
+                        "comment": "Boost volume: A value in range [0..1] (corresponding to the range of the\nrig volume parameter of the Kemper. Some examples: 0.5 is 0dB, 0.625 is +3dB, 0.75 is +6dB, 1.0 is +12dB"
                     },
                     {
                         "name": "display",

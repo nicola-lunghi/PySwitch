@@ -40,14 +40,18 @@ class ParserFrontendInput {
      * Init the UI
      */
     async #initDom() {
-        // Parser UI
+        const that = this;
+
+        // Get actions to show
         const actions = await this.input.actions();
         const actionsHold = await this.input.actions(true);
 
-        const that = this;
-
+        // Load all available clients
         const clients = await this.#parserFrontend.parser.getAvailableActions();
 
+        /**
+         * Searches for a action definition by name and client ID. Returns null if not found.
+         */
         function getActionDefinition(name, clientId) {
             for (const client of clients) {
                 if (client.client != clientId) continue;
@@ -59,6 +63,9 @@ class ParserFrontendInput {
             return null;
         }
 
+        /**
+         * Generate item text
+         */
         function getItemText(item) {
             const action = getActionDefinition(
                 item.name, 
@@ -70,8 +77,12 @@ class ParserFrontendInput {
             return action.meta.getShortDisplayName(item);
         }
 
+        // Load messages from the checks
         const messages = await this.#parserFrontend.parser.checks.messages();
 
+        /**
+         * Returns if the action has any relevant messages of the given type
+         */
         function hasMessages(item, type) {
             for (const msg of messages) {
                 if (msg.type != type) continue;
@@ -82,16 +93,35 @@ class ParserFrontendInput {
             }
             return false;
         }
+
+        /**
+         * Determines the additional classes for the actions (warnings etc)
+         */
+        function getAdditionalClasses(item) {
+            if (hasMessages(item, "E")) return "error";
+
+            const args = JSON.parse(item.arguments());
+
+            for (const arg of args) {
+                if (arg.name == "enable_callback" && arg.value != "None") {
+                    return "has-enable-callback";
+                }
+            }
+
+            if (hasMessages(item, "W")) return "warn";
+        }
         
         function getActionElements(a, buttonClass, hold, tooltip) {
             return a.map(
-                (item) => {                    
+                (item) => {       
+                    const addClasses = getAdditionalClasses(item);
+
                     return $('<div class="action-item" />').append(
                         $('<div class="action-item-content" />')
                         .append(
                             // Action
                             $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
-                            .toggleClass("warn", hasMessages(item, "W"))
+                            .addClass(addClasses)
                             .text(getItemText(item))
                             .on('click', async function() {
                                 try {                                        
@@ -104,6 +134,7 @@ class ParserFrontendInput {
 
                             // Remove button
                             $('<span class="button ' + buttonClass + ' remove-action fas fa-times" data-toggle="tooltip" title="Remove action" />')
+                            .addClass(addClasses)
                             .on('click', async function() {
                                 try {
                                     const action = $(this).parent().parent().data('handler');

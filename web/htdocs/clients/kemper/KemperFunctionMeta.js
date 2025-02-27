@@ -6,10 +6,21 @@ class KemperFunctionMeta extends FunctionMeta {
     /**
      * Returns the display name for specific actions
      */
+    getDisplayName(actionCallProxy = null) {
+        switch (this.functionDefinition.name) {
+            case "RIG_SELECT_AND_MORPH_STATE": return this.client.getDisplayName() + ": " + this.#getDisplayNameRigSelectAndMorphState(actionCallProxy)
+        }
+
+        return this.client.getDisplayName() + ": " + this.getShortDisplayName(actionCallProxy);
+    }
+
+    /**
+     * Returns the display name for specific actions
+     */
     getShortDisplayName(actionCallProxy = null) {
         switch (this.functionDefinition.name) {
             case "RIG_SELECT": return this.#getDisplayNameRigSelect(actionCallProxy)
-            case "RIG_SELECT_AND_MORPH_STATE": return this.#getDisplayNameRigSelectAndMorphState(actionCallProxy)
+            case "RIG_SELECT_AND_MORPH_STATE": return this.#getDisplayNameRigSelectAndMorphStateShort(actionCallProxy)
             case "BANK_SELECT": return this.#getDisplayNameBankSelect(actionCallProxy)
             case "EFFECT_BUTTON": return this.#getDisplayNameEffectButton(actionCallProxy)
             case "EFFECT_STATE": return this.#getDisplayNameEffectState(actionCallProxy)
@@ -42,6 +53,7 @@ class KemperFunctionMeta extends FunctionMeta {
      */
     #getDisplayNameRigSelectAndMorphState(actionCallProxy = null) {
         const rig_off = this.#getArgument(actionCallProxy, "rig_off");
+
         if (actionCallProxy && !(rig_off == null || rig_off.value == "None")) {
             return this.#replaceParameterTokens(actionCallProxy, "Toggle Rigs {rig}/{rig_off} & Morph Display");
         }
@@ -51,6 +63,23 @@ class KemperFunctionMeta extends FunctionMeta {
         }
 
         return this.#replaceParameterTokens(actionCallProxy, "Select Rig {rig} & Morph Display");
+    }
+
+    /**
+     * Special implementation for rig select and morph state (short version)
+     */
+    #getDisplayNameRigSelectAndMorphStateShort(actionCallProxy = null) {
+        const rig_off = this.#getArgument(actionCallProxy, "rig_off");
+        
+        if (actionCallProxy && !(rig_off == null || rig_off.value == "None")) {
+            return this.#replaceParameterTokens(actionCallProxy, "Rigs {rig}/{rig_off} & Morph");
+        }
+
+        if (!actionCallProxy) {
+            return "Rig & Morph";
+        }
+
+        return this.#replaceParameterTokens(actionCallProxy, "Rig {rig} & Morph");
     }
 
     /**

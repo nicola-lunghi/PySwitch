@@ -82,11 +82,16 @@ class ParserFrontend {
         // After the frontend reset, we must let some time pass for the UI to flush.
         const that = this;
         setTimeout(async function() {
-            // All set_actions calls have suppressed updating until now, so we need to do this here
-            that.parser.updateConfig();
+            try {
+                // All set_actions calls have suppressed updating until now, so we need to do this here
+                that.parser.updateConfig();
 
-            // Restart the emulated controller
-            await that.#controller.restart("none");
+                // Restart the emulated controller
+                await that.#controller.restart("none");
+                
+            } catch (e) {
+                that.#controller.handle(e);
+            }
         }, 10)
     }
 }
