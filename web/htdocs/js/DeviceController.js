@@ -113,7 +113,7 @@ class DeviceController {
     /**
      * Returns the content of the passed file path, loaded from the device behind the currently connected bridge.
      */
-    async loadFile(path) {
+    async loadFile(path, noProgress = false) {
         if (!this.#connection) {
             throw new Error("No controller connected");
         }
@@ -124,15 +124,17 @@ class DeviceController {
             bridge.throwExceptionsOnReceive = true;
 
             bridge.onReceiveStart = async function(data) {                
+                if (noProgress) return;
                 that.#controller.ui.progress(0, "Loading " + data.path);
             };
 
             bridge.onReceiveProgress = async function(data) {
+                if (noProgress) return;
                 that.#controller.ui.progress((data.chunk + 1) / data.numChunks, "Loading " + data.path); //"Loading chunk " + data.chunk + " of " + data.numChunks);
             };
 
             bridge.onReceiveFinish = async function(data) {
-                that.#controller.ui.progress(1);
+                if (!noProgress) that.#controller.ui.progress(1);
                 resolve(data.data);
             }
 

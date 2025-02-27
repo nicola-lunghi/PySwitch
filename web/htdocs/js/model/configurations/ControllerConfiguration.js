@@ -21,9 +21,17 @@ class ControllerConfiguration extends Configuration {
         await this.#controller.device.connect(this.#portName);
 
         // Get config scripts from the controller
-        return {
+        const data = {
             inputs_py: await this.#controller.device.loadFile("/inputs.py"),
             display_py: await this.#controller.device.loadFile("/display.py")
         };
+
+        // Also start a check that compares PySwitch versions of the controller and local
+        const that = this;
+        setTimeout(function() {
+            new PySwitchVersionCheck(that.#controller).check();
+        }, 100);        
+
+        return data;
     }
 }
