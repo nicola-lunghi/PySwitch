@@ -189,7 +189,7 @@ class Input(libcst.CSTVisitor):
         self.result = self.result.visit(adder)
 
         # Reset buffer
-        self.__actions = None
+        self.__actions = {}
 
         # Tell the parser to replace the new state of this input in its CST buffers
         self.parser.update_input(self, noUpdate)

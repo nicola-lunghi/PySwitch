@@ -61,10 +61,12 @@ class ParserChecks {
          * Returns an array of actions containing the display as an argument
          */
         async function getContainedDisplays(input, hold) {
+            if (!input) return [];
+            
             const actions = await input.actions(hold);
 
             const ret = [];
-            for (const action of actions) {
+            for (const action of actions || []) {
                 for (const arg of JSON.parse(action.arguments())) {                
                     if (arg.value == displayName) {
                         ret.push({

@@ -9,7 +9,10 @@ class Arguments(VisitorWithStack):
     def visit_Arg(self, node):
         if len(self.stack) != 2:
             return False
-        
+
+        if not node.keyword:
+            return False
+
         self.result.append({
             "name": node.keyword.value,
             "value": self.__format_value(node.value)

@@ -41,6 +41,9 @@ class ActionProperties {
         const that = this;
         const parameters = await Promise.all(
             this.#action.parameters
+            .sort(function(a, b) {
+                return (a.meta.data.advanced ? 1 : 0) + (b.meta.data.advanced ? -1 : 0);
+            })
             .map(
                 async (param) => {
                     const input = await this.#createInput(param);
