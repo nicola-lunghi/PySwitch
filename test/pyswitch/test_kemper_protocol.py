@@ -143,8 +143,8 @@ class TestKemperBidirectionalProtocol(unittest.TestCase):
         protocol.init(midi, client)
 
         # Receive sense message in advance (shall do nothing)
-        self.assertEqual(protocol.receive(KemperMappings.BIDIRECTIONAL_SENSING().response), True)
-        self.assertEqual(protocol.state, protocol._STATE_RUNNING)
+        self.assertEqual(protocol.receive(KemperMappings.BIDIRECTIONAL_SENSING().response), None)
+        self.assertEqual(protocol.state, protocol._STATE_OFFLINE)
 
 
     def test_is_bidirectional(self):
