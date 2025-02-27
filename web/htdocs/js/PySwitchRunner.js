@@ -260,7 +260,7 @@ class PySwitchRunner {
             this.#runner.stop()
 
             while(true) {
-                if (!this.#runner.running) break;
+                if (!this.#runner || !this.#runner.running) break;
                 await new Promise(r => setTimeout(r, this.#options.updateIntervalMillis / 4));
             }   
              
