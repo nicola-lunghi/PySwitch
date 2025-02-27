@@ -289,6 +289,8 @@ class PySwitchUI {
                             throw new Error("No data to save");
                         }
 
+                        if (!confirm("Save current configuration to " + entry.value + "?")) return;
+
                         that.saveBrowser.hide();
 
                         const dummyConfig = new ControllerConfiguration(that.#controller, entry.value);
