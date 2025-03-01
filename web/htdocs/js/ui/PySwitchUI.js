@@ -186,6 +186,20 @@ class PySwitchUI {
         // Show or hide tabs
         this.tabs = new Tabs(this.#controller, tabsElement, showTabsButton);
 
+        // // CTRL-S key to save
+        // $(window).on('keydown', async function(event) {
+        //     if (event.ctrlKey || event.metaKey) {
+        //         switch (String.fromCharCode(event.which).toLowerCase()) {
+        //             case 's':
+        //                 event.preventDefault();
+                        
+        //                 console.log(888)
+                        
+        //                 break;		        
+        //         }
+        //     }
+        // });
+
         // if (!this.#controller.getState('suppressInfoPopup')) {
         //     await this.showAbout();
         // }
@@ -195,7 +209,7 @@ class PySwitchUI {
      * Show the about popup
      */
     async showAbout() {
-        const that = this;
+        // const that = this;
 
         this.getPopup({ 
             container: this.container,
@@ -260,6 +274,15 @@ class PySwitchUI {
                         // Open existing preset
                         that.#controller.routing.call(encodeURI("preset/" + entry.value));
                     }
+                }),
+
+                // Upload
+                new SingleEntryProvider({
+                    text: "Upload...",
+                    onSelect: async function(entry) {
+                        await (new Upload(that.#controller)).upload(that.#controller.currentConfig);
+                    },
+                    sortString: "XXXXXXXXXXXXXXXX"
                 })
             ]
         }); 
@@ -288,7 +311,8 @@ class PySwitchUI {
                         that.saveBrowser.hide();
                         await that.#controller.currentConfig.save();
                         that.#controller.ui.notifications.message("Successfully saved configuration to " + (await that.#controller.currentConfig.name()), "S");
-                    }
+                    },
+                    sortString: "________________"
                 }),
 
                 // Connected controllers
@@ -348,6 +372,15 @@ class PySwitchUI {
                         that.#controller.ui.notifications.message("Successfully saved preset " + presetId, "S");
                         that.#controller.routing.call(encodeURI("preset/" + presetId));
                     }
+                }),
+
+                // Download
+                new SingleEntryProvider({
+                    text: "Download ZIP",
+                    onSelect: async function(entry) {
+                        await (new Download()).download(that.#controller.currentConfig);
+                    },
+                    sortString: "XXXXXXXXXXXXXXXX"
                 })
             ]
         }); 

@@ -89,8 +89,6 @@ class CodeEditor extends Tab {
      * Apply changes to the config
      */
     async apply() {
-        // if (!this.isDirty()) return;
-
         // Remove all inputs and LEDs etc.
         await this.#controller.ui.frontend.reset();
 
@@ -114,21 +112,21 @@ class CodeEditor extends Tab {
 	 * Global key shortcuts
 	 */
 	#initGlobalShortcuts() {
-		// const that = this;
+		const that = this;
 		
-		// // CTRL-S key to save
-		// $(window).on('keydown', async function(event) {
-		//     if (event.ctrlKey || event.metaKey) {
-		//         switch (String.fromCharCode(event.which).toLowerCase()) {
-        //             case 's':
-        //                 event.preventDefault();
+		// CTRL-S key to save
+		this.#editorElement.on('keydown', async function(event) {
+		    if (event.ctrlKey || event.metaKey) {
+		        switch (String.fromCharCode(event.which).toLowerCase()) {
+                    case 's':
+                        event.preventDefault();
                         
-        //                 // that.#ui.save();
+                        await that.apply();
                         
-        //                 break;		        
-		//         }
-		//     }
-		// });
+                        break;		        
+		        }
+		    }
+		});
 	}
 
     /**

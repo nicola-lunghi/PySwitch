@@ -15,7 +15,11 @@ class WrapTFT:
         self.update()
 
     def update(self):
-        self.canvas = self.get_canvas(self.dom_namespace)
+        if not self.canvas:
+            self.canvas = self.get_canvas(self.dom_namespace)            
+        
+        if not self.canvas:
+            return
         
         self.canvas.width = self.width
         self.canvas.height = self.height
@@ -36,8 +40,8 @@ class WrapTFT:
     def get_canvas(dom_namespace):
         id = dom_namespace + "-display"
         canvas = document.getElementById(id)
-        if not canvas:
-            raise Exception("No canvas found with ID " + repr(id))
+        # if not canvas:
+        #     raise Exception("No canvas found with ID " + repr(id))
         return canvas
 
 

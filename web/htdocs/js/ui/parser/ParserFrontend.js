@@ -75,7 +75,6 @@ class ParserFrontend {
             await inputToUpdate.updateInput();
         }
 
-
         // Remove all inputs and LEDs etc.
         await this.#controller.ui.frontend.reset();
 

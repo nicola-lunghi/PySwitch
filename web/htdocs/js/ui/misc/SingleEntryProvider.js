@@ -10,6 +10,7 @@ class SingleEntryProvider extends BrowserProvider {
      *      text:
      *      onSelect:           (entry) => void,
      *      showCallback:       bool function, if the entry should be shown
+     *      sortString
      * }
      */
     constructor(options) {
@@ -30,7 +31,7 @@ class SingleEntryProvider extends BrowserProvider {
             {
                 text: this.#options.text,
                 onSelect: this.#options.onSelect,
-                sortString: "_____________"
+                sortString: this.#options.sortString ? this.#options.sortString : null
             }
         );
     }

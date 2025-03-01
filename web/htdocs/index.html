@@ -41,6 +41,12 @@
     <script src="lib/codemirror/mode/python/python.js"></script>  
     <script src="lib/codemirror/addons/lint/lint.js"></script>  
 
+    <script type="text/javascript" src="lib/FileSaver/FileSaver.min.js"></script>
+    <script type="module">
+        import { downloadZip } from "./lib/client-zip.js"; 
+        window.downloadZip = downloadZip;
+    </script>
+
     <!-- Application CSS -->
     <link rel="stylesheet" type="text/css" href="styles/general.css">
     <link rel="stylesheet" type="text/css" href="styles/tabs.css">
@@ -133,6 +139,8 @@
     <script type="text/javascript" src="js/ui/misc/ClientConnectionButton.js"></script>
     <script type="text/javascript" src="js/ui/misc/PortsProvider.js"></script>
     <script type="text/javascript" src="js/ui/misc/SingleEntryProvider.js"></script>
+    <script type="text/javascript" src="js/ui/misc/Download.js"></script>
+    <script type="text/javascript" src="js/ui/misc/Upload.js"></script>
    
     <script type="text/javascript" src="clients/ClientFactory.js"></script>
 
