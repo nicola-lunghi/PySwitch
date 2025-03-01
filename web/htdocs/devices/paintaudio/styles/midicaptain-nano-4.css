@@ -51,7 +51,7 @@
 
 .midicaptain-nano-4 #pyswitch-switch-gp9 .pyswitch-switch-visual,
 .midicaptain-nano-4 #pyswitch-switch-gp10 .pyswitch-switch-visual {
-    transform: rotate(180deg); 
+    transform: rotate(-60deg); 
 }
 
 /****************************************************************/

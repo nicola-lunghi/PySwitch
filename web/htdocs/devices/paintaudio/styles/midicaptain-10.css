@@ -87,7 +87,7 @@
 .midicaptain-10 #pyswitch-switch-gp11 .pyswitch-switch-visual,
 .midicaptain-10 #pyswitch-switch-gp18 .pyswitch-switch-visual,
 .midicaptain-10 #pyswitch-switch-gp19 .pyswitch-switch-visual {
-    transform: rotate(180deg); 
+    transform: rotate(-60deg); 
 }
 
 /****************************************************************/
