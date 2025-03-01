@@ -3,14 +3,11 @@
  */
 class BrowserPopup extends Popup {
 
-    #toc = null;
-
     #buttons = null;
     #infoPanel = null;
     #infoPanelContent = null;
     #infoPanelOnClick = null;
     
-    #last = null;
     #lastPath = null;
     #currentItems = null;
 
@@ -151,24 +148,24 @@ class BrowserPopup extends Popup {
      * Returns a TOC of all providers, if not done
      */
     async #getData() {
-        //if (this.#toc) return this.#toc;
-
         // One provider: Use this as root
         if (this.options.providers.length == 1) {
-            this.#toc = await this.options.providers[0].getToc(this);
-            return this.#toc;
+            return this.options.providers[0].getToc(this);
         }
 
         // Multiple providers: Create new root and add all provider roots as children
-        this.#toc = new BrowserEntry(this);
+        const toc = new BrowserEntry(this);
 
         for(const p of this.options.providers) {
             const child = await p.getToc(this);
-            child.parent = this.#toc;
-            this.#toc.children.push(child);
+
+            if (child) {
+                child.parent = toc;
+                toc.children.push(child);
+            }
         }
 
-        return this.#toc;
+        return toc;
     }
 
     /**

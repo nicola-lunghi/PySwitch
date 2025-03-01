@@ -166,7 +166,7 @@ class Controller {
         this.ui.progress(1);
         this.currentConfig = config;
 
-        this.ui.message("Loaded configuration: " + (await config.name()), "S");
+        this.ui.message("Loaded " + (await config.name()), "S");
     }
 
     /**
@@ -198,7 +198,7 @@ class Controller {
         await this.pyswitch.run(await this.currentConfig.get());
         
         if (message != "none") {
-            this.ui.message(message ? message : ("Reloaded configuration: " + (await this.currentConfig.name())), "S");
+            this.ui.message(message ? message : ("Reloaded " + (await this.currentConfig.name())), "S");
         }
     }
 

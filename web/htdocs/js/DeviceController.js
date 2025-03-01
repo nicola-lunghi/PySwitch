@@ -112,7 +112,7 @@ class DeviceController {
         await this.saveFile('inputs.py', code.inputs_py);
         await this.saveFile('display.py', code.display_py);
 
-        this.#controller.ui.notifications.message("Successfully saved configuration to " + portName, "S");
+        // this.#controller.ui.notifications.message("Successfully saved configuration to " + portName, "S");
     }
 
     /**
@@ -172,7 +172,7 @@ class DeviceController {
                 that.#controller.ui.progress((data.chunk + 1) / data.numChunks, "Writing " + data.path); // + ": Writing chunk " + data.chunk + " of " + data.numChunks);
 
                 if (data.chunk + 1 == data.numChunks) {
-                    that.#controller.ui.notifications.message("Successfully saved " + data.path, "S");
+                    // that.#controller.ui.notifications.message("Successfully saved " + data.path, "S");
                     resolve();
                 }
             };

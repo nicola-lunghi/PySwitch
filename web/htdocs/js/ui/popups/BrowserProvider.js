@@ -6,7 +6,7 @@ class BrowserProvider {
     /**
      * Must return a hierarchical TOC
      */
-    async getToc() {
+    async getToc(browser) {
         throw new Error("Must be implemented in child classes");
     }    
 }

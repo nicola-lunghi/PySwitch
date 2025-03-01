@@ -36,6 +36,13 @@ class ControllerConfiguration extends Configuration {
     }
 
     /**
+     * Can the config be saved?
+     */
+    canBeSaved() {
+        return true;
+    }
+    
+    /**
      * Save the data to the location of the configuration
      */
     async save() {

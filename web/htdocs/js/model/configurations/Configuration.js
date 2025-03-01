@@ -67,6 +67,13 @@ class Configuration {
     }
 
     /**
+     * Can the config be saved?
+     */
+    canBeSaved() {
+        return false;
+    }
+
+    /**
      * Save the data to the location of the configuration
      */
     async save() {

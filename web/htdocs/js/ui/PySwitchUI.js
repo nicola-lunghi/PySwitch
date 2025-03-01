@@ -276,12 +276,27 @@ class PySwitchUI {
             wide: true,
             headline: "Please select a destination to store the current configuration",
             providers: [
+                // Save to current location
+                new SingleEntryProvider({
+                    showCallback: async function() {
+                        return that.#controller.currentConfig ? that.#controller.currentConfig.canBeSaved() : false;
+                    },
+                    text: async function(entry) {
+                        return "Save to " + (await that.#controller.currentConfig.name());
+                    },
+                    onSelect: async function(entry) {
+                        that.saveBrowser.hide();
+                        await that.#controller.currentConfig.save();
+                        that.#controller.ui.notifications.message("Successfully saved configuration to " + (await that.#controller.currentConfig.name()), "S");
+                    }
+                }),
+
                 // Connected controllers
                 new PortsProvider(this.#controller, {
                     rootText: "Connected Controllers",
                     onSelect: async function(entry) {
                         let data = null;
-                        try {
+                        try {
                             data = await that.#controller.currentConfig.get();
 
                         } catch(e) {
@@ -295,7 +310,9 @@ class PySwitchUI {
 
                         const dummyConfig = new ControllerConfiguration(that.#controller, entry.value);
                         dummyConfig.set(data);
-                        await dummyConfig.save();                        
+                        await dummyConfig.save();      
+                        
+                        that.#controller.ui.notifications.message("Successfully saved configuration to " + entry.value, "S");
                     }
                 }),
 
@@ -304,7 +321,7 @@ class PySwitchUI {
                     newPresetsEntry: true,
                     onSelect: async function(entry) {
                         let data = null;
-                        try {
+                        try {
                             data = await that.#controller.currentConfig.get();
 
                         } catch(e) {
@@ -415,6 +432,9 @@ class PySwitchUI {
         await this.editors.display.setConfig(config);
     }
 
+    /**
+     * Let all tabs confirm if they have unapplied content
+     */
     confirmIfDirty() {
         return this.tabs.confirmIfDirty();
     }
@@ -450,7 +470,7 @@ class PySwitchUI {
     }
 
     /**
-     * Sjow a block screen
+     * Show a block screen
      */
     block() {
         this.#progressBarContainer.hide();
@@ -460,7 +480,7 @@ class PySwitchUI {
     }
 
     /**
-     * Show progress. Values above 1 hide the progress bar.
+     * Show progress. Values above (and including) 1 hide the progress bar.
      * 
      * @param {*} percentage range [0..1]
      * @param {*} message 

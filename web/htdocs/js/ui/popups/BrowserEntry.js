@@ -11,7 +11,6 @@ class BrowserEntry {
 
     #browser = null;
     
-
     /**
      * {
      *      value:         Entry value
