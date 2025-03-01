@@ -13,6 +13,7 @@ from pyswitch.controller.AnalogAction import AnalogAction
 from pyswitch.controller.EncoderAction import EncoderAction
 
 
+# Defines the switch assignments and other inputs
 Inputs = [
     # Pedal 1
     {
@@ -24,6 +25,7 @@ Inputs = [
             )
         ]
     },
+
     # Pedal 2
     {
         "assignment": PA_MIDICAPTAIN_10_EXP_PEDAL_2,
@@ -34,6 +36,7 @@ Inputs = [
             )
         ]
     },
+
     # Wheel rotary encoder
     {
         "assignment": PA_MIDICAPTAIN_10_WHEEL_ENCODER,
@@ -43,6 +46,7 @@ Inputs = [
             )
         ]
     },
+
     # Wheel push button
     {
         "assignment": PA_MIDICAPTAIN_10_WHEEL_BUTTON,
@@ -52,7 +56,9 @@ Inputs = [
             )
         ]
     },
+
     ####################################################################################
+
     # Switch 1
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_1,
@@ -63,6 +69,7 @@ Inputs = [
             )
         ]    
     },
+
     # Switch 2
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_2,
@@ -73,6 +80,7 @@ Inputs = [
             )
         ]    
     },
+
     # Switch 3
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_3,
@@ -83,7 +91,7 @@ Inputs = [
             )
         ]    
     },
-
+    
     # Switch 4
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_4,
@@ -97,7 +105,8 @@ Inputs = [
             TUNER_MODE()
         ]    
     },
-    # Switch up
+
+   # Switch up
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_UP,
         "actions": [
@@ -105,7 +114,9 @@ Inputs = [
         ]
     },
 
+
     # ########################################################################################
+
     # Switch A
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_A,
@@ -114,9 +125,10 @@ Inputs = [
                 rig = 1,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
                 rig_btn_morph = True
-            )  
-        ]  
+            )    
+        ]
     },
+
     # Switch B
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_B,
@@ -125,9 +137,10 @@ Inputs = [
                 rig = 2,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
                 rig_btn_morph = True
-            )  
-        ]  
+            )    
+        ]
     },
+
     # Switch C
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_C,
@@ -136,9 +149,10 @@ Inputs = [
                 rig = 3,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
                 rig_btn_morph = True
-            )  
-        ]  
+            )    
+        ]
     },
+
     # Switch D
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_D,
@@ -147,10 +161,11 @@ Inputs = [
                 rig = 4,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
                 rig_btn_morph = True
-            )  
-        ]  
+            )    
+        ]
     },
-        # Switch down
+
+      # Switch down
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_DOWN,
         "actions": [
