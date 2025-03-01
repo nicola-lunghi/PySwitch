@@ -28,8 +28,8 @@ def RIG_SELECT_AND_MORPH_STATE(rig,
                                morph_use_leds = True,                          # Use the LEDs to show morph state?
                                morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.
                                morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
-                               morph_color_base = Colors.RED,                  
-                               morph_color_morphed = Colors.BLUE,
+                               morph_color_base = Colors.RED,                  # See MORPH_DISPLAY
+                               morph_color_morphed = Colors.BLUE,              # See MORPH_DISPLAY
                                rig_btn_morph = False                           # If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified.
 
 ):

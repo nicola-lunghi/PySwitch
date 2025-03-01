@@ -1,5 +1,6 @@
 # PySwitch v2.3.4
 - Reset state of the Effect Button actions on rig changes
+- RIG_SELECT_AND_MORPH_STATE now can be used inside [] brackets like any other action (action lists are flattened initially)
 - Bug Fix in the Kemper Bidirectional Protocol Implementation: Send init beacon even if we already received keep-alive messages from a former connection. This makes re-connecting easier in development and the new Emulator currently being developed.
 
 # PySwitch v2.3.3

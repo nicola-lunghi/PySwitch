@@ -11,8 +11,8 @@ def MORPH_BUTTON(display = None,
                  use_leds = True, 
                  enable_callback = None, 
                  color = "kemper",                   # Can be "kemper" or a fixed color
-                 morph_color_base = Colors.RED,      # Only used if color = "kemper"
-                 morph_color_morphed = Colors.BLUE   # Only used if color = "kemper"
+                 morph_color_base = Colors.RED,      # Only used if color = "kemper". See MORPH_DISPLAY
+                 morph_color_morphed = Colors.BLUE   # Only used if color = "kemper". See MORPH_DISPLAY
     ):
     return PushButtonAction({
         "callback": KemperMorphCallback(
@@ -38,8 +38,8 @@ def MORPH_DISPLAY(display = None,
                   id = False, 
                   use_leds = True, 
                   enable_callback = None,
-                  morph_color_base = Colors.RED,
-                  morph_color_morphed = Colors.BLUE
+                  morph_color_base = Colors.RED,        # Color used for the unmorphed state
+                  morph_color_morphed = Colors.BLUE     # Color used for the morphed state
     ):
     return PushButtonAction({
         "callback": KemperMorphCallback(

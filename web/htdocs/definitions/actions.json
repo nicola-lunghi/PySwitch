@@ -349,12 +349,12 @@
                     {
                         "name": "morph_color_base",
                         "default": "Colors.RED",
-                        "comment": "Only used if color = \"kemper\""
+                        "comment": "Only used if color = \"kemper\". See MORPH_DISPLAY"
                     },
                     {
                         "name": "morph_color_morphed",
                         "default": "Colors.BLUE",
-                        "comment": "Only used if color = \"kemper\""
+                        "comment": "Only used if color = \"kemper\". See MORPH_DISPLAY"
                     }
                 ],
                 "comment": "Morph button (faded change of morph state)",
@@ -391,12 +391,12 @@
                     {
                         "name": "morph_color_base",
                         "default": "Colors.RED",
-                        "comment": null
+                        "comment": "Color used for the unmorphed state"
                     },
                     {
                         "name": "morph_color_morphed",
                         "default": "Colors.BLUE",
-                        "comment": null
+                        "comment": "Color used for the morphed state"
                     }
                 ],
                 "comment": "Morph state (display/LEDs only)",
@@ -743,12 +743,12 @@
                     {
                         "name": "morph_color_base",
                         "default": "Colors.RED",
-                        "comment": null
+                        "comment": "See MORPH_DISPLAY"
                     },
                     {
                         "name": "morph_color_morphed",
                         "default": "Colors.BLUE",
-                        "comment": null
+                        "comment": "See MORPH_DISPLAY"
                     },
                     {
                         "name": "rig_btn_morph",
