@@ -112,8 +112,7 @@ class Controller {
     async loadConfiguration(config) {
         this.ui.notifications.reset();
 
-        if (!this.ui.confirmIfDirty()) return;
-
+        this.ui.resetDirtyState();
         this.currentConfig = null;
 
         // Initialize PySwitch (this starts Pyodide and copies all necessary sources to the Emscripten virtual file system)

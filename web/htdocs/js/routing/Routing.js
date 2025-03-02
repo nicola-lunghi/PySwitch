@@ -58,7 +58,7 @@ class Routing {
                     );
                 } else {
                     await that.#controller.loadConfiguration(
-                        new WebConfiguration("circuitpy", "PySwitch Default")
+                        new WebConfiguration(that.#controller, "circuitpy", "PySwitch Default")
                     );
                 }
             })));
@@ -67,7 +67,7 @@ class Routing {
             this.get(/\#example\/(.*)/, that.#queue.add(that.#executeRoute(async function() {
                 const path = decodeURI(this.params['splat'][0]);                    
                 await that.#controller.loadConfiguration(
-                    new WebConfiguration("examples/" + encodeURI(path))
+                    new WebConfiguration(that.#controller, "examples/" + encodeURI(path))
                 );
             })));
 
@@ -75,7 +75,7 @@ class Routing {
             this.get(/\#template\/(.*)/, that.#queue.add(that.#executeRoute(async function() {
                 const path = decodeURI(this.params['splat'][0]);                    
                 await that.#controller.loadConfiguration(
-                    new WebConfiguration("templates/" + encodeURI(path))
+                    new WebConfiguration(that.#controller, "templates/" + encodeURI(path))
                 );
             })));
 
@@ -137,6 +137,8 @@ class Routing {
      * Calls the passed uri path
      */
     call(path) {
+        if (!this.#controller.ui.confirmIfDirty()) return;
+
         location.href = location.protocol +'//'+ location.host + (location.pathname ? location.pathname : '') + '#' + encodeURI(path);
     }
 }

@@ -15,7 +15,7 @@ class ConfigParserTests extends TestBase {
 
     async getInputActionsDefault() {
         await this.init();
-        const config = new WebConfiguration("data/test-presets/get-inputs-default");
+        const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
         
         await config.init(this.pyswitch, "../");
         const parser = config.parser;
@@ -114,7 +114,7 @@ class ConfigParserTests extends TestBase {
 
     async getInputActionsHold() {
         await this.init();
-        const config = new WebConfiguration("data/test-presets/get-inputs-hold");
+        const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-hold");
         
         await config.init(this.pyswitch, "../");
         const parser = config.parser;
@@ -240,7 +240,7 @@ class ConfigParserTests extends TestBase {
 
     async #replaceActions(port, actions, clientId) {
         await this.init();
-        const config = new WebConfiguration("data/test-presets/get-inputs-default");
+        const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
         
         await config.init(this.pyswitch, "../");
         const parser = config.parser;
@@ -274,7 +274,7 @@ class ConfigParserTests extends TestBase {
 
     async addOneImport() {
         await this.init();
-        const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
+        const config = new WebConfiguration(new MockController(), "../templates/MIDICaptain Nano 4");
         await config.init(this.pyswitch, "../");
         const parser = config.parser;
 
@@ -301,7 +301,7 @@ class ConfigParserTests extends TestBase {
 
     async addAllImports() {
         await this.init();
-        const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
+        const config = new WebConfiguration(new MockController(), "../templates/MIDICaptain Nano 4");
         
         await config.init(this.pyswitch, "../");
         const parser = config.parser;
@@ -334,7 +334,7 @@ class ConfigParserTests extends TestBase {
 
     async addDisplayImports() {
         await this.init();
-        const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
+        const config = new WebConfiguration(new MockController(), "../templates/MIDICaptain Nano 4");
         
         await config.init(this.pyswitch, "../");
         const parser = config.parser;
@@ -545,7 +545,7 @@ class ConfigParserTests extends TestBase {
 
     async #doCheckActionMeta(name, action, expNameDefault, expNameCurrent, hold) {
         await this.init();
-        const config = new WebConfiguration("../templates/MIDICaptain Nano 4");
+        const config = new WebConfiguration(new MockController(), "../templates/MIDICaptain Nano 4");
         
         await config.init(this.pyswitch, "../");
         const parser = config.parser;
@@ -585,7 +585,7 @@ class ConfigParserTests extends TestBase {
 
     // async removeAction() {        
     //     await this.init();
-    //     const config = new WebConfiguration("data/test-presets/get-inputs-default");
+    //     const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
         
     //     const parser = await config.parser(this.pyswitch);
     //     expect(parser).toBeInstanceOf(KemperParser);
@@ -722,7 +722,7 @@ class ConfigParserTests extends TestBase {
 
     // async removeActionHold() {        
     //     await this.init();
-    //     const config = new WebConfiguration("data/test-presets/remove-actions-hold");
+    //     const config = new WebConfiguration(new MockController(), "data/test-presets/remove-actions-hold");
         
     //     const parser = await config.parser(this.pyswitch);
     //     expect(parser).toBeInstanceOf(KemperParser);
@@ -824,7 +824,7 @@ class ConfigParserTests extends TestBase {
 
     // async addActionNoIndex() {        
     //     await this.init();
-    //     const config = new WebConfiguration("data/test-presets/get-inputs-default");
+    //     const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
         
     //     const parser = await config.parser(this.pyswitch);
     //     expect(parser).toBeInstanceOf(KemperParser);
@@ -900,7 +900,7 @@ class ConfigParserTests extends TestBase {
 
     // async addActionWithIndex() {        
     //     await this.init();
-    //     const config = new WebConfiguration("data/test-presets/get-inputs-default");
+    //     const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
         
     //     const parser = await config.parser(this.pyswitch);
     //     expect(parser).toBeInstanceOf(KemperParser);
@@ -978,7 +978,7 @@ class ConfigParserTests extends TestBase {
 
     // async addActionHoldNoIndex() {        
     //     await this.init();
-    //     const config = new WebConfiguration("data/test-presets/get-inputs-default");
+    //     const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
         
     //     const parser = await config.parser(this.pyswitch);
     //     expect(parser).toBeInstanceOf(KemperParser);

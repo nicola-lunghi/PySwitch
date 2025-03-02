@@ -69,7 +69,7 @@ class ExampleTestRunner extends TestBase {
             return;
         };
 
-        const config = new WebConfiguration(this.#examplesPath + entry.data.callPath);
+        const config = new WebConfiguration(new MockController(), this.#examplesPath + entry.data.callPath);
         
         const that = this;        
         await this.runner.run(config, async function() {

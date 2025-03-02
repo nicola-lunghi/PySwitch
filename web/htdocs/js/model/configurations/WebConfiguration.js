@@ -5,13 +5,13 @@ class WebConfiguration extends Configuration {
 
     #path = null;
     
-    constructor(path, title = null) {
+    constructor(controller, path, title = null) {
         if (!title) {
             const splt = decodeURI(path).split("/");
             title = splt.pop();
         }
 
-        super(title);
+        super(controller, title);
         this.#path = path;
 
     }

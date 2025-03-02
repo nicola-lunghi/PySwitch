@@ -3,13 +3,11 @@
  */
 class ControllerConfiguration extends Configuration {
 
-    #controller = null;
     #portName = null;
 
     constructor(controller, portName) {
-        super(portName);
+        super(controller, portName);
 
-        this.#controller = controller;
         this.#portName = portName;
     }
 
@@ -18,12 +16,12 @@ class ControllerConfiguration extends Configuration {
      */
     async load() {
         // Connect if not yet done
-        await this.#controller.device.connect(this.#portName);
+        await this.controller.device.connect(this.#portName);
 
         // Get config scripts from the controller
         const data = {
-            inputs_py: await this.#controller.device.loadFile("/inputs.py"),
-            display_py: await this.#controller.device.loadFile("/display.py")
+            inputs_py: await this.controller.device.loadFile("/inputs.py"),
+            display_py: await this.controller.device.loadFile("/display.py")
         };
 
         // // Also start a check that compares PySwitch versions of the controller and local
@@ -45,7 +43,7 @@ class ControllerConfiguration extends Configuration {
     /**
      * Save the data to the location of the configuration
      */
-    async save() {
-        await this.#controller.device.saveConfig(this, this.#portName);
+    async doSave() {
+        await this.controller.device.saveConfig(this, this.#portName);
     }
 }

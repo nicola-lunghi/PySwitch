@@ -13,6 +13,7 @@ class PySwitchUI {
     #contentHeadline = null;
     #deviceElement = null;
     #versionElement = null;
+    #changeMarker = null;
     
     #virtualClientTab = null;
     #virtualClientUI = null;    
@@ -80,7 +81,6 @@ class PySwitchUI {
                 tabsElement = $('<div class="tabs" />'),
 
                 // Application area
-                //this.#applicationElement = 
                 $('<div class="application"/>').append(
                     
                     $('<div class="about" />').append(
@@ -145,7 +145,14 @@ class PySwitchUI {
                     ),
 
                     // Header, showing the current Configuration name
-                    this.#contentHeadline = $('<div class="headline"/>'),
+                    $('<div class="headline"/>').append(
+                        this.#contentHeadline = $('<span />'),
+                        
+                        // Change marker
+                        this.#changeMarker = $('<span class="change-marker" />')
+                        .text("*")
+                        .hide()
+                    ),
                 ),
 
                 /////////////////////////////////////////////////////////////////////////////////////
@@ -334,7 +341,9 @@ class PySwitchUI {
 
                         const dummyConfig = new ControllerConfiguration(that.#controller, entry.value);
                         dummyConfig.set(data);
-                        await dummyConfig.save();      
+                        await dummyConfig.save();    
+
+                        that.#controller.currentConfig.resetDirtyState();
                         
                         that.#controller.ui.notifications.message("Successfully saved configuration to " + entry.value, "S");
                     }
@@ -368,6 +377,8 @@ class PySwitchUI {
                         const dummyConfig = new PresetConfiguration(that.#controller, presetId);
                         dummyConfig.set(data);
                         await dummyConfig.save();
+
+                        that.#controller.currentConfig.resetDirtyState();
 
                         that.#controller.ui.notifications.message("Successfully saved preset " + presetId, "S");
                         that.#controller.routing.call(encodeURI("preset/" + presetId));
@@ -446,7 +457,8 @@ class PySwitchUI {
     async applyConfig(config) {
         // Headline (config name)
         this.#contentHeadline.text(await config.name());
-
+        // this.resetDirtyState();
+        
         // Apply the parser to the frontend (generates all switches etc.)
         await this.frontend.apply(config.parser);
 
@@ -469,7 +481,15 @@ class PySwitchUI {
      * Let all tabs confirm if they have unapplied content
      */
     confirmIfDirty() {
-        return this.tabs.confirmIfDirty();
+        // First ask the tabs
+        if (!this.tabs.confirmIfDirty()) return false;
+
+        // Tabs said everything is ok, so check if the config is dirty
+        if (this.#controller.currentConfig && this.#controller.currentConfig.isDirty()) {
+            if (!confirm("You have unsaved changes. Do you want to continue?")) return false;
+        }
+
+        return true;
     }
 
     /**
@@ -533,6 +553,20 @@ class PySwitchUI {
         this.#progressMessage.text(message);
 
         this.#block.show();
+    }
+
+    /**
+     * Show the dirty mark
+     */
+    setDirty() {
+        this.#changeMarker.show();
+    }
+
+    /**
+     * Hide the dirty mark
+     */
+    resetDirtyState() {
+        this.#changeMarker.hide();
     }
 
     /**

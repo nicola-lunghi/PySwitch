@@ -4,7 +4,7 @@ class MockConfiguration extends Configuration {
     #display_py = null;
 
     constructor(inputs_py, display_py) {
-        super("Dummy");
+        super(new MockController(), "Dummy");
 
         this.#inputs_py = inputs_py;
         this.#display_py = display_py;

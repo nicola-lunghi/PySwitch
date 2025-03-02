@@ -6,9 +6,13 @@ class Configuration {
 
     #data = null;
     #name = null;
-    parser = null;
+    #dirty = false;
     
-    constructor(name = "") {
+    parser = null;
+    controller = null;
+    
+    constructor(controller, name = "") {
+        this.controller = controller;
         this.#name = name;
     }
 
@@ -31,6 +35,7 @@ class Configuration {
     async get() {
         if (!this.loaded()) {
             this.#data = await this.load();
+            this.resetDirtyState();
         }
         
         return this.#data;
@@ -40,6 +45,7 @@ class Configuration {
      * Set new data.
      */
     set(data) {
+        this.setDirty();
         this.#data = data;
     }
 
@@ -55,6 +61,39 @@ class Configuration {
      */
     async name() {
         return this.#name;
+    }
+
+    ///////////////////////////////////////////////////////////////////
+
+    /**
+     * Save the data to the location of the configuration
+     */
+    async save() {
+        await this.doSave();
+        this.resetDirtyState();
+    }
+
+    /**
+     * Returns if the config has unsaved changes
+     */
+    isDirty() {
+        return this.#dirty;
+    }
+
+    /**
+     * Set the config dirty
+     */
+    setDirty() {
+        this.#dirty = true;
+        this.controller.ui.setDirty();
+    }
+
+    /**
+     * Reset the dirty state
+     */
+    resetDirtyState() {
+        this.#dirty = false;
+        this.controller.ui.resetDirtyState();
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -76,7 +115,7 @@ class Configuration {
     /**
      * Save the data to the location of the configuration
      */
-    async save() {
+    async doSave() {
         throw new Error("Saving not supported for this type of configuration");
     }
 }
