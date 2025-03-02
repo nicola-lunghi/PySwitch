@@ -169,17 +169,6 @@ class Controller {
     }
 
     /**
-     * Stops any current run
-     *
-    async stop() {
-        // Hide all inputs and LEDs etc.
-        await this.ui.frontend.reset();
-
-        // Stop the engine
-        await this.pyswitch.stop();
-    }
-
-    /**
      * Restarts the current configuration
      * 
      * {

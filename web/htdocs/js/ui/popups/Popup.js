@@ -11,7 +11,7 @@ class Popup {
 
     /**
      * {
-     *      container:                Container DOM element
+     *      container:                Container DOM element. Will be hidden/shown along with the popups.
      *      additionalClasses:        Optional CSS classes for the popup element
      *      onReturnKey:              Callback when the user hits the Return key
      *      onClose:                  Called on hide
@@ -32,9 +32,11 @@ class Popup {
             this.#container.remove();
         }        
 
+        this.options.container.hide();
+
         this.#container = null;
         this.element = null;
-
+        
         $(window).off('.' + this.#id);
     }
 
@@ -95,6 +97,8 @@ class Popup {
         this.element.on('click.' + this.#id, function(event) {
             event.stopPropagation();
         })
+
+        this.options.container.show();
 
         setTimeout(function() {
             $(window).on('click.' + that.#id, async function() {

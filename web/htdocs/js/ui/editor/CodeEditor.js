@@ -79,7 +79,7 @@ class CodeEditor extends Tab {
      * Sets a Configuration instance to get/set code
      */
     async setConfig(config) {
-        const content = (await config.get())[this.#configFieldName];
+        const content = config ? (await config.get())[this.#configFieldName] : "";
         this.#resetDirtyState();
         this.#setContent(content);
         this.#config = config;

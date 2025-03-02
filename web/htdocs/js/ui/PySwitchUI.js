@@ -14,7 +14,7 @@ class PySwitchUI {
     #deviceElement = null;
     #versionElement = null;
     #changeMarker = null;
-    
+    #popupContainer = null;
     #virtualClientTab = null;
     #virtualClientUI = null;    
     
@@ -125,6 +125,7 @@ class PySwitchUI {
                         $('<div class="appl-button fas fa-save" data-toggle="tooltip" title="Save configuration..." />')
                         .on("click", async function() {
                             try {
+                                that.saveBrowser.options.selectedValue = that.#controller.currentConfig ? (await that.#controller.currentConfig.name()) : null;
                                 await that.saveBrowser.browse();
 
                             } catch (e) {
@@ -171,6 +172,9 @@ class PySwitchUI {
 
                 /////////////////////////////////////////////////////////////////////////////////////
 
+                // Popups (will apply their content to this)
+                this.#popupContainer = $('<div class="popup-container" />').hide(),
+
                 // Messages
                 messageElement = $('<div class="messages"/>')
             )
@@ -195,16 +199,20 @@ class PySwitchUI {
 
         // CTRL-S key to save
         $(window).on('keydown', async function(event) {
-            if (event.ctrlKey || event.metaKey) {
-                switch (String.fromCharCode(event.which).toLowerCase()) {
-                    case 's':
-                        event.preventDefault();
-                        
-                        await that.#controller.currentConfig.save();
-                        that.#controller.ui.notifications.message("Successfully saved configuration to " + (await that.#controller.currentConfig.name()), "S");
-                        
-                        break;		        
+            try {
+                if (event.ctrlKey || event.metaKey) {
+                    switch (String.fromCharCode(event.which).toLowerCase()) {
+                        case 's':
+                            event.preventDefault();
+                            
+                            await that.#controller.currentConfig.save();
+                            that.#controller.ui.notifications.message("Successfully saved configuration to " + (await that.#controller.currentConfig.name()), "S");
+                            
+                            break;		        
+                    }
                 }
+            } catch (e) {
+                that.#controller.handle(e);
             }
         });
 
@@ -220,7 +228,6 @@ class PySwitchUI {
         // const that = this;
 
         this.getPopup({ 
-            container: this.container,
             fullscreen: true,
             onClose: function() {
                 // that.#controller.setState('suppressInfoPopup', true);
@@ -237,7 +244,7 @@ class PySwitchUI {
      * Returns a new simple Popup instance
      */
     getPopup(options = {}) {
-        if (!options.container) options.container = this.container;
+        if (!options.container) options.container = this.#popupContainer;
         if (!options.errorHandler) options.errorHandler = this.#controller;
         return new Popup(options);        
     }
@@ -246,7 +253,7 @@ class PySwitchUI {
      * Returns a new BrowserPopup instance
      */
     getBrowserPopup(options = {}) {
-        if (!options.container) options.container = this.container;
+        if (!options.container) options.container = this.#popupContainer;
         if (!options.errorHandler) options.errorHandler = this.#controller;
         return new BrowserPopup(options);        
     }
@@ -456,6 +463,15 @@ class PySwitchUI {
      * Sets the UI properties for the configuration
      */
     async applyConfig(config) {
+        if (!config) {
+            this.#contentHeadline.text("");
+            
+            await this.frontend.reset();
+
+            await this.editors.inputs.setConfig(null);
+            await this.editors.display.setConfig(null);
+            return;
+        }
         // Headline (config name)
         this.#contentHeadline.text(await config.name());
         // this.resetDirtyState();
