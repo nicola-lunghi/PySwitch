@@ -52,7 +52,7 @@ class CodeEditor extends Tab {
 			that.#setDirty();
 		});
 
-        this.#initGlobalShortcuts();
+        this.#initShortcuts();
     }
 
     /**
@@ -103,21 +103,15 @@ class CodeEditor extends Tab {
     /**
 	 * Global key shortcuts
 	 */
-	#initGlobalShortcuts() {
+	#initShortcuts() {
 		const that = this;
 		
-		// CTRL-S key to save
+		// F8 key to apply
 		this.#editorElement.on('keydown', async function(event) {
-		    if (event.ctrlKey || event.metaKey) {
-		        switch (String.fromCharCode(event.which).toLowerCase()) {
-                    case 's':
-                        event.preventDefault();
-                        
-                        await that.apply();
-                        
-                        break;		        
-		        }
-		    }
+            if (event.key == "F8") {
+                event.preventDefault();                        
+                await that.apply();
+            }
 		});
 	}
 

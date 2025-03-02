@@ -193,19 +193,20 @@ class PySwitchUI {
         // Show or hide tabs
         this.tabs = new Tabs(this.#controller, tabsElement, showTabsButton);
 
-        // // CTRL-S key to save
-        // $(window).on('keydown', async function(event) {
-        //     if (event.ctrlKey || event.metaKey) {
-        //         switch (String.fromCharCode(event.which).toLowerCase()) {
-        //             case 's':
-        //                 event.preventDefault();
+        // CTRL-S key to save
+        $(window).on('keydown', async function(event) {
+            if (event.ctrlKey || event.metaKey) {
+                switch (String.fromCharCode(event.which).toLowerCase()) {
+                    case 's':
+                        event.preventDefault();
                         
-        //                 console.log(888)
+                        await that.#controller.currentConfig.save();
+                        that.#controller.ui.notifications.message("Successfully saved configuration to " + (await that.#controller.currentConfig.name()), "S");
                         
-        //                 break;		        
-        //         }
-        //     }
-        // });
+                        break;		        
+                }
+            }
+        });
 
         // if (!this.#controller.getState('suppressInfoPopup')) {
         //     await this.showAbout();
@@ -312,7 +313,7 @@ class PySwitchUI {
                         return that.#controller.currentConfig ? that.#controller.currentConfig.canBeSaved() : false;
                     },
                     text: async function(entry) {
-                        return "Save to " + (await that.#controller.currentConfig.name());
+                        return "Save to " + (await that.#controller.currentConfig.name()) + " (Ctrl+S)";
                     },
                     onSelect: async function(entry) {
                         that.saveBrowser.hide();
