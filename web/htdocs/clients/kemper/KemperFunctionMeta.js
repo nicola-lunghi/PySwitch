@@ -24,7 +24,7 @@ class KemperFunctionMeta extends FunctionMeta {
             case "BANK_SELECT": return this.#getDisplayNameBankSelect(actionCallProxy)
             case "EFFECT_BUTTON": return this.#getDisplayNameEffectButton(actionCallProxy)
             case "EFFECT_STATE": return this.#getDisplayNameEffectState(actionCallProxy)
-            case "BINARY_SWITCH": return "Other"
+            case "BINARY_SWITCH": return this.#getDisplayNameBinarySwitch(actionCallProxy)
         }
         
         return super.getShortDisplayName(actionCallProxy);
@@ -142,6 +142,28 @@ class KemperFunctionMeta extends FunctionMeta {
 
         return "Effect State";
     }
+
+    /**
+     * Special implementation for Binary Switch action
+     */
+    #getDisplayNameBinarySwitch(actionCallProxy = null) {
+        if (!actionCallProxy) return "Other";
+
+        const mapping = this.#getArgument(actionCallProxy, "mapping");
+
+        if (!(mapping == null || mapping.value == "None")) {
+            return this.underscoreToDisplayName(
+                mapping.value
+                .replace("MAPPING_", "")
+                .replace("KemperMappings.", "")
+                .replace(/\((.+?)*\)/g, "")
+            );
+        }
+
+        return "Other";
+    }   
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Gets the name of a argument in the given definition

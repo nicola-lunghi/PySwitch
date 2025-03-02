@@ -140,7 +140,13 @@ class PySwitchRunner:
 
     # One tick of the controller
     def tick(self):
-        self.controller.tick()
+        try:
+            self.controller.tick()
+        
+        except Exception as exc:
+            self.stop()
+            raise exc
+        
         self.display_driver.update()
 
         externalRefs.protocolState = self.protocol.state
