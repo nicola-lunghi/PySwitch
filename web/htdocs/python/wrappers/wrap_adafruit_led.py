@@ -37,7 +37,6 @@ class WrapNeoPixelDriver:
             
             value = [clip(trans(v * 3)) for v in value]
 
-            # When black, make transparent
             led.style.backgroundColor = f"rgb({ value[0] }, { value[1] }, { value[2] })"
 
 

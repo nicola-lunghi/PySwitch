@@ -89,23 +89,15 @@ class CodeEditor extends Tab {
      * Apply changes to the config
      */
     async apply() {
-        // Remove all inputs and LEDs etc.
-        await this.#controller.ui.frontend.reset();
-
-        // After the frontend reset, we must let some time pass for the UI to flush.
         const that = this;
-        setTimeout(async function() {
-            try {
+        await this.#controller.restart({
+            message: "none",
+            changeCallback: async function() {
                 await that.#config.parser.updateFromSource(that.#configFieldName, that.#getContent());
-        
-                await that.#controller.restart("Successfully applied changes");
 
                 that.#resetDirtyState();
-                
-            } catch (e) {
-                that.#controller.handle(e);
             }
-        }, 10)
+        });
     }
 
     /**

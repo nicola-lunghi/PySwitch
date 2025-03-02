@@ -21,4 +21,18 @@ class Device {
         
         throw new Error("Unknown device type");
     }
+
+    /**
+     * Returns the hardware definition script file name in the lib/pyswitch/hardware/devices/ folder
+     */
+    getHardwareImportPath() {
+        throw new Error("Implement this in child classes");
+    }
+
+    /**
+     * Returns the class(es) to set on the device element
+     */
+    getDeviceClass() {
+        throw new Error("Implement this in child classes");
+    }
 }

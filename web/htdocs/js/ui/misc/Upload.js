@@ -45,13 +45,10 @@ class Upload {
      * Load files from the passed event
      */
     async #load(e, config) {
-        // Remove all inputs and LEDs etc.
-        await this.#controller.ui.frontend.reset();
-
-        // After the frontend reset, we must let some time pass for the UI to flush.
         const that = this;
-        setTimeout(async function() {
-            try {
+        await this.#controller.restart({
+            message: "none",
+            changeCallback: async function() {
                 const data = await config.get();
 
                 for (const file of e.target.files) {
@@ -64,13 +61,8 @@ class Upload {
                 }
         
                 await config.parser.updateFromData(data);
-        
-                await that.#controller.restart("Successfully uploaded configuration");
-                        
-            } catch (e) {
-                that.#controller.handle(e);
             }
-        }, 10)
+        });
     }
 
     /**

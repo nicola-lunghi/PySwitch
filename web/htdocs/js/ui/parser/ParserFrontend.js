@@ -68,29 +68,18 @@ class ParserFrontend {
      * Implementation for updateConfig
      */
     async #doUpdateConfig() {
-        await this.#controller.stop();
-
-        while (this.#toUpdate.length > 0) {
-            const inputToUpdate = this.#toUpdate.shift();
-            await inputToUpdate.updateInput();
-        }
-
-        // Remove all inputs and LEDs etc.
-        await this.#controller.ui.frontend.reset();
-
-        // After the frontend reset, we must let some time pass for the UI to flush.
         const that = this;
-        setTimeout(async function() {
-            try {
-                // All set_actions calls have suppressed updating until now, so we need to do this here
-                that.parser.updateConfig();
+        await this.#controller.restart({
+            message: "none",
+            changeCallback: async function() {
+                // Update the input queue
+                while (that.#toUpdate.length > 0) {
+                    const inputToUpdate = that.#toUpdate.shift();
+                    await inputToUpdate.updateInput();
+                }
 
-                // Restart the emulated controller
-                await that.#controller.restart("none");
-                
-            } catch (e) {
-                that.#controller.handle(e);
+                that.parser.updateConfig();
             }
-        }, 10)
+        });
     }
 }

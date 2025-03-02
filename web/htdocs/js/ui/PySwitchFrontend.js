@@ -7,7 +7,7 @@ class PySwitchFrontend {
     #options = null;
     #container = null;
     parserFrontend = null;
-    #elementsToRemove = [];    // Elements to be removed on reset
+    #elementsToHide = [];    // Elements to be removed on reset
 
     constructor(controller, container, options) {
         this.#controller = controller;
@@ -19,10 +19,9 @@ class PySwitchFrontend {
      * Remove all controls and the display (to signal that a new UI is coming up)
      */
     reset() {
-        for (const item of this.#elementsToRemove) {
-            item.remove();
+        for (const item of this.#elementsToHide) {
+            item.hide();
         }
-        this.#elementsToRemove = [];
     }
 
     /**
@@ -39,7 +38,7 @@ class PySwitchFrontend {
 
         // Clear contents and create container
         this.#container.empty();
-        this.#elementsToRemove = [];
+        this.#elementsToHide = [];
         
         this.#container.append(
             $('<img id="' + this.#options.domNamespace + '-background" />')
@@ -55,7 +54,7 @@ class PySwitchFrontend {
         this.#container.append(
             canvasElement = $('<canvas id="' + this.#options.domNamespace + '-display" />')
         );
-        this.#elementsToRemove.push(canvasElement);
+        this.#elementsToHide.push(canvasElement);
     }
 
     /**
@@ -85,7 +84,7 @@ class PySwitchFrontend {
 
         let visualElement = null;
         let inputElement = null;
-
+        
         switch (model.type) {
             case "AdafruitSwitch":
                 inputsContainer.append(
@@ -126,7 +125,7 @@ class PySwitchFrontend {
         }
 
         if (visualElement) {
-            this.#elementsToRemove.push(visualElement);
+            this.#elementsToHide.push(visualElement);
         }
 
         // Parser frontend

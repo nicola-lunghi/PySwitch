@@ -171,35 +171,61 @@ class Controller {
 
     /**
      * Stops any current run
-     */
+     *
     async stop() {
+        // Hide all inputs and LEDs etc.
+        await this.ui.frontend.reset();
+
         // Stop the engine
         await this.pyswitch.stop();
     }
 
     /**
      * Restarts the current configuration
+     * 
+     * {
+     *      message: Set to override the default success message. If set to "none", no message is issued at all.
+     *      changeCallback: If set, this is called when the engine is down, to apply changes to the configuration in between.
+     * }
      */
-    async restart(message = null) {
+    async restart(options = {}) {
         this.ui.notifications.reset();
-
+        
         if (!this.currentConfig) {
             console.warn("No config to restart");
             return;
         }
 
-        // Stop the engine
-        await this.pyswitch.stop();
+        // Hide all inputs and LEDs etc.
+        await this.ui.frontend.reset();
 
-        // Recreate UI
-        await this.ui.applyConfig(this.currentConfig);
+        // After the frontend changes, we must let some time pass for the UI to flush.
+        const that = this;
+        setTimeout(async function() {
+            try {
+                // Stop the engine
+                await that.pyswitch.stop();
 
-        // Restart configuration
-        await this.pyswitch.run(await this.currentConfig.get());
-        
-        if (message != "none") {
-            this.ui.message(message ? message : ("Reloaded " + (await this.currentConfig.name())), "S");
-        }
+                // If requested, do some changes (or whatever else) before the config is 
+                // applied to the UI and started again
+                if (options.changeCallback) {
+                    await options.changeCallback();
+                }
+
+                // Recreate UI
+                await that.ui.applyConfig(that.currentConfig);
+
+                // Restart configuration
+                await that.pyswitch.run(await that.currentConfig.get());
+
+                if (options.message != "none") {
+                    that.ui.message(options.message ? options.message : ("Reloaded " + (await that.currentConfig.name())), "S");
+                }
+
+            } catch (e) {
+                that.handle(e);
+            }
+        }, 10);
     }
 
     /**

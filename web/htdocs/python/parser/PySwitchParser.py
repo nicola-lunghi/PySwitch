@@ -12,7 +12,7 @@ from .misc.ImportExtractor import ImportExtractor
 class PySwitchParser:
 
     def __init__(self, hw_import_path, available_clients_json):
-        self.__hw_import_path = hw_import_path       
+        self.hw_import_path = hw_import_path       
         self.__js_parser = None
         self.__csts = None
         
@@ -63,7 +63,7 @@ class PySwitchParser:
         if port in self.__inputs:
             return self.__inputs[port]
         
-        visitor = Input(self, self.__hw_import_path, port)
+        visitor = Input(self, self.hw_import_path, port)
         self.__csts["inputs_py"].visit(visitor)
         ret = visitor if visitor.result != None else None
 

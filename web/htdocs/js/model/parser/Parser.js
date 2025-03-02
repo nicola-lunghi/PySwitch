@@ -21,6 +21,8 @@ class Parser {
         this.basePath = basePath;
 
         this.checks = new ParserChecks(this);
+
+        this.#bufferHardwareInfo = new Map();
     }
 
     /**
@@ -28,9 +30,10 @@ class Parser {
      * the parser is actually used. Expects the PySwitchRunner.
      */
     async #init() {
-        if (this.#pySwitchParser) return;
-        
         const device = await this.device();
+
+        if (this.#pySwitchParser && (this.#pySwitchParser.hw_import_path == device.getHardwareImportPath())) return;
+        
         const clients = (await Client.getAvailable(this.basePath)).map((item) => item.id);
 
         this.#pySwitchParser = await this.runner.pyodide.runPython(`         
@@ -78,6 +81,7 @@ class Parser {
      * Update the config with new code for a single file and reset the parser
      */
     async updateFromSource(fileName, code) {
+        await this.#init();
         const data = await this.config.get();
         data[fileName] = code;
         await this.updateFromData(data);
@@ -87,6 +91,7 @@ class Parser {
      * Update the config with new code for all files and reset the parser
      */
     async updateFromData(data) {
+        await this.#init();
         this.config.set(data);
         await this.#pySwitchParser.from_source(data.inputs_py, data.display_py);
         this.checks.reset();
@@ -104,11 +109,11 @@ class Parser {
     /**
      * Returns hardware info (available inputs) for the given config (buffered)
      */
-    async getHardwareInfo() {
-        if (this.#bufferHardwareInfo) return this.#bufferHardwareInfo;
-
+    async getHardwareInfo() {        
         const device = await this.device();
-        
+    
+        if (this.#bufferHardwareInfo.has(device.getHardwareImportPath())) return this.#bufferHardwareInfo.get(device.getHardwareImportPath());
+
         const hardwareJson = await this.runner.pyodide.runPython(`
             import json
             from parser.PySwitchHardware import PySwitchHardware
@@ -116,8 +121,8 @@ class Parser {
             json.dumps(pySwitchHardware.get("` + device.getHardwareImportPath() + `"))
         `);
 
-        this.#bufferHardwareInfo = JSON.parse(hardwareJson);
-        return this.#bufferHardwareInfo;
+        this.#bufferHardwareInfo.set(device.getHardwareImportPath(), JSON.parse(hardwareJson));
+        return this.#bufferHardwareInfo.get(device.getHardwareImportPath());
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
