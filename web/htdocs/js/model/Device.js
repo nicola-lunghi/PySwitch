@@ -35,4 +35,19 @@ class Device {
     getDeviceClass() {
         throw new Error("Implement this in child classes");
     }
+
+    /**
+     * Returns if the device has any additional inputs
+     */
+    hasAdditionalInputs() {
+        return false;
+    }    
+
+    /**
+     * For a given input data model (as returned by parser.getHardwareInfo()), this returns if the 
+     * input is additional and should be rendered in a separate panel.
+     */
+    isAdditionalInput(model) {
+        return false;
+    }
 }

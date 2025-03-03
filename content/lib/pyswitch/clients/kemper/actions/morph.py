@@ -78,7 +78,7 @@ def _get_color(action, value):
         cb.color_base[0] + int(cb.r_diff * v),
         cb.color_base[1] + int(cb.g_diff * v),
         cb.color_base[2] + int(cb.b_diff * v),
-    )  
+    )
 
 ###################################################################################################
 
@@ -132,6 +132,7 @@ class KemperMorphCallback(BinaryParameterCallback):
         self.appl = None
 
         self.ignore_next_value = False
+
 
     def init(self, appl, listener = None):
         super().init(appl, listener)

@@ -28,6 +28,9 @@
     padding-bottom: 7.5%;
 }
 
+.midicaptain-10 .pyswitch-potentiometer {    
+}
+
 /****************************************************************/
 
 .midicaptain-10 #pyswitch-switch-gp1 {
@@ -112,3 +115,18 @@
     transform: translate(-50%, 100%);
 }
 
+/****************************************************************/
+
+.midicaptain-10 #pyswitch-potentiometer-gp27 {
+    top: -45%;
+    left: 3%;
+}
+
+/* .midicaptain-10 #pyswitch-potentiometer-gp27 .pyswitch-potentiometer-visual {
+    transform: rotate(-90deg);
+} */
+
+/* .midicaptain-10 #pyswitch-potentiometer-gp27 .pyswitch-parser-frontend {
+    bottom: -90%;
+    left: 110%;
+} */

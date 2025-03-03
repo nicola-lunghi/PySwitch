@@ -14,6 +14,7 @@ class ClassAttributeExtractor {
      *      file: The file to parse,
      *      className
      *      importPath
+     *      includeUnderscore: bool
      * }
      */
     async get(options) {
@@ -23,9 +24,10 @@ class ClassAttributeExtractor {
             from parser.misc.ClassAttributeExtractor import ClassAttributeExtractor
 
             classAttributeExtractor = ClassAttributeExtractor(
-                file = '` + options.file + `',
-                className = '` + options.className + `',
-                importPath = '` + options.importPath + `',
+                file               = '` + options.file + `',
+                className          = '` + options.className + `',
+                importPath         = '` + options.importPath + `',
+                include_underscore = ` + (options.includeUnderscore ? "True" : "False") + `
             )
             
             json.dumps(classAttributeExtractor.get())

@@ -6,9 +6,16 @@ class PySwitchFrontend {
     #controller = null;
     #options = null;
     #container = null;
-    parserFrontend = null;
     #elementsToHide = [];    // Elements to be removed on reset
 
+    parserFrontend = null;
+
+    /**
+     * {
+     *      domNamespace,
+     *      globalContainer:   Container for additional inputs (see Device.isAdditionalInput())
+     * }
+     */
     constructor(controller, container, options) {
         this.#controller = controller;
         this.#container = container;
@@ -39,6 +46,7 @@ class PySwitchFrontend {
         // Clear contents and create container
         this.#container.empty();
         this.#elementsToHide = [];
+        this.#options.globalContainer.empty();
         
         this.#container.append(
             $('<img id="' + this.#options.domNamespace + '-background" />')
@@ -47,7 +55,7 @@ class PySwitchFrontend {
         // Create parser frontend
         this.parserFrontend = new ParserFrontend(this.#controller, parser);
 
-        // Add switches and LEDs
+        // Add switches and LEDs etc.
         await this.#initInputs(parser);
 
         let canvasElement = null;
@@ -69,7 +77,7 @@ class PySwitchFrontend {
         
         // Create all inputs
         for (const inputDefinition of hw) {
-            await this.#createInput(inputsContainer, inputDefinition)            
+            await this.#createInput(parser, inputsContainer, inputDefinition)            
         }
 
         // Init all frontend inputs
@@ -79,15 +87,18 @@ class PySwitchFrontend {
     /**
      * Crate one input from a HW definition
      */
-    async #createInput(inputsContainer, inputDefinition) {
+    async #createInput(parser, inputsContainer, inputDefinition) {
         const model = inputDefinition.data.model;
+        const device = await parser.device();
 
         let visualElement = null;
         let inputElement = null;
+
+        const container = device.isAdditionalInput(model) ? this.#options.globalContainer : inputsContainer;
         
         switch (model.type) {
             case "AdafruitSwitch":
-                inputsContainer.append(
+                container.append(
                     // Switch element
                     inputElement = $('<div id="' + this.#options.domNamespace + '-switch-gp' + model.port + '" />')
                     .addClass(this.#options.domNamespace + '-switch')
@@ -105,6 +116,30 @@ class PySwitchFrontend {
                         .on('mouseup mouseout mouseleave touchend', async function(e) {
                             e.currentTarget.parentNode.dataset.pushed = false;
                         })
+                    )
+                );
+                break;
+
+            case "AdafruitPotentiometer":
+                container.append(
+                    // Continuous input element
+                    inputElement = $('<div id="' + this.#options.domNamespace + '-potentiometer-gp' + model.port + '" />')
+                    .addClass(this.#options.domNamespace + '-potentiometer')
+                    .append(
+                        visualElement = $('<input type="range" min="0" max="65535" />')
+                        .addClass(this.#options.domNamespace + '-potentiometer-visual')
+                    )
+                );
+                break;
+
+            case "AdafruitEncoder":
+                container.append(
+                    // Rotary encoder element
+                    inputElement = $('<div id="' + this.#options.domNamespace + '-encoder-gp' + model.port + '" />')
+                    .addClass(this.#options.domNamespace + '-encoder')
+                    .append(
+                        visualElement = $('<input type="range" min="0" max="65535" />')
+                        .addClass(this.#options.domNamespace + '-encoder-visual')
                     )
                 );
                 break;
@@ -129,6 +164,6 @@ class PySwitchFrontend {
         }
 
         // Parser frontend
-        await this.parserFrontend.addInput(model.port, inputElement);
+        await this.parserFrontend.addInput(model, inputElement);
     }
 }

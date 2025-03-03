@@ -10,12 +10,14 @@ class ParserFrontendInput {
     #gridElement = null;
 
     input = null;           // Input handler
+    model = null;           // Hardware model
 
-    constructor(controller, parserFrontend, input, inputElement) {
+    constructor(controller, parserFrontend, model, input, inputElement) {
         this.#controller = controller;
         this.#parserFrontend = parserFrontend;
         this.#inputElement = inputElement;
         this.input = input;
+        this.model = model;
     }
 
     /**
@@ -23,14 +25,16 @@ class ParserFrontendInput {
      */
     async destroy() {
         if (this.#grid) await this.#grid.destroy();
+
         this.input = null;
+        this.model = null;
     }
 
     /**
      * Adds the parser frontend for one input
      */
     async init() {
-        if (!this.input) return;
+        if (!this.model) return;
 
         await this.#initDom();
         await this.#initGrid();
@@ -43,8 +47,8 @@ class ParserFrontendInput {
         const that = this;
 
         // Get actions to show
-        const actions = await this.input.actions();
-        const actionsHold = await this.input.actions(true);
+        const actions = this.input ? (await this.input.actions()) : [];
+        const actionsHold = this.input ? (await this.input.actions(true)) : [];
 
         // Load all available clients
         const clients = await this.#parserFrontend.parser.getAvailableActions();
@@ -428,6 +432,25 @@ class ParserFrontendInput {
 
             props.setArguments(preselectAction.arguments);
             props.setHold(preselectAction.hold)            
+        }
+
+        // Preselected entry not found: Show a note that this can only be edited via Code Editor
+        if (preselectAction && !actionsProvider.preselectEntry) {
+            browser.showInfoPanel(
+                [
+                    $('<span />')
+                    .text(preselectAction.name + " can only be edited directly in "),
+
+                    $('<span class="underline-link" />')
+                    .text("Source Code...")
+                    .on('click', async function() {
+                        browser.hide();
+
+                        that.#controller.ui.tabs.show();
+                        that.#controller.ui.tabs.setActiveByName("inputs.py");
+                    })
+                ]
+            );
         }
 
         // Commit button

@@ -198,6 +198,16 @@ class Tabs {
     }
 
     /**
+     * Activate a tab by name, if found
+     */
+    setActiveByName(name) {
+        const tab = this.getTabByName(name);
+        if (!tab) return;
+
+        this.setActive(tab);
+    }
+
+    /**
      * Updates the tabs to the current active tab
      */
     #updateActive() {

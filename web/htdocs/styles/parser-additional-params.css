@@ -1,0 +1,87 @@
+.container .application .additional-parameters-container {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
+
+.container .application .additional-parameters-container.hidden {
+    bottom: unset;
+    top: 100%;
+}
+
+/**********************************************************************/
+
+.container .application .additional-parameters {
+    background-color: rgb(110, 110, 110);
+    padding: 1em;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 1em;
+}
+
+.container .application .additional-button {
+    position: absolute;
+    left: -0.3em;
+    top: -2em;
+    width: 1em;
+
+    margin-top: var(--elements-margin);
+    margin-left: calc(var(--elements-margin)* 2);
+
+    text-align: center;    
+    color: var(--elements-color);    
+}
+
+.container .application .additional-button:hover {
+    color: var(--elements-color-hover);
+}
+
+/**********************************************************************/
+
+.container .application .additional-parameters input {
+    padding: 0.5em;
+}
+
+/**********************************************************************/
+
+.container .application .additional-parameters .pyswitch-switch {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+/**********************************************************************/
+
+.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-overlay {
+    visibility: hidden;
+}
+
+.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-visual {
+    margin: 0.5em;
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    background-color: rgb(48, 48, 48);
+}
+
+.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-visual:hover {
+    background-color: rgb(66, 66, 66);    
+}
+
+.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-visual:active:hover {
+    background-color: rgb(90, 90, 90);   
+}
+
+/**********************************************************************/
+
+.container .application .additional-parameters .pyswitch-potentiometer {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+/**********************************************************************/
+
+.container .application .additional-parameters .pyswitch-encoder {
+    display: flex;
+    flex-direction: column-reverse;
+}

@@ -1,4 +1,4 @@
-.container .application .pyswitch-parser-frontend {
+.container .application #pyswitch-inputs .pyswitch-parser-frontend {
     position: absolute;
 }
 
@@ -6,8 +6,6 @@
 
 .container .application .pyswitch-parser-frontend .action-grid {
     position: relative;
-    /* min-height: 2em;
-    min-width: 3em; */
     background-color: #afafaf;
     border-radius: 0.5em;
     transition: width 0.2s, height 0.2s;
@@ -17,7 +15,6 @@
     display: block;
     position: absolute;
     z-index: 1;   
-    /* background-color: greenyellow; */
 }
 
 .container .application .pyswitch-parser-frontend .action-grid .action-item.muuri-item-dragging {
@@ -38,7 +35,6 @@
     display: grid;
     grid-template-columns: auto auto;
     grid-template-rows: auto;
-    /* grid-gap: 0.2em; */
 }
 
 .container .application .pyswitch-parser-frontend .action-grid .action-item-content > *:first-child {
@@ -52,7 +48,8 @@
 /****************************************************************/
 
 .container .application .pyswitch-parser-frontend .button {
-    font-size: 0.8em;
+    font-size: 0.7em;
+    text-overflow: ellipsis;
     border: none;
 }
 
@@ -62,31 +59,17 @@
     background-color: unset;
 }
 
-/* .container .application .pyswitch-parser-frontend .button.remove-action {
-    background-color: unset;
-} */
-
 /*****************************************************************/
 
 .container .application .pyswitch-parser-frontend .button.actions {
     background-color: rgb(221, 221, 221);
-	/* border-color: rgb(241, 241, 241); */
     color: black;
 }
 
-/* .container .application .pyswitch-parser-frontend .button.actions:hover {
-    background-color: rgb(207, 207, 207);
-} */
-
 .container .application .pyswitch-parser-frontend .button.actions-hold {
     background-color: rgb(92, 92, 92);
-	/* border-color: rgb(141, 141, 141); */
     color: white;
 }
-
-/* .container .application .pyswitch-parser-frontend .button.actions-hold:hover {
-    background-color: rgb(75, 75, 75);
-} */
 
 .container .application .pyswitch-parser-frontend .button:hover {
     filter: brightness(0.9);

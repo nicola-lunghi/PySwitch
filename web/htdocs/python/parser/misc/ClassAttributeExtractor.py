@@ -4,10 +4,11 @@ from .CollectCommentsTransformer import CollectCommentsTransformer
 
 class ClassAttributeExtractor:
 
-    def __init__(self, file, className, importPath):
+    def __init__(self, file, className, importPath, include_underscore = False):
         self.file = file
         self.className = className
         self.importPath = importPath
+        self.include_underscore = include_underscore
 
     # Returns a list of all public functions defined on module level
     def get(self):
@@ -55,7 +56,7 @@ class ClassAttributeExtractor:
                 if not self.inside_classdef: 
                     return False
                 
-                if node.name.value.startswith("_"):
+                if not self.main.include_underscore and node.name.value.startswith("_"):
                     return False
                 
                 ret.append({
@@ -67,20 +68,5 @@ class ClassAttributeExtractor:
                 })
 
         cst.visit(ClassVisitor(self))
-
-        # # Check all statements for function definitions
-        # for statement in cst.body:
-        #     if not isinstance(statement, libcst.FunctionDef):
-        #         continue
-
-        #     if statement.name.value.startswith("_"):
-        #         continue
-
-        #     ret.append({
-        #         "name": statement.name.value,
-        #         "parameters": get_params(statement),
-        #         "comment": get_comments(statement, 0),
-        #         "importPath": path.replace("/", ".").removesuffix(".py")
-        #     })
 
         return ret

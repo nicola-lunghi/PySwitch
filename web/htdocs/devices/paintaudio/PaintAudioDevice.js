@@ -34,4 +34,25 @@ class PaintAudioDevice extends Device {
 
         throw new Error("Unknown device file: " + this.#filename);
     }
+
+    /**
+     * Returns if the device has any additional inputs
+     */
+    hasAdditionalInputs() {
+        return this.#filename == 'pa_midicaptain_10';
+    }
+
+    /**
+     * For a given input data model (as returned by parser.getHardwareInfo()), this returns if the 
+     * input is additional and should be rendered in a separate panel.
+     */
+    isAdditionalInput(model) {
+        switch(model.port) {
+            case 27: return true;  // Exp. Pedal 1
+            case 28: return true;  // Exp. Pedal 2
+            case 2: return true;   // Wheel Encoder
+            case 0: return true;   // Wheel Button            
+        }
+        return false;
+    }
 }

@@ -16,7 +16,9 @@ class PySwitchUI {
     #changeMarker = null;
     #popupContainer = null;
     #virtualClientTab = null;
-    #virtualClientUI = null;    
+    #virtualClientUI = null;
+    #additionalInputsContainer = null;
+    #additionalInputsButton = null;
     
     container = null;
 
@@ -72,6 +74,8 @@ class PySwitchUI {
         let clientButtonElement = null;
         let tabsElement = null;
         let showTabsButton = null;
+        let additionalInputsElement = null;
+        let additionalInputsContainer = null;
         
         // Settings panel
         const that = this;
@@ -119,7 +123,7 @@ class PySwitchUI {
                             } catch (e) {
                                 that.#controller.handle(e);
                             }
-                        })  ,
+                        }),
 
                         // Save
                         $('<div class="appl-button fas fa-save" data-toggle="tooltip" title="Save configuration..." />')
@@ -131,7 +135,7 @@ class PySwitchUI {
                             } catch (e) {
                                 that.#controller.handle(e);
                             }
-                        })  ,
+                        }),
 
                         // Show/hide tabs
                         showTabsButton = $('<div class="appl-button fas fa-code" data-toggle="tooltip" title="Show code"/>')
@@ -142,7 +146,7 @@ class PySwitchUI {
                             } catch (e) {
                                 that.#controller.handle(e);
                             }
-                        }),
+                        })
                     ),
 
                     // Header, showing the current Configuration name
@@ -154,6 +158,28 @@ class PySwitchUI {
                         .text("*")
                         .hide()
                     ),
+
+                    // Additional parameters: Container
+                    this.#additionalInputsContainer = $('<div class="additional-parameters-container" />')
+                    .addClass('hidden')
+                    .append(
+                        // Additional parameters: Button
+                        this.#additionalInputsButton = $('<div class="additional-button appl-button fas" data-toggle="tooltip" title="Show additional inputs" />')
+                        .addClass('fa-ellipsis-v')
+                        .on("click", async function() {
+                            try {
+                                const newVisible = that.#additionalInputsContainer.hasClass('hidden')
+                                that.#toggleAdditionalInputs(newVisible);
+                                
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
+                        }),
+
+                        // Additional parameters
+                        additionalInputsElement = $('<div class="additional-parameters" />')
+                    )
+                    .hide()
                 ),
 
                 /////////////////////////////////////////////////////////////////////////////////////
@@ -192,7 +218,10 @@ class PySwitchUI {
         this.notifications = new Notifications(messageElement);
 
         // Parser UI handler
-        this.frontend = new PySwitchFrontend(this.#controller, this.#deviceElement, this.#options);
+        this.frontend = new PySwitchFrontend(this.#controller, this.#deviceElement, {
+            domNamespace: this.#options.domNamespace,
+            globalContainer: additionalInputsElement
+        });
 
         // Show or hide tabs
         this.tabs = new Tabs(this.#controller, tabsElement, showTabsButton);
@@ -219,6 +248,23 @@ class PySwitchUI {
         // if (!this.#controller.getState('suppressInfoPopup')) {
         //     await this.showAbout();
         // }
+    }
+
+    /**
+     * Shows/hides the additional inputs panel
+     */
+    #toggleAdditionalInputs(show) {
+        this.#additionalInputsContainer.toggleClass('hidden', !show);
+                                
+        this.#additionalInputsButton.toggleClass('fa-ellipsis-v', !show);
+        this.#additionalInputsButton.toggleClass('fa-times', show);
+    }
+
+    /**
+     * Completely show/hide the additional inputs panel (incl. the button)
+     */
+    #enableAdditionalInputs(enable) {
+        this.#additionalInputsContainer.toggle(enable);
     }
 
     /**
@@ -474,7 +520,10 @@ class PySwitchUI {
         }
         // Headline (config name)
         this.#contentHeadline.text(await config.name());
-        // this.resetDirtyState();
+        
+        // Show/hide additional parameters container
+        const device = await config.parser.device();
+        this.#enableAdditionalInputs(device.hasAdditionalInputs());
         
         // Apply the parser to the frontend (generates all switches etc.)
         await this.frontend.apply(config.parser);

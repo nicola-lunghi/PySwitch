@@ -46,6 +46,10 @@ class PySwitchHardware:
 
             if hasattr(model, "port"):
                 new_model["port"] = model.port
+                
+            elif hasattr(model, "port_1"):
+                # If the input has more ports like the rotary encoder, take the first one only (enough as unique identifier)
+                new_model["port"] = model.port_1
 
             entry["data"]["model"] = new_model
 
