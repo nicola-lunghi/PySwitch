@@ -71,7 +71,7 @@ class WrapAnalogIO:
         def __init__(self, port):
             self.port = port
 
-            self.element = document.getElementById(WrapAnalogIO.dom_namespace + "-pedal-gp" + str(port))
+            self.element = document.getElementById(WrapAnalogIO.dom_namespace + "-potentiometer-gp" + str(port))
 
         @property
         def value(self):
@@ -82,7 +82,7 @@ class WrapAnalogIO:
             if not dataset.hasOwnProperty("value"):
                 return 0
             
-            return dataset.value
+            return int(dataset.value)
         
 
 class WrapRotaryIO:
@@ -96,7 +96,7 @@ class WrapRotaryIO:
             self.divisor = divisor
             
             # The first port is used to address the wheel element
-            self.element = document.getElementById(WrapRotaryIO.dom_namespace + "-wheel-gp" + str(port_1))
+            self.element = document.getElementById(WrapRotaryIO.dom_namespace + "-encoder-gp" + str(port_1))
 
         @property
         def position(self):
@@ -105,6 +105,6 @@ class WrapRotaryIO:
             
             dataset = self.element.dataset.to_py()
             if not dataset.hasOwnProperty("position"):
-                self.element.dataset.position = 0
+                return 0
             
-            return dataset.position
+            return int(dataset.position)

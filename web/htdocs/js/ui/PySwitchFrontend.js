@@ -123,11 +123,14 @@ class PySwitchFrontend {
             case "AdafruitPotentiometer":
                 container.append(
                     // Continuous input element
-                    inputElement = $('<div id="' + this.#options.domNamespace + '-potentiometer-gp' + model.port + '" />')
+                    inputElement = $('<div id="' + this.#options.domNamespace + '-potentiometer-gp' + model.port + '" data-value="0" />')
                     .addClass(this.#options.domNamespace + '-potentiometer')
                     .append(
-                        visualElement = $('<input type="range" min="0" max="65535" />')
+                        visualElement = $('<input type="range" min="0" max="65535" value="0" />')
                         .addClass(this.#options.domNamespace + '-potentiometer-visual')
+                        .on('input', async function(e) {
+                            e.currentTarget.parentNode.dataset.value = $(this).val();
+                        })
                     )
                 );
                 break;
@@ -135,11 +138,16 @@ class PySwitchFrontend {
             case "AdafruitEncoder":
                 container.append(
                     // Rotary encoder element
-                    inputElement = $('<div id="' + this.#options.domNamespace + '-encoder-gp' + model.port + '" />')
+                    inputElement = $('<div id="' + this.#options.domNamespace + '-encoder-gp' + model.port + '" data-position="0"/>')
                     .addClass(this.#options.domNamespace + '-encoder')
                     .append(
-                        visualElement = $('<input type="range" min="0" max="65535" />')
-                        .addClass(this.#options.domNamespace + '-encoder-visual')
+                        visualElement = $('<wc-rotation-input trigger="manipulate" displayvalue="true" />').append(
+                            $('<input type="number" >')
+                            .on('input', async function(e) {
+                                e.currentTarget.parentNode.parentNode.dataset.position = $(this).val();
+                            })
+                        )
+                        .addClass(this.#options.domNamespace + '-encoder-visual')                                                
                     )
                 );
                 break;

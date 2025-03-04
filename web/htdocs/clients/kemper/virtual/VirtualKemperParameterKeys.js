@@ -127,7 +127,7 @@ class NRPNKey extends ParameterKey {
     }
 
     getDisplayName() {
-        return this.data.join("|");
+        return "NRPN " + this.data.join("|");
     }
 
     evaluateValue(value) {
@@ -175,7 +175,7 @@ class CCKey extends ParameterKey {
     }
 
     getDisplayName() {
-        return "" + this.control;
+        return "CC " + this.control;
     }
 
     evaluateValue(value) {

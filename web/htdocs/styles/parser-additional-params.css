@@ -52,23 +52,24 @@
 
 /**********************************************************************/
 
-.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-overlay {
+.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-visual {
     visibility: hidden;
 }
 
-.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-visual {
+.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-overlay {
     margin: 0.5em;
     width: 2em;
     height: 2em;
     border-radius: 50%;
     background-color: rgb(48, 48, 48);
+    cursor: pointer;
 }
 
-.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-visual:hover {
+.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-overlay:hover {
     background-color: rgb(66, 66, 66);    
 }
 
-.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-visual:active:hover {
+.container .application .additional-parameters .pyswitch-switch .pyswitch-switch-overlay:active:hover {
     background-color: rgb(90, 90, 90);   
 }
 
@@ -84,4 +85,11 @@
 .container .application .additional-parameters .pyswitch-encoder {
     display: flex;
     flex-direction: column-reverse;
+    cursor: col-resize;
+}
+
+.container .application .additional-parameters .pyswitch-encoder-visual {
+    margin: 0.5em;
+    --fill-color: rgb(48, 48, 48);
+    --stroke-color: rgb(213, 213, 213);    
 }
