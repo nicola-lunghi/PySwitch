@@ -22,6 +22,8 @@ class VirtualKemperParameter {
     //     new CCKey(52),                   // Select rig
     //     new CCKey(53),                   // Select rig
     //     new CCKey(54),                   // Select rig
+    //     new CCKey(11),                   // Morph Pedal
+    //     new NRPNKey([0, 11])             // Morph Pedal
     // ];
 
     /**
@@ -103,12 +105,17 @@ class VirtualKemperParameter {
     parse(message) {        
         // Try to parse with all keys
         for (const key of this.options.keys.receive) {
-            if (this.#parseKey(key, message)) return true;
+            if (this.#parseKey(key, message)) {
+                return true;
+            }
         }
 
         return false;
     }
 
+    /**
+     * Parse one receive key 
+     */
     #parseKey(key, message) {
         if (key instanceof NRPNKey) {           
             // NRPN: Request parameter
@@ -197,13 +204,13 @@ class VirtualKemperParameter {
             this.#debugParam("send: (raw: " + this.value + ")" + msg);
         
         } else if (this.options.keys.send instanceof CCKey) {
-            const msg = [176, this.options.keys.send.control, this.value]
+            const msg = [176, this.options.keys.send.control, this.options.keys.send.encodeValue(this.value)]
             
             this.client.queueMessage(msg);
             this.#debugParam("send: (raw: " + this.value + ")" + msg);
 
         } else if (this.options.keys.send instanceof PCKey) {
-            const msg = [192, this.value]
+            const msg = [192, this.options.keys.send.encodeValue(this.value)]
             
             this.client.queueMessage(msg);
             this.#debugParam("send: (raw: " + this.value + ")" + msg);

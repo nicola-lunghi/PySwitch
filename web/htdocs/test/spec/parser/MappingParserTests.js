@@ -6,6 +6,11 @@ class MappingParserTests extends FunctionParserTestBase {
         const basePath = "../";
         const that = this;
 
+        async function fromClass(options) {
+            const extractor = new ClassMethodExtractor(that.pyswitch);
+            return await extractor.get(options);
+        }   
+
         await this.checkDefinitions(
             "mappings.json",
 
@@ -30,15 +35,11 @@ class MappingParserTests extends FunctionParserTestBase {
 
                     // Add mappings from __init__.py
                     if (client.getInitMappingsClassName()) {
-                        const __init__extractor = new ClassAttributeExtractor(that.pyswitch);
-
-                        const init_mappings = await __init__extractor.get({
+                        mappings = mappings.concat(await fromClass({
                             file: "pyswitch/clients/" + client.id + "/__init__.py",
                             importPath: "pyswitch.clients." + client.id,
                             className: client.getInitMappingsClassName()
-                        });
-
-                        mappings = mappings.concat(init_mappings);
+                        }))
                     }
                     
                     ret.push({

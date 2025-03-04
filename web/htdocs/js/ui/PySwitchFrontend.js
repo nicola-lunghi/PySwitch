@@ -94,7 +94,8 @@ class PySwitchFrontend {
         let visualElement = null;
         let inputElement = null;
 
-        const container = device.isAdditionalInput(model) ? this.#options.globalContainer : inputsContainer;
+        const isAdditional = device.isAdditionalInput(model);
+        const container = isAdditional ? this.#options.globalContainer : inputsContainer;
         
         switch (model.type) {
             case "AdafruitSwitch":
@@ -103,6 +104,11 @@ class PySwitchFrontend {
                     inputElement = $('<div id="' + this.#options.domNamespace + '-switch-gp' + model.port + '" />')
                     .addClass(this.#options.domNamespace + '-switch')
                     .append(
+                        // Headline (additional inputs only)
+                        !isAdditional ? null : 
+                        $('<div class="input-name" />')
+                        .text(inputDefinition.displayName),
+
                         // Visual switch parts (LEDs)
                         visualElement = $('<div />')
                         .addClass(this.#options.domNamespace + '-switch-visual'),
@@ -126,6 +132,11 @@ class PySwitchFrontend {
                     inputElement = $('<div id="' + this.#options.domNamespace + '-potentiometer-gp' + model.port + '" data-value="0" />')
                     .addClass(this.#options.domNamespace + '-potentiometer')
                     .append(
+                        // Headline (additional inputs only)
+                        !isAdditional ? null : 
+                        $('<div class="input-name" />')
+                        .text(inputDefinition.displayName),
+                        
                         visualElement = $('<input type="range" min="0" max="65535" value="0" />')
                         .addClass(this.#options.domNamespace + '-potentiometer-visual')
                         .on('input', async function(e) {
@@ -141,6 +152,11 @@ class PySwitchFrontend {
                     inputElement = $('<div id="' + this.#options.domNamespace + '-encoder-gp' + model.port + '" data-position="0"/>')
                     .addClass(this.#options.domNamespace + '-encoder')
                     .append(
+                        // Headline (additional inputs only)
+                        !isAdditional ? null : 
+                        $('<div class="input-name" />')
+                        .text(inputDefinition.displayName),
+                        
                         visualElement = $('<wc-rotation-input trigger="manipulate" displayvalue="true" />').append(
                             $('<input type="number" >')
                             .on('input', async function(e) {

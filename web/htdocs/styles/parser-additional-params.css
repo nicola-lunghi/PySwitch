@@ -39,6 +39,12 @@
 
 /**********************************************************************/
 
+.container .application .additional-parameters .input-name {
+    padding-bottom: 1em;
+    color: white;
+    order: 1;
+}
+
 .container .application .additional-parameters input {
     padding: 0.5em;
 }
@@ -47,13 +53,18 @@
 
 .container .application .additional-parameters .pyswitch-switch {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
+}
+
+.container .application .additional-parameters .pyswitch-parser-frontend {
+    order: 10;
 }
 
 /**********************************************************************/
 
 .container .application .additional-parameters .pyswitch-switch .pyswitch-switch-visual {
     visibility: hidden;
+    order: 99;
 }
 
 .container .application .additional-parameters .pyswitch-switch .pyswitch-switch-overlay {
@@ -63,6 +74,7 @@
     border-radius: 50%;
     background-color: rgb(48, 48, 48);
     cursor: pointer;
+    order: 99;
 }
 
 .container .application .additional-parameters .pyswitch-switch .pyswitch-switch-overlay:hover {
@@ -77,19 +89,25 @@
 
 .container .application .additional-parameters .pyswitch-potentiometer {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
+}
+
+.container .application .additional-parameters .pyswitch-potentiometer input {
+    order: 99;
 }
 
 /**********************************************************************/
 
 .container .application .additional-parameters .pyswitch-encoder {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     cursor: col-resize;
 }
 
 .container .application .additional-parameters .pyswitch-encoder-visual {
     margin: 0.5em;
     --fill-color: rgb(48, 48, 48);
-    --stroke-color: rgb(213, 213, 213);    
+    --stroke-color: rgb(213, 213, 213);  
+    order: 99;  
 }
+

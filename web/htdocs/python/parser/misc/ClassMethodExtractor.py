@@ -2,7 +2,7 @@ import libcst
 
 from .CollectCommentsTransformer import CollectCommentsTransformer
 
-class ClassAttributeExtractor:
+class ClassMethodExtractor:
 
     def __init__(self, file, className, importPath, include_underscore = False):
         self.file = file
@@ -30,6 +30,9 @@ class ClassAttributeExtractor:
             params = []
 
             for param in statement.params.params:
+                if param.name.value == "self": 
+                    continue
+                
                 params.append({
                     "name": param.name.value,
                     "default": libcst.parse_module("").code_for_node(param.default) if param.default else None,
@@ -60,7 +63,7 @@ class ClassAttributeExtractor:
                     return False
                 
                 ret.append({
-                    "name": self.main.className + "." + node.name.value,
+                    "name": self.main.className + (("." + node.name.value) if node.name.value != "__init__" else ""),
                     "parameters": get_params(node),
                     "comment": get_comments(node, 0),
                     "importPath": self.main.importPath,

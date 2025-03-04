@@ -1,7 +1,7 @@
 /**
- * Adapter to the python based ClassAttributeExtractor (which can extract all attributes of a class)
+ * Adapter to the python based ClassMethodExtractor (which can extract all attributes of a class)
  */
-class ClassAttributeExtractor {
+class ClassMethodExtractor {
 
     #runner = null  // PySwitchRunner instance
 
@@ -21,16 +21,16 @@ class ClassAttributeExtractor {
         // Tell the python code which files to examine, process it and return the decoded result.
         const resultJson = await this.#runner.pyodide.runPython(`
             import json
-            from parser.misc.ClassAttributeExtractor import ClassAttributeExtractor
+            from parser.misc.ClassMethodExtractor import ClassMethodExtractor
 
-            classAttributeExtractor = ClassAttributeExtractor(
+            classMethodExtractor = ClassMethodExtractor(
                 file               = '` + options.file + `',
                 className          = '` + options.className + `',
                 importPath         = '` + options.importPath + `',
                 include_underscore = ` + (options.includeUnderscore ? "True" : "False") + `
             )
             
-            json.dumps(classAttributeExtractor.get())
+            json.dumps(classMethodExtractor.get())
         `);
         
         return JSON.parse(resultJson);

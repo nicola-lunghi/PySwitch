@@ -137,7 +137,7 @@ class VirtualKemperClientSetup {
         const that = this;
 
         // Morph state
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 11]), receive: new CCKey(11) }) });
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 11]), receive: new CCKey(11, { scale: 128 }) }) });
 
         // Morph button
         this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(80) }), callback: function(param, value) {

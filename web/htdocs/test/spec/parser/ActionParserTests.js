@@ -6,6 +6,11 @@ class ActionParserTests extends FunctionParserTestBase {
         const basePath = "../";
         const that = this;
 
+        async function fromClass(options) {
+            const extractor = new ClassMethodExtractor(that.pyswitch);
+            return await extractor.get(options);
+        }                 
+
         await this.checkDefinitions(
             "actions.json",
 
@@ -30,17 +35,38 @@ class ActionParserTests extends FunctionParserTestBase {
 
                     // Add actions from __init__.py
                     if (client.getInitActionsClassName()) {
-                        const __init__extractor = new ClassAttributeExtractor(that.pyswitch);
-
-                        const init_actions = await __init__extractor.get({
+                        actions = actions.concat(await fromClass({
                             file: "pyswitch/clients/" + client.id + "/__init__.py",
                             importPath: "pyswitch.clients." + client.id,
                             className: client.getInitActionsClassName()
-                        });
-
-                        actions = actions.concat(init_actions);
+                        }))
                     }
 
+                    // Add general actions, not coming from the clients folder
+                    actions = actions.concat(
+                        (
+                            await fromClass({
+                                file: "pyswitch/controller/AnalogAction.py",
+                                importPath: "pyswitch.controller.AnalogAction",
+                                className: "AnalogAction",
+                                includeUnderscore: true
+                            })
+                        )
+                        .filter((item) => item.name == "AnalogAction")
+                    );
+
+                    actions = actions.concat(
+                        (
+                            await fromClass({
+                                file: "pyswitch/controller/EncoderAction.py",
+                                importPath: "pyswitch.controller.EncoderAction",
+                                className: "EncoderAction",
+                                includeUnderscore: true
+                            })
+                        )
+                        .filter((item) => item.name == "EncoderAction")
+                    );
+                    
                     ret.push({
                         client: client.id,
                         actions: actions
@@ -51,25 +77,27 @@ class ActionParserTests extends FunctionParserTestBase {
         )
     }
 
-    // async getAvailableActionsMeta() {
-    //     await this.init();
+    async getAvailableActionsMeta() {
+        await this.init();
         
-    //     const config = new MockConfiguration("", "");
-    //     await config.init(this.pyswitch);
-    //     const parser = config.parser;
+        const config = new MockConfiguration("", "");
+        await config.init(this.pyswitch, "../");
+        const parser = config.parser;
         
-    //     await this.checkDefinitions(
-    //         "actions-with-meta.json",
+        const clients = await parser.getAvailableActions();
 
-    //         // Load from buffer file
-    //         async function() {
-    //             return JSON.parse(await Tools.fetch("data/definitions/actions-with-meta.json"));
-    //         },
+        for(const client of clients) {
+            for (const action of client.actions) {
+                // console.log(action);
 
-    //         // Generate from scratch
-    //         async function() {
-    //             return await parser.getAvailableActions("../");
-    //         }
-    //     )
-    // }
+                expect(action.meta).toBeInstanceOf(FunctionMeta);
+                
+                expect(action.meta.getDisplayName().length).toBeGreaterThan(0)
+                expect(action.meta.getShortDisplayName().length).toBeGreaterThan(0)
+
+                expect(action.meta.data.category.length).toBeGreaterThan(0)
+                expect(action.meta.data.target.length).toBeGreaterThan(0)
+            }
+        }
+    }
 }

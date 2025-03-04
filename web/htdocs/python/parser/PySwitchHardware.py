@@ -64,5 +64,9 @@ class PySwitchHardware:
 
         if entry["data"]["model"]["type"] == "AdafruitSwitch":
             return "Switch " + str(name)
+        elif entry["data"]["model"]["type"] == "AdafruitPotentiometer":
+            return "Pedal " + str(name)
+        elif entry["data"]["model"]["type"] == "AdafruitEncoder":
+            return "Encoder " + str(name)
         else:
             return str(name)

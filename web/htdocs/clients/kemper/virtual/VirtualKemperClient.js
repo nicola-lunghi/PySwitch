@@ -118,7 +118,6 @@ class VirtualKemperClient extends VirtualClient {
     async send(message) {
         try {
             message = message.toJs();
-            // console.log(message)
             
             // Try to parse message: Protocol
             if (this.protocol.parse(message)) return;

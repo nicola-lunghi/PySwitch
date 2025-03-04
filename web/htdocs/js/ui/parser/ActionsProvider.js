@@ -12,7 +12,8 @@ class ActionsProvider extends BrowserProvider {
     /**
      * {
      *      onSelect,
-     *      preselectActionName
+     *      preselectActionName,     // Name of the action to preselect
+     *      target                   // The target hardware model name, e.g. AdafruitSwitch
      * }
      */
     constructor(parser, options) {
@@ -55,6 +56,8 @@ class ActionsProvider extends BrowserProvider {
         
         for (const client of clients) {
             for (const action of client.actions) {
+                if (action.meta.data.target != this.#options.target) continue;
+
                 const entry = new BrowserEntry(
                     browser,
                     {

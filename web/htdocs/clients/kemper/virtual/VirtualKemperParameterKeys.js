@@ -64,25 +64,6 @@ class VirtualKemperParameterKeys {
         }
         return ret.join(", ");
     }
-
-    // /**
-    //  * Returns if the keys are mixed type
-    //  */
-    // mixed() {
-    //     let sendNRPN = (this.send instanceof NRPNKey);
-    //     let receiveHasNRPN = false;
-    //     let receiveHasOthers = false;
-
-    //     for (const r of this.receive) {
-    //         if (r instanceof NRPNKey) {
-    //             receiveHasNRPN = true;
-    //         } else {
-    //             receiveHasOthers = true;
-    //         }
-    //     }
-
-    //     return ((sendNRPN && receiveHasOthers) || (!sendNRPN && receiveHasNRPN))
-    // }
 }
 
 /**************************************************************/
@@ -104,10 +85,10 @@ class ParameterKey {
     }
 
     /**
-     * Returns a byte array containing the value
+     * Returns a representation for sending
      */
     encodeValue(value) {
-        throw new Error("Not supported for this type");
+        return value;
     }
 }
 
@@ -162,12 +143,13 @@ class NRPNKey extends ParameterKey {
  * Key for a CC parameter
  */
 class CCKey extends ParameterKey {
-    constructor(control) {
+    constructor(control, options = {}) {
         super();
 
         if (typeof control != "number") throw new Error("Invalid CC control")
 
         this.control = control;
+        this.options = options;
     }
 
     getId() {
@@ -178,7 +160,17 @@ class CCKey extends ParameterKey {
         return "CC " + this.control;
     }
 
+    encodeValue(value) {
+        if (this.options.hasOwnProperty("scale")) {
+            return Math.floor(value / this.options.scale);
+        }
+        return value;
+    }
+
     evaluateValue(value) {
+        if (this.options.hasOwnProperty("scale")) {
+            return value * this.options.scale;
+        }
         return value;        
     }
 }

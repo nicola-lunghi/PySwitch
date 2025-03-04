@@ -241,26 +241,31 @@
             {
                 "entityName": "BANK_SELECT",
                 "category": "bank",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "BANK_UP",
                 "category": "bank",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "BANK_DOWN",
                 "category": "bank",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "EFFECT_STATE",
                 "category": "effects",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "EFFECT_BUTTON",
                 "category": "effects",
+                "target": "AdafruitSwitch",
                 "parameters": [
                     {
                         "name": "num",
@@ -280,51 +285,61 @@
             {
                 "entityName": "LOOPER_REC_PLAY_OVERDUB",
                 "category": "looper",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "LOOPER_STOP",
                 "category": "looper",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "LOOPER_ERASE",
                 "category": "looper",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "LOOPER_CANCEL",
                 "category": "looper",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "LOOPER_REVERSE",
                 "category": "looper",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "LOOPER_TRIGGER",
                 "category": "looper",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "LOOPER_HALF_SPEED",
                 "category": "looper",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "MORPH_BUTTON",
                 "category": "morph",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "MORPH_DISPLAY",
                 "category": "morph",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "RIG_SELECT_AND_MORPH_STATE",
                 "category": "rig",
+                "target": "AdafruitSwitch",
                 "parameters": [
                     {
                         "name": "morph_display",
@@ -361,6 +376,7 @@
             {
                 "entityName": "RIG_SELECT",
                 "category": "rig",
+                "target": "AdafruitSwitch",
                 "parameters": [
                     {
                         "name": "bank",
@@ -381,16 +397,19 @@
             {
                 "entityName": "RIG_UP",
                 "category": "rig",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "RIG_DOWN",
                 "category": "rig",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "RIG_VOLUME_BOOST",
                 "category": "rig",
+                "target": "AdafruitSwitch",
                 "parameters": [
                     {
                         "name": "boost_volume",
@@ -405,11 +424,13 @@
             {
                 "entityName": "TAP_TEMPO",
                 "category": "tempo",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "SHOW_TEMPO",
                 "category": "tempo",
+                "target": "AdafruitSwitch",
                 "parameters": [
                     {
                         "name": "led_brightness_on",
@@ -426,10 +447,13 @@
             {
                 "entityName": "TUNER_MODE",
                 "category": "tuner",
+                "target": "AdafruitSwitch",
                 "parameters": []
             },
             {
                 "entityName": "BINARY_SWITCH",
+                "category": "other",
+                "target": "AdafruitSwitch",
                 "parameters": [
                     {
                         "name": "mapping",
@@ -452,6 +476,18 @@
                         }
                     }
                 ]
+            },
+
+            {
+                "entityName": "AnalogAction",
+                "category": "other",
+                "target": "AdafruitPotentiometer"
+            },
+
+            {
+                "entityName": "EncoderAction",
+                "category": "other",
+                "target": "AdafruitEncoder"
             }
         ]
     }

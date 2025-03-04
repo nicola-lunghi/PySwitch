@@ -59,6 +59,7 @@ class ParserFrontendInput {
                 if (client.client != clientId) continue;
 
                 for (const action of client.actions) {
+                    if (action.meta.data.target != that.definition.data.model.type) continue;
                     if (action.name == name) return action;
                 }
             }
@@ -413,8 +414,9 @@ class ParserFrontendInput {
                     this.#parserFrontend.parser,
                     {
                         onSelect: onSelect,
-                        preselectActionName: preselectAction ? preselectAction.name : null
-                    }
+                        preselectActionName: preselectAction ? preselectAction.name : null,
+                        target: this.definition.data.model.type
+                    }                    
                 )
             ]
         });
