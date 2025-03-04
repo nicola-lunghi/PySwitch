@@ -42,36 +42,40 @@ class ActionParserTests extends FunctionParserTestBase {
                         }))
                     }
 
-                    // Add general actions, not coming from the clients folder
-                    actions = actions.concat(
-                        (
-                            await fromClass({
-                                file: "pyswitch/controller/AnalogAction.py",
-                                importPath: "pyswitch.controller.AnalogAction",
-                                className: "AnalogAction",
-                                includeUnderscore: true
-                            })
-                        )
-                        .filter((item) => item.name == "AnalogAction")
-                    );
-
-                    actions = actions.concat(
-                        (
-                            await fromClass({
-                                file: "pyswitch/controller/EncoderAction.py",
-                                importPath: "pyswitch.controller.EncoderAction",
-                                className: "EncoderAction",
-                                includeUnderscore: true
-                            })
-                        )
-                        .filter((item) => item.name == "EncoderAction")
-                    );
-                    
                     ret.push({
                         client: client.id,
                         actions: actions
                     })
                 }
+
+                // Add general actions, not coming from the clients folder
+                let actionsGeneral = (
+                        await fromClass({
+                            file: "pyswitch/controller/AnalogAction.py",
+                            importPath: "pyswitch.controller.AnalogAction",
+                            className: "AnalogAction",
+                            includeUnderscore: true
+                        })
+                    )
+                    .filter((item) => item.name == "AnalogAction");
+
+                actionsGeneral = actionsGeneral.concat(
+                    (
+                        await fromClass({
+                            file: "pyswitch/controller/EncoderAction.py",
+                            importPath: "pyswitch.controller.EncoderAction",
+                            className: "EncoderAction",
+                            includeUnderscore: true
+                        })
+                    )
+                    .filter((item) => item.name == "EncoderAction")
+                );
+                    
+                ret.push({
+                    client: "local",
+                    actions: actionsGeneral
+                })
+
                 return ret;
             }
         )

@@ -59,7 +59,7 @@ class Client {
      * Returns a sort string for the passed action definition
      */
     async getActionSortString(actionDefinition) {
-        return action.name;
+        return actionDefinition.name;
     }
 
     /**

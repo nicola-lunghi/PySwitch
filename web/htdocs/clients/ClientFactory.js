@@ -8,7 +8,8 @@ class ClientFactory {
      */
     static getInstance(clientId) {
         switch (clientId) {
-            case "kemper": return new KemperClient(clientId)
+            case "kemper": return new KemperClient(clientId);
+            case "local": return new Client(clientId);
         }
         return null;
     }

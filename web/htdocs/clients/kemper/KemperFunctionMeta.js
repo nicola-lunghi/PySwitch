@@ -36,7 +36,7 @@ class KemperFunctionMeta extends FunctionMeta {
      * Special implementation for rig select
      */
     #getDisplayNameRigSelect(actionCallProxy = null) {
-        const rig_off = this.#getArgument(actionCallProxy, "rig_off");
+        const rig_off = this.getArgument(actionCallProxy, "rig_off");
         if (actionCallProxy && !(rig_off == null || rig_off.value == "None")) {
             return this.#replaceParameterTokens(actionCallProxy, "Toggle Rigs {rig}/{rig_off}");
         }
@@ -52,7 +52,7 @@ class KemperFunctionMeta extends FunctionMeta {
      * Special implementation for rig select and morph state
      */
     #getDisplayNameRigSelectAndMorphState(actionCallProxy = null) {
-        const rig_off = this.#getArgument(actionCallProxy, "rig_off");
+        const rig_off = this.getArgument(actionCallProxy, "rig_off");
 
         if (actionCallProxy && !(rig_off == null || rig_off.value == "None")) {
             return this.#replaceParameterTokens(actionCallProxy, "Toggle Rigs {rig}/{rig_off} & Morph Display");
@@ -69,7 +69,7 @@ class KemperFunctionMeta extends FunctionMeta {
      * Special implementation for rig select and morph state (short version)
      */
     #getDisplayNameRigSelectAndMorphStateShort(actionCallProxy = null) {
-        const rig_off = this.#getArgument(actionCallProxy, "rig_off");
+        const rig_off = this.getArgument(actionCallProxy, "rig_off");
         
         if (actionCallProxy && !(rig_off == null || rig_off.value == "None")) {
             return this.#replaceParameterTokens(actionCallProxy, "Rigs {rig}/{rig_off} & Morph");
@@ -86,8 +86,8 @@ class KemperFunctionMeta extends FunctionMeta {
      * Special implementation for bank select
      */
     #getDisplayNameBankSelect(actionCallProxy = null) {
-        const bank_off = this.#getArgument(actionCallProxy, "bank_off");
-        const preselect = this.#getArgument(actionCallProxy, "preselect");
+        const bank_off = this.getArgument(actionCallProxy, "bank_off");
+        const preselect = this.getArgument(actionCallProxy, "preselect");
         
         if (!actionCallProxy) {
             return "Select Bank";  
@@ -108,7 +108,7 @@ class KemperFunctionMeta extends FunctionMeta {
      * Special implementation for effect buttons
      */
     #getDisplayNameEffectButton(actionCallProxy = null) {
-        const num = this.#getArgument(actionCallProxy, "num");
+        const num = this.getArgument(actionCallProxy, "num");
         if (actionCallProxy && num) {
             return this.#replaceParameterTokens(actionCallProxy, "Effect Button {num}");
         }
@@ -120,7 +120,7 @@ class KemperFunctionMeta extends FunctionMeta {
      * Special implementation for effect state
      */
     #getDisplayNameEffectState(actionCallProxy = null) {
-        const slot_id = this.#getArgument(actionCallProxy, "slot_id");
+        const slot_id = this.getArgument(actionCallProxy, "slot_id");
         if (actionCallProxy && slot_id) {
             function getSlotName(id) {
                 switch (id) {
@@ -149,7 +149,7 @@ class KemperFunctionMeta extends FunctionMeta {
     #getDisplayNameBinarySwitch(actionCallProxy = null) {
         if (!actionCallProxy) return "Other";
 
-        const mapping = this.#getArgument(actionCallProxy, "mapping");
+        const mapping = this.getArgument(actionCallProxy, "mapping");
 
         if (!(mapping == null || mapping.value == "None")) {
             return this.underscoreToDisplayName(
@@ -164,20 +164,6 @@ class KemperFunctionMeta extends FunctionMeta {
     }   
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Gets the name of a argument in the given definition
-     */
-    #getArgument(actionCallProxy = null, name) {
-        if (!actionCallProxy) return null;
-        
-        const args = JSON.parse(actionCallProxy.arguments());
-
-        for (const arg of args) {
-            if (arg.name == name) return arg;
-        }
-        return null;
-    }
 
     /**
      * Replaces all tokens for parameters

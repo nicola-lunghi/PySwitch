@@ -56,7 +56,7 @@ class ParserFrontendInput {
          */
         function getActionDefinition(name, clientId) {
             for (const client of clients) {
-                if (client.client != clientId) continue;
+                if (client.client != clientId && client.client != "local") continue;
 
                 for (const action of client.actions) {
                     if (action.meta.data.target != that.definition.data.model.type) continue;

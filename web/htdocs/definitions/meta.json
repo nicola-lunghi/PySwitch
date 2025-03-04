@@ -476,18 +476,86 @@
                         }
                     }
                 ]
-            },
+            }
+        ]
+    },
 
+    {
+        "client": "local",
+        "entities": [
             {
                 "entityName": "AnalogAction",
                 "category": "other",
-                "target": "AdafruitPotentiometer"
+                "target": "AdafruitPotentiometer",
+                "comment": "Use this action for all analog inputs like expression pedals.",
+                "parameters": [
+                    {
+                        "name": "mapping",
+                        "type": "select",
+                        "default": "MAPPING_VOLUME_PEDAL()",
+                        "comment": "Mapping to be used."
+                    },
+                    {
+                        "name": "max_frame_rate",
+                        "advanced": true,
+                        "type": "any"
+                    },
+                    {
+                        "name": "max_value",
+                        "advanced": true,
+                        "type": "any"
+                    },
+                    {
+                        "name": "num_steps",
+                        "advanced": true,
+                        "type": "any"
+                    },
+                    {
+                        "name": "cal_min_window",
+                        "advanced": true,
+                        "type": "any"
+                    },
+                    {
+                        "name": "transfer_function",
+                        "advanced": true,
+                        "type": "any"
+                    },
+                    {
+                        "name": "enable_callback",
+                        "advanced": true,
+                        "type": "any"
+                    }
+                ]
             },
 
             {
                 "entityName": "EncoderAction",
                 "category": "other",
-                "target": "AdafruitEncoder"
+                "target": "AdafruitEncoder",
+                "comment": "Use this action for all rotary encoders.",
+                "parameters": [
+                    {
+                        "name": "mapping",
+                        "type": "select",
+                        "default": "MAPPING_AMP_GAIN()",
+                        "comment": "Mapping to be used."
+                    },
+                    {
+                        "name": "max_value",
+                        "type": "any",
+                        "advanced": true
+                    },
+                    {
+                        "name": "step_width",
+                        "type": "any",
+                        "advanced": true
+                    },
+                    {
+                        "name": "enable_callback",
+                        "type": "any",
+                        "advanced": true
+                    }
+                ]
             }
         ]
     }

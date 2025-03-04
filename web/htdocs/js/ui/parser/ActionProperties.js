@@ -99,6 +99,7 @@ class ActionProperties {
                     tbody = $('<tbody />').append(
 
                         // Hold option
+                        (this.#actionDefinition.meta.data.target != "AdafruitSwitch") ? null :
                         $('<tr />').append(
                             $('<td />').append(
                                 $('<span />').text("hold")
@@ -142,9 +143,11 @@ class ActionProperties {
         }
 
         // Hold input
-        this.#inputs.set("hold", holdInput);
-        if (this.#oldProperties) {
-            this.setHold(this.#oldProperties.hold());            
+        if (this.#actionDefinition.meta.data.target == "AdafruitSwitch") {
+            this.#inputs.set("hold", holdInput);
+            if (this.#oldProperties) {
+                this.setHold(this.#oldProperties.hold());            
+            }
         }
 
         return ret;
@@ -183,7 +186,10 @@ class ActionProperties {
      * Returns if the user selected hold or not (JS bool, no python value)
      */
     hold() {
-        return !!this.#inputs.get("hold").prop('checked')
+        if (this.#actionDefinition.meta.data.target == "AdafruitSwitch") {
+            return !!this.#inputs.get("hold").prop('checked');
+        }
+        return false;
     }
 
     /**
@@ -206,6 +212,9 @@ class ActionProperties {
      * Sets the hold input
      */
     setHold(hold) {
+        if (this.#actionDefinition.meta.data.target != "AdafruitSwitch") {
+            return;
+        }
         this.#inputs.get("hold").prop('checked', !!hold)
     }
 
@@ -250,30 +259,13 @@ class ActionProperties {
             type = this.#deriveType(param);
         }
 
-        // const that = this;
-
-        // async function onChange(input) {
-        //     try {
-        //         await that.#onChange(param, $(input));
-
-        //     } catch(e) {
-        //         console.error(e);
-        //     }
-        // }
-
         switch(type) {
             case "bool":                
                 return $('<input type="checkbox" />')
                 .prop('checked', param.meta.getDefaultValue() == "True")
-                // .on('change', async function() {
-                //     await onChange(this);
-                // })
 
             case "int":                
                 return this.#getNumberInput(param)
-                // .on('change', async function() {
-                //     await onChange(this);
-                // })
 
             case 'select':
                 const values = await param.meta.getValues();
@@ -285,36 +277,13 @@ class ActionProperties {
                         )                        
                     )                    
                     .val(param.meta.getDefaultValue())
-                    // .on('change', async function() {
-                    //     await onChange(this);
-                    // })
                 }
                 break;               
         }        
 
         return $('<input type="text" />')
         .val(param.meta.getDefaultValue())
-        // .on('change', async function() {
-        //     await onChange(this);
-        // })
     }
-
-    // /**
-    //  * Parameter has changed
-    //  */
-    // async #onChange(param, input) {
-    //     const messages = await this.#parser.checks.messagesForAction(this.#actionDefinition);
-    //     input.removeClass("warn");
-
-    //     for (const msg of messages) {
-    //         if (msg.type != "W") continue;
-
-    //         if (msg.parameter == param.name) {
-    //             input.addClass("warn");
-    //             return;
-    //         }
-    //     }
-    // }
 
     /**
      * Returns a parameter value by name

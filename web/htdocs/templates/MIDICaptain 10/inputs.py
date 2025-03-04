@@ -2,6 +2,27 @@ from pyswitch.hardware.devices.pa_midicaptain_10 import *
 
 Inputs = [
 
+    # Pedal 1
+    {
+        "assignment": PA_MIDICAPTAIN_10_EXP_PEDAL_1
+    },
+
+    # Pedal 2
+    {
+        "assignment": PA_MIDICAPTAIN_10_EXP_PEDAL_2
+    },
+
+    # Wheel rotary encoder
+    {
+        "assignment": PA_MIDICAPTAIN_10_WHEEL_ENCODER
+    },
+
+    # Wheel push button
+    {
+        "assignment": PA_MIDICAPTAIN_10_WHEEL_BUTTON
+    },
+
+    ####################################################################################
     # Switch 1
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_1

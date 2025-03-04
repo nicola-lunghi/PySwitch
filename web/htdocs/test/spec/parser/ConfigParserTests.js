@@ -368,11 +368,15 @@ class ConfigParserTests extends TestBase {
         const actions = [];
         for (const client of clients) {
             for (const action of client.actions) {
+                if (action.meta.data.target != "AdafruitSwitch") continue;
+
                 actions.push(
                     this.#composeAction(action, client.client)
                 )
             }
         }
+
+        expect(actions.length).toBeGreaterThan(0);
 
         await input1.set_actions(
             actions.filter((item) => item != null)

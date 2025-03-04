@@ -55,7 +55,7 @@ class ActionsProvider extends BrowserProvider {
         const clients = await this.#parser.getAvailableActions();
         
         for (const client of clients) {
-            for (const action of client.actions) {
+            for (const action of client.actions) {   
                 if (action.meta.data.target != this.#options.target) continue;
 
                 const entry = new BrowserEntry(
