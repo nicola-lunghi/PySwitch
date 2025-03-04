@@ -19,7 +19,6 @@ class Input(libcst.CSTVisitor):
 
         # Buffers
         self.__actions = {}
-        self.__display_name = None
 
     # Inputs
     def visit_Assign(self, node):
@@ -55,17 +54,7 @@ class Input(libcst.CSTVisitor):
 
     # Returns the display name
     def display_name(self):
-        if self.__display_name:
-            return self.__display_name
-        
-        name = self.assignment["data"]["name"] if "name" in self.assignment["data"] else ( "GP" + str(self.assignment["data"]["model"]["port"]) )
-
-        if self.assignment["data"]["model"]["type"] == "AdafruitSwitch":
-            self.__display_name = "Switch " + str(name)
-        else:
-            self.__display_name = str(name)
-
-        return self.__display_name
+        return self.assignment["displayName"]        
 
     # Returns a list containing a result list of nodes, represented by Action instances
     def actions(self, hold = False):

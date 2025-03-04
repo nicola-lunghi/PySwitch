@@ -22,6 +22,10 @@ describe('Configuration Parser', function() {
         await tests.replaceActions();
     });
 
+    it('Create new inputs', async function() {
+        await tests.createNewInputs();
+    });
+
     it('Auto-add imports (all actions)', async function() {
         await tests.addAllImports();
     });

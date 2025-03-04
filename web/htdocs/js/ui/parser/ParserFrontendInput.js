@@ -9,15 +9,15 @@ class ParserFrontendInput {
     #inputElement = null;
     #gridElement = null;
 
-    input = null;           // Input handler
-    model = null;           // Hardware model
+    input = null;                     // Input handler (may be null)
+    definition = null;
 
-    constructor(controller, parserFrontend, model, input, inputElement) {
+    constructor(controller, parserFrontend, inputDefinition, input, inputElement) {
         this.#controller = controller;
         this.#parserFrontend = parserFrontend;
         this.#inputElement = inputElement;
         this.input = input;
-        this.model = model;
+        this.definition = inputDefinition;
     }
 
     /**
@@ -27,15 +27,13 @@ class ParserFrontendInput {
         if (this.#grid) await this.#grid.destroy();
 
         this.input = null;
-        this.model = null;
+        this.definition = null;
     }
 
     /**
      * Adds the parser frontend for one input
      */
     async init() {
-        if (!this.model) return;
-
         await this.#initDom();
         await this.#initGrid();
     }
@@ -142,9 +140,8 @@ class ParserFrontendInput {
                             .on('click', async function() {
                                 try {
                                     const action = $(this).parent().parent().data('handler');
-                                    
-                                    const inputName = that.input.display_name();        
-                                    if (!confirm("Do you want to delete " + action.name + " from " + inputName + "?")) {
+
+                                    if (!confirm("Do you want to delete " + action.name + " from " + that.definition.displayName + "?")) {
                                         return;
                                     }
                                                                                 
@@ -302,8 +299,6 @@ class ParserFrontendInput {
      * Updates the parser from the current DOM state
      */
     async updateInput() {
-        if (!this.input) throw new Error("No input");
-
         // Build actions definitions
         const newActions = this.#getItemHandlers(false)
             .map((item) => { return {
@@ -318,15 +313,15 @@ class ParserFrontendInput {
             }});
 
         // Set the inputs accordingly (no update)
-        await this.input.set_actions(newActions, false, true);
-        await this.input.set_actions(newActionsHold, true, true);
+        await this.#setActions(newActions, false, true);
+        await this.#setActions(newActionsHold, true, true);
     }
 
     /**
      * Shows the add action dialog
      */
     async promptAddAction() {
-        const inputName = this.input.display_name();
+        const inputName = this.definition.displayName;
         const that = this;
 
         const browser = await this.#promptAction(
@@ -344,7 +339,7 @@ class ParserFrontendInput {
      * Shows the edit action dialog
      */
     async promptEditAction(action, hold) {
-        const inputName = this.input.display_name();
+        const inputName = this.definition.displayName;
         const that = this;
 
         await this.#promptAction(
@@ -491,7 +486,7 @@ class ParserFrontendInput {
         const that = this;
         setTimeout(
             async function() {
-                await that.input.set_actions(newActions, hold, true);
+                await that.#setActions(newActions, hold, true);
 
                 await that.#parserFrontend.updateConfig();    
             }, 
@@ -520,7 +515,7 @@ class ParserFrontendInput {
         const that = this;
         setTimeout(
             async function() {
-                await that.input.set_actions(newActions, hold, true);
+                await that.#setActions(newActions, hold, true);
 
                 await that.#parserFrontend.updateConfig();    
             }, 
@@ -548,7 +543,7 @@ class ParserFrontendInput {
         const that = this;
         setTimeout(
             async function() {
-                await that.input.set_actions(newActions, hold, true);
+                await that.#setActions(newActions, hold, true);
 
                 await that.#parserFrontend.updateConfig();    
             }, 
@@ -582,5 +577,17 @@ class ParserFrontendInput {
         return items
             .filter((item) => $(item.getElement()).data('hold') == hold)
             .map((item) => $(item.getElement()).data('handler'));
+    }
+
+    /**
+     * Sets actions on the input, which will be created if not existent.
+     */
+    async #setActions(actions, hold, noUpdate) {
+        if (!this.input) {
+            // Create input
+            this.input = await this.#parserFrontend.parser.input(this.definition.data.model.port, true);
+        }
+
+        this.input.set_actions(actions, hold, noUpdate);
     }
 }

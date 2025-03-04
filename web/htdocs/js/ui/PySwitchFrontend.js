@@ -164,6 +164,6 @@ class PySwitchFrontend {
         }
 
         // Parser frontend
-        await this.parserFrontend.addInput(model, inputElement);
+        await this.parserFrontend.addInput(inputDefinition, inputElement);
     }
 }

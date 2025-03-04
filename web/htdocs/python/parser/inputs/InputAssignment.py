@@ -6,11 +6,11 @@ class InputAssignment:
         
     # Get hardware descriptor. Only returns a value when the node is an input Dict assigned to the port
     def get(self, node, port):
-        for dictElement in node.elements:
-            if dictElement.key.value != '"assignment"':
+        for dict_element in node.elements:
+            if dict_element.key.value != '"assignment"':
                 continue
 
-            definition = self.__get_hw_definition(dictElement.value.value)
+            definition = self.get_by_name(dict_element.value.value)
 
             if not definition or "port" not in definition["data"]["model"] or definition["data"]["model"]["port"] != port:
                 continue
@@ -19,8 +19,14 @@ class InputAssignment:
         
         return None
         
+    # Returns the name identifier for a port number
+    def get_by_port(self, port):
+        for defi in self.hardwareDefinitions:
+            if defi["data"]["model"]["port"] == port:
+                return defi
+
     # For a given name, returns the hardware definition
-    def __get_hw_definition(self, name):
+    def get_by_name(self, name):
         for defi in self.hardwareDefinitions:
             if defi["name"] == name:
                 return defi

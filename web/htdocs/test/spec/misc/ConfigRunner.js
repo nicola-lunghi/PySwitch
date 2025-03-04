@@ -18,11 +18,17 @@ class ConfigRunner {
         this.client = null;
 
         // Create a temporary container element for pyswitch
-        const el = $('<div id="test-pyswitch-example" />');
+        const el = $('<div id="test-pyswitch-example" />').hide();
         $('body').append(el);
 
+        const globals = $('<span />').hide();
+        $('body').append(globals);
+
         // Set up frontend
-        this.frontend = new PySwitchFrontend(null, el, { domNamespace: "pyswitch" });
+        this.frontend = new PySwitchFrontend(null, el, { 
+            domNamespace: "pyswitch",
+            globalContainer: globals
+        });
         await config.init(this.pyswitch, "../");
         await this.frontend.apply(config.parser);
 
@@ -34,7 +40,7 @@ class ConfigRunner {
         const clientId = await ClientFactory.estimateClient(config);
         const client = ClientFactory.getInstance(clientId);
         
-        this.client = await client.getVirtualClient({ // await (await config.parser.getEstimatedClient()).getVirtualClient({
+        this.client = await client.getVirtualClient({
             overrideTimeCallback: function() {
                 return that.timeMillis;
             }
@@ -64,6 +70,7 @@ class ConfigRunner {
 
         // Remove the test element from the body again
         el.remove();
+        globals.remove();
     }
 
     /**

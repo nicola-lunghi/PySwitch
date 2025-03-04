@@ -58,9 +58,9 @@ class Parser {
      * Returns an instance of Input.py, which handles all operations on the input.
      * port must be an integer ID of the port (as defined in the board wrapper in python)
      */
-    async input(port) {
+    async input(port, createIfNotExistent = false) {
         await this.#init();
-        return this.#pySwitchParser.input(port);
+        return this.#pySwitchParser.input(port, createIfNotExistent);
     }
     
     /**

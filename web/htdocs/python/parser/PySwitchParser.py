@@ -3,6 +3,8 @@ import json
 
 from .inputs.Input import Input
 from .inputs.InputReplacer import InputReplacer
+from .inputs.CreateInputTransformer import CreateInputTransformer
+
 from .misc.RemoveUnusedImportTransformer import RemoveUnusedImportTransformer
 from .misc.AddImportsTransformer import AddImportsTransformer
 from .misc.AssignmentExtractor import AssignmentExtractor
@@ -56,17 +58,33 @@ class PySwitchParser:
         }
 
     # Returns the visitor/handler of the input assigned to the port given
-    def input(self, port):
+    def input(self, port, create_if_not_existent = False):
         if not self.__csts:
             raise Exception("No data loaded")
         
-        if port in self.__inputs:
+        if not create_if_not_existent and port in self.__inputs:
             return self.__inputs[port]
         
+        # Try to find the input
         visitor = Input(self, self.hw_import_path, port)
         self.__csts["inputs_py"].visit(visitor)
         ret = visitor if visitor.result != None else None
 
+        if create_if_not_existent and not ret:
+            # Create input
+            visitor = CreateInputTransformer(self.hw_import_path, port)
+            self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
+            
+            # Scan again for the input
+            visitor = Input(self, self.hw_import_path, port)
+            self.__csts["inputs_py"].visit(visitor)
+            
+            if not visitor.result:
+                raise Exception("Error creating input " + repr(port))
+
+            ret = visitor
+
+            
         self.__inputs[port] = ret
 
         return ret

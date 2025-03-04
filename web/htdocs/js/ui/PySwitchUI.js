@@ -234,8 +234,16 @@ class PySwitchUI {
                         case 's':
                             event.preventDefault();
                             
-                            await that.#controller.currentConfig.save();
-                            that.#controller.ui.notifications.message("Successfully saved configuration to " + (await that.#controller.currentConfig.name()), "S");
+                            try {
+                                await that.#controller.currentConfig.save();
+                                that.#controller.ui.notifications.message("Successfully saved configuration to " + (await that.#controller.currentConfig.name()), "S");    
+                                
+                            } catch(e) {
+                                console.error(e);
+
+                                that.saveBrowser.options.selectedValue = that.#controller.currentConfig ? (await that.#controller.currentConfig.name()) : null;
+                                await that.saveBrowser.browse();
+                            }
                             
                             break;		        
                     }

@@ -23,13 +23,13 @@ class ParserFrontend {
     /**
      * Adds a new frontend for an input
      */
-    async addInput(model, inputElement) {
+    async addInput(inputDefinition, inputElement) {
         if (!inputElement) return;
 
-        const input = await this.parser.input(model.port);
+        const input = await this.parser.input(inputDefinition.data.model.port);
         
         this.inputs.push(
-            new ParserFrontendInput(this.#controller, this, model, input, inputElement)
+            new ParserFrontendInput(this.#controller, this, inputDefinition, input, inputElement)
         );
     }
 
@@ -81,27 +81,5 @@ class ParserFrontend {
                 that.parser.updateConfig();
             }
         });
-
-        // await this.#controller.stop();
-
-        // while (this.#toUpdate.length > 0) {
-        //     const inputToUpdate = this.#toUpdate.shift();
-        //     await inputToUpdate.updateInput();
-        // }
-
-        // // After the frontend reset, we must let some time pass for the UI to flush.
-        // const that = this;
-        // setTimeout(async function() {
-        //     try {
-        //         // All set_actions calls have suppressed updating until now, so we need to do this here
-        //         that.parser.updateConfig();
-
-        //         // Restart the emulated controller
-        //         await that.#controller.restart("none");
-                
-        //     } catch (e) {
-        //         that.#controller.handle(e);
-        //     }
-        // }, 10)
     }
 }

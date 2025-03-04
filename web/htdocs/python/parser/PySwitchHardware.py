@@ -52,8 +52,17 @@ class PySwitchHardware:
                 new_model["port"] = model.port_1
 
             entry["data"]["model"] = new_model
+            entry["displayName"] = self._display_name(entry)
 
             ret.append(entry)
 
         return ret
 
+    # Display name for the inputs
+    def _display_name(self, entry):
+        name = entry["data"]["name"] if "name" in entry["data"] else ( "GP" + str(entry["data"]["model"]["port"]) )
+
+        if entry["data"]["model"]["type"] == "AdafruitSwitch":
+            return "Switch " + str(name)
+        else:
+            return str(name)

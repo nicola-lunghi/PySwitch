@@ -73,6 +73,7 @@ class PySwitchRunner {
         await this.#loadModule("parser/inputs/Input.py", localPythonPath);
         await this.#loadModule("parser/inputs/InputReplacer.py", localPythonPath);
         await this.#loadModule("parser/inputs/InputAssignment.py", localPythonPath);
+        await this.#loadModule("parser/inputs/CreateInputTransformer.py", localPythonPath);
         
         this.pyodide.FS.mkdir("wrappers");
         await this.#loadModule("wrappers/__init__.py", localPythonPath);

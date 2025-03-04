@@ -272,6 +272,60 @@ class ConfigParserTests extends TestBase {
     
     ///////////////////////////////////////////////////////////////////////////////////////////
 
+    async createNewInputs() {
+        await this.init();
+
+        const config = new WebConfiguration(new MockController(), "data/test-presets/empty");
+        await config.init(this.pyswitch, "../");
+        const parser = config.parser;
+
+        const input1 = await parser.input(1);
+        expect(input1).toEqual(undefined);
+
+        const input2 = await parser.input(1, true);
+        
+        // Add first actions available
+        await input2.set_actions(
+            [
+                {
+                    name: "RIG_SELECT",
+                    arguments: [
+                        {
+                            name: "rig",
+                            value: "1"
+                        },
+                        {
+                            name: "display",
+                            value: "DISPLAY_HEADER_2"
+                        }
+                    ]
+                }
+            ]
+        );
+        
+        // console.log((await parser.config.get()).inputs_py);
+
+        await this.#testAction(parser, {
+            port: 1,
+            client: "kemper",
+            actions: [{
+                name: "RIG_SELECT",
+                arguments: [
+                    {
+                        name: "rig",
+                        value: "1"
+                    },
+                    {
+                        name: "display",
+                        value: "DISPLAY_HEADER_2"
+                    }
+                ]
+            }]
+        });
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
     async addOneImport() {
         await this.init();
         const config = new WebConfiguration(new MockController(), "../templates/MIDICaptain Nano 4");
