@@ -12,9 +12,9 @@ NOTE: This uses some quite new web features, so take care to use it with a reaso
 
 The emulator version always consists of the PySwitch version it is based on, plus one digit for the emulator itself. Always ensure that the controllers you connect run the same version, or you might get syntax errors when running the generated configurations on your real device.
 
-If you cannot do this for whatever reason, any older release of the emulator is also still accessible, just add the PySwitch version to the url like:
+If you cannot do this for whatever reason, any older release of the emulator is also still accessible at:
 
-https://pyswitch.tunetown.de/2.3.4/
+https://pyswitch.tunetown.de/versions
 
 ## Usage
 
