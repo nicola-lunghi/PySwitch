@@ -10,6 +10,28 @@ generic configuration script. Features are:
 
 ![Overview Image](https://github.com/user-attachments/assets/c48903b2-a5f7-4d78-b7eb-9fca98dbfbe0)
 
+## Installation
+
+1. Connect you device to your computer via USB and power it up. For PaintAudio MIDICaptain controllers, press and hold switch 1 while powering up to tell the controller to mount the USB drive.
+2. On your computer, you should now see the USB drive of the device (named MIDICAPTAIN for Paintaudio controllers, CIRCUITPY for generic boards)
+3. Delete the whole content of the USB drive. For PaintAudio devices, dont forget to save the contents on your hard drive (especially the license folder) if you perhaps want to restore the original manufacturer firmware later.
+4. Copy everything inside the "content" folder of the project to the root folder on your device drive (named MIDICAPTAIN or CIRCUITPY).
+5. Unmount the USB drive (important: wait until the drive really is unmounted, or it will sometimes forget everything again).
+6. Reboot the device.
+
+PySwitch now runs with the default configuration, which most likely will be one of my own configurations ;) You will perhaps want to try one of the contained examples.
+1. Just copy all files of the example into the root folder of the device, overwriting the old files (you can omit the README file of course). More on the configuration files in one of the next chapters.
+2. Unmount the USB drive (important: wait until the drive really is unmounted, or it will sometimes forget everything again).
+3. Reboot the device.
+
+## Configuration
+
+If you do not want to program your configuration yourself in Python (as described later) which offers any needed degree of freedom, you can also use the new **PySwitch Emulator** to graphically create and test your patch easily:
+
+![image](https://github.com/user-attachments/assets/7cefdf8e-c8e4-4370-a869-dd06780fa382)
+
+You can even control your actual Kemper from the browser to pre-test everything before flashing it to a connected device :) for more details see [this README](web/README.md).
+
 ## Motivation
 
 The firmware has been developed to interface the PaintAudio MIDI Captain series of MIDI controller pedals to the Kemper Profiler Player, which can be controlled very deeply via MIDI. It is based on the great explorational work of @gstrotmann who did the hardware reverse engineering and provided the initial script this project is based on (https://github.com/gstrotmann/MidiCaptain4Kemper). 
@@ -26,22 +48,6 @@ The manufacturer PaintAudio also provides a Kemper Player related firmware (<a h
 
 This project is developed generically, so it can basically be run on any board which runs CircuitPy, using the Adafruit libraries to run a TFT display and LEDs, to control basically any device which is controlled in a similar way as the Kemper devices (it can also be used to control all other Kemper Profiler products, however his has not been tested and might need slight changes in the pyswitch_kemper module) and address any parameter or other information the controlled device provides. You just have to provide the apropriate adapter classes and mappings!
 
-## Installation
-
-1. Connect you device to your computer via USB and power it up. For PaintAudio MIDICaptain controllers, press and hold switch 1 while powering up to tell the controller to mount the USB drive.
-2. On your computer, you should now see the USB drive of the device (named MIDICAPTAIN for Paintaudio controllers, CIRCUITPY for generic boards)
-3. Delete the whole content of the USB drive. For PaintAudio devices, dont forget to save the contents on your hard drive (especially the license folder) if you perhaps want to restore the original manufacturer firmware later.
-4. Copy everything inside the "content" folder of the project to the root folder on your device drive (named MIDICAPTAIN or CIRCUITPY).
-5. Unmount the USB drive (important: wait until the drive really is unmounted, or it will sometimes forget everything again).
-6. Reboot the device.
-
-PySwitch now runs with the default configuration, which most likely will be one of my own configurations ;) You will perhaps want to try one of the contained examples.
-1. Just copy all files of the example into the root folder of the device, overwriting the old files (you can omit the README file of course). More on the configuration files in one of the next chapters.
-2. Unmount the USB drive (important: wait until the drive really is unmounted, or it will sometimes forget everything again).
-3. Reboot the device.
-
-Optionally you can use your browser (if compatible) and use <a href="https://demo.midibridge.tunetown.de">https://demo.midibridge.tunetown.de</a> to maintain the files. See below.
-
 ## Startup Options
 
 When the controller device is powered up with the pyswitch firmware installed, you have the following options:
@@ -49,7 +55,7 @@ When the controller device is powered up with the pyswitch firmware installed, y
 - Press and hold switch 2 to enable auto-reload (obly valid when the USB drive is enabled). This enables re-booting the device whenever the USB drive 
 contents have been changed (which is the default behaviour for CircuitPy boards). You could use this when configuring the firmware, so you can test your changes immediately, however if you connect the serial console in a terminal, you can control the reloading there with CTRL-D (see <a href="https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux" target="_blank">this tutorial</a>)
 
-## Configuration
+## Configuration Files
 
 The whole configuration is done in some files in the root directory (of the device drive). These are all python scripts and follow the corresponding syntax rules. 
 
@@ -61,27 +67,6 @@ The whole configuration is done in some files in the root directory (of the devi
 - **communication.py**: Defines the communication with the client, as well as generic MIDI routing between available MIDI ports
 
 These files can make use of the objects contained in the **lib/pyswitch/clients/kemper** module which provide lots of mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change). Contributors welcome!
-
-## Editing Configuration via the Browser
-
-PySwitch now has <a href="https://github.com/Tunetown/MidiBridge">MidiBridge</a> integrated. This makes all files editable in the Web Browser ;) With your device connected via USB, visit this web site (which contains the demo from the MidiBridge Project): <a href="https://demo.midibridge.tunetown.de">https://demo.midibridge.tunetown.de</a>. It will automatically connect to the first found connected device running a MidiBridge. This needs no USB mounting/unmounting (do NOT press switches on startup like you normally do to change files). 
-
-![image](https://github.com/user-attachments/assets/af22457f-58da-4c72-9478-05eecde106a7)
-
-**This should serve as proof-of-concept for building a visual editor in the future.**
-
-The editor is only a demo application, by no means fully developed:
-
-- You can just browse the files and read/write them, no delete/create/rename/move etc.
-- The syntax checking is pretty basic and reports much falsy errors
-
-However, it is sometimes way faster editing your inputs.py file this way than having to mount/unmount every time, for example when you forget to change presets before a gig and only have 2 minutes ;) Other features:
-
-- Syntax errors happening on the device are reported back to the browser. When you make an error in your config, the error will be shown in the bottom area on the web site. The MidiBridge will still be functional.
-- The application is designed according to RESTful principles, so every file has its own path you can bookmark.
-- Also multiple connected client devices can be controlled.
-
-*NOTE: If you ever run out of memory (with a very large patch for example), this can be disabled completely in config.py with option "enableMidiBridge" set to False. The library needs about 11k of RAM. Under normal circumstances, every configuration should run with enabled MIDI bridge, even the biggest test constellations still leave plenty of headroom.*
 
 ### Global configuration
 
