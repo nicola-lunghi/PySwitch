@@ -5,9 +5,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./htdocs:/var/www/html
-      - ../content:/var/www/html/circuitpy
-      - ../examples:/var/www/html/examples
+      - ./htdocs:/var/www/html/sub
+      - ../content:/var/www/html/sub/circuitpy
+      - ../examples:/var/www/html/sub/examples
       
       - ./apache2-conf:/etc/apache2/sites-available
       - ./apache2-log:/var/log/apache2

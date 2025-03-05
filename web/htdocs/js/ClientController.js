@@ -11,7 +11,7 @@ class ClientController {
     constructor(controller) {
         this.#controller = controller;
         
-        this.state = new LocalState("pyswitch", "client");
+        this.state = new LocalState(controller, "client");
     }
     
     /**

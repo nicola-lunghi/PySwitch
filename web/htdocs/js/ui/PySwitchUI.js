@@ -12,7 +12,6 @@ class PySwitchUI {
     #progressBarContainer = null;
     #contentHeadline = null;
     #deviceElement = null;
-    #versionElement = null;
     #changeMarker = null;
     #popupContainer = null;
     #virtualClientTab = null;
@@ -58,13 +57,6 @@ class PySwitchUI {
     }
 
     /**
-     * Update the version
-     */
-    updateVersion() {
-        this.#versionElement.html("PySwitch Emulator<br>v" + this.#controller.VERSION);
-    }
-
-    /**
      * Build the DOM tree
      */
     async build() {
@@ -92,7 +84,8 @@ class PySwitchUI {
                     
                     $('<div class="about" />').append(
                         // Version
-                        this.#versionElement = $('<div class="version"/>').html("PySwitch Emulator")
+                        $('<div class="version"/>')
+                        .html("PySwitch Emulator<br>v" + this.#controller.VERSION)
                         .on('click', async function() {
                             try {
                                 await that.showAbout();

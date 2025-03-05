@@ -3,7 +3,7 @@
  */
 class Controller {
 
-    VERSION = "?.0";            // For productive releases, the first three numbers should always match the PySwitch version. The last is the UI version.
+    VERSION = "2.3.4.0";            // For productive releases, the first three numbers should always match the PySwitch version. The last is the UI version.
 
     ui = null;                  // User Interface implementation
     routing = null;             // sammy.js router
@@ -52,7 +52,7 @@ class Controller {
         this.pyswitch = new PySwitchRunner(options, options.domNamespace + "-device");    
         this.device = new DeviceController(this);
         this.client = new ClientController(this);
-        this.presets = new Presets();
+        this.presets = new Presets(this);
     }
 
     /**
@@ -126,10 +126,7 @@ class Controller {
         await config.init(this.pyswitch);
 
         // Get PySwitch version
-        this.ui.progress(0.4, "Initialize UI");
-
-        this.VERSION = this.VERSION.replace('?', await this.pyswitch.getVersion());
-        this.ui.updateVersion()
+        this.ui.progress(0.4, "Initialize UI");        
 
         // Initialize client (scan for devices)
         this.ui.progress(0.5, "Initialize client device");

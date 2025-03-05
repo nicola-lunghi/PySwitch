@@ -2,8 +2,8 @@ class Presets {
 
     #state = null;
 
-    constructor() {
-        this.#state = new LocalState("pyswitch-presets");
+    constructor(controller) {
+        this.#state = new LocalState(controller, "presets");
     }
 
     /**

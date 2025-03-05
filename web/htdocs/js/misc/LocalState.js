@@ -4,15 +4,13 @@
 class LocalState {
 
     #storageId = null;
-    #subObjectId = null;
-
+    
     /**
-     * storageId is the ID of the local storage cookie.
+     * storageId is the ID of the local storage cookie (will be prefixed with "pyswitch-X.X.X-").
      * stateObjectId is the sub-object name. If not set, the keys will be placed in the root object.
      */
-    constructor(storageId, subObjectId = null) {
-        this.#storageId = storageId;
-        this.#subObjectId = subObjectId;
+    constructor(controller, subObjectId) {        
+        this.#storageId = "pyswitch-" + controller.VERSION + "-" + subObjectId;
     }
 
     /**
@@ -21,12 +19,7 @@ class LocalState {
     set(key, value) {
         const data = JSON.parse(localStorage.getItem(this.#storageId) || "{}");
         
-        if (this.#subObjectId) {
-            if (!data.hasOwnProperty(this.#subObjectId)) data[this.#subObjectId] = {};
-            data[this.#subObjectId][key] = value;
-        } else {
-            data[key] = value;
-        }
+        data[key] = value;
         
         localStorage.setItem(this.#storageId, JSON.stringify(data));
     }
@@ -37,15 +30,8 @@ class LocalState {
     get(key) {
         const data = JSON.parse(localStorage.getItem(this.#storageId) || "{}");
 
-        if (this.#subObjectId) {
-            if (!data.hasOwnProperty(this.#subObjectId) || 
-                !data[this.#subObjectId].hasOwnProperty(key)) return null;
-
-            return data[this.#subObjectId][key];
-        } else {
-            if (!data.hasOwnProperty(key)) return null;
+        if (!data.hasOwnProperty(key)) return null;
             
-            return data[key];
-        }
+        return data[key];
     }
 }
