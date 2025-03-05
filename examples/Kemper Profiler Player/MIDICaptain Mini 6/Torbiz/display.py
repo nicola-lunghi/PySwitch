@@ -65,7 +65,9 @@ Splashes = TunerDisplayCallback(
                     "text": KemperRigNameCallback.DEFAULT_TEXT,
                 },
 
-                callback = KemperRigNameCallback()
+                callback = KemperRigNameCallback(
+                    show_rig_id = True
+                )
             ),
 
             BidirectionalProtocolState(DisplayBounds(

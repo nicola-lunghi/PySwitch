@@ -32,6 +32,6 @@ from ..adafruit.AdafruitSwitch import AdafruitSwitch as _AdafruitSwitch
 PA_MIDICAPTAIN_MINI_SWITCH_1 = { "model": _AdafruitSwitch(_board.GP1),  "pixels": (0, 1, 2), "name": "1", "strobeOrder": 0 }
 PA_MIDICAPTAIN_MINI_SWITCH_2 = { "model": _AdafruitSwitch(_board.GP25), "pixels": (3, 4, 5), "name": "2", "strobeOrder": 1 }
 PA_MIDICAPTAIN_MINI_SWITCH_3 = { "model": _AdafruitSwitch(_board.GP24), "pixels": (6, 7, 8), "name": "3", "strobeOrder": 2 }
-PA_MIDICAPTAIN_MINI_SWITCH_A = { "model": _AdafruitSwitch(_board.GP9),  "pixels": (9, 10, 11), "name": "A", "strobeOrder": 5 }
-PA_MIDICAPTAIN_MINI_SWITCH_B = { "model": _AdafruitSwitch(_board.GP10), "pixels": (12, 13, 14), "name": "B", "strobeOrder": 4 }
-PA_MIDICAPTAIN_MINI_SWITCH_C = { "model": _AdafruitSwitch(_board.GP11), "pixels": (15, 16, 17), "name": "C", "strobeOrder": 3 }
+PA_MIDICAPTAIN_MINI_SWITCH_A = { "model": _AdafruitSwitch(_board.GP9),  "pixels": (9, 11, 10), "name": "A", "strobeOrder": 5 }
+PA_MIDICAPTAIN_MINI_SWITCH_B = { "model": _AdafruitSwitch(_board.GP10), "pixels": (12, 14, 13), "name": "B", "strobeOrder": 4 }
+PA_MIDICAPTAIN_MINI_SWITCH_C = { "model": _AdafruitSwitch(_board.GP11), "pixels": (15, 17, 16), "name": "C", "strobeOrder": 3 }

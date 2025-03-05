@@ -46,11 +46,12 @@ PA_MIDICAPTAIN_10_SWITCH_2      = { "model": _AdafruitSwitch(_board.GP25), "pixe
 PA_MIDICAPTAIN_10_SWITCH_3      = { "model": _AdafruitSwitch(_board.GP24), "pixels": (6, 7, 8), "name": "3", "strobeOrder": 2 }
 PA_MIDICAPTAIN_10_SWITCH_4      = { "model": _AdafruitSwitch(_board.GP23), "pixels": (9, 10, 11), "name": "4", "strobeOrder": 3 }
 PA_MIDICAPTAIN_10_SWITCH_UP     = { "model": _AdafruitSwitch(_board.GP20), "pixels": (12, 13, 14), "name": "Up", "strobeOrder": 4 }
-PA_MIDICAPTAIN_10_SWITCH_A      = { "model": _AdafruitSwitch(_board.GP9),  "pixels": (15, 16, 17), "name": "A", "strobeOrder": 9 }
-PA_MIDICAPTAIN_10_SWITCH_B      = { "model": _AdafruitSwitch(_board.GP10), "pixels": (18, 19, 20), "name": "B", "strobeOrder": 8 }
-PA_MIDICAPTAIN_10_SWITCH_C      = { "model": _AdafruitSwitch(_board.GP11), "pixels": (21, 22, 23), "name": "C", "strobeOrder": 7 }
-PA_MIDICAPTAIN_10_SWITCH_D      = { "model": _AdafruitSwitch(_board.GP18), "pixels": (24, 25, 26), "name": "D", "strobeOrder": 6 }
-PA_MIDICAPTAIN_10_SWITCH_DOWN   = { "model": _AdafruitSwitch(_board.GP19), "pixels": (27, 28, 29), "name": "Dn", "strobeOrder": 5 }
+
+PA_MIDICAPTAIN_10_SWITCH_A      = { "model": _AdafruitSwitch(_board.GP9),  "pixels": (15, 17, 16), "name": "A", "strobeOrder": 9 }
+PA_MIDICAPTAIN_10_SWITCH_B      = { "model": _AdafruitSwitch(_board.GP10), "pixels": (18, 20, 19), "name": "B", "strobeOrder": 8 }
+PA_MIDICAPTAIN_10_SWITCH_C      = { "model": _AdafruitSwitch(_board.GP11), "pixels": (21, 23, 22), "name": "C", "strobeOrder": 7 }
+PA_MIDICAPTAIN_10_SWITCH_D      = { "model": _AdafruitSwitch(_board.GP18), "pixels": (24, 26, 25), "name": "D", "strobeOrder": 6 }
+PA_MIDICAPTAIN_10_SWITCH_DOWN   = { "model": _AdafruitSwitch(_board.GP19), "pixels": (27, 29, 28), "name": "Dn", "strobeOrder": 5 }
 
 PA_MIDICAPTAIN_10_EXP_PEDAL_1   = { "model": _AdafruitPotentiometer(_board.GP27), "name": "Exp1" }
 PA_MIDICAPTAIN_10_EXP_PEDAL_2   = { "model": _AdafruitPotentiometer(_board.GP28), "name": "Exp2" }

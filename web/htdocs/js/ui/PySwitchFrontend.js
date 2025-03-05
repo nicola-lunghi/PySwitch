@@ -174,7 +174,8 @@ class PySwitchFrontend {
 
         // LEDs (can be added to any type, theoretically)
         if (inputDefinition.data.pixels) {
-            const pixels = inputDefinition.data.pixels
+            const pixels = inputDefinition.data.pixels.toSorted((a, b) => parseInt(a) - parseInt(b));
+            
             for (const pixel of pixels) {
                 visualElement.append(
                     $('<div id="' + this.#options.domNamespace + '-led-' + pixel + '"/>')
