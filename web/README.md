@@ -104,7 +104,7 @@ Also note that analog inputs can only use one kind of action: AnalogAction, the 
 
 ## Development
 
-The emulator is built in pure JavaScript plus JQuery. The complete DOM is created by JS. 
+The emulator is built in pure JavaScript plus JQuery. The complete DOM is created by JS.  
 
 The folder structure is as follows:
 
@@ -127,6 +127,10 @@ The <a href="https://pyodide.org">Pyodide</a> project is used to run python code
 The original PySwitch code is loaded into Pyodide, as well as a lot of additional wrappers and parser code specific to the emulator. Dependencies like CircuitPython or the Adafruit hardware libraries are mocked in a similar way as it is common for unit tests. The entry point is PySwitchRunner.js, see there how the python code is run.
 
 For the source code manipulation and parsing algorithms, <a href="https://libcst.readthedocs.io">LibCST</a> is used. This enables manipulating single statements and leaving other code as is.
+
+### Server side Scripts
+
+Basically the application is a pure client application, so no server side rendering is used etc., everything runs locally at the client. However, to provide the TOC (Table of Contents) for the examples and clients, only some small PHP scripts are used (toc.php) delivering a JSON TOC for the directory they are located in, but that's all.
 
 ### Class Overview
 
