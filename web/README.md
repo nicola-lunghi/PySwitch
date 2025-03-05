@@ -4,6 +4,8 @@ This is a web based configuration/emulation tool for PySwitch. If you just want 
 
 https://pyswitch.tunetown.de
 
+![image](https://github.com/user-attachments/assets/e773644b-3e74-48e6-8a7e-b6406f0ba8f0)
+
 NOTE: This uses some quite new web features, so take care to use it with a reasonably new browser version. The emulator still is in Alpha state, so currently it is only tested in the latest Chrome browser, but Safari/Firefox should work as well. Please open an issue on Github or inform me directly if you encounter problems.
 
 ## Versioning
@@ -31,11 +33,13 @@ When we are taking about "clients", this always means devices to control like th
 
 The emulator (as stated above) will scan automatically for connected clients if nothing is manually done, but you can set the client manually also if you like. Click on the client state button in the lower right corner to set the connected client.
 
+![image](https://github.com/user-attachments/assets/e61ed695-2c3c-429e-8668-8a7472c6a60e)
+
 ### Devices
 
 If the word "device" is used, we always mean the device running PySwitch. The emulator (as well as PySwitch itself) supports multiple devices. Currently only the MIDI Captain series of PaintAudio is provided, but others (including DIY controllers) can be added easily. The only prerequisite for the device is to run CircuitPython.
 
-The emulator simulates all hardware switches etc. with HTML, so you can click on the foot switches for example to triger the actions.
+The emulator simulates all hardware switches etc. with HTML, so you can click on the foot switches for example to trigger the actions.
 
 ### Configurations
 
@@ -53,6 +57,8 @@ In the emulator, configurations each have their own URLs. You can load/save conf
 
 There are two buttons at the top right for loading and saving stuff. See there, its pretty self explanatory ;)
 
+![image](https://github.com/user-attachments/assets/fc540480-0d15-4724-af48-c87a44634177)
+
 ### Edit configurations
 
 To edit the currently loaded configuration, there are two possibilities (besides file Upload):
@@ -65,7 +71,11 @@ To edit the currently loaded configuration, there are two possibilities (besides
 
     Every change done here will be instantly run in the emulator!
 
+    ![image](https://github.com/user-attachments/assets/2a38e44c-4430-4f6e-82ee-c5364c049ee0)
+
 - **Edit Code:** When you click on the "Code" button at the top left, a side area opens, providing tabs for the source files. You can edit them directly here. To apply the changes, hit the "Okay" button above the editor or hit F8. Note that this does NOT save the preset somewhere, it just applies the changed code to the emulator.
+
+    ![image](https://github.com/user-attachments/assets/229558f3-05ea-44ef-a3ac-28d34b93be8f)
 
 Both of these methods work hand in hand also: PySwitch allows for custom Python implementations, so if you for example add custom code (Callbacks etc.) in your code, the emulator will not touch this, so you can still use the graphical editor and vice versa! If you change the actions with the graphical interface, the code will follow, keeping your custom implementations 100%. This is possible through the use of CSTs (Concrete Syntax Trees) for manipulating the source tree, which preserve all formatting and comments.
 
@@ -74,6 +84,8 @@ After editing the configuration, click the save button on the top left to choose
 #### Expression Pedals and other Off-Screen Inputs
 
 For additional inputs like expression pedals, there is a separate panel if the selected device supports any of those. You can access it by the three dots at the bottom left.
+
+![image](https://github.com/user-attachments/assets/a189bd6c-c737-4a8c-b879-0f757cc8ad82)
 
 NOTE: The Encoder wheel of the MIDI Captain 10 currently also is located in this panel, as the screen already is overcrouded. You can also adjust the wheel encoder and switch in the panel, as well as the expression pedals.
 
