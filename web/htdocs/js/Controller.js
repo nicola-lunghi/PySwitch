@@ -110,7 +110,7 @@ class Controller {
      * Run PySwitch with a specific Configuration instance.
      */
     async loadConfiguration(config) {
-        this.ui.notifications.reset();
+        this.ui.reset();
 
         this.ui.resetDirtyState();
         this.currentConfig = null;
@@ -177,7 +177,7 @@ class Controller {
      * }
      */
     async restart(options = {}) {
-        this.ui.notifications.reset();
+        this.ui.reset();
         
         if (!this.currentConfig) {
             console.warn("No config to restart");

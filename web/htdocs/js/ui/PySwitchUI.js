@@ -51,7 +51,10 @@ class PySwitchUI {
      * Reset the UI
      */
     async reset() {
-        // this.listElement.hide();
+        this.notifications.reset();
+
+        // Clean up file inputs which have been canceled
+        (new Upload(this.#controller)).cleanup();
     }
 
     /**

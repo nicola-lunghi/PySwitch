@@ -57,4 +57,4 @@ PA_MIDICAPTAIN_10_EXP_PEDAL_1   = { "model": _AdafruitPotentiometer(_board.GP27)
 PA_MIDICAPTAIN_10_EXP_PEDAL_2   = { "model": _AdafruitPotentiometer(_board.GP28), "name": "Exp2" }
 
 PA_MIDICAPTAIN_10_WHEEL_ENCODER = { "model": _AdafruitEncoder(_board.GP2, _board.GP3, divisor = 2), "name": "Wheel" }
-PA_MIDICAPTAIN_10_WHEEL_BUTTON  = { "model": _AdafruitSwitch(_board.GP0), "name": "Button" }
+PA_MIDICAPTAIN_10_WHEEL_BUTTON  = { "model": _AdafruitSwitch(_board.GP0), "name": "Wheel" }

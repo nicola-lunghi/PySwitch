@@ -3,6 +3,9 @@ from ..misc import Updateable
 from adafruit_midi.system_exclusive import SystemExclusive
 
 class EncoderAction(Updateable):
+
+    # Use this action for all rotary encoders like wheels. The push-down switch of the encoder is 
+    # not addressed here: This is represented as a separate switch, and can be linked to the same actions as a normal foot switch.
     def __init__(self, 
                  mapping,                          # Parameter mapping to be controlled
                  max_value = None,                 # Maximum value of the mapping (set to None for auto-detect: 16383 for NRPN, 127 for CC)

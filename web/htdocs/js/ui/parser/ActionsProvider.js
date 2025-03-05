@@ -70,14 +70,20 @@ class ActionsProvider extends BrowserProvider {
                     }
                 )
 
+                // Pre-selection by option
                 if (this.#options.preselectActionName && (action.name == this.#options.preselectActionName)) {
                     this.preselectEntry = entry;
-                } 
+                }                 
 
                 this.#toc.children.push(
                     entry
                 )
             }
+        }
+
+        // Pre-select if we only have one entry
+        if (this.#toc.children.length == 1) {
+            this.preselectEntry = this.#toc.children[0];
         }
 
         return this.#toc;

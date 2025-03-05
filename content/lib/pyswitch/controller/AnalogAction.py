@@ -3,6 +3,8 @@ from ..misc import PeriodCounter
 from adafruit_midi.system_exclusive import SystemExclusive
 
 class AnalogAction:
+    
+    # Use this action for all analog inputs like expression pedals.
     def __init__(self, 
                  mapping,                          # Parameter mapping to be controlled
                  max_frame_rate = 24,              # Maximum frame rate for sending MIDI values (fps)

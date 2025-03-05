@@ -487,7 +487,6 @@
                 "entityName": "AnalogAction",
                 "category": "other",
                 "target": "AdafruitPotentiometer",
-                "comment": "Use this action for all analog inputs like expression pedals.",
                 "parameters": [
                     {
                         "name": "mapping",
@@ -532,7 +531,6 @@
                 "entityName": "EncoderAction",
                 "category": "other",
                 "target": "AdafruitEncoder",
-                "comment": "Use this action for all rotary encoders.",
                 "parameters": [
                     {
                         "name": "mapping",

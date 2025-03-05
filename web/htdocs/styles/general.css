@@ -47,3 +47,9 @@
     cursor: pointer;
 }
 
+/*************************************************/
+
+.container .upload-file-input {
+    position: absolute;
+    top: -100000px;
+}

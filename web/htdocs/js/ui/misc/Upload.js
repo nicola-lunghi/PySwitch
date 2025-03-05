@@ -15,30 +15,22 @@ class Upload {
     async upload(config) {
         const that = this;
 
-        const popup = this.#controller.ui.getPopup({ 
-            container: this.#controller.ui.container,
+        const el = $('<input type="file" id="input" multiple />')
+        .addClass('upload-file-input')
+        .on('change', async function(e) {
+            el.remove();
+            await that.#load(e, config);
         });
 
-        popup.show(
-            $('<div />').append(
-                $('<div />')
-                .text("Please select the files to load."),
-                $('<br />'),
+        this.#controller.ui.container.append(el);
+        el.trigger('click');
+    }
 
-                $('<div />')
-                .text("Only display.py and/or inputs.py files will be processed."),
-                $('<br />'),
-
-                $('<hr />'),
-                $('<br />'),
-
-                $('<input type="file" id="input" multiple />')
-                .on('change', async function(e) {
-                    popup.hide();
-                    await that.#load(e, config);
-                })
-            )
-        );
+    /**
+     * Clean up file inputs which have been canceled
+     */
+    cleanup() {
+        $('.upload-file-input').remove();
     }
 
     /**

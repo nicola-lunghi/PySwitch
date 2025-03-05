@@ -213,7 +213,9 @@ class ParserFrontendInput {
             // dragContainer: document.body,
 
             dragSort: function () {
-                return that.#parserFrontend.inputs.filter((item) => !!item.#grid).map((item) => item.#grid);
+                return that.#parserFrontend.inputs
+                    .filter((item) => !!item.#grid && item.definition.data.model.type == that.definition.data.model.type)
+                    .map((item) => item.#grid);
             },
             
             dragStartPredicate: function (item, e) {
@@ -325,15 +327,13 @@ class ParserFrontendInput {
         const inputName = this.definition.displayName;
         const that = this;
 
-        const browser = await this.#promptAction(
+        await this.#promptAction(
             async function(action, hold) {
                 await that.addAction(action, hold);
             },
             "Add an action to " + inputName,
             "Add"
-        );
-
-        browser.showInfoPanel("Please select an action to add");
+        );        
     }
 
     /**
@@ -424,11 +424,15 @@ class ParserFrontendInput {
         await browser.browse();
 
         // Preselected entry, if any
-        if (preselectAction && actionsProvider.preselectEntry) {
+        if (actionsProvider.preselectEntry) {
             await onSelect(actionsProvider.preselectEntry);
 
-            props.setArguments(preselectAction.arguments);
-            props.setHold(preselectAction.hold)            
+            if (preselectAction) {
+                props.setArguments(preselectAction.arguments);
+                props.setHold(preselectAction.hold)    
+            }
+        } else {
+            browser.showInfoPanel("Please select an action to add");
         }
 
         // Preselected entry not found: Show a note that this can only be edited via Code Editor
