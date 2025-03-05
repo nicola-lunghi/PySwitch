@@ -114,10 +114,9 @@ class WcRotationInput extends HTMLElement {
         
         this.#startPosition = this.#position;
         
-        // const rect = this.dom.svg.getBoundingClientRect();
-        // this.#center = { x: rect.x + (rect.width / 2), y: rect.y + (rect.height / 2) };
         document.addEventListener("pointermove", this.onPointerMove);
         document.addEventListener("pointerup", this.onPointerUp);
+        //document.body.classList.add('noselect')
     }
 
     onPointerMove(e) {
@@ -140,6 +139,8 @@ class WcRotationInput extends HTMLElement {
     }
 
     onPointerUp() {
+        //document.body.classList.remove('noselect')
+
         document.removeEventListener("pointermove", this.onPointerMove);
         document.removeEventListener("pointerup", this.onPointerUp);
         if(this.#trigger === "settled"){

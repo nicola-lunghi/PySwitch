@@ -53,7 +53,7 @@ class ActionProperties {
                     // Take over old values from the old props object, if different from the default
                     takeOverValues(input, param);
 
-                    const row = $('<tr />').append(
+                    const row = $('<tr class="selectable" />').append(
                         // Parameter Name
                         $('<td />').append(
                             $('<span />').text(param.name)

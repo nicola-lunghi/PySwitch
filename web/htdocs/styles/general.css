@@ -1,4 +1,5 @@
 .container {
+    user-select: none;
     margin: 0;
     padding: 0;
 
@@ -19,11 +20,9 @@
     container-name: container;
 }
 
-/* @media all and (width <= 700px) {
-    .container {
-        flex-direction: column-reverse;
-    }
-} */
+.container .selectable {
+    user-select: text;
+}
 
 .container * {
 	box-sizing: border-box;
