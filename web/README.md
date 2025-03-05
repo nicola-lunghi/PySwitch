@@ -231,3 +231,7 @@ To deploy the application to a server, you have two choices:
         - examples -> web/htdocs/examples
 
 For the last step, symlinks also work well.
+
+## Donate
+
+If you use and like the application, please consider donating to support open source development: <a href="https://www.paypal.com/webapps/mpp/page-not-found?cmd=_s-xclick&hosted_button_id=6WHW7WRXSGQXY" target="_blank">Donate</a> Thanks a lot for appreciating the big efforts to create a full application free of charge, and also free of advertisement ;)
