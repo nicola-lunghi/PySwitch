@@ -5,7 +5,7 @@ generic configuration script. Features are:
 
 - Program (Foot)switches and expression pedals to send MIDI messages. Each switch or pedal can do any amount of actions. Programming is done by setup scripts, with lots of examples.
 - Establish a bidirectional communication with the client device to show the states correctly when changed on the client device (e.g. a Kemper Player). Implemented for the Kemper Profiler Player (all Levels), but can be adapted for the other Kemper devices or anything with similar protocol
-- Ready-to-go implementation for the Kemper Profiler Player (R), others (like Fractal / Line 6 Helix) can be added easily.
+- Ready-to-go implementation for the Kemper Profiler Player (R), others (like Fractal / Line 6 Helix) can be added later.
 - Free MIDI routing capatbilities
 
 ![Overview Image](https://github.com/user-attachments/assets/c48903b2-a5f7-4d78-b7eb-9fca98dbfbe0)
