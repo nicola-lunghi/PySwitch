@@ -28,7 +28,7 @@ PySwitch now runs with the default configuration, which most likely will be one 
 
 If you do not want to program your configuration yourself in Python (as described later) which offers any needed degree of freedom, you can also use the new **PySwitch Emulator** to graphically create and test your patch easily:
 
-![image](https://github.com/user-attachments/assets/7cefdf8e-c8e4-4370-a869-dd06780fa382)
+![image](https://github.com/user-attachments/assets/55270c26-ead9-4d66-a782-ff293bfe2abf)
 
 You can even control your actual Kemper from the browser to pre-test everything before flashing it to a connected device :) for more details see [this README](web/README.md).
 
