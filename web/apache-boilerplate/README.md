@@ -1,0 +1,2 @@
+These file help providing access to several PySwitch versions, while automatically redirecting to the latest one. Copy them into your domain root, 
+check out your code in repository folders there, and set the links and htaccess redirects accordingly.

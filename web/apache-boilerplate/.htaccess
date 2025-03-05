@@ -1,0 +1,10 @@
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !/versions
+
+# Version foo
+#RewriteCond %{REQUEST_URI} !3.0/
+
+# Version 2.3.4
+RewriteCond %{REQUEST_URI} !2.3.4/PySwitch/web/htdocs/
+RewriteRule ^(.*)$ /2.3.4/PySwitch/web/htdocs/$1
+
