@@ -26,7 +26,7 @@ PySwitch now runs with the default configuration, which most likely will be one 
 
 ## Configuration
 
-If you do not want to program your configuration yourself in Python (as described later) which offers any needed degree of freedom, you can also use the new **PySwitch Emulator** to graphically create and test your patch easily:
+If you do not want to program your configuration yourself in Python (as described later) which offers any needed degree of freedom, you can also use the new [**PySwitch Emulator**](https://pyswitch.tunetown.de) to graphically create and test your patch easily:
 
 ![image](https://github.com/user-attachments/assets/55270c26-ead9-4d66-a782-ff293bfe2abf)
 
