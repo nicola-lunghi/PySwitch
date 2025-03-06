@@ -3,7 +3,7 @@ class Presets {
     #state = null;
 
     constructor(controller) {
-        this.#state = new LocalState(controller, "presets");
+        this.#state = new LocalState(controller, "presets", true); // No PySwitch version
     }
 
     /**

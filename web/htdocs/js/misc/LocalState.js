@@ -9,8 +9,8 @@ class LocalState {
      * storageId is the ID of the local storage cookie (will be prefixed with "pyswitch-X.X.X-").
      * stateObjectId is the sub-object name. If not set, the keys will be placed in the root object.
      */
-    constructor(controller, subObjectId) {        
-        this.#storageId = "pyswitch-" + controller.VERSION + "-" + subObjectId;
+    constructor(controller, storageId, noVersion = false) {
+        this.#storageId = noVersion ? "pyswitch" : ("pyswitch-" + controller.VERSION + "-" + storageId);
     }
 
     /**
