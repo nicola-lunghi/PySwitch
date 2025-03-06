@@ -8,6 +8,10 @@ https://pyswitch.tunetown.de
 
 NOTE: This uses some quite new web features, so take care to use it with a reasonably new browser version. The emulator still is in Alpha state, so currently it is only tested in the latest Chrome browser, but Safari/Firefox should work as well. Please open an issue on Github or inform me directly if you encounter problems.
 
+## Compatibility
+
+The emulator needs the Web MIDI API to run. Currently this is only tested on the recent version of Chrome. Cross compatibility is to be done still.
+
 ## Versioning
 
 The emulator version always consists of the PySwitch version it is based on, plus one digit for the emulator itself. Always ensure that the controllers you connect run the same version, or you might get syntax errors when running the generated configurations on your real device.
