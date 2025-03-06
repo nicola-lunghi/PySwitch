@@ -35,6 +35,10 @@ class MidiHandler {
                 reject({ message: "Failed to get MIDI access: " + msg });
             }
 
+            if (!navigator.hasOwnProperty("requestMIDIAccess")) {
+                reject({ message: "Your browser does not support Web MIDI. The communication will be restricted." })
+            }
+
             navigator.requestMIDIAccess({ sysex: true })
                 .then(onMIDISuccess, onMIDIFailure);
         });
@@ -51,6 +55,11 @@ class MidiHandler {
     scan(connect, onSuccess = null, onFailure = null) {
         // Get all in/out pairs sharing the same name
         const ports = this.getMatchingPortPairs();
+
+        if (!ports.length) {
+            onFailure();
+            return;
+        }
 
         const attempts = new Map();
         let success = false;
@@ -140,6 +149,10 @@ class MidiHandler {
      */
     getMatchingPortPairs() {
         const ret = [];
+
+        if (!this.midiAccess) {
+            return ret;
+        }
 
         // Inputs
         for (const input of this.midiAccess.inputs) {

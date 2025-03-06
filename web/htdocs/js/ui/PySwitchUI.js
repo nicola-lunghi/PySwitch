@@ -609,6 +609,8 @@ class PySwitchUI {
      * @param {*} message 
      */
     progress(percentage, message) {
+        if (!this.#block) return;
+
         if (percentage >= 1) {
             this.#block.hide();
             return;
@@ -644,6 +646,24 @@ class PySwitchUI {
      */
     message(msg, type, options) {
         this.progress(1);
-        this.notifications.message(msg, type, options);
+
+        if (this.notifications) {
+            this.notifications.message(msg, type, options);
+        } else {
+            switch (type) {
+                case 'I':
+                    console.log(msg);
+                    break;
+                case 'S':
+                    console.log(msg);
+                    break;
+                case 'W':
+                    console.warn(msg);
+                    break;
+                default:
+                    console.error(msg)
+                    break;
+            }            
+        }
     }   
 }

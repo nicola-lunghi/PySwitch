@@ -59,15 +59,26 @@ class Controller {
      * Run the app.
      */
     async run() {
-        // Initialize MIDI
-        await this.midi.init();
+        try {
+            try {
+                // Initialize MIDI
+                await this.midi.init();
 
-        // Initialize UI (settings panel etc.)        
-        await this.ui.build();
+            } catch (e) {
+                // This means there is no Web MIDI access. In this case, you can still use the emulator but without MIDI access.
+                this.handle(e);
+            }
 
-        // Routing handler: Runs routing. see Routing.js for the callbacks which in turn call this controller again.
-        this.routing = new Routing(this);
-        this.routing.run();
+            // Initialize UI (settings panel etc.)        
+            await this.ui.build();
+
+            // Routing handler: Runs routing. see Routing.js for the callbacks which in turn call this controller again.
+            this.routing = new Routing(this);
+            this.routing.run();
+
+        } catch (e) {
+            this.handle(e);
+        }
     }
 
     /**
