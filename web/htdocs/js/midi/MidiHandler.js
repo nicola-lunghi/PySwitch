@@ -35,7 +35,7 @@ class MidiHandler {
                 reject({ message: "Failed to get MIDI access: " + msg });
             }
 
-            if (!navigator.hasOwnProperty("requestMIDIAccess")) {
+            if (!navigator.requestMIDIAccess) {
                 reject({ message: "Your browser does not support Web MIDI. The communication will be restricted." })
             }
 
