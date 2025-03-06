@@ -1,11 +1,52 @@
 .container .application .action-icons {
-    display: block;
+    display: flex;
+    align-items: center;
+    margin-right: 0.2em;
 }
 
-.container .application .action-icons .icon-page { 
+.container .application .action-icons .action-icon { 
     display: block;
     width: 1em;
     height: 1em;
-    border-radius: 50%;
-    background-color: black;
+    margin-right: 0.2em;
 }
+
+/**********************************************************/
+
+.container .application .action-icons .icon-page { 
+    border-radius: 50%;    
+}
+
+.container .application .action-icons .icon-page-0 { 
+    background-color: rgb(58, 144, 0);
+}
+
+.container .application .action-icons .icon-page-1 { 
+    background-color: rgb(131, 0, 183);
+}
+
+.container .application .action-icons .icon-page-2 { 
+    background-color: rgb(75, 75, 255);
+}
+
+.container .application .action-icons .icon-page-3 { 
+    background-color: rgb(44, 204, 248);
+}
+
+.container .application .action-icons .icon-page-4 { 
+    background-color: rgb(207, 183, 1);
+}
+
+/**********************************************************/
+
+.container .application .action-icons .icon-has-display {
+    margin-right: 0.6em;
+}
+
+/*
+.container .application .action-icons .icon-enable-callback {
+}
+
+.container .application .action-icons .icon-uses-leds {
+}
+*/

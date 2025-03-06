@@ -95,6 +95,8 @@ Also note that analog inputs can only use one kind of action: AnalogAction, the 
 
 - **display.py:** At the current (alpha) state of the emaulator, no graphical editor for the display areas is implemented yet. Currently the emulator focuses on the inputs. However there are several examples for display.py among the examples, you can copy the code of any of them and reuse it.
 
+- **Paging:** Currently, the emulator recognizes if you use PagerAction in inputs.py, but there is no graphical editor for this, you have to implement the pager in code manually.
+
 - **MIDI:** The emulator uses the Web MIDI API which is widely available. However, the only tested browser is Chrome, so if you have problems, try a current version of Chrome first. Also, you have to allow the domain to use MIDI (including System Exclusive) once at first usage.
 
 - **Screen Size:** The emulator is designed to be run on rather large screens. It is reponsive to the screen size, but the CSS could be optimized far better for mobile devices. However, on Pads for example it is usable. For editing source code for example, a big PC screen is best.

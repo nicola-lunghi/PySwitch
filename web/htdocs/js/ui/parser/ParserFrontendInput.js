@@ -80,6 +80,10 @@ class ParserFrontendInput {
             return action.meta.getShortDisplayName(item);
         }
 
+        // The promises in the upcoming map() call will run pseudo-parallel, so we better
+        // scan messages beforehand (even if the messagesForAction() method would do that automatically)
+        await that.#parserFrontend.parser.checks.process();
+
         /**
          * Determines the additional classes for the actions (warnings etc)
          */
@@ -91,7 +95,7 @@ class ParserFrontendInput {
         }
         
         async function getActionElements(a, buttonClass, hold, tooltip) {
-            return Promise.all(
+            return await Promise.all(
                 a.map(
                     async (item) => {       
                         const addClasses = await getAdditionalClasses(item);
@@ -102,9 +106,10 @@ class ParserFrontendInput {
                                 // Action
                                 $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
                                 .addClass(addClasses)
-                                .text(getItemText(item))
                                 .append(
-                                    that.#parserFrontend.icons.get(item)
+                                    await that.#parserFrontend.icons.get(item, getActionDefinition(item.name, item.client)),
+
+                                    $('<span />').text(getItemText(item))
                                 )
                                 .on('click', async function() {
                                     try {                                        

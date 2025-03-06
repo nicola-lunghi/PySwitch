@@ -153,10 +153,15 @@ class ConfigParserTests extends TestBase {
                     }
                 ]
             }], 
-            actions: [{ 
-                name: "BANK_UP",
-                arguments: [] 
-            }] 
+            actions: [
+                { 
+                    name: "BANK_UP",
+                    arguments: [] 
+                },
+                {
+                    name: "None"
+                }
+            ] 
         });
 
         await this.#testAction(parser, {
@@ -1147,8 +1152,11 @@ class ConfigParserTests extends TestBase {
                 const expAction = expActions[i];
     
                 expect(action.name).toBe(expAction.name);
-                expect(JSON.parse(action.arguments())).toEqual(expAction.arguments);
-                expect(action.client).toBe(config.client);
+                if (action.client != "local") expect(action.client).toBe(config.client);
+
+                if (expAction.arguments) {
+                    expect(JSON.parse(action.arguments())).toEqual(expAction.arguments);
+                }
             }
         }
 

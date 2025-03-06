@@ -82,9 +82,11 @@ class ParameterMeta {
 
             function addValues(values) {
                 for(const value of values) {
+                    const argStr = (mapping.parameters.length > 1) ? (param.name + " = ") : "";
+
                     ret.push({
-                        name: mapping.name + "(" + param.name + " = " + value.value + ")",
-                        value: mapping.name + "(" + param.name + " = " + value.value + ")",
+                        name: mapping.name + "(" + argStr + value.value + ")",
+                        value: mapping.name + "(" + argStr + value.value + ")"
                     });
                 }
             }

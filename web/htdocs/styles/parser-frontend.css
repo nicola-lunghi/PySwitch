@@ -51,6 +51,7 @@
     font-size: 0.7em;
     text-overflow: ellipsis;
     border: none;
+    display: flex;
 }
 
 /****************************************************************/

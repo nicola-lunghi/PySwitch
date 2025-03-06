@@ -24,8 +24,9 @@ class ParserChecks {
     async process() {
         if (this.#messages != null) return;
 
-        this.#messages = [];
-        await this.#checkDisplayLabels();
+        const msgs = []
+        await this.#checkDisplayLabels(msgs);
+        this.#messages = msgs;
     }
 
     /**
@@ -41,7 +42,6 @@ class ParserChecks {
      */
     async messagesForAction(actionCallProxy, type = null) {
         await this.process();
-        
         const ret = [];
         
         for (const msg of this.#messages) {
@@ -52,6 +52,33 @@ class ParserChecks {
             }
         }
         return ret;
+    }
+
+    /**
+     * Check for multiple assignments of DisplayLabels
+     */
+    async #checkDisplayLabels(messages) {
+        const displays = await this.#parser.getAvailableDisplays();
+
+        // Crawl all actions for parameters with the displays
+        for (const display of displays) {
+            const usages = await this.getDisplayUsages(display);
+            const pages = [...new Set(usages.map((item) => item.page()))];
+            
+            for (const page of pages) {
+                const usagesFiltered = usages.filter((item) => !item.page() || (item.page() == page));
+            
+                if (usagesFiltered.length > 1) {
+                    messages.push({
+                        type: "W",
+                        message: "DisplayLabel " + display + " is used more than once (paging regarded). This leads to unpredicted behaviour on the label.",
+                        parameter: "display",
+                        value: display,
+                        actions: usagesFiltered
+                    })    
+                }    
+            }
+        }
     }
 
     /**
@@ -97,32 +124,5 @@ class ParserChecks {
         this.#usages.set(displayId, usages);
 
         return usages;        
-    }
-
-    /**
-     * Check for multiple assignments of DisplayLabels
-     */
-    async #checkDisplayLabels() {
-        const displays = await this.#parser.getAvailableDisplays();
-
-        // Crawl all actions for parameters with the displays
-        for (const display of displays) {
-            const usages = await this.getDisplayUsages(display);
-            const pages = [...new Set(usages.map((item) => item.page()))];
-            
-            for (const page of pages) {
-                const usagesFiltered = usages.filter((item) => !item.page() || (item.page() == page));
-            
-                if (usagesFiltered.length > 1) {
-                    this.#messages.push({
-                        type: "W",
-                        message: "DisplayLabel " + display + " is used more than once (paging regarded). This leads to unpredicted behaviour on the label.",
-                        parameter: "display",
-                        value: display,
-                        actions: usagesFiltered
-                    })    
-                }    
-            }
-        }
     }
 }

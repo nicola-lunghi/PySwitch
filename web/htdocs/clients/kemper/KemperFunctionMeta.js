@@ -9,6 +9,7 @@ class KemperFunctionMeta extends FunctionMeta {
     getDisplayName(actionCallProxy = null) {
         switch (this.functionDefinition.name) {
             case "RIG_SELECT_AND_MORPH_STATE": return this.client.getDisplayName() + ": " + this.#getDisplayNameRigSelectAndMorphState(actionCallProxy)
+            case "LOOPER_REC_PLAY_OVERDUB": return this.client.getDisplayName() + ": " + super.getShortDisplayName(actionCallProxy);
         }
 
         return this.client.getDisplayName() + ": " + this.getShortDisplayName(actionCallProxy);
@@ -25,6 +26,7 @@ class KemperFunctionMeta extends FunctionMeta {
             case "EFFECT_BUTTON": return this.#getDisplayNameEffectButton(actionCallProxy)
             case "EFFECT_STATE": return this.#getDisplayNameEffectState(actionCallProxy)
             case "BINARY_SWITCH": return this.#getDisplayNameBinarySwitch(actionCallProxy)
+            case "LOOPER_REC_PLAY_OVERDUB": return "Looper Rec|Play|OD"
         }
         
         return super.getShortDisplayName(actionCallProxy);
