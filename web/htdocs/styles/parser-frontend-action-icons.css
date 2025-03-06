@@ -1,0 +1,11 @@
+.container .application .action-icons {
+    display: block;
+}
+
+.container .application .action-icons .icon-page { 
+    display: block;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    background-color: black;
+}
