@@ -10,7 +10,17 @@ NOTE: This uses some quite new web features, so take care to use it with a reaso
 
 ## Compatibility
 
-The emulator needs the Web MIDI API to run. Currently this is only tested on the recent version of Chrome. Cross compatibility is to be done still.
+The emulator needs the [Web MIDI API](https://developer.mozilla.org/en-US/docs/Web/API/Web_MIDI_API) to connect to devices. If no Web MIDI access is provided, you can still use it, but without MIDI for sure.
+
+In general, the emulator uses pretty modern CSS features, so be sure to run a recent version of your browser, and in case anything is not working, first update the browser before opening an issue.
+
+Tested browsers:
+
+- Chrome: This is the recommended browser for the emulator. 
+- Firefox: Fully supported.
+- Safari: Works basically, but there are a few issues:
+    - No MIDI
+    - The rendering is blurry sometimes, but this seems like a Safari bug
 
 ## Versioning
 
