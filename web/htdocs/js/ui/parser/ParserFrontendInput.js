@@ -103,6 +103,9 @@ class ParserFrontendInput {
                                 $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
                                 .addClass(addClasses)
                                 .text(getItemText(item))
+                                .append(
+                                    that.#parserFrontend.icons.get(item)
+                                )
                                 .on('click', async function() {
                                     try {                                        
                                         await that.promptEditAction(

@@ -5,6 +5,7 @@ class ParserFrontend {
 
     inputs = [];   // Array of parser frontends
     parser = null;
+    icons = null;
 
     #controller = null;
     #toUpdate = [];    // Queue for parser frontends which had changes recently.
@@ -12,6 +13,8 @@ class ParserFrontend {
     constructor(controller, parser) {
         this.#controller = controller;
         this.parser = parser;
+
+        this.icons = new ParserFrontendIcons();
     }
 
     async destroy() {
