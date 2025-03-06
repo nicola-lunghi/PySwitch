@@ -75,6 +75,9 @@ class PySwitchRunner {
         await this.#loadModule("parser/inputs/InputAssignment.py", localPythonPath);
         await this.#loadModule("parser/inputs/CreateInputTransformer.py", localPythonPath);
         
+        this.pyodide.FS.mkdir("parser/pager");
+        await this.#loadModule("parser/pager/Pager.py", localPythonPath);
+
         this.pyodide.FS.mkdir("wrappers");
         await this.#loadModule("wrappers/__init__.py", localPythonPath);
         await this.#loadModule("wrappers/wrap_io.py", localPythonPath);

@@ -14,40 +14,43 @@ class ParserChecks {
      * Reset messages buffer
      */
     reset() {
-        this.#messages = [];
+        this.#messages = null;
         this.#usages = new Map();
+    }
+
+    /**
+     * Process checks
+     */
+    async process() {
+        if (this.#messages != null) return;
+
+        this.#messages = [];
+        await this.#checkDisplayLabels();
     }
 
     /**
      * Process all checks (buffered)
      */
     async messages() {
-        if (this.#messages.length > 0) return this.#messages;
-
-        await this.#checkDisplayLabels();
-
+        await this.process();
         return this.#messages;
     }
 
     /**
-     * Returns messages related to an action
-     * 
-     * @param {*} action 
-     * @returns 
-     *
-    async messagesForAction(action) {
-        const messages = await this.messages();
-
+     * Returns if the action has any relevant messages of the given type
+     */
+    async messagesForAction(actionCallProxy, type = null) {
+        await this.process();
+        
         const ret = [];
+        
+        for (const msg of this.#messages) {
+            if (type && (msg.type != type)) continue;
 
-        for (const msg of messages) {
-            for (const a of msg.actions) {
-                if (a.name == action.name && a.client == action.client) {
-                    ret.push(msg);
-                }
+            for (const action of msg.actions || []) {
+                if (action.id() == actionCallProxy.id()) ret.push(msg);
             }
         }
-
         return ret;
     }
 
@@ -63,18 +66,15 @@ class ParserChecks {
         async function getContainedDisplays(input, hold) {
             if (!input) return [];
             
-            const actions = await input.actions(hold);
+            const actions = await input.actions(hold).toJs();
 
             const ret = [];
             for (const action of actions || []) {
-                for (const arg of JSON.parse(action.arguments())) {                
+                const args = JSON.parse(action.arguments());
+
+                for (const arg of args) {                
                     if (arg.value == displayId) {
-                        ret.push({
-                            input, input,
-                            name: action.name,
-                            client: action.client,
-                            display: displayId
-                        });
+                        ret.push(action);
                     }                                        
                 }
             }
@@ -108,14 +108,20 @@ class ParserChecks {
         // Crawl all actions for parameters with the displays
         for (const display of displays) {
             const usages = await this.getDisplayUsages(display);
-
-            if (usages.length > 1) {
-                this.#messages.push({
-                    type: "W",
-                    message: "DisplayLabel " + display + " is used more than once. This leads to unpredicted behaviour on the label.",
-                    parameter: display,
-                    actions: usages
-                })    
+            const pages = [...new Set(usages.map((item) => item.page()))];
+            
+            for (const page of pages) {
+                const usagesFiltered = usages.filter((item) => !item.page() || (item.page() == page));
+            
+                if (usagesFiltered.length > 1) {
+                    this.#messages.push({
+                        type: "W",
+                        message: "DisplayLabel " + display + " is used more than once (paging regarded). This leads to unpredicted behaviour on the label.",
+                        parameter: "display",
+                        value: display,
+                        actions: usagesFiltered
+                    })    
+                }    
             }
         }
     }

@@ -25,9 +25,6 @@ class Actions(libcst.CSTVisitor):
         if not self.actions_key:
             return False
         
-        if not isinstance(node.value, libcst.Call):
-            return False
-
         self.result.append(Action(self.input, node))
         return False
     

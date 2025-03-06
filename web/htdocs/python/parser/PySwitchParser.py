@@ -5,6 +5,8 @@ from .inputs.Input import Input
 from .inputs.InputReplacer import InputReplacer
 from .inputs.CreateInputTransformer import CreateInputTransformer
 
+from .pager.Pager import Pager
+
 from .misc.RemoveUnusedImportTransformer import RemoveUnusedImportTransformer
 from .misc.AddImportsTransformer import AddImportsTransformer
 from .misc.AssignmentExtractor import AssignmentExtractor
@@ -23,6 +25,9 @@ class PySwitchParser:
         # Buffers
         self.__available_actions = None
         self.__available_mappings = None
+        
+        self.__pager = None
+        self.__pager_buffer_active = False
         
         self.reset_buffers()
 
@@ -89,11 +94,30 @@ class PySwitchParser:
 
         return ret
     
+    # Returns a Handler for the first pager (instance of PagerAction) found in inputs.py (instance of Pager).
+    def pager(self):
+        if self.__pager_buffer_active:
+            return self.__pager
+        
+        if not self.__csts:
+            raise Exception("No data loaded")
+        
+        pager = Pager(self)
+        self.__csts["inputs_py"].visit(pager)
+        
+        self.__pager = pager if pager.name != None else None
+        self.__pager_buffer_active = True
+        
+        return self.__pager
+
     # Returns a JSON encoded list of assignments in display.py
     def displays(self):
         if self.__displays:
             return self.__displays
             
+        if not self.__csts:
+            raise Exception("No data loaded")
+        
         self.__displays = json.dumps(AssignmentExtractor().get(self.__csts["display_py"]))
 
         return self.__displays

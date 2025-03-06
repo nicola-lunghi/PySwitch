@@ -8,11 +8,13 @@ class ActionProperties {
     #oldProperties = null;
     #advancedRows = null;
     #parser = null;
+    #messages = null;
 
-    constructor(parser, actionDefinition, oldProperties = null) {
+    constructor(parser, actionDefinition, oldProperties = null, messages = []) {
         this.#parser = parser;
         this.#actionDefinition = actionDefinition;
-        this.#oldProperties = oldProperties;   
+        this.#oldProperties = oldProperties;
+        this.#messages = messages;
     }
 
     /**
@@ -53,6 +55,10 @@ class ActionProperties {
                     // Take over old values from the old props object, if different from the default
                     takeOverValues(input, param);
 
+                    // Get messages for the parameter
+                    const messages = that.#messages.filter((item) => item.parameter == param.name)
+
+                    // Build DOM for row
                     const row = $('<tr class="selectable" />').append(
                         // Parameter Name
                         $('<td />').append(
@@ -60,8 +66,10 @@ class ActionProperties {
                         ),
 
                         // Input
-                        $('<td />').append(
-                            input
+                        $('<td />')
+                        .addClass(messages.length ? "has-messages" : null)
+                        .append(
+                            input                            
                         ),
 
                         // Comment
@@ -70,16 +78,40 @@ class ActionProperties {
                         )
                     );
 
-                    if (param.meta.data.advanced) {
-                        that.#advancedRows.push(row);
-                        row.hide();
-                    }
+                    if (!messages.length) {
+                        // No messages: Hide if advanced
+                        if (param.meta.data.advanced) {
+                            that.#advancedRows.push({
+                                row: row,
+                                parameterName: param.name
+                            });
+                            row.hide();
+                        }
 
-                    return row;
+                        return row;
+
+                    } else {
+                        // Messages: Also return additional rows. The result array (parameters) will be flattened later.
+                        return [
+                            // Main input row
+                            row,
+
+                            // Message rows
+                            ...messages.map((item) => {
+                                return $('<tr class="param-messages" />').append(
+                                    $('<td />'),
+    
+                                    $('<td colspan="2" />').append(
+                                        item.message
+                                    )
+                                )
+                            })                            
+                        ]
+                    }
                 }
             )
         );
-
+        
         let tbody = null;
 
         const ret = $('<div class="action-properties" />').append(
@@ -116,13 +148,13 @@ class ActionProperties {
                         ),
 
                         // Action parameters
-                        parameters
+                        parameters.flat()
                     )
                 )
             )
         );
 
-        // Advanced parameters
+        // Advanced parameters: Show all button
         if (this.#advancedRows.length > 0) {
             let advRow = null;
             tbody.append(
@@ -132,7 +164,7 @@ class ActionProperties {
                         .text("Show all...")
                         .on('click', async function() {
                             for (const row of that.#advancedRows) {
-                                row.show();
+                                row.row.show();
                             }
 
                             advRow.hide();
@@ -205,6 +237,23 @@ class ActionProperties {
             if (!input) throw new Error("No input for param " + param.name + " found");
 
             this.#setInputValue(input, param, arg.value);
+
+            // If not default value, show the row
+            const defaultValue = param.meta.getDefaultValue()
+            if (defaultValue != arg.value) {
+                this.#showParameter(arg.name)
+            }
+        }
+    }
+
+    /**
+     * Shows an advanced parameter
+     */
+    #showParameter(name) {
+        for (const row of this.#advancedRows) {
+            if (row.parameterName == name) {
+                row.row.show();
+            }
         }
     }
 

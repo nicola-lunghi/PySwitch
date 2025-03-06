@@ -80,83 +80,65 @@ class ParserFrontendInput {
             return action.meta.getShortDisplayName(item);
         }
 
-        // Load messages from the checks
-        const messages = await this.#parserFrontend.parser.checks.messages();
-
-        /**
-         * Returns if the action has any relevant messages of the given type
-         */
-        function hasMessages(item, type) {
-            for (const msg of messages) {
-                if (msg.type != type) continue;
-
-                for (const usage of msg.actions || []) {
-                    if (usage.name == item.name && usage.client == item.client) return true;
-                }
-            }
-            return false;
-        }
-
         /**
          * Determines the additional classes for the actions (warnings etc)
          */
-        function getAdditionalClasses(item) {
-            if (hasMessages(item, "E")) return "error";
-
-            const args = JSON.parse(item.arguments());
-
-            for (const arg of args) {
-                if (arg.name == "enable_callback" && arg.value != "None") {
-                    return "has-enable-callback";
-                }
-            }
-
-            if (hasMessages(item, "W")) return "warn";
+        async function getAdditionalClasses(item) {
+            const errorMsgs = await that.#parserFrontend.parser.checks.messagesForAction(item, "E");
+            if (errorMsgs.length > 0) return "error";
+            const warnMsgs = await that.#parserFrontend.parser.checks.messagesForAction(item, "W");
+            if (warnMsgs.length > 0) return "warn";
         }
         
-        function getActionElements(a, buttonClass, hold, tooltip) {
-            return a.map(
-                (item) => {       
-                    const addClasses = getAdditionalClasses(item);
+        async function getActionElements(a, buttonClass, hold, tooltip) {
+            return Promise.all(
+                a.map(
+                    async (item) => {       
+                        const addClasses = await getAdditionalClasses(item);
 
-                    return $('<div class="action-item" />').append(
-                        $('<div class="action-item-content" />')
-                        .append(
-                            // Action
-                            $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
-                            .addClass(addClasses)
-                            .text(getItemText(item))
-                            .on('click', async function() {
-                                try {                                        
-                                    await that.promptEditAction(item, hold);
+                        return $('<div class="action-item" />').append(
+                            $('<div class="action-item-content" />')
+                            .append(
+                                // Action
+                                $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
+                                .addClass(addClasses)
+                                .text(getItemText(item))
+                                .on('click', async function() {
+                                    try {                                        
+                                        await that.promptEditAction(
+                                            item, 
+                                            hold, 
+                                            await that.#parserFrontend.parser.checks.messagesForAction(item)
+                                        );
 
-                                } catch (e) {
-                                    that.#controller.handle(e);
-                                }
-                            }),
-
-                            // Remove button
-                            $('<span class="button ' + buttonClass + ' remove-action fas fa-times" data-toggle="tooltip" title="Remove action" />')
-                            .addClass(addClasses)
-                            .on('click', async function() {
-                                try {
-                                    const action = $(this).parent().parent().data('handler');
-
-                                    if (!confirm("Do you want to delete " + action.name + " from " + that.definition.displayName + "?")) {
-                                        return;
+                                    } catch (e) {
+                                        that.#controller.handle(e);
                                     }
-                                                                                
-                                    await that.removeAction(action);
+                                }),
 
-                                } catch (e) {
-                                    that.#controller.handle(e);
-                                }
-                            })
-                        )                    
-                    )
-                    .data('handler', item)
-                    .data('hold', hold)
-                }
+                                // Remove button
+                                $('<span class="button ' + buttonClass + ' remove-action fas fa-times" data-toggle="tooltip" title="Remove action" />')
+                                .addClass(addClasses)
+                                .on('click', async function() {
+                                    try {
+                                        const action = $(this).parent().parent().data('handler');
+
+                                        if (!confirm("Do you want to delete " + action.name + " from " + that.definition.displayName + "?")) {
+                                            return;
+                                        }
+                                                                                    
+                                        await that.removeAction(action);
+
+                                    } catch (e) {
+                                        that.#controller.handle(e);
+                                    }
+                                })
+                            )                    
+                        )
+                        .data('handler', item)
+                        .data('hold', hold)                        
+                    }
+                )
             )
         }
 
@@ -164,7 +146,7 @@ class ParserFrontendInput {
             $('<div class="pyswitch-parser-frontend" />').append(                
                 this.#gridElement = $('<div class="action-grid" />').append(
                     // Actions
-                    getActionElements(
+                    await getActionElements(
                         actions,
                         "actions",
                         false,
@@ -172,7 +154,7 @@ class ParserFrontendInput {
                     ),
 
                     // Hold actions
-                    getActionElements(
+                    await getActionElements(
                         actionsHold,
                         "actions-hold",
                         true,
@@ -339,11 +321,12 @@ class ParserFrontendInput {
     /**
      * Shows the edit action dialog
      */
-    async promptEditAction(action, hold) {
+    async promptEditAction(action, hold, messages = []) {
         const inputName = this.definition.displayName;
         const that = this;
 
         await this.#promptAction(
+            // onCommit
             async function(actionNew, holdNew) {
                 if (hold == holdNew) {
                     await that.replaceAction(action, actionNew);
@@ -352,20 +335,29 @@ class ParserFrontendInput {
                     await that.addAction(actionNew, holdNew);
                 }                
             },
+
+            // Headline
             "Edit/replace action \"" + action.name + "\" of " + inputName,
+
+            // Button text
             "Apply",
+
+            // Preselected action
             {
                 name: action.name,
                 arguments: JSON.parse(action.arguments()),
                 hold: hold
-            }
+            },
+
+            // Messages
+            messages
         );
     }
 
     /**
      * Shows the action edit/create dialog
      */
-    async #promptAction(onCommit, headline, buttonText, preselectAction = null) {
+    async #promptAction(onCommit, headline, buttonText, preselectAction = null, messages = []) {
         const that = this;
 
         let props = null;
@@ -378,7 +370,8 @@ class ParserFrontendInput {
             props = new ActionProperties(
                 that.#parserFrontend.parser,
                 entry.data.actionDefinition,
-                props
+                props,
+                messages
             );
 
             browser.showInfoPanel(await props.get());

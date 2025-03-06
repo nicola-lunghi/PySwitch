@@ -42,6 +42,10 @@
     max-width: 100cqw;
 }
 
+/* .container .action-properties .action-parameters td:first-child {
+    width: fit-content;
+} */
+
 .container .action-properties .action-parameters td:last-child {
     white-space: unset;
     color: gray;
@@ -64,6 +68,16 @@
 
 /**********************************************************************************/
 
+.container .action-properties .action-parameters .param-messages td {
+    color: orange;
+}
+
+.container .action-properties td.has-messages > * {
+    background-color: orange;
+}
+
+/**********************************************************************************/
+
 .container .action-properties select {
     font-size: 0.88888em;
     max-width: 15em;
@@ -80,3 +94,4 @@
     cursor: pointer;
     float: right;
 }
+

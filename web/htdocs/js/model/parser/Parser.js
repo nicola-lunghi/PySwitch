@@ -55,12 +55,20 @@ class Parser {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns an instance of Input.py, which handles all operations on the input.
+     * Returns a (proxy) instance of Input.py, which handles all operations on the input.
      * port must be an integer ID of the port (as defined in the board wrapper in python)
      */
     async input(port, createIfNotExistent = false) {
         await this.#init();
         return this.#pySwitchParser.input(port, createIfNotExistent);
+    }
+
+    /**
+     * Returns a Handler proxy for the first pager (instance of PagerAction) found in inputs.py (instance of Pager).
+     */
+    async pager() {
+        await this.#init();
+        return this.#pySwitchParser.pager();
     }
     
     /**
