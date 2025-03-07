@@ -18,9 +18,9 @@ Button setup – Dango Updates to MIDI Captain Mini-6
 
 | Button | Short Press        | Long Press           |
 |--------|--------------------|----------------------|
-| 1      | Undo	Bank UP       |                      |
-| 2      | Half Speed	Rig UP|                      |
+| 1      | Undo	              |                      |
+| 2      | Half Speed	      |                      |
 | 3      | Reverse	          |                      |
 | A      | Rec/Play/Dub	      |                      |
-| B      | Stop 	Erase     |                      |
-| C      | Vol Boost (2-3db)  | EFFECTS  PAGE TOGGLE |
+| B      | Stop 	          | Erase                |
+| C      | Vol Boost (2-3db)  | EFFECTS PAGE TOGGLE  |
