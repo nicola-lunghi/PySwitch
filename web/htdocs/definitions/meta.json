@@ -342,6 +342,15 @@
                 "target": "AdafruitSwitch",
                 "parameters": [
                     {
+                        "name": "bank",
+                        "type": "int",
+                        "range": {
+                            "min": 1,
+                            "max": "NUM_BANKS",
+                            "none": true
+                        }
+                    },
+                    {
                         "name": "morph_display",
                         "type": "any",
                         "advanced": true
