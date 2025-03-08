@@ -5,6 +5,10 @@
 - Changed the order of the bottom LEDs, to be a mirror of the upper LEDs order. This makes way more sense for switches with two actions sharing the LEDs, where the second action used the wrong LED before. The fix was just swapping the pixel addressing in lib/pyswitch/hardware/devices, if you like the old order better, just copy the definitions into inputs.py (just the bottom switches) and swap them back to linear order.
 - Finally there is a **Web-based Configuration Tool**, currently released in alpha phase: The **"PySwitch Emulator"!** See README. This can change patches with a graphical user interface, and directly load/save them to the device. Also, it can directly control your Kemper! PySwitch is running in an emulated Python environment called "Pyodide" to achieve that (the original PySwitch code, no fake!), which is very handy for configuring the controller, trying things out, even for development of new features!
 
+## Emulator 2.3.4.3
+- Updated Pyodide to 0.27.3, fixing issues on Safari on iOS
+
+
 # PySwitch v2.3.3
 - Fixed behaviour of bank preselect:
     - **BANK_SELECT**: Now also can override a previously made selection
