@@ -386,7 +386,7 @@ class ConfigParserTests extends TestBase {
                 }
             ],
             "local",
-            true
+            // true
         );
     }
 
