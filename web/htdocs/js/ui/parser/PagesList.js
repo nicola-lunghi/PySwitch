@@ -1,6 +1,6 @@
 class PagesList {
 
-    #pages = null;
+    #pages = [];
 
     /**
      * Returns the DOM for the pages list
@@ -13,7 +13,7 @@ class PagesList {
      * Sets the list from the passed pages list
      */
     set(value) {
-        console.log(value);
+        // console.log(value);
         this.#pages = value;
     }
 

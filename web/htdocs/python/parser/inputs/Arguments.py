@@ -25,7 +25,6 @@ class Arguments(VisitorWithStack):
     # Parse incoming argument values from JS
     def parse_value(self, arg_name, arg_value):
         if self.action_name == "PagerAction" and arg_name == "pages":
-            print(arg_value)
             return libcst.List(
                 elements = [
                     libcst.Element(

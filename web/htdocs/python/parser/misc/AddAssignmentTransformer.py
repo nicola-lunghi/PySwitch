@@ -5,7 +5,7 @@ class AddAssignmentTransformer(TransformerWithStack):
     def __init__(self, name, call_node):
         super().__init__()
         self.name = name
-        print(self.name)
+        
         self.call_node = call_node
 
     def leave_SimpleStatementLine(self, original_node, updated_node):
