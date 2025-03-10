@@ -25,6 +25,8 @@ class ActionProperties {
         this.#inputs = new Map();
 
         let holdInput = null;
+        let assignInput = null;
+        let assignRow = null;
 
         /**
          * Take over old values from the old props object, if different from the default
@@ -147,12 +149,34 @@ class ActionProperties {
                             $('<td />').text("")
                         ),
 
+                        // Assign option
+                        assignRow = $('<tr />').append(
+                            $('<td />').append(
+                                $('<span />').text("assign")
+                            ),
+    
+                            // Input
+                            $('<td />').append(
+                                assignInput = $('<input type="text" />')
+                                .val(this.#actionDefinition.meta.data.assign ? this.#actionDefinition.meta.data.assign : "")
+                            ),
+    
+                            // Comment
+                            $('<td />').text("Define as separate assignment")
+                        )
+                        .hide(),
+
                         // Action parameters
                         parameters.flat()
                     )
                 )
             )
         );
+
+        this.#advancedRows.push({
+            row: assignRow,
+            parameterName: "assign"
+        });
 
         // Advanced parameters: Show all button
         if (this.#advancedRows.length > 0) {
@@ -182,6 +206,12 @@ class ActionProperties {
             }
         }
 
+        // Assign input
+        this.#inputs.set("assign", assignInput);
+        if (this.#oldProperties) {
+            this.setAssign(this.#oldProperties.assign());            
+        }
+
         return ret;
     }
 
@@ -193,6 +223,7 @@ class ActionProperties {
 
         return {
             name: this.#actionDefinition.name,
+            assign: this.#inputs.get('assign').val(),
             arguments: this.#actionDefinition.parameters
                 .filter((param) => {
                     const input = that.#inputs.get(param);
@@ -222,6 +253,30 @@ class ActionProperties {
             return !!this.#inputs.get("hold").prop('checked');
         }
         return false;
+    }
+
+    /**
+     * Sets the hold input
+     */
+    setHold(hold) {
+        if (this.#actionDefinition.meta.data.target != "AdafruitSwitch") {
+            return;
+        }
+        this.#inputs.get("hold").prop('checked', !!hold)
+    }
+
+    /**
+     * Returns the assign value if set
+     */
+    assign() {
+        return this.#inputs.get("assign").val();
+    }
+
+    /**
+     * Sets the assign input
+     */
+    setAssign(assign) {
+        this.#inputs.get("assign").val(assign);
     }
 
     /**
@@ -255,16 +310,6 @@ class ActionProperties {
                 row.row.show();
             }
         }
-    }
-
-    /**
-     * Sets the hold input
-     */
-    setHold(hold) {
-        if (this.#actionDefinition.meta.data.target != "AdafruitSwitch") {
-            return;
-        }
-        this.#inputs.get("hold").prop('checked', !!hold)
     }
 
     /**

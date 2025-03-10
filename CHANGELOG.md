@@ -1,3 +1,6 @@
+# PySwitch v2.3.5
+- Changed parameters for PagerAction (all config options now accessible as parameters directly). Examples have been adjusted.
+
 # PySwitch v2.3.4
 - Reset state of the Effect Button actions on rig changes
 - RIG_SELECT_AND_MORPH_STATE now can be used inside [] brackets like any other action (action lists are flattened initially)

@@ -19,9 +19,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.controller.pager import *
     from lib.pyswitch.ui.elements import DisplayLabel
     
-    # from .mocks_ui import *
     from .mocks_appl import *
-    # from .mocks_callback import *
 
 
 class MockController2:
@@ -146,9 +144,7 @@ class TestPagerAction(unittest.TestCase):
                     "id": 2
                 },
             ],
-            config = {
-                "useSwitchLeds": False
-            }
+            use_leds = False
         )
 
         action_1 = MockAction({ "enableCallback": pager.enable_callback, "id": 1 })
@@ -222,9 +218,7 @@ class TestPagerAction(unittest.TestCase):
                     "text": "bar"
                 },
             ],
-            config = {
-                "display": display
-            },
+            display = display,
             led_brightness = 0.4
         )
 

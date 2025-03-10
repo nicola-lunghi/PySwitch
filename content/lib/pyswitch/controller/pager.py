@@ -10,22 +10,27 @@ class PagerAction(Callback, Action):
         def enabled(self, action):
             return (action.id == self.__pager.current_page_id)
 
-    # pages has to be a list of dicts like follows:
-    # {
-    #      "id": Page ID. All actions with this ID will be enabled
-    #      "color": Page color. LEDs and label will be colored this way (for the brightness, there is a separate parameter)
-    #      "text": Label text for the page
-    # }
-    def __init__(self, pages, led_brightness = 0.15, mappings = [], config = {}):
-        # Enable LEDs only if a color is set
-        if not "useSwitchLeds" in config:
-            for page in pages:
-                if "color" in page:
-                    config["useSwitchLeds"] = True
-                    break
-
+    def __init__(self, 
+                 pages,                         # This has to be a list of dicts like follows:
+                                                # {
+                                                #      "id": Page ID. All actions with this ID will be enabled
+                                                #      "color": Page color. LEDs and label will be colored this way (for the brightness, there is a separate parameter)
+                                                #      "text": Label text for the page
+                                                # }
+                 led_brightness = 0.15,         # LED brightness for the action (fixed) in range [0..1]
+                 mappings = [],                 # List of mappings the paging depends on (optional)
+                 use_leds = True,
+                 id = None,
+                 display = None,
+                 enable_callback = None
+        ):
         Callback.__init__(self, mappings)
-        Action.__init__(self, config)
+        Action.__init__(self, {
+            "useSwitchLeds": use_leds,
+            "id": id,
+            "display": display,
+            "enableCallback": enable_callback
+        })
 
         self.__pages = pages
         self.__led_brightness = led_brightness
@@ -40,10 +45,13 @@ class PagerAction(Callback, Action):
         Action.init(self, appl, switch)
 
         self.__current_page_index = 0
-        self.current_page_id = self.__pages[self.__current_page_index]["id"]
+        self.current_page_id = self.__pages[self.__current_page_index]["id"] if len(self.__pages) > 0 else None
 
     # Called when the switch is pushed down
     def push(self):
+        if not len(self.__pages):
+            return
+        
         if self.__current_page_index < 0:
             return 
         
@@ -52,17 +60,20 @@ class PagerAction(Callback, Action):
         while self.__current_page_index >= len(self.__pages):
             self.__current_page_index = 0
 
-        self.current_page_id = self.__pages[self.__current_page_index]["id"]
+        self.current_page_id = self.__pages[self.__current_page_index]["id"] if len(self.__pages) > 0 else None
 
         self.update_displays()
 
     def update_displays(self):
+        if not len(self.__pages):
+            return
+
         if self.__current_page_index < 0:
             return 
         
         if not self.enabled:
             return
-
+        
         page = self.__pages[self.__current_page_index]
         
         if "color" in page:

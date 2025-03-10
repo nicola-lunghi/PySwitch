@@ -1,12 +1,8 @@
 import libcst
 
-class AssignmentExtractor:
+class AssignmentNameExtractor:
         
-    # Returns a list of all assignments defined on module level, as dicts 
-    # {
-    #     name: Target name
-    #     node: Value node
-    # }
+    # Returns a list of all public assignments defined on module level
     def get(self, cst):
         ret = []
 
@@ -21,9 +17,9 @@ class AssignmentExtractor:
             assign = statement.body[0]
 
             for target in assign.targets:
-                ret.append({
-                    "name": target.target.value,
-                    "node": assign.value
-                })
+                if target.target.value.startswith("_"):
+                    continue
+
+                ret.append(target.target.value)
 
         return ret

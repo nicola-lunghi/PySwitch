@@ -4,6 +4,8 @@ from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
 from pyswitch.clients.kemper.actions.rig_up_down import RIG_UP, RIG_DOWN, FOO_RIG
 from pyswitch.clients.kemper.actions.foo import FOO1, FOO2
 
+_foo = "Must be removed"
+
 Inputs = [
 
     # Switch 1

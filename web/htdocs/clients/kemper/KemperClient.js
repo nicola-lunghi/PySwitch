@@ -68,7 +68,8 @@ class KemperClient extends Client {
             case "tuner": return "f";
             case "none": return "m";
             case "looper": return "w";
-        }        
+        }    
+            
         return category;
     }
 

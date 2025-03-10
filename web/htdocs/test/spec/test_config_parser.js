@@ -18,8 +18,16 @@ describe('Configuration Parser', function() {
         await tests.getInputActionsHold();
     });
 
+    it('Get input actions (defined as Assign)', async function() {
+        await tests.getInputActionsDeferred();
+    });
+
     it('Replace actions', async function() {
         await tests.replaceActions();
+    });
+
+    it('Replace actions (defined as Assign)', async function() {
+        await tests.replaceActionsDeferred();
     });
 
     it('Create new inputs', async function() {

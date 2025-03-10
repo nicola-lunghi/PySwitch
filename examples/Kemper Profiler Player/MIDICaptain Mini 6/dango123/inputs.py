@@ -24,9 +24,7 @@ _pager = PagerAction(
             "color": Colors.GREEN,
             "text": "L  O  O  P  E  R"
         },   ],
-    config = {
-        "display": DISPLAY_PAGE
-    }
+    display = DISPLAY_PAGE
 )
 
 

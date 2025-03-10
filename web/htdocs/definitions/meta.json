@@ -493,6 +493,39 @@
         "client": "local",
         "entities": [
             {
+                "entityName": "default",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "advanced": true,
+                        "type": "any",
+                        "comment": "This ID can be used for Paging or custom callbacks, to enable/disable the action."
+                    },
+                    {
+                        "name": "use_leds",
+                        "type": "bool",
+                        "comment": "If disabled, the action will not use the LEDs of the switch"
+                    },
+                    {
+                        "name": "display",
+                        "type": "select",
+                        "comment": "DisplayLabel identifier (must be defined in display.py)"
+                    },
+                    {
+                        "name": "color",
+                        "type": "color"
+                    },
+
+                    {
+                        "name": "enable_callback",
+                        "advanced": true,
+                        "type": "any",
+                        "comment": "Callback instance to control dynamically whether the action should be enabled."
+                    }
+                ]
+            },
+
+            {
                 "entityName": "AnalogAction",
                 "category": "other",
                 "target": "AdafruitPotentiometer",
@@ -560,6 +593,35 @@
                     {
                         "name": "enable_callback",
                         "type": "any",
+                        "advanced": true
+                    }
+                ]
+            },
+
+            {
+                "entityName": "PagerAction",
+                "category": "other",
+                "target": "AdafruitSwitch",
+                "assign": "_pager",
+                "parameters": [
+                    {
+                        "name": "pages",
+                        "type": "any",
+                        "default": "[]"
+                    },
+                    {
+                        "name": "mappings",
+                        "type": "any",
+                        "default": "[]",
+                        "advanced": true
+                    },
+                    {
+                        "name": "led_brightness",
+                        "type": "float",
+                        "range": {
+                            "min": 0,
+                            "max": 1
+                        },
                         "advanced": true
                     }
                 ]

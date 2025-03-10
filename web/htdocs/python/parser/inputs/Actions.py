@@ -25,7 +25,7 @@ class Actions(libcst.CSTVisitor):
         if not self.actions_key:
             return False
         
-        self.result.append(Action(self.input, node))
+        self.result.append(Action(self.input, node.value))
         return False
     
         

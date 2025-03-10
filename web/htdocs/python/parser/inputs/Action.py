@@ -4,11 +4,12 @@ import uuid
 from .Arguments import Arguments
 
 class Action:
-    def __init__(self, input, element_node):
+    def __init__(self, input, call_node):
         self.__id = str(uuid.uuid4())
 
-        self.node = element_node
+        self.node = call_node
         self.input = input 
+        self.assign = None
 
         self._evaluate_node()
         self.client = self._determine_client()
@@ -18,12 +19,23 @@ class Action:
 
     def _evaluate_node(self):
         # Is it a function call? Most actions are.
-        if isinstance(self.node.value, libcst.Call):
-            self.name = self.node.value.func.value
+        if isinstance(self.node, libcst.Call):
+            self.name = self.node.func.value
+            self.node_content = self.node
             
         # No call: Search if there is an assignment with the name
-        elif isinstance(self.node.value, libcst.Name):
-            self.name = self.node.value.value
+        elif isinstance(self.node, libcst.Name):
+            assign_node = self.input.parser.get_assignment(self.node.value)
+
+            if assign_node:
+                self.assign = self.node.value
+                
+                self.name = assign_node.func.value
+                self.node_content = assign_node
+            else:
+                self.name = self.node.value
+                self.node_content = self.node
+                
 
     # Unique ID
     def id(self):
@@ -34,8 +46,8 @@ class Action:
         if self.__arguments:
             return json.dumps(self.__arguments)
         
-        visitor = Arguments()
-        self.node.value.visit(visitor)
+        visitor = Arguments()        
+        self.node_content.visit(visitor)
         self.__arguments = visitor.result
 
         return json.dumps(self.__arguments)
@@ -62,12 +74,12 @@ class Action:
         if not ec:
             return None
         
-        pager = self.input.parser.pager()
-        if not pager:
-            return None
+        # pager = self.input.parser.pager()
+        # if not pager:
+        #     return None
         
-        if ec != pager.name + ".enable_callback":
-            return None
+        # if ec != pager.name + ".enable_callback":
+        #     return None
         
         return self.argument("id")
 

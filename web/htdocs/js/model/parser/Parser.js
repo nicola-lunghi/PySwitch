@@ -64,14 +64,6 @@ class Parser {
     }
 
     /**
-     * Returns a Handler proxy for the first pager (instance of PagerAction) found in inputs.py (instance of Pager).
-     */
-    async pager() {
-        await this.#init();
-        return this.#pySwitchParser.pager();
-    }
-    
-    /**
      * Updates the underlying config from the current CSTs. Called by python code after updates to the trees.
      */
     updateConfig() {

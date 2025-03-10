@@ -199,6 +199,71 @@ class ConfigParserTests extends TestBase {
 
     ///////////////////////////////////////////////////////////////////////////////////////////
 
+    async getInputActionsDeferred() {
+        await this.init();
+        const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-assign");
+        
+        await config.init(this.pyswitch, "../");
+        const parser = config.parser;
+        
+        await this.#testAction(parser, {
+            port: 1,
+            client: "kemper",
+            actions: [{ 
+                name: "RIG_UP",
+                assign: "_deferred_2",
+                arguments: [
+                    {
+                        name: "display",
+                        value: "DISPLAY_HEADER_1"
+                    },
+                    {
+                        name: "text",
+                        value: '"foo"'
+                    },
+                    {
+                        name: "id",
+                        value: "303"
+                    }
+                ] 
+            }] 
+        });
+
+        await this.#testAction(parser, {
+            port: 25,
+            client: "kemper",
+            actions: [
+                { 
+                    name: "BANK_UP",
+                    arguments: [] 
+                }
+            ],
+            actionsHold: [
+                { 
+                    name: "TUNER_MODE",
+                    arguments: [
+                        {
+                            name: "display",
+                            value: "DISPLAY_HEADER_2"
+                        }
+                    ]
+                },
+                {
+                    name: "RIG_DOWN",
+                    assign: "_deferred",
+                    arguments: [
+                        {
+                            name: "display",
+                            value: "DISPLAY_FOO"
+                        }
+                    ]
+                }
+            ]
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
     async replaceActions() {
         await this.#replaceActions(
             1, 
@@ -243,6 +308,53 @@ class ConfigParserTests extends TestBase {
         );
     }
 
+    async replaceActionsDeferred() {
+        await this.#replaceActions(
+            1, 
+            [
+                { 
+                    name: "SOME_ACTION",
+                    assign: "_foo",
+                    arguments: [
+                        {
+                            name: "display",
+                            value: "DISPLAY_HEADER_5"
+                        }
+                    ] 
+                },
+                { 
+                    name: "SOME_ACTION_2",
+                    assign: "_bar",
+                    arguments: [
+                        {
+                            name: "useLeds",
+                            value: "{3:4}"
+                        }
+                    ] 
+                }
+            ],
+            "local"
+        );
+
+        await this.#replaceActions(
+            9, 
+            [
+                { 
+                    name: "SOME_ACTION",
+                    assign: "_bar2",
+                    arguments: [] 
+                }
+            ],
+            "local"
+        );
+
+        await this.#replaceActions(
+            9, 
+            [],
+            "local"
+        );
+    }
+
     async #replaceActions(port, actions, clientId) {
         await this.init();
         const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
@@ -255,7 +367,8 @@ class ConfigParserTests extends TestBase {
         // Replace actions
         await input.set_actions(actions)
 
-        // console.log((await parser.source()).get("inputs_py"));
+        // console.log(actions);
+        // console.log((await config.get()).inputs_py);
         // expect(1).toBe(2)
 
         await this.#testAction(parser, {
@@ -1152,6 +1265,11 @@ class ConfigParserTests extends TestBase {
                 const expAction = expActions[i];
     
                 expect(action.name).toBe(expAction.name);
+
+                if (expAction.assign) {
+                    expect(action.assign).toBe(expAction.assign);
+                }
+                
                 if (action.client != "local") expect(action.client).toBe(config.client);
 
                 if (expAction.arguments) {

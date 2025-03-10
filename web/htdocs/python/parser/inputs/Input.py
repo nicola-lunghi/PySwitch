@@ -82,47 +82,59 @@ class Input(libcst.CSTVisitor):
         )
         self.result = self.result.visit(remover)
         
+        def get_element_value(definition):
+            call = libcst.Call(
+                func = libcst.Name(
+                    value = definition.name,                        
+                ),
+
+                whitespace_before_args = libcst.ParenthesizedWhitespace(
+                    first_line = libcst.TrailingWhitespace(
+                        whitespace = libcst.SimpleWhitespace(value=''),
+                        comment = None,
+                        newline = libcst.Newline(),
+                    ),
+                    empty_lines=[],
+                    indent=True,
+                    last_line = libcst.SimpleWhitespace(value='                ')
+                ),
+
+                args = [
+                    libcst.Arg(
+                        keyword = libcst.Name(
+                            value = definition.arguments[a].name
+                        ),
+                        value = libcst.parse_expression(definition.arguments[a].value),
+                        whitespace_after_arg = libcst.ParenthesizedWhitespace(
+                            first_line = libcst.TrailingWhitespace(
+                                whitespace = libcst.SimpleWhitespace(value=''),
+                                comment = None,
+                                newline = libcst.Newline(),
+                            ),
+                            empty_lines=[],
+                            indent=True,
+                            last_line = libcst.SimpleWhitespace(
+                                value = '                ' if (a < len(definition.arguments) - 1) else '            '
+                            )
+                        )
+                    )
+                    for a in range(len(definition.arguments))
+                ]
+            )
+
+            if "assign" in definition.to_py() and definition.assign:
+                self.parser.set_action_assignment(definition.assign, call)
+
+                return libcst.Name(
+                    value = definition.assign
+                )
+            else:
+                return call            
+
         # Add new actions list
         elements = [
             libcst.Element(
-                value = libcst.Call(
-                    func = libcst.Name(
-                        value = definition.name,                        
-                    ),
-
-                    whitespace_before_args = libcst.ParenthesizedWhitespace(
-                        first_line = libcst.TrailingWhitespace(
-                            whitespace = libcst.SimpleWhitespace(value=''),
-                            comment = None,
-                            newline = libcst.Newline(),
-                        ),
-                        empty_lines=[],
-                        indent=True,
-                        last_line = libcst.SimpleWhitespace(value='                ')
-                    ),
-
-                    args = [
-                        libcst.Arg(
-                            keyword = libcst.Name(
-                                value = definition.arguments[a].name
-                            ),
-                            value = libcst.parse_expression(definition.arguments[a].value), # if definition.arguments[a].value != "" else libcst.SimpleString(value = '""'),
-                            whitespace_after_arg = libcst.ParenthesizedWhitespace(
-                                first_line = libcst.TrailingWhitespace(
-                                    whitespace = libcst.SimpleWhitespace(value=''),
-                                    comment = None,
-                                    newline = libcst.Newline(),
-                                ),
-                                empty_lines=[],
-                                indent=True,
-                                last_line = libcst.SimpleWhitespace(
-                                    value = '                ' if (a < len(definition.arguments) - 1) else '            '
-                                )
-                            )
-                        )
-                        for a in range(len(definition.arguments))
-                    ]
-                ),
+                value = get_element_value(definition),
 
                 comma = libcst.Comma(
                     whitespace_after = libcst.ParenthesizedWhitespace(

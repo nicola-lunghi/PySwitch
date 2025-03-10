@@ -48,6 +48,14 @@ class ParserFrontendIcons {
             )
         }
 
+        // Deferred definitions
+        if (actionCallProxy.assign) {
+            icons.push(
+                $('<span data-toggle="tooltip" title="This action is defined globally in an Assign statement" />')
+                .addClass('fas fa-arrow-right action-icon icon-assign')
+            )
+        }
+
         return $('<span class="action-icons" />').append(icons)
     }
 

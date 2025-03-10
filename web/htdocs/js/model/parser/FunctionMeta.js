@@ -31,6 +31,7 @@ class FunctionMeta {
      */
     getShortDisplayName(actionCallProxy = null) {
         switch (this.functionDefinition.name) {
+            case "PagerAction": return "Pager";
             case "AnalogAction": return this.#getDisplayNameAnalogAction(actionCallProxy);
             case "EncoderAction": return this.#getDisplayNameEncoderAction(actionCallProxy);
         }

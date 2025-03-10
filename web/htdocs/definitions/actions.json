@@ -1258,6 +1258,49 @@
                 "comment": "Use this action for all rotary encoders like wheels. The push-down switch of the encoder is \nnot addressed here: This is represented as a separate switch, and can be linked to the same actions as a normal foot switch.",
                 "importPath": "pyswitch.controller.EncoderAction",
                 "importName": "EncoderAction"
+            },
+            {
+                "name": "PagerAction",
+                "parameters": [
+                    {
+                        "name": "pages",
+                        "default": null,
+                        "comment": "This has to be a list of dicts like follows:\n{\n     \"id\": Page ID. All actions with this ID will be enabled\n     \"color\": Page color. LEDs and label will be colored this way (for the brightness, there is a separate parameter)\n     \"text\": Label text for the page\n}"
+                    },
+                    {
+                        "name": "led_brightness",
+                        "default": "0.15",
+                        "comment": "LED brightness for the action (fixed) in range [0..1]"
+                    },
+                    {
+                        "name": "mappings",
+                        "default": "[]",
+                        "comment": "List of mappings the paging depends on (optional)"
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    }
+                ],
+                "comment": null,
+                "importPath": "pyswitch.controller.pager",
+                "importName": "PagerAction"
             }
         ]
     }

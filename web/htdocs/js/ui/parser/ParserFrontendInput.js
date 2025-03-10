@@ -296,12 +296,14 @@ class ParserFrontendInput {
         const newActions = this.#getItemHandlers(false)
             .map((item) => { return {
                 name: item.name,
+                assign: item.assign,
                 arguments: JSON.parse(item.arguments())
             }});
 
         const newActionsHold = this.#getItemHandlers(true)
             .map((item) => { return {
                 name: item.name,
+                assign: item.assign,
                 arguments: JSON.parse(item.arguments())
             }});
 
@@ -353,6 +355,7 @@ class ParserFrontendInput {
             // Preselected action
             {
                 name: action.name,
+                assign: action.assign,
                 arguments: JSON.parse(action.arguments()),
                 hold: hold
             },
@@ -430,7 +433,8 @@ class ParserFrontendInput {
 
             if (preselectAction) {
                 props.setArguments(preselectAction.arguments);
-                props.setHold(preselectAction.hold)    
+                props.setHold(preselectAction.hold);
+                props.setAssign(preselectAction.assign);
             }
         } else {
             browser.showInfoPanel("Please select an action to add");
@@ -482,6 +486,7 @@ class ParserFrontendInput {
                 return {
                     name: item.name,
                     client: item.client,
+                    assign: item.assign,
                     arguments: JSON.parse(item.arguments())
                 }
             });
@@ -514,6 +519,7 @@ class ParserFrontendInput {
                 return {
                     name: item.name,
                     client: item.client,
+                    assign: item.assign,
                     arguments: JSON.parse(item.arguments())
                 }
             });
@@ -542,6 +548,7 @@ class ParserFrontendInput {
                 return {
                     name: item.name,
                     client: item.client,
+                    assign: item.assign,
                     arguments: JSON.parse(item.arguments())
                 }
             });

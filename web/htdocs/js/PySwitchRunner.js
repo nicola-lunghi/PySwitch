@@ -64,7 +64,10 @@ class PySwitchRunner {
         await this.#loadModule("parser/misc/FunctionExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/ClassMethodExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/AssignmentExtractor.py", localPythonPath);
+        await this.#loadModule("parser/misc/AssignmentNameExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/ImportExtractor.py", localPythonPath);
+        await this.#loadModule("parser/misc/RemoveAssignmentTransformer.py", localPythonPath);
+        await this.#loadModule("parser/misc/AddAssignmentTransformer.py", localPythonPath);
 
         this.pyodide.FS.mkdir("parser/inputs");
         await this.#loadModule("parser/inputs/Action.py", localPythonPath);
@@ -75,8 +78,8 @@ class PySwitchRunner {
         await this.#loadModule("parser/inputs/InputAssignment.py", localPythonPath);
         await this.#loadModule("parser/inputs/CreateInputTransformer.py", localPythonPath);
         
-        this.pyodide.FS.mkdir("parser/pager");
-        await this.#loadModule("parser/pager/Pager.py", localPythonPath);
+        // this.pyodide.FS.mkdir("parser/pager");
+        // await this.#loadModule("parser/pager/Pager.py", localPythonPath);
 
         this.pyodide.FS.mkdir("wrappers");
         await this.#loadModule("wrappers/__init__.py", localPythonPath);

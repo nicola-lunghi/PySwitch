@@ -68,7 +68,17 @@ class ActionParserTests extends FunctionParserTestBase {
                             includeUnderscore: true
                         })
                     )
-                    .filter((item) => item.name == "EncoderAction")
+                    .filter((item) => item.name == "EncoderAction"),
+
+                    (
+                        await fromClass({
+                            file: "pyswitch/controller/pager.py",
+                            importPath: "pyswitch.controller.pager",
+                            className: "PagerAction",
+                            includeUnderscore: true
+                        })
+                    )
+                    .filter((item) => item.name == "PagerAction")
                 );
                     
                 ret.push({
