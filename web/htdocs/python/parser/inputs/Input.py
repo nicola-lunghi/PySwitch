@@ -1,6 +1,7 @@
 import libcst
 
 from .Actions import Actions
+from .Arguments import Arguments
 from .InputAssignment import InputAssignment
 from ..misc.AddElementTransformer import AddElementTransformer
 from ..misc.RemoveDictElementTransformer import RemoveDictElementTransformer
@@ -82,7 +83,10 @@ class Input(libcst.CSTVisitor):
         )
         self.result = self.result.visit(remover)
         
-        def get_element_value(definition):
+        def get_arg_value(definition, arg_index):            
+            return Arguments(definition.name).parse_value(definition.arguments[arg_index].name, definition.arguments[arg_index].value)
+
+        def get_element_value_node(definition):
             call = libcst.Call(
                 func = libcst.Name(
                     value = definition.name,                        
@@ -102,9 +106,9 @@ class Input(libcst.CSTVisitor):
                 args = [
                     libcst.Arg(
                         keyword = libcst.Name(
-                            value = definition.arguments[a].name
+                            value = definition.arguments[arg_index].name
                         ),
-                        value = libcst.parse_expression(definition.arguments[a].value),
+                        value = get_arg_value(definition, arg_index),
                         whitespace_after_arg = libcst.ParenthesizedWhitespace(
                             first_line = libcst.TrailingWhitespace(
                                 whitespace = libcst.SimpleWhitespace(value=''),
@@ -114,11 +118,11 @@ class Input(libcst.CSTVisitor):
                             empty_lines=[],
                             indent=True,
                             last_line = libcst.SimpleWhitespace(
-                                value = '                ' if (a < len(definition.arguments) - 1) else '            '
+                                value = '                ' if (arg_index < len(definition.arguments) - 1) else '            '
                             )
                         )
                     )
-                    for a in range(len(definition.arguments))
+                    for arg_index in range(len(definition.arguments))
                 ]
             )
 
@@ -134,7 +138,7 @@ class Input(libcst.CSTVisitor):
         # Add new actions list
         elements = [
             libcst.Element(
-                value = get_element_value(definition),
+                value = get_element_value_node(definition),
 
                 comma = libcst.Comma(
                     whitespace_after = libcst.ParenthesizedWhitespace(

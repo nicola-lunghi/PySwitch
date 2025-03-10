@@ -9,6 +9,7 @@ class ActionProperties {
     #advancedRows = null;
     #parser = null;
     #messages = null;
+    #pages = null;
 
     constructor(parser, actionDefinition, oldProperties = null, messages = []) {
         this.#parser = parser;
@@ -372,7 +373,12 @@ class ActionProperties {
                     )                    
                     .val(param.meta.getDefaultValue())
                 }
-                break;               
+                break;
+                
+            case 'pages':
+                // Dedicated type for the pager actions's "pages" parameter
+                this.#pages = new PagesList()
+                return this.#pages.get()
         }        
 
         return $('<input type="text" />')
@@ -404,6 +410,7 @@ class ActionProperties {
 
         switch(type) {
             case "bool": return input.prop('checked') ? "True" : "False";
+            case "pages": return this.#pages.value()
         }        
 
         let value = input.val();
@@ -427,8 +434,12 @@ class ActionProperties {
                 input.prop('checked', value == "True");
                 break;
 
+            case "pages":
+                this.#pages.set(value)
+                break;
+
             default:
-                input.val(value);
+                input.val(value.replaceAll('"', "'"));
         }      
     }
 

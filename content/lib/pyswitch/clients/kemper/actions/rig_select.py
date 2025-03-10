@@ -17,7 +17,7 @@ def RIG_SELECT(rig,
                rig_off = None,                                 # If set, this defines the "off" rig chosen when the action is disabled. Set to "auto" to always remember the current rig as "off" rig
                bank = None,                                    # If set, a specific bank is selected. If None, the current bank is kept
                bank_off = None,                                # If set, this defines the "off" bank to be chosen when the action is disabled. Set to "auto" to always remember the current bank as "off" bank
-               display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (see definitions above)
+               display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode (show color/text for current or target rig)
                display = None, 
                id = False, 
                use_leds = True, 

@@ -10,20 +10,19 @@ from ..mappings.select import MAPPING_RIG_SELECT
 
 
 # Adds morph state display on one LED to the rig select action.
-# For details on the parameters, see RIG_SELECT.
 def RIG_SELECT_AND_MORPH_STATE(rig, 
-                               rig_off = None, 
-                               bank = None,
-                               bank_off = None,
+                               rig_off = None,                                 # If set, this defines the "off" rig chosen when the action is disabled. Set to "auto" to always remember the current rig as "off" rig
+                               bank = None,                                    # If set, a specific bank is selected. If None, the current bank is kept
+                               bank_off = None,                                # If set, this defines the "off" bank to be chosen when the action is disabled. Set to "auto" to always remember the current bank as "off" bank
                                display = None, 
                                id = False, 
                                use_leds = True, 
                                enable_callback = None,
-                               color_callback = None,
-                               color = None,
-                               text_callback = None,
-                               text = None,
-                               display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
+                               color_callback = None,                          # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
+                               color = None,                                   # Color override (if no text callback is passed)
+                               text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
+                               text = None,                                    # Text override (if no text callback is passed)
+                               display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,   # Display mode (show color/text for current or target rig)
                                morph_display = None,                           # Optional DisplayLabel to show morph color
                                morph_use_leds = True,                          # Use the LEDs to show morph state?
                                morph_id = None,                                # Separate ID for the morph action. Default is the same id as specified with the "id" parameter.

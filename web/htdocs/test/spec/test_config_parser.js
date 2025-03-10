@@ -30,6 +30,10 @@ describe('Configuration Parser', function() {
         await tests.replaceActionsDeferred();
     });
 
+    it('Replace actions (Pager)', async function() {
+        await tests.replaceActionsPaging();
+    });
+
     it('Create new inputs', async function() {
         await tests.createNewInputs();
     });

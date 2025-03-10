@@ -50,7 +50,16 @@
                         "range": {
                             "min": 1,
                             "max": "NUM_RIGS_PER_BANK",
-                            "none": true
+                            "additionalValues": [
+                                {
+                                    "name": "None",
+                                    "value": "None"
+                                },
+                                {
+                                    "name": "'auto'",
+                                    "value": "'auto'"
+                                }
+                            ]
                         }
                     },
                     {
@@ -67,7 +76,16 @@
                         "range": {
                             "min": 1,
                             "max": "NUM_BANKS",
-                            "none": true
+                            "additionalValues": [
+                                {
+                                    "name": "None",
+                                    "value": "None"
+                                },
+                                {
+                                    "name": "'auto'",
+                                    "value": "'auto'"
+                                }
+                            ]
                         }
                     },
                     {
@@ -347,7 +365,12 @@
                         "range": {
                             "min": 1,
                             "max": "NUM_BANKS",
-                            "none": true
+                            "additionalValues": [
+                                {
+                                    "name": "None",
+                                    "value": "None"
+                                }
+                            ]
                         }
                     },
                     {
@@ -393,7 +416,12 @@
                         "range": {
                             "min": 1,
                             "max": "NUM_BANKS",
-                            "none": true
+                            "additionalValues": [
+                                {
+                                    "name": "None",
+                                    "value": "None"
+                                }
+                            ]
                         }
                     },
                     {
@@ -606,7 +634,7 @@
                 "parameters": [
                     {
                         "name": "pages",
-                        "type": "any",
+                        "type": "pages",
                         "default": "[]"
                     },
                     {

@@ -663,17 +663,17 @@
                     {
                         "name": "rig_off",
                         "default": "None",
-                        "comment": null
+                        "comment": "If set, this defines the \"off\" rig chosen when the action is disabled. Set to \"auto\" to always remember the current rig as \"off\" rig"
                     },
                     {
                         "name": "bank",
                         "default": "None",
-                        "comment": null
+                        "comment": "If set, a specific bank is selected. If None, the current bank is kept"
                     },
                     {
                         "name": "bank_off",
                         "default": "None",
-                        "comment": null
+                        "comment": "If set, this defines the \"off\" bank to be chosen when the action is disabled. Set to \"auto\" to always remember the current bank as \"off\" bank"
                     },
                     {
                         "name": "display",
@@ -698,27 +698,27 @@
                     {
                         "name": "color_callback",
                         "default": "None",
-                        "comment": null
+                        "comment": "Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0."
                     },
                     {
                         "name": "color",
                         "default": "None",
-                        "comment": null
+                        "comment": "Color override (if no text callback is passed)"
                     },
                     {
                         "name": "text_callback",
                         "default": "None",
-                        "comment": null
+                        "comment": "Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0."
                     },
                     {
                         "name": "text",
                         "default": "None",
-                        "comment": null
+                        "comment": "Text override (if no text callback is passed)"
                     },
                     {
                         "name": "display_mode",
                         "default": "RIG_SELECT_DISPLAY_TARGET_RIG",
-                        "comment": null
+                        "comment": "Display mode (show color/text for current or target rig)"
                     },
                     {
                         "name": "morph_display",
@@ -756,7 +756,7 @@
                         "comment": "If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified."
                     }
                 ],
-                "comment": "Adds morph state display on one LED to the rig select action.\nFor details on the parameters, see RIG_SELECT.",
+                "comment": "Adds morph state display on one LED to the rig select action.",
                 "importPath": "pyswitch.clients.kemper.actions.rig_select_and_morph_state"
             },
             {
@@ -899,7 +899,7 @@
                     {
                         "name": "display_mode",
                         "default": "RIG_SELECT_DISPLAY_CURRENT_RIG",
-                        "comment": "Display mode (see definitions above)"
+                        "comment": "Display mode (show color/text for current or target rig)"
                     },
                     {
                         "name": "display",

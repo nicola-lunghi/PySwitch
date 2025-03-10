@@ -23,11 +23,13 @@ class ParameterRange {
     async getValues() {
         const values = [];
         
-        if (this.#parameterMeta.data.range.none) {
-            values.push({
-                name: "None",
-                value: "None"
-            })
+        if (this.#parameterMeta.data.range.additionalValues) {
+            for (const av of this.#parameterMeta.data.range.additionalValues) {
+                values.push({
+                    name: av.name,
+                    value: av.value
+                })    
+            }
         }
 
         const min = await this.min();

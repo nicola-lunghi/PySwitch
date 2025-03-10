@@ -355,7 +355,42 @@ class ConfigParserTests extends TestBase {
         );
     }
 
-    async #replaceActions(port, actions, clientId) {
+    async replaceActionsPaging() {
+        await this.#replaceActions(
+            1, 
+            [
+                { 
+                    name: "PagerAction",
+                    assign: "_pager",
+                    arguments: [
+                        {
+                            name: "display",
+                            value: "DISPLAY_HEADER_5"
+                        },
+                        {
+                            name: "pages",
+                            value: [
+                                {
+                                    id: "10",
+                                    color: "Colors.GREEN",
+                                    text: '"sometext"'
+                                },
+                                {
+                                    id: '"other"',
+                                    color: "(3, 4, 5)",
+                                    text: '"someothertext"'
+                                }
+                            ]
+                        }
+                    ] 
+                }
+            ],
+            "local",
+            true
+        );
+    }
+
+    async #replaceActions(port, actions, clientId, debug = false) {
         await this.init();
         const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
         
@@ -367,9 +402,10 @@ class ConfigParserTests extends TestBase {
         // Replace actions
         await input.set_actions(actions)
 
-        // console.log(actions);
-        // console.log((await config.get()).inputs_py);
-        // expect(1).toBe(2)
+        if (debug) {
+            console.log(actions);
+            console.log((await config.get()).inputs_py);
+        }
 
         await this.#testAction(parser, {
             port: port,
@@ -553,6 +589,13 @@ class ConfigParserTests extends TestBase {
             client: client,
             arguments: item.parameters.map(                
                 function (param) {
+                    if (item.name == "PagerAction" && param.name == "pages") {
+                        return {
+                            name: param.name,
+                            value: []
+                        }
+                    }
+
                     return {
                         name: param.name,
                         value: param.meta.getDefaultValue()

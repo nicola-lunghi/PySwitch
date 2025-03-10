@@ -15,7 +15,7 @@ class Action:
         self.client = self._determine_client()
 
         # Buffers
-        self.__arguments = None
+        self._arguments = None
 
     def _evaluate_node(self):
         # Is it a function call? Most actions are.
@@ -43,21 +43,21 @@ class Action:
 
     # Returns a json encoded list of arguments of the node, represented by dicts.
     def arguments(self):
-        if self.__arguments:
-            return json.dumps(self.__arguments)
+        if self._arguments:
+            return json.dumps(self._arguments)
         
-        visitor = Arguments()        
+        visitor = Arguments(self.name)        
         self.node_content.visit(visitor)
-        self.__arguments = visitor.result
+        self._arguments = visitor.result
 
-        return json.dumps(self.__arguments)
+        return json.dumps(self._arguments)
 
     # Returns the value of an argument as string, or None if not found
     def argument(self, name):
-        if not self.__arguments:
+        if not self._arguments:
             self.arguments()
 
-        for arg in self.__arguments:
+        for arg in self._arguments:
             if arg["name"] == name:
                 return arg["value"]
             
@@ -65,7 +65,7 @@ class Action:
 
     # Removes the action from the tree.
     def remove(self):
-        self.__arguments = None
+        self._arguments = None
         self.input.remove_action(self.node)
 
     # If the action is connected to a pager, this returns the page ID, or None if not.
