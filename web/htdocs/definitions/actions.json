@@ -1298,7 +1298,7 @@
                         "comment": null
                     }
                 ],
-                "comment": null,
+                "comment": "The PagerAction is used to control multiple other actions to provide paging for specifiec actions.\nDefine this action for one switch, and select it in the actions to control by setting the \nenable_callback parameter and page ID for those actions.",
                 "importPath": "pyswitch.controller.pager",
                 "importName": "PagerAction"
             }

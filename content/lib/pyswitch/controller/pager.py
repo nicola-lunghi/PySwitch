@@ -10,6 +10,9 @@ class PagerAction(Callback, Action):
         def enabled(self, action):
             return (action.id == self.__pager.current_page_id)
 
+    # The PagerAction is used to control multiple other actions to provide paging for specifiec actions.
+    # Define this action for one switch, and select it in the actions to control by setting the 
+    # enable_callback parameter and page ID for those actions.
     def __init__(self, 
                  pages,                         # This has to be a list of dicts like follows:
                                                 # {
