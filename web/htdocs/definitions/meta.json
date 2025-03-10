@@ -495,7 +495,7 @@
                     {
                         "name": "mapping",
                         "type": "select",
-                        "default": "MAPPING_ROTARY_SPEED(slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD)",
+                        "default": "MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_MOD)",
                         "comment": "Mapping to be used."
                     }
                 ]
