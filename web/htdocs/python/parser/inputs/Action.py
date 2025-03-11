@@ -70,18 +70,25 @@ class Action:
 
     # If the action is connected to a pager, this returns the page ID, or None if not.
     def page(self):
+        if not self.pager():
+            return None
+        
+        return self.argument("id")
+    
+    # Returns the pager name, if any
+    def pager(self):
         ec = self.argument("enable_callback")
         if not ec:
             return None
         
-        # pager = self.input.parser.pager()
-        # if not pager:
-        #     return None
+        if not self.argument("id") or self.argument("id") == "None":
+            return None
         
-        # if ec != pager.name + ".enable_callback":
-        #     return None
+        splt = ec.split(".")
+        if len(splt) != 2:
+            return None
         
-        return self.argument("id")
+        return splt[0]
 
     # Determine the client
     def _determine_client(self):

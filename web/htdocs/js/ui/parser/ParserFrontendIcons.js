@@ -5,8 +5,10 @@ class ParserFrontendIcons {
  
     #pageColors = null;
     #nextPageColorId = 0;
+    #parser = null;
 
-    constructor() {
+    constructor(parser) {
+        this.#parser = parser;
         this.#pageColors = new Map();
     }
 
@@ -35,11 +37,12 @@ class ParserFrontendIcons {
 
         // Page icon if involved in paging, if not: enable callback
         const page = actionCallProxy.page()
+        const pager = actionCallProxy.pager()
         const ec = actionCallProxy.argument('enable_callback');
-        if (page) {            
+        if (page) {
             icons.push(
-                $('<span data-toggle="tooltip" title="This action is part of page ' + page + '" />')
-                .addClass('action-icon icon-page icon-page-' + this.#getPageColorId(page))
+                $('<span data-toggle="tooltip" title="This action is part of pager ' + pager + ', page ' + page + '" />')
+                .addClass('action-icon icon-page icon-page-' + (await this.#getPageColorId(pager, page)))
             )
         } else if (ec && (ec != 'None')) {
             icons.push(
@@ -62,16 +65,21 @@ class ParserFrontendIcons {
     /**
      * Returns a numeric color ID
      */
-    #getPageColorId(page) {
-        if (this.#pageColors.has(page)) return this.#pageColors.get(page);
+    async #getPageColorId(pager, page) {
+        const action = await this.#parser.getPagerAction(pager);
+        if (!action) return "none";
 
-        this.#pageColors.set(page, this.#nextPageColorId++);
+        return 0; // TODO get page color, or rotate color
 
-        if (this.#nextPageColorId >= 5) {
-            this.#nextPageColorId = 0;
-        }
+        // if (this.#pageColors.has(page)) return this.#pageColors.get(page);
 
-        return this.#pageColors.get(page);
+        // this.#pageColors.set(page, this.#nextPageColorId++);
+
+        // if (this.#nextPageColorId >= 5) {
+        //     this.#nextPageColorId = 0;
+        // }
+
+        // return this.#pageColors.get(page);
     }
 
     /**

@@ -630,11 +630,11 @@
                 "entityName": "PagerAction",
                 "category": "other",
                 "target": "AdafruitSwitch",
-                "assign": "_pager",
                 "parameters": [
                     {
                         "name": "pages",
                         "type": "pages",
+                        "hideComment": true,
                         "default": "[]"
                     },
                     {

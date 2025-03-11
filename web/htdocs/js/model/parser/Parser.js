@@ -128,6 +128,41 @@ class Parser {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * Returns all PagerAction proxies
+     */
+    async pagerActions() {
+        const hw = await this.getHardwareInfo();
+        
+        const ret = [];
+        for (const inputDefinition of hw) {
+            const input = await this.input(inputDefinition.data.model.port);
+            if (!input) continue;
+
+            const actions = input.actions(false).concat(input.actions(true));
+
+            for (const action of actions) {
+                if (action.name != "PagerAction") continue;
+
+                ret.push(action);
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Returns a PagerAction proxy by assign target name
+     */
+    async getPagerAction(name) {
+        const pagers = await this.pagerActions();
+        for (const pager of pagers) {
+            if (pager.assign == name) {
+                return pager;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns all available display labels
      */
     async getAvailableDisplays() {

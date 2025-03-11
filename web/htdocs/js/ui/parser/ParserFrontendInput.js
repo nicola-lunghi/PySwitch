@@ -379,6 +379,7 @@ class ParserFrontendInput {
          */
         async function onSelect(entry) {
             props = new ActionProperties(
+                that.#controller,
                 that.#parserFrontend.parser,
                 entry.data.actionDefinition,
                 props,
@@ -387,6 +388,8 @@ class ParserFrontendInput {
 
             browser.showInfoPanel(await props.get());
             browser.setSelected(entry)
+
+            await props.init();
         }
 
         /**
@@ -432,7 +435,8 @@ class ParserFrontendInput {
             await onSelect(actionsProvider.preselectEntry);
 
             if (preselectAction) {
-                props.setArguments(preselectAction.arguments);
+                await props.setArguments(preselectAction.arguments);
+                
                 props.setHold(preselectAction.hold);
                 props.setAssign(preselectAction.assign);
             }

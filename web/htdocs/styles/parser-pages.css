@@ -1,3 +1,94 @@
 .container .action-properties .pages-list-container {
     background-color: yellow;
 }
+
+/****************************************************************/
+
+.container .action-properties .pages-list-container .pages-grid {
+    position: relative;
+    background-color: #afafaf;
+    border-radius: 0.5em;
+    transition: width 0.2s, height 0.2s;
+}
+
+.container .action-properties .pages-list-container .pages-grid .page-item {
+    display: block;
+    position: absolute;
+    z-index: 1;   
+}
+
+.container .action-properties .pages-list-container .pages-grid .page-item.muuri-item-dragging {
+    z-index: 3;
+}
+
+.container .action-properties .pages-list-container .pages-grid .page-item.muuri-item-releasing {
+    z-index: 2;
+}
+  
+.container .action-properties .pages-list-container .pages-grid .page-item.muuri-item-hidden {
+    z-index: 0;
+}
+
+.container .action-properties .pages-list-container .pages-grid .page-item-content {
+    position: relative;
+    margin: 0.3em 0.3em;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto;
+}
+
+.container .action-properties .pages-list-container .pages-grid .page-item-content > *:first-child {
+    border-radius: 0.3em 0 0 0.3em;
+}
+
+.container .action-properties .pages-list-container .pages-grid .page-item-content > *:last-child {
+    border-radius: 0 0.3em 0.3em 0;
+}
+
+/****************************************************************/
+
+.container .action-properties .pages-list-container .button {
+    font-size: 0.7em;
+    text-overflow: ellipsis;
+    border: none;
+    display: flex;
+}
+
+/****************************************************************/
+
+.container .action-properties .pages-list-container .page-item input[type=text] {
+    max-width: 10em;
+}
+
+.container .action-properties .pages-list-container .page-item input[type=text].page-id {
+    max-width: 5em;
+}
+
+/* .container .action-properties .pages-list-container .button.add-action {
+    background-color: unset;
+} */
+
+/*****************************************************************/
+
+.container .action-properties .pages-list-container .button {
+    background-color: rgb(221, 221, 221);
+    color: black;
+}
+/* 
+.container .action-properties .pages-list-container .button:hover {
+    filter: brightness(0.9);
+} */
+
+/**********************************************************************************************/
+
+.container .action-properties .action-pages {
+    margin-left: 0.5em;
+}
+
+.container .action-properties .action-pages > * {
+    margin-right: 0.5em;
+}
+
+.container .action-properties .action-pages .action-pages-comment {
+    margin-bottom: 0.5em;
+}

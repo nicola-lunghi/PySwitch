@@ -63,20 +63,70 @@ class ParserChecks {
         // Crawl all actions for parameters with the displays
         for (const display of displays) {
             const usages = await this.getDisplayUsages(display);
-            const pages = [...new Set(usages.map((item) => item.page()))];
+            const pagers = [];
+
+            function getPager(pagerName) {
+                for (const pager of pagers) {
+                    if (pager.name == pagerName) return pager;
+                }
+
+                const ret = {
+                    name: pagerName,
+                    pages: []
+                }
+
+                pagers.push(ret)
+                return ret;
+            }
+
+            function addToPager(pager, pageName) {
+                for (const page of pager.pages) {
+                    if (page == pageName) return;
+                }
+                pager.pages.push(pageName);
+            }
+
+            function addPage(usage) {
+                const pagerName = usage.pager();
+                const page = usage.page();
+
+                const pager = getPager(pagerName);
+                addToPager(pager, page);
+            }
+
+            // Build tree of all pages using this display
+            for (const usage of usages) {
+                addPage(usage);
+            }
+
+            function addMessage(message) {
+                for (const msg of messages) {
+                    if (msg.parameter == message.parameter && 
+                        msg.value == message.value && 
+                        msg.message == message.message && 
+                        msg.type == message.type
+                    ) {
+                        msg.actions = [...new Set(msg.actions.concat(message.actions))]
+                        return;
+                    }
+                }
+                messages.push(message);
+            }
             
-            for (const page of pages) {
-                const usagesFiltered = usages.filter((item) => !item.page() || (item.page() == page));
-            
-                if (usagesFiltered.length > 1) {
-                    messages.push({
-                        type: "W",
-                        message: "DisplayLabel " + display + " is used more than once (paging regarded). This leads to unpredicted behaviour on the label.",
-                        parameter: "display",
-                        value: display,
-                        actions: usagesFiltered
-                    })    
-                }    
+            for (const pager of pagers) {
+                for (const page of pager.pages) {
+                    const usagesFiltered = usages.filter((item) => (item.pager() != pager.name) || (item.page() == page && item.pager() == pager.name));
+                
+                    if (usagesFiltered.length > 1) {
+                        addMessage({
+                            type: "W",
+                            message: "DisplayLabel " + display + " is possibly used more than once at a time (paging regarded). You might get inconsistent displays, use at your own risk.",
+                            parameter: "display",
+                            value: display,
+                            actions: usagesFiltered
+                        })    
+                    }
+                }
             }
         }
     }
@@ -90,7 +140,7 @@ class ParserChecks {
         /**
          * Returns an array of actions containing the display as an argument
          */
-        async function getContainedDisplays(input, hold) {
+        async function getActionsWithDisplay(input, hold) {
             if (!input) return [];
             
             const actions = await input.actions(hold).toJs();
@@ -115,8 +165,8 @@ class ParserChecks {
         for (const inputDescr of hw) {
             const input = await this.#parser.input(inputDescr.data.model.port);
 
-            const contained = await getContainedDisplays(input, false);
-            const containedHold = await getContainedDisplays(input, true);
+            const contained = await getActionsWithDisplay(input, false);
+            const containedHold = await getActionsWithDisplay(input, true);
 
             usages = usages.concat(contained, containedHold);
         }

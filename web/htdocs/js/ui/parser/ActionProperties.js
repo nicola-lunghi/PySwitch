@@ -10,12 +10,21 @@ class ActionProperties {
     #parser = null;
     #messages = null;
     #pages = null;
+    #controller = null;
 
-    constructor(parser, actionDefinition, oldProperties = null, messages = []) {
+    constructor(controller, parser, actionDefinition, oldProperties = null, messages = []) {
+        this.#controller = controller;
         this.#parser = parser;
         this.#actionDefinition = actionDefinition;
         this.#oldProperties = oldProperties;
         this.#messages = messages;
+    }
+
+    /**
+     * Initialize after adding to DOM
+     */
+    async init() {
+        if (this.#pages) await this.#pages.init();
     }
 
     /**
@@ -32,14 +41,14 @@ class ActionProperties {
         /**
          * Take over old values from the old props object, if different from the default
          */
-        function takeOverValues(input, param) {
+        async function takeOverValues(input, param) {
             if (!that.#oldProperties) return;
                 
             const oldParam = that.#oldProperties.getParameterDefinition(param.name);
             const oldValue = that.#oldProperties.getParameterValue(param.name);
             
             if (oldValue !== null && oldValue != oldParam.meta.getDefaultValue()) {
-                that.#setInputValue(input, param, oldValue);
+                await that.#setInputValue(input, param, oldValue);
             }
         }
 
@@ -56,7 +65,7 @@ class ActionProperties {
                     that.#inputs.set(param, input);
 
                     // Take over old values from the old props object, if different from the default
-                    takeOverValues(input, param);
+                    await takeOverValues(input, param);
 
                     // Get messages for the parameter
                     const messages = that.#messages.filter((item) => item.parameter == param.name)
@@ -68,17 +77,28 @@ class ActionProperties {
                             $('<span />').text(param.name)
                         ),
 
-                        // Input
-                        $('<td />')
-                        .addClass(messages.length ? "has-messages" : null)
-                        .append(
-                            input                            
-                        ),
+                        (param.meta.data.hideComment) 
+                        ?
+                            // Input
+                            $('<td colspan="2" />')
+                            .addClass(messages.length ? "has-messages" : null)
+                            .append(
+                                input                            
+                            )
+                        :
+                            [
+                                // Input
+                                $('<td />')
+                                .addClass(messages.length ? "has-messages" : null)
+                                .append(
+                                    input                            
+                                ),
 
-                        // Comment
-                        $('<td />').append(
-                            await this.#getParameterComment(param)
-                        )
+                                // Comment
+                                $('<td />').append(
+                                    await this.#getParameterComment(param)
+                                )
+                            ]
                     );
 
                     if (!messages.length) {
@@ -128,7 +148,7 @@ class ActionProperties {
             // Parameters
             $('<div class="action-header" />')
             .text("Parameters:"),
-            
+
             $('<div class="action-parameters" />').append(
                 $('<table />').append(
                     tbody = $('<tbody />').append(
@@ -159,25 +179,34 @@ class ActionProperties {
                             // Input
                             $('<td />').append(
                                 assignInput = $('<input type="text" />')
-                                .val(this.#actionDefinition.meta.data.assign ? this.#actionDefinition.meta.data.assign : "")
+                                .val(await this.#getDefaultAssign())
                             ),
     
                             // Comment
                             $('<td />').text("Define as separate assignment")
-                        )
-                        .hide(),
+                        ),
 
                         // Action parameters
                         parameters.flat()
                     )
                 )
-            )
+            ),
+
+            // Pager buttons
+            $('<div class="action-header" />')
+            .text("Paging:"),
+            
+            await this.#getPagerButtons()
         );
 
-        this.#advancedRows.push({
-            row: assignRow,
-            parameterName: "assign"
-        });
+        if (this.#actionDefinition.name != "PagerAction") {
+            assignRow.hide();
+
+            this.#advancedRows.push({
+                row: assignRow,
+                parameterName: "assign"
+            });
+        }
 
         // Advanced parameters: Show all button
         if (this.#advancedRows.length > 0) {
@@ -188,11 +217,15 @@ class ActionProperties {
                         $('<span class="show-advanced" />')
                         .text("Show all...")
                         .on('click', async function() {
-                            for (const row of that.#advancedRows) {
-                                row.row.show();
-                            }
+                            try {
+                                for (const row of that.#advancedRows) {
+                                    row.row.show();
+                                }
 
-                            advRow.hide();
+                                advRow.hide();
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
                         })
                     )
                 )
@@ -209,11 +242,106 @@ class ActionProperties {
 
         // Assign input
         this.#inputs.set("assign", assignInput);
-        if (this.#oldProperties) {
-            this.setAssign(this.#oldProperties.assign());            
-        }
+        // if (this.#oldProperties) {
+        //     this.setAssign(this.#oldProperties.assign());            
+        // }
 
         return ret;
+    }
+
+    /**
+     * Returns the default assign value
+     */
+    async #getDefaultAssign() {
+        if (this.#actionDefinition.name == "PagerAction") {
+            return this.#getNextPagerAssign();
+        }
+        return "";
+    }
+
+    /**
+     * Returns an unused pager assign target name
+     */
+    async #getNextPagerAssign() {
+        const pagerActions = await this.#parser.pagerActions();
+
+        function pagerExists(assign) {
+            for (const pager of pagerActions) {
+                if (pager.assign == assign) return true;
+            }
+            return false;
+        }
+
+        let ret = "_pager";
+        let cnt = 2;
+        while (pagerExists(ret)) {
+            ret = "_pager" + cnt++;
+        }
+        return ret;
+    }
+
+    /**
+     * Returns DOM for the pager buttons
+     */
+    async #getPagerButtons() {
+        const pagerActions = await this.#parser.pagerActions();
+        const that = this;
+
+        function getPageText(actionCallProxy, el) {
+            if (pagerActions.length == 1) {
+                return "Page " + el.id;
+            }
+            
+            return (actionCallProxy.assign ? (actionCallProxy.assign + "|") : "") + el.id;
+        }
+
+        return $('<div class="action-pages" />').append(
+            $('<div class="action-pages-comment" />')
+            .text('To assign this action to a page, use these buttons:'),
+
+            $('<span class="button"/>')
+                .text("No Page")
+                .on('click', async function() {
+                    try {
+                        await that.#setPageParameters(null, null);
+
+                    } catch (e) {
+                        that.#controller.handle(e);
+                    }
+                }),
+
+            pagerActions
+            .map((item) => {
+                const pagesArg = JSON.parse(item.arguments()).filter((e) => e.name == "pages");
+                if (!pagesArg || !pagesArg.length) return null;
+
+                const pages = pagesArg[0].value;
+                
+                return pages.map((el) => 
+                    $('<span class="button"/>')
+                    .text(getPageText(item, el))
+                    .on('click', async function() {
+                        try {
+                            await that.#setPageParameters(item, el);
+
+                        } catch (e) {
+                            that.#controller.handle(e);
+                        }
+                    })
+                )
+            }).flat()
+        );
+    }
+
+    /**
+     * Sets the parameters for the given page of the given PagerAction.
+     */
+    async #setPageParameters(actionCallProxy, page) {
+        await this.setArgument("enable_callback", ((actionCallProxy && actionCallProxy.assign) ? (actionCallProxy.assign + ".enable_callback") : "None"));
+        await this.setArgument("id", (page && page.id) ? page.id : "None");
+
+        this.#showParameter("enable_callback");
+        this.#showParameter("id");
     }
 
     /**
@@ -283,23 +411,31 @@ class ActionProperties {
     /**
      * Sets the input values to the passed arguments list's values
      */
-    setArguments(args) {
-        const that = this;
-
+    async setArguments(args) {
         for (const arg of args) {
-            // Get parameter definition first
-            const param = this.getParameterDefinition(arg.name);
-            const input = that.#inputs.get(param);
-            if (!input) throw new Error("No input for param " + param.name + " found");
-
-            this.#setInputValue(input, param, arg.value);
-
+            await this.setArgument(arg.name, arg.value);
+            
             // If not default value, show the row
+            const param = this.getParameterDefinition(arg.name);
             const defaultValue = param.meta.getDefaultValue()
             if (defaultValue != arg.value) {
                 this.#showParameter(arg.name)
             }
         }
+    }
+
+    /**
+     * Set the value of a parameter input
+     */
+    async setArgument(name, value) {
+        // Get parameter definition first
+        const param = this.getParameterDefinition(name);
+        if (!param) throw new Error("Parameter " + name + " not found");
+
+        const input = this.#inputs.get(param);
+        if (!input) throw new Error("No input for param " + param.name + " found");
+
+        await this.#setInputValue(input, param, value);
     }
 
     /**
@@ -377,8 +513,8 @@ class ActionProperties {
                 
             case 'pages':
                 // Dedicated type for the pager actions's "pages" parameter
-                this.#pages = new PagesList()
-                return this.#pages.get()
+                this.#pages = new PagesList(this.#controller);
+                return this.#pages.create()
         }        
 
         return $('<input type="text" />')
@@ -410,7 +546,7 @@ class ActionProperties {
 
         switch(type) {
             case "bool": return input.prop('checked') ? "True" : "False";
-            case "pages": return this.#pages.value()
+            case "pages": return this.#pages.get()
         }        
 
         let value = input.val();
@@ -422,7 +558,7 @@ class ActionProperties {
     /**
      * Sets the input value according to an argumen/parameter value
      */
-    #setInputValue(input, param, value) {
+    async #setInputValue(input, param, value) {
         let type = param.meta.data.type;
 
         if (!type) {
@@ -435,7 +571,7 @@ class ActionProperties {
                 break;
 
             case "pages":
-                this.#pages.set(value)
+                await this.#pages.set(value)
                 break;
 
             default:

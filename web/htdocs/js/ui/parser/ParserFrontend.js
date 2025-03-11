@@ -14,7 +14,7 @@ class ParserFrontend {
         this.#controller = controller;
         this.parser = parser;
 
-        this.icons = new ParserFrontendIcons();
+        this.icons = new ParserFrontendIcons(parser);
     }
 
     async destroy() {

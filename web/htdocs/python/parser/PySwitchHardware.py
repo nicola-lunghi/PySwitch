@@ -12,7 +12,7 @@ class PySwitchHardware:
 
     # Returns the input descriptors as list, loaded from the passed module.
     # The model instances are replaced by dicts holding the class name and port if any.
-    def get(self, importPath):
+    def get(self, import_path):
         with patch.dict(sys.modules, {
             "board": WrapBoard,
             "displayio": WrapDisplayIO(),
@@ -24,7 +24,7 @@ class PySwitchHardware:
             "analogio": WrapAnalogIO(""),
             "rotaryio": WrapRotaryIO("")
         }):   
-            module = importlib.import_module(importPath)
+            module = importlib.import_module(import_path)
 
         all = []
         for entry in dir(module):
