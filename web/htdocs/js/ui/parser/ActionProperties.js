@@ -317,11 +317,13 @@ class ActionProperties {
         const that = this;
 
         function getPageText(actionCallProxy, el) {
+            const pageText = el.text ? el.text.replaceAll('"', "").replaceAll("'", "") : el.id;
+
             if (pagerActions.length == 1) {
-                return "" + el.id;
+                return "" + pageText;
             }
             
-            return (actionCallProxy.assign ? (actionCallProxy.assign + "|") : "") + el.id;
+            return (actionCallProxy.assign ? (actionCallProxy.assign + "|") : "") + pageText;
         }
 
         const noPageButton = $('<span class="button"/>')
