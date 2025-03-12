@@ -38,6 +38,8 @@ class ActionProperties {
         let holdInput = null;
         let assignInput = null;
         let assignRow = null;
+        let pagerProxyRow = null;
+        let pagerProxyInput = null;
 
         /**
          * Take over old values from the old props object, if different from the default
@@ -189,6 +191,21 @@ class ActionProperties {
                             $('<td />').text("Define as separate assignment")
                         ),
 
+                        pagerProxyRow = $('<tr />').append(
+                            $('<td />').append(
+                                $('<span />').text("Pager")
+                            ),
+    
+                            // Input
+                            $('<td />').append(
+                                pagerProxyInput = $('<input type="text" />')
+                            ),
+    
+                            // Comment
+                            $('<td />').text("Pager to connect the proxy to")
+                        )
+                        .hide(),
+
                         // Action parameters
                         parameters.flat()
                     )
@@ -213,6 +230,11 @@ class ActionProperties {
                 row: assignRow,
                 parameterName: "assign"
             });
+        }
+
+        if (this.#actionDefinition.name == "PagerAction.proxy") {
+            pagerProxyRow.show();
+            this.#inputs.set("pager", pagerProxyInput);
         }
 
         // Advanced parameters: Show all button
@@ -248,7 +270,7 @@ class ActionProperties {
         }
 
         // Assign input
-        this.#inputs.set("assign", assignInput);
+        this.#inputs.set("assign", assignInput);        
         // if (this.#oldProperties) {
         //     this.setAssign(this.#oldProperties.assign());            
         // }
@@ -432,8 +454,19 @@ class ActionProperties {
     createActionDefinition() {
         const that = this;
 
+        function getName() {
+            if (that.#actionDefinition.name == "PagerAction.proxy") {
+                const pagerProxy = that.#inputs.get("pager").val();
+                console.log(pagerProxy)
+                if (pagerProxy) {
+                    return that.#actionDefinition.name.replace("PagerAction", pagerProxy)
+                }
+            }
+            return that.#actionDefinition.name;
+        }
+
         return {
-            name: this.#actionDefinition.name,
+            name: getName(),
             assign: this.#inputs.get('assign').val(),
             arguments: this.#actionDefinition.parameters
                 .filter((param) => {
@@ -488,6 +521,20 @@ class ActionProperties {
      */
     setAssign(assign) {
         this.#inputs.get("assign").val(assign);
+    }
+
+    /**
+     * Returns the pager proxy value if set
+     */
+    pagerProxy() {
+        return this.#inputs.get("pager").val();
+    }
+
+    /**
+     * Sets the pager proxy input
+     */
+    setPagerProxy(proxy) {
+        this.#inputs.get("pager").val(proxy);
     }
 
     /**

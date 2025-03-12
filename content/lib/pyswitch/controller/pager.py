@@ -33,6 +33,9 @@ class PagerAction(Callback, Action):
             self.__pager.update_displays()
 
         def update_displays(self):
+            if self.__page_index == None:
+                return
+            
             if len(self.__pager.pages) <= self.__page_index - 1:
                 return
 

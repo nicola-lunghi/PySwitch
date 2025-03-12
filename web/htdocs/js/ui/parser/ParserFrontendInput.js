@@ -440,6 +440,13 @@ class ParserFrontendInput {
                 
                 props.setHold(preselectAction.hold);
                 props.setAssign(preselectAction.assign);
+
+                if (preselectAction.proxy_name) {
+                    const splt = preselectAction.name.split(".");
+                    if (splt.length == 2) {
+                        props.setPagerProxy(splt[0])
+                    }                    
+                }                
             }
         } else {
             browser.showInfoPanel("Please select an action to add");

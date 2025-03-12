@@ -536,7 +536,7 @@ class ConfigParserTests extends TestBase {
             actions.filter((item) => item != null)
         );
         
-        // console.log((await parser.config.get()).inputs_py);
+        console.log((await parser.config.get()).inputs_py);
 
         // Test with PySwitch
         await this.runner.run(config);
@@ -585,7 +585,8 @@ class ConfigParserTests extends TestBase {
      */
     #composeAction(item, client) {
         return {
-            name: item.name,
+            name: (item.name == "PagerAction.proxy") ? "_pager.proxy" : item.name,
+            assign: (item.name == "PagerAction") ? "_pager" : null,
             client: client,
             arguments: item.parameters.map(                
                 function (param) {
@@ -593,6 +594,13 @@ class ConfigParserTests extends TestBase {
                         return {
                             name: param.name,
                             value: []
+                        }
+                    }
+
+                    if (item.name == "PagerAction.proxy" && param.name == "page_id") {
+                        return {
+                            name: param.name,
+                            value: "1"
                         }
                     }
 
