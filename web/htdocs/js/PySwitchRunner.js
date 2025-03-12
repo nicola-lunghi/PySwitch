@@ -62,7 +62,7 @@ class PySwitchRunner {
         await this.#loadModule("parser/misc/CollectCommentsTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/AddImportsTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/FunctionExtractor.py", localPythonPath);
-        await this.#loadModule("parser/misc/ClassMethodExtractor.py", localPythonPath);
+        await this.#loadModule("parser/misc/ClassItemExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/AssignmentExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/AssignmentNameExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/ImportExtractor.py", localPythonPath);

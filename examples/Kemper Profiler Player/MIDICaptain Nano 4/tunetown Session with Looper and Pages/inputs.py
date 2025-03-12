@@ -7,19 +7,16 @@ from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG
 from pyswitch.clients.kemper.actions.looper import LOOPER_REC_PLAY_OVERDUB, LOOPER_STOP, LOOPER_ERASE, LOOPER_CANCEL, LOOPER_REVERSE
 
-_PAGE_1 = 10
-_PAGE_2 = 20
-
 
 _pager = PagerAction(
     pages = [
         {
-            "id": _PAGE_1, 
+            "id": 1, 
             "color": Colors.BLACK,
             "text": "                                                              Looper"
         },
         {
-            "id": _PAGE_2, 
+            "id": 2, 
             "color": Colors.LIGHT_GREEN,
             "text": "L  O  O  P  E  R"
         },
@@ -54,7 +51,7 @@ Inputs = [
                 color = Colors.LIGHT_GREEN,
                 display = DISPLAY_HEADER_2,
                 text = "Rec|Erase",
-                id = _PAGE_1,
+                id = 1,
                 enable_callback = _pager.enable_callback
             ),
 
@@ -63,7 +60,7 @@ Inputs = [
                 color = Colors.LIGHT_RED,
                 display = DISPLAY_HEADER_2,
                 text = "Stp|Erase",
-                id = _PAGE_2,
+                id = 2,
                 enable_callback = _pager.enable_callback
             )
         ],
@@ -90,7 +87,7 @@ Inputs = [
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
                 color = Colors.PINK,
                 text = "Synth-4",
-                id = _PAGE_1,
+                id = 1,
                 enable_callback = _pager.enable_callback
             ),
             
@@ -99,7 +96,7 @@ Inputs = [
                 color = Colors.LIGHT_GREEN,
                 display = DISPLAY_FOOTER_1,
                 text = "Undo|Rev",
-                id = _PAGE_2,
+                id = 2,
                 enable_callback = _pager.enable_callback
             )
         ],
@@ -107,7 +104,7 @@ Inputs = [
             # Pahe 2: Looper Reverse
             LOOPER_REVERSE(
                 color = Colors.YELLOW,
-                id = _PAGE_2,
+                id = 2,
                 enable_callback = _pager.enable_callback
             )
         ]     
@@ -126,7 +123,7 @@ Inputs = [
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
                 color = Colors.RED,
                 text = "Lead-5|Lp",
-                id = _PAGE_1,
+                id = 1,
                 enable_callback = _pager.enable_callback
             ),
 
@@ -135,7 +132,7 @@ Inputs = [
                 color = Colors.LIGHT_GREEN,
                 display = DISPLAY_FOOTER_2,
                 text = "Rec|Exit",
-                id = _PAGE_2,
+                id = 2,
                 enable_callback = _pager.enable_callback
             ),
         ],

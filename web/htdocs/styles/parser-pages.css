@@ -92,3 +92,23 @@
 .container .action-properties .action-pages .action-pages-comment {
     margin-bottom: 0.5em;
 }
+
+.container .action-properties .action-pages .button {
+    display: inline-flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: fit-content;
+}
+
+.container .action-properties .action-pages .button.page-selected {
+    background-color: rgb(36 80 121);
+}
+
+.container .action-properties .action-pages .button .page-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 0.4em;
+    border-radius: 50%;
+}
+

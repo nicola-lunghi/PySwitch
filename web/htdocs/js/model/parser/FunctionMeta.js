@@ -31,11 +31,23 @@ class FunctionMeta {
      */
     getShortDisplayName(actionCallProxy = null) {
         switch (this.functionDefinition.name) {
-            case "PagerAction": return "Pager";
+            case "PagerAction": return actionCallProxy ? actionCallProxy.assign : "Pager";
+            case "PagerAction.proxy": return "Pager Proxy";
             case "AnalogAction": return this.#getDisplayNameAnalogAction(actionCallProxy);
             case "EncoderAction": return this.#getDisplayNameEncoderAction(actionCallProxy);
         }
         return this.underscoreToDisplayName(this.functionDefinition.name);
+    }
+
+    /**
+     * Returns a sort string for the action definition
+     */
+    async getSortString() {
+        if (this.functionDefinition.name.startsWith("PagerAction")) {
+            return "ZZZZZZZZ" + this.functionDefinition.name;
+        }
+
+        return this.functionDefinition.name;
     }
 
     /**

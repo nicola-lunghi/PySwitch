@@ -1184,6 +1184,7 @@
         "client": "local",
         "actions": [
             {
+                "type": "function",
                 "name": "AnalogAction",
                 "parameters": [
                     {
@@ -1232,6 +1233,7 @@
                 "importName": "AnalogAction"
             },
             {
+                "type": "function",
                 "name": "EncoderAction",
                 "parameters": [
                     {
@@ -1260,6 +1262,7 @@
                 "importName": "EncoderAction"
             },
             {
+                "type": "function",
                 "name": "PagerAction",
                 "parameters": [
                     {
@@ -1268,9 +1271,34 @@
                         "comment": "This has to be a list of dicts like follows:\n{\n     \"id\": Page ID. All actions with this ID will be enabled\n     \"color\": Page color. LEDs and label will be colored this way (for the brightness, there is a separate parameter)\n     \"text\": Label text for the page\n}"
                     },
                     {
+                        "name": "select_page",
+                        "default": "None",
+                        "comment": "If none, the pages will be rotated. If set to a page ID, the action will select the passed page (use a \nproxy() for directly selecting other pages)"
+                    },
+                    {
                         "name": "led_brightness",
                         "default": "0.15",
-                        "comment": "LED brightness for the action (fixed) in range [0..1]"
+                        "comment": "LED brightness for the pager in range [0..1]. Only used when selet_page is None (rotate mode)."
+                    },
+                    {
+                        "name": "led_brightness_off",
+                        "default": "0.02",
+                        "comment": "LED brightness for the pager when select_page is set and the page is not currently selected. Range [0..1]."
+                    },
+                    {
+                        "name": "led_brightness_on",
+                        "default": "0.3",
+                        "comment": "LED brightness for the pager when select_page is set and the page is currently selected. Range [0..1]."
+                    },
+                    {
+                        "name": "display_dim_factor_on",
+                        "default": "1",
+                        "comment": "Display dim factor used when in rotation mode or if the current page is select_page"
+                    },
+                    {
+                        "name": "display_dim_factor_off",
+                        "default": "0.2",
+                        "comment": "Display dim factor used when select_page is selt and the current page is not select_page"
                     },
                     {
                         "name": "mappings",
@@ -1298,7 +1326,41 @@
                         "comment": null
                     }
                 ],
-                "comment": "The PagerAction is used to control multiple other actions to provide paging for specifiec actions.\nDefine this action for one switch, and select it in the actions to control by setting the \nenable_callback parameter and page ID for those actions.",
+                "comment": "The PagerAction is used to control multiple other actions to provide paging for specifiec actions.\nDefine this action for one switch, and select it in the actions to control by setting the enable_callback parameter and page ID for those actions.\n\nIf you want to rotate through pages, just use this action with select_page set to None. \n\nIf you want to have one switch dedicated to select every page, set select_page to the page you want to select with this switch, and use the Pager Proxy action for the other switches.",
+                "importPath": "pyswitch.controller.pager",
+                "importName": "PagerAction"
+            },
+            {
+                "type": "function",
+                "name": "PagerAction.proxy",
+                "parameters": [
+                    {
+                        "name": "page_id",
+                        "default": null,
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    }
+                ],
+                "comment": "This controls a PagerAction from another switch, making it possible to directly select pages with dedicated switches.\n#\nYou always need to have one PagerAction which defines the pages and selects one of them (see the select_page parameter of PagerAction). For selecting the other pages, create Pager Proxy actions on the other switches.",
                 "importPath": "pyswitch.controller.pager",
                 "importName": "PagerAction"
             }

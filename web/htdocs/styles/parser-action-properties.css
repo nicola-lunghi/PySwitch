@@ -21,6 +21,7 @@
 .container .action-properties .action-comment {
     white-space: pre-wrap;
     margin-left: 0.5em;
+    padding-right: 0.5em;
 }
 
 .container .action-properties .action-parameters {

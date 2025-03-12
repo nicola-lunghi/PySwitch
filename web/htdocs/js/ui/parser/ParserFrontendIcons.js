@@ -40,10 +40,19 @@ class ParserFrontendIcons {
         const pager = actionCallProxy.pager()
         const ec = actionCallProxy.argument('enable_callback');
         if (page) {
-            icons.push(
-                $('<span data-toggle="tooltip" title="This action is part of pager ' + pager + ', page ' + page + '" />')
-                .addClass('action-icon icon-page icon-page-' + (await this.#getPageColorId(pager, page)))
-            )
+            const el = $('<span class="action-icon icon-page" data-toggle="tooltip" title="This action is part of pager ' + pager + ', page ' + page + '" />')
+                
+            const color = await this.getPageColor(pager, page);
+            
+            if (color) {
+                el.css('background-color', "rgb" + color);
+            } else {
+                const colorId = await this.#getPageColorId(pager, page);
+                el.addClass('icon-page-' + colorId)
+            }
+
+            icons.push(el);
+
         } else if (ec && (ec != 'None')) {
             icons.push(
                 $('<span data-toggle="tooltip" title="This action has an Enable Callback not involved in a PagerAction" />')
@@ -63,23 +72,37 @@ class ParserFrontendIcons {
     }
 
     /**
+     * Returns color for a page, if any
+     */
+    async getPageColor(pager, page) {
+        const action = await this.#parser.getPagerAction(pager);
+        if (!action) return null;
+
+        const pages = action.argument("pages");
+        if (!pages) return null;
+
+        for (const pageProxy of pages) {
+            const pageProxyJs = pageProxy.toJs();
+            if (pageProxyJs.id == page && pageProxyJs.color) {                
+                return this.#parser.resolveColor(pageProxyJs.color);
+            }
+        }
+        return null;
+    }
+    
+    /**
      * Returns a numeric color ID
      */
     async #getPageColorId(pager, page) {
-        const action = await this.#parser.getPagerAction(pager);
-        if (!action) return "none";
+        if (this.#pageColors.has(pager + page)) return this.#pageColors.get(pager + page);
 
-        return 0; // TODO get page color, or rotate color
+        this.#pageColors.set(pager + page, this.#nextPageColorId++);
 
-        // if (this.#pageColors.has(page)) return this.#pageColors.get(page);
+        if (this.#nextPageColorId >= 5) {
+            this.#nextPageColorId = 0;
+        }
 
-        // this.#pageColors.set(page, this.#nextPageColorId++);
-
-        // if (this.#nextPageColorId >= 5) {
-        //     this.#nextPageColorId = 0;
-        // }
-
-        // return this.#pageColors.get(page);
+        return this.#pageColors.get(pager + page);
     }
 
     /**

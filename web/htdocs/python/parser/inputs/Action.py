@@ -11,18 +11,26 @@ class Action:
         self.input = input 
         self.assign = None
 
-        self._evaluate_node()
-        self.client = self._determine_client()
-
         # Buffers
         self._arguments = None
 
+        self._evaluate_node()
+        self.client = self._determine_client()
+
     def _evaluate_node(self):
+        self.proxy_name = None
+
         # Is it a function call? Most actions are.
         if isinstance(self.node, libcst.Call):
-            self.name = self.node.func.value
+            self.name = libcst.parse_module("").code_for_node(self.node.func)
             self.node_content = self.node
-            
+
+            if isinstance(self.node.func, libcst.Attribute):                
+                # Determine the name of the action for a proxy function
+                proxy_call = self.input.parser.get_assignment(self.node.func.value.value)
+                if proxy_call:
+                    self.proxy_name = proxy_call.func.value + "." + self.node.func.attr.value
+
         # No call: Search if there is an assignment with the name
         elif isinstance(self.node, libcst.Name):
             assign_node = self.input.parser.get_assignment(self.node.value)

@@ -55,43 +55,27 @@ class PagesList {
      * Create DOM for one page
      */
     #createItem(page) {
+        const that = this;
+        
         return $('<div class="page-item" />').append(
             $('<div class="page-item-content" />')
             .append(
                 // Action
                 $('<span class="button name" />')
                 .append(
-                    $('<input type="text" class="page-id" />').val(page.id),
-                    $('<input type="text" class="page-color" />').val(page.color),
-                    $('<input type="text" class="page-text" />').val(page.text),
+                    $('<input type="text" class="page-id" placeholder="Page ID" />').val(page.id),
+                    $('<input type="text" class="page-color" placeholder="Color (optional)" />').val(page.color),
+                    $('<input type="text" class="page-text" placeholder="Text (optional)" />').val(page.text),
                 ),
-                // .on('click', async function() {
-                //     try {                                        
-                //         // await that.promptEditAction(
-                //         //     item, 
-                //         //     hold, 
-                //         //     await that.#parserFrontend.parser.checks.messagesForAction(item)
-                //         // );
-
-                //     } catch (e) {
-                //         // that.#controller.handle(e);
-                //     }
-                // }),
 
                 // Remove button
                 $('<span class="button remove-page fas fa-times" data-toggle="tooltip" title="Remove page" />')
                 .on('click', async function() {
                     try {
-                        // const action = $(this).parent().parent().data('handler');
-
-                        // if (!confirm("Do you want to delete " + action.name + " from " + that.definition.displayName + "?")) {
-                        //     return;
-                        // }
-                                                                    
-                        // await that.removeAction(action);
+                        await that.#removePage(page.id);
 
                     } catch (e) {
-                        // that.#controller.handle(e);
+                        that.#controller.handle(e);
                     }
                 })
             )                    
@@ -145,6 +129,15 @@ class PagesList {
     }
 
     /**
+     * Remove page by ID
+     */
+    async #removePage(id) {
+        const pages = await this.get();
+
+        await this.set(pages.filter((item) => item.id != id));
+    }
+
+    /**
      * Determines what the next page ID could be
      */
     #getNextPageId(pages) {
@@ -155,8 +148,8 @@ class PagesList {
             if (id > highest) highest = id;
         }
         
-        if (highest < 0) return "10";
-        return "" + (highest + 10);
+        if (highest < 0) return "1";
+        return "" + (highest + 1);
     }
 
     /**
@@ -243,16 +236,5 @@ class PagesList {
                 callback(layout);
             }
         });
-
-        this.#grid.on('dragEnd', async function(item, event) {            
-            // that.#parserFrontend.scheduleForUpdate(that);
-        });
-
-        this.#grid.on('dragReleaseEnd', async function(item, event) {
-            // that.#parserFrontend.scheduleForUpdate(that);
-            
-            // // No await!
-            // that.#parserFrontend.updateConfig();
-        });          
     }
 }

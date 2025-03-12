@@ -52,28 +52,6 @@ class KemperClient extends Client {
     }
 
     /**
-     * Returns a sort string for the passed action definition
-     */
-    async getActionSortString(actionDefinition) {
-        if (actionDefinition.name == "BINARY_SWITCH") {
-            return "ZZZZZ";
-        }
-
-        const category = actionDefinition.meta.getCategory();
-        
-        switch (category) {
-            case "rig": return "a" + actionDefinition.meta.getDisplayName();
-            case "bank": return "b" + actionDefinition.meta.getDisplayName();
-            case "effects": return "e";
-            case "tuner": return "f";
-            case "none": return "m";
-            case "looper": return "w";
-        }    
-            
-        return category;
-    }
-
-    /**
      * If the client has action implementations in __init__.py, this can return the class name for them.
      */
     getInitMappingsClassName() {

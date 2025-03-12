@@ -7,14 +7,15 @@ class ActionProperties {
     #inputs = null;
     #oldProperties = null;
     #advancedRows = null;
-    #parser = null;
+    #parserFrontend = null;
     #messages = null;
     #pages = null;
     #controller = null;
+    #pageButtons = [];
 
-    constructor(controller, parser, actionDefinition, oldProperties = null, messages = []) {
+    constructor(controller, parserFrontend, actionDefinition, oldProperties = null, messages = []) {
         this.#controller = controller;
-        this.#parser = parser;
+        this.#parserFrontend = parserFrontend;
         this.#actionDefinition = actionDefinition;
         this.#oldProperties = oldProperties;
         this.#messages = messages;
@@ -62,7 +63,7 @@ class ActionProperties {
                 async (param) => {
                     const input = await this.#createInput(param);
 
-                    that.#inputs.set(param, input);
+                    that.#inputs.set(param.name, input);
 
                     // Take over old values from the old props object, if different from the default
                     await takeOverValues(input, param);
@@ -137,6 +138,8 @@ class ActionProperties {
         
         let tbody = null;
 
+        const pagerActions = await this.#parserFrontend.parser.pagerActions();
+        
         const ret = $('<div class="action-properties" />').append(
             // Comment
             $('<div class="action-header" />')
@@ -192,11 +195,15 @@ class ActionProperties {
                 )
             ),
 
-            // Pager buttons
-            $('<div class="action-header" />')
-            .text("Paging:"),
-            
-            await this.#getPagerButtons()
+            ...(
+                !pagerActions.length ? [] : [
+                    // Pager buttons
+                    $('<div class="action-header" />')
+                    .text("Paging:"),
+                    
+                    await this.#getPagerButtons(pagerActions)
+                ]
+            )
         );
 
         if (this.#actionDefinition.name != "PagerAction") {
@@ -263,7 +270,7 @@ class ActionProperties {
      * Returns an unused pager assign target name
      */
     async #getNextPagerAssign() {
-        const pagerActions = await this.#parser.pagerActions();
+        const pagerActions = await this.#parserFrontend.parser.pagerActions();
 
         function pagerExists(assign) {
             for (const pager of pagerActions) {
@@ -283,54 +290,129 @@ class ActionProperties {
     /**
      * Returns DOM for the pager buttons
      */
-    async #getPagerButtons() {
-        const pagerActions = await this.#parser.pagerActions();
+    async #getPagerButtons(pagerActions) {
+        this.#pageButtons = [];
         const that = this;
 
         function getPageText(actionCallProxy, el) {
             if (pagerActions.length == 1) {
-                return "Page " + el.id;
+                return "" + el.id;
             }
             
             return (actionCallProxy.assign ? (actionCallProxy.assign + "|") : "") + el.id;
         }
 
+        const noPageButton = $('<span class="button"/>')
+            .text("No Page")
+            .on('click', async function() {
+                try {
+                    await that.#setPageParameters(null, null);
+
+                } catch (e) {
+                    that.#controller.handle(e);
+                }
+            });
+        
+        this.#pageButtons.push({
+            pager: "None",
+            page: "None",
+            button: noPageButton
+        })
+
         return $('<div class="action-pages" />').append(
             $('<div class="action-pages-comment" />')
             .text('To assign this action to a page, use these buttons:'),
 
-            $('<span class="button"/>')
-                .text("No Page")
-                .on('click', async function() {
-                    try {
-                        await that.#setPageParameters(null, null);
+            noPageButton,
 
-                    } catch (e) {
-                        that.#controller.handle(e);
-                    }
-                }),
+            (
+                await Promise.all(
+                    pagerActions
+                    .map(
+                        async (item) => {
+                            const pagesArg = JSON.parse(item.arguments()).filter((e) => e.name == "pages");
+                            if (!pagesArg || !pagesArg.length) return null;
 
-            pagerActions
-            .map((item) => {
-                const pagesArg = JSON.parse(item.arguments()).filter((e) => e.name == "pages");
-                if (!pagesArg || !pagesArg.length) return null;
+                            const pages = pagesArg[0].value;
+                            return (
+                                await Promise.all(
+                                    pages.map(async (el) => 
+                                        {
+                                            let pageColorIcon = null;
+                                            const button = $('<span class="button"/>').append(
+                                                // Page color icon
+                                                pageColorIcon = $('<span class="page-icon" />'),
 
-                const pages = pagesArg[0].value;
-                
-                return pages.map((el) => 
-                    $('<span class="button"/>')
-                    .text(getPageText(item, el))
-                    .on('click', async function() {
-                        try {
-                            await that.#setPageParameters(item, el);
+                                                // Page ID
+                                                $('<span />')
+                                                .text(getPageText(item, el))
+                                            )
+                                            .on('click', async function() {
+                                                try {
+                                                    await that.#setPageParameters(item, el);
 
-                        } catch (e) {
-                            that.#controller.handle(e);
+                                                } catch (e) {
+                                                    that.#controller.handle(e);
+                                                }
+                                            });
+
+                                            const color = await that.#parserFrontend.icons.getPageColor(item.assign, el.id);
+                                            if (color) {
+                                                pageColorIcon.css('background-color', "rgb" + color);
+                                            } else {
+                                                pageColorIcon.hide()
+                                            }
+
+                                            that.#pageButtons.push({
+                                                pager: item.assign,
+                                                page: el.id,
+                                                button: button
+                                            })                    
+
+                                            return button;
+                                        }
+                                    )
+                                )
+                            )
                         }
-                    })
+                    )
                 )
-            }).flat()
+            ).flat()
         );
+    }
+
+    /**
+     * Update the state of the pager buttons
+     */
+    async #updatePagerButtons() {
+        const pager = this.#getPager();
+        const page = this.#getPage();
+        
+        for (const button of this.#pageButtons) {
+            const selected = (button.pager == pager && button.page == page);
+            button.button.toggleClass("page-selected", selected);
+        }
+    }
+
+    /**
+     * Returns the current pager (derived from the enable callback)
+     */
+    #getPager() {
+        if (!this.#inputs.has("enable_callback")) return null;
+
+        const ec = this.#inputs.get("enable_callback").val();
+        const splt = ec.split(".");
+        if (!splt.length == 2) return null;
+
+        return splt[0];
+    }
+
+    /**
+     * Returns the currently set page (parameter "id")
+     */
+    #getPage() {
+        if (!this.#inputs.has("id")) return null;
+        return this.#inputs.get("id").val();
     }
 
     /**
@@ -355,7 +437,7 @@ class ActionProperties {
             assign: this.#inputs.get('assign').val(),
             arguments: this.#actionDefinition.parameters
                 .filter((param) => {
-                    const input = that.#inputs.get(param);
+                    const input = that.#inputs.get(param.name);
                     if (!input) throw new Error("No input for param " + param.name + " found");
         
                     const value = that.#getInputValue(input, param);
@@ -363,7 +445,7 @@ class ActionProperties {
                     return !param.hasOwnProperty("default") || (value != param.default);
                 })
                 .map((param) => {
-                    const input = that.#inputs.get(param);
+                    const input = that.#inputs.get(param.name);
                     if (!input) throw new Error("No input for param " + param.name + " found");
         
                     return {
@@ -422,6 +504,8 @@ class ActionProperties {
                 this.#showParameter(arg.name)
             }
         }
+
+        await this.#update();
     }
 
     /**
@@ -432,10 +516,12 @@ class ActionProperties {
         const param = this.getParameterDefinition(name);
         if (!param) throw new Error("Parameter " + name + " not found");
 
-        const input = this.#inputs.get(param);
+        const input = this.#inputs.get(param.name);
         if (!input) throw new Error("No input for param " + param.name + " found");
 
         await this.#setInputValue(input, param, value);
+
+        await this.#update();
     }
 
     /**
@@ -481,6 +567,13 @@ class ActionProperties {
     }
 
     /**
+     * Update the UI
+     */
+    async #update() {
+        await this.#updatePagerButtons();
+    }
+
+    /**
      * Generates the DOM for one parameter
      */
     async #createInput(param) {
@@ -490,13 +583,21 @@ class ActionProperties {
             type = this.#deriveType(param);
         }
 
+        const that = this;
+        async function onChange(e) {            
+            await that.#update();
+        }
+
         switch(type) {
             case "bool":                
                 return $('<input type="checkbox" />')
                 .prop('checked', param.meta.getDefaultValue() == "True")
+                .on('change', onChange)
 
             case "int":                
-                return this.#getNumberInput(param)
+                return (await this.#getNumberInput(param))
+                .on('change', onChange)
+                .val(param.meta.getDefaultValue());
 
             case 'select':
                 const values = await param.meta.getValues();
@@ -507,6 +608,7 @@ class ActionProperties {
                             .text(option.name)
                         )                        
                     )                    
+                    .on('change', onChange)
                     .val(param.meta.getDefaultValue())
                 }
                 break;
@@ -518,6 +620,7 @@ class ActionProperties {
         }        
 
         return $('<input type="text" />')
+        .on('change', onChange)
         .val(param.meta.getDefaultValue())
     }
 
@@ -528,7 +631,7 @@ class ActionProperties {
         const param = this.getParameterDefinition(name);
         if (!param) return null;
 
-        const input = this.#inputs.get(param);
+        const input = this.#inputs.get(param.name);
         if (!input) return null;
 
         return this.#getInputValue(input, param);        
@@ -585,8 +688,7 @@ class ActionProperties {
     async #getNumberInput(param) {
         const range = param.meta.range();
         if (!range) {
-            return $('<input type="number" />')
-                .val(param.meta.getDefaultValue());
+            return $('<input type="number" />');                
         }
 
         const values = await param.meta.getValues();

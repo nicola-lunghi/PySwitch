@@ -651,8 +651,51 @@
                             "max": 1
                         },
                         "advanced": true
+                    },
+                    {
+                        "name": "led_brightness_off",
+                        "type": "float",
+                        "range": {
+                            "min": 0,
+                            "max": 1
+                        },
+                        "advanced": true
+                    },
+                    {
+                        "name": "led_brightness_on",
+                        "type": "float",
+                        "range": {
+                            "min": 0,
+                            "max": 1
+                        },
+                        "advanced": true
+                    },
+                    {
+                        "name": "display_dim_factor_on",
+                        "type": "float",
+                        "range": {
+                            "min": 0,
+                            "max": 1
+                        },
+                        "advanced": true
+                    },
+                    {
+                        "name": "display_dim_factor_off",
+                        "type": "float",
+                        "range": {
+                            "min": 0,
+                            "max": 1
+                        },
+                        "advanced": true
                     }
                 ]
+            },
+
+            {
+                "entityName": "PagerAction.proxy",
+                "category": "other",
+                "target": "AdafruitSwitch",
+                "parameters": []
             }
         ]
     }

@@ -32,6 +32,28 @@ class KemperFunctionMeta extends FunctionMeta {
         return super.getShortDisplayName(actionCallProxy);
     }
 
+    /**
+     * Returns a sort string for the passed action definition
+     */
+    async getSortString() {
+        if (this.functionDefinition.name == "BINARY_SWITCH") {
+            return "ZZZZZ";
+        }
+
+        const category = this.functionDefinition.meta.getCategory();
+        
+        switch (category) {
+            case "rig": return "a" + this.functionDefinition.meta.getDisplayName();
+            case "bank": return "b" + this.functionDefinition.meta.getDisplayName();
+            case "effects": return "e";
+            case "tuner": return "f";
+            case "none": return "m";
+            case "looper": return "w";
+        }    
+            
+        return category;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     /**

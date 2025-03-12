@@ -261,6 +261,7 @@
                 "importPath": "pyswitch.clients.kemper.mappings.rotary"
             },
             {
+                "type": "function",
                 "name": "KemperMappings.EFFECT_STATE",
                 "parameters": [
                     {
@@ -274,6 +275,7 @@
                 "importName": "KemperMappings"
             },
             {
+                "type": "function",
                 "name": "KemperMappings.EFFECT_TYPE",
                 "parameters": [
                     {
@@ -287,6 +289,7 @@
                 "importName": "KemperMappings"
             },
             {
+                "type": "function",
                 "name": "KemperMappings.RIG_NAME",
                 "parameters": [],
                 "comment": "Rig name (request only)",
@@ -294,6 +297,7 @@
                 "importName": "KemperMappings"
             },
             {
+                "type": "function",
                 "name": "KemperMappings.TUNER_MODE_STATE",
                 "parameters": [],
                 "comment": "Switch tuner mode on/off (no receive possible when not in bidirectional mode)",
@@ -301,6 +305,7 @@
                 "importName": "KemperMappings"
             },
             {
+                "type": "function",
                 "name": "KemperMappings.TUNER_NOTE",
                 "parameters": [],
                 "comment": "Tuner note (only sent in bidirectional mode)",
@@ -308,6 +313,7 @@
                 "importName": "KemperMappings"
             },
             {
+                "type": "function",
                 "name": "KemperMappings.TUNER_DEVIANCE",
                 "parameters": [],
                 "comment": "Tuner deviance from \"in tune\" (only sent in bidirectional mode)",
@@ -315,6 +321,7 @@
                 "importName": "KemperMappings"
             },
             {
+                "type": "function",
                 "name": "KemperMappings.BIDIRECTIONAL_SENSING",
                 "parameters": [],
                 "comment": "Used for state sensing in bidirection communication",
@@ -322,6 +329,7 @@
                 "importName": "KemperMappings"
             },
             {
+                "type": "function",
                 "name": "KemperMappings.RIG_ID",
                 "parameters": [],
                 "comment": "Rig ID",

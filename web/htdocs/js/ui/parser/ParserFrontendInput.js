@@ -355,6 +355,7 @@ class ParserFrontendInput {
             // Preselected action
             {
                 name: action.name,
+                proxy_name: action.proxy_name,
                 assign: action.assign,
                 arguments: JSON.parse(action.arguments()),
                 hold: hold
@@ -380,7 +381,7 @@ class ParserFrontendInput {
         async function onSelect(entry) {
             props = new ActionProperties(
                 that.#controller,
-                that.#parserFrontend.parser,
+                that.#parserFrontend,
                 entry.data.actionDefinition,
                 props,
                 messages
@@ -421,7 +422,7 @@ class ParserFrontendInput {
                     this.#parserFrontend.parser,
                     {
                         onSelect: onSelect,
-                        preselectActionName: preselectAction ? preselectAction.name : null,
+                        preselectActionName: preselectAction ? (preselectAction.proxy_name ? preselectAction.proxy_name : preselectAction.name) : null,
                         target: this.definition.data.model.type
                     }                    
                 )

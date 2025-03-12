@@ -14,6 +14,7 @@ class Parser {
     #availableActions = null;        // Buffer
     #availableMappings = null;       // Buffer
     #bufferHardwareInfo = null;      // Buffer
+    #colors = null;                  // Buffer
 
     constructor(config, runner, basePath = "") {
         this.config = config;
@@ -160,6 +161,40 @@ class Parser {
             }
         }
         return null;
+    }
+
+    /**
+     * Resolve a color string. (r, g, b) will be passed through, Colors.XXX will be resolved.
+     */
+    async resolveColor(colorValue) {
+        if (colorValue.startsWith('Colors')) {
+            const colors = await this.getAvailableColors();
+            
+            for (const color of colors) {
+                if (color.name == colorValue) {
+                    return color.value;
+                }
+            }
+        }
+
+        return colorValue;
+    }
+
+    /**
+     * Returns all available colors (buffered)
+     */
+    async getAvailableColors() {
+        if (this.#colors) return this.#colors;
+
+        const extractor = new ClassItemExtractor(this.runner);
+        this.#colors = await extractor.get({
+            file: "pyswitch/misc.py",
+            importPath: "pyswitch.misc",
+            className: "Colors",
+            attributes: true
+        });
+
+        return this.#colors;
     }
 
     /**

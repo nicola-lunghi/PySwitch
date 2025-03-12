@@ -56,17 +56,6 @@ class Client {
     }
 
     /**
-     * Returns a sort string for the passed action definition
-     */
-    async getActionSortString(actionDefinition) {
-        if (actionDefinition.name == "PagerAction") {
-            return "ZZZZZZZZ";
-        }
-
-        return actionDefinition.name;
-    }
-
-    /**
      * If the client has mapping implementations in __init__.py, this can return the class name for them.
      */
     getInitMappingsClassName() {

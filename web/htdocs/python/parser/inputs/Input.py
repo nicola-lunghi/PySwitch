@@ -88,9 +88,10 @@ class Input(libcst.CSTVisitor):
 
         def get_element_value_node(definition):
             call = libcst.Call(
-                func = libcst.Name(
-                    value = definition.name,                        
-                ),
+                func = libcst.parse_expression(definition.name),
+                    # libcst.Name(
+                    #     value = definition.name,                        
+                    # ),
 
                 whitespace_before_args = libcst.ParenthesizedWhitespace(
                     first_line = libcst.TrailingWhitespace(

@@ -7,7 +7,7 @@ class ActionParserTests extends FunctionParserTestBase {
         const that = this;
 
         async function fromClass(options) {
-            const extractor = new ClassMethodExtractor(that.pyswitch);
+            const extractor = new ClassItemExtractor(that.pyswitch);
             return await extractor.get(options);
         }                 
 
@@ -38,7 +38,8 @@ class ActionParserTests extends FunctionParserTestBase {
                         actions = actions.concat(await fromClass({
                             file: "pyswitch/clients/" + client.id + "/__init__.py",
                             importPath: "pyswitch.clients." + client.id,
-                            className: client.getInitActionsClassName()
+                            className: client.getInitActionsClassName(),
+                            functions: true
                         }))
                     }
 
@@ -54,7 +55,8 @@ class ActionParserTests extends FunctionParserTestBase {
                             file: "pyswitch/controller/AnalogAction.py",
                             importPath: "pyswitch.controller.AnalogAction",
                             className: "AnalogAction",
-                            includeUnderscore: true
+                            includeUnderscore: true,
+                            functions: true
                         })
                     )
                     .filter((item) => item.name == "AnalogAction");
@@ -65,7 +67,8 @@ class ActionParserTests extends FunctionParserTestBase {
                             file: "pyswitch/controller/EncoderAction.py",
                             importPath: "pyswitch.controller.EncoderAction",
                             className: "EncoderAction",
-                            includeUnderscore: true
+                            includeUnderscore: true,
+                            functions: true
                         })
                     )
                     .filter((item) => item.name == "EncoderAction"),
@@ -75,12 +78,13 @@ class ActionParserTests extends FunctionParserTestBase {
                             file: "pyswitch/controller/pager.py",
                             importPath: "pyswitch.controller.pager",
                             className: "PagerAction",
-                            includeUnderscore: true
+                            includeUnderscore: true,
+                            functions: true
                         })
                     )
-                    .filter((item) => item.name == "PagerAction")
+                    .filter((item) => item.name == "PagerAction" || item.name == "PagerAction.proxy")
                 );
-                    
+
                 ret.push({
                     client: "local",
                     actions: actionsGeneral
@@ -91,6 +95,9 @@ class ActionParserTests extends FunctionParserTestBase {
         )
     }
 
+    /**
+     * Check metadata
+     */
     async getAvailableActionsMeta() {
         await this.init();
         

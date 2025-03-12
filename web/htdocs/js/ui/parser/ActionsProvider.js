@@ -66,7 +66,7 @@ class ActionsProvider extends BrowserProvider {
                         parent: this.#toc,
                         onSelect: this.#options.onSelect,
                         actionDefinition: action,
-                        sortString: await action.meta.client.getActionSortString(action)
+                        sortString: await action.meta.getSortString()
                     }
                 )
 

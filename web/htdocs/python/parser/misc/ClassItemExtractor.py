@@ -2,7 +2,7 @@ import libcst
 
 from .CollectCommentsTransformer import CollectCommentsTransformer
 
-class ClassMethodExtractor:
+class ClassItemExtractor:
 
     def __init__(self, file, className, importPath, include_underscore = False):
         self.file = file
@@ -10,8 +10,8 @@ class ClassMethodExtractor:
         self.importPath = importPath
         self.include_underscore = include_underscore        
 
-    # Returns a list of all public functions defined on module level
-    def get(self):
+    # Returns a list of all public functions and/or attributes defined on module level
+    def get(self, functions = False, attributes = False):
         ret = []
 
         with open(self.file) as f: content = f.read()
@@ -60,6 +60,9 @@ class ClassMethodExtractor:
                 self.class_stack -= 1
 
             def visit_FunctionDef(self, node):
+                if not functions:
+                    return False
+                
                 if not self.class_stack == self.classdef_depth: 
                     return False
                 
@@ -67,8 +70,29 @@ class ClassMethodExtractor:
                     return False
                 
                 ret.append({
+                    "type": "function",
                     "name": self.main.className + (("." + node.name.value) if node.name.value != "__init__" else ""),
                     "parameters": get_params(node),
+                    "comment": get_comments(node, 0),
+                    "importPath": self.main.importPath,
+                    "importName": self.main.className
+                })
+
+            def visit_Assign(self, node):
+                if not attributes:
+                    return False
+                
+                if not self.class_stack == self.classdef_depth: 
+                    return False
+                
+                target = node.targets[0].target.value
+                if not self.main.include_underscore and target.startswith("_"):
+                    return False
+                
+                ret.append({
+                    "type": "attribute",
+                    "name": self.main.className + "." + target,
+                    "value": libcst.parse_module("").code_for_node(node.value),
                     "comment": get_comments(node, 0),
                     "importPath": self.main.importPath,
                     "importName": self.main.className
