@@ -1,17 +1,25 @@
 .container .action-properties {
     width: 100%;
     position: relative;
+    container-type: size;
+}
+
+@container popup-content (max-width: 650px) {
+    .container .action-properties {
+        min-height: 100cqh;
+    }
 }
 
 .container .action-properties > * {
     width: 100%;
-    margin-bottom: 1em;
+    margin-bottom: 2em;
 }
 
 /**********************************************************************************/
 
 .container .action-properties .action-header {
     font-weight: bold;
+    margin-bottom: 1em;
 }
 
 .container .action-properties .action-header:first-child {
@@ -40,22 +48,29 @@
 
 .container .action-properties .action-parameters table {
     border-spacing: 0;
-    max-width: 100cqw;
+    width: 100cqw;
 }
 
 /* .container .action-properties .action-parameters td:first-child {
     width: fit-content;
 } */
 
-.container .action-properties .action-parameters td:last-child {
+/* .container .action-properties .action-parameters td:last-child {
     white-space: unset;
     color: gray;
-}
+} */
 
 .container .action-properties .action-parameters td {
     border-bottom: 1px solid lightgray;
     padding: 0.5em;
     vertical-align: top;
+    position: relative;
+    z-index: 10;
+}
+
+.container .action-properties .action-parameters td > * {
+    position: relative;
+    z-index: 10;
 }
 
 .container .action-properties .action-parameters td:first-child {
@@ -81,7 +96,7 @@
 
 .container .action-properties select {
     font-size: 0.88888em;
-    max-width: 15em;
+    max-width: 25em;
 }
 
 .container .action-properties input[type=text] {
@@ -93,6 +108,5 @@
 .container .action-properties .show-advanced {
     text-decoration: underline;
     cursor: pointer;
-    float: right;
+    color: #959595;
 }
-

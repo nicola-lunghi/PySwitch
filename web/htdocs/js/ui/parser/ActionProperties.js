@@ -55,6 +55,22 @@ class ActionProperties {
             }
         }
 
+        /**
+         * Returns the passed element with the passed comment on hover
+         */
+        function withComment(el, comment) {
+            if (comment) {
+                tippy(el[0], {
+                    content: comment,
+                    theme: "actionparameter",
+                    placement: "left",
+                    duration: 0
+                });
+            }
+
+            return el;
+        }
+
         const that = this;
         const parameters = await Promise.all(
             this.#actionDefinition.parameters
@@ -74,34 +90,37 @@ class ActionProperties {
                     const messages = that.#messages.filter((item) => item.parameter == param.name)
 
                     // Build DOM for row
-                    const row = $('<tr class="selectable" />').append(
-                        // Parameter Name
-                        $('<td />').append(
-                            $('<span />').text(param.name)
-                        ),
+                    const row = withComment(
+                        $('<tr class="selectable" />').append(
+                            // Parameter Name                        
+                            $('<td />').append(
+                                $('<span />').text(param.name)
+                            ),                     
 
-                        (param.meta.data.hideComment) 
-                        ?
-                            // Input
-                            $('<td colspan="2" />')
-                            .addClass(messages.length ? "has-messages" : null)
-                            .append(
-                                input                            
-                            )
-                        :
-                            [
+                            (param.meta.data.hideComment) 
+                            ?
                                 // Input
-                                $('<td />')
+                                $('<td colspan="2" />')
                                 .addClass(messages.length ? "has-messages" : null)
                                 .append(
                                     input                            
-                                ),
-
-                                // Comment
-                                $('<td />').append(
-                                    await this.#getParameterComment(param)
                                 )
-                            ]
+                            :
+                                [
+                                    // Input
+                                    $('<td />')
+                                    .addClass(messages.length ? "has-messages" : null)
+                                    .append(
+                                        input                            
+                                    ),
+
+                                    // // Comment
+                                    // $('<td />').append(
+                                    //     await this.#getParameterComment(param)
+                                    // )
+                                ]
+                        ),
+                        await this.#getParameterComment(param)
                     );
 
                     if (!messages.length) {
@@ -127,7 +146,7 @@ class ActionProperties {
                                 return $('<tr class="param-messages" />').append(
                                     $('<td />'),
     
-                                    $('<td colspan="2" />').append(
+                                    $('<td />').append(
                                         item.message
                                     )
                                 )
@@ -160,51 +179,52 @@ class ActionProperties {
 
                         // Hold option
                         (this.#actionDefinition.meta.data.target != "AdafruitSwitch") ? null :
-                        $('<tr />').append(
-                            $('<td />').append(
-                                $('<span />').text("hold")
-                            ),
+                        withComment(
+                            $('<tr />').append(                            
+                                $('<td />').append(
+                                    $('<span />').text("hold")
+                                ),
     
-                            // Input
-                            $('<td />').append(
-                                holdInput = $('<input type="checkbox" />')
-                                .prop('checked', false)
+                                // Input
+                                $('<td />').append(
+                                    holdInput = $('<input type="checkbox" />')
+                                    .prop('checked', false)
+                                )
                             ),
-    
-                            // Comment
-                            $('<td />').text("")
+                            "Trigger on long press"
                         ),
 
                         // Assign option
-                        assignRow = $('<tr />').append(
-                            $('<td />').append(
-                                $('<span />').text("assign")
-                            ),
+                        assignRow = withComment(
+                            $('<tr />').append(                            
+                                $('<td />').append(
+                                    $('<span />').text("assign")
+                                ),
     
-                            // Input
-                            $('<td />').append(
-                                assignInput = $('<input type="text" />')
-                                .val(await this.#getDefaultAssign())
+                                // Input
+                                $('<td />').append(
+                                    assignInput = $('<input type="text" />')
+                                    .val(await this.#getDefaultAssign())
+                                )
                             ),
-    
-                            // Comment
-                            $('<td />').text("Define as separate assignment")
+                            "Define as separate assignment"
                         ),
 
-                        pagerProxyRow = $('<tr />').append(
-                            $('<td />').append(
-                                $('<span />').text("pager")
-                            ),
-    
-                            // Input
-                            $('<td />').append(
-                                pagerProxyInput = (await this.#createPageProxyInput())
-                            ),
-    
-                            // Comment
-                            $('<td />').text("Pager to connect the action to")
-                        )
-                        .hide(),
+                        pagerProxyRow = withComment(
+                            $('<tr />').append(                            
+                                $('<td />').append(
+                                    $('<span />').text("pager")
+                                ),
+        
+                                // Input
+                                $('<td />').append(
+                                    pagerProxyInput = (await this.#createPageProxyInput())
+                                ),
+                            )
+                            .hide(),
+
+                            "Pager to connect the action to"
+                        ),
 
                         // Action parameters
                         parameters.flat()
@@ -212,11 +232,11 @@ class ActionProperties {
                 )
             ),
 
+            // Pager buttons
             ...(
                 !pagerActions.length ? [] : [
-                    // Pager buttons
                     $('<div class="action-header" />')
-                    .text("Paging:"),
+                    .text("Assign to Page:"),
                     
                     await this.#getPagerButtons(pagerActions)
                 ]
@@ -242,9 +262,9 @@ class ActionProperties {
             let advRow = null;
             tbody.append(
                 advRow = $('<tr />').append(
-                    $('<td colspan="3" />').append(
+                    $('<td colspan="2" />').append(
                         $('<span class="show-advanced" />')
-                        .text("Show all...")
+                        .text("more...")
                         .on('click', async function() {
                             try {
                                 for (const row of that.#advancedRows) {
@@ -369,8 +389,8 @@ class ActionProperties {
         })
 
         return $('<div class="action-pages" />').append(
-            $('<div class="action-pages-comment" />')
-            .text('To assign this action to a page, use these buttons:'),
+            // $('<div class="action-pages-comment" />')
+            // .text('To assign this action to a page, use these buttons:'),
 
             noPageButton,
 
