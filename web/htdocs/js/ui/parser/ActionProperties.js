@@ -58,7 +58,9 @@ class ActionProperties {
         /**
          * Returns the passed element with the passed comment on hover
          */
-        function withComment(el, comment) {
+        function withComment(el, param, comment) {
+            if (param && param.meta.data.hideComment) return el;
+
             if (comment) {
                 tippy(el[0], {
                     content: comment,
@@ -88,7 +90,7 @@ class ActionProperties {
 
                     // Get messages for the parameter
                     const messages = that.#messages.filter((item) => item.parameter == param.name)
-
+                    
                     // Build DOM for row
                     const row = withComment(
                         $('<tr class="selectable" />').append(
@@ -97,29 +99,16 @@ class ActionProperties {
                                 $('<span />').text(param.name)
                             ),                     
 
-                            (param.meta.data.hideComment) 
-                            ?
-                                // Input
-                                $('<td colspan="2" />')
-                                .addClass(messages.length ? "has-messages" : null)
-                                .append(
-                                    input                            
-                                )
-                            :
-                                [
-                                    // Input
-                                    $('<td />')
-                                    .addClass(messages.length ? "has-messages" : null)
-                                    .append(
-                                        input                            
-                                    ),
-
-                                    // // Comment
-                                    // $('<td />').append(
-                                    //     await this.#getParameterComment(param)
-                                    // )
-                                ]
+                                
+                            // Input
+                            $('<td />')
+                            .addClass(messages.length ? "has-messages" : null)
+                            .append(
+                                input,
+                                ...(await that.#createAdditionalColorInputOptions(input, param))
+                            )
                         ),
+                        param,
                         await this.#getParameterComment(param)
                     );
 
@@ -191,6 +180,7 @@ class ActionProperties {
                                     .prop('checked', false)
                                 )
                             ),
+                            null,
                             "Trigger on long press"
                         ),
 
@@ -207,6 +197,7 @@ class ActionProperties {
                                     .val(await this.#getDefaultAssign())
                                 )
                             ),
+                            null,
                             "Define as separate assignment"
                         ),
 
@@ -222,7 +213,7 @@ class ActionProperties {
                                 ),
                             )
                             .hide(),
-
+                            null,
                             "Pager to connect the action to"
                         ),
 
@@ -739,11 +730,7 @@ class ActionProperties {
      * Generates the DOM for one parameter
      */
     async #createInput(param) {
-        let type = param.meta.data.type;
-
-        if (!type) {
-            type = this.#deriveType(param);
-        }
+        const type = this.#deriveType(param);
 
         const that = this;
         async function onChange() {            
@@ -796,6 +783,60 @@ class ActionProperties {
     }
 
     /**
+     * If the parameter is of type "color", this returns additional elements to add to the input. If
+     * not an empty array is returned.
+     */
+    async #createAdditionalColorInputOptions(input, param) {
+        const that = this;
+        const type = this.#deriveType(param);
+        if (type != "color") return [];
+        
+        let colorInput = null;
+
+        async function updateColorInput() {
+            const color = await that.#parserFrontend.parser.resolveColor(input.val());
+            if (color) {
+                colorInput.val(Tools.rgbToHex(color))
+            }
+        }
+
+        const ret = [
+            $('<select class="parameter-option" />').append(
+                (await this.#parserFrontend.parser.getAvailableColors())
+                .concat([{
+                    name: "Select color..."
+                }])
+                .map((item) => 
+                    $('<option value="' + item.name + '" />')
+                    .text(item.name)
+                )
+            )
+            .on('change', async function() {
+                const color = $(this).val();
+                if (color == "Select color...") return;
+
+                await that.setArgument(param.name, color);
+
+                $(this).val("Select color...")
+
+                await updateColorInput();
+            })
+            .val("Select color..."),
+
+            colorInput = $('<input type="color" class="parameter-option parameter-link" />')
+            .on('change', async function() {
+                const rgb = Tools.hexToRgb($(this).val());
+
+                await that.setArgument(param.name, "(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ")");
+            })
+        ];
+
+        input.on('change', updateColorInput)
+
+        return ret;
+    }
+
+    /**
      * Returns a parameter value by name
      */
     getParameterValue(name) {
@@ -812,11 +853,7 @@ class ActionProperties {
      * Converts the input values to action argument values
      */
     #getInputValue(input, param) {
-        let type = param.meta.data.type;
-
-        if (!type) {
-            type = this.#deriveType(param);
-        }
+        const type = this.#deriveType(param);
 
         switch(type) {
             case "bool": return input.prop('checked') ? "True" : "False";
@@ -833,15 +870,12 @@ class ActionProperties {
      * Sets the input value according to an argumen/parameter value
      */
     async #setInputValue(input, param, value) {
-        let type = param.meta.data.type;
-
-        if (!type) {
-            type = this.#deriveType(param);
-        }
+        const type = this.#deriveType(param);
 
         switch(type) {
             case "bool": 
                 input.prop('checked', value == "True");
+                input.trigger('change');
                 break;
 
             case "pages":
@@ -850,6 +884,7 @@ class ActionProperties {
 
             default:
                 input.val(value.replaceAll('"', "'"));
+                input.trigger('change');
         }      
     }
 
@@ -874,6 +909,8 @@ class ActionProperties {
      * Tries to derive the parameter type from its default value. Returns null if not successful.
      */
     #deriveType(param) {
+        if (param.meta.data.type) return param.meta.data.type;;
+
         const defaultValue = param.meta.getDefaultValue();
         switch (defaultValue) {
             case "False": return "bool";

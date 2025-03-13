@@ -110,3 +110,13 @@
     cursor: pointer;
     color: #959595;
 }
+
+
+.container .action-properties .parameter-option {
+    cursor: pointer;
+    margin-left: 0.6em;
+}
+
+.container .action-properties .parameter-option.parameter-link {
+    text-decoration: underline;
+}

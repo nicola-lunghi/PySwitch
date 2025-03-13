@@ -36,4 +36,36 @@ class Tools {
 		
 		return true;
 	}
+
+    /**
+     * Returns an array with [r, g, b] 8 bit values from a hex color string
+     */
+    static hexToRgb(color) {
+        if (!color.startsWith("#")) return color;
+        
+        const r = parseInt(color.substr(1,2), 16)
+        const g = parseInt(color.substr(3,2), 16)
+        const b = parseInt(color.substr(5,2), 16)
+        
+        return [r, g, b];
+    }
+
+    /**
+     * Convert a RGB color string to hex
+     */
+    static rgbToHex(rgb) {
+        function componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length == 1 ? "0" + hex : hex;
+        }
+            
+        const comps = rgb.replace("(", "").replace(")", "").replace("rgba", "").replace("rgb", "").split(",");
+        
+        const r = parseInt(comps[0]);
+        const g = parseInt(comps[1]);
+        const b = parseInt(comps[2]);
+
+        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    }
+
 }
