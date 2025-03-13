@@ -60,3 +60,6 @@
     background-color: rgb(255, 228, 205);
 }
 
+.container .select-actions .listing-link.category-pager {
+    background-color: rgb(245 247 198);
+}

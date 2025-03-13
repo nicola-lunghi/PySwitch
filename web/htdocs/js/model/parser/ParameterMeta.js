@@ -5,7 +5,7 @@ class ParameterMeta {
 
     client = null;
     data = null;          // Parameter metadata
-    parameter = null;    // Parameter descriptor
+    parameter = null;     // Parameter descriptor
     parser = null;
     #range = null;
 
@@ -33,13 +33,13 @@ class ParameterMeta {
      * If possible, returns a list of values, null if not possible.
      */
     async getValues() {
-        function formatUsages(usages) {
-            if (usages.length == 0) return "";
-            const usagemap = usages.map((item) => item.input.display_name());
-            return " (" + usagemap.join(", ") + ")";
-        }
-
-        if (this.parameter.name == "display") {
+        if (this.parameter.name == "display" || this.parameter.name == "morph_display") {
+            function formatUsages(usages) {
+                if (usages.length == 0) return "";
+                const usagemap = usages.map((item) => item.input.display_name());
+                return " (" + usagemap.join(", ") + ")";
+            }
+    
             return Promise.all(
                 (await this.parser.getAvailableDisplays())
                     .map(async (item) => {
@@ -60,6 +60,7 @@ class ParameterMeta {
         }
    
         if (this.#range) return this.#range.getValues();
+
         return this.data.values || null;
     }
 
@@ -140,7 +141,7 @@ class ParameterMeta {
         }
 
         function getSelectDefault() {
-            if (!that.data.values) throw new Error("No values for select type: " + that.parameter.name);
+            if (!that.data.values) return ""; //throw new Error("No values for select type: " + that.parameter.name);
 
             return "" + that.data.values[0].value;
         }
@@ -151,6 +152,7 @@ class ParameterMeta {
                 case "int": return getNumberDefault();
                 case "float": return getNumberDefault();
                 case "select": return getSelectDefault();
+                case "select-page": return getSelectDefault();
                 case "bool": return "False";
                 case "color": return "(0, 0, 0)";
                 default: throw new Error("Unknown parameter type: " + this.data.type);

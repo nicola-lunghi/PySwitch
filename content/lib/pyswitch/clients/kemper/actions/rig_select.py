@@ -11,9 +11,8 @@ RIG_SELECT_DISPLAY_CURRENT_RIG = 10  # Show current rig ID (for example 2-1 for 
 RIG_SELECT_DISPLAY_TARGET_RIG = 20   # Show the target rig ID
 
 
-# Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in
-# the current bank. Rigs are indexed starting from one, range: [1..5].
-def RIG_SELECT(rig, 
+# Selects a specific rig, or toggles between two rigs (if rig_off is also provided).
+def RIG_SELECT(rig,                                            # Rig to select. Range: [1..5]
                rig_off = None,                                 # If set, this defines the "off" rig chosen when the action is disabled. Set to "auto" to always remember the current rig as "off" rig
                bank = None,                                    # If set, a specific bank is selected. If None, the current bank is kept
                bank_off = None,                                # If set, this defines the "off" bank to be chosen when the action is disabled. Set to "auto" to always remember the current bank as "off" bank

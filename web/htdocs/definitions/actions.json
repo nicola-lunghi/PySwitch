@@ -658,7 +658,7 @@
                     {
                         "name": "rig",
                         "default": null,
-                        "comment": null
+                        "comment": "Rig to select. Range: [1..5]"
                     },
                     {
                         "name": "rig_off",
@@ -756,7 +756,7 @@
                         "comment": "If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified."
                     }
                 ],
-                "comment": "Adds morph state display on one LED to the rig select action.",
+                "comment": "Adds morph state display on one LED to the rig select action. The morph display will only be enabled when the rig in question is currently selected.",
                 "importPath": "pyswitch.clients.kemper.actions.rig_select_and_morph_state"
             },
             {
@@ -879,7 +879,7 @@
                     {
                         "name": "rig",
                         "default": null,
-                        "comment": null
+                        "comment": "Rig to select. Range: [1..5]"
                     },
                     {
                         "name": "rig_off",
@@ -952,7 +952,7 @@
                         "comment": "If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified."
                     }
                 ],
-                "comment": "Selects a specific rig, or toggles between two rigs (if rig_off is also provided) in\nthe current bank. Rigs are indexed starting from one, range: [1..5].",
+                "comment": "Selects a specific rig, or toggles between two rigs (if rig_off is also provided).",
                 "importPath": "pyswitch.clients.kemper.actions.rig_select"
             },
             {
@@ -1108,7 +1108,7 @@
                         "comment": "If enabled, the state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). "
                     }
                 ],
-                "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).\nNOTE: The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). \nIf you dont want this behaviour, you can set \"use_internal_state = False\".",
+                "comment": "Effect Button I-IIII (set only). num must be a number (1 to 4).\n\n<b>NOTE:</b> The state of the display will be toggled no matter what the real status on the Kemper is (the Kemper sadly does not report the state at all). \nIf you dont want this behaviour, you can set \"use_internal_state = False\".",
                 "importPath": "pyswitch.clients.kemper.actions.effect_button"
             },
             {
@@ -1117,7 +1117,7 @@
                     {
                         "name": "bank",
                         "default": null,
-                        "comment": "Bank to select"
+                        "comment": "Bank to select. Banks are indexed starting from one, range: [1..126]."
                     },
                     {
                         "name": "bank_off",
@@ -1175,7 +1175,7 @@
                         "comment": "Static text (if no text callback is passed)"
                     }
                 ],
-                "comment": "Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). \nBanks are indexed starting from one, range: [1..126].",
+                "comment": "Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). ",
                 "importPath": "pyswitch.clients.kemper.actions.bank_select"
             }
         ]
@@ -1273,7 +1273,7 @@
                     {
                         "name": "select_page",
                         "default": "None",
-                        "comment": "If none, the pages will be rotated. If set to a page ID, the action will select the passed page (use a \nproxy() for directly selecting other pages)"
+                        "comment": "If None, the pages will be rotated. If set to a page ID, the action will select the passed page (use a \n\"Select Page\" action for directly selecting the other pages)"
                     },
                     {
                         "name": "led_brightness",
@@ -1326,7 +1326,7 @@
                         "comment": null
                     }
                 ],
-                "comment": "The PagerAction is used to control multiple other actions to provide paging for specifiec actions.\nDefine this action for one switch, and select it in the actions to control by setting the enable_callback parameter and page ID for those actions.\n\nIf you want to rotate through pages, just use this action with select_page set to None. \n\nIf you want to have one switch dedicated to select every page, set select_page to the page you want to select with this switch, and use the Pager Proxy action for the other switches.",
+                "comment": "The PagerAction is used to control multiple other actions to provide paging. Define this action for one switch which will by default rotate through the defined pages.\nFor the actions you want to be part of pages, just assign them using the paging buttons (which will set the id and enable_callback parameters for you).\nAlso, it is possible to have more than one pager in a configuration.\n\n<b>Rotate Through Pages:</b>\nIf you want to rotate through pages, just use this action with select_page set to None, which is the default. The switch will then rotate through the pages. \n\n<b>Directly Select Pages:</b>\nIf you want to have one switch dedicated to select each page, set select_page here to the page you want to select with this switch, and use the \"Select Page\" action (assigned to this pager) for the other switches to select the further pages directly.",
                 "importPath": "pyswitch.controller.pager",
                 "importName": "PagerAction"
             },
@@ -1337,7 +1337,7 @@
                     {
                         "name": "page_id",
                         "default": null,
-                        "comment": null
+                        "comment": "Sets the page to be selected with this action"
                     },
                     {
                         "name": "use_leds",
@@ -1360,7 +1360,7 @@
                         "comment": null
                     }
                 ],
-                "comment": "This controls a PagerAction from another switch, making it possible to directly select pages with dedicated switches.\n#\nYou always need to have one PagerAction which defines the pages and selects one of them (see the select_page parameter of PagerAction). For selecting the other pages, create Pager Proxy actions on the other switches.",
+                "comment": "This controls a PagerAction from another switch, making it possible to directly select pages with dedicated switches.\n\nYou always need to have one (or more) PagerAction(s) which defines the pages. For selecting the other pages of a pager, create \"Select Page\" actions on the other switches.",
                 "importPath": "pyswitch.controller.pager",
                 "importName": "PagerAction"
             }

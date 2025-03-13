@@ -39,6 +39,39 @@ class ParserFrontendInput {
     }
 
     /**
+     * Searches for a action definition by name and client ID. Returns null if not found.
+     */
+    async #getActionDefinition(name, clientId) {
+        // Load all available clients
+        const clients = await this.#parserFrontend.parser.getAvailableActions();
+
+        for (const client of clients) {
+            if (client.client != clientId && client.client != "local") continue;
+
+            for (const action of client.actions) {
+                if (!action.meta) console.log(action)
+                if (action.meta.data.target != this.definition.data.model.type) continue;
+                if (action.name == name) return action;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Generate item text
+     */
+    async #getActionText(actionCallProxy, short = false) {
+        const action = await this.#getActionDefinition(
+            actionCallProxy.proxy_name ? actionCallProxy.proxy_name : actionCallProxy.name, 
+            actionCallProxy.client
+        );
+        
+        if (!action) return actionCallProxy.name;
+        
+        return short ? action.meta.getShortDisplayName(actionCallProxy) : action.meta.getDisplayName(actionCallProxy);
+    }
+
+    /**
      * Init the UI
      */
     async #initDom() {
@@ -48,41 +81,11 @@ class ParserFrontendInput {
         const actions = this.input ? (await this.input.actions()) : [];
         const actionsHold = this.input ? (await this.input.actions(true)) : [];
 
-        // Load all available clients
-        const clients = await this.#parserFrontend.parser.getAvailableActions();
-
-        /**
-         * Searches for a action definition by name and client ID. Returns null if not found.
-         */
-        function getActionDefinition(name, clientId) {
-            for (const client of clients) {
-                if (client.client != clientId && client.client != "local") continue;
-
-                for (const action of client.actions) {
-                    if (action.meta.data.target != that.definition.data.model.type) continue;
-                    if (action.name == name) return action;
-                }
-            }
-            return null;
-        }
-
-        /**
-         * Generate item text
-         */
-        function getItemText(item) {
-            const action = getActionDefinition(
-                item.name, 
-                item.client
-            );
-            
-            if (!action) return item.name;
-            
-            return action.meta.getShortDisplayName(item);
-        }
-
         // The promises in the upcoming map() call will run pseudo-parallel, so we better
-        // scan messages beforehand (even if the messagesForAction() method would do that automatically)
+        // scan messages beforehand (even if the messagesForAction() method would do that automatically).
+        // Same goes for the available actions, which we also call here to fill the buffers.
         await that.#parserFrontend.parser.checks.process();
+        await this.#parserFrontend.parser.getAvailableActions();
 
         /**
          * Determines the additional classes for the actions (warnings etc)
@@ -107,9 +110,9 @@ class ParserFrontendInput {
                                 $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
                                 .addClass(addClasses)
                                 .append(
-                                    await that.#parserFrontend.icons.get(item, getActionDefinition(item.name, item.client)),
+                                    await that.#parserFrontend.icons.get(item, await that.#getActionDefinition(item.name, item.client)),
 
-                                    $('<span />').text(getItemText(item))
+                                    $('<span />').text(await that.#getActionText(item, true))
                                 )
                                 .on('click', async function() {
                                     try {                                        
@@ -347,7 +350,7 @@ class ParserFrontendInput {
             },
 
             // Headline
-            "Edit/replace action \"" + action.name + "\" of " + inputName,
+            "Edit/replace action \"" + (await this.#getActionText(action)) + "\" of " + inputName,
 
             // Button text
             "Apply",
@@ -436,8 +439,6 @@ class ParserFrontendInput {
             await onSelect(actionsProvider.preselectEntry);
 
             if (preselectAction) {
-                await props.setArguments(preselectAction.arguments);
-                
                 props.setHold(preselectAction.hold);
                 props.setAssign(preselectAction.assign);
 
@@ -447,6 +448,8 @@ class ParserFrontendInput {
                         props.setPagerProxy(splt[0])
                     }                    
                 }                
+
+                await props.setArguments(preselectAction.arguments);                
             }
         } else {
             browser.showInfoPanel("Please select an action to add");

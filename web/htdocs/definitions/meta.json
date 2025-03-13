@@ -19,7 +19,7 @@
                     {
                         "name": "display",
                         "type": "select",
-                        "comment": "DisplayLabel identifier (must be defined in display.py)"
+                        "comment": "Display label to visualize the action state (must be defined in display.py)"
                     },
                     {
                         "name": "display_mode",
@@ -47,6 +47,7 @@
                     {
                         "name": "rig_off",
                         "type": "int",
+                        "advanced": true,
                         "range": {
                             "min": 1,
                             "max": "NUM_RIGS_PER_BANK",
@@ -73,6 +74,7 @@
                     {
                         "name": "bank_off",
                         "type": "int",
+                        "advanced": true,
                         "range": {
                             "min": 1,
                             "max": "NUM_BANKS",
@@ -90,7 +92,8 @@
                     },
                     {
                         "name": "color",
-                        "type": "color"
+                        "type": "color",
+                        "advanced": true
                     },
 
                     {
@@ -118,6 +121,11 @@
                         "comment": "Callback instance to control dynamically whether the action should be enabled."
                     },
 
+                    {
+                        "name": "text",
+                        "type": "any",
+                        "advanced": true
+                    },
                     {
                         "name": "text_callback",
                         "advanced": true,
@@ -188,6 +196,7 @@
                         "name": "mode",
                         "type": "select",
                         "comment": "Mode of operation",
+                        "advanced": true,
                         "values": [
                             {
                                 "name": "Latch",
@@ -346,13 +355,35 @@
                 "entityName": "MORPH_BUTTON",
                 "category": "morph",
                 "target": "AdafruitSwitch",
-                "parameters": []
+                "parameters": [
+                    {
+                        "name": "morph_color_base",
+                        "type": "color",
+                        "advanced": true
+                    },
+                    {
+                        "name": "morph_color_morphed",
+                        "type": "color",
+                        "advanced": true
+                    }
+                ]
             },
             {
                 "entityName": "MORPH_DISPLAY",
                 "category": "morph",
                 "target": "AdafruitSwitch",
-                "parameters": []
+                "parameters": [
+                    {
+                        "name": "morph_color_base",
+                        "type": "color",
+                        "advanced": true
+                    },
+                    {
+                        "name": "morph_color_morphed",
+                        "type": "color",
+                        "advanced": true
+                    }
+                ]
             },
             {
                 "entityName": "RIG_SELECT_AND_MORPH_STATE",
@@ -372,10 +403,10 @@
                                 }
                             ]
                         }
-                    },
+                    },                    
                     {
                         "name": "morph_display",
-                        "type": "any",
+                        "type": "select",
                         "advanced": true
                     },
                     {
@@ -628,7 +659,7 @@
 
             {
                 "entityName": "PagerAction",
-                "category": "other",
+                "category": "pager",
                 "target": "AdafruitSwitch",
                 "parameters": [
                     {
@@ -636,6 +667,10 @@
                         "type": "pages",
                         "hideComment": true,
                         "default": "[]"
+                    },
+                    {
+                        "name": "select_page",
+                        "type": "select-page"
                     },
                     {
                         "name": "mappings",
@@ -693,9 +728,14 @@
 
             {
                 "entityName": "PagerAction.proxy",
-                "category": "other",
+                "category": "pager",
                 "target": "AdafruitSwitch",
-                "parameters": []
+                "parameters": [
+                    {
+                        "name": "page_id",
+                        "type": "select-page"
+                    }
+                ]
             }
         ]
     }

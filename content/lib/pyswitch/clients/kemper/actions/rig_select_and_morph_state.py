@@ -9,8 +9,8 @@ from ..mappings.morph import MAPPING_MORPH_PEDAL
 from ..mappings.select import MAPPING_RIG_SELECT
 
 
-# Adds morph state display on one LED to the rig select action.
-def RIG_SELECT_AND_MORPH_STATE(rig, 
+# Adds morph state display on one LED to the rig select action. The morph display will only be enabled when the rig in question is currently selected.
+def RIG_SELECT_AND_MORPH_STATE(rig,                                            # Rig to select. Range: [1..5]
                                rig_off = None,                                 # If set, this defines the "off" rig chosen when the action is disabled. Set to "auto" to always remember the current rig as "off" rig
                                bank = None,                                    # If set, a specific bank is selected. If None, the current bank is kept
                                bank_off = None,                                # If set, this defines the "off" bank to be chosen when the action is disabled. Set to "auto" to always remember the current bank as "off" bank

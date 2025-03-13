@@ -31,8 +31,8 @@ class FunctionMeta {
      */
     getShortDisplayName(actionCallProxy = null) {
         switch (this.functionDefinition.name) {
-            case "PagerAction": return actionCallProxy ? actionCallProxy.assign : "Pager";
-            case "PagerAction.proxy": return "Pager Proxy";
+            case "PagerAction": return this.#getDisplayNamePager(actionCallProxy);
+            case "PagerAction.proxy": return this.#getDisplayNamePagerProxy(actionCallProxy);
             case "AnalogAction": return this.#getDisplayNameAnalogAction(actionCallProxy);
             case "EncoderAction": return this.#getDisplayNameEncoderAction(actionCallProxy);
         }
@@ -76,7 +76,50 @@ class FunctionMeta {
         }
 
         return "AnalogAction";
+    }
+
+    /**
+     * Special implementation for PagerAction
+     */
+    #getDisplayNamePager(actionCallProxy = null) {
+        if (!actionCallProxy) return "Pager";
+        
+        const select_page = this.getArgument(actionCallProxy, "select_page");
+
+        if (!(select_page == null || select_page.value == "None")) {
+            return "Select " + actionCallProxy.assign + "|" + select_page.value;
+        }
+
+        return "Rotate " + actionCallProxy.assign;
     }   
+
+    
+
+    /**
+     * Special implementation for PagerAction.proxy
+     */
+    #getDisplayNamePagerProxy(actionCallProxy = null) {
+        if (!actionCallProxy) return "Select Page";
+        
+        const page_id = this.getArgument(actionCallProxy, "page_id");
+        const pager = this.#extractPager(actionCallProxy.name);
+
+        if (!(page_id == null || page_id.value == "None")) {
+            return "Select " + pager + "|" + page_id.value;
+        }
+
+        return "Select Page";
+    }   
+
+    /**
+     * Extracts the pager name from _pager.xxx
+     */
+    #extractPager(name) {
+        const splt = name.split(".");
+        if (!splt.length == 2) return null;
+
+        return splt[0];
+    }
 
     /**
      * Special implementation for EncoderAction

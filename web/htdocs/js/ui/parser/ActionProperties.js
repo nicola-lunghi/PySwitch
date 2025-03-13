@@ -193,16 +193,16 @@ class ActionProperties {
 
                         pagerProxyRow = $('<tr />').append(
                             $('<td />').append(
-                                $('<span />').text("Pager")
+                                $('<span />').text("pager")
                             ),
     
                             // Input
                             $('<td />').append(
-                                pagerProxyInput = $('<input type="text" />')
+                                pagerProxyInput = (await this.#createPageProxyInput())
                             ),
     
                             // Comment
-                            $('<td />').text("Pager to connect the proxy to")
+                            $('<td />').text("Pager to connect the action to")
                         )
                         .hide(),
 
@@ -279,6 +279,24 @@ class ActionProperties {
     }
 
     /**
+     * Creates the pager proxy input for PagerAction.proxy
+     */
+    async #createPageProxyInput() {
+        const pagerActions = await this.#parserFrontend.parser.pagerActions();
+        const that = this;
+
+        return $('<select />').append(
+            pagerActions.map((option) => {
+                return $('<option value="' + option.assign + '" />')
+                .text(option.assign)
+            })                        
+        )
+        .on('change', async function() {
+            await that.#update();
+        })
+    }
+
+    /**
      * Returns the default assign value
      */
     async #getDefaultAssign() {
@@ -310,6 +328,13 @@ class ActionProperties {
     }
 
     /**
+     * Strip the page text from quotes
+     */
+    #stripPageText(page) {
+        return page.text ? page.text.replaceAll('"', "").replaceAll("'", "") : null;
+    }
+
+    /**
      * Returns DOM for the pager buttons
      */
     async #getPagerButtons(pagerActions) {
@@ -317,7 +342,7 @@ class ActionProperties {
         const that = this;
 
         function getPageText(actionCallProxy, el) {
-            const pageText = el.text ? el.text.replaceAll('"', "").replaceAll("'", "") : el.id;
+            const pageText = that.#stripPageText(el) || el.id;
 
             if (pagerActions.length == 1) {
                 return "" + pageText;
@@ -423,9 +448,14 @@ class ActionProperties {
      */
     #getPager() {
         if (!this.#inputs.has("enable_callback")) return null;
+        return this.#extractPager(this.#inputs.get("enable_callback").val());
+    }
 
-        const ec = this.#inputs.get("enable_callback").val();
-        const splt = ec.split(".");
+    /**
+     * Extracts the pager name from _pager.xxx
+     */
+    #extractPager(name) {
+        const splt = name.split(".");
         if (!splt.length == 2) return null;
 
         return splt[0];
@@ -446,8 +476,66 @@ class ActionProperties {
         await this.setArgument("enable_callback", ((actionCallProxy && actionCallProxy.assign) ? (actionCallProxy.assign + ".enable_callback") : "None"));
         await this.setArgument("id", (page && page.id) ? page.id : "None");
 
-        this.#showParameter("enable_callback");
-        this.#showParameter("id");
+        // this.#showParameter("enable_callback");
+        // this.#showParameter("id");
+    }
+
+    /**
+     * Updates the page inputs to the currently available pages
+     */
+    async #updatePagesInputs() {
+        const that = this;
+
+        /**
+         * Add pages as options to a select input
+         */
+        function addPagesToInput(input, pages) {
+            input.empty().append(                
+                pages.map((item) => {
+                    const pageText = that.#stripPageText(item);
+                    return $('<option value="' + item.id + '" />')
+                    .text(pageText ? (item.id + " " + pageText) : item.id)
+                })
+            );
+        }
+
+        // Pager
+        if (this.#pages && this.#actionDefinition.name == "PagerAction") {
+            const pages = this.#pages.get();
+            pages.push({
+                id: "None"                
+            })
+
+            const input = this.#inputs.get("select_page");
+            if (input) {
+                const value = input.val() || "None";
+                addPagesToInput(input, pages);
+                input.val(value);
+            }
+        }
+
+        // Pager proxy
+        if (this.#actionDefinition.name == "PagerAction.proxy") {
+            const pagerProxy = this.#inputs.get("pager").val();
+            
+            if (pagerProxy) {
+                const pager = await this.#parserFrontend.parser.getPagerAction(pagerProxy)
+                if (pager) {
+                    const pages = pager.argument("pages");
+                    if (pages) {
+                        const input = this.#inputs.get("page_id");
+                        if (input) {
+                            const value = input.val();
+                            addPagesToInput(
+                                input, 
+                                pages.map((item) => item.toJs())
+                            );
+                            input.val(value);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -459,7 +547,7 @@ class ActionProperties {
         function getName() {
             if (that.#actionDefinition.name == "PagerAction.proxy") {
                 const pagerProxy = that.#inputs.get("pager").val();
-                console.log(pagerProxy)
+                
                 if (pagerProxy) {
                     return that.#actionDefinition.name.replace("PagerAction", pagerProxy)
                 }
@@ -543,6 +631,8 @@ class ActionProperties {
      * Sets the input values to the passed arguments list's values
      */
     async setArguments(args) {
+        await this.#update();
+
         for (const arg of args) {
             await this.setArgument(arg.name, arg.value);
             
@@ -561,6 +651,8 @@ class ActionProperties {
      * Set the value of a parameter input
      */
     async setArgument(name, value) {
+        await this.#update();
+
         // Get parameter definition first
         const param = this.getParameterDefinition(name);
         if (!param) throw new Error("Parameter " + name + " not found");
@@ -620,6 +712,7 @@ class ActionProperties {
      */
     async #update() {
         await this.#updatePagerButtons();
+        await this.#updatePagesInputs();
     }
 
     /**
@@ -633,39 +726,48 @@ class ActionProperties {
         }
 
         const that = this;
-        async function onChange(e) {            
+        async function onChange() {            
             await that.#update();
         }
 
         switch(type) {
-            case "bool":                
+            case "bool": {                             
                 return $('<input type="checkbox" />')
                 .prop('checked', param.meta.getDefaultValue() == "True")
                 .on('change', onChange)
+            }
 
-            case "int":                
+            case "int": {
                 return (await this.#getNumberInput(param))
                 .on('change', onChange)
                 .val(param.meta.getDefaultValue());
+            }
 
-            case 'select':
+            case 'select': {
                 const values = await param.meta.getValues();
                 if (values) {
                     return $('<select />').append(
                         values.map((option) => 
                             $('<option value="' + option.value + '" />')
                             .text(option.name)
-                        )                        
-                    )                    
+                        )
+                    )
                     .on('change', onChange)
                     .val(param.meta.getDefaultValue())
                 }
                 break;
+            }
+
+            case 'select-page': {
+                return $('<select />')
+                .on('change', onChange)
+            }
                 
-            case 'pages':
+            case 'pages': {
                 // Dedicated type for the pager actions's "pages" parameter
-                this.#pages = new PagesList(this.#controller);
+                this.#pages = new PagesList(this.#controller, onChange);
                 return this.#pages.create()
+            }
         }        
 
         return $('<input type="text" />')
@@ -735,12 +837,10 @@ class ActionProperties {
      * Create a numeric input (int)
      */
     async #getNumberInput(param) {
-        const range = param.meta.range();
-        if (!range) {
-            return $('<input type="number" />');                
-        }
-
         const values = await param.meta.getValues();
+        if (!values) {
+            return $('<input type="number" />');
+        }
 
         return $('<select />').append(
             values.map((option) => 

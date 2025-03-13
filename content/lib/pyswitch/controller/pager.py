@@ -49,12 +49,15 @@ class PagerAction(Callback, Action):
             self.__pager.apply_page_to_action_displays(self, page, self.__page_index)
 
 
-    # The PagerAction is used to control multiple other actions to provide paging for specifiec actions.
-    # Define this action for one switch, and select it in the actions to control by setting the enable_callback parameter and page ID for those actions.
+    # The PagerAction is used to control multiple other actions to provide paging. Define this action for one switch which will by default rotate through the defined pages.
+    # For the actions you want to be part of pages, just assign them using the paging buttons (which will set the id and enable_callback parameters for you).
+    # Also, it is possible to have more than one pager in a configuration.
     # 
-    # If you want to rotate through pages, just use this action with select_page set to None. 
+    # <b>Rotate Through Pages:</b>
+    # If you want to rotate through pages, just use this action with select_page set to None, which is the default. The switch will then rotate through the pages. 
     # 
-    # If you want to have one switch dedicated to select every page, set select_page to the page you want to select with this switch, and use the Pager Proxy action for the other switches.
+    # <b>Directly Select Pages:</b>
+    # If you want to have one switch dedicated to select each page, set select_page here to the page you want to select with this switch, and use the "Select Page" action (assigned to this pager) for the other switches to select the further pages directly.
     def __init__(self, 
                  pages,                         # This has to be a list of dicts like follows:
                                                 # {
@@ -63,8 +66,8 @@ class PagerAction(Callback, Action):
                                                 #      "text": Label text for the page
                                                 # }
 
-                 select_page = None,            # If none, the pages will be rotated. If set to a page ID, the action will select the passed page (use a 
-                                                # proxy() for directly selecting other pages)
+                 select_page = None,            # If None, the pages will be rotated. If set to a page ID, the action will select the passed page (use a 
+                                                # "Select Page" action for directly selecting the other pages)
 
                  led_brightness = 0.15,         # LED brightness for the pager in range [0..1]. Only used when selet_page is None (rotate mode).
                  led_brightness_off = 0.02,     # LED brightness for the pager when select_page is set and the page is not currently selected. Range [0..1].
@@ -100,9 +103,15 @@ class PagerAction(Callback, Action):
         self.enable_callback = PagerAction._EnableCallback(self)
 
     # This controls a PagerAction from another switch, making it possible to directly select pages with dedicated switches.
-    #
-    # You always need to have one PagerAction which defines the pages and selects one of them (see the select_page parameter of PagerAction). For selecting the other pages, create Pager Proxy actions on the other switches.
-    def proxy(self, page_id, use_leds = True, id = None, display = None, enable_callback = None):
+    # 
+    # You always need to have one (or more) PagerAction(s) which defines the pages. For selecting the other pages of a pager, create "Select Page" actions on the other switches.
+    def proxy(self, 
+              page_id,                    # Sets the page to be selected with this action
+              use_leds = True, 
+              id = None, 
+              display = None, 
+              enable_callback = None
+        ):
         proxy = self._DirectPageProxy(self, 
                                       page_index = self._get_page_index(page_id),
                                       use_leds = use_leds,

@@ -3,13 +3,17 @@ class PagesList {
     #grid = null;
     #gridElement = null;
     #controller = null;
+    #onChange = null;
 
-    constructor(controller) {
+    // onChange is a change handler for inputs:
+    // onChange(event) => void
+    constructor(controller, onChange) {
         this.#controller = controller;
+        this.#onChange = onChange;
     }
 
     /**
-     * Returns the DOM for the pages list (empty by default)
+     * Returns the DOM for the pages list (empty by default). 
      */
     async create() {
         return $('<span class="pages-list-container" />').append(
@@ -49,6 +53,7 @@ class PagesList {
         ); 
         
         await this.#initGrid();
+        await this.#onChange();
     }
 
     /**
@@ -63,9 +68,17 @@ class PagesList {
                 // Action
                 $('<span class="button name" />')
                 .append(
-                    $('<input type="text" class="page-id" placeholder="Page ID" />').val(page.id),
-                    $('<input type="text" class="page-color" placeholder="Color (optional)" />').val(page.color),
-                    $('<input type="text" class="page-text" placeholder="Text (optional)" />').val(page.text),
+                    $('<input type="text" class="page-id" placeholder="Page ID" />')
+                    .on('change', this.#onChange)
+                    .val(page.id),
+
+                    $('<input type="text" class="page-color" placeholder="Color (optional)" />')
+                    .on('change', this.#onChange)
+                    .val(page.color),
+
+                    $('<input type="text" class="page-text" placeholder="Text (optional)" />')
+                    .on('change', this.#onChange)
+                    .val(page.text)
                 ),
 
                 // Remove button
