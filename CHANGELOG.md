@@ -1,5 +1,5 @@
 # PySwitch v2.3.5
-- Changed parameters for PagerAction (all config options now accessible as parameters directly). Examples have been adjusted.
+- Changed parameters for PagerAction (all config options now accessible as parameters directly). Examples have been adjusted, some documentation can be found in the Emulator [README](https://github.com/Tunetown/PySwitch/blob/main/web/README.md).
 - Added option to directly select pages (see proxy method of PagerAction, demonstrated in some new examples for the MIDI Captain 10)
 
 ### Emulator 2.3.5.4

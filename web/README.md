@@ -95,6 +95,29 @@ Both of these methods work hand in hand also: PySwitch allows for custom Python 
 
 After editing the configuration, click the save button on the top left to choose from a destination to save to, or just use CTRL-S / CMD-S to save to the current location (if possible). If your MIDI Captain is selected for example, CTRL-S will "flash" the configuration to the device, which runs the new configuration after a reboot.
 
+#### Paging
+
+Paging means to have different actions active for the switches, depending on pre-defined pages which are either rotated through with one switch or selected directly with many switches. To realize paging, there are two dedicated actions defined:
+
+- PagerAction: This defines pages and itself also acts as an action either rotating thjrough pages or directly selecting one (see below).
+- PagerAction.proxy: This creates a proxy action to extend the pager for direct selection of other pages. If you rotate through pages, you dont need this.
+
+**NOTE:** It is also possible to have multiple pagers at once, for example to toggle the upper and lower buttons separately. See example MC 10 / "Twin Pagers".
+
+##### PagerAction
+
+This action (shown as Pager in the Emulator) defines the pages. Each page must have an id unique within the pager, and can have a color and a text optionally.
+
+###### Rotate through Pages
+
+By default, the Pager action, when its switch is triggering, rotates through the pages. 
+
+###### Directly access pages
+
+The optional parameter "select_page" can be set to change this behaviour to directly select a page by its ID. When directly selecting the pages, one of the switches must always be a PagerAction which defines the pages. The other must be created with PagerAction.proxy() (shown as "Select Page" in the emulator). This creates a proxy action which is connected to the Pager action. This way we can create proxies for each page but the one selected by the pager itself.
+
+*Note that the Pager Action must always be assigned to a switch! You cannot just use proxies, or the main pager will not be initialized and updated correctly!*
+
 #### Expression Pedals and other Off-Screen Inputs
 
 For additional inputs like expression pedals, there is a separate panel if the selected device supports any of those. You can access it by the three dots at the bottom left.
@@ -160,7 +183,7 @@ For the source code manipulation and parsing algorithms, <a href="https://libcst
 
 Basically the application is a pure client application, so no server side rendering is used etc., everything runs locally at the client. However, to provide the TOC (Table of Contents) for the examples and clients, only some small PHP scripts are used (toc.php) delivering a JSON TOC for the directory they are located in, but that's all.
 
-### Class Overview
+### Sources Overview
 
 The most basic classes of the emulator are the following:
 
