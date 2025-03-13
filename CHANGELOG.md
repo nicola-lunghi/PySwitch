@@ -2,6 +2,10 @@
 - Changed parameters for PagerAction (all config options now accessible as parameters directly). Examples have been adjusted.
 - Added option to directly select pages (see proxy method of PagerAction, demonstrated in some new examples for the MIDI Captain 10)
 
+### Emulator 2.3.5.5
+- Auto-add quotes to page text fields
+- Added color input help
+
 ### Emulator 2.3.5.4
 - Added full support for all Paging functionality (see Pager and Select Page actions)
 - Usability changes: 
