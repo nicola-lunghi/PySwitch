@@ -4,7 +4,9 @@
 
 ### Emulator 2.3.5.4
 - Added full support for all Paging functionality (see Pager and Select Page actions)
-
+- Usability changes: 
+    - Parameter comments now shown as tooltips to reduce information overflow
+    - Better display names for some actions
 
 # PySwitch v2.3.4
 - Reset state of the Effect Button actions on rig changes
