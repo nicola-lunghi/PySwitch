@@ -6,6 +6,7 @@
 - Auto-add quotes to page text fields
 - Added color input help
 - Added explanation to the client select dialog
+- Auto-add quotes to text parameters and page texts
 
 ### Emulator 2.3.5.4
 - Added full support for all Paging functionality (see Pager and Select Page actions)
