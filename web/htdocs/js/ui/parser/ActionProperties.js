@@ -857,13 +857,21 @@ class ActionProperties {
 
         switch(type) {
             case "bool": return input.prop('checked') ? "True" : "False";
-            case "pages": return this.#pages.get()
+            case "pages": return this.#pages.get();
         }        
 
         let value = input.val();
         if (value == "") value = param.meta.getDefaultValue();
 
-        return value;        
+        function getTextTypeValue(v) {
+            // TODO Allow other values, move to ParameterMeta
+            return Tools.autoQuote(v);
+        }
+
+        switch (type) {
+            case "text": return getTextTypeValue(value)
+        }
+        return value;
     }
 
     /**

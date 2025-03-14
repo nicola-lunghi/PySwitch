@@ -68,4 +68,10 @@ class Tools {
         return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
     }
 
+    /**
+     * Remove all existing quotes and add new ones.
+     */
+    static autoQuote(str) {
+        return "'" + str.replaceAll('"', "").replaceAll("'", "") + "'"
+    }
 }

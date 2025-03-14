@@ -78,9 +78,7 @@ class PagesList {
 
                     $('<input type="text" class="page-text" placeholder="Text (optional)" />')
                     .on('change', async function(e) {
-                        $(this).val(
-                            "'" + $(this).val().replaceAll('"', "").replaceAll("'", "") + "'"
-                        )
+                        $(this).val(Tools.autoQuote($(this).val()))
 
                         await that.#onChange(e);
                     })

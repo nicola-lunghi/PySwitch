@@ -123,8 +123,11 @@
 
                     {
                         "name": "text",
-                        "type": "any",
-                        "advanced": true
+                        "type": "text",
+                        "advanced": true,
+                        "unquotedValues": [
+                            "None"
+                        ]
                     },
                     {
                         "name": "text_callback",
