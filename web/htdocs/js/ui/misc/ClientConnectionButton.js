@@ -32,6 +32,7 @@ class ClientConnectionButton {
             try {
                 await that.#controller.ui.clientBrowser.browse();
                 that.#controller.ui.clientBrowser.setSelectedValue(that.#controller.client.state.get("selectedClient"));
+                that.#controller.ui.clientBrowser.showInfoPanel("This selects a device like a Kemper Player connected to the Computer via USB, to be controlled by the emulator. <br><br>To load/save configurations from/to your MIDI Controller, use the Load/Save buttons on the top of the screen.")
 
             } catch (e) {
                 that.#controller.handle(e);
