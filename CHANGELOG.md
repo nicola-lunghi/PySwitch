@@ -5,6 +5,7 @@
 ### Emulator 2.3.5.5
 - Auto-add quotes to page text fields
 - Added color input help
+- Added explanation to the client select dialog
 
 ### Emulator 2.3.5.4
 - Added full support for all Paging functionality (see Pager and Select Page actions)
