@@ -125,7 +125,7 @@
                         "name": "text",
                         "type": "text",
                         "advanced": true,
-                        "unquotedValues": [
+                        "unconvertedValues": [
                             "None"
                         ]
                     },
