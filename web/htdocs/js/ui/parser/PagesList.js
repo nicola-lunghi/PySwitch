@@ -77,7 +77,11 @@ class PagesList {
                     .val(page.color),
 
                     $('<input type="text" class="page-text" placeholder="Text (optional)" />')
-                    .on('change', this.#onChange)
+                    .on('change', async function(e) {
+                        $(this).val(Tools.autoQuote($(this).val()))
+
+                        await that.#onChange(e);
+                    })
                     .val(page.text)
                 ),
 

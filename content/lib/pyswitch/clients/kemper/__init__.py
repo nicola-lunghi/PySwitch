@@ -66,7 +66,7 @@ def NRPN_VALUE(value):
 
 # Callback for DisplayLabel to show the rig name
 class KemperRigNameCallback(Callback):
-    DEFAULT_TEXT = "Kemper Control " + PYSWITCH_VERSION
+    DEFAULT_TEXT = "PySwitch " + PYSWITCH_VERSION
 
     def __init__(self, show_name = True, show_rig_id = False):
         Callback.__init__(self)

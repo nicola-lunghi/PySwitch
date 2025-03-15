@@ -30,6 +30,23 @@ class ParameterMeta {
     }
 
     /**
+     * Tries to derive the parameter type from its default value. Returns null if not successful.
+     */
+    type() {
+        if (this.data.type) return this.data.type;;
+
+        const defaultValue = this.getDefaultValue();
+        switch (defaultValue) {
+            case "False": return "bool";
+            case "True": return "bool";            
+        }
+
+        if (parseInt(defaultValue)) return "int";
+
+        return null;
+    }
+
+    /**
      * If possible, returns a list of values, null if not possible.
      */
     async getValues() {
@@ -161,5 +178,29 @@ class ParameterMeta {
         
         // Last fallback: None
         return "None";
+    }
+
+    /**
+     * Input conversion (applied when entries are set by user input for example).
+     */
+    convertInput(value) {
+        const that = this;
+        
+        function convertInputText(v) {
+            // Specific values can be excluded from auto-quoting
+            for (const ucv of that.data.unconvertedValues || []) {
+                if (ucv == v) return v
+            }
+
+            return Tools.autoQuote(v);
+        }
+
+        // Input conversion for specific types
+        switch (this.type()) {
+            case "text": return convertInputText(value);
+        }
+
+        // No conversion
+        return value;
     }
 }

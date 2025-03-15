@@ -495,7 +495,7 @@ class PySwitchUI {
 
         // A browser to select client connections (to Kemper etc.), triggered by the client select button
         this.clientBrowser = this.getBrowserPopup({
-            headline: "Please select a client device to control",
+            headline: "Please select a client device to connect to",
             providers: [
                 new PortsProvider(this.#controller, {
                     onSelect: async function(entry) {

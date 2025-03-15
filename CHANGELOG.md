@@ -2,6 +2,12 @@
 - Changed parameters for PagerAction (all config options now accessible as parameters directly). Examples have been adjusted, some documentation can be found in the Emulator [README](https://github.com/Tunetown/PySwitch/blob/main/web/README.md).
 - Added option to directly select pages (see proxy method of PagerAction, demonstrated in some new examples for the MIDI Captain 10)
 
+### Emulator 2.3.5.5
+- Added color input help
+- Added explanation to the client select dialog
+- Auto-add quotes to text parameters and page texts
+- Prevent assigning pagers to their own pages
+
 ### Emulator 2.3.5.4
 - Added full support for all Paging functionality (see Pager and Select Page actions)
 - Usability changes: 
