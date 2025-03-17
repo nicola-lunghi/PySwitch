@@ -104,7 +104,7 @@ class ParserFrontendInput {
                         const addClasses = await getAdditionalClasses(item);
 
                         return $('<div class="action-item" />').append(
-                            $('<div class="action-item-content" />')
+                            $('<div class="action-item-content action-button" />')
                             .append(
                                 // Action
                                 $('<span class="button ' + buttonClass + ' name" data-toggle="tooltip" title="' + tooltip + '" />')
@@ -172,17 +172,32 @@ class ParserFrontendInput {
                         "Action on long press"
                     ),
 
-                    // Add action button
+                    // Buttons item
                     $('<div class="action-item" />').append(
-                        $('<div class="action-item-content button actions add-action fixed fas fa-plus" data-toggle="tooltip" title="Add an action" />')                        
-                        .on('click', async function() {
-                            try {
-                                await that.promptAddAction();
+                        $('<div class="action-item-content input-button fixed" />').append(
+                            // Add action button
+                            $('<div class="button actions add-action fas fa-plus" data-toggle="tooltip" title="Add an action" />')
+                            .on('click', async function() {
+                                try {
+                                    await that.promptAddAction();
 
-                            } catch (e) {
-                                that.#controller.handle(e);
-                            }
-                        })
+                                } catch (e) {
+                                    that.#controller.handle(e);
+                                }
+                            }),
+
+                            // Input settings button
+                            !(await (new InputSettings(this.#controller, this.definition).get())) ? null :
+                            $('<div class="button actions input-settings fas fa-wrench" data-toggle="tooltip" title="Settings for ' + this.definition.displayName + '" />')
+                            .on('click', async function() {
+                                try {
+                                    await that.promptInputSettings();
+
+                                } catch (e) {
+                                    that.#controller.handle(e);
+                                }
+                            })
+                        )
                     )
                 )
             )
@@ -486,6 +501,56 @@ class ParserFrontendInput {
                     that.#controller.handle(e);
                 }
             })
+        );
+
+        return browser;
+    }
+
+    /**
+     * Shows the action edit/create dialog
+     */
+    async promptInputSettings() {
+        const that = this;
+
+        /**
+         * Commit popup
+         */
+        async function commit() {
+            browser.hide();
+        }
+
+        // A browser to select client connections (to Kemper etc.), triggered by the client select button
+        const browser = this.#controller.ui.getPopup({
+            onReturnKey: commit
+        });
+
+        const props = new InputSettings(
+            this.#controller,
+            this.definition,
+            this.input
+        );
+
+        const propsContent = await props.get();
+        if (!propsContent) return;
+
+        await browser.show(
+            $('<span class="input-settings-container" />').append(
+                propsContent,
+                
+                $('<div class="buttons" />').append(
+                    $('<div class="button" />')
+                    .text("Done")
+                    .on('click', async function() {
+                        try {
+                            await commit();
+        
+                        } catch(e) {
+                            that.#controller.handle(e);
+                        }
+                    })
+                )
+            ),
+            "General Settings for " + this.definition.displayName
         );
 
         return browser;

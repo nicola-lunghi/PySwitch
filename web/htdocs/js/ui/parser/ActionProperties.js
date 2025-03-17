@@ -12,6 +12,7 @@ class ActionProperties {
     #pagers = null;
     #oldProperties = null;
     #advancedRows = null;
+    #advancedLevel = 0;
 
     constructor(controller, parserFrontend, actionDefinition, oldProperties = null, messages = []) {
         this.controller = controller;
@@ -81,7 +82,7 @@ class ActionProperties {
         const parameters = await Promise.all(
             this.actionDefinition.parameters
             .sort(function(a, b) {
-                return (a.meta.data.advanced ? 1 : 0) + (b.meta.data.advanced ? -1 : 0);
+                return (a.meta.data.advanced ? a.meta.data.advanced : 0) - (b.meta.data.advanced ? b.meta.data.advanced : 0);
             })
             .map(
                 async (param) => {
@@ -119,10 +120,7 @@ class ActionProperties {
                     if (!messages.length) {
                         // No messages: Hide if advanced
                         if (param.meta.data.advanced) {
-                            that.#advancedRows.push({
-                                row: row,
-                                parameterName: param.name
-                            });
+                            that.#registerAdvancedParameterRow(row, param);
                             row.hide();
                         }
 
@@ -153,10 +151,11 @@ class ActionProperties {
         let tbody = null;
 
         const ret = $('<div class="action-properties" />').append(
-            // Comment
+            // Action name
             $('<div class="action-header" />')
             .text(this.actionDefinition.meta.getDisplayName()),
             
+            // Comment
             $('<div class="action-comment" />')
             .html(this.#getActionComment()),
 
@@ -232,9 +231,13 @@ class ActionProperties {
         if (this.actionDefinition.name != "PagerAction") {
             assignRow.hide();
 
-            this.#advancedRows.push({
-                row: assignRow,
-                parameterName: "assign"
+            this.#registerAdvancedParameterRow(assignRow, {
+                name: "assign",
+                meta: {
+                    data: {
+                        advanced: 2
+                    }
+                }
             });
         }
 
@@ -253,11 +256,9 @@ class ActionProperties {
                         .text("more...")
                         .on('click', async function() {
                             try {
-                                for (const row of that.#advancedRows) {
-                                    row.row.show();
-                                }
-
-                                advRow.hide();
+                                that.#advancedLevel++;
+                                that.#updateAdvancedLevel(advRow);
+                                
                             } catch (e) {
                                 that.controller.handle(e);
                             }
@@ -282,6 +283,45 @@ class ActionProperties {
         // }
 
         return ret;
+    }
+
+    /**
+     * Adds an advanced parameter row to an array to show them later (the array is 2 dimensional, grouped by advanced value)
+     */
+    #registerAdvancedParameterRow(row, param) {
+        const level = param.meta.data.advanced;
+
+        // Check if level exists
+        while (this.#advancedRows.length < level) {
+            this.#advancedRows.push([]);
+        }
+
+        this.#advancedRows[level - 1].push(
+            {
+                row: row,
+                parameterName: param.name
+            }
+        );
+    }
+
+    /**
+     * Update advanced parameter rows to the currend advancedLevel.
+     */
+    #updateAdvancedLevel(advRow) {
+        if (this.#advancedRows.length < this.#advancedLevel) return;
+                                
+        for (const row of this.#advancedRows[this.#advancedLevel - 1]) {
+            row.row.show();
+        }
+
+        if (this.#advancedRows.length == this.#advancedLevel + 1) {
+            advRow.find('.show-advanced').text("all...");
+        }
+
+        if (this.#advancedRows.length == this.#advancedLevel) {
+            // Last level
+            advRow.hide();
+        }
     }
 
     /**
@@ -427,9 +467,11 @@ class ActionProperties {
      * Shows an advanced parameter
      */
     #showParameter(name) {
-        for (const row of this.#advancedRows) {
-            if (row.parameterName == name) {
-                row.row.show();
+        for (const level of this.#advancedRows) {
+            for (const row of level) {
+                if (row.parameterName == name) {
+                    row.row.show();
+                }
             }
         }
     }
@@ -577,6 +619,7 @@ class ActionProperties {
         ];
 
         input.on('change', updateColorInput)
+        await updateColorInput();
 
         return ret;
     }

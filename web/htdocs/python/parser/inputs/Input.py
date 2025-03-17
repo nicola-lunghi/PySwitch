@@ -34,7 +34,7 @@ class Input(libcst.CSTVisitor):
     def leave_Assign(self, node):
         self.__inputs = None
 
-    # Main Dict of one input
+    # Main Dict of the input
     def visit_Dict(self, node):
         if self.result:
             return False
@@ -56,6 +56,34 @@ class Input(libcst.CSTVisitor):
     # Returns the display name
     def display_name(self):
         return self.assignment["displayName"]        
+
+    # Returns hold time
+    def hold_time_millis(self):
+        return int(self.__get_option("holdTimeMillis", '600'))  # SwitchController.DEFAULT_HOLD_TIME_MILLIS
+    
+    # Returns hold repeat
+    def hold_repeat(self):
+        return self.__get_option("holdRepeat", 'False') == 'True'
+
+    # Set hold time in milliseconds
+    def set_hold_time_millis(self, time, noUpdate = False):
+        self.__set_option(
+            name = "holdTimeMillis", 
+            value = int(time),
+            default = 600, 
+            noUpdate = noUpdate
+        )
+
+    # Set hold repeat
+    def set_hold_repeat(self, repeat, noUpdate = False):
+        self.__set_option(
+            name = "holdRepeat", 
+            value = repeat, 
+            default = False, 
+            noUpdate = noUpdate
+        )
+
+    ###############################################################################################################################
 
     # Returns a list containing a result list of nodes, represented by Action instances
     def actions(self, hold = False):
@@ -196,6 +224,52 @@ class Input(libcst.CSTVisitor):
 
         # Reset buffer
         self.__actions = {}
+
+        # Tell the parser to replace the new state of this input in its CST buffers
+        self.parser.update_input(self, noUpdate)
+
+    ###############################################################################################################################
+
+    # Parse one option from the dict node
+    def __get_option(self, name, default):
+        if not self.result:
+            raise Exception("No result to get options from")
+
+        for element in self.result.elements:
+            if element.key.value == '"' + name + '"':
+                return libcst.parse_module("").code_for_node(element.value)
+            
+        return default
+
+    # Sets an option in the dict node
+    def __set_option(self, name, value, default, noUpdate):
+        remover = RemoveDictElementTransformer(
+            node = self.result,
+            key = '"' + name + '"'
+        )
+        self.result = self.result.visit(remover)
+
+        if value != default:
+            adder = AddElementTransformer(
+                node = self.result,
+                new_element = libcst.DictElement(
+                    key = libcst.SimpleString(
+                        value = '"' + name + '"'
+                    ),
+                    value = libcst.parse_expression(str(value)),
+                    comma = libcst.Comma(
+                        whitespace_after = libcst.ParenthesizedWhitespace(
+                            first_line = libcst.TrailingWhitespace(
+                                newline = libcst.Newline()
+                            ),
+                            last_line = libcst.SimpleWhitespace(
+                                value='        '
+                            )
+                        )
+                    )
+                )
+            )
+            self.result = self.result.visit(adder)
 
         # Tell the parser to replace the new state of this input in its CST buffers
         self.parser.update_input(self, noUpdate)

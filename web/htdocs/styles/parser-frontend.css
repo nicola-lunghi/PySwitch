@@ -37,12 +37,25 @@
     grid-template-rows: auto;
 }
 
-.container .application .pyswitch-parser-frontend .action-grid .action-item-content > *:first-child {
+.container .application .pyswitch-parser-frontend .action-grid .action-item-content.action-button > *:first-child {
     border-radius: 0.3em 0 0 0.3em;
 }
 
-.container .application .pyswitch-parser-frontend .action-grid .action-item-content > *:last-child {
+.container .application .pyswitch-parser-frontend .action-grid .action-item-content.action-button > *:last-child {
     border-radius: 0 0.3em 0.3em 0;
+}
+
+.container .application .pyswitch-parser-frontend .action-grid .action-item-content.input-button > * {
+    margin-right: 0.6em;
+}
+
+.container .application .pyswitch-parser-frontend .action-grid .action-item-content.input-button > *:last-child {
+    background-color: unset;
+    margin-right: 0;
+}
+
+.container .application .pyswitch-parser-frontend .action-grid .action-item-content.input-button > *:last-child:hover {
+    background-color: #b5b5b5;
 }
 
 /****************************************************************/

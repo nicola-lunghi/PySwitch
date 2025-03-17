@@ -52,15 +52,18 @@ class Popup {
                     .toggleClass("wide", !!this.options.wide)
                     .toggleClass("fullscreen", !!this.options.fullscreen)                    
                     .append(
-                        $('<div class="content" />').append(
+                        $('<div class="content" />')
+                        .append(
                             // Headline
                             !headline ? null :
                             $('<div class="headline"/>')
-                            .text(headline),
-            
+                            .text(headline)
+                        )
+                        .append(            
                             // Content
-                            content,
-                            
+                            content
+                        )
+                        .append(                            
                             // Close button
                             $('<span class="fa fa-times close-button"/>')
                             .on('click', async function() {

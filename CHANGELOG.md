@@ -1,3 +1,13 @@
+# PySwitch v2.3.6
+- Changed default preset to a MC10 example close to the original PaintAudio KPP firmware
+- Option for repeated hold: When enabled, the hold action is repeated again and again as long as the switch is held down.
+
+### Emulator 2.3.6.6
+- Added switch settings (new button beneath the "+" button): Here you can adjust the hold time as well as the new "Hold Repeat" option (see above)
+- More "realistic" rig names in the virtual Kemper client (the old ones suggested there is a rig ID by default)
+- Levels of advanced parameters: When clicking "show more...", the parameters will be unveiled by level of "advancedness". All nerdy parameters only show up in the last level. This keeps the technical parameters hidden except you really want to see them.
+- Fixed a visual bug with color inputs
+
 # PySwitch v2.3.5
 - Changed parameters for PagerAction (all config options now accessible as parameters directly). Examples have been adjusted, some documentation can be found in the Emulator [README](https://github.com/Tunetown/PySwitch/blob/main/web/README.md).
 - Added option to directly select pages (see proxy method of PagerAction, demonstrated in some new examples for the MIDI Captain 10)
@@ -13,6 +23,7 @@
 - Usability changes: 
     - Parameter comments now shown as tooltips to reduce information overflow
     - Better display names for some actions
+
 
 # PySwitch v2.3.4
 - Reset state of the Effect Button actions on rig changes

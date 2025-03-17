@@ -10,6 +10,10 @@ describe('Configuration Parser', function() {
         await tests.minimal();
     });
 
+    it('Get input attributes', async function() {
+        await tests.getInputSettings();
+    });
+
     it('Get input actions for a port (default)', async function() {
         await tests.getInputActionsDefault();
     });
@@ -36,6 +40,10 @@ describe('Configuration Parser', function() {
 
     it('Create new inputs', async function() {
         await tests.createNewInputs();
+    });
+
+    it('Create new inputs with settings', async function() {
+        await tests.createNewInputsWithSettings();
     });
 
     it('Auto-add imports (all actions)', async function() {

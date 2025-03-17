@@ -13,6 +13,36 @@ class ConfigParserTests extends TestBase {
 
     ///////////////////////////////////////////////////////////////////////////////////////////
 
+    async getInputSettings() {
+        await this.init();
+        const config = new WebConfiguration(new MockController(), "data/test-presets/get-input-settings");
+        
+        await config.init(this.pyswitch, "../");
+        const parser = config.parser;
+        
+        await this.#testAction(parser, {
+            port: 1,
+            client: "kemper",
+            actions: [{
+                name: "RIG_UP",
+                arguments: [
+                    {
+                        name: "display",
+                        value: "DISPLAY_HEADER_1"
+                    },
+                    {
+                        name: "text",
+                        value: '"Rig up"'
+                    }
+                ]
+            }],
+            holdTimeMillis: 555,
+            holdRepeat: true
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
     async getInputActionsDefault() {
         await this.init();
         const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
@@ -400,7 +430,7 @@ class ConfigParserTests extends TestBase {
         const input = await parser.input(port);
         
         // Replace actions
-        await input.set_actions(actions)
+        input.set_actions(actions)
 
         if (debug) {
             console.log(actions);
@@ -414,7 +444,7 @@ class ConfigParserTests extends TestBase {
         });
 
         // Replace actionsHold
-        await input.set_actions(actions, true)
+        input.set_actions(actions, true)
 
         await this.#testAction(parser, {
             port: port,
@@ -438,8 +468,7 @@ class ConfigParserTests extends TestBase {
 
         const input2 = await parser.input(1, true);
         
-        // Add first actions available
-        await input2.set_actions(
+        input2.set_actions(
             [
                 {
                     name: "RIG_SELECT",
@@ -477,6 +506,44 @@ class ConfigParserTests extends TestBase {
             }]
         });
     }
+
+    async createNewInputsWithSettings() {
+        await this.init();
+
+        const config = new WebConfiguration(new MockController(), "data/test-presets/empty");
+        await config.init(this.pyswitch, "../");
+        const parser = config.parser;
+
+        const input = await parser.input(1, true);
+
+        input.set_actions(
+            [
+                {
+                    name: "RIG_SELECT",
+                    arguments: []
+                }
+            ]
+        );
+
+        input.set_hold_time_millis(765)
+        input.set_hold_repeat(true)
+
+        expect(input.hold_time_millis()).toBe(765);
+        expect(input.hold_repeat()).toBe(true);
+                
+        // console.log((await parser.config.get()).inputs_py);
+
+        await this.#testAction(parser, {
+            port: 1,
+            client: "kemper",
+            actions: [{
+                name: "RIG_SELECT",
+                arguments: []
+            }],
+            holdTimeMillis: 765,
+            holdRepeat: true
+        });
+    }
     
     ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -493,7 +560,7 @@ class ConfigParserTests extends TestBase {
         const action = clients[0].actions[0];
         const client = clients[0].client;
 
-        await input1.set_actions(
+        input1.set_actions(
             [
                 this.#composeAction(action, client)
             ]
@@ -532,7 +599,7 @@ class ConfigParserTests extends TestBase {
 
         expect(actions.length).toBeGreaterThan(0);
 
-        await input1.set_actions(
+        input1.set_actions(
             actions.filter((item) => item != null)
         );
         
@@ -553,7 +620,7 @@ class ConfigParserTests extends TestBase {
 
         const input1 = await parser.input(1);
         
-        await input1.set_actions(
+        input1.set_actions(
             [
                 {
                     name: "RIG_SELECT",
@@ -778,7 +845,7 @@ class ConfigParserTests extends TestBase {
         const parser = config.parser;
 
         const input1 = await parser.input(1);
-        await input1.set_actions(
+        input1.set_actions(
             [
                 action
             ],
@@ -1301,6 +1368,8 @@ class ConfigParserTests extends TestBase {
      *          }
      *      ],
      *      actionsHold: [...] 
+     *      holdTimeMillis:
+     *      holdRepeat:
      * }
      */
     async #testAction(parser, config) {
@@ -1334,6 +1403,14 @@ class ConfigParserTests extends TestBase {
         }
         if (config.actionsHold) {
             await test(true, config.actionsHold);
+        }
+
+        if (config.holdTimeMillis) {
+            expect(input.hold_time_millis()).toBe(config.holdTimeMillis)
+        }
+
+        if (config.holdRepeat) {
+            expect(input.hold_repeat()).toBe(config.holdRepeat)
         }
     }
 }

@@ -9,8 +9,7 @@ from .rig_select import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGE
 # Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). 
 def BANK_SELECT(bank,                                           # Bank to select. Banks are indexed starting from one, range: [1..126].
                 bank_off = None,                                # "off" bank, to toggle between banks. Will be ignored when preselect is enabled.
-                preselect = False,                              # If False, the bank is switched immediately (by sending a rig select command 
-                                                                # after bank preselect). If True, only the bank preselect is sent. Ignores bank_off.
+                preselect = False,                              # Preselect mode. If enabled, the bank is only pre-selected, the change will only take effect when you select a rig next time. Ignores the parameter "bank_off".
                 display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,  # Display mode
                 display = None,                                 # Reference to a DisplayLabel
                 id = False,                                     # ID for paging / enable callbacks

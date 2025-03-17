@@ -1,0 +1,42 @@
+.container .input-settings-container {
+    position: relative;
+}
+
+.container .input-settings-container .buttons {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.container .input-settings-container .input-comment {
+    margin-bottom: 0.7em;
+}
+
+/***************************************************************/
+
+.container .input-settings-container .input-settings table {
+    border-spacing: 0;
+    width: 100cqw;
+}
+
+.container .input-settings-container .input-settings td {
+    border-bottom: 1px solid lightgray;
+    padding: 0.5em;
+    vertical-align: top;
+    position: relative;
+    z-index: 10;
+}
+
+.container .input-settings-container .input-settings td > * {
+    position: relative;
+    z-index: 10;
+}
+
+.container .input-settings-container .input-settings td:first-child {
+    padding-left: 0;
+}
+
+
+.container .input-settings-container .input-settings tr:last-child td {
+    border-bottom: none;
+}

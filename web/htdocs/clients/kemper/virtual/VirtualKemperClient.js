@@ -82,11 +82,37 @@ class VirtualKemperClient extends VirtualClient {
     updateRig() {
         const rigId = this.getRigId();
 
-        const bank = Math.floor(rigId / 5);
-        const rig = rigId % 5;
-        const rigName = "Rig " + (bank + 1) + "-" + (rig + 1);
+        const rigName = this.#generateRigName(rigId);
 
         this.parameters.get(new NRPNKey([0, 1])).setValue(rigName);
+    }
+
+    /**
+     * Generates dummy rig names
+     */
+    #generateRigName(rigId) {
+        const bank = Math.floor(rigId / 5);
+        const rig = rigId % 5;
+
+        const tokens = [
+            "Blue",
+            "Yellow",
+            "Red",
+            "Green",
+            "Purple"    
+        ]
+
+        let rigName = tokens[bank % tokens.length];
+
+        switch(rig) {
+            case 0: rigName += " Clean"; break;
+            case 1: rigName += " Crunch"; break;
+            case 2: rigName += " Overdrive"; break;
+            case 3: rigName += " Lead"; break;
+            case 4: rigName += " Acoustic"; break;
+        }
+
+        return rigName;
     }
 
     /**

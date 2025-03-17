@@ -21,6 +21,7 @@ class SwitchController:
     #     ],
     #     "actionsHold":        List of actions to perform on holding the switch. Optional.
     #     "holdTimeMillis":     Optional hold time in milliseconds. Default is DEFAULT_HOLD_TIME_MILLIS.
+    #     "holdRepeat":         Repeat hold actions when the switch is still pressed (boolean). Default: False
     # }
     def __init__(self, appl, config, period_counter_hold = None):
         self.pixels = get_option(config["assignment"], "pixels", [])
@@ -39,7 +40,9 @@ class SwitchController:
         self.color = Colors.WHITE
         self.brightness = 0.5
 
+        self.__hold_repeat = get_option(config, "holdRepeat", False)
         self.__hold_active = False
+        self.__hold_was_active = False
 
         self.__actions = _flatten_actions(get_option(config, "actions", []))
         self.__actions_hold = _flatten_actions(get_option(config, "actionsHold", []))
@@ -65,7 +68,7 @@ class SwitchController:
         
     # Process the switch: Check if it is currently pushed, set state accordingly
     def process(self):
-        # Is the switch currently pushed? If not, return false.
+        # Is the switch currently pushed?
         if not self.pushed:
             if self.__pushed_state:
                 self.__pushed_state = False
@@ -79,6 +82,11 @@ class SwitchController:
                         if self.__check_hold():
                             return
 
+                        if self.__hold_was_active:
+                            self.__hold_active = False
+                            self.__hold_was_active = False
+                            return
+
                     for action in self.__actions:
                         if not action.enabled:
                             continue
@@ -89,6 +97,7 @@ class SwitchController:
                         action.release()
 
                     self.__hold_active = False
+                    self.__hold_was_active = False
                     
                 if self.override_action:
                     if self.override_action.release():
@@ -126,7 +135,10 @@ class SwitchController:
     # Checks hold time and triggers hold action if exceeded.
     def __check_hold(self):
         if self.__period_hold.exceeded:
-            self.__hold_active = False
+            if self.__hold_repeat:
+                self.__hold_was_active = True
+            else:
+                self.__hold_active = False
 
             # Hold click
             for action in self.__actions_hold:

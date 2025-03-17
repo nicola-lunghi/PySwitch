@@ -7,7 +7,7 @@
                 "parameters": [
                     {
                         "name": "id",
-                        "advanced": true,
+                        "advanced": 1,
                         "type": "any",
                         "comment": "This ID can be used for Paging or custom callbacks, to enable/disable the action."
                     },
@@ -47,7 +47,7 @@
                     {
                         "name": "rig_off",
                         "type": "int",
-                        "advanced": true,
+                        "advanced": 1,
                         "range": {
                             "min": 1,
                             "max": "NUM_RIGS_PER_BANK",
@@ -74,7 +74,7 @@
                     {
                         "name": "bank_off",
                         "type": "int",
-                        "advanced": true,
+                        "advanced": 1,
                         "range": {
                             "min": 1,
                             "max": "NUM_BANKS",
@@ -93,30 +93,30 @@
                     {
                         "name": "color",
                         "type": "color",
-                        "advanced": true
+                        "advanced": 1
                     },
 
                     {
                         "name": "value_on",
                         "type": "any",
-                        "advanced": true
+                        "advanced": 1
                     },
 
                     {
                         "name": "value_off",
                         "type": "any",
-                        "advanced": true
+                        "advanced": 1
                     },
 
                     {
                         "name": "reference_value",
                         "type": "any",
-                        "advanced": true
+                        "advanced": 2
                     },
 
                     {
                         "name": "enable_callback",
-                        "advanced": true,
+                        "advanced": 2,
                         "type": "any",
                         "comment": "Callback instance to control dynamically whether the action should be enabled."
                     },
@@ -124,35 +124,38 @@
                     {
                         "name": "text",
                         "type": "text",
-                        "advanced": true,
+                        "advanced": 1,
                         "unconvertedValues": [
                             "None"
-                        ]
+                        ],
+                        "comment": "Fixed text (overrides the action specific text if the action would generate one)"
                     },
                     {
                         "name": "text_callback",
-                        "advanced": true,
-                        "type": "any"
+                        "advanced": 2,
+                        "type": "any",
+                        "comment": "Callback function for the display text. See the action source code for details."
                     },
 
                     {
                         "name": "color_callback",
-                        "advanced": true,
-                        "type": "any"
+                        "advanced": 2,
+                        "type": "any",
+                        "comment": "Callback function for the color. See the action source code for details."
                     },
 
                     {
                         "name": "dim_factor",
-                        "advanced": true,
+                        "advanced": 1,
                         "type": "any",
-                        "comment": "Dim factor for the display"
+                        "comment": "Dim factor for the display. Range: [0..1]"
                     },
 
                     {
                         "name": "led_brightness",
-                        "advanced": true,
+                        "advanced": 1,
                         "type": "any",
-                        "comment": "Brightness factor for the LED(s)"
+                        "comment": "Brightness factor for the LED(s). Range: [0..1]"
                     },
 
                     {
@@ -199,7 +202,7 @@
                         "name": "mode",
                         "type": "select",
                         "comment": "Mode of operation",
-                        "advanced": true,
+                        "advanced": 1,
                         "values": [
                             {
                                 "name": "Latch",
@@ -236,7 +239,7 @@
                         "name": "comparison_mode",
                         "type": "select",
                         "comment": "For incoming parameter values, this decides how the new values will be compared to the reference value (or on value) to update the state of the action",
-                        "advanced": true,
+                        "advanced": 2,
                         "values": [
                             {
                                 "name": "Equal",
@@ -308,7 +311,7 @@
                     {
                         "name": "use_internal_state",
                         "type": "bool",
-                        "advanced": true
+                        "advanced": 2
                     }
                 ]
             },
@@ -362,12 +365,12 @@
                     {
                         "name": "morph_color_base",
                         "type": "color",
-                        "advanced": true
+                        "advanced": 1
                     },
                     {
                         "name": "morph_color_morphed",
                         "type": "color",
-                        "advanced": true
+                        "advanced": 1
                     }
                 ]
             },
@@ -379,12 +382,12 @@
                     {
                         "name": "morph_color_base",
                         "type": "color",
-                        "advanced": true
+                        "advanced": 1
                     },
                     {
                         "name": "morph_color_morphed",
                         "type": "color",
-                        "advanced": true
+                        "advanced": 1
                     }
                 ]
             },
@@ -410,32 +413,32 @@
                     {
                         "name": "morph_display",
                         "type": "select",
-                        "advanced": true
+                        "advanced": 2
                     },
                     {
                         "name": "morph_use_leds",
                         "type": "bool",
-                        "advanced": true
+                        "advanced": 2
                     },
                     {
                         "name": "morph_id",
                         "type": "any",
-                        "advanced": true
+                        "advanced": 2
                     },
                     {
                         "name": "morph_only_when_enabled",
                         "type": "bool",
-                        "advanced": true
+                        "advanced": 2
                     },
                     {
                         "name": "morph_color_base",
                         "type": "color",
-                        "advanced": true
+                        "advanced": 1
                     },
                     {
                         "name": "morph_color_morphed",
                         "type": "color",
-                        "advanced": true
+                        "advanced": 1
                     }
                 ]
             },
@@ -461,7 +464,7 @@
                     {
                         "name": "auto_exclude_rigs",
                         "type": "any",
-                        "advanced": true
+                        "advanced": 2
                     }
                 ]
             },
@@ -506,12 +509,12 @@
                     {
                         "name": "led_brightness_on",
                         "type": "float",
-                        "advanced": true
+                        "advanced": 1
                     },
                     {
                         "name": "led_brightness_off",
                         "type": "float",
-                        "advanced": true
+                        "advanced": 1
                     }
                 ]
             },
@@ -559,7 +562,7 @@
                 "parameters": [
                     {
                         "name": "id",
-                        "advanced": true,
+                        "advanced": 1,
                         "type": "any",
                         "comment": "This ID can be used for Paging or custom callbacks, to enable/disable the action."
                     },
@@ -580,7 +583,7 @@
 
                     {
                         "name": "enable_callback",
-                        "advanced": true,
+                        "advanced": 2,
                         "type": "any",
                         "comment": "Callback instance to control dynamically whether the action should be enabled."
                     }
@@ -600,32 +603,32 @@
                     },
                     {
                         "name": "max_frame_rate",
-                        "advanced": true,
+                        "advanced": 2,
                         "type": "any"
                     },
                     {
                         "name": "max_value",
-                        "advanced": true,
+                        "advanced": 1,
                         "type": "any"
                     },
                     {
                         "name": "num_steps",
-                        "advanced": true,
+                        "advanced": 1,
                         "type": "any"
                     },
                     {
                         "name": "cal_min_window",
-                        "advanced": true,
+                        "advanced": 2,
                         "type": "any"
                     },
                     {
                         "name": "transfer_function",
-                        "advanced": true,
+                        "advanced": 2,
                         "type": "any"
                     },
                     {
                         "name": "enable_callback",
-                        "advanced": true,
+                        "advanced": 2,
                         "type": "any"
                     }
                 ]
@@ -645,17 +648,17 @@
                     {
                         "name": "max_value",
                         "type": "any",
-                        "advanced": true
+                        "advanced": 1
                     },
                     {
                         "name": "step_width",
                         "type": "any",
-                        "advanced": true
+                        "advanced": 1
                     },
                     {
                         "name": "enable_callback",
                         "type": "any",
-                        "advanced": true
+                        "advanced": 2
                     }
                 ]
             },
@@ -679,7 +682,7 @@
                         "name": "mappings",
                         "type": "any",
                         "default": "[]",
-                        "advanced": true
+                        "advanced": 2
                     },
                     {
                         "name": "led_brightness",
@@ -688,7 +691,7 @@
                             "min": 0,
                             "max": 1
                         },
-                        "advanced": true
+                        "advanced": 1
                     },
                     {
                         "name": "led_brightness_off",
@@ -697,7 +700,7 @@
                             "min": 0,
                             "max": 1
                         },
-                        "advanced": true
+                        "advanced": 1
                     },
                     {
                         "name": "led_brightness_on",
@@ -706,7 +709,7 @@
                             "min": 0,
                             "max": 1
                         },
-                        "advanced": true
+                        "advanced": 1
                     },
                     {
                         "name": "display_dim_factor_on",
@@ -715,7 +718,7 @@
                             "min": 0,
                             "max": 1
                         },
-                        "advanced": true
+                        "advanced": 1
                     },
                     {
                         "name": "display_dim_factor_off",
@@ -724,7 +727,7 @@
                             "min": 0,
                             "max": 1
                         },
-                        "advanced": true
+                        "advanced": 1
                     }
                 ]
             },

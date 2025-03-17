@@ -4,18 +4,22 @@ from pyswitch.ui.ui import DisplayElement, DisplayBounds
 from pyswitch.ui.elements import DisplayLabel, BidirectionalProtocolState
 from pyswitch.clients.kemper import KemperRigNameCallback, TunerDisplayCallback
 
+
 _ACTION_LABEL_LAYOUT = {
     "font": "/fonts/H20.pcf",
     "backColor": DEFAULT_LABEL_COLOR,
     "stroke": 1
 }
 
+
 _DISPLAY_WIDTH = const(240)
 _DISPLAY_HEIGHT = const(240)
 _SLOT_WIDTH = const(120)
 _SLOT_HEIGHT = const(40)
 _FOOTER_Y = const(200)
+_RIG_ID_HEIGHT = const(40)
 _RIG_NAME_HEIGHT = const(160)
+_RIG_ID_Y = const(160)
 
 
 DISPLAY_HEADER_1 = DisplayLabel(
@@ -64,7 +68,26 @@ Splashes = TunerDisplayCallback(
                 },
 
                 callback = KemperRigNameCallback(
-                	show_rig_id = True
+                    show_name = True,
+                    show_rig_id = False
+                )
+            ),
+
+            DisplayLabel(
+                bounds = DisplayBounds(
+                    0,
+                    _RIG_ID_Y,
+                    _DISPLAY_WIDTH,
+                    _RIG_ID_HEIGHT
+                ),
+
+                layout = {
+                    "font": "/fonts/H20.pcf"
+                },
+
+                callback = KemperRigNameCallback(
+                    show_name = False,
+                    show_rig_id = True
                 )
             ),
 

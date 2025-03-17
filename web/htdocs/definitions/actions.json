@@ -579,7 +579,7 @@
                     {
                         "name": "preselect",
                         "default": "False",
-                        "comment": "Preselect mode"
+                        "comment": "Preselect mode. If enabled, the bank is only pre-selected, the change will only take effect when you select a rig next time."
                     }
                 ],
                 "comment": "Next bank (keeps rig index)",
@@ -1127,7 +1127,7 @@
                     {
                         "name": "preselect",
                         "default": "False",
-                        "comment": "If False, the bank is switched immediately (by sending a rig select command \nafter bank preselect). If True, only the bank preselect is sent. Ignores bank_off."
+                        "comment": "Preselect mode. If enabled, the bank is only pre-selected, the change will only take effect when you select a rig next time. Ignores the parameter \"bank_off\"."
                     },
                     {
                         "name": "display_mode",

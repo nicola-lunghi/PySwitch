@@ -20,7 +20,7 @@ def BANK_UP(display = None,
             color = None,                                     # Override color (if no color_callback is passed)
             color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
             display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,    # Display mode (same as for RIG_SELECT, see definitions above)
-            preselect = False                                 # Preselect mode
+            preselect = False                                 # Preselect mode. If enabled, the bank is only pre-selected, the change will only take effect when you select a rig next time.
     ):
     return PushButtonAction({
         "callback": KemperBankChangeCallback(
