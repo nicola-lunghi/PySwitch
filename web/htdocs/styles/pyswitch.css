@@ -9,3 +9,7 @@
     width: 100%;
     height: 100%;
 }
+
+.container .application #pyswitch-display {
+    cursor: pointer;
+}

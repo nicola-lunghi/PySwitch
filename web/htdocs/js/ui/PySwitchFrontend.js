@@ -59,8 +59,12 @@ class PySwitchFrontend {
         await this.#initInputs(parser);
 
         let canvasElement = null;
+        const that = this;
         this.#container.append(
             canvasElement = $('<canvas id="' + this.#options.domNamespace + '-display" />')
+            .on('click', async function() {
+                await that.parserFrontend.showDisplayEditor(canvasElement);
+            })
         );
         this.#elementsToHide.push(canvasElement);
     }

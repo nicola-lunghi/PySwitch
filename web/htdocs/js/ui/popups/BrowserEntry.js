@@ -9,7 +9,7 @@ class BrowserEntry {
     children = [];      // Child BrowserEntry list
     data = null;        // Options (plus arbitrary application data if needed)
 
-    #browser = null;
+    browser = null;
     
     /**
      * {
@@ -26,7 +26,7 @@ class BrowserEntry {
      * }
      */
     constructor(browser, data = {}) {
-        this.#browser = browser;
+        this.browser = browser;
         this.data = data;
 
         this.value = data.value;
@@ -110,10 +110,10 @@ class BrowserEntry {
                 .text(await this.getText())
                 .on("click", async function() {
                     try {
-                        await that.#browser.browse(that);
+                        await that.browser.browse(that);
 
                     } catch (e) {
-                        that.#browser.handle(e);
+                        that.browser.handle(e);
                     }
                 })
             ]
@@ -135,7 +135,7 @@ class BrowserEntry {
     }
 
     /**
-     * Creates the listing elements (TR)
+     * Creates the listing elements
      */
     async getElement(layout) {
         const that = this;
@@ -154,10 +154,10 @@ class BrowserEntry {
                         .text(await this.getText())
                         .on('click', async function() {
                             try {
-                                await that.#browser.browse(that);
+                                await that.browser.browse(that);
 
                             } catch (e) {
-                                that.#browser.handle(e);
+                                that.browser.handle(e);
                             }
                         })
                     )

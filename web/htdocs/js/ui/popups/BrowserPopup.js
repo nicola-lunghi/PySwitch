@@ -19,7 +19,8 @@ class BrowserPopup extends Popup {
      *      selectedValue:            If set, the entry with this value will be selected until this value is changed. 
      *                                For temporary selection use setSelected() or setSelectedValue().
      *      dontCloseOnSelect: false
-     *      onReturnKey:              Callback when the user hits the Return key
+     *      onReturnKey:              Callback when the user hits the Return key,
+     *      noTable:                  Do not embed the generated items in a table statement (bool, default: false)
      * }
      */
     constructor(options) {
@@ -197,11 +198,15 @@ class BrowserPopup extends Popup {
 
                 // Listing
                 $('<div class="table-container" />').append(
-                    $('<table/>').append(
-                        $('<tbody/>').append(
-                            this.#currentItems.map((item) => item.element)
+                    this.options.noTable                     
+                    ? 
+                        this.#currentItems.map((item) => item.element)
+                    :
+                        $('<table/>').append(
+                            $('<tbody/>').append(
+                                this.#currentItems.map((item) => item.element)
+                            )
                         )
-                    )
                 ),
 
                 // Info panel

@@ -187,7 +187,7 @@ class ParserFrontendInput {
                             }),
 
                             // Input settings button
-                            !(await (new InputSettings(this.#controller, this.definition).get())) ? null :
+                            !(await (new InputSettings(this.#controller, this.definition, this.input).get())) ? null :
                             $('<div class="button actions input-settings fas fa-wrench" data-toggle="tooltip" title="Settings for ' + this.definition.displayName + '" />')
                             .on('click', async function() {
                                 try {
@@ -510,8 +510,6 @@ class ParserFrontendInput {
      * Shows the action edit/create dialog
      */
     async promptInputSettings() {
-        const that = this;
-
         /**
          * Commit popup
          */
@@ -519,7 +517,6 @@ class ParserFrontendInput {
             browser.hide();
         }
 
-        // A browser to select client connections (to Kemper etc.), triggered by the client select button
         const browser = this.#controller.ui.getPopup({
             onReturnKey: commit
         });
@@ -527,29 +524,15 @@ class ParserFrontendInput {
         const props = new InputSettings(
             this.#controller,
             this.definition,
-            this.input
+            this.input,
+            commit
         );
 
         const propsContent = await props.get();
-        if (!propsContent) return;
+        if (!propsContent) return null;
 
         await browser.show(
-            $('<span class="input-settings-container" />').append(
-                propsContent,
-                
-                $('<div class="buttons" />').append(
-                    $('<div class="button" />')
-                    .text("Done")
-                    .on('click', async function() {
-                        try {
-                            await commit();
-        
-                        } catch(e) {
-                            that.#controller.handle(e);
-                        }
-                    })
-                )
-            ),
+            propsContent,
             "General Settings for " + this.definition.displayName
         );
 

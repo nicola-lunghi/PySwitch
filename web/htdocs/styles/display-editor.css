@@ -1,0 +1,7 @@
+.container .display-editor .canvas-container {
+    text-align: center;
+}
+
+.container .display-editor .canvas-container > * {
+    margin-top: 1em;
+}

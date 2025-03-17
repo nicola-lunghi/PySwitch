@@ -5,6 +5,7 @@
 ### Emulator 2.3.6.6
 - Added switch settings (new button beneath the "+" button): Here you can adjust the hold time as well as the new "Hold Repeat" option (see above)
 - More "realistic" rig names in the virtual Kemper client (the old ones suggested there is a rig ID by default)
+- Review of tooltips, descriptions etc.
 - Levels of advanced parameters: When clicking "show more...", the parameters will be unveiled by level of "advancedness". All nerdy parameters only show up in the last level. This keeps the technical parameters hidden except you really want to see them.
 - Fixed a visual bug with color inputs
 

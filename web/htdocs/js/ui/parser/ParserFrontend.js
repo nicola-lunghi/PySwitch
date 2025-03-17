@@ -37,6 +37,40 @@ class ParserFrontend {
     }
 
     /**
+     * Shows the action edit/create dialog. The passed displayCanvas will be mirrored.
+     */
+    async showDisplayEditor(displayCanvas) {
+        /**
+         * Commit popup
+         */
+        async function commit() {
+            browser.hide();
+        }
+
+        const browser = this.#controller.ui.getPopup({
+            onReturnKey: commit,
+            additionalClasses: "display-editor",
+            wide: true
+        });
+
+        const props = new DisplayEditor(
+            this.#controller,
+            displayCanvas,
+            commit         
+        );
+
+        const propsContent = await props.get();
+        if (!propsContent) return null;
+
+        await browser.show(
+            propsContent,
+            "Display Configuration"
+        );
+
+        return browser;
+    }
+
+    /**
      * Must be called after all inputs have been added
      */
     async init() {

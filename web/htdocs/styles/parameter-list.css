@@ -1,0 +1,42 @@
+.container .parameter-list-container {
+    position: relative;
+}
+
+.container .parameter-list-container .buttons {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.container .parameter-list-container .parameter-comment {
+    margin-bottom: 0.7em;
+}
+
+/***************************************************************/
+
+.container .parameter-list-container .parameter-list table {
+    border-spacing: 0;
+    width: 100cqw;
+}
+
+.container .parameter-list-container .parameter-list td {
+    border-bottom: 1px solid lightgray;
+    padding: 0.5em;
+    vertical-align: top;
+    position: relative;
+    z-index: 10;
+}
+
+.container .parameter-list-container .parameter-list td > * {
+    position: relative;
+    z-index: 10;
+}
+
+.container .parameter-list-container .parameter-list td:first-child {
+    padding-left: 0;
+}
+
+
+.container .parameter-list-container .parameter-list tr:last-child td {
+    border-bottom: none;
+}
