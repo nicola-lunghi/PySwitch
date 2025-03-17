@@ -1,75 +1,11 @@
-import json
-import libcst
-import uuid
-from .Arguments import Arguments
+from ..misc.ItemBase import ItemBase
 
-class Action:
+class Action(ItemBase):
     def __init__(self, input, call_node):
-        self.__id = str(uuid.uuid4())
-
-        self.node = call_node
-        self.input = input 
-        self.assign = None
-
-        # Buffers
-        self._arguments = None
-
-        self._evaluate_node()
-        self.client = self._determine_client()
-
-    def _evaluate_node(self):
-        self.proxy_name = None
-
-        # Is it a function call? Most actions are.
-        if isinstance(self.node, libcst.Call):
-            self.name = libcst.parse_module("").code_for_node(self.node.func)
-            self.node_content = self.node
-
-            if isinstance(self.node.func, libcst.Attribute):                
-                # Determine the name of the action for a proxy function
-                proxy_call = self.input.parser.get_assignment(self.node.func.value.value)
-                if proxy_call:
-                    self.proxy_name = proxy_call.func.value + "." + self.node.func.attr.value
-
-        # No call: Search if there is an assignment with the name
-        elif isinstance(self.node, libcst.Name):
-            assign_node = self.input.parser.get_assignment(self.node.value)
-
-            if assign_node:
-                self.assign = self.node.value
-                
-                self.name = assign_node.func.value
-                self.node_content = assign_node
-            else:
-                self.name = self.node.value
-                self.node_content = self.node
-                
-
-    # Unique ID
-    def id(self):
-        return self.__id
-
-    # Returns a json encoded list of arguments of the node, represented by dicts.
-    def arguments(self):
-        if self._arguments:
-            return json.dumps(self._arguments)
+        super().__init__(input.parser, call_node)
         
-        visitor = Arguments(self.name)        
-        self.node_content.visit(visitor)
-        self._arguments = visitor.result
-
-        return json.dumps(self._arguments)
-
-    # Returns the value of an argument as string, or None if not found
-    def argument(self, name):
-        if not self._arguments:
-            self.arguments()
-
-        for arg in self._arguments:
-            if arg["name"] == name:
-                return arg["value"]
-            
-        return None
+        self.input = input 
+        self.client = self._determine_client()
 
     # Removes the action from the tree.
     def remove(self):

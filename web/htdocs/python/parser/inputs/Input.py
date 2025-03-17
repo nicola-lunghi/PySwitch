@@ -1,8 +1,8 @@
 import libcst
 
 from .Actions import Actions
-from .Arguments import Arguments
 from .InputAssignment import InputAssignment
+from ..misc.Arguments import Arguments
 from ..misc.AddElementTransformer import AddElementTransformer
 from ..misc.RemoveDictElementTransformer import RemoveDictElementTransformer
 

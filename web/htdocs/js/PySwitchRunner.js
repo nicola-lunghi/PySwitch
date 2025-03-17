@@ -68,18 +68,21 @@ class PySwitchRunner {
         await this.#loadModule("parser/misc/ImportExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/RemoveAssignmentTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/AddAssignmentTransformer.py", localPythonPath);
+        await this.#loadModule("parser/misc/ItemBase.py", localPythonPath);
+        await this.#loadModule("parser/misc/Arguments.py", localPythonPath);
 
         this.pyodide.FS.mkdir("parser/inputs");
         await this.#loadModule("parser/inputs/Action.py", localPythonPath);
         await this.#loadModule("parser/inputs/Actions.py", localPythonPath);
-        await this.#loadModule("parser/inputs/Arguments.py", localPythonPath);
         await this.#loadModule("parser/inputs/Input.py", localPythonPath);
         await this.#loadModule("parser/inputs/InputReplacer.py", localPythonPath);
         await this.#loadModule("parser/inputs/InputAssignment.py", localPythonPath);
         await this.#loadModule("parser/inputs/CreateInputTransformer.py", localPythonPath);
         
-        // this.pyodide.FS.mkdir("parser/pager");
-        // await this.#loadModule("parser/pager/Pager.py", localPythonPath);
+        this.pyodide.FS.mkdir("parser/display");
+        await this.#loadModule("parser/display/Splashes.py", localPythonPath);
+        await this.#loadModule("parser/display/SplashElement.py", localPythonPath);
+        await this.#loadModule("parser/display/SplashElements.py", localPythonPath);
 
         this.pyodide.FS.mkdir("wrappers");
         await this.#loadModule("wrappers/__init__.py", localPythonPath);

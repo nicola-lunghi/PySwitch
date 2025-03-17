@@ -65,6 +65,14 @@ class Parser {
     }
 
     /**
+     * Returns a (proxy) instance of Splashes.py, which handles all operations on the display splashes.
+     */
+    async splashes() {
+        await this.#init();
+        return this.#pySwitchParser.splashes();
+    }
+
+    /**
      * Updates the underlying config from the current CSTs. Called by python code after updates to the trees.
      */
     updateConfig() {

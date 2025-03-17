@@ -510,9 +510,6 @@ class ParserFrontendInput {
      * Shows the action edit/create dialog
      */
     async promptInputSettings() {
-        /**
-         * Commit popup
-         */
         async function commit() {
             browser.hide();
         }

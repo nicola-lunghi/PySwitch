@@ -1352,7 +1352,6 @@ class ConfigParserTests extends TestBase {
     //////////////////////////////////////////////////////////////////////////////////////
         
     /**
-     * Tests a single action, controlled by the config object:
      * {
      *      port,
      *      client,             // Client ID
@@ -1388,12 +1387,16 @@ class ConfigParserTests extends TestBase {
 
                 if (expAction.assign) {
                     expect(action.assign).toBe(expAction.assign);
+                } else {
+                    expect(action.assign).toBe(undefined);
                 }
                 
                 if (action.client != "local") expect(action.client).toBe(config.client);
 
                 if (expAction.arguments) {
                     expect(JSON.parse(action.arguments())).toEqual(expAction.arguments);
+                } else {
+                    expect(JSON.parse(action.arguments())).toEqual([]);
                 }
             }
         }

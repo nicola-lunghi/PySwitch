@@ -5,7 +5,7 @@ from .inputs.Input import Input
 from .inputs.InputReplacer import InputReplacer
 from .inputs.CreateInputTransformer import CreateInputTransformer
 
-# from .pager.Pager import Pager
+from .display.Splashes import Splashes
 
 from .misc.RemoveUnusedImportTransformer import RemoveUnusedImportTransformer
 from .misc.AddImportsTransformer import AddImportsTransformer
@@ -14,8 +14,6 @@ from .misc.AssignmentExtractor import AssignmentExtractor
 from .misc.ImportExtractor import ImportExtractor
 from .misc.RemoveAssignmentTransformer import RemoveAssignmentTransformer
 from .misc.AddAssignmentTransformer import AddAssignmentTransformer
-
-from .PySwitchHardware import PySwitchHardware
 
 class PySwitchParser:
 
@@ -43,6 +41,7 @@ class PySwitchParser:
     def reset_buffers(self):
         self.__displays = None
         self.__inputs = {}
+        self.__splashes = None
 
     # Set the parser data from source code
     def from_source(self, inputs_py, display_py):
@@ -116,6 +115,8 @@ class PySwitchParser:
         adder = AddAssignmentTransformer(name, call_node)
         self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(adder)
 
+    #######################################################################################
+
     # Returns a JSON encoded list of assignments in display.py
     def displays(self):
         if self.__displays:
@@ -127,6 +128,23 @@ class PySwitchParser:
         self.__displays = json.dumps(AssignmentNameExtractor().get(self.__csts["display_py"]))
 
         return self.__displays
+    
+    # Returns a proxy to the splashes in display.py
+    def splashes(self):
+        if self.__splashes:
+            return self.__splashes
+        
+        if not self.__csts:
+            raise Exception("No data loaded")
+                
+        # Try to find the input
+        visitor = Splashes(self)
+        self.__csts["display_py"].visit(visitor)
+        ret = visitor if visitor.result != None else None
+
+        self.__splashes = ret
+
+        return ret
 
     ########################################################################################
 

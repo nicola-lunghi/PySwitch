@@ -4,38 +4,25 @@
 class DisplayEditor extends ParameterList {
     
     #displayCanvas = null;
+    #mirrorCanvas = null;
 
     constructor(controller, displayCanvas, onCommit) {
         super(controller, onCommit);
-
         this.#displayCanvas = displayCanvas;
+    }
+
+    /**
+     * Start updates for the mirror canvas
+     */
+    init() {
+        this.#updateCanvas();        
     }
 
     /**
      * Must return the option table rows (array of TR elements) or null if no options are available.
      */
     async getOptions() {
-        const that = this;
-        const mirrorCanvas = $('<canvas />');
-
-        function updateCanvas() {
-            setTimeout(function() {
-                updateCanvas();
-            }, 100);
-
-            const context = mirrorCanvas[0].getContext('2d');
-        
-            //set dimensions
-            mirrorCanvas[0].width = that.#displayCanvas[0].width;
-            mirrorCanvas[0].height = that.#displayCanvas[0].height;
-        
-            //apply the old canvas to the new one
-            context.drawImage(that.#displayCanvas[0], 0, 0);
-
-            console.log("upd")
-        }
-
-        updateCanvas();
+        this.#mirrorCanvas = $('<canvas />');
         
         return [
             this.createNumericInputRow(
@@ -103,11 +90,49 @@ class DisplayEditor extends ParameterList {
                 }
             ),
 
+            this.createSelectInputRow(
+                "Tuner Display",
+                "If set, and the corresponding client goes into tuner mode, the controller will show a tuner, too",
+                [
+                    "Kemper: Tuner Display TODO"
+                ],
+                "foo",
+                async function(value) {
+                    // that.#input.set_hold_repeat(value);
+
+                    // await that.controller.restart({
+                    //     message: "none"
+                    // });
+                }
+            ),
+
             $('<tr />'). append(
                 $('<td colspan="2" class="canvas-container" />').append(
-                    mirrorCanvas
+                    this.#mirrorCanvas
                 )
             )
         ]
+    }
+
+    /**
+     * The canvas is updated periodically
+     */
+    #updateCanvas() {
+        // If the mirror canvas is attached to the DOM, schedule the next update
+        if (document.contains(this.#mirrorCanvas[0])) {
+            const that = this;
+
+            setTimeout(function() {
+                that.#updateCanvas();
+            }, 100);
+        }
+
+        // Mirror the pyswitch canvas to a local one
+        const context = this.#mirrorCanvas[0].getContext('2d');    
+        
+        this.#mirrorCanvas[0].width = this.#displayCanvas[0].width;
+        this.#mirrorCanvas[0].height = this.#displayCanvas[0].height;
+    
+        context.drawImage(this.#displayCanvas[0], 0, 0);
     }
 }

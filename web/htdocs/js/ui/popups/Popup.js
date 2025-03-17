@@ -14,7 +14,7 @@ class Popup {
      *      container:                Container DOM element. Will be hidden/shown along with the popups.
      *      additionalClasses:        Optional CSS classes for the popup element
      *      onReturnKey:              Callback when the user hits the Return key
-     *      onClose:                  Called on hide
+     *      onClose:                  Called on hide (not awaited!)
      *      errorHandler:             Optional error handler. must provide a handle(ex) => void method.
      * }
      */
@@ -27,7 +27,7 @@ class Popup {
     /**
      * Hide: Remove all closing event handlers
      */
-    hide() {
+    hide(noCallback = false) {
         if (this.#container) {
             this.#container.remove();
         }        
@@ -38,13 +38,17 @@ class Popup {
         this.element = null;
         
         $(window).off('.' + this.#id);
+
+        if (!noCallback && this.options.onClose) {
+            this.options.onClose();
+        }
     }
 
     /**
      * Show the browser: Also adds some event handlers to close it on ESC and clicking outside
      */
     show(content, headline = null) {
-        this.hide();
+        this.hide(true);
 
         this.options.container.append(
             this.#container = $('<div class="list-block" />').append(
@@ -66,11 +70,7 @@ class Popup {
                         .append(                            
                             // Close button
                             $('<span class="fa fa-times close-button"/>')
-                            .on('click', async function() {
-                                if (that.options.onClose) {
-                                    await that.options.onClose();
-                                }
-                        
+                            .on('click', function() {
                                 that.hide();
                             })
                         )

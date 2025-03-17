@@ -1,4 +1,4 @@
-describe('Configuration Parser', function() {
+describe('Inputs Parser', function() {
     
     const tests = new ConfigParserTests();
 
