@@ -12,13 +12,14 @@ class Arguments(VisitorWithStack):
         if len(self.stack) != 2:
             return False
 
-        if not node.keyword:
-            return False
+        ret = {
+            "value": self.__format_value(node.keyword.value if node.keyword else None, node.value)
+        }
 
-        self.result.append({
-            "name": node.keyword.value,
-            "value": self.__format_value(node.keyword.value, node.value)
-        })
+        if node.keyword:
+            ret["name"] = node.keyword.value
+
+        self.result.append(ret)
 
         return False
 

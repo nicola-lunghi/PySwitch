@@ -73,6 +73,14 @@ class Parser {
     }
 
     /**
+     * Sets a new splashes definition
+     */
+    async setSplashes(splashes) {
+        await this.#init();
+        this.#pySwitchParser.set_splashes(splashes);
+    }
+
+    /**
      * Updates the underlying config from the current CSTs. Called by python code after updates to the trees.
      */
     updateConfig() {

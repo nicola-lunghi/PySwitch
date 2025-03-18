@@ -17,5 +17,5 @@ class AddImportsTransformer(libcst.CSTTransformer):
             for definition in self.import_paths
         ]
 
-        return libcst.FlattenSentinel([updated_node] + new_statements)
+        return libcst.FlattenSentinel(new_statements + [updated_node])
         

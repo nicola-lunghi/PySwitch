@@ -35,6 +35,17 @@ _RIG_ID_Y = const(160)
 
 #############################################################################################################################################
 
+_FOOBOUNDS = DisplayBounds(0, _FOOTER_Y, _SLOT_WIDTH, _SLOT_HEIGHT)
+_RIGBOUNDS = DisplayBounds(
+                    0, 
+                    _SLOT_HEIGHT,
+                    _DISPLAY_WIDTH,
+                    _RIG_NAME_HEIGHT
+                    
+                )
+
+_CB =       KemperRigNameCallback(show_name = True,show_rig_id = False)
+
 # Header
 DISPLAY_HEADER_1 = DisplayLabel(
     layout = _ACTION_LABEL_LAYOUT,
@@ -48,7 +59,7 @@ DISPLAY_HEADER_2 = DisplayLabel(
 # Footer
 DISPLAY_FOOTER_1 = DisplayLabel(
     layout = _ACTION_LABEL_LAYOUT,
-    bounds = DisplayBounds(0, _FOOTER_Y, _SLOT_WIDTH, _SLOT_HEIGHT)
+    bounds = _FOOBOUNDS
 )
 DISPLAY_FOOTER_2 = DisplayLabel(
     layout = _ACTION_LABEL_LAYOUT,
@@ -57,7 +68,7 @@ DISPLAY_FOOTER_2 = DisplayLabel(
 
 
 Splashes = TunerDisplayCallback(
-    # strobe = True,
+    strobe = True,
     splash_default = DisplayElement(
         bounds = DisplayBounds(0, 0, _DISPLAY_WIDTH, _DISPLAY_HEIGHT),
         children = [
@@ -71,12 +82,7 @@ Splashes = TunerDisplayCallback(
 
             # Rig name
             DisplayLabel(
-                bounds = DisplayBounds(
-                    0, 
-                    _SLOT_HEIGHT,
-                    _DISPLAY_WIDTH,
-                    _RIG_NAME_HEIGHT
-                ),
+                bounds = _RIGBOUNDS,
 
                 layout = {
                     "font": "/fonts/PTSans-NarrowBold-40.pcf",
@@ -85,10 +91,7 @@ Splashes = TunerDisplayCallback(
                     "text": KemperRigNameCallback.DEFAULT_TEXT,
                 },
 
-                callback = KemperRigNameCallback(
-                    show_name = True,
-                    show_rig_id = False
-                )
+                callback = _CB
             ),
 
             # Rig ID

@@ -5,8 +5,9 @@ import json
 from .Arguments import Arguments
 
 class ItemBase:
-    def __init__(self, parser, call_node):
+    def __init__(self, parser, call_node, file_id):
         self.__id = str(uuid.uuid4())
+        self.__file_id = file_id
 
         self.parser = parser
         self.node = call_node
@@ -15,14 +16,14 @@ class ItemBase:
         # Buffers
         self._arguments = None
 
-        self.evaluate_node()
+        self._evaluate_node()
 
     # Unique ID
     def id(self):
         return self.__id
 
     # Evaluate the node after it has been set
-    def evaluate_node(self):
+    def _evaluate_node(self):
         self.proxy_name = None
 
         # Is it a function call? Most actions are.
@@ -32,14 +33,14 @@ class ItemBase:
 
             if isinstance(self.node.func, libcst.Attribute):                
                 # Determine the name of the action for a proxy function
-                proxy_call = self.parser.get_assignment(self.node.func.value.value)
+                proxy_call = self.parser.get_assignment(self.node.func.value.value, self.__file_id)
                 if proxy_call:
                     self.proxy_name = proxy_call.func.value + "." + self.node.func.attr.value
 
         # No call: Search if there is an assignment with the name
         elif isinstance(self.node, libcst.Name):
-            assign_node = self.parser.get_assignment(self.node.value)
-
+            assign_node = self.parser.get_assignment(self.node.value, self.__file_id)
+            
             if assign_node:
                 self.assign = self.node.value
                 
@@ -60,13 +61,14 @@ class ItemBase:
 
         return json.dumps(self._arguments)
 
-    # Returns the value of an argument as string, or None if not found
+    # Returns the value of an argument as string, or None if not found 
+    # (only applies to keyword arguments of course)
     def argument(self, name):
         if not self._arguments:
             self.arguments()
 
         for arg in self._arguments:
-            if arg["name"] == name:
+            if "name" in arg and arg["name"] == name:
                 return arg["value"]
             
         return None

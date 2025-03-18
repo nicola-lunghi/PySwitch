@@ -156,7 +156,7 @@ class Input(libcst.CSTVisitor):
             )
 
             if "assign" in definition.to_py() and definition.assign:
-                self.parser.set_action_assignment(definition.assign, call)
+                self.parser.set_assignment(definition.assign, call, "inputs_py", "Inputs")
 
                 return libcst.Name(
                     value = definition.assign

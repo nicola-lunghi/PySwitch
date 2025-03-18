@@ -58,11 +58,11 @@ class PySwitchRunner {
         await this.#loadModule("parser/misc/AddElementTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/RemoveDictElementTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/RemoveUnusedImportTransformer.py", localPythonPath);
-        // await this.#loadModule("parser/misc/StripImportsTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/CollectCommentsTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/AddImportsTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/FunctionExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/ClassItemExtractor.py", localPythonPath);
+        await this.#loadModule("parser/misc/ClassNameExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/AssignmentExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/AssignmentNameExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/ImportExtractor.py", localPythonPath);
@@ -70,6 +70,8 @@ class PySwitchRunner {
         await this.#loadModule("parser/misc/AddAssignmentTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/ItemBase.py", localPythonPath);
         await this.#loadModule("parser/misc/Arguments.py", localPythonPath);
+        await this.#loadModule("parser/misc/CodeExtractor.py", localPythonPath);
+        await this.#loadModule("parser/misc/CodeGenerator.py", localPythonPath);
 
         this.pyodide.FS.mkdir("parser/inputs");
         await this.#loadModule("parser/inputs/Action.py", localPythonPath);
@@ -80,9 +82,7 @@ class PySwitchRunner {
         await this.#loadModule("parser/inputs/CreateInputTransformer.py", localPythonPath);
         
         this.pyodide.FS.mkdir("parser/display");
-        await this.#loadModule("parser/display/Splashes.py", localPythonPath);
-        await this.#loadModule("parser/display/SplashElement.py", localPythonPath);
-        await this.#loadModule("parser/display/SplashElements.py", localPythonPath);
+        await this.#loadModule("parser/display/SplashesExtractor.py", localPythonPath);        
 
         this.pyodide.FS.mkdir("wrappers");
         await this.#loadModule("wrappers/__init__.py", localPythonPath);

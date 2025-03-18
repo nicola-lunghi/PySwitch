@@ -5,8 +5,9 @@ from .inputs.Input import Input
 from .inputs.InputReplacer import InputReplacer
 from .inputs.CreateInputTransformer import CreateInputTransformer
 
-from .display.Splashes import Splashes
+from .display.SplashesExtractor import SplashesExtractor
 
+from .misc.CodeGenerator import CodeGenerator
 from .misc.RemoveUnusedImportTransformer import RemoveUnusedImportTransformer
 from .misc.AddImportsTransformer import AddImportsTransformer
 from .misc.AssignmentNameExtractor import AssignmentNameExtractor
@@ -14,6 +15,7 @@ from .misc.AssignmentExtractor import AssignmentExtractor
 from .misc.ImportExtractor import ImportExtractor
 from .misc.RemoveAssignmentTransformer import RemoveAssignmentTransformer
 from .misc.AddAssignmentTransformer import AddAssignmentTransformer
+from .misc.ClassNameExtractor import ClassNameExtractor
 
 class PySwitchParser:
 
@@ -27,6 +29,7 @@ class PySwitchParser:
         # Buffers
         self.__available_actions = None
         self.__available_mappings = None
+        self.__available_display_imports = None
         
         # self.__pager = None
         # self.__pager_buffer_active = False
@@ -98,8 +101,8 @@ class PySwitchParser:
         return ret
     
     # Searches for an Assign with the given name and returns its node, or None if not found
-    def get_assignment(self, name):
-        assignments = AssignmentExtractor().get(self.__csts["inputs_py"])
+    def get_assignment(self, name, file_id):
+        assignments = AssignmentExtractor().get(self.__csts[file_id])
         
         for a in assignments:
             if a["name"] == name:
@@ -108,12 +111,18 @@ class PySwitchParser:
         return None
 
     # Adds or replaces the given assignment by name.
-    def set_action_assignment(self, name, call_node):
+    def set_assignment(self, name, call_node, file_id, insert_before_assign = None):
         remover = RemoveAssignmentTransformer(name)
-        self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(remover)
+        self.__csts[file_id] = self.__csts[file_id].visit(remover)
 
-        adder = AddAssignmentTransformer(name, call_node)
-        self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(adder)
+        adder = AddAssignmentTransformer(
+            name, 
+            call_node, 
+            insert_before_assign = insert_before_assign, 
+            cst = self.__csts[file_id] if not insert_before_assign else None
+        )
+
+        self.__csts[file_id] = self.__csts[file_id].visit(adder)
 
     #######################################################################################
 
@@ -137,14 +146,24 @@ class PySwitchParser:
         if not self.__csts:
             raise Exception("No data loaded")
                 
-        # Try to find the input
-        visitor = Splashes(self)
-        self.__csts["display_py"].visit(visitor)
-        ret = visitor if visitor.result != None else None
+        splashes = SplashesExtractor(self, self.__csts["display_py"]).get("Splashes")
+        self.__splashes = json.dumps(splashes)
+        
+        return self.__splashes
 
-        self.__splashes = ret
-
-        return ret
+    # Replace the splashes in display.py
+    def set_splashes(self, splashes):
+        if not self.__csts:
+            raise Exception("No data loaded")
+        
+        self.__splashes = None
+        self.__displays = None
+        
+        splashes_node = CodeGenerator(self, "display_py", insert_before_assign = "Splashes").generate(splashes.to_py())
+        
+        self.set_assignment("Splashes", splashes_node, "display_py")
+        
+        self.__js_parser.updateConfig()
 
     ########################################################################################
 
@@ -169,15 +188,19 @@ class PySwitchParser:
         self._remove_unused_import_for_file("inputs_py")
         self._remove_unused_import_for_file("display_py")
 
-    def _remove_unused_import_for_file(self, file):
-        wrapper = libcst.metadata.MetadataWrapper(self.__csts[file])
+    def _remove_unused_import_for_file(self, file_id):
+        wrapper = libcst.metadata.MetadataWrapper(self.__csts[file_id])
         visitor = RemoveUnusedImportTransformer(wrapper)
-        self.__csts[file] = wrapper.module.visit(visitor)
+        self.__csts[file_id] = wrapper.module.visit(visitor)
 
     ########################################################################################
 
     # Adds all possible imports (actions etc.) Does no config update!
     def _add_all_possible_imports(self):
+        self._add_all_possible_imports_inputs()
+        self._add_all_possible_imports_display()
+
+    def _add_all_possible_imports_inputs(self):
         if not self.__available_actions:
             self.__available_actions = self._generate_action_imports()
 
@@ -195,7 +218,51 @@ class PySwitchParser:
         # Add all imports
         visitor = AddImportsTransformer(self.__available_actions + self.__available_mappings + display_assignments)
         self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
+
+    def _add_all_possible_imports_display(self):
+        if not self.__available_display_imports:
+            self.__available_display_imports = self._generate_display_imports()
+
+        # Add all imports
+        visitor = AddImportsTransformer(self.__available_display_imports)
+        self.__csts["display_py"] = self.__csts["display_py"].visit(visitor)
             
+    # Generates all client specific display assigns (everything from the client's __init__.py file)
+    def _generate_display_imports(self):
+        ret = []
+        for client in self.clients:
+            ret += ClassNameExtractor(
+                file = "pyswitch/clients/" + client + "/__init__.py", 
+                import_path = "pyswitch.clients." + client
+            ).get()
+        
+        return ret + [
+            {
+                "name": "const",
+                "importPath": "micropython"
+            },
+            {
+                "name": "Colors",
+                "importPath": "pyswitch.misc"
+            },
+            {
+                "name": "DisplayElement",
+                "importPath": "pyswitch.ui.ui"
+            },
+            {
+                "name": "DisplayBounds",
+                "importPath": "pyswitch.ui.ui"
+            },
+            {
+                "name": "DisplayLabel",
+                "importPath": "pyswitch.ui.elements"
+            },
+            {
+                "name": "BidirectionalProtocolState",
+                "importPath": "pyswitch.ui.elements"
+            }
+        ]
+    
     # Generates all imports for actions
     def _generate_action_imports(self):
         # Load actions definitions from file
@@ -260,9 +327,25 @@ class PySwitchParser:
             mappings = mappings + client["mappings"]
 
         return mappings
+    
+    ##############################################################################################
 
     # Determine the client for an Action instance
-    def determine_import_statement(self, action):
-        visitor = ImportExtractor(action.name)
-        self.__csts["inputs_py"].visit(visitor)
+    def _determine_import_statement(self, name, cst):
+        visitor = ImportExtractor(name)
+        cst.visit(visitor)
         return visitor.result
+
+    # Determine the client for a type name. You must pass either cst or file_id.
+    def determine_client(self, name, file_id = None, cst = None):
+        import_statement = self._determine_import_statement(name, self.__csts[file_id] if file_id else cst)
+        
+        if not import_statement:
+            # No import statement: Perhaps this is defined in inputs.py directly, so we have no client
+            return "local"
+
+        for client in self.clients:
+            if client in import_statement:
+                 return client
+
+        return "local"

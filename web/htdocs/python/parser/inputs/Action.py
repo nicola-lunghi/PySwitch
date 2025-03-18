@@ -2,10 +2,13 @@ from ..misc.ItemBase import ItemBase
 
 class Action(ItemBase):
     def __init__(self, input, call_node):
-        super().__init__(input.parser, call_node)
+        super().__init__(input.parser, call_node, "inputs_py")
         
         self.input = input 
-        self.client = self._determine_client()
+        self.client = self.input.parser.determine_client(
+            name = self.name, 
+            file_id = "inputs_py"
+        )
 
     # Removes the action from the tree.
     def remove(self):
@@ -34,15 +37,4 @@ class Action(ItemBase):
         
         return splt[0]
 
-    # Determine the client
-    def _determine_client(self):
-        import_statement = self.input.parser.determine_import_statement(self)
-        if not import_statement:
-            # No import statement: Perhaps this is defined in inputs.py directly, so we have no client
-            return "local"
-
-        for client in self.input.parser.clients:
-            if client in import_statement:
-                 return client
-
-        return "local"
+    
