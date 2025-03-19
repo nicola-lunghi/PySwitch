@@ -19,7 +19,7 @@ class ActionsProvider extends BrowserProvider {
     constructor(parser, options) {
         super();
         this.#parser = parser;
-        this.#options = options;
+        this.#options = options;        
     }
 
     /**

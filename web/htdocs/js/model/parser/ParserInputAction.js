@@ -18,7 +18,8 @@ class ParserInputAction extends ParserTreeElement {
         this.name = data.name;
         this.client = data.client;
         this.assign = data.assign;
-        this.proxyName = data.assign ? (this.name + "." + data.assign) : null;
+        
+        // this.proxyName = data.assign ? (this.name + "." + data.assign) : null;
     }
 
     id() {

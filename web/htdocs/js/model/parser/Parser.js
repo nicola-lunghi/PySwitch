@@ -67,6 +67,9 @@ class Parser {
             this.#inputs = inputs ? JSON.parse(inputs) : null;
         }
         if (!this.#splashes) {
+            // this.#splashes = {
+            //     arguments: []
+            // }
             const splashes = this.#pySwitchParser.splashes()
             this.#splashes = splashes ? JSON.parse(splashes) : null;
         }

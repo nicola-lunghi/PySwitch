@@ -82,9 +82,8 @@ class ParserFrontendIcons {
         if (!pages) return null;
 
         for (const pageProxy of pages) {
-            const pageProxyJs = pageProxy.toJs();
-            if (pageProxyJs.id == page && pageProxyJs.color) {                
-                return this.#parser.resolveColor(pageProxyJs.color);
+            if (pageProxy.id == page && pageProxy.color) {                
+                return this.#parser.resolveColor(pageProxy.color);
             }
         }
         return null;
