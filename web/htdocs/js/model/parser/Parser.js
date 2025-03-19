@@ -16,6 +16,9 @@ class Parser {
     #bufferHardwareInfo = null;      // Buffer
     #colors = null;                  // Buffer
 
+    #inputs = null;                  // Raw inputs tree
+    #splashes = null;                // Raw splashes tree
+
     constructor(config, runner, basePath = "") {
         this.config = config;
         this.runner = runner;
@@ -30,10 +33,13 @@ class Parser {
      * Creates the python libcst parser. Must be called at least once before 
      * the parser is actually used. Expects the PySwitchRunner.
      */
-    async #init() {
+    async init() {
         const device = await this.device();
 
-        if (this.#pySwitchParser && (this.#pySwitchParser.hw_import_path == device.getHardwareImportPath())) return;
+        if (this.#pySwitchParser && (this.#pySwitchParser.hw_import_path == device.getHardwareImportPath())) {
+            this.#initTrees();
+            return;
+        }
         
         const clients = (await Client.getAvailable(this.basePath)).map((item) => item.id);
 
@@ -45,45 +51,147 @@ class Parser {
             )
         `);
 
-        this.#pySwitchParser.init(this);
+        //this.#pySwitchParser.init(this);
 
         const inputs_py = (await this.config.get()).inputs_py;
         const display_py = (await this.config.get()).display_py;
 
-        await this.#pySwitchParser.from_source(inputs_py, display_py);
+        await this.#pySwitchParser.from_source(inputs_py, display_py);        
+
+        this.#initTrees();
+    }
+
+    #initTrees() {
+        if (!this.#inputs) {
+            const inputs = this.#pySwitchParser.inputs()
+            this.#inputs = inputs ? JSON.parse(inputs) : null;
+        }
+        if (!this.#splashes) {
+            const splashes = this.#pySwitchParser.splashes()
+            this.#splashes = splashes ? JSON.parse(splashes) : null;
+        }
+    }
+
+    /**
+     * Reset local trees and checks
+     */
+    reset() {
+        this.checks.reset();
+        this.#inputs = null;
+        this.#splashes = null;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * For a raw tree node, this returns the source code
+     */
+    codeForNode(node) {
+        return this.#pySwitchParser.code_for_data_node(node)
+    }
+
+    /**
+     * Returns the inputs raw tree
+     */
+    inputs() {
+        if (!this.#pySwitchParser) throw new Error("Parser not initialized")
+        this.#initTrees();
+        return this.#inputs;
+    }
 
     /**
      * Returns a (proxy) instance of Input.py, which handles all operations on the input.
      * port must be an integer ID of the port (as defined in the board wrapper in python)
      */
     async input(port, createIfNotExistent = false) {
-        await this.#init();
-        return this.#pySwitchParser.input(port, createIfNotExistent);
+        await this.init();
+
+        const hw = await this.getHardwareInfo();
+
+        function getAssignmentForPort() {
+            const filteredHw = hw.filter((item) => item.data.model.port == port);
+            if (!filteredHw.length) return null;
+         
+            return filteredHw[0];
+        }
+        
+        const assignment = getAssignmentForPort();
+        const inputData = this.inputData(assignment.name);
+
+        if (!inputData) {
+            if (!createIfNotExistent) return null;
+
+            // Create new input
+            const newInput = {
+                arguments: [
+                    {
+                        name: "assignment",
+                        value: assignment.name
+                    }
+                ]
+            }
+
+            this.#inputs.push(newInput);
+
+            this.updateConfig();
+            
+            return this.input(port);
+        }
+        
+        return new ParserInput(this, inputData, assignment);
     }
 
     /**
-     * Returns a (proxy) instance of Splashes.py, which handles all operations on the display splashes.
+     * Returns raw input data for a assignmentName input, or null
      */
-    async splashes() {
-        await this.#init();
-        return this.#pySwitchParser.splashes();
+    inputData(assignmentName) {
+        if (!this.#pySwitchParser) throw new Error("Parser not initialized")
+            
+        function getArgument(node, name) {
+            if (!node.arguments) return null;
+
+            const filteredArgs = node.arguments.filter((arg) => arg.name == name);
+            if (!filteredArgs.length) return null;
+
+            return filteredArgs[0].value;
+        }
+
+        const filtered = this.#inputs.filter((inputData) => 
+            getArgument(inputData, "assignment") == assignmentName
+        );
+
+        if (!filtered.length) return null;
+        return filtered[0];
+    }
+
+    /**
+     * Returns the splashes raw tree
+     */
+    splashes() {
+        if (!this.#pySwitchParser) throw new Error("Parser not initialized")
+        this.#initTrees();
+        return this.#splashes;
     }
 
     /**
      * Sets a new splashes definition
      */
     async setSplashes(splashes) {
-        await this.#init();
-        this.#pySwitchParser.set_splashes(splashes);
+        await this.init();
+        this.#splashes = splashes;
+        this.updateConfig();
     }
 
     /**
      * Updates the underlying config from the current CSTs. Called by python code after updates to the trees.
      */
     updateConfig() {
+        if (!this.#pySwitchParser) throw new Error("Parser not initialized")
+
+        this.#initTrees();
+        this.#pySwitchParser.set_inputs(this.#inputs);
+        this.#pySwitchParser.set_splashes(this.#splashes);
+
         const src = this.#pySwitchParser.to_source().toJs();
         
         this.config.set({
@@ -91,27 +199,34 @@ class Parser {
             display_py: src.get("display_py")
         });
 
-        this.checks.reset();
+        this.reset();
     }
 
     /**
      * Update the config with new code for a single file and reset the parser
      */
     async updateFromSource(fileName, code) {
-        await this.#init();
+        await this.init();
+
         const data = await this.config.get();
         data[fileName] = code;
+
         await this.updateFromData(data);
+
+        this.reset();    
     }
 
     /**
      * Update the config with new code for all files and reset the parser
      */
     async updateFromData(data) {
-        await this.#init();
+        await this.init();
+
         this.config.set(data);
+        
         await this.#pySwitchParser.from_source(data.inputs_py, data.display_py);
-        this.checks.reset();
+        
+        this.reset();
     }    
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,7 +332,7 @@ class Parser {
      * Returns all available display labels
      */
     async getAvailableDisplays() {
-        await this.#init();
+        await this.init();
         
         const displays = JSON.parse(this.#pySwitchParser.displays());
 

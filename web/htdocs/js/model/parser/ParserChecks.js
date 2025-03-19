@@ -143,13 +143,13 @@ class ParserChecks {
         async function getActionsWithDisplay(input, hold) {
             if (!input) return [];
             
-            const actions = await input.actions(hold).toJs();
+            const actions = await input.actions(hold);
 
             const ret = [];
             for (const action of actions || []) {
-                const args = JSON.parse(action.arguments());
+                const args = action.arguments();
 
-                for (const arg of args) {                
+                for (const arg of args) {  
                     if (arg.value == displayId) {
                         ret.push(action);
                     }                                        

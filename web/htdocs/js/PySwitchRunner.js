@@ -52,11 +52,13 @@ class PySwitchRunner {
         this.pyodide.FS.mkdir("parser");
         await this.#loadModule("parser/PySwitchParser.py", localPythonPath);
         await this.#loadModule("parser/PySwitchHardware.py", localPythonPath);
-
+        await this.#loadModule("parser/InputsExtractor.py", localPythonPath);
+        await this.#loadModule("parser/SplashesExtractor.py", localPythonPath);
+        
         this.pyodide.FS.mkdir("parser/misc");
         await this.#loadModule("parser/misc/VisitorsWithStack.py", localPythonPath);
-        await this.#loadModule("parser/misc/AddElementTransformer.py", localPythonPath);
-        await this.#loadModule("parser/misc/RemoveDictElementTransformer.py", localPythonPath);
+        //await this.#loadModule("parser/misc/AddElementTransformer.py", localPythonPath);
+        // await this.#loadModule("parser/misc/RemoveDictElementTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/RemoveUnusedImportTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/CollectCommentsTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/AddImportsTransformer.py", localPythonPath);
@@ -66,23 +68,23 @@ class PySwitchRunner {
         await this.#loadModule("parser/misc/AssignmentExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/AssignmentNameExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/ImportExtractor.py", localPythonPath);
-        await this.#loadModule("parser/misc/RemoveAssignmentTransformer.py", localPythonPath);
+        await this.#loadModule("parser/misc/ReplaceAssignmentTransformer.py", localPythonPath);
         await this.#loadModule("parser/misc/AddAssignmentTransformer.py", localPythonPath);
-        await this.#loadModule("parser/misc/ItemBase.py", localPythonPath);
-        await this.#loadModule("parser/misc/Arguments.py", localPythonPath);
+        //await this.#loadModule("parser/misc/ItemBase.py", localPythonPath);
+        // await this.#loadModule("parser/misc/Arguments.py", localPythonPath);
         await this.#loadModule("parser/misc/CodeExtractor.py", localPythonPath);
         await this.#loadModule("parser/misc/CodeGenerator.py", localPythonPath);
 
-        this.pyodide.FS.mkdir("parser/inputs");
-        await this.#loadModule("parser/inputs/Action.py", localPythonPath);
-        await this.#loadModule("parser/inputs/Actions.py", localPythonPath);
-        await this.#loadModule("parser/inputs/Input.py", localPythonPath);
-        await this.#loadModule("parser/inputs/InputReplacer.py", localPythonPath);
-        await this.#loadModule("parser/inputs/InputAssignment.py", localPythonPath);
-        await this.#loadModule("parser/inputs/CreateInputTransformer.py", localPythonPath);
+        // this.pyodide.FS.mkdir("parser/inputs");
+        // await this.#loadModule("parser/inputs/Action.py", localPythonPath);
+        // await this.#loadModule("parser/inputs/Actions.py", localPythonPath);
+        // await this.#loadModule("parser/inputs/Input.py", localPythonPath);
+        // await this.#loadModule("parser/inputs/InputReplacer.py", localPythonPath);
+        // await this.#loadModule("parser/inputs/InputAssignment.py", localPythonPath);
+        // await this.#loadModule("parser/inputs/CreateInputTransformer.py", localPythonPath);
         
-        this.pyodide.FS.mkdir("parser/display");
-        await this.#loadModule("parser/display/SplashesExtractor.py", localPythonPath);        
+        // this.pyodide.FS.mkdir("parser/display");
+        
 
         this.pyodide.FS.mkdir("wrappers");
         await this.#loadModule("wrappers/__init__.py", localPythonPath);

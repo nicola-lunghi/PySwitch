@@ -49,7 +49,7 @@ class ConfigParserTests extends TestBase {
         
         await config.init(this.pyswitch, "../");
         const parser = config.parser;
-        
+
         await this.#testAction(parser, {
             port: 1,
             client: "kemper",
@@ -98,11 +98,11 @@ class ConfigParserTests extends TestBase {
                         },
                         {
                             name: "large",
-                            value: '{"d":{"e":{"f":8}}}'
+                            value: '{"d": {"e": {"f": 8}}}'
                         },
                         {
                             name: "arr",
-                            value: '[{"f": 8, "j": [3, 5,6]}, None, "g"]'
+                            value: '[{"f": 8, "j": [3, 5, 6]}, None, "g"]'
                         }
                     ] 
                 }
@@ -187,9 +187,6 @@ class ConfigParserTests extends TestBase {
                 { 
                     name: "BANK_UP",
                     arguments: [] 
-                },
-                {
-                    name: "None"
                 }
             ] 
         });
@@ -312,7 +309,7 @@ class ConfigParserTests extends TestBase {
                     arguments: [
                         {
                             name: "useLeds",
-                            value: "{3:4}"
+                            value: '{"a": 4}'
                         }
                     ] 
                 }
@@ -358,7 +355,7 @@ class ConfigParserTests extends TestBase {
                     arguments: [
                         {
                             name: "useLeds",
-                            value: "{3:4}"
+                            value: '{"3": 4}'
                         }
                     ] 
                 }
@@ -415,25 +412,31 @@ class ConfigParserTests extends TestBase {
                     ] 
                 }
             ],
-            "local",
-            // true
+            "local"
         );
     }
 
     async #replaceActions(port, actions, clientId, debug = false) {
         await this.init();
-        const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
-        
-        await config.init(this.pyswitch, "../");
-        const parser = config.parser;
 
-        const input = await parser.input(port);
-        
-        // Replace actions
-        input.set_actions(actions)
+        const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
+        await config.init(this.pyswitch, "../");
+
+        const parser = config.parser;
+        await parser.init();
 
         if (debug) {
-            console.log(actions);
+            console.log("REPLACE of actions: ", actions);
+            console.log("current: ", parser.inputs())
+        }
+
+        const input = await parser.input(port);
+    
+        // Replace actions
+        input.setActions(actions);
+
+        if (debug) {
+            console.log(" -> added actions: ")
             console.log((await config.get()).inputs_py);
         }
 
@@ -443,8 +446,13 @@ class ConfigParserTests extends TestBase {
             actions: actions
         });
 
-        // Replace actionsHold
-        input.set_actions(actions, true)
+        // Replace actionsHold        
+        input.setActions(actions, true);
+
+        if (debug) {
+            console.log(" -> added actionsHold: ")
+            console.log((await config.get()).inputs_py);
+        }
 
         await this.#testAction(parser, {
             port: port,
@@ -464,11 +472,11 @@ class ConfigParserTests extends TestBase {
         const parser = config.parser;
 
         const input1 = await parser.input(1);
-        expect(input1).toEqual(undefined);
+        expect(input1).toEqual(null);
 
         const input2 = await parser.input(1, true);
         
-        input2.set_actions(
+        input2.setActions(
             [
                 {
                     name: "RIG_SELECT",
@@ -516,7 +524,7 @@ class ConfigParserTests extends TestBase {
 
         const input = await parser.input(1, true);
 
-        input.set_actions(
+        input.setActions(
             [
                 {
                     name: "RIG_SELECT",
@@ -525,11 +533,11 @@ class ConfigParserTests extends TestBase {
             ]
         );
 
-        input.set_hold_time_millis(765)
-        input.set_hold_repeat(true)
+        input.setHoldTimeMillis(765)
+        input.setHoldRepeat(true)
 
-        expect(input.hold_time_millis()).toBe(765);
-        expect(input.hold_repeat()).toBe(true);
+        expect(input.holdTimeMillis()).toBe(765);
+        expect(input.holdRepeat()).toBe(true);
                 
         // console.log((await parser.config.get()).inputs_py);
 
@@ -560,7 +568,7 @@ class ConfigParserTests extends TestBase {
         const action = clients[0].actions[0];
         const client = clients[0].client;
 
-        input1.set_actions(
+        input1.setActions(
             [
                 this.#composeAction(action, client)
             ]
@@ -599,7 +607,7 @@ class ConfigParserTests extends TestBase {
 
         expect(actions.length).toBeGreaterThan(0);
 
-        input1.set_actions(
+        input1.setActions(
             actions.filter((item) => item != null)
         );
         
@@ -620,7 +628,7 @@ class ConfigParserTests extends TestBase {
 
         const input1 = await parser.input(1);
         
-        input1.set_actions(
+        input1.setActions(
             [
                 {
                     name: "RIG_SELECT",
@@ -845,7 +853,8 @@ class ConfigParserTests extends TestBase {
         const parser = config.parser;
 
         const input1 = await parser.input(1);
-        input1.set_actions(
+        
+        input1.setActions(
             [
                 action
             ],
@@ -875,482 +884,6 @@ class ConfigParserTests extends TestBase {
         expect(meta.getDisplayName(current)).toBe(expNameCurrent);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
-
-    // async removeAction() {        
-    //     await this.init();
-    //     const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
-        
-    //     const parser = await config.parser(this.pyswitch);
-    //     expect(parser).toBeInstanceOf(KemperParser);
-
-    //     // Remove from switch 2
-    //     async function remove(index) {
-    //         const input = await parser.input(25);
-    //         const actions = await input.actions(false);
-    //         await actions[index].remove();
-    //     }
-
-    //     await remove(1);
-
-    //     await this.#testAction(parser, {
-    //         port: 25,
-    //         actions: [
-    //             { 
-    //                 name: "BANK_UP",
-    //                 arguments: [
-    //                     {
-    //                         name: "display",
-    //                         value: "DISPLAY_HEADER_2"
-    //                     }
-    //                 ] 
-    //             },
-    //             { 
-    //                 name: "RIG_UP",
-    //                 arguments: [
-    //                     {
-    //                         name: "some",
-    //                         value: "val"
-    //                     },
-    //                     {
-    //                         name: "numb",
-    //                         value: '78'
-    //                     },
-    //                     {
-    //                         name: "large",
-    //                         value: '{"d":{"e":{"f":8}}}'
-    //                     },
-    //                     {
-    //                         name: "arr",
-    //                         value: '[{"f": 8, "j": [3, 5,6]}, None, "g"]'
-    //                     }
-    //                 ] 
-    //             }
-    //         ] 
-    //     });
-
-    //     await remove(0);
-
-    //     await this.#testAction(parser, {
-    //         port: 25,
-    //         actions: [
-    //             { 
-    //                 name: "RIG_UP",
-    //                 arguments: [
-    //                     {
-    //                         name: "some",
-    //                         value: "val"
-    //                     },
-    //                     {
-    //                         name: "numb",
-    //                         value: '78'
-    //                     },
-    //                     {
-    //                         name: "large",
-    //                         value: '{"d":{"e":{"f":8}}}'
-    //                     },
-    //                     {
-    //                         name: "arr",
-    //                         value: '[{"f": 8, "j": [3, 5,6]}, None, "g"]'
-    //                     }
-    //                 ] 
-    //             }
-    //         ] 
-    //     });
-
-    //     await remove(0);
-
-    //     await this.#testAction(parser, {
-    //         port: 25,
-    //         actions: [] 
-    //     });
-
-    //     // Check if everything else is still in place
-    //     await this.#testAction(parser, {
-    //         port: 1,
-    //         actions: [{
-    //             name: "RIG_UP",
-    //             arguments: [
-    //                 {
-    //                     name: "display",
-    //                     value: "DISPLAY_HEADER_1"
-    //                 },
-    //                 {
-    //                     name: "text",
-    //                     value: '"Rig up"'
-    //                 }
-    //             ]
-    //         }]
-    //     });
-
-    //     await this.#testAction(parser, {
-    //         port: 9,
-    //         actions: [{ 
-    //             name: "RIG_DOWN",
-    //             arguments: [
-    //                 {
-    //                     name: "display",
-    //                     value: "DISPLAY_FOOTER_1"
-    //                 },
-    //                 {
-    //                     name: "text",
-    //                     value: '"Rig dn"'
-    //                 }
-    //             ]
-    //         }] 
-    //     });
-
-    //     await this.#testAction(parser, {
-    //         port: 10,
-    //         actions: [{ 
-    //             name: "BANK_DOWN",
-    //             arguments: [
-    //                 {
-    //                     name: "display",
-    //                     value: "DISPLAY_FOOTER_2"
-    //                 }
-    //             ] 
-    //         }] 
-    //     });
-    // }
-
-    // async removeActionHold() {        
-    //     await this.init();
-    //     const config = new WebConfiguration(new MockController(), "data/test-presets/remove-actions-hold");
-        
-    //     const parser = await config.parser(this.pyswitch);
-    //     expect(parser).toBeInstanceOf(KemperParser);
-
-    //     // Remove from switch 2
-    //     async function remove(index) {
-    //         const input = await parser.input(25);
-    //         const actions = await input.actions(true);
-    //         await actions[index].remove();
-    //     }
-
-    //     await this.#testAction(parser, {
-    //         port: 25,
-    //         actions: [
-    //             {
-    //                 name: "BANK_UP",
-    //                 arguments: []
-    //             }
-    //         ],
-    //         actionsHold: [
-    //             { 
-    //                 name: "TUNER_MODE",
-    //                 arguments: [
-    //                     {
-    //                         name: "display",
-    //                         value: "DISPLAY_HEADER_2"
-    //                     }
-    //                 ] 
-    //             },
-    //             { 
-    //                 name: "BANK_UP",
-    //                 arguments: [] 
-    //             },
-    //             { 
-    //                 name: "BANK_DOWN",
-    //                 arguments: [] 
-    //             }
-    //         ] 
-    //     });
-
-    //     await remove(1);
-
-    //     await this.#testAction(parser, {
-    //         port: 25,
-    //         actions: [
-    //             {
-    //                 name: "BANK_UP",
-    //                 arguments: []
-    //             }
-    //         ],
-    //         actionsHold: [
-    //             { 
-    //                 name: "TUNER_MODE",
-    //                 arguments: [
-    //                     {
-    //                         name: "display",
-    //                         value: "DISPLAY_HEADER_2"
-    //                     }
-    //                 ] 
-    //             },
-    //             { 
-    //                 name: "BANK_DOWN",
-    //                 arguments: [] 
-    //             }
-    //         ] 
-    //     });
-
-    //     await remove(0);
-
-    //     await this.#testAction(parser, {
-    //         port: 25,
-    //         actions: [
-    //             {
-    //                 name: "BANK_UP",
-    //                 arguments: []
-    //             }
-    //         ],
-    //         actionsHold: [
-    //             { 
-    //                 name: "BANK_DOWN",
-    //                 arguments: [] 
-    //             }
-    //         ] 
-    //     });
-
-    //     await remove(0);
-
-    //     await this.#testAction(parser, {
-    //         port: 25,
-    //         actions: [
-    //             {
-    //                 name: "BANK_UP",
-    //                 arguments: []
-    //             }
-    //         ],
-    //         actionsHold: [] 
-    //     });
-    // }
-
-    // async addActionNoIndex() {        
-    //     await this.init();
-    //     const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
-        
-    //     const parser = await config.parser(this.pyswitch);
-    //     expect(parser).toBeInstanceOf(KemperParser);
-
-    //     // Add to switch 1
-    //     async function add(action) {
-    //         const input = await parser.input(1);
-    //         await input.add_action(action, false);
-    //     }
-
-    //     await add({
-    //         name: "FOO_ACTION",
-    //         arguments: [
-    //             {
-    //                 name: "param1",
-    //                 value: '"StringValue"'
-    //             },
-    //             {
-    //                 name: "param2",
-    //                 value: 'NameValue'
-    //             },
-    //             {
-    //                 name: "param3",
-    //                 value: '789'
-    //             },
-    //             {
-    //                 name: "param4",
-    //                 value: '{"ff":[{4:6}, "hk"]}'
-    //             },
-    //         ]
-    //     });
-
-    //     await this.#testAction(parser, {
-    //         port: 1,
-    //         actions: [
-    //             {
-    //                 name: "RIG_UP",
-    //                 arguments: [
-    //                     {
-    //                         name: "display",
-    //                         value: "DISPLAY_HEADER_1"
-    //                     },
-    //                     {
-    //                         name: "text",
-    //                         value: '"Rig up"'
-    //                     }
-    //                 ]
-    //             },
-    //             {
-    //                 name: "FOO_ACTION",
-    //                 arguments: [
-    //                     {
-    //                         name: "param1",
-    //                         value: '"StringValue"'
-    //                     },
-    //                     {
-    //                         name: "param2",
-    //                         value: 'NameValue'
-    //                     },
-    //                     {
-    //                         name: "param3",
-    //                         value: '789'
-    //                     },
-    //                     {
-    //                         name: "param4",
-    //                         value: '{"ff":[{4:6}, "hk"]}'
-    //                     },
-    //                 ]
-    //             }
-    //         ]
-    //     });
-    // }
-
-    // async addActionWithIndex() {        
-    //     await this.init();
-    //     const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
-        
-    //     const parser = await config.parser(this.pyswitch);
-    //     expect(parser).toBeInstanceOf(KemperParser);
-
-    //     // Add to switch 1
-    //     async function add(action, index) {
-    //         const input = await parser.input(1);
-    //         await input.add_action(action, false, index);
-
-    //         // console.log((await parser.source()).get("inputs_py"));
-    //     }
-
-    //     await add({
-    //         name: "FOO_ACTION",
-    //         arguments: [
-    //             {
-    //                 name: "param1",
-    //                 value: '"StringValue"'
-    //             },
-    //             {
-    //                 name: "param2",
-    //                 value: 'NameValue'
-    //             },
-    //             {
-    //                 name: "param3",
-    //                 value: '789'
-    //             },
-    //             {
-    //                 name: "param4",
-    //                 value: '{"ff":[{4:6}, "hk"]}'
-    //             },
-    //         ]
-    //     }, 0);
-
-    //     await this.#testAction(parser, {
-    //         port: 1,
-    //         actions: [                
-    //             {
-    //                 name: "FOO_ACTION",
-    //                 arguments: [
-    //                     {
-    //                         name: "param1",
-    //                         value: '"StringValue"'
-    //                     },
-    //                     {
-    //                         name: "param2",
-    //                         value: 'NameValue'
-    //                     },
-    //                     {
-    //                         name: "param3",
-    //                         value: '789'
-    //                     },
-    //                     {
-    //                         name: "param4",
-    //                         value: '{"ff":[{4:6}, "hk"]}'
-    //                     },
-    //                 ]
-    //             },
-    //             {
-    //                 name: "RIG_UP",
-    //                 arguments: [
-    //                     {
-    //                         name: "display",
-    //                         value: "DISPLAY_HEADER_1"
-    //                     },
-    //                     {
-    //                         name: "text",
-    //                         value: '"Rig up"'
-    //                     }
-    //                 ]
-    //             }
-    //         ]
-    //     });
-    // }
-
-    // async addActionHoldNoIndex() {        
-    //     await this.init();
-    //     const config = new WebConfiguration(new MockController(), "data/test-presets/get-inputs-default");
-        
-    //     const parser = await config.parser(this.pyswitch);
-    //     expect(parser).toBeInstanceOf(KemperParser);
-
-    //     // Add to switch 1
-    //     async function add(action) {
-    //         const input = await parser.input(1);
-    //         await input.add_action(action, true);
-    //     }
-
-    //     await add({
-    //         name: "FOO_ACTION",
-    //         arguments: [
-    //             {
-    //                 name: "param1",
-    //                 value: '"StringValue"'
-    //             },
-    //             {
-    //                 name: "param2",
-    //                 value: 'NameValue'
-    //             },
-    //             {
-    //                 name: "param3",
-    //                 value: '789'
-    //             },
-    //             {
-    //                 name: "param4",
-    //                 value: '{"ff":[{4:6}, "hk"]}'
-    //             },
-    //         ]
-    //     });
-
-    //     await this.#testAction(parser, {
-    //         port: 1,
-    //         actions: [
-    //             {
-    //                 name: "RIG_UP",
-    //                 arguments: [
-    //                     {
-    //                         name: "display",
-    //                         value: "DISPLAY_HEADER_1"
-    //                     },
-    //                     {
-    //                         name: "text",
-    //                         value: '"Rig up"'
-    //                     }
-    //                 ]
-    //             }
-    //         ],
-    //         actionsHold: [
-    //             {
-    //                 name: "FOO_ACTION",
-    //                 arguments: [
-    //                     {
-    //                         name: "param1",
-    //                         value: '"StringValue"'
-    //                     },
-    //                     {
-    //                         name: "param2",
-    //                         value: 'NameValue'
-    //                     },
-    //                     {
-    //                         name: "param3",
-    //                         value: '789'
-    //                     },
-    //                     {
-    //                         name: "param4",
-    //                         value: '{"ff":[{4:6}, "hk"]}'
-    //                     },
-    //                 ]
-    //             }
-    //         ]
-    //     });
-    // }
-    
-    //////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////////
-        
     /**
      * {
      *      port,
@@ -1374,29 +907,61 @@ class ConfigParserTests extends TestBase {
     async #testAction(parser, config) {
         const input = await parser.input(config.port);
 
+        function precheck(item, expItem) {
+            if (Array.isArray(item)) {
+                if (item.length != expItem.length) {
+                    console.warn(item, expItem, input);
+                }
+
+                for (let i = 0; i < item.length; ++i) {
+                    const it = item[i];
+                    const exp = expItem[i];
+
+                    precheck(it, exp);
+                }
+                return;
+            }
+
+            if (typeof item != "string") return;
+
+            if (item == expItem) return;
+            console.warn(item, expItem, input)
+        }
+
         async function test(hold, expActions) {
             const actions = await input.actions(hold);
-
+            
+            if (actions.length != expActions.length) {
+                precheck(actions, expActions)
+            }
             expect(actions.length).toBe(expActions.length);
     
             for (let i = 0; i < expActions.length; ++i) {
                 const action = actions[i];
                 const expAction = expActions[i];
     
+                precheck(action.name, expAction.name)
                 expect(action.name).toBe(expAction.name);
 
                 if (expAction.assign) {
+                    precheck(action.assign, expAction.assign)
                     expect(action.assign).toBe(expAction.assign);
                 } else {
+                    precheck(action.assign, undefined)
                     expect(action.assign).toBe(undefined);
                 }
                 
-                if (action.client != "local") expect(action.client).toBe(config.client);
+                if (action.client != "local") {
+                    precheck(action.client, config.client)
+                    expect(action.client).toBe(config.client);
+                }
 
                 if (expAction.arguments) {
-                    expect(JSON.parse(action.arguments())).toEqual(expAction.arguments);
+                    precheck(action.arguments(), expAction.arguments)
+                    expect(action.arguments()).toEqual(expAction.arguments);
                 } else {
-                    expect(JSON.parse(action.arguments())).toEqual([]);
+                    precheck(action.arguments(), [])
+                    expect(action.arguments()).toEqual([]);
                 }
             }
         }
@@ -1409,11 +974,11 @@ class ConfigParserTests extends TestBase {
         }
 
         if (config.holdTimeMillis) {
-            expect(input.hold_time_millis()).toBe(config.holdTimeMillis)
+            expect(input.holdTimeMillis()).toBe(config.holdTimeMillis)
         }
 
         if (config.holdRepeat) {
-            expect(input.hold_repeat()).toBe(config.holdRepeat)
+            expect(input.holdRepeat()).toBe(config.holdRepeat)
         }
     }
 }

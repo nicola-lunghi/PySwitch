@@ -62,7 +62,7 @@ class ParserFrontendInput {
      */
     async #getActionText(actionCallProxy, short = false) {
         const action = await this.#getActionDefinition(
-            actionCallProxy.proxy_name ? actionCallProxy.proxy_name : actionCallProxy.name, 
+            actionCallProxy.proxyName ? actionCallProxy.proxyName : actionCallProxy.name, 
             actionCallProxy.client
         );
         
@@ -315,14 +315,14 @@ class ParserFrontendInput {
             .map((item) => { return {
                 name: item.name,
                 assign: item.assign,
-                arguments: JSON.parse(item.arguments())
+                arguments: item.arguments()
             }});
 
         const newActionsHold = this.#getItemHandlers(true)
             .map((item) => { return {
                 name: item.name,
                 assign: item.assign,
-                arguments: JSON.parse(item.arguments())
+                arguments: item.arguments()
             }});
 
         // Set the inputs accordingly (no update)
@@ -373,9 +373,9 @@ class ParserFrontendInput {
             // Preselected action
             {
                 name: action.name,
-                proxy_name: action.proxy_name,
+                proxyName: action.proxyName,
                 assign: action.assign,
-                arguments: JSON.parse(action.arguments()),
+                arguments: action.arguments(),
                 hold: hold
             },
 
@@ -440,7 +440,7 @@ class ParserFrontendInput {
                     this.#parserFrontend.parser,
                     {
                         onSelect: onSelect,
-                        preselectActionName: preselectAction ? (preselectAction.proxy_name ? preselectAction.proxy_name : preselectAction.name) : null,
+                        preselectActionName: preselectAction ? (preselectAction.proxyName ? preselectAction.proxyName : preselectAction.name) : null,
                         target: this.definition.data.model.type
                     }                    
                 )
@@ -457,7 +457,7 @@ class ParserFrontendInput {
                 props.setHold(preselectAction.hold);
                 props.setAssign(preselectAction.assign);
 
-                if (preselectAction.proxy_name) {
+                if (preselectAction.proxyName) {
                     const splt = preselectAction.name.split(".");
                     if (splt.length == 2) {
                         props.setPagerProxy(splt[0])
@@ -547,7 +547,7 @@ class ParserFrontendInput {
                     name: item.name,
                     client: item.client,
                     assign: item.assign,
-                    arguments: JSON.parse(item.arguments())
+                    arguments: item.arguments()
                 }
             });
         
@@ -580,7 +580,7 @@ class ParserFrontendInput {
                     name: item.name,
                     client: item.client,
                     assign: item.assign,
-                    arguments: JSON.parse(item.arguments())
+                    arguments: item.arguments()
                 }
             });
                 
@@ -609,7 +609,7 @@ class ParserFrontendInput {
                     name: item.name,
                     client: item.client,
                     assign: item.assign,
-                    arguments: JSON.parse(item.arguments())
+                    arguments: item.arguments()
                 }
             });
                 
@@ -659,9 +659,10 @@ class ParserFrontendInput {
     async #setActions(actions, hold, noUpdate) {
         if (!this.input) {
             // Create input
+            console.log(this.definition)
             this.input = await this.#parserFrontend.parser.input(this.definition.data.model.port, true);
         }
 
-        this.input.set_actions(actions, hold, noUpdate);
+        this.input.setActions(actions, hold, noUpdate);
     }
 }

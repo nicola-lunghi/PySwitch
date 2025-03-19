@@ -1,11 +1,8 @@
 import libcst
 import json 
 
-from .inputs.Input import Input
-from .inputs.InputReplacer import InputReplacer
-from .inputs.CreateInputTransformer import CreateInputTransformer
-
-from .display.SplashesExtractor import SplashesExtractor
+from .InputsExtractor import InputsExtractor
+from .SplashesExtractor import SplashesExtractor
 
 from .misc.CodeGenerator import CodeGenerator
 from .misc.RemoveUnusedImportTransformer import RemoveUnusedImportTransformer
@@ -13,7 +10,7 @@ from .misc.AddImportsTransformer import AddImportsTransformer
 from .misc.AssignmentNameExtractor import AssignmentNameExtractor
 from .misc.AssignmentExtractor import AssignmentExtractor
 from .misc.ImportExtractor import ImportExtractor
-from .misc.RemoveAssignmentTransformer import RemoveAssignmentTransformer
+from .misc.ReplaceAssignmentTransformer import ReplaceAssignmentTransformer
 from .misc.AddAssignmentTransformer import AddAssignmentTransformer
 from .misc.ClassNameExtractor import ClassNameExtractor
 
@@ -21,7 +18,6 @@ class PySwitchParser:
 
     def __init__(self, hw_import_path, available_clients_json):
         self.hw_import_path = hw_import_path       
-        self.__js_parser = None
         self.__csts = None
         
         self.clients = json.loads(available_clients_json)
@@ -31,29 +27,12 @@ class PySwitchParser:
         self.__available_mappings = None
         self.__available_display_imports = None
         
-        # self.__pager = None
-        # self.__pager_buffer_active = False
-        
-        self.reset_buffers()
-
-    # Has to be called before usage
-    def init(self, js_parser):
-        self.__js_parser = js_parser.to_py()
-
-    # Reset buffers
-    def reset_buffers(self):
-        self.__displays = None
-        self.__inputs = {}
-        self.__splashes = None
-
     # Set the parser data from source code
     def from_source(self, inputs_py, display_py):
         self.__csts = {
             "inputs_py": libcst.parse_module(inputs_py),
             "display_py": libcst.parse_module(display_py)
         }
-
-        self.reset_buffers()
 
     # Returns a dict holding the sources for the current configuration
     def to_source(self):
@@ -67,39 +46,32 @@ class PySwitchParser:
             "inputs_py": self.__csts["inputs_py"].code,
             "display_py": self.__csts["display_py"].code
         }
-
-    # Returns the visitor/handler of the input assigned to the port given
-    def input(self, port, create_if_not_existent = False):
+    
+    # Delivers code for a node of tree data. Cannot add assignments!
+    def code_for_data_node(self, data):
+        if isinstance(data, str):
+            return data
+        
+        node = CodeGenerator().generate(data.to_py())
+        return libcst.parse_module("").code_for_node(node)
+    
+    # Returns a JSON encoded tree of the Inputs assign in inputs.py
+    def inputs(self):
+        if not self.__csts:
+            raise Exception("No data loaded")
+                
+        inputs = InputsExtractor(self, self.__csts["inputs_py"]).get("Inputs")
+        return json.dumps(inputs)
+    
+    # Replace the inputs in inputs.py
+    def set_inputs(self, inputs):
         if not self.__csts:
             raise Exception("No data loaded")
         
-        if not create_if_not_existent and port in self.__inputs:
-            return self.__inputs[port]
+        inputs_node = CodeGenerator(self, "inputs_py", insert_before_assign = "Inputs").generate(inputs.to_py())
         
-        # Try to find the input
-        visitor = Input(self, self.hw_import_path, port)
-        self.__csts["inputs_py"].visit(visitor)
-        ret = visitor if visitor.result != None else None
+        self.set_assignment("Inputs", inputs_node, "inputs_py")
 
-        if create_if_not_existent and not ret:
-            # Create input
-            visitor = CreateInputTransformer(self.hw_import_path, port)
-            self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
-            
-            # Scan again for the input
-            visitor = Input(self, self.hw_import_path, port)
-            self.__csts["inputs_py"].visit(visitor)
-            
-            if not visitor.result:
-                raise Exception("Error creating input " + repr(port))
-
-            ret = visitor
-
-            
-        self.__inputs[port] = ret
-
-        return ret
-    
     # Searches for an Assign with the given name and returns its node, or None if not found
     def get_assignment(self, name, file_id):
         assignments = AssignmentExtractor().get(self.__csts[file_id])
@@ -110,10 +82,40 @@ class PySwitchParser:
             
         return None
 
+    #######################################################################################
+
+    # Returns a JSON encoded list of assignments in display.py TODO remove
+    def displays(self):
+        if not self.__csts:
+            raise Exception("No data loaded")
+        
+        return json.dumps(AssignmentNameExtractor().get(self.__csts["display_py"]))
+    
+    # Returns a JSON encoded tree of the Splashes assign in display.py
+    def splashes(self):
+        if not self.__csts:
+            raise Exception("No data loaded")
+                
+        splashes = SplashesExtractor(self, self.__csts["display_py"]).get("Splashes")
+        return json.dumps(splashes)
+
+    # Replace the splashes in display.py
+    def set_splashes(self, splashes):
+        if not self.__csts:
+            raise Exception("No data loaded")
+
+        splashes_node = CodeGenerator(self, "display_py", insert_before_assign = "Splashes").generate(splashes.to_py())
+        
+        self.set_assignment("Splashes", splashes_node, "display_py")
+
+    ########################################################################################
+        
     # Adds or replaces the given assignment by name.
     def set_assignment(self, name, call_node, file_id, insert_before_assign = None):
-        remover = RemoveAssignmentTransformer(name)
-        self.__csts[file_id] = self.__csts[file_id].visit(remover)
+        replacer = ReplaceAssignmentTransformer(name, call_node)
+        self.__csts[file_id] = self.__csts[file_id].visit(replacer)
+        if replacer.replaced:
+            return
 
         adder = AddAssignmentTransformer(
             name, 
@@ -124,65 +126,8 @@ class PySwitchParser:
 
         self.__csts[file_id] = self.__csts[file_id].visit(adder)
 
-    #######################################################################################
-
-    # Returns a JSON encoded list of assignments in display.py
-    def displays(self):
-        if self.__displays:
-            return self.__displays
-            
-        if not self.__csts:
-            raise Exception("No data loaded")
-        
-        self.__displays = json.dumps(AssignmentNameExtractor().get(self.__csts["display_py"]))
-
-        return self.__displays
-    
-    # Returns a proxy to the splashes in display.py
-    def splashes(self):
-        if self.__splashes:
-            return self.__splashes
-        
-        if not self.__csts:
-            raise Exception("No data loaded")
-                
-        splashes = SplashesExtractor(self, self.__csts["display_py"]).get("Splashes")
-        self.__splashes = json.dumps(splashes)
-        
-        return self.__splashes
-
-    # Replace the splashes in display.py
-    def set_splashes(self, splashes):
-        if not self.__csts:
-            raise Exception("No data loaded")
-        
-        self.__splashes = None
-        self.__displays = None
-        
-        splashes_node = CodeGenerator(self, "display_py", insert_before_assign = "Splashes").generate(splashes.to_py())
-        
-        self.set_assignment("Splashes", splashes_node, "display_py")
-        
-        self.__js_parser.updateConfig()
-
     ########################################################################################
 
-    # Update the CSTs from the passed input. Only called internally.
-    def update_input(self, input, noUpdate = False):
-        if not self.__csts:
-            raise Exception("No data loaded")
-
-        visitor = InputReplacer(input)
-        self.__csts["inputs_py"] = self.__csts["inputs_py"].visit(visitor)
-
-        # Reset buffer
-        self.__inputs = {}
-
-        if not noUpdate:
-            self.__js_parser.updateConfig()
-
-    ########################################################################################
-        
     # Remove unused imports on all files. Does no config update!
     def _remove_unused_imports(self):
         self._remove_unused_import_for_file("inputs_py")
@@ -241,10 +186,16 @@ class PySwitchParser:
                 "name": "const",
                 "importPath": "micropython"
             },
+
             {
                 "name": "Colors",
                 "importPath": "pyswitch.misc"
             },
+            {
+                "name": "DEFAULT_LABEL_COLOR",
+                "importPath": "pyswitch.misc"
+            },
+
             {
                 "name": "DisplayElement",
                 "importPath": "pyswitch.ui.ui"

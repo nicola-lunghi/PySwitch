@@ -72,6 +72,13 @@ class Tools {
      * Remove all existing quotes and add new ones.
      */
     static autoQuote(str) {
-        return "'" + str.replaceAll('"', "").replaceAll("'", "") + "'"
+        return "'" + Tools.stripQuotes(str) + "'";
+    }
+
+    /**
+     * Removes all kinds of quotes
+     */
+    static stripQuotes(str) {
+        return str.replaceAll('"', "").replaceAll("'", "");
     }
 }

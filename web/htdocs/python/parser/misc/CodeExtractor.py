@@ -40,7 +40,7 @@ class CodeExtractor:
         return None
     
     # Returns a dict from the value node (recursive)
-    def _parse_node(self, node):
+    def _parse_node(self, node):        
         if isinstance(node, libcst.Name):
             return self._parse_assigned(node)
         

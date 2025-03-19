@@ -147,8 +147,8 @@ class FunctionMeta {
     getArgument(actionCallProxy = null, name) {
         if (!actionCallProxy) return null;
         
-        const args = JSON.parse(actionCallProxy.arguments());
-
+        const args = actionCallProxy.arguments();
+        
         for (const arg of args) {
             if (arg.name == name) return arg;
         }

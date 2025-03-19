@@ -30,9 +30,9 @@ class InputSettings extends ParameterList {
                 that.createBooleanInputRow(
                     "Hold Repeat",
                     "This option keeps repeating the hold actions again and again as long as the switch is held.",
-                    that.#input ? that.#input.hold_repeat() : false,
+                    that.#input ? that.#input.holdRepeat() : false,
                     async function(value) {
-                        that.#input.set_hold_repeat(value);
+                        that.#input.setHoldRepeat(value);
 
                         await that.controller.restart({
                             message: "none"
@@ -43,9 +43,9 @@ class InputSettings extends ParameterList {
                 that.createNumericInputRow(
                     "Hold Time", 
                     "Amount of time you have to press the switch for the hold actions to be triggered (Milliseconds).",
-                    that.#input ? that.#input.hold_time_millis() : 0,
+                    that.#input ? that.#input.holdTimeMillis() : 0,
                     async function(value) {
-                        that.#input.set_hold_time_millis(value);
+                        that.#input.setHoldTimeMillis(value);
 
                         await that.controller.restart({
                             message: "none"

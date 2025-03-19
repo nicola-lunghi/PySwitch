@@ -30,7 +30,7 @@ class DisplayEditor extends ParameterList {
                 "Number of displays sharing the area above the rig name",
                 2,
                 async function(value) {
-                    // that.#input.set_hold_repeat(value);
+                    // that.#input.setHoldRepeat(value);
 
                     // await that.controller.restart({
                     //     message: "none"
@@ -43,7 +43,7 @@ class DisplayEditor extends ParameterList {
                 "Number of rows for showing the amount of displays selected for the header",
                 1,
                 async function(value) {
-                    // that.#input.set_hold_repeat(value);
+                    // that.#input.setHoldRepeat(value);
 
                     // await that.controller.restart({
                     //     message: "none"
@@ -56,7 +56,7 @@ class DisplayEditor extends ParameterList {
                 "Number of displays sharing the area below the rig name",
                 2,
                 async function(value) {
-                    // that.#input.set_hold_repeat(value);
+                    // that.#input.setHoldRepeat(value);
 
                     // await that.controller.restart({
                     //     message: "none"
@@ -69,7 +69,7 @@ class DisplayEditor extends ParameterList {
                 "Number of rows for showing the amount of displays selected for the footer",
                 1,
                 async function(value) {
-                    // that.#input.set_hold_repeat(value);
+                    // that.#input.setHoldRepeat(value);
 
                     // await that.controller.restart({
                     //     message: "none"
@@ -82,7 +82,7 @@ class DisplayEditor extends ParameterList {
                 "Adds the rig ID to the rig name display",
                 false,
                 async function(value) {
-                    // that.#input.set_hold_repeat(value);
+                    // that.#input.setHoldRepeat(value);
 
                     // await that.controller.restart({
                     //     message: "none"
@@ -98,7 +98,7 @@ class DisplayEditor extends ParameterList {
                 ],
                 "foo",
                 async function(value) {
-                    // that.#input.set_hold_repeat(value);
+                    // that.#input.setHoldRepeat(value);
 
                     // await that.controller.restart({
                     //     message: "none"

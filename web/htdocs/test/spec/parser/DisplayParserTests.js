@@ -757,6 +757,265 @@ class DisplayParserTests extends TestBase {
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
+    async codeForNode() {
+        await this.init();
+        const config = new WebConfiguration(new MockController(), "data/test-display/get-displays-minimal");
+        
+        await config.init(this.pyswitch, "../");
+        const parser = config.parser;
+        await parser.init();
+
+        // Basic
+        expect(parser.codeForNode("foo")).toEqual("foo");
+        
+        // Lists
+        expect(parser.codeForNode([])).toEqual("[]");        
+        expect(parser.codeForNode(["2","3","4"])).toEqual("[2, 3, 4]");
+        expect(parser.codeForNode(["2","3",'"hjk"'])).toEqual('[2, 3, "hjk"]');
+        expect(parser.codeForNode(["2", { 
+            name: "foos", 
+            arguments: [
+                {
+                    name: "h",
+                    value: "67"
+                },
+                {
+                    name: "g",
+                    value: '"67"'
+                }
+            ]
+        }])).toEqual('[2, foos(h = 67, g = "67")]');
+
+        // Dicts
+        expect(parser.codeForNode({ arguments: [] })).toEqual("{}");
+        expect(parser.codeForNode({
+            arguments: [
+                {
+                    name: "jk",
+                    value: "67"
+                }
+            ]
+        })).toEqual('{"jk": 67}');
+        expect(parser.codeForNode({
+            arguments: [
+                {
+                    name: "jk",
+                    value: '"67"'
+                },
+                {
+                    name: "jg",
+                    value: {
+                        name: "dd",
+                        arguments: [
+                            {
+                                name: "j",
+                                value: "9"
+                            },
+                            {
+                                name: "i",
+                                value: ["2","3","4"]
+                            }
+                        ]
+                    }
+                }
+            ]
+        })).toEqual('{"jk": "67", "jg": dd(j = 9, i = [2, 3, 4])}');
+
+        // Calls
+        expect(parser.codeForNode({
+            name: "kk"
+        })).toEqual("kk()");
+        expect(parser.codeForNode({
+            name: "kk",
+            arguments: [
+                {
+                    value: '3'
+                }
+            ]
+        })).toEqual('kk(3)');
+        expect(parser.codeForNode({
+            name: "kk",
+            arguments: [
+                {
+                    name: "l",
+                    value: '"aa"'
+                },
+                {
+                    name: "a",
+                    value: {
+                        name: "oo"
+                    }
+                }
+            ]
+        })).toEqual('kk(l = "aa", a = oo())');
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    async replaceDisplaysCode() {
+        // Root code
+        await this.#replaceSplashes(
+            // Set data
+            {
+                code: "DisplayEtwas(someparam = 9)"
+            },
+
+            // Expected
+            {
+                name: "DisplayEtwas",
+                arguments: [
+                    {
+                        name: "someparam",
+                        value: "9"
+                    }
+                ]
+            }
+        );
+
+        // List items
+        await this.#replaceSplashes(
+            // Set data
+            [
+                {
+                    code: "DisplayEtwas(someparam = 9)"
+                },
+                "9"
+            ],
+
+            // Expected
+            [
+                {
+                    name: "DisplayEtwas",
+                    arguments: [
+                        {
+                            name: "someparam",
+                            value: "9"
+                        }
+                    ]
+                },
+                "9"
+            ]
+        );
+
+        // Call args
+        await this.#replaceSplashes(
+            // Set data
+            {
+                name: "jj",
+                arguments: [
+                    {
+                        name: "foos",
+                        code: "DisplayEtwas(someparam = 9)"
+                    }
+                ]
+            },
+
+            // Expected
+            {
+                name: "jj",
+                arguments: [
+                    {
+                        name: "foos",
+                        value: {
+                            name: "DisplayEtwas",
+                            arguments: [
+                                {
+                                    name: "someparam",
+                                    value: "9"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        );
+
+        // Dict args
+        await this.#replaceSplashes(
+            // Set data
+            {
+                arguments: [
+                    {
+                        name: "foos",
+                        code: "DisplayEtwas(someparam = 9)"
+                    }
+                ]
+            },
+
+            // Expected
+            {
+                arguments: [
+                    {
+                        name: "foos",
+                        value: {
+                            name: "DisplayEtwas",
+                            arguments: [
+                                {
+                                    name: "someparam",
+                                    value: "9"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        );
+
+        await this.#replaceSplashes(
+            // Set data
+            {
+                arguments: [
+                    {
+                        name: "ddd",
+                        code: 'DesrbHut(sdfvsdv = { "foo": [2,3,4,"hg", foos(SOMETYPE)] }, deb = True)'
+                    }
+                ]
+            },
+
+            // Expected
+            {
+                arguments: [
+                    {
+                        name: "ddd",
+                        value: {
+                            name: "DesrbHut",
+                            arguments: [
+                                {
+                                    name: "sdfvsdv",
+                                    value: {
+                                        arguments: [
+                                            {
+                                                name: 'foo',
+                                                value: [
+                                                    "2",
+                                                    "3",
+                                                    "4",
+                                                    '"hg"',
+                                                    {
+                                                        name: "foos",
+                                                        arguments: [
+                                                            {
+                                                                value: "SOMETYPE" 
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    name: "deb",
+                                    value: "True"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        );
+    }
+
     async replaceDisplaysDict() {
         await this.#replaceSplashes({
             arguments: [
@@ -2157,8 +2416,8 @@ class DisplayParserTests extends TestBase {
                     }
                 ]
             },
-            "data/test-display/get-displays-real",
-            true
+            null,
+            "data/test-display/get-displays-real"
         )
     }
     
@@ -2166,8 +2425,9 @@ class DisplayParserTests extends TestBase {
 
     async #testDisplay(parser, expSplashes, debug = false) {
         await this.init();
+        await parser.init();
 
-        const splashes = JSON.parse(await parser.splashes());
+        const splashes = await parser.splashes();
         if (debug) console.log(splashes, expSplashes)
         
         function test(node, expNode) {
@@ -2203,14 +2463,14 @@ class DisplayParserTests extends TestBase {
         test(splashes, expSplashes);
     }
 
-    async #replaceSplashesWithRun(splashes, testdata = null, debug = false) {
-        const parser = await this.#replaceSplashes(splashes, testdata, debug);
+    async #replaceSplashesWithRun(splashes, expSplashes = null, testdataPath = null, debug = false) {
+        const parser = await this.#replaceSplashes(splashes, expSplashes, testdataPath, debug);
         await this.runner.run(parser.config);        
     }
 
-    async #replaceSplashes(splashes, testdata = null, debug = false) {
+    async #replaceSplashes(splashes, expSplashes = null, testdataPath = null, debug = false) {
         await this.init();
-        const config = new WebConfiguration(new MockController(), testdata ? testdata : "data/test-display/get-displays-minimal");
+        const config = new WebConfiguration(new MockController(), testdataPath ? testdataPath : "data/test-display/get-displays-minimal");
         
         await config.init(this.pyswitch, "../");
         const parser = config.parser;
@@ -2222,7 +2482,7 @@ class DisplayParserTests extends TestBase {
             console.log((await config.get()).display_py);
         }
 
-        await this.#testDisplay(parser, splashes);
+        await this.#testDisplay(parser, expSplashes ? expSplashes : splashes);
         return parser
     }
 }

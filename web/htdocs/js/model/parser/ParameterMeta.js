@@ -53,7 +53,7 @@ class ParameterMeta {
         if (this.parameter.name == "display" || this.parameter.name == "morph_display") {
             function formatUsages(usages) {
                 if (usages.length == 0) return "";
-                const usagemap = usages.map((item) => item.input.display_name());
+                const usagemap = usages.map((item) => item.input.displayName());
                 return " (" + usagemap.join(", ") + ")";
             }
     

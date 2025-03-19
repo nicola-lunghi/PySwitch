@@ -241,7 +241,7 @@ class PagerProperties {
                     pagerActions
                     .map(
                         async (item) => {
-                            const pagesArg = JSON.parse(item.arguments()).filter((e) => e.name == "pages");
+                            const pagesArg = item.arguments().filter((e) => e.name == "pages");
                             if (!pagesArg || !pagesArg.length) return null;
 
                             const pages = pagesArg[0].value;

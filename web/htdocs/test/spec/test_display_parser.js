@@ -23,6 +23,10 @@ describe('Display Parser', function() {
     });
 
 
+    it('Code for single tree nodes', async function() {
+        await tests.codeForNode();
+    });
+
 
     it('Generic: Replace list', async function() {
         await tests.replaceDisplaysArray();
@@ -34,6 +38,10 @@ describe('Display Parser', function() {
 
     it('Generic: Replace call', async function() {
         await tests.replaceDisplaysCall();
+    });
+
+    it('Generic: Replace with code attribute', async function() {
+        await tests.replaceDisplaysCode();
     });
 
     it('Replace displays (fantasy values)', async function() {

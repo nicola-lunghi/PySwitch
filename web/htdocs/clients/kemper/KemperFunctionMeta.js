@@ -61,6 +61,7 @@ class KemperFunctionMeta extends FunctionMeta {
      */
     #getDisplayNameRigSelect(actionCallProxy = null) {
         const rig_off = this.getArgument(actionCallProxy, "rig_off");
+        
         if (actionCallProxy && !(rig_off == null || rig_off.value == "None")) {
             return this.#replaceParameterTokens(actionCallProxy, "Toggle Rigs {rig}/{rig_off}");
         }
@@ -194,7 +195,7 @@ class KemperFunctionMeta extends FunctionMeta {
      */
     #replaceParameterTokens(actionCallProxy = null, str) {
         function getReplaceValue(param) {
-            for (const def of (actionCallProxy ? (JSON.parse(actionCallProxy.arguments()) || []) : [])) {
+            for (const def of (actionCallProxy ? actionCallProxy.arguments() : [])) {
                 if (def.name == param.name) {
                     return def.value;
                 }

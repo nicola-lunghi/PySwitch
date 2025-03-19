@@ -1,4 +1,4 @@
-from ..misc.CodeExtractor import CodeExtractor
+from .misc.CodeExtractor import CodeExtractor
 
 class SplashesExtractor(CodeExtractor):
     
