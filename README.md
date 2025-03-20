@@ -174,7 +174,7 @@ Inputs = [
 ]
 ```
 
-### 
+### Continuous Inputs
 
 Continuous controllers like expression pedals and rotary encoders can also be added to the "Inputs" list in **inputs.py**, using the appropriate models from lib/pyswitch/hardware/hardware.py. However, the actions are different than with switches.
 
@@ -418,6 +418,96 @@ Inputs = [
     }
 ]
 ```
+
+#### Custom Actions
+
+If you want to send your own custom MIDI messages, you can also define your mappings. This example is similar to the "Rig Volume Boost" action:
+
+```python
+from pyswitch.controller.callbacks import BinaryParameterCallback
+from pyswitch.controller.actions import PushButtonAction
+from adafruit_midi.system_exclusive import SystemExclusive
+from pyswitch.clients.kemper import KemperParameterMapping
+
+Inputs = [
+    {
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            PushButtonAction(
+                {
+                    "callback": BinaryParameterCallback(
+                        mapping = KemperParameterMapping(
+                            set = SystemExclusive(
+                                manufacturer_id = [0x00, 0x20, 0x33], 
+                                data = [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01] # Two value bytes will be added by PySwitch
+                            ), 
+                            request = SystemExclusive(
+                                manufacturer_id = [0x00, 0x20, 0x33], 
+                                data = [0x02, 0x7f, 0x41, 0x00, 0x04, 0x01]
+                            ), 
+                            response = SystemExclusive(
+                                manufacturer_id = [0x00, 0x20, 0x33], 
+                                data = [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01] # Two value bytes will be evaluated by PySwitch
+                            )
+                        ), 
+                        color = (255, 100, 0), 
+                        text = "Rig Vol", 
+                        value_enable = 12000,    # Value set on enable state
+                        value_disable = "auto",    # Value set on disable state
+                        reference_value = 12000, # Value to compare incoming messages, to determine the state of the switch (on or off)
+                        comparison_mode = BinaryParameterCallback.GREATER_EQUAL
+                    ),
+                    "display": DISPLAY_HEADER_1,
+                    "useSwitchLeds": True,
+                    "mode": PushButtonAction.HOLD_MOMENTARY,  # Pushbutton mode                    
+                }
+            )            
+        ]       
+    }
+]
+```
+
+If you want only to send but not receive, you have to set the internal state enabled like in this example, which does not listen to the client at all but just sends messages:
+
+```python
+from pyswitch.controller.callbacks import BinaryParameterCallback
+from pyswitch.controller.actions import PushButtonAction
+from adafruit_midi.system_exclusive import SystemExclusive
+from pyswitch.clients.kemper import KemperParameterMapping
+
+Inputs = [
+    {
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [
+            PushButtonAction(
+                {
+                    "callback": BinaryParameterCallback(
+                        mapping = KemperParameterMapping(
+                            set = SystemExclusive(
+                                manufacturer_id = [0x00, 0x20, 0x33], 
+                                data = [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01] # Two value bytes will be added by PySwitch
+                            )
+                        ), 
+                        color = (255, 100, 0), 
+                        text = "Rig Vol", 
+                        value_enable = 12000,    # Value set on enable state
+                        value_disable = 8192,    # Value set on disable state
+                        use_internal_state = True
+                    ),
+                    "display": DISPLAY_HEADER_1,
+                    "useSwitchLeds": True,
+                    "mode": PushButtonAction.HOLD_MOMENTARY,  # Pushbutton mode                    
+                }
+            )            
+        ]       
+    }
+]
+```
+
+For a complete list of options, see these two classes:
+
+- pyswitch/controller/actions/PushbuttonAction
+- pyswitch/controller/callbacks/BinaryParameterCallback
 
 ### TFT Display Layout Definition
 

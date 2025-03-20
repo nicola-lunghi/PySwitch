@@ -110,6 +110,7 @@ class PySwitchRunner:
                 config = {
                     # "debugBidirectionalProtocol": True,
                     # "updateInterval": 2000,
+                    # "debugSentMessages": True
                 },
                 inputs = Inputs,
                 ui = UiController(

@@ -43,16 +43,26 @@ class CodeGenerator:
 
     # Generate libcst node from th passed list representation
     def _generate_list_node(self, data, level):
+        def format_list():
+            for item in data:
+                if not isinstance(item, str):
+                    return True
+                
+            return False
+
+        # If there are only atomic items, do not format
+        format = format_list()
+
         return libcst.List(
             elements = [
                 libcst.Element(
                     value = self._generate(item, level + 1),
-                    comma = self._generate_whitespaced_node(libcst.Comma, libcst.MaybeSentinel.DEFAULT, level + 1)
+                    comma = self._generate_whitespaced_node(libcst.Comma, libcst.MaybeSentinel.DEFAULT, level + 1) if format else libcst.MaybeSentinel.DEFAULT
                 )
                 for item in data
             ],
-            rbracket = self._generate_whitespaced_node(libcst.RightSquareBracket, libcst.RightSquareBracket(), level),
-            lbracket = self._generate_whitespaced_node(libcst.LeftSquareBracket, libcst.LeftSquareBracket(), level + 1)
+            rbracket = self._generate_whitespaced_node(libcst.RightSquareBracket, libcst.RightSquareBracket(), level) if format else libcst.RightSquareBracket(),
+            lbracket = self._generate_whitespaced_node(libcst.LeftSquareBracket, libcst.LeftSquareBracket(), level + 1) if format else libcst.LeftSquareBracket()
         )
     
     # Generate libcst node from the passed dict representation
