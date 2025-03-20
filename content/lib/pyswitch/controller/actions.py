@@ -198,6 +198,7 @@ class PushButtonAction(Action):
                                            # used (inverse or not: This depends on the current state of the functionality. When it is
                                            # on, it will momentarily be switched off and vice versa).
     ONE_SHOT = const(100)                  # Fire the SET command on every push (show as disabled)
+    NO_STATE_CHANGE = const(200)           # Do not react on pushing the switch
 
     # Hold time for HOLD_MOMENTARY mode (milliseconds)
     DEFAULT_LATCH_MOMENTARY_HOLD_TIME = const(600)
@@ -276,7 +277,7 @@ class PushButtonAction(Action):
 
         elif mode == self.ONE_SHOT:
             self.__state = False    # Triggers that set() is called by the state property in the next line
-            self.state = True
+            self.state = True            
 
     # Button released
     def release(self):

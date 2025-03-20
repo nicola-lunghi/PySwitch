@@ -231,6 +231,10 @@
                             {
                                 "name": "One Shot",
                                 "value": "PushButtonAction.ONE_SHOT"
+                            },
+                            {
+                                "name": "No State Change",
+                                "value": "PushButtonAction.NO_STATE_CHANGE"
                             }
                         ]
                     },

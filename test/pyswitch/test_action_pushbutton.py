@@ -460,6 +460,80 @@ class TestActionPushButton(unittest.TestCase):
         self.assertEqual(len(cb.update_displays_calls), 5)
         self.assertEqual(len(cb.state_changed_calls), 2)
 
+
+###################################################################################
+
+
+    def test_no_state_change(self):
+        switch_1 = MockSwitch()
+        cb = MockPushButtonActionCallback()
+
+        action_1 = MockPushButtonAction({
+            "mode": PushButtonAction.NO_STATE_CHANGE,
+            "callback": cb
+        })
+
+        appl = Controller(
+            led_driver = MockNeoPixelDriver(),
+            midi = MockMidiController(),
+            inputs = [
+                {
+                    "assignment": {
+                        "model": switch_1
+                    },
+                    "actions": [
+                        action_1
+                    ]
+                }
+            ]
+        )
+
+        appl.init()
+
+        # Build scene:
+        # Step 1: Button pushed
+        switch_1.shall_be_pushed = True
+        cb.update_displays_calls = []
+        cb.state_changed_calls = []
+
+        appl.tick()
+
+        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(len(cb.state_changed_calls), 0)
+
+        # Step 2: Button released    
+        switch_1.shall_be_pushed = False
+        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(len(cb.state_changed_calls), 0)
+
+        appl.tick()
+        appl.tick()
+
+        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(len(cb.state_changed_calls), 0)
+        
+        # Step 3: Button pushed
+        switch_1.shall_be_pushed = True
+        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(len(cb.state_changed_calls), 0)
+
+        appl.tick()
+        appl.tick()
+
+        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(len(cb.state_changed_calls), 0)
+        
+        # Step 4: Button released
+        switch_1.shall_be_pushed = False
+        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(len(cb.state_changed_calls), 0)
+
+        appl.tick()
+        appl.tick()
+
+        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(len(cb.state_changed_calls), 0)
+
         
 ###################################################################################
 
