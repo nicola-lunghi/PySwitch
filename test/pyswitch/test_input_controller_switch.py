@@ -321,13 +321,13 @@ class TestControllerSwitch(unittest.TestCase):
             }
         })
 
-        with self.assertRaises(Exception):            
+        with self.assertRaises(Exception):
             fs.colors = [(0, 0, 0)]
 
-        with self.assertRaises(Exception):            
+        with self.assertRaises(Exception):
             fs.colors = ((0, 0, 0), (0, 0, 0))
 
-        with self.assertRaises(Exception):            
+        with self.assertRaises(Exception):
             fs.brightnesses = [1]
 
     ##############################################################################

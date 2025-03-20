@@ -66,7 +66,7 @@ class Notifications {
 		} else {
 			msg = msgOrException;
 		}
-
+		
 		const msgEl = $('<div />').html(msg);
 		const msgCont = $('<tr />').append($('<td />').append(msgEl));
 		let fadeTime = 0;
@@ -77,7 +77,7 @@ class Notifications {
 		switch (type) {
 		case 'E':
 			msgEl.addClass("message message-danger");
-
+			console.log(msg)
 			if (typeof msg == "string" && msg.includes("Traceback")) {
 				msgEl.addClass("message-traceback")
 			}

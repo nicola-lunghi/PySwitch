@@ -1326,7 +1326,7 @@
                         "comment": null
                     }
                 ],
-                "comment": "The PagerAction is used to control multiple other actions to provide paging. Define this action for one switch which will by default rotate through the defined pages.\nFor the actions you want to be part of pages, just assign them using the paging buttons (which will set the id and enable_callback parameters for you).\nAlso, it is possible to have more than one pager in a configuration.\n\n<b>Rotate Through Pages:</b>\nIf you want to rotate through pages, just use this action with select_page set to None, which is the default. The switch will then rotate through the pages. \n\n<b>Directly Select Pages:</b>\nIf you want to have one switch dedicated to select each page, set select_page here to the page you want to select with this switch, and use the \"Select Page\" action (assigned to this pager) for the other switches to select the further pages directly.",
+                "comment": "The PagerAction is used to control multiple other actions to provide paging. Define this action for one switch which will by default rotate through the defined pages.\nFor the actions you want to be part of pages, just assign them using the paging buttons (which will set the id and enable_callback parameters for you).\nAlso, it is possible to have more than one pager in a configuration.\n\n<b>Rotate Through Pages:</b>\nIf you want to rotate through pages, just use this action with select_page set to None, which is the default. The switch will then rotate through the pages. \n\n<b>Directly Select Pages:</b>\nIf you want to have one switch dedicated to select each page, set select_page here to the page you want to select with the switch this pager is assigned to, and use the \"Select Page\" action (assigned to this pager) for the other switches to select the further pages directly.",
                 "importPath": "pyswitch.controller.pager",
                 "importName": "PagerAction"
             },
@@ -1360,7 +1360,7 @@
                         "comment": null
                     }
                 ],
-                "comment": "This controls a PagerAction from another switch, making it possible to directly select pages with dedicated switches.\n\nYou always need to have one (or more) PagerAction(s) which defines the pages. For selecting the other pages of a pager, create \"Select Page\" actions on the other switches.",
+                "comment": "This controls a Pager Action from another switch, making it possible to directly select pages with dedicated switches.\n\nYou always need to have a Pager Action which defines the pages, which also MUST be assigned to a switch. Set \"select_page\" on this pager to the first page, and for selecting the other pages, create \"Select Page\" actions for other switches. For example, to have 3 pages and 3 switches:\n<ul>\n    <li>Switch 1: Pager Action with \"select_page\" set to the first page</li>\n    <li>Switch 2: Select Page action set to page 2</li>\n    <li>Switch 3: Select Page action set to page 3</li>\n</ul>",
                 "importPath": "pyswitch.controller.pager",
                 "importName": "PagerAction"
             }

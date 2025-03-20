@@ -1,5 +1,6 @@
 import sys
 from unittest.mock import patch
+import traceback
 
 from pyodide.ffi.wrappers import set_timeout
 from js import externalRefs
@@ -145,12 +146,15 @@ class PySwitchRunner:
         
         except Exception as exc:
             self.stop()
+
+            if hasattr(externalRefs, "errorHandler"):
+                externalRefs.errorHandler.handle("".join(traceback.format_exception(exc)))
+            
             raise exc
         
         self.display_driver.update()
 
         externalRefs.protocolState = self.protocol.state
-
 
     # Stop execution of the set_timeout handler by just not renewing it
     def stop(self):        

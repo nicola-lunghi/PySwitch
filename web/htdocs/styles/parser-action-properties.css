@@ -32,6 +32,10 @@
     padding-right: 1em;
 }
 
+.container .action-properties .action-comment ul {
+    white-space: normal;
+}
+
 .container .action-properties .action-parameters {
     border-spacing: 0;
     margin-left: 0.5em;

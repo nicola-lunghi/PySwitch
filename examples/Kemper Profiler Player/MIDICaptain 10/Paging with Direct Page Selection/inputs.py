@@ -15,38 +15,6 @@ from display import DISPLAY_HEADER_2
 from display import DISPLAY_FOOTER_1
 from display import DISPLAY_FOOTER_2
 
-_pager_top = PagerAction(
-                pages = [{
-                    "id": 1, 
-                    "color": (50, 50, 50), 
-                    "text": "FX A-D", 
-                    
-                },
-                {
-                    "id": 2, 
-                    "color": Colors.WHITE, 
-                    "text": "FX X-REV", 
-                    
-                },
-                ]
-            )
-
-_pager_bottom = PagerAction(
-                pages = [{
-                    "id": 1, 
-                    "color": (50, 50, 50), 
-                    "text": "Rig Select", 
-                    
-                },
-                {
-                    "id": 2, 
-                    "color": Colors.WHITE, 
-                    "text": "Looper", 
-                    
-                },
-                ]
-            )
-
 _pager = PagerAction(
                 pages = [{
                     "id": 1, 

@@ -44,6 +44,8 @@ class Controller {
             options.updateIntervalMillis = 20;
         }
 
+        options.errorHandler = this;
+        
         // Set up handlers
         this.ui = new PySwitchUI(this, options);
 

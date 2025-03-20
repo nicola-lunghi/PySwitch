@@ -1,6 +1,10 @@
 # PySwitch v2.3.6
 - Changed default preset to a MC10 example close to the original PaintAudio KPP firmware
 - Option for repeated hold: When enabled, the hold action is repeated again and again as long as the switch is held down.
+- Paging:
+    - Added Error when a PagerAction is used by a Select Page (proxy) Action while not being part of any switch
+    - Removed display parameter from Select Action (the display should be assigned only to the pager), see next point
+    - Changed display handling: Formerly, for direct page select, two displays were needed. Now, only one display can be assigned to the pager itself, which shows the current page always.
 
 ### Emulator 2.3.6.6
 - Added switch settings (new button beneath the "+" button): Here you can adjust the hold time as well as the new "Hold Repeat" option (see above)
@@ -8,6 +12,7 @@
 - Review of tooltips, descriptions etc.
 - Levels of advanced parameters: When clicking "show more...", the parameters will be unveiled by level of "advancedness". All nerdy parameters only show up in the last level. This keeps the technical parameters hidden except you really want to see them.
 - Fixed a visual bug with color inputs
+- Fixed a bug that did not show error messages in the PySwitch tick routine correctly
 
 # PySwitch v2.3.5
 - Changed parameters for PagerAction (all config options now accessible as parameters directly). Examples have been adjusted, some documentation can be found in the Emulator [README](https://github.com/Tunetown/PySwitch/blob/main/web/README.md).

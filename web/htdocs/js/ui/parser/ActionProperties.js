@@ -493,7 +493,7 @@ class ActionProperties {
         if (!this.actionDefinition.comment) return "No information available";
         let comment = "" + this.actionDefinition.comment;
 
-        if (comment.slice(-1) != ".") comment += ".";
+        //if (comment.slice(-1) != ".") comment += ".";
 
         return comment;
     }
