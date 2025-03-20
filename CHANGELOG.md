@@ -1,10 +1,10 @@
 # PySwitch v2.3.6
 - Changed default preset to a MC10 example close to the original PaintAudio KPP firmware
 - Option for repeated hold: When enabled, the hold action is repeated again and again as long as the switch is held down.
-- Paging:
-    - Added Error when a PagerAction is used by a Select Page (proxy) Action while not being part of any switch
+- Rework of Paging:
     - Removed display parameter from Select Action (the display should be assigned only to the pager), see next point
-    - Changed display handling: Formerly, for direct page select, two displays were needed. Now, only one display can be assigned to the pager itself, which shows the current page always.
+    - Changed display handling: Formerly, for direct page select, displays were needed for each page, being a waste of space so no one did that. Now, only one display can be assigned to the pager itself, which always shows the current page.
+    - Added Error when a PagerAction is used by a Select Page (proxy) Action while not being part of any switch
 
 ### Emulator 2.3.6.6
 - Added switch settings (new button beneath the "+" button): Here you can adjust the hold time as well as the new "Hold Repeat" option (see above)
