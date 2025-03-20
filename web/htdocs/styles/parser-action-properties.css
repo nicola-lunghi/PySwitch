@@ -90,6 +90,7 @@
 
 .container .action-properties .action-parameters .param-messages td {
     color: orange;
+    white-space: normal;
 }
 
 .container .action-properties td.has-messages > * {

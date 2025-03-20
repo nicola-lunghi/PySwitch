@@ -73,7 +73,7 @@ class ParameterList {
             tippy(el[0], {
                 content: comment,
                 theme: "actionparameter",
-                placement: "left",
+                placement: "top-end",
                 duration: 0
             });
         }

@@ -1291,16 +1291,6 @@
                         "comment": "LED brightness for the pager when select_page is set and the page is currently selected. Range [0..1]."
                     },
                     {
-                        "name": "display_dim_factor_on",
-                        "default": "1",
-                        "comment": "Display dim factor used when in rotation mode or if the current page is select_page"
-                    },
-                    {
-                        "name": "display_dim_factor_off",
-                        "default": "0.2",
-                        "comment": "Display dim factor used when select_page is selt and the current page is not select_page"
-                    },
-                    {
                         "name": "mappings",
                         "default": "[]",
                         "comment": "List of mappings the paging depends on (optional)"
@@ -1350,17 +1340,12 @@
                         "comment": null
                     },
                     {
-                        "name": "display",
-                        "default": "None",
-                        "comment": null
-                    },
-                    {
                         "name": "enable_callback",
                         "default": "None",
                         "comment": null
                     }
                 ],
-                "comment": "This controls a Pager Action from another switch, making it possible to directly select pages with dedicated switches.\n\nYou always need to have a Pager Action which defines the pages, which also MUST be assigned to a switch. Set \"select_page\" on this pager to the first page, and for selecting the other pages, create \"Select Page\" actions for other switches. For example, to have 3 pages and 3 switches:\n<ul>\n    <li>Switch 1: Pager Action with \"select_page\" set to the first page</li>\n    <li>Switch 2: Select Page action set to page 2</li>\n    <li>Switch 3: Select Page action set to page 3</li>\n</ul>",
+                "comment": "This controls a Pager Action from another switch, making it possible to directly select pages with dedicated switches.\n\nYou always need to have a Pager Action which defines the pages, which also MUST be assigned to a switch. Set \"select_page\" on this pager to the first page, and for selecting the other pages, create \"Select Page\" actions for other switches. For example, to have 3 pages and 3 switches:\n<ul>\n    <li>Switch 1: Pager Action with \"select_page\" set to the first page</li>\n    <li>Switch 2: Select Page action set to page 2</li>\n    <li>Switch 3: Select Page action set to page 3</li>\n</ul>\nThe LED and display brightness settings are determined from the connected pager and can be set there if needed.",
                 "importPath": "pyswitch.controller.pager",
                 "importName": "PagerAction"
             }

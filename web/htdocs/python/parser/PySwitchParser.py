@@ -48,11 +48,11 @@ class PySwitchParser:
         }
     
     # Delivers code for a node of tree data. Cannot add assignments!
-    def code_for_data_node(self, data):
+    def code_for_data_node(self, data, format = False):
         if isinstance(data, str):
             return data
         
-        node = CodeGenerator().generate(data.to_py())
+        node = CodeGenerator(format = format).generate(data.to_py())
         return libcst.parse_module("").code_for_node(node)
     
     # Returns a JSON encoded tree of the Inputs assign in inputs.py
@@ -68,7 +68,12 @@ class PySwitchParser:
         if not self.__csts:
             raise Exception("No data loaded")
         
-        inputs_node = CodeGenerator(self, "inputs_py", insert_before_assign = "Inputs").generate(inputs.to_py())
+        inputs_node = CodeGenerator(
+            self, 
+            "inputs_py", 
+            insert_before_assign = "Inputs",
+            format = True
+        ).generate(inputs.to_py())
         
         self.set_assignment("Inputs", inputs_node, "inputs_py")
 
@@ -104,7 +109,12 @@ class PySwitchParser:
         if not self.__csts:
             raise Exception("No data loaded")
 
-        splashes_node = CodeGenerator(self, "display_py", insert_before_assign = "Splashes").generate(splashes.to_py())
+        splashes_node = CodeGenerator(
+            self, 
+            "display_py", 
+            insert_before_assign = "Splashes",
+            format = True
+        ).generate(splashes.to_py())
         
         self.set_assignment("Splashes", splashes_node, "display_py")
 

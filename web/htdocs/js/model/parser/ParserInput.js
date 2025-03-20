@@ -2,6 +2,9 @@ class ParserInput extends ParserTreeElement {
 
     assignment = null;
 
+    #actions = null;
+    #actionsHold = null;
+
     constructor(parser, data, assignment) {
         super(parser, data);
 
@@ -28,50 +31,85 @@ class ParserInput extends ParserTreeElement {
         }
     }
 
+    /**
+     * Display name for the input
+     */
     displayName() {
         return this.assignment.displayName;
     }
 
+    /**
+     * Returns the hold time in milliseconds
+     */
     holdTimeMillis() {
         this.checkValid()
+
         const arg = this.getArgument("holdTimeMillis");
         return (arg && arg.value) ? parseInt(Tools.stripQuotes(arg.value)) : null;
     }
 
+    /**
+     * Sets the hold time in milliseconds
+     */
     setHoldTimeMillis(htm) {
         this.checkValid()
-        if (this.setArgument("holdTimeMillis", "" + parseInt(htm))) {
-            this.parser.updateConfig();
-        }
+
+        this.setArgument("holdTimeMillis", "" + parseInt(htm));
+        this.parser.updateConfig();
     }
 
+    /**
+     * Returns if the holdRepeat optionis enabled
+     */
     holdRepeat() {
         this.checkValid()
+
         const arg = this.getArgument("holdRepeat");
         return (arg && arg.value) ? (arg.value == "True") : null;
     }
 
+    /**
+     * Sets the holdRepeat option
+     */
     setHoldRepeat(hr) {
         this.checkValid()
-        if (this.setArgument("holdRepeat", hr ? "True" : "False")) {
-            this.parser.updateConfig();
-        }
+        
+        this.setArgument("holdRepeat", hr ? "True" : "False");
+        this.parser.updateConfig();
     }
 
+    /**
+     * Returns the actions of the input as arrays of ParserInputActions
+     */
     actions(hold = false) {
         this.checkValid()
+
+        if (!hold && this.#actions) return this.#actions;
+        if (hold && this.#actionsHold) return this.#actionsHold;
 
         const actions = this.getArgument(hold ? "actionsHold" : "actions");
         if (!actions) return []
 
-        return actions.value
-        .filter((item) => item != "None")
-        .map((item) => new ParserInputAction(this.parser, this, item));
+        const ret = actions.value
+            .filter((item) => item != "None")
+            .map((item) => new ParserInputAction(this.parser, this, item));
+
+        if (hold) {
+            this.#actionsHold = ret;
+        } else {
+            this.#actions = ret;
+        }
+
+        return ret;
     }
 
+    /**
+     * Sets the actions of the input by an array of objects describing the actions
+     */
     setActions(actions, hold = false, noUpdate = false) {
         this.checkValid()
 
+        const that = this;
         const prepped = actions.map((item) => { 
             return {
                 name: item.name,
@@ -82,20 +120,7 @@ class ParserInput extends ParserTreeElement {
                             name: arg.name,
                             value: arg.value.map((page) => {
                                 return {
-                                    arguments: [
-                                        {
-                                            name: "id",
-                                            value: page.id
-                                        },
-                                        {
-                                            name: "color",
-                                            value: page.color
-                                        },
-                                        {
-                                            name: "text",
-                                            value: page.text
-                                        }
-                                    ]
+                                    arguments: that.#encodePage(page)
                                 }
                             })
                         }    
@@ -103,18 +128,50 @@ class ParserInput extends ParserTreeElement {
 
                     return {
                         name: arg.name,
-                        code: (typeof arg.value == "string") ? arg.value : null,
-                        value: (typeof arg.value == "string") ? null : arg.value,
+                        value: arg.value,
                         assign: arg.assign ? arg.assign : null
                     }
                 })
             }
         })
         
+        this.#actions = null;
         this.setArgument(hold ? "actionsHold" : "actions", prepped);
 
         if (!noUpdate) {
             this.parser.updateConfig();
         }
+    }
+
+    /**
+     * Encodes a page deifinition like used in the UI and returns it as raw parser definition
+     */
+    #encodePage(page) {
+        const ret = [
+            {
+                name: "id",
+                value: page.id
+            }
+        ]
+
+        if (page.color) {
+            ret.push(
+                {
+                    name: "color",
+                    value: page.color
+                }
+            )
+        }
+            
+        if (page.text) {
+            ret.push(
+                {
+                    name: "text",
+                    value: page.text
+                }
+            )
+        }
+
+        return ret;
     }
 }

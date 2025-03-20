@@ -30,6 +30,7 @@ class ActionProperties {
      */
     async init() {
         await this.#pagers.init();
+        await this.update();
     }
 
     /**
@@ -272,14 +273,14 @@ class ActionProperties {
         if (this.actionDefinition.meta.data.target == "AdafruitSwitch") {
             this.inputs.set("hold", holdInput);
             if (this.#oldProperties) {
-                this.setHold(this.#oldProperties.hold());            
+                await this.setHold(this.#oldProperties.hold());            
             }
         }
 
         // Assign input
         this.inputs.set("assign", assignInput);        
         // if (this.#oldProperties) {
-        //     this.setAssign(this.#oldProperties.assign());            
+        //     await this.setAssign(this.#oldProperties.assign());            
         // }
 
         return ret;
@@ -388,11 +389,12 @@ class ActionProperties {
     /**
      * Sets the hold input
      */
-    setHold(hold) {
+    async setHold(hold) {
         if (this.actionDefinition.meta.data.target != "AdafruitSwitch") {
             return;
         }
         this.inputs.get("hold").prop('checked', !!hold)
+        // await this.update();
     }
 
     /**
@@ -406,8 +408,9 @@ class ActionProperties {
     /**
      * Sets the assign input
      */
-    setAssign(assign) {
+    async setAssign(assign) {
         this.inputs.get("assign").val(assign);
+        // await this.update();     
     }
 
     /**
@@ -421,8 +424,9 @@ class ActionProperties {
     /**
      * Sets the pager proxy input
      */
-    setPagerProxy(proxy) {
-        this.inputs.get("pager").val(proxy);
+    async setPagerProxy(proxy) {
+        this.inputs.get("pager").val(proxy);   
+        // await this.update();
     }
 
     /**

@@ -15,9 +15,9 @@ class Parser {
     #availableMappings = null;       // Buffer
     #bufferHardwareInfo = null;      // Buffer
     #colors = null;                  // Buffer
+    #inputs = null;                  // Buffer for input instances
 
-    #inputs = null;                  // Raw inputs tree
-    #splashes = null;                // Raw splashes tree
+    #trees = null;                   // Raw parsed data
 
     constructor(config, runner, basePath = "") {
         this.config = config;
@@ -26,7 +26,8 @@ class Parser {
 
         this.checks = new ParserChecks(this);
 
-        this.#bufferHardwareInfo = new Map();
+        this.#bufferHardwareInfo = new Map();        
+        this.reset();
     }
 
     /**
@@ -61,27 +62,59 @@ class Parser {
         this.#initTrees();
     }
 
+    /**
+     * Load trees if not yet done
+     */
     #initTrees() {
-        if (!this.#inputs) {
-            const inputs = this.#pySwitchParser.inputs()
-            this.#inputs = inputs ? JSON.parse(inputs) : null;
+        const that = this;
+        function createTree(fileId, createDataCallback) {   
+            if (that.#trees.has(fileId)) return
+            
+            const data = createDataCallback();
+            if (data) {
+                that.#trees.set(fileId, JSON.parse(data));
+            }
         }
-        if (!this.#splashes) {
-            // this.#splashes = {
-            //     arguments: []
-            // }
-            const splashes = this.#pySwitchParser.splashes()
-            this.#splashes = splashes ? JSON.parse(splashes) : null;
-        }
+
+        createTree("inputs_py", () => this.#pySwitchParser.inputs())
+        createTree("display_py", () => this.#pySwitchParser.splashes())
     }
 
     /**
-     * Reset local trees and checks
+     * Reset trees and checks
      */
     reset() {
         this.checks.reset();
-        this.#inputs = null;
-        this.#splashes = null;
+
+        this.#trees = new Map();
+        this.#inputs = new Map();
+    }
+
+    /**
+     * From the tree for fileId, this searches recursively for the passed assignment 
+     * name and returns its definition node.
+     */
+    getAssignment(fileId, name) {
+        this.#initTrees();
+        
+        function crawl(node) {
+            if (Array.isArray(node)) {
+                for (const item of node) {
+                    const ret = crawl(item);
+                    if (ret) return ret;
+                }
+            }
+
+            if (typeof node == "object") {
+                if (node.assign == name) return node;
+                if (node.value) return crawl(node.value);
+                if (node.arguments) return crawl(node.arguments);
+            }
+
+            return null;
+        }
+
+        return crawl(this.#trees.get(fileId));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +132,7 @@ class Parser {
     inputs() {
         if (!this.#pySwitchParser) throw new Error("Parser not initialized")
         this.#initTrees();
-        return this.#inputs;
+        return this.#trees.get("inputs_py");
     }
 
     /**
@@ -107,6 +140,8 @@ class Parser {
      * port must be an integer ID of the port (as defined in the board wrapper in python)
      */
     async input(port, createIfNotExistent = false) {
+        if (this.#inputs.has(port)) return this.#inputs.get(port);
+        
         await this.init();
 
         const hw = await this.getHardwareInfo();
@@ -134,14 +169,17 @@ class Parser {
                 ]
             }
 
-            this.#inputs.push(newInput);
+            this.#trees.get("inputs_py").push(newInput);
 
             this.updateConfig();
             
             return this.input(port);
         }
         
-        return new ParserInput(this, inputData, assignment);
+        const ret = new ParserInput(this, inputData, assignment);
+        this.#inputs.set(port, ret);
+
+        return ret;
     }
 
     /**
@@ -159,7 +197,7 @@ class Parser {
             return filteredArgs[0].value;
         }
 
-        const filtered = this.#inputs.filter((inputData) => 
+        const filtered = this.#trees.get("inputs_py").filter((inputData) => 
             getArgument(inputData, "assignment") == assignmentName
         );
 
@@ -173,7 +211,7 @@ class Parser {
     splashes() {
         if (!this.#pySwitchParser) throw new Error("Parser not initialized")
         this.#initTrees();
-        return this.#splashes;
+        return this.#trees.get("display_py");
     }
 
     /**
@@ -181,7 +219,7 @@ class Parser {
      */
     async setSplashes(splashes) {
         await this.init();
-        this.#splashes = splashes;
+        this.#trees.set("display_py", splashes);
         this.updateConfig();
     }
 
@@ -192,8 +230,8 @@ class Parser {
         if (!this.#pySwitchParser) throw new Error("Parser not initialized")
 
         this.#initTrees();
-        this.#pySwitchParser.set_inputs(this.#inputs);
-        this.#pySwitchParser.set_splashes(this.#splashes);
+        this.#pySwitchParser.set_inputs(this.#trees.get("inputs_py"));
+        this.#pySwitchParser.set_splashes(this.#trees.get("display_py"));
 
         const src = this.#pySwitchParser.to_source().toJs();
         

@@ -101,7 +101,7 @@ class Tabs {
 
         tab.destroy();
 
-        if (tab == self.active) self.active = null;
+        if (tab == this.active) this.active = null;
         
         const index = this.#tabs.indexOf(tab);
         if (index > -1) { 

@@ -25,6 +25,8 @@ class InputSettings extends ParameterList {
     async getOptions() {
         const that = this;
 
+        const holdTimeMillis = this.#input ? this.#input.holdTimeMillis() : 0
+
         function getSwitchOptions() {
             return [
                 that.createBooleanInputRow(
@@ -43,7 +45,7 @@ class InputSettings extends ParameterList {
                 that.createNumericInputRow(
                     "Hold Time", 
                     "Amount of time you have to press the switch for the hold actions to be triggered (Milliseconds).",
-                    that.#input ? that.#input.holdTimeMillis() : 0,
+                    holdTimeMillis ? holdTimeMillis : 600,
                     async function(value) {
                         that.#input.setHoldTimeMillis(value);
 

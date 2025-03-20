@@ -62,7 +62,7 @@ class ParserFrontendInput {
      */
     async #getActionText(actionCallProxy, short = false) {
         const action = await this.#getActionDefinition(
-            actionCallProxy.proxyName ? actionCallProxy.proxyName : actionCallProxy.name, 
+            actionCallProxy.definitionName ? actionCallProxy.definitionName : actionCallProxy.name, 
             actionCallProxy.client
         );
         
@@ -373,7 +373,7 @@ class ParserFrontendInput {
             // Preselected action
             {
                 name: action.name,
-                proxyName: action.proxyName,
+                definitionName: action.definitionName,
                 assign: action.assign,
                 arguments: action.arguments(),
                 hold: hold
@@ -440,7 +440,7 @@ class ParserFrontendInput {
                     this.#parserFrontend.parser,
                     {
                         onSelect: onSelect,
-                        preselectActionName: preselectAction ? (preselectAction.proxyName ? preselectAction.proxyName : preselectAction.name) : null,
+                        preselectActionName: preselectAction ? (preselectAction.definitionName ? preselectAction.definitionName : preselectAction.name) : null,
                         target: this.definition.data.model.type
                     }                    
                 )
@@ -454,13 +454,13 @@ class ParserFrontendInput {
             await onSelect(actionsProvider.preselectEntry);
 
             if (preselectAction) {
-                props.setHold(preselectAction.hold);
-                props.setAssign(preselectAction.assign);
+                await props.setHold(preselectAction.hold);
+                await props.setAssign(preselectAction.assign);
 
-                if (preselectAction.proxyName) {
+                if (preselectAction.definitionName) {
                     const splt = preselectAction.name.split(".");
                     if (splt.length == 2) {
-                        props.setPagerProxy(splt[0])
+                        await props.setPagerProxy(splt[0])
                     }                    
                 }                
 

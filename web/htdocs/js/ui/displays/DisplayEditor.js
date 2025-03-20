@@ -90,21 +90,21 @@ class DisplayEditor extends ParameterList {
                 }
             ),
 
-            this.createSelectInputRow(
-                "Tuner Display",
-                "If set, and the corresponding client goes into tuner mode, the controller will show a tuner, too",
-                [
-                    "Kemper: Tuner Display TODO"
-                ],
-                "foo",
-                async function(value) {
-                    // that.#input.setHoldRepeat(value);
+            // this.createSelectInputRow(
+            //     "Tuner Display",
+            //     "If set, and the corresponding client goes into tuner mode, the controller will show a tuner, too",
+            //     [
+            //         "Kemper: Tuner Display TODO"
+            //     ],
+            //     "foo",
+            //     async function(value) {
+            //         // that.#input.setHoldRepeat(value);
 
-                    // await that.controller.restart({
-                    //     message: "none"
-                    // });
-                }
-            ),
+            //         // await that.controller.restart({
+            //         //     message: "none"
+            //         // });
+            //     }
+            // ),
 
             $('<tr />'). append(
                 $('<td colspan="2" class="canvas-container" />').append(

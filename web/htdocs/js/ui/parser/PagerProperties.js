@@ -100,9 +100,9 @@ class PagerProperties {
         }
 
         // Pager proxy
-        if (this.#props.actionDefinition.name == "PagerAction.proxy") {
+        if (this.#props.actionDefinition.name == "PagerAction.proxy" && this.#props.inputs.has("pager")) {
             const pagerProxy = this.#props.inputs.get("pager").val();
-            
+        
             if (pagerProxy) {
                 const pager = await this.#props.parserFrontend.parser.getPagerAction(pagerProxy)
                 if (pager) {
@@ -113,7 +113,7 @@ class PagerProperties {
                             const value = input.val();
                             addPagesToInput(
                                 input, 
-                                pages.map((item) => item.toJs())
+                                pages
                             );
                             input.val(value);
                         }

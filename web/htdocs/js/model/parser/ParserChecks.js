@@ -42,6 +42,7 @@ class ParserChecks {
      */
     async messagesForAction(actionCallProxy, type = null) {
         await this.process();
+        
         const ret = [];
         
         for (const msg of this.#messages) {
@@ -116,7 +117,7 @@ class ParserChecks {
             for (const pager of pagers) {
                 for (const page of pager.pages) {
                     const usagesFiltered = usages.filter((item) => (item.pager() != pager.name) || (item.page() == page && item.pager() == pager.name));
-                
+                    
                     if (usagesFiltered.length > 1) {
                         addMessage({
                             type: "W",

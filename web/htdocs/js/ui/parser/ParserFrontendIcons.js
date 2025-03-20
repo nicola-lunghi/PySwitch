@@ -38,9 +38,10 @@ class ParserFrontendIcons {
         // Page icon if involved in paging, if not: enable callback
         const page = actionCallProxy.page()
         const pager = actionCallProxy.pager()
+        
         const ec = actionCallProxy.argument('enable_callback');
         if (page) {
-            const el = $('<span class="action-icon icon-page" data-toggle="tooltip" title="This action is part of pager ' + pager + ', page ' + page + '" />')
+            const el = $('<span class="action-icon icon-page" data-toggle="tooltip" title="This action is part of pager \"' + pager + '\", page ' + page + '" />')
                 
             const color = await this.getPageColor(pager, page);
             

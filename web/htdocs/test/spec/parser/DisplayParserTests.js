@@ -857,7 +857,7 @@ class DisplayParserTests extends TestBase {
         await this.#replaceSplashes(
             // Set data
             {
-                code: "DisplayEtwas(someparam = 9)"
+                value: "DisplayEtwas(someparam = 9)"
             },
 
             // Expected
@@ -877,7 +877,7 @@ class DisplayParserTests extends TestBase {
             // Set data
             [
                 {
-                    code: "DisplayEtwas(someparam = 9)"
+                    value: "DisplayEtwas(someparam = 9)"
                 },
                 "9"
             ],
@@ -905,7 +905,7 @@ class DisplayParserTests extends TestBase {
                 arguments: [
                     {
                         name: "foos",
-                        code: "DisplayEtwas(someparam = 9)"
+                        value: "DisplayEtwas(someparam = 9)"
                     }
                 ]
             },
@@ -937,7 +937,7 @@ class DisplayParserTests extends TestBase {
                 arguments: [
                     {
                         name: "foos",
-                        code: "DisplayEtwas(someparam = 9)"
+                        value: "DisplayEtwas(someparam = 9)"
                     }
                 ]
             },
@@ -967,7 +967,7 @@ class DisplayParserTests extends TestBase {
                 arguments: [
                     {
                         name: "ddd",
-                        code: 'DesrbHut(sdfvsdv = { "foo": [2,3,4,"hg", foos(SOMETYPE)] }, deb = True)'
+                        value: 'DesrbHut(sdfvsdv = { "foo": [2,3,4,"hg", foos(SOMETYPE)] }, deb = True)'
                     }
                 ]
             },
@@ -1079,6 +1079,18 @@ class DisplayParserTests extends TestBase {
                 {
                     assign: "_ASS",
                     value: '"hk"'
+                },
+                {
+                    arguments: [
+                        {
+                            name: "ff",
+                            value: "2"
+                        },
+                        {
+                            name: "fdf",
+                            value: "kkk"
+                        }
+                    ]
                 },
                 {
                     name: "somecall",
