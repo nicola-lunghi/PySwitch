@@ -17,12 +17,13 @@ generic configuration script. Features are:
 3. Delete the whole content of the USB drive. For PaintAudio devices, dont forget to save the contents on your hard drive (especially the license folder) if you perhaps want to restore the original manufacturer firmware later.
 4. Copy everything inside the "content" folder of the project to the root folder on your device drive (named MIDICAPTAIN or CIRCUITPY).
 5. Unmount the USB drive (important: wait until the drive really is unmounted, or it will sometimes forget everything again).
-6. Reboot the device.
+6. Reboot the device. 
+7. Per default, PySwitch is configured for the PaintAudio MIDICaptain STD. Launch the [PySwitch Emulator](https://pyswitch.tunetown.de) in your Web Browser AFTER the device has been booted completely. It will automatically connect to the controller, you can then choose an example as a starting point (see the load button on the top left) and save it to your controller via the Save button -> Connected Controllers.
+8. Connect the controller to your Kemper (or other client).
 
-PySwitch now runs with the default configuration, which most likely will be one of my own configurations ;) You will perhaps want to try one of the contained examples.
-1. Just copy all files of the example into the root folder of the device, overwriting the old files (you can omit the README file of course). More on the configuration files in one of the next chapters.
-2. Unmount the USB drive (important: wait until the drive really is unmounted, or it will sometimes forget everything again).
-3. Reboot the device.
+**NOTE**: If the Save button does not show any connected controllers, your browser might not support Web MIDI (currently, for example Safari does not support this). In this case, you have to:
+- After creating your config in the Emulator, download it (see Save -> Download (ZIP)).
+- Mount your controller as USB drive (see Installation process), and put the files downloaded in the root folder of it (overwrite existing files).
 
 ## Configuration
 
@@ -144,12 +145,13 @@ Inputs = [
 
 Most actions feature a "mode" parameter. This parameter controls the behaviour of the switch as defined here:
 
-- **PushButtonModes.ENABLE**: Switch the functionality on (always, no switching off again!)
-- **PushButtonModes.DISABLE**: Switch the functionality off (always, no switching on again)
-- **PushButtonModes.LATCH**: Toggle state on every button push
-- **PushButtonModes.MOMENTARY**: Enable on push, disable on release
-- **PushButtonModes.HOLD_MOMENTARY**: Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is used (inverse or not: This depends on the current state of the functionality. When it is on, it will momentarily be switched off and vice versa). This is the default for most of the actions.
-- **PushButtonModes.ONE_SHOT**: Fire the SET command on every push (show as disabled)
+- **PushButtonAction.ENABLE**: Switch the functionality on (always, no switching off again!)
+- **PushButtonAction.DISABLE**: Switch the functionality off (always, no switching on again)
+- **PushButtonAction.LATCH**: Toggle state on every button push
+- **PushButtonAction.MOMENTARY**: Enable on push, disable on release
+- **PushButtonAction.HOLD_MOMENTARY**: Combination of latch, momentary and momentary inverse: If pushed shortly, latch mode is used. If pushed longer than specified in the "holdTimeMillis" parameter, momentary mode is used (inverse or not: This depends on the current state of the functionality. When it is on, it will momentarily be switched off and vice versa). This is the default for most of the actions.
+- **PushButtonAction.ONE_SHOT**: Fire the SET command on every push (show as disabled)
+- **PushButtonAction.NO_STATE_CHANGE**: The action is not connected to the switch at all. Use this for example to drive displays showing rig ID or effect state without a dedicated switch. (all actions need to be assigned to a switch, so this is the workaround here)
 
 Each switch can be assigned to any number of actions, which are implementing the functionality for the switch. Actions are instances based on the lib/pyswitch/controller/actions/Action base class. Normally you would use predefined actions as provided by lib/pyswitch/clients/kemper/actions, however you could also directly use the classes defined in lib/pyswitch/controller/actions.py and provide all the MIDI mapping manually.
 
