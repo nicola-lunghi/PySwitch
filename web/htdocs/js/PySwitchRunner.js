@@ -150,7 +150,12 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/clients/kemper/mappings/rotary.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/mappings/select.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/mappings/tempo.py", circuitpyPath);
+        await this.#loadModule("pyswitch/clients/kemper/mappings/tempo_bpm.py", circuitpyPath);
         
+        this.pyodide.FS.mkdir("pyswitch/clients/kemper/callbacks");
+        await this.#loadModule("pyswitch/clients/kemper/callbacks/__init__.py", circuitpyPath);
+        await this.#loadModule("pyswitch/clients/kemper/callbacks/tempo_bpm.py", circuitpyPath);
+
         this.pyodide.FS.mkdir("pyswitch/clients/local");
         await this.#loadModule("pyswitch/clients/local/__init__.py", circuitpyPath);
         

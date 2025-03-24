@@ -109,6 +109,19 @@ class VirtualKemperClientSetup {
         this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(30) }), callback: function(param, value) {
             that.#client.tempo.tap(value);
         } });
+
+        // Tempo BPM
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([4, 0]) }), callback: function(param, value) {
+            that.#client.tempo.set(value)
+        } });
+
+        this.#client.tempo.addChangeCallback(
+            function(bpm) {
+                // Update BPM parameter
+                const bpm = that.#client.parameters.get(new NRPNKey([4, 0]));
+                bpm.setValue(bpm);
+            }
+        );
     }
 
     /**

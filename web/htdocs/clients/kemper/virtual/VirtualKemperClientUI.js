@@ -134,6 +134,7 @@ class VirtualKemperClientUI {
                     try {
                         const tempo = parseInt($(this).val());
                         that.#client.tempo.set(tempo ? tempo : null);
+                        
                     } catch (e) {
                         console.error(e);
                     } 

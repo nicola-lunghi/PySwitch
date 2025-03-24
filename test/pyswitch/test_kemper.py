@@ -30,6 +30,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.mappings.rig import *
     from lib.pyswitch.clients.kemper.mappings.bank import *
     from lib.pyswitch.clients.kemper.mappings.tempo import *
+    from lib.pyswitch.clients.kemper.mappings.tempo_bpm import *
     from lib.pyswitch.clients.kemper.mappings.morph import *
     from lib.pyswitch.clients.kemper.mappings.amp import *
     from lib.pyswitch.clients.kemper.mappings.cabinet import *
@@ -137,8 +138,6 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Tuner Note", KemperMappings.TUNER_NOTE().name)
         self.assertIn("Tuner", KemperMappings.TUNER_DEVIANCE().name)
 
-        self.assertIn("Tap", MAPPING_TAP_TEMPO().name)
-
         self.assertIn("Morph Button", MAPPING_MORPH_BUTTON().name)
         self.assertIn("Morph Pedal", MAPPING_MORPH_PEDAL().name)
 
@@ -161,6 +160,8 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Sense", KemperMappings.BIDIRECTIONAL_SENSING().name)
 
         self.assertIn("Tempo", MAPPING_TEMPO_DISPLAY().name)
+        self.assertIn("Tap", MAPPING_TAP_TEMPO().name)
+        self.assertIn("bpm", MAPPING_TEMPO_BPM().name)
 
         self.assertIn("Freeze", MAPPING_FREEZE_ALL_GLOBAL().name)
 
