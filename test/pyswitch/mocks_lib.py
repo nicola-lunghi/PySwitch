@@ -254,3 +254,38 @@ class MockOs:
 
     def stat(path):
         return MockOs._StatMock(MockOs.STAT_SIZE_OUTPUTS[path] if path in MockOs.STAT_SIZE_OUTPUTS else -1)
+
+
+##################################################################################################################################
+
+
+class MockUsbHid:
+    def __init__(self):
+        self.devices = [3,4,5]
+
+class MockUsbHidKeyboard:
+    keyboards = []
+
+    def reset():
+        if len(MockUsbHidKeyboard.keyboards) == 0:
+            return
+        
+        MockUsbHidKeyboard.keyboards[0].send_calls = []
+
+    class Keyboard:
+        def __init__(self, devices):
+            if not devices == [3,4,5]:
+                raise Exception()
+            
+            self.send_calls = []
+            MockUsbHidKeyboard.keyboards.append(self)
+
+        def send(self, code):
+            self.send_calls.append(code)
+
+
+class MockUsbHidKeycode:
+    class Keycode:
+        A = 4
+        B = 5
+        C = 6

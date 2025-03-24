@@ -2,7 +2,7 @@ from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
 from pyswitch.misc import Colors
 from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2
-from pyswitch.clients.kemper.actions.binary_switch import BINARY_SWITCH
+from pyswitch.clients.local.actions.binary_switch import BINARY_SWITCH
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 from pyswitch.clients.kemper.mappings.rotary import MAPPING_ROTARY_SPEED

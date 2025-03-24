@@ -422,7 +422,7 @@
                     },
                     {
                         "name": "use_leds",
-                        "default": "True",
+                        "default": "False",
                         "comment": null
                     },
                     {
@@ -500,8 +500,23 @@
                         "comment": null
                     },
                     {
+                        "name": "show_slot_names",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
                         "name": "id",
                         "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "None",
                         "comment": null
                     },
                     {
@@ -580,6 +595,11 @@
                         "name": "preselect",
                         "default": "False",
                         "comment": "Preselect mode. If enabled, the bank is only pre-selected, the change will only take effect when you select a rig next time."
+                    },
+                    {
+                        "name": "max_bank",
+                        "default": "None",
+                        "comment": "Highest bank available. Only relevant if preselct is enabled."
                     }
                 ],
                 "comment": "Next bank (keeps rig index)",
@@ -647,10 +667,67 @@
                         "name": "preselect",
                         "default": "False",
                         "comment": "Preselect mode"
+                    },
+                    {
+                        "name": "max_bank",
+                        "default": "None",
+                        "comment": "Highest bank available. Only relevant if preselct is enabled."
                     }
                 ],
                 "comment": "Previous bank (keeps rig index)",
                 "importPath": "pyswitch.clients.kemper.actions.bank_up_down"
+            },
+            {
+                "name": "EFFECT_STATE_EXT",
+                "parameters": [
+                    {
+                        "name": "slot_id",
+                        "default": null,
+                        "comment": null
+                    },
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "mode",
+                        "default": "PushButtonAction.HOLD_MOMENTARY",
+                        "comment": null
+                    },
+                    {
+                        "name": "show_slot_names",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    }
+                ],
+                "comment": "Switch an effect slot on / off. This variant has distinct names for each effect type. \n\n<b>Use with care:</b> This takes quite some RAM memory, so if you run a large configuration you might run into memory allocation failures. In this case, just use the normal Effect State action instead.",
+                "importPath": "pyswitch.clients.kemper.actions.effect_state_extended_names"
             },
             {
                 "name": "RIG_SELECT_AND_MORPH_STATE",
@@ -998,73 +1075,6 @@
                 "importPath": "pyswitch.clients.kemper.actions.tuner"
             },
             {
-                "name": "BINARY_SWITCH",
-                "parameters": [
-                    {
-                        "name": "mapping",
-                        "default": null,
-                        "comment": null
-                    },
-                    {
-                        "name": "display",
-                        "default": "None",
-                        "comment": null
-                    },
-                    {
-                        "name": "text",
-                        "default": "\"\"",
-                        "comment": null
-                    },
-                    {
-                        "name": "mode",
-                        "default": "PushButtonAction.HOLD_MOMENTARY",
-                        "comment": null
-                    },
-                    {
-                        "name": "color",
-                        "default": "Colors.WHITE",
-                        "comment": null
-                    },
-                    {
-                        "name": "id",
-                        "default": "False",
-                        "comment": null
-                    },
-                    {
-                        "name": "use_leds",
-                        "default": "True",
-                        "comment": null
-                    },
-                    {
-                        "name": "enable_callback",
-                        "default": "None",
-                        "comment": null
-                    },
-                    {
-                        "name": "value_on",
-                        "default": "1",
-                        "comment": null
-                    },
-                    {
-                        "name": "value_off",
-                        "default": "0",
-                        "comment": null
-                    },
-                    {
-                        "name": "reference_value",
-                        "default": "None",
-                        "comment": null
-                    },
-                    {
-                        "name": "comparison_mode",
-                        "default": "BinaryParameterCallback.GREATER_EQUAL",
-                        "comment": null
-                    }
-                ],
-                "comment": "Generic switch action which can be used for all parameter mappings",
-                "importPath": "pyswitch.clients.kemper.actions.binary_switch"
-            },
-            {
                 "name": "EFFECT_BUTTON",
                 "parameters": [
                     {
@@ -1177,6 +1187,125 @@
                 ],
                 "comment": "Selects a specific bank, keeping the current rig, or toggles between two banks (if bank_off is also provided). ",
                 "importPath": "pyswitch.clients.kemper.actions.bank_select"
+            }
+        ]
+    },
+    {
+        "client": "local",
+        "actions": [
+            {
+                "name": "HID_KEYBOARD",
+                "parameters": [
+                    {
+                        "name": "keycodes",
+                        "default": null,
+                        "comment": "Key code(s) to send. Can be either a single key code or a list/tuple of key codes. \nSearch \"adafruit_hid.keycode\" for available key codes, for example Keycode.LEFT_ARROW."
+                    },
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.LIGHT_BLUE",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness",
+                        "default": "0.15",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    }
+                ],
+                "comment": "Sends a HID (Human Interface Device) command which emulates an USB keyboard. With this, the controller can work as an USB page turner for example.",
+                "importPath": "pyswitch.clients.local.actions.hid"
+            },
+            {
+                "name": "BINARY_SWITCH",
+                "parameters": [
+                    {
+                        "name": "mapping",
+                        "default": null,
+                        "comment": null
+                    },
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "mode",
+                        "default": "PushButtonAction.HOLD_MOMENTARY",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.WHITE",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "value_on",
+                        "default": "1",
+                        "comment": null
+                    },
+                    {
+                        "name": "value_off",
+                        "default": "0",
+                        "comment": null
+                    },
+                    {
+                        "name": "reference_value",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "comparison_mode",
+                        "default": "BinaryParameterCallback.GREATER_EQUAL",
+                        "comment": null
+                    }
+                ],
+                "comment": "Generic switch action which can be used for all parameter mappings",
+                "importPath": "pyswitch.clients.local.actions.binary_switch"
             }
         ]
     },
@@ -1317,7 +1446,7 @@
                     }
                 ],
                 "comment": "The PagerAction is used to control multiple other actions to provide paging. Define this action for one switch which will by default rotate through the defined pages.\nFor the actions you want to be part of pages, just assign them using the paging buttons (which will set the id and enable_callback parameters for you).\nAlso, it is possible to have more than one pager in a configuration.\n\n<b>Rotate Through Pages:</b>\nIf you want to rotate through pages, just use this action with select_page set to None, which is the default. The switch will then rotate through the pages. \n\n<b>Directly Select Pages:</b>\nIf you want to have one switch dedicated to select each page, set select_page here to the page you want to select with the switch this pager is assigned to, and use the \"Select Page\" action (assigned to this pager) for the other switches to select the further pages directly.",
-                "importPath": "pyswitch.controller.pager",
+                "importPath": "pyswitch.clients.local.actions.pager",
                 "importName": "PagerAction"
             },
             {
@@ -1346,7 +1475,7 @@
                     }
                 ],
                 "comment": "This controls a Pager Action from another switch, making it possible to directly select pages with dedicated switches.\n\nYou always need to have a Pager Action which defines the pages, which also MUST be assigned to a switch. Set \"select_page\" on this pager to the first page, and for selecting the other pages, create \"Select Page\" actions for other switches. For example, to have 3 pages and 3 switches:\n<ul>\n    <li>Switch 1: Pager Action with \"select_page\" set to the first page</li>\n    <li>Switch 2: Select Page action set to page 2</li>\n    <li>Switch 3: Select Page action set to page 3</li>\n</ul>\nThe LED and display brightness settings are determined from the connected pager and can be set there if needed.",
-                "importPath": "pyswitch.controller.pager",
+                "importPath": "pyswitch.clients.local.actions.pager",
                 "importName": "PagerAction"
             }
         ]

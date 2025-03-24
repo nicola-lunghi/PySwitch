@@ -651,6 +651,83 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
             rig_switch_should_blink = False
         )
 
+    def test_messages_preselect_max_bank(self):
+        self._test_messages_preselect_max_bank(up = False)
+        self._test_messages_preselect_max_bank(up = True)
+
+    def _test_messages_preselect_max_bank(self, up):
+        if up:
+            action = BANK_UP(
+                preselect = True,
+                max_bank = 10
+            )
+        else:
+            action = BANK_DOWN(
+                preselect = True,
+                max_bank = 10
+            )
+
+        switch = MockFootswitch(actions = [action])
+        
+        appl = MockController2(inputs = [
+            switch,
+        ])
+
+        action.init(appl, switch)
+        
+        mapping = action.callback._BinaryParameterCallback__mapping 
+        
+        mapping.value = 14  # Bank 2
+        
+        action.update_displays()
+        
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["preselectedBank"], 3 if up else 1)
+        self.assertEqual(appl.shared["preselectCallback"], action.callback)
+
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["preselectedBank"], 4 if up else 0)
+        self.assertEqual(appl.shared["preselectCallback"], action.callback)
+
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["preselectedBank"], 5 if up else 9)
+        self.assertEqual(appl.shared["preselectCallback"], action.callback)
+        
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["preselectedBank"], 6 if up else 8)
+        self.assertEqual(appl.shared["preselectCallback"], action.callback)
+        
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["preselectedBank"], 7 if up else 7)
+        self.assertEqual(appl.shared["preselectCallback"], action.callback)
+        
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["preselectedBank"], 8 if up else 6)
+        self.assertEqual(appl.shared["preselectCallback"], action.callback)
+        
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["preselectedBank"], 9 if up else 5)
+        self.assertEqual(appl.shared["preselectCallback"], action.callback)
+        
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.shared["preselectedBank"], 0 if up else 4)
+        self.assertEqual(appl.shared["preselectCallback"], action.callback)
         
     # Checks if the LEDs are blinking
     def _check_blinking(self, 

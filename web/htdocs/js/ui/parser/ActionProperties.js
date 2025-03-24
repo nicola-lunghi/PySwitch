@@ -111,7 +111,7 @@ class ActionProperties {
                             .addClass(messages.length ? "has-messages" : null)
                             .append(
                                 input,
-                                ...(await that.#createAdditionalColorInputOptions(input, param))
+                                ...(await that.#createAdditionalInputOptions(input, param))
                             )
                         ),
                         param,
@@ -574,15 +574,48 @@ class ActionProperties {
     }
 
     /**
-     * If the parameter is of type "color", this returns additional elements to add to the input. If
-     * not an empty array is returned.
+     * If the parameter is of type "color", this returns additional elements to add to the input. Also
+     * other special types with additional inputs are created here. 
+     * 
+     * If not special, an empty array is returned.
      */
-    async #createAdditionalColorInputOptions(input, param) {
-        const that = this;
-        const type = param.meta.type();
-        if (type != "color") return [];
+    async #createAdditionalInputOptions(input, param) {
+        switch (param.meta.type()) {
+            case "color": return this.#createAdditionalColorInputOptions(input, param);
+            case "select-free": return this.#createAdditionalSelectFreeInputOptions(input, param);
+        }
         
+        return [];
+    }
+
+    async #createAdditionalSelectFreeInputOptions(input, param) {
+        const that = this;
+        return [
+            $('<select class="parameter-option" />').append(
+                (await param.meta.getValues())
+                .concat([{
+                    name: "Select..."
+                }])
+                .map((item) => 
+                    $('<option value="' + item.name + '" />')
+                    .text(item.name)
+                )
+            )
+            .on('change', async function() {
+                const value = $(this).val();
+                if (value == "Select...") return;
+
+                await that.setArgument(param.name, value);
+
+                $(this).val("Select...")
+            })
+            .val("Select..."),
+        ];
+    }
+
+    async #createAdditionalColorInputOptions(input, param) {
         let colorInput = null;
+        const that = this;
 
         async function updateColorInput() {
             const color = await that.parserFrontend.parser.resolveColor(input.val());

@@ -10,7 +10,7 @@ class ClassItemExtractor:
         self.importPath = importPath
         self.include_underscore = include_underscore        
 
-    # Returns a list of all public functions and/or attributes defined on module level
+    # Returns a list of all public functions and/or attributes defined in the given class
     def get(self, functions = False, attributes = False):
         ret = []
 

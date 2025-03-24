@@ -300,6 +300,12 @@
                 "parameters": []
             },
             {
+                "entityName": "EFFECT_STATE_EXT",
+                "category": "effects",
+                "target": "AdafruitSwitch",
+                "parameters": []
+            },
+            {
                 "entityName": "EFFECT_BUTTON",
                 "category": "effects",
                 "target": "AdafruitSwitch",
@@ -528,19 +534,6 @@
                 "target": "AdafruitSwitch",
                 "parameters": []
             },
-            {
-                "entityName": "BINARY_SWITCH",
-                "category": "other",
-                "target": "AdafruitSwitch",
-                "parameters": [
-                    {
-                        "name": "mapping",
-                        "type": "select",
-                        "default": "MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_MOD)",
-                        "comment": "Mapping to be used."
-                    }
-                ]
-            },
 
             {
                 "entityName": "MAPPING_EFFECT_BUTTON",
@@ -590,6 +583,16 @@
                         "advanced": 2,
                         "type": "any",
                         "comment": "Callback instance to control dynamically whether the action should be enabled."
+                    },
+
+                    {
+                        "name": "text",
+                        "type": "text",
+                        "advanced": 1,
+                        "unconvertedValues": [
+                            "None"
+                        ],
+                        "comment": "Fixed text (overrides the action specific text if the action would generate one)"
                     }
                 ]
             },
@@ -744,6 +747,33 @@
                     {
                         "name": "page_id",
                         "type": "select-page"
+                    }
+                ]
+            },
+
+            {
+                "entityName": "BINARY_SWITCH",
+                "category": "other",
+                "target": "AdafruitSwitch",
+                "parameters": [
+                    {
+                        "name": "mapping",
+                        "type": "select",
+                        "default": "MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_MOD)",
+                        "comment": "Mapping to be used."
+                    }
+                ]
+            },
+
+            {
+                "entityName": "HID_KEYBOARD",
+                "category": "other",
+                "target": "AdafruitSwitch",
+                "parameters": [
+                    {
+                        "name": "keycodes",
+                        "type": "select-free",
+                        "default": "Keycode.LEFT_ARROW"
                     }
                 ]
             }

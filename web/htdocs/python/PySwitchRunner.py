@@ -12,6 +12,7 @@ from wrappers.wrap_adafruit_display import *
 from wrappers.wrap_adafruit_led import *
 from wrappers.wrap_adafruit_midi import *
 from wrappers.wrap_time import *
+from wrappers.wrap_hid import *
 
 class PySwitchRunner:
     def __init__(self, container_id, dom_namespace, update_interval_ms, coverage):
@@ -56,7 +57,10 @@ class PySwitchRunner:
             "digitalio": WrapDigitalIO(self.dom_namespace),
             "analogio": WrapAnalogIO(self.dom_namespace),
             "rotaryio": WrapRotaryIO(self.dom_namespace),
-            "time": WrapTime()
+            "time": WrapTime(),
+            "usb_hid": WrapUsbHid(),
+            "adafruit_hid.keyboard": WrapUsbHidKeyboard,
+            # "adafruit_hid.keycode": WrapUsbHidKeycode
         }):            
             self.display_driver = WrapDisplayDriver(
                 width = 240,

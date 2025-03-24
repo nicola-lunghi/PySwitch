@@ -6,7 +6,7 @@ from ....misc import Colors
 from ..mappings.tempo import MAPPING_TAP_TEMPO, MAPPING_TEMPO_DISPLAY
 
 # Tap tempo
-def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = True, enable_callback = None):
+def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = False, enable_callback = None):
     return PushButtonAction({
         "callback": BinaryParameterCallback(
             mapping = MAPPING_TAP_TEMPO(),

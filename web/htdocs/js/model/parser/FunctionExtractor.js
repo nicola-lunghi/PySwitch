@@ -31,7 +31,7 @@ class FunctionExtractor {
             for(const child of node.children || []) {
                 if (child.name == name) return child;
             }
-            throw new Error("Child " + name + " not found");
+            return null;
         }
 
         // Get actions dir node
@@ -39,6 +39,10 @@ class FunctionExtractor {
         let actions = toc;
         for (const token of splt) {
             actions = getChild(actions, token);
+
+            if (actions == null) {
+                return [];
+            }
         }        
 
         // Get python paths for all files (the files are already located in the Pyodide FS, so python 

@@ -274,6 +274,12 @@ class PySwitchParser:
                 "name": "KemperEffectSlot",
                 "importPath": "pyswitch.clients.kemper"
             },
+
+            # HID Keycodes
+            {
+                "name": "Keycode",
+                "importPath": "adafruit_hid.keycode"
+            }
         ]
     
     # Generates all imports for mappings

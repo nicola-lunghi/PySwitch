@@ -1,7 +1,7 @@
 from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
 from pyswitch.misc import Colors
-from pyswitch.controller.pager import PagerAction
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_PAGE
+from pyswitch.clients.local.actions.pager import PagerAction
 from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO, SHOW_TEMPO
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_TARGET_RIG

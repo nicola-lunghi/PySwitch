@@ -18,6 +18,7 @@ class PySwitchRunner {
      *                                       which in a browser woult block all user interaction, so the ticks are triggered in intervals. Mandatory.
      *      coverage: False                  Measure coverage
      *      errorHandler: null               Optional error handler, providing a handle(exc) method
+     *      messageHandler: null             Optional message handler, providing a message(msg, type) method
      * }
      */
     constructor(options, containerId) {
@@ -79,6 +80,7 @@ class PySwitchRunner {
         await this.#loadModule("wrappers/wrap_adafruit_led.py", localPythonPath);
         await this.#loadModule("wrappers/wrap_adafruit_display.py", localPythonPath);
         await this.#loadModule("wrappers/wrap_time.py", localPythonPath);
+        await this.#loadModule("wrappers/wrap_hid.py", localPythonPath);
         await this.#loadModule("wrappers/WrapDisplayDriver.py", localPythonPath);
         
         //////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,6 +103,10 @@ class PySwitchRunner {
         await this.#loadModule("adafruit_midi/system_exclusive.py", localPythonPath);
         await this.#loadModule("adafruit_midi/timing_clock.py", localPythonPath);
 
+        this.pyodide.FS.mkdir("adafruit_hid");
+        await this.#loadModule("adafruit_hid/__init__.py", localPythonPath);
+        await this.#loadModule("adafruit_hid/keycode.py", localPythonPath);
+
         //////////////////////////////////////////////////////////////////////////////////////////////
 
         this.pyodide.FS.mkdir("pyswitch");
@@ -114,13 +120,13 @@ class PySwitchRunner {
         this.pyodide.FS.mkdir("pyswitch/clients/kemper");
         await this.#loadModule("pyswitch/clients/kemper/__init__.py", circuitpyPath);
         
-        this.pyodide.FS.mkdir("pyswitch/clients/kemper/actions");         
+        this.pyodide.FS.mkdir("pyswitch/clients/kemper/actions");
         await this.#loadModule("pyswitch/clients/kemper/actions/__init__.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/actions/bank_select.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/actions/bank_up_down.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/binary_switch.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/actions/effect_button.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/actions/effect_state.py", circuitpyPath);
+        await this.#loadModule("pyswitch/clients/kemper/actions/effect_state_extended_names.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/actions/looper.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/actions/morph.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/actions/rig_select_and_morph_state.py", circuitpyPath);
@@ -145,6 +151,14 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/clients/kemper/mappings/select.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/mappings/tempo.py", circuitpyPath);
         
+        this.pyodide.FS.mkdir("pyswitch/clients/local");
+        await this.#loadModule("pyswitch/clients/local/__init__.py", circuitpyPath);
+        
+        this.pyodide.FS.mkdir("pyswitch/clients/local/actions");
+        await this.#loadModule("pyswitch/clients/local/actions/binary_switch.py", circuitpyPath);
+        await this.#loadModule("pyswitch/clients/local/actions/pager.py", circuitpyPath);
+        await this.#loadModule("pyswitch/clients/local/actions/hid.py", circuitpyPath);
+
         this.pyodide.FS.mkdir("pyswitch/controller");
         await this.#loadModule("pyswitch/controller/__init__.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/actions.py", circuitpyPath);
@@ -156,7 +170,6 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/controller/ExploreModeController.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/InputControllers.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/MidiController.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/pager.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/RuntimeMeasurement.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/strobe.py", circuitpyPath);
 
@@ -198,7 +211,10 @@ class PySwitchRunner {
             
             if (this.#options.errorHandler) {
                 window.externalRefs.errorHandler = this.#options.errorHandler;
-            }            
+            }
+            if (this.#options.messageHandler) {
+                window.externalRefs.messageHandler = this.#options.messageHandler;
+            }
         }
         
         this.#initialized = true;

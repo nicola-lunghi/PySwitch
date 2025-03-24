@@ -33,10 +33,10 @@ class MockEffectEnableCallback(EffectEnableCallback):
     def get_effect_category(self, kpp_effect_type):
         return kpp_effect_type * 10
 
-    def get_effect_category_color(self, category):
+    def get_effect_category_color(self, category, kpp_type):
         return (category, category + 2, category * 4)
 
-    def get_effect_category_text(self, category):
+    def get_effect_category_text(self, category, kpp_type):
         return "name" + repr(category)
 
 

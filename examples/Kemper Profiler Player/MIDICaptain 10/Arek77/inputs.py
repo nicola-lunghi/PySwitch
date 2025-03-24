@@ -15,7 +15,7 @@ from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT_DISPLAY_TARGET
 from pyswitch.clients.kemper.actions.rig_select_and_morph_state import RIG_SELECT_AND_MORPH_STATE
 
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
-from pyswitch.clients.kemper.actions.binary_switch import BINARY_SWITCH
+from pyswitch.clients.local.actions.binary_switch import BINARY_SWITCH
 
 from pyswitch.clients.kemper.mappings.pedals import MAPPING_VOLUME_PEDAL, MAPPING_WAH_PEDAL
 from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_GAIN, MAPPING_AMP_STATE

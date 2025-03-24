@@ -13,6 +13,7 @@ class Parser {
 
     #availableActions = null;        // Buffer
     #availableMappings = null;       // Buffer
+    #availableKeycodes = null;       // Buffer
     #bufferHardwareInfo = null;      // Buffer
     #colors = null;                  // Buffer
     #inputs = null;                  // Buffer for input instances
@@ -378,6 +379,17 @@ class Parser {
         const displays = JSON.parse(this.#pySwitchParser.displays());
 
         return displays.filter((item) => item != "Splashes");
+    }
+
+    /**
+     * Returns all available key codes
+     */
+    async getAvailableKeycodes() {
+        if (this.#availableKeycodes) return this.#availableKeycodes;
+
+        this.#availableKeycodes = JSON.parse(await Tools.fetch(this.basePath + "definitions/keycodes.json"));
+
+        return this.#availableKeycodes;
     }
 
     /**

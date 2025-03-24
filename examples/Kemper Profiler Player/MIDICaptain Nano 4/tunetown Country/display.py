@@ -104,7 +104,7 @@ Splashes = TunerDisplayCallback(
                     
                 }, 
                 callback = KemperRigNameCallback(
-                	show_rig_id = True
+                    show_rig_id = True
                 )
             ),
             BidirectionalProtocolState(

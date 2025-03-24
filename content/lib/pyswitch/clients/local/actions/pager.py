@@ -1,5 +1,5 @@
-from .callbacks import Callback
-from .actions import Action
+from ....controller.callbacks import Callback
+from ....controller.actions import Action
 
 class PagerAction(Callback, Action):
     class _EnableCallback(Callback):

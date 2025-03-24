@@ -1,19 +1,27 @@
 from micropython import const
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import EffectEnableCallback
-from ...kemper import KemperMappings
+from ...kemper import KemperMappings, KemperEffectSlot
 from ....misc import Colors, DEFAULT_LABEL_COLOR
 
 # Switch an effect slot on / off
 def EFFECT_STATE(slot_id, 
                  display = None, 
-                 mode = PushButtonAction.HOLD_MOMENTARY, 
-                 id = False, 
+                 mode = PushButtonAction.HOLD_MOMENTARY,
+                 show_slot_names = False,
+                 id = False,
+                 text = None,
+                 color = None,
                  use_leds = True, 
                  enable_callback = None
     ):
     return PushButtonAction({
-        "callback": KemperEffectEnableCallback(slot_id),
+        "callback": KemperEffectEnableCallback(
+            slot_id = slot_id,
+            text = text,
+            color = color,
+            show_slot_names = show_slot_names
+        ),
         "mode": mode,
         "display": display,
         "id": id,
@@ -79,12 +87,23 @@ class KemperEffectEnableCallback(EffectEnableCallback):
         "Reverb"
     )
 
-    def __init__(self, slot_id):
+    def __init__(self, 
+                 slot_id,
+                 text = None,
+                 color = None,
+                 show_slot_names = False,
+                 extended_type_names = False
+        ):
         super().__init__(
             mapping_state = KemperMappings.EFFECT_STATE(slot_id),
             mapping_type = KemperMappings.EFFECT_TYPE(slot_id)
         )
+        self.__text = text
+        self.__color = color
+        self.__slot_name = KemperEffectSlot.EFFECT_SLOT_NAME[slot_id] if show_slot_names else None
+        self.__extended_type_names = extended_type_names
     
+
     # Must return the effect category for a mapping value
     def get_effect_category(self, kpp_effect_type):
         # NOTE: The ranges are defined by Kemper with a lot of unused numbers, so the borders between types
@@ -123,9 +142,26 @@ class KemperEffectEnableCallback(EffectEnableCallback):
             return self.CATEGORY_REVERB
         
     # Must return the color for a category    
-    def get_effect_category_color(self, category):
+    def get_effect_category_color(self, category, kpp_effect_type):
+        if self.__color:
+            return self.__color
+        
         return self.CATEGORY_COLORS[category]
 
     # Must return the text to show for a category    
-    def get_effect_category_text(self, category):
-        return self.CATEGORY_NAMES[category]
+    def get_effect_category_text(self, category, kpp_effect_type):
+        if self.__text:
+            return self.__text
+        
+        if self.__extended_type_names:
+            if kpp_effect_type in self.__extended_type_names:
+                name = self.__extended_type_names[kpp_effect_type]
+            else:
+                name = self.CATEGORY_NAMES[category]
+        else:
+            name = self.CATEGORY_NAMES[category]
+
+        if self.__slot_name:
+            return self.__slot_name + " " + name
+        
+        return name

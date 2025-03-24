@@ -1,0 +1,1034 @@
+[
+    {
+        "type": "attribute",
+        "name": "Keycode.A",
+        "value": "0x04",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.B",
+        "value": "0x05",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.C",
+        "value": "0x06",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.D",
+        "value": "0x07",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.E",
+        "value": "0x08",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F",
+        "value": "0x09",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.G",
+        "value": "0x0A",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.H",
+        "value": "0x0B",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.I",
+        "value": "0x0C",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.J",
+        "value": "0x0D",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.K",
+        "value": "0x0E",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.L",
+        "value": "0x0F",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.M",
+        "value": "0x10",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.N",
+        "value": "0x11",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.O",
+        "value": "0x12",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.P",
+        "value": "0x13",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.Q",
+        "value": "0x14",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.R",
+        "value": "0x15",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.S",
+        "value": "0x16",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.T",
+        "value": "0x17",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.U",
+        "value": "0x18",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.V",
+        "value": "0x19",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.W",
+        "value": "0x1A",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.X",
+        "value": "0x1B",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.Y",
+        "value": "0x1C",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.Z",
+        "value": "0x1D",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.ONE",
+        "value": "0x1E",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.TWO",
+        "value": "0x1F",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.THREE",
+        "value": "0x20",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.FOUR",
+        "value": "0x21",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.FIVE",
+        "value": "0x22",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.SIX",
+        "value": "0x23",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.SEVEN",
+        "value": "0x24",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.EIGHT",
+        "value": "0x25",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.NINE",
+        "value": "0x26",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.ZERO",
+        "value": "0x27",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.ENTER",
+        "value": "0x28",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.RETURN",
+        "value": "ENTER",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.ESCAPE",
+        "value": "0x29",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.BACKSPACE",
+        "value": "0x2A",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.TAB",
+        "value": "0x2B",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.SPACEBAR",
+        "value": "0x2C",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.SPACE",
+        "value": "SPACEBAR",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.MINUS",
+        "value": "0x2D",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.EQUALS",
+        "value": "0x2E",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.LEFT_BRACKET",
+        "value": "0x2F",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.RIGHT_BRACKET",
+        "value": "0x30",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.BACKSLASH",
+        "value": "0x31",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.POUND",
+        "value": "0x32",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.SEMICOLON",
+        "value": "0x33",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.QUOTE",
+        "value": "0x34",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.GRAVE_ACCENT",
+        "value": "0x35",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.COMMA",
+        "value": "0x36",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.PERIOD",
+        "value": "0x37",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.FORWARD_SLASH",
+        "value": "0x38",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.CAPS_LOCK",
+        "value": "0x39",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F1",
+        "value": "0x3A",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F2",
+        "value": "0x3B",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F3",
+        "value": "0x3C",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F4",
+        "value": "0x3D",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F5",
+        "value": "0x3E",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F6",
+        "value": "0x3F",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F7",
+        "value": "0x40",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F8",
+        "value": "0x41",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F9",
+        "value": "0x42",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F10",
+        "value": "0x43",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F11",
+        "value": "0x44",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F12",
+        "value": "0x45",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.PRINT_SCREEN",
+        "value": "0x46",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.SCROLL_LOCK",
+        "value": "0x47",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.PAUSE",
+        "value": "0x48",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.INSERT",
+        "value": "0x49",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.HOME",
+        "value": "0x4A",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.PAGE_UP",
+        "value": "0x4B",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.DELETE",
+        "value": "0x4C",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.END",
+        "value": "0x4D",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.PAGE_DOWN",
+        "value": "0x4E",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.RIGHT_ARROW",
+        "value": "0x4F",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.LEFT_ARROW",
+        "value": "0x50",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.DOWN_ARROW",
+        "value": "0x51",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.UP_ARROW",
+        "value": "0x52",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_NUMLOCK",
+        "value": "0x53",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_FORWARD_SLASH",
+        "value": "0x54",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_ASTERISK",
+        "value": "0x55",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_MINUS",
+        "value": "0x56",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_PLUS",
+        "value": "0x57",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_ENTER",
+        "value": "0x58",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_ONE",
+        "value": "0x59",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_TWO",
+        "value": "0x5A",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_THREE",
+        "value": "0x5B",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_FOUR",
+        "value": "0x5C",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_FIVE",
+        "value": "0x5D",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_SIX",
+        "value": "0x5E",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_SEVEN",
+        "value": "0x5F",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_EIGHT",
+        "value": "0x60",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_NINE",
+        "value": "0x61",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_ZERO",
+        "value": "0x62",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_PERIOD",
+        "value": "0x63",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_BACKSLASH",
+        "value": "0x64",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.APPLICATION",
+        "value": "0x65",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.POWER",
+        "value": "0x66",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.KEYPAD_EQUALS",
+        "value": "0x67",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F13",
+        "value": "0x68",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F14",
+        "value": "0x69",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F15",
+        "value": "0x6A",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F16",
+        "value": "0x6B",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F17",
+        "value": "0x6C",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F18",
+        "value": "0x6D",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F19",
+        "value": "0x6E",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F20",
+        "value": "0x6F",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F21",
+        "value": "0x70",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F22",
+        "value": "0x71",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F23",
+        "value": "0x72",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.F24",
+        "value": "0x73",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.LEFT_CONTROL",
+        "value": "0xE0",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.CONTROL",
+        "value": "LEFT_CONTROL",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.LEFT_SHIFT",
+        "value": "0xE1",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.SHIFT",
+        "value": "LEFT_SHIFT",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.LEFT_ALT",
+        "value": "0xE2",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.ALT",
+        "value": "LEFT_ALT",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.OPTION",
+        "value": "ALT",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.LEFT_GUI",
+        "value": "0xE3",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.GUI",
+        "value": "LEFT_GUI",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.WINDOWS",
+        "value": "GUI",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.COMMAND",
+        "value": "GUI",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.RIGHT_CONTROL",
+        "value": "0xE4",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.RIGHT_SHIFT",
+        "value": "0xE5",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.RIGHT_ALT",
+        "value": "0xE6",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    },
+    {
+        "type": "attribute",
+        "name": "Keycode.RIGHT_GUI",
+        "value": "0xE7",
+        "comment": null,
+        "importPath": "undefined",
+        "importName": "Keycode"
+    }
+]

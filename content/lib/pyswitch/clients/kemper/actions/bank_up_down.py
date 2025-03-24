@@ -20,7 +20,8 @@ def BANK_UP(display = None,
             color = None,                                     # Override color (if no color_callback is passed)
             color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
             display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,    # Display mode (same as for RIG_SELECT, see definitions above)
-            preselect = False                                 # Preselect mode. If enabled, the bank is only pre-selected, the change will only take effect when you select a rig next time.
+            preselect = False,                                # Preselect mode. If enabled, the bank is only pre-selected, the change will only take effect when you select a rig next time.
+            max_bank = None                                   # Highest bank available. Only relevant if preselct is enabled.
     ):
     return PushButtonAction({
         "callback": KemperBankChangeCallback(
@@ -33,7 +34,8 @@ def BANK_UP(display = None,
             color_callback = color_callback,
             text = text,
             text_callback = text_callback,
-            preselect = preselect
+            preselect = preselect,
+            max_bank = max_bank
         ),
         "mode": PushButtonAction.ONE_SHOT,
         "display": display,
@@ -54,7 +56,8 @@ def BANK_DOWN(display = None,                                   # Reference to a
               color = None,                                     # Override color (if no color_callback is passed)
               color_callback = None,                            # Optional callback for setting the color. Footprint: def callback(action, bank, rig) -> (r, g, b) where bank and rig are int starting from 0.
               display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,    # Display mode (same as for RIG_SELECT, see definitions above)
-              preselect = False                                 # Preselect mode
+              preselect = False,                                # Preselect mode
+              max_bank = None                                   # Highest bank available. Only relevant if preselct is enabled.
     ):
     return PushButtonAction({
         "callback": KemperBankChangeCallback(
@@ -67,7 +70,8 @@ def BANK_DOWN(display = None,                                   # Reference to a
             color_callback = color_callback,
             text = text,
             text_callback = text_callback,
-            preselect = preselect
+            preselect = preselect,
+            max_bank = max_bank
         ),
         "mode": PushButtonAction.ONE_SHOT,
         "display": display,
@@ -90,12 +94,11 @@ class KemperBankChangeCallback(BinaryParameterCallback):
                     text,
                     text_callback,
                     preselect,
+                    max_bank,
                     preselect_blink_interval = 400
         ):            
         super().__init__(
             mapping = mapping,
-            # value_enable = 0,
-            # value_disable = 0,
             comparison_mode = self.NO_STATE_CHANGE
         )
 
@@ -110,7 +113,8 @@ class KemperBankChangeCallback(BinaryParameterCallback):
 
         self.__text = text
         self.__text_callback = text_callback
-        self.__preselect = preselect  
+        self.__preselect = preselect
+        self.__max_bank = max_bank
 
         if preselect:
             self.__preselect_blink_period = PeriodCounter(preselect_blink_interval)
@@ -225,9 +229,11 @@ class KemperBankChangeCallback(BinaryParameterCallback):
             bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)        
 
         value = bank + self.__offset
+        _num_banks = NUM_BANKS if self.__max_bank == None else self.__max_bank
+        
         while (value < 0):
-            value += NUM_BANKS
-        while (value >= NUM_BANKS):
-            value -= NUM_BANKS
+            value += _num_banks
+        while (value >= _num_banks):
+            value -= _num_banks
 
         return value

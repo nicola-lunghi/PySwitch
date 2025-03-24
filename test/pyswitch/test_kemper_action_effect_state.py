@@ -130,39 +130,79 @@ class TestKemperActionEffectState(unittest.TestCase):
         # All types have to be mapped
         cb = KemperEffectEnableCallback(KemperEffectSlot.EFFECT_SLOT_ID_DLY)
 
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_WAH)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_DISTORTION)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_COMPRESSOR)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_NOISE_GATE)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_SPACE)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_CHORUS)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_PHASER_FLANGER)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_EQUALIZER)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_BOOSTER)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_LOOPER)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_PITCH)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_DUAL)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_DELAY)
-        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_REVERB)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_WAH, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_DISTORTION, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_COMPRESSOR, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_NOISE_GATE, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_SPACE, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_CHORUS, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_PHASER_FLANGER, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_EQUALIZER, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_BOOSTER, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_LOOPER, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_PITCH, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_DUAL, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_DELAY, 0)
+        cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_REVERB, 0)
 
+    def test_color_override(self):
+        cb = KemperEffectEnableCallback(
+            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
+            color = (6, 7, 8)
+        )
 
+        self.assertEqual(cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_WAH, 0), (6, 7, 8))
+        self.assertEqual(cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_COMPRESSOR, 0), (6, 7, 8))
+        self.assertEqual(cb.get_effect_category_color(KemperEffectEnableCallback.CATEGORY_REVERB, 0), (6, 7, 8))
+        self.assertEqual(cb.get_effect_category_color("anyvalue", 0), (6, 7, 8))        
+
+    def test_text_override(self):
+        cb = KemperEffectEnableCallback(
+            slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY,
+            text = "foo"
+        )
+
+        self.assertEqual(cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_WAH, 0), "foo")
+        self.assertEqual(cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_COMPRESSOR, 0), "foo")
+        self.assertEqual(cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_REVERB, 0), "foo")
+        self.assertEqual(cb.get_effect_category_text("anyvalue", 0), "foo")
+
+    def test_show_slot_names(self):
+        self._test_show_slot_names(KemperEffectSlot.EFFECT_SLOT_ID_A, "A Wah")
+        self._test_show_slot_names(KemperEffectSlot.EFFECT_SLOT_ID_B, "B Wah")
+        self._test_show_slot_names(KemperEffectSlot.EFFECT_SLOT_ID_C, "C Wah")
+        self._test_show_slot_names(KemperEffectSlot.EFFECT_SLOT_ID_D, "D Wah")
+
+        self._test_show_slot_names(KemperEffectSlot.EFFECT_SLOT_ID_X, "X Wah")
+        self._test_show_slot_names(KemperEffectSlot.EFFECT_SLOT_ID_MOD, "MOD Wah")
+        self._test_show_slot_names(KemperEffectSlot.EFFECT_SLOT_ID_DLY, "DLY Wah")
+        self._test_show_slot_names(KemperEffectSlot.EFFECT_SLOT_ID_REV, "REV Wah")
+
+    def _test_show_slot_names(self, slot_id, exp_text):
+        cb = KemperEffectEnableCallback(
+            slot_id = slot_id,
+            show_slot_names = True
+        )
+
+        self.assertEqual(cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_WAH, 0), exp_text)
+        
     def test_type_names(self):
         # All types have to be mapped
         cb = KemperEffectEnableCallback(KemperEffectSlot.EFFECT_SLOT_ID_DLY)
 
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_WAH)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_DISTORTION)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_COMPRESSOR)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_NOISE_GATE)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_SPACE)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_CHORUS)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_PHASER_FLANGER)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_EQUALIZER)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_BOOSTER)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_LOOPER)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_PITCH)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_DUAL)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_DELAY)
-        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_REVERB)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_WAH, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_DISTORTION, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_COMPRESSOR, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_NOISE_GATE, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_SPACE, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_CHORUS, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_PHASER_FLANGER, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_EQUALIZER, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_BOOSTER, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_LOOPER, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_PITCH, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_DUAL, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_DELAY, 0)
+        cb.get_effect_category_text(KemperEffectEnableCallback.CATEGORY_REVERB, 0)
 
 

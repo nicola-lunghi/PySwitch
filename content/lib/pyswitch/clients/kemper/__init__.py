@@ -317,6 +317,18 @@ class KemperEffectSlot:
     EFFECT_SLOT_ID_DLY = const(6)
     EFFECT_SLOT_ID_REV = const(7)
 
+    EFFECT_SLOT_NAME = (
+        "A",
+        "B",
+        "C",
+        "D",
+        
+        "X",
+        "MOD",
+        "DLY",
+        "REV"
+    )
+
     # CC Address for Effect Slot enable/disable. Order has to match the one defined above!
     CC_EFFECT_SLOT_ENABLE = (
         const(17),    # Slot A
@@ -355,7 +367,7 @@ class KemperEffectSlot:
         const(0x71),   # Slot MOD
         const(0x72),   # Slot DLY
         const(0x73)    # Slot REV
-    ]    
+    ]   
 
 
 ####################################################################################################################

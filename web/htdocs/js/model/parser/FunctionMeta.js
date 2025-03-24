@@ -22,6 +22,9 @@ class FunctionMeta {
      * argument values can be used to show more specific names.
      */
     getDisplayName(actionCallProxy = null) {
+        switch (this.functionDefinition.name) {
+            case "HID_KEYBOARD": return this.#getDisplayNameHidKeyboard(actionCallProxy);
+        }
         return ((this.client.id != "local") ? (this.client.getDisplayName() + ": ") : "") + this.getShortDisplayName(actionCallProxy);
     }
 
@@ -35,6 +38,8 @@ class FunctionMeta {
             case "PagerAction.proxy": return this.#getDisplayNamePagerProxy(actionCallProxy);
             case "AnalogAction": return this.#getDisplayNameAnalogAction(actionCallProxy);
             case "EncoderAction": return this.#getDisplayNameEncoderAction(actionCallProxy);
+            case "BINARY_SWITCH": return this.#getDisplayNameBinarySwitch(actionCallProxy);
+            case "HID_KEYBOARD": return this.#getDisplayNameHidKeyboardShort(actionCallProxy);
         }
         return this.underscoreToDisplayName(this.functionDefinition.name);
     }
@@ -45,6 +50,12 @@ class FunctionMeta {
     async getSortString() {
         if (this.functionDefinition.name.startsWith("PagerAction")) {
             return "ZZZZZZZZ" + this.functionDefinition.name;
+        }
+        if (this.functionDefinition.name == "BINARY_SWITCH") {
+            return "ZZZZZ";
+        }
+        if (this.functionDefinition.name == "HID_KEYBOARD") {
+            return "ZZZZZZZ";
         }
 
         return this.functionDefinition.name;
@@ -69,9 +80,9 @@ class FunctionMeta {
         if (!(mapping == null || mapping.value == "None")) {
             return this.underscoreToDisplayName(
                 mapping.value
-                .replace("MAPPING_", "")
-                .replace("KemperMappings.", "")
-                .replace(/\((.+?)*\)/g, "")
+                .replaceAll("MAPPING_", "")
+                .replaceAll("KemperMappings.", "")
+                .replaceAll(/\((.+?)*\)/g, "")
             );
         }
 
@@ -139,6 +150,59 @@ class FunctionMeta {
         }
 
         return "EncoderAction";
+    }
+
+    /**
+     * Special implementation for Binary Switch action
+     */
+    #getDisplayNameBinarySwitch(actionCallProxy = null) {
+        if (!actionCallProxy) return "Other";
+
+        const mapping = this.getArgument(actionCallProxy, "mapping");
+
+        if (!(mapping == null || mapping.value == "None")) {
+            return this.underscoreToDisplayName(
+                mapping.value
+                .replace("MAPPING_", "")
+                .replace("KemperMappings.", "")
+                .replace(/\((.+?)*\)/g, "")
+            );
+        }
+
+        return "Other";
+    }
+
+    #getDisplayNameHidKeyboard(actionCallProxy = null) {
+        if (!actionCallProxy) return "USB Keyboard (HID)";
+
+        const keycodes = this.getArgument(actionCallProxy, "keycodes");
+
+        if (!(keycodes == null || keycodes.value == "None")) {
+            return "USB Key " + this.#formatKeycodes(keycodes.value)
+        }
+
+        return "USB Keyboard (HID)";
+    }
+
+    #getDisplayNameHidKeyboardShort(actionCallProxy = null) {
+        if (!actionCallProxy) return "USB Key";
+
+        const keycodes = this.getArgument(actionCallProxy, "keycodes");
+
+        if (!(keycodes == null || keycodes.value == "None")) {
+            return "USB Key " + this.#formatKeycodes(keycodes.value)
+                
+        }
+
+        return "USB Key";
+    }
+
+    #formatKeycodes(codes) {
+        return codes.replaceAll("Keycode.", "")
+            .replaceAll("[", "")
+            .replaceAll("]", "")
+            .replaceAll("(", "")
+            .replaceAll(")", "")
     }
 
     /**

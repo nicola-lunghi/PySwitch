@@ -70,7 +70,6 @@ class PySwitchUI {
         let tabsElement = null;
         let showTabsButton = null;
         let additionalInputsElement = null;
-        let additionalInputsContainer = null;
         
         // Settings panel
         const that = this;

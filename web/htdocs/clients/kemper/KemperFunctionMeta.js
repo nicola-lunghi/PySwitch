@@ -8,7 +8,7 @@ class KemperFunctionMeta extends FunctionMeta {
      */
     getDisplayName(actionCallProxy = null) {
         switch (this.functionDefinition.name) {
-            case "RIG_SELECT_AND_MORPH_STATE": return this.client.getDisplayName() + ": " + this.#getDisplayNameRigSelectAndMorphState(actionCallProxy)
+            case "RIG_SELECT_AND_MORPH_STATE": return this.client.getDisplayName() + ": " + this.#getDisplayNameRigSelectAndMorphState(actionCallProxy);
             case "LOOPER_REC_PLAY_OVERDUB": return this.client.getDisplayName() + ": " + super.getShortDisplayName(actionCallProxy);
         }
 
@@ -20,13 +20,13 @@ class KemperFunctionMeta extends FunctionMeta {
      */
     getShortDisplayName(actionCallProxy = null) {
         switch (this.functionDefinition.name) {
-            case "RIG_SELECT": return this.#getDisplayNameRigSelect(actionCallProxy)
-            case "RIG_SELECT_AND_MORPH_STATE": return this.#getDisplayNameRigSelectAndMorphStateShort(actionCallProxy)
-            case "BANK_SELECT": return this.#getDisplayNameBankSelect(actionCallProxy)
-            case "EFFECT_BUTTON": return this.#getDisplayNameEffectButton(actionCallProxy)
-            case "EFFECT_STATE": return this.#getDisplayNameEffectState(actionCallProxy)
-            case "BINARY_SWITCH": return this.#getDisplayNameBinarySwitch(actionCallProxy)
-            case "LOOPER_REC_PLAY_OVERDUB": return "Looper Rec|Play|OD"
+            case "RIG_SELECT": return this.#getDisplayNameRigSelect(actionCallProxy);
+            case "RIG_SELECT_AND_MORPH_STATE": return this.#getDisplayNameRigSelectAndMorphStateShort(actionCallProxy);
+            case "BANK_SELECT": return this.#getDisplayNameBankSelect(actionCallProxy);
+            case "EFFECT_BUTTON": return this.#getDisplayNameEffectButton(actionCallProxy);
+            case "EFFECT_STATE": return this.#getDisplayNameEffectState(actionCallProxy);
+            case "EFFECT_STATE_EXT": return this.#getDisplayNameEffectStateExt(actionCallProxy);
+            case "LOOPER_REC_PLAY_OVERDUB": return "Looper Rec|Play|OD";
         }
         
         return super.getShortDisplayName(actionCallProxy);
@@ -36,10 +36,6 @@ class KemperFunctionMeta extends FunctionMeta {
      * Returns a sort string for the passed action definition
      */
     async getSortString() {
-        if (this.functionDefinition.name == "BINARY_SWITCH") {
-            return "ZZZZZ";
-        }
-
         const category = this.functionDefinition.meta.getCategory();
         
         switch (category) {
@@ -169,24 +165,31 @@ class KemperFunctionMeta extends FunctionMeta {
     }
 
     /**
-     * Special implementation for Binary Switch action
+     * Special implementation for effect state
      */
-    #getDisplayNameBinarySwitch(actionCallProxy = null) {
-        if (!actionCallProxy) return "Other";
+    #getDisplayNameEffectStateExt(actionCallProxy = null) {
+        const slot_id = this.getArgument(actionCallProxy, "slot_id");
+        if (actionCallProxy && slot_id) {
+            function getSlotName(id) {
+                switch (id) {
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_A": return "A";
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_B": return "B";
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_C": return "C";
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_D": return "D";
 
-        const mapping = this.getArgument(actionCallProxy, "mapping");
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_X": return "X";
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_MOD": return "MOD";
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_DLY": return "DLY";
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_REV": return "REV";
+                }
+                return "?";
+            }
 
-        if (!(mapping == null || mapping.value == "None")) {
-            return this.underscoreToDisplayName(
-                mapping.value
-                .replace("MAPPING_", "")
-                .replace("KemperMappings.", "")
-                .replace(/\((.+?)*\)/g, "")
-            );
+            return "Effect State " + getSlotName(slot_id.value);
         }
 
-        return "Other";
-    }   
+        return "Effect State (Ext.)";
+    }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -51,6 +51,13 @@ class Controller {
 
         this.midi = new MidiHandler();
 
+        const that = this;
+        options.messageHandler = {
+            message: function(msg, type) {
+                that.ui.notifications.message(msg, type);
+            }
+        }
+
         this.pyswitch = new PySwitchRunner(options, options.domNamespace + "-device");    
         this.device = new DeviceController(this);
         this.client = new ClientController(this);

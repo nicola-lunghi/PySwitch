@@ -75,6 +75,10 @@ class ParameterMeta {
         if (this.parameter.name == "mapping") {
             return this.#generateMappingOptions();
         }
+
+        if (this.parameter.name == "keycodes") {
+            return this.#generateKeycodeOptions();
+        }
    
         if (this.#range) return this.#range.getValues();
 
@@ -132,6 +136,20 @@ class ParameterMeta {
             }
         }
         return ret;
+    }
+
+    /**
+     * Returns values for the HID keycodes
+     */
+    async #generateKeycodeOptions() {
+        return (await this.parser.getAvailableKeycodes()).map(
+            (item) => {
+                return {
+                    name: item.name,
+                    value: item.name
+                }
+            }
+        );
     }
 
     /**

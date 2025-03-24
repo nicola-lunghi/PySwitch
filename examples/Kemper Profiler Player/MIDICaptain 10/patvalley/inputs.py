@@ -14,14 +14,14 @@ def _text_callback(action, bank, rig):
 # Category names: Instead of using EFFECT_STATE, you can define the PushButtonAction manually, overriding the
 # callback to deliver different effect category names: First override the respective method:
 class MyKemperEffectEnableCallback(KemperEffectEnableCallback):
-    def get_effect_category_text(self, category):
+    def get_effect_category_text(self, category, kpp_type):
         if category == self.CATEGORY_CHORUS:
             return "Mod Ch/Tr"
         elif category == self.CATEGORY_PHASER_FLANGER:
             return "Mod Ph/Fl"
         else:
             # Fall back to the original implementation for all others
-            return super().get_effect_category_text(category)
+            return super().get_effect_category_text(category, kpp_type)
 
 # Now define our custom action, which is used instead of EFFECT_STATE
 def MY_EFFECT_STATE(slot_id, display = None):

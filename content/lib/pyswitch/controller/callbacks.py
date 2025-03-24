@@ -374,7 +374,7 @@ class EffectEnableCallback(BinaryParameterCallback):
     
     def __init__(self, mapping_state, mapping_type):
         def color_callback(action, value):
-            return self.get_effect_category_color(self.__effect_category)
+            return self.get_effect_category_color(self.__effect_category, self.mapping_fxtype.value)
 
         super().__init__(
             mapping = mapping_state, 
@@ -407,7 +407,7 @@ class EffectEnableCallback(BinaryParameterCallback):
 
         # Effect category text
         if action.label:
-            action.label.text = self.get_effect_category_text(self.__effect_category)
+            action.label.text = self.get_effect_category_text(self.__effect_category, self.mapping_fxtype.value)
 
         super().update_displays(action)
 
@@ -416,9 +416,9 @@ class EffectEnableCallback(BinaryParameterCallback):
         pass                                           # pragma: no cover
 
     # Must return the color for a category    
-    def get_effect_category_color(self, category):
+    def get_effect_category_color(self, category, kpp_effect_type):
         pass                                           # pragma: no cover
 
     # Must return the text to show for a category    
-    def get_effect_category_text(self, category):
+    def get_effect_category_text(self, category, kpp_effect_type):
         pass                                           # pragma: no cover

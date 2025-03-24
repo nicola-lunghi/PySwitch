@@ -75,8 +75,8 @@ class ActionParserTests extends FunctionParserTestBase {
 
                     (
                         await fromClass({
-                            file: "pyswitch/controller/pager.py",
-                            importPath: "pyswitch.controller.pager",
+                            file: "pyswitch/clients/local/actions/pager.py",
+                            importPath: "pyswitch.clients.local.actions.pager",
                             className: "PagerAction",
                             includeUnderscore: true,
                             functions: true
@@ -109,8 +109,6 @@ class ActionParserTests extends FunctionParserTestBase {
 
         for(const client of clients) {
             for (const action of client.actions) {
-                // console.log(action);
-
                 expect(action.meta).toBeInstanceOf(FunctionMeta);
                 
                 expect(action.meta.getDisplayName().length).toBeGreaterThan(0)

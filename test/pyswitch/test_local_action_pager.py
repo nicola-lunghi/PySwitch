@@ -16,7 +16,7 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.controller.pager import *
+    from lib.pyswitch.clients.local.actions.pager import *
     from lib.pyswitch.ui.elements import DisplayLabel
     
     from .mocks_appl import *
@@ -63,7 +63,7 @@ class MockFootswitch:
 ######################################################
 
 
-class TestPagerAction(unittest.TestCase):
+class TestLocalPagerAction(unittest.TestCase):
 
     def test_without_label(self):
         pager = PagerAction(
