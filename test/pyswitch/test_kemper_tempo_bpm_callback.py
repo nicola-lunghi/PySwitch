@@ -1,0 +1,76 @@
+import sys
+import unittest
+from unittest.mock import patch   # Necessary workaround! Needs to be separated.
+
+from .mocks_lib import *
+
+# Import subject under test
+with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
+    "displayio": MockDisplayIO(),
+    "adafruit_display_text": MockAdafruitDisplayText(),
+    #"adafruit_midi": MockAdafruitMIDI(),
+    "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+    "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+    "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+    "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
+    "gc": MockGC()
+}):
+    from lib.pyswitch.clients.kemper.callbacks.tempo_bpm import KemperTempoDisplayCallback
+    from lib.pyswitch.clients.kemper.mappings.tempo_bpm import MAPPING_TEMPO_BPM
+    
+    from lib.pyswitch.ui.elements import DisplayLabel
+    from lib.pyswitch.misc import Updater
+
+    from .mocks_appl import *
+    from .mocks_ui import MockUiController
+    
+
+class MockController2(Updater):
+    def __init__(self, inputs = []):
+        Updater.__init__(self)
+
+        self.client = MockClient()
+        self.inputs = inputs
+        self.shared = {}
+      
+
+class TestKemperBpmDisplayCallback(unittest.TestCase):
+
+    def test(self):
+        cb = KemperTempoDisplayCallback()
+
+        self.assertIn(MAPPING_TEMPO_BPM(), cb._Callback__mappings)
+        mapping = cb._Callback__mappings[0]
+
+        label = DisplayLabel(
+            layout = {
+                "font": "foo"
+            },
+            callback = cb
+        )
+
+        appl = MockController2()
+        ui = MockUiController()
+        label.init(ui, appl)
+
+        cb.update_label(label)
+        
+        self.assertEqual(label.text, "")
+
+        # Set a value
+        mapping.value = 301
+
+        cb.update_label(label)
+
+        self.assertEqual(label.text, "301 bpm")
+        
+        # Set another value
+        mapping.value = 155
+
+        cb.update_label(label)
+
+        self.assertEqual(label.text, "155 bpm")
+        
+

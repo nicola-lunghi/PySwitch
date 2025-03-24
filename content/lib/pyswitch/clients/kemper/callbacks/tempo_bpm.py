@@ -5,6 +5,8 @@ from ..mappings.tempo_bpm import MAPPING_TEMPO_BPM
 class KemperTempoDisplayCallback(ParameterDisplayCallback):
     def __init__(self):
         def convert_value(value):
+            if value == None:
+                return None
             return f"{ str(value) } bpm"
         
         super().__init__(

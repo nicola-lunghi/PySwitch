@@ -129,6 +129,12 @@
                 "importPath": "pyswitch.clients.kemper.mappings.morph"
             },
             {
+                "name": "MAPPING_TEMPO_BPM",
+                "parameters": [],
+                "comment": "Tempo (BPM value)",
+                "importPath": "pyswitch.clients.kemper.mappings.tempo_bpm"
+            },
+            {
                 "name": "MAPPING_TAP_TEMPO",
                 "parameters": [],
                 "comment": "Switch tuner mode on/off (no receive possible!)",
