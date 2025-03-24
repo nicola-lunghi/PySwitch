@@ -12,6 +12,8 @@
     - Added an extended variant which shows dedicated type names for each Kemper type ID. This gives more information, but also needs a bit more RAM, so use with care.
 - Added "max_bank" parameter to Bank Up/Down actions. Set this to 10 for the Player Level I. Only relevant if the preselect option is enabled.
 - Added HID (Human Interface Device) support, see the new Action "USB Keyboard". This basically emulates an USB Keyboard: with the new action you can send key commands to the USB host. This way, PySwitch can additionally become a page turner for example. Also sequences of keys can be sent with one switch.
+- Minor refactorings:
+    - Merged KemperParameterMapping and KemperTwoPartParameterMapping classes into the Client implementation
 
 ### Emulator 2.3.6.6
 - Added switch settings (new button beneath the "+" button): Here you can adjust the hold time as well as the new "Hold Repeat" option (see above)

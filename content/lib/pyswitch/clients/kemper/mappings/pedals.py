@@ -1,5 +1,5 @@
 from micropython import const
-from .. import KemperParameterMapping
+from ....controller.Client import ClientParameterMapping
 
 from adafruit_midi.control_change import ControlChange
 
@@ -16,7 +16,7 @@ _CC_OUTPUT_VOLUME = const(73)
 
 
 def MAPPING_WAH_PEDAL(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "Wah",
         set = ControlChange(
             _CC_WAH_PEDAL, 
@@ -25,7 +25,7 @@ def MAPPING_WAH_PEDAL():
     )
 
 def MAPPING_VOLUME_PEDAL(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "Vol",
         set = ControlChange(
             _CC_VOLUME_PEDAL, 
@@ -34,7 +34,7 @@ def MAPPING_VOLUME_PEDAL():
     )
 
 def MAPPING_PITCH_PEDAL(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "Pitch",
         set = ControlChange(
             _CC_PITCH_PEDAL, 
@@ -43,7 +43,7 @@ def MAPPING_PITCH_PEDAL():
     )
 
 def MAPPING_DELAY_MIX_PEDAL(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "DlyMix",
         set = ControlChange(
             _CC_DELAY_MIX, 
@@ -52,7 +52,7 @@ def MAPPING_DELAY_MIX_PEDAL():
     )
 
 def MAPPING_DELAY_FEEDBACK_PEDAL(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "DlyFB",
         set = ControlChange(
             _CC_DELAY_FEEDBACK, 
@@ -61,7 +61,7 @@ def MAPPING_DELAY_FEEDBACK_PEDAL():
     )
 
 def MAPPING_REVERB_MIX_PEDAL(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "RevMix",
         set = ControlChange(
             _CC_REVERB_MIX, 
@@ -70,7 +70,7 @@ def MAPPING_REVERB_MIX_PEDAL():
     )
 
 def MAPPING_REVERB_TIME_PEDAL(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "RevTime",
         set = ControlChange(
             _CC_REVERB_TIME, 
@@ -79,7 +79,7 @@ def MAPPING_REVERB_TIME_PEDAL():
     )
 
 def MAPPING_VOLUME_OUTPUT_PEDAL(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "OutVol",
         set = ControlChange(
             _CC_OUTPUT_VOLUME, 

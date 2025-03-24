@@ -36,3 +36,5 @@ class MockMisc:
     Updateable = misc.Updateable
     EventEmitter = misc.EventEmitter
     PeriodCounter = misc.PeriodCounter
+
+    PYSWITCH_VERSION = misc.PYSWITCH_VERSION

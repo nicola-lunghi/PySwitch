@@ -1,5 +1,6 @@
 from micropython import const
-from .. import KemperParameterMapping, KemperNRPNMessage
+from .. import KemperNRPNMessage
+from ....controller.Client import ClientParameterMapping
 from .. import NRPN_FUNCTION_SET_SINGLE_PARAMETER, NRPN_FUNCTION_REQUEST_STRING_PARAMETER, NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, NRPN_ADDRESS_PAGE_STRINGS, NRPN_FUNCTION_RESPONSE_STRING_PARAMETER
 
 _NRPN_ADDRESS_PAGE_AMP = const(0x0a)
@@ -11,7 +12,7 @@ _NRPN_STRING_PARAMETER_ID_AMP_NAME = const(0x10)
 
 # Amp name (request only)
 def MAPPING_AMP_NAME(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "Amp Name",
         request = KemperNRPNMessage(               
             NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
@@ -23,12 +24,12 @@ def MAPPING_AMP_NAME():
             NRPN_ADDRESS_PAGE_STRINGS,
             _NRPN_STRING_PARAMETER_ID_AMP_NAME
         ),
-        type = KemperParameterMapping.PARAMETER_TYPE_STRING
+        type = ClientParameterMapping.PARAMETER_TYPE_STRING
     )
 
 # Amp on/off
 def MAPPING_AMP_STATE(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "Amp State",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
@@ -49,7 +50,7 @@ def MAPPING_AMP_STATE():
 
 # Amp gain
 def MAPPING_AMP_GAIN(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "Amp Gain",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 

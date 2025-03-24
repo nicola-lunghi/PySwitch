@@ -1,5 +1,6 @@
 from micropython import const
-from .. import KemperParameterMapping, KemperNRPNMessage
+from .. import KemperNRPNMessage
+from ....controller.Client import ClientParameterMapping
 from .. import NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER
 
 from adafruit_midi.control_change import ControlChange
@@ -10,7 +11,7 @@ _CC_MORPH_BUTTON = const(80)                     # Also includes ride/fall times
 _NRPN_ADDRESS_PAGE_ZERO = const(0x00)            # As of the notes of sumsar
 
 def MAPPING_MORPH_BUTTON(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "Morph Button",
         set = ControlChange(
             _CC_MORPH_BUTTON, 
@@ -29,7 +30,7 @@ def MAPPING_MORPH_BUTTON():
     )
 
 def MAPPING_MORPH_PEDAL(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "Morph Pedal",
         set = ControlChange(
             _CC_MORPH_PEDAL, 

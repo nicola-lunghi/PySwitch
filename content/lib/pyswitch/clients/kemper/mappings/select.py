@@ -1,5 +1,6 @@
 from micropython import const
-from .. import KemperTwoPartParameterMapping
+
+from ....controller.Client import ClientTwoPartParameterMapping
 
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.program_change import ProgramChange
@@ -10,7 +11,7 @@ _CC_RIG_INDEX_PART_1 = const(32) # The second part will be sent as program chang
 
 # Selects a rig of the current bank. Rig index must be in range [0..4]
 def MAPPING_RIG_SELECT(rig):
-    return KemperTwoPartParameterMapping(
+    return ClientTwoPartParameterMapping(
         name = "Rig Select",
         set = [
             # If only one command with value 1 is sent, the morph on rig select 
@@ -39,7 +40,7 @@ def MAPPING_RIG_SELECT(rig):
 
 # Pre-selects a bank.
 def MAPPING_BANK_SELECT():
-    return KemperTwoPartParameterMapping(
+    return ClientTwoPartParameterMapping(
         name = "Bank",
         set = [
             ControlChange(
@@ -61,7 +62,7 @@ def MAPPING_BANK_SELECT():
 
 # Selects a rig of a specific bank. Rig index must be in range [0..4]
 def MAPPING_BANK_AND_RIG_SELECT(rig):
-    return KemperTwoPartParameterMapping(
+    return ClientTwoPartParameterMapping(
         name = "Rig+Bank",
         set = [
             ControlChange(

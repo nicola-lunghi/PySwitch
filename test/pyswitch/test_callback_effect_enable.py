@@ -23,7 +23,7 @@ with patch.dict(sys.modules, {
 
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.callbacks import EffectEnableCallback
+    from lib.pyswitch.controller.callbacks.effect_enable import EffectEnableCallback
     from lib.pyswitch.controller.actions import PushButtonAction
 
     from lib.pyswitch.controller.Controller import Controller

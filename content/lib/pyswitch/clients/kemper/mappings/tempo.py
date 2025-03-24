@@ -1,5 +1,6 @@
 from micropython import const
-from .. import KemperParameterMapping, KemperNRPNExtendedMessage
+from .. import KemperNRPNExtendedMessage
+from ....controller.Client import ClientParameterMapping
 
 from adafruit_midi.control_change import ControlChange
 
@@ -7,7 +8,7 @@ _CC_TAP_TEMPO = const(30)
 
 # Switch tuner mode on/off (no receive possible!)
 def MAPPING_TAP_TEMPO(): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "Tap Tempo",
         set = ControlChange(
             _CC_TAP_TEMPO, 
@@ -16,7 +17,7 @@ def MAPPING_TAP_TEMPO():
     )
 
 def MAPPING_TEMPO_DISPLAY():
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = "Tempo",
         response = KemperNRPNExtendedMessage(
             0x01,
@@ -29,12 +30,12 @@ def MAPPING_TEMPO_DISPLAY():
     )
 
 # MIDI Clock message, sent 24x every beat
-#MAPPING_MIDI_CLOCK = KemperParameterMapping(
+#MAPPING_MIDI_CLOCK = ClientParameterMapping(
 #    name = "Clock",
 #    response = MidiClockMessage()
 #)
 
-#MAPPING_MIDI_CLOCK_START = KemperParameterMapping(
+#MAPPING_MIDI_CLOCK_START = ClientParameterMapping(
 #    name = "Start",
 #    response = Start()
 #)

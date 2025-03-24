@@ -52,9 +52,7 @@ This project is developed generically, so it can basically be run on any board w
 ## Startup Options
 
 When the controller device is powered up with the pyswitch firmware installed, you have the following options:
-- Press and hold switch 1 to mount the USB drive. Per default, this is disabled to save resources during normal operation.
-- Press and hold switch 2 to enable auto-reload (obly valid when the USB drive is enabled). This enables re-booting the device whenever the USB drive 
-contents have been changed (which is the default behaviour for CircuitPy boards). You could use this when configuring the firmware, so you can test your changes immediately, however if you connect the serial console in a terminal, you can control the reloading there with CTRL-D (see <a href="https://learn.adafruit.com/welcome-to-circuitpython/advanced-serial-console-on-mac-and-linux" target="_blank">this tutorial</a>)
+- Press and hold switch 1 to mount the USB drive.
 
 ## Configuration Files
 
@@ -428,8 +426,8 @@ If you want to send your own custom MIDI messages, you can also define your mapp
 ```python
 from pyswitch.controller.callbacks import BinaryParameterCallback
 from pyswitch.controller.actions import PushButtonAction
+from pyswitch.controller.Client import ClientParameterMapping
 from adafruit_midi.system_exclusive import SystemExclusive
-from pyswitch.clients.kemper import KemperParameterMapping
 
 Inputs = [
     {
@@ -438,7 +436,7 @@ Inputs = [
             PushButtonAction(
                 {
                     "callback": BinaryParameterCallback(
-                        mapping = KemperParameterMapping(
+                        mapping = ClientParameterMapping(
                             set = SystemExclusive(
                                 manufacturer_id = [0x00, 0x20, 0x33], 
                                 data = [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01] # Two value bytes will be added by PySwitch
@@ -474,8 +472,8 @@ If you want only to send but not receive, you have to set the internal state ena
 ```python
 from pyswitch.controller.callbacks import BinaryParameterCallback
 from pyswitch.controller.actions import PushButtonAction
+from pyswitch.controller.Client import ClientParameterMapping
 from adafruit_midi.system_exclusive import SystemExclusive
-from pyswitch.clients.kemper import KemperParameterMapping
 
 Inputs = [
     {
@@ -484,7 +482,7 @@ Inputs = [
             PushButtonAction(
                 {
                     "callback": BinaryParameterCallback(
-                        mapping = KemperParameterMapping(
+                        mapping = ClientParameterMapping(
                             set = SystemExclusive(
                                 manufacturer_id = [0x00, 0x20, 0x33], 
                                 data = [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01] # Two value bytes will be added by PySwitch
@@ -983,26 +981,6 @@ Every incoming MIDI message will be parsed by all open requests. This is the lif
 2. When a value comes in (MIDI message):
     - Tell all listeners that the value has changed by calling parameter_changed() on each listener.
 3. When the mapping is not bidirectional, the request will be set to finished, which will trigger the client to clean it up. When the mapping is bidirectional, the request will never be finished and stay forever to receive further values.
-
-#### Client-Specific parsing
-
-For parsing the incoming messages and setting values before sending messages, a child class of ClientParameterMapping has to be used. This has to be implemented for each controlled device. For Kemper devices, the KemperParameterMapping class is defined in kemper.py.
-
-```python
-class MyMapping(ClientParameterMapping):
-
-    # Must parse the incoming MIDI message and set its value on the mapping.
-    # If the response template does not match, must return False, and
-    # vice versa must return True to notify the listeners of a value change.
-    def parse(self, midi_message):
-        return False    
-
-    # Must set the passed value on the SET message of the mapping.
-    def set_value(self, value):
-        pass
-```
-
-You have to provide two methods, which are device specific. See the Kemper implementation for details.
 
 ## Explore Mode: Discover unknown IO Ports
 

@@ -1,4 +1,3 @@
-from math import floor
 from micropython import const
 
 from adafruit_midi.control_change import ControlChange
@@ -7,7 +6,7 @@ from adafruit_midi.program_change import ProgramChange
 
 from ...misc import Colors, PeriodCounter, formatted_timestamp, do_print, PYSWITCH_VERSION
 from ...controller.callbacks import Callback
-from ...controller.Client import ClientParameterMapping
+from ...controller.Client import ClientParameterMapping, ClientTwoPartParameterMapping
 from ...ui.elements import TunerDisplay
 
 
@@ -66,7 +65,7 @@ def NRPN_VALUE(value):
 
 # Callback for DisplayLabel to show the rig name
 class KemperRigNameCallback(Callback):
-    DEFAULT_TEXT = "PySwitch " + PYSWITCH_VERSION
+    DEFAULT_TEXT = f"PySwitch { PYSWITCH_VERSION }"
 
     def __init__(self, show_name = True, show_rig_id = False):
         Callback.__init__(self)
@@ -369,170 +368,6 @@ class KemperEffectSlot:
         const(0x73)    # Slot REV
     ]   
 
-
-####################################################################################################################
-
-
-# Implements setting values and parsing request responses
-class KemperParameterMapping(ClientParameterMapping):
-
-    # Parameter types (used internally in mappings)
-    PARAMETER_TYPE_NUMERIC = const(0)   # Default, also used for on/off
-    PARAMETER_TYPE_STRING = const(1)
-
-    def __init__(self, name = "", set = None, request = None, response = None, value = None, type = 0):
-        super().__init__(name = name, set = set, request = request, response = response, value = value)
-        self.type = type
-
-    # Must parse the incoming MIDI message and set its value on the mapping.
-    # If the response template does not match, must return False, and
-    # vice versa must return True to notify the listeners of a value change.
-    def parse(self, midi_message):     
-        result = self.parse_against(midi_message, self.response)
-        if result != None:
-            self.value = result
-            return True
-        
-        return False
-
-    # Parse a message against a response message
-    def parse_against(self, midi_message, response):     
-        # SysEx (NRPN) Messages
-        if isinstance(midi_message, SystemExclusive):
-            if not isinstance(response, SystemExclusive):
-                return None
-                     
-            # Compare manufacturer IDs
-            if midi_message.manufacturer_id != response.manufacturer_id:
-                return None
-            
-            # Check if the message belongs to the mapping. The following have to match:
-            #   2: function code, 
-            #   3: instance ID, 
-            #   4: address page, 
-            #   5: address nunber
-            #
-            # The first two values are ignored (the Kemper MIDI specification implies this would contain the product type
-            # and device ID as for the request, however the device just sends two zeroes)
-            if midi_message.data[2:6] != response.data[2:6]:
-                return None
-            
-            # The values starting from index 6 are the value of the response.
-            if self.type == self.PARAMETER_TYPE_STRING:
-                # Take as string
-                return ''.join(chr(int(c)) for c in list(midi_message.data[6:-1]))
-            else:
-                # Decode 14-bit value to int
-                return midi_message.data[-2] * 128 + midi_message.data[-1]
-
-        # CC Messages
-        elif isinstance(midi_message, ControlChange):
-            if not isinstance(response, ControlChange):
-                return None
-            
-            if midi_message.control == response.control:
-                return midi_message.value
-
-        # PC Messages
-        elif isinstance(midi_message, ProgramChange):
-            if not isinstance(response, ProgramChange):
-                return None
-            
-            return midi_message.patch
-
-        # MIDI Clock (disabled in favor of the custom beat message the kemper sends. See mapping TEMPO_DISPLAY)
-        #elif isinstance(midi_message, MidiClockMessage):
-        #    self._count_clock += 1
-
-        #    if self._count_clock >= 24:
-        #        self._count_clock = 0
-
-        #    if self._count_clock >= 12:
-        #        mapping.value = 1
-        #    else:
-        #        mapping.value = 0    
-
-        #    return True
-        
-        # MIDI Clock start
-        #elif isinstance(midi_message, Start):
-        #    self._count_clock = 0
-
-        #    mapping.value = 1
-
-        #    return True
-
-        return None
-    
-    # Must set the passed value(s) on the SET message(s) of the mapping.
-    def set_value(self, value):
-        if isinstance(self.set, list):
-            for i in range(len(self.set)):
-                self.__set_value(self.set[i], value[i])
-        else:
-            self.__set_value(self.set, value)
-
-    def __set_value(self, midi_message, value):
-        if self.type == self.PARAMETER_TYPE_STRING:
-            raise Exception() # Setting strings is not implemented yet
-
-        if isinstance(midi_message, ControlChange):
-            # Set value directly (CC takes int values)            
-            midi_message.value = value
-
-        elif isinstance(midi_message, SystemExclusive):            
-            # Fill up message to appropriate length for the specification
-            data = list(midi_message.data)
-            while len(data) < 8:
-                data.append(0)
-            
-            # Set value as 14 bit
-            data[6] = int(floor(value / 128))
-            data[7] = int(value % 128)
-
-            midi_message.data = bytes(data)
-
-        elif isinstance(midi_message, ProgramChange):
-            # Set patch
-            midi_message.patch = value
-        
-
-####################################################################################################################
-
-
-# Parser for two-part messages: The result value will be 128 * value1 + value2, 
-# notified when the second message arrives.
-class KemperTwoPartParameterMapping(KemperParameterMapping):
-
-    def __init__(self, name = "", set = None, request = None, response = None, value = None, type = 0):
-        super().__init__(name = name, set = set, request = request, response = response, value = value, type = type)
-
-        self.__value_1 = None
-    
-    # Must parse the incoming MIDI message and set its value on the mapping.
-    # If the response template does not match, must return False, and
-    # vice versa must return True to notify the listeners of a value change.
-    def parse(self, midi_message): 
-        value_1 = self.parse_against(midi_message, self.response[0])
-        if value_1 != None:
-            self.__value_1 = value_1
-            return True
-        
-        value_2 = self.parse_against(midi_message, self.response[1])
-
-        if value_2 != None and self.__value_1 != None:
-            self.value = 128 * self.__value_1 + value_2
-            self.__value_1 = None
-            return True
-        
-        return False
-            
-    # Returns if the mapping has finished receiving a result. Per default,
-    # this returns True which is valid for mappings with one response.
-    def result_finished(self):
-        return (self.__value_1 == None)
-
-
 ####################################################################################################################
 
 # ControlChange Addresses
@@ -553,7 +388,7 @@ class KemperMappings:
     # Effect slot enable/disable
     @staticmethod
     def EFFECT_STATE(slot_id):
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = f"Slot State { str(slot_id) }",
             set = ControlChange(
                 KemperEffectSlot.CC_EFFECT_SLOT_ENABLE[slot_id], 
@@ -574,7 +409,7 @@ class KemperMappings:
     # Effect slot type (request only)
     @staticmethod
     def EFFECT_TYPE(slot_id):
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = f"Slot Type { str(slot_id) }",
             request = KemperNRPNMessage(               
                 NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
@@ -590,7 +425,7 @@ class KemperMappings:
 
     # Rig name (request only)
     def RIG_NAME(): 
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = "Rig Name",
             request = KemperNRPNMessage(               
                 NRPN_FUNCTION_REQUEST_STRING_PARAMETER,             
@@ -602,12 +437,12 @@ class KemperMappings:
                 NRPN_ADDRESS_PAGE_STRINGS,
                 _NRPN_STRING_PARAMETER_ID_RIG_NAME
             ),
-            type = KemperParameterMapping.PARAMETER_TYPE_STRING
+            type = ClientParameterMapping.PARAMETER_TYPE_STRING
         )
 
     # Switch tuner mode on/off (no receive possible when not in bidirectional mode)
     def TUNER_MODE_STATE(): 
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = "Tuner Mode",
             set = ControlChange(
                 _CC_TUNER_MODE, 
@@ -622,7 +457,7 @@ class KemperMappings:
 
     # Tuner note (only sent in bidirectional mode)
     def TUNER_NOTE(): 
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = "Tuner Note",
             response = KemperNRPNMessage(
                 0x01,
@@ -633,7 +468,7 @@ class KemperMappings:
 
     # Tuner deviance from "in tune" (only sent in bidirectional mode)
     def TUNER_DEVIANCE(): 
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = "Tuner Deviance",
             response = KemperNRPNMessage(
                 0x01,
@@ -644,7 +479,7 @@ class KemperMappings:
 
     # Used for state sensing in bidirection communication
     def BIDIRECTIONAL_SENSING():
-        return KemperParameterMapping(
+        return ClientParameterMapping(
             name = "Sense",
             response = KemperNRPNExtendedMessage(
                 0x7e,
@@ -656,7 +491,7 @@ class KemperMappings:
     
     # Rig ID
     def RIG_ID():
-        return KemperTwoPartParameterMapping(
+        return ClientTwoPartParameterMapping(
             name = "Rig ID",
             response = [
                 ControlChange(

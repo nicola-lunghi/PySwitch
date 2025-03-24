@@ -1,6 +1,6 @@
 from micropython import const
-from ..misc import DEFAULT_SWITCH_COLOR, Updateable, get_option
-#from ...stats import RuntimeStatistics
+from ...misc import DEFAULT_SWITCH_COLOR, Updateable, get_option
+
 
 class Callback(Updateable):
     def __init__(self, mappings = []):
@@ -359,66 +359,3 @@ class BinaryParameterCallback(Callback):
                 int(color[2] * factor)
             )
         
-
-###########################################################################################################
-
-
-# Used for effect enable/disable. Abstract, must implement some methods (see end of class)
-class EffectEnableCallback(BinaryParameterCallback):
-
-    # The "None" Type is defined here, all others in derived classes
-    CATEGORY_NONE = const(0)
-
-    # Only used on init and reset
-    CATEGORY_INITIAL = const(-1)
-    
-    def __init__(self, mapping_state, mapping_type):
-        def color_callback(action, value):
-            return self.get_effect_category_color(self.__effect_category, self.mapping_fxtype.value)
-
-        super().__init__(
-            mapping = mapping_state, 
-            color_callback = color_callback
-        )
-
-        self.register_mapping(mapping_type)
-
-        self.mapping_fxtype = mapping_type
-        
-        self.__effect_category = self.CATEGORY_NONE  
-        self.__current_category = self.CATEGORY_INITIAL        
-        
-    def reset(self):
-        super().reset()
-        
-        self.__current_category = self.CATEGORY_INITIAL
-
-    def update_displays(self, action):  
-        self.__effect_category = self.get_effect_category(self.mapping_fxtype.value) if self.mapping_fxtype.value != None else self.CATEGORY_NONE
-        
-        if self.__effect_category == self.CATEGORY_NONE:
-            action.feedback_state(False)
-
-        if self.__current_category == self.__effect_category:
-            super().update_displays(action)
-            return
-
-        self.__current_category = self.__effect_category
-
-        # Effect category text
-        if action.label:
-            action.label.text = self.get_effect_category_text(self.__effect_category, self.mapping_fxtype.value)
-
-        super().update_displays(action)
-
-    # Must return the effect category for a mapping value
-    def get_effect_category(self, kpp_effect_type):
-        pass                                           # pragma: no cover
-
-    # Must return the color for a category    
-    def get_effect_category_color(self, category, kpp_effect_type):
-        pass                                           # pragma: no cover
-
-    # Must return the text to show for a category    
-    def get_effect_category_text(self, category, kpp_effect_type):
-        pass                                           # pragma: no cover

@@ -3,7 +3,7 @@ import board
 from storage import disable_usb_drive, remount
 from digitalio import DigitalInOut, Direction, Pull
 from time import sleep
-from supervisor import disable_autoreload
+# from supervisor import disable_autoreload
 
 ############################################################################################
 
@@ -24,8 +24,8 @@ def _is_switch_pressed(switch):
 # When this switch is pressed during boot, the USB drive will be mounted
 _switch_mount_usb = _init_switch(board.GP1)       
 
-# When this switch is pressed during boot, the autoreload feature will be enabled (rebooting on every drive change)
-_switch_autoreload = _init_switch(board.GP25)     
+# # When this switch is pressed during boot, the autoreload feature will be enabled (rebooting on every drive change)
+# _switch_autoreload = _init_switch(board.GP25)     
 
 ############################################################################################
 
@@ -35,6 +35,6 @@ if not _is_switch_pressed(_switch_mount_usb):
     remount("/", readonly = False)
 
 
-# No autoreload in normal operation
-if not _is_switch_pressed(_switch_autoreload):
-	disable_autoreload()
+# # No autoreload in normal operation
+# if not _is_switch_pressed(_switch_autoreload):
+# 	disable_autoreload()

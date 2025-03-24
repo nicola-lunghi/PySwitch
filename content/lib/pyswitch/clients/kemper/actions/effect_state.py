@@ -1,6 +1,6 @@
 from micropython import const
 from ....controller.actions import PushButtonAction
-from ....controller.callbacks import EffectEnableCallback
+from ....controller.callbacks.effect_enable import EffectEnableCallback
 from ...kemper import KemperMappings, KemperEffectSlot
 from ....misc import Colors, DEFAULT_LABEL_COLOR
 

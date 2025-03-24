@@ -1,5 +1,6 @@
 from micropython import const
-from .. import KemperParameterMapping, KemperNRPNMessage, KemperEffectSlot
+from .. import KemperNRPNMessage, KemperEffectSlot
+from ....controller.Client import ClientParameterMapping
 from .. import NRPN_FUNCTION_SET_SINGLE_PARAMETER, NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER
 
 from adafruit_midi.control_change import ControlChange
@@ -12,7 +13,7 @@ _NRPN_EFFECT_PARAMETER_ADDRESS_MIX_DLY_REV = const(0x45)  # 69
 
 # Effect Button I-IIII (set only). num must be a number (1 to 4).
 def MAPPING_EFFECT_BUTTON(num): 
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = f"Effect Button { repr(num) }",
         set = ControlChange(
             _CC_EFFECT_BUTTON_I + (num - 1),
@@ -22,7 +23,7 @@ def MAPPING_EFFECT_BUTTON(num):
 
 
 def MAPPING_DELAY_MIX(slot_id):
-    return KemperParameterMapping(
+    return ClientParameterMapping(
         name = f"Mix { str(slot_id) }",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 

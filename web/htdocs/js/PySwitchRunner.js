@@ -163,7 +163,6 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/controller/__init__.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/actions.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/AnalogAction.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/callbacks.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/Client.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/Controller.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/EncoderAction.py", circuitpyPath);
@@ -172,6 +171,11 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/controller/MidiController.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/RuntimeMeasurement.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/strobe.py", circuitpyPath);
+
+        this.pyodide.FS.mkdir("pyswitch/controller/callbacks");
+        await this.#loadModule("pyswitch/controller/callbacks/__init__.py", circuitpyPath);
+        await this.#loadModule("pyswitch/controller/callbacks/effect_enable.py", circuitpyPath);
+        await this.#loadModule("pyswitch/controller/callbacks/parameter_display.py", circuitpyPath);
 
         this.pyodide.FS.mkdir("pyswitch/hardware");  
         await this.#loadModule("pyswitch/hardware/__init__.py", circuitpyPath);
