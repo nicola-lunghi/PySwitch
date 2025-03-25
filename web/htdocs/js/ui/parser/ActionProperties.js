@@ -10,7 +10,9 @@ class ActionProperties {
 
     #messages = null;
     #pagers = null;
-    #oldProperties = null;
+    #internalRows = null;
+    #encoderProps = null;
+    oldProperties = null;
     #advancedRows = null;
     #advancedLevel = 0;
 
@@ -19,10 +21,12 @@ class ActionProperties {
         this.parserFrontend = parserFrontend;
         this.actionDefinition = actionDefinition;
         
-        this.#oldProperties = oldProperties;
+        this.oldProperties = oldProperties;
         this.#messages = messages;
         
-        this.#pagers = new PagerProperties(this)
+        this.#pagers = new PagerProperties(this);
+        this.#internalRows = new ActionPropertiesInternal(this);
+        this.#encoderProps = new ActionPropertiesEncoder(this);
     }
 
     /**
@@ -40,21 +44,15 @@ class ActionProperties {
         this.#advancedRows = [];
         this.inputs = new Map();
 
-        let holdInput = null;
-        let assignInput = null;
-        let assignRow = null;
-        let pagerProxyRow = null;
-        let pagerProxyInput = null;
-
         /**
          * Take over old values from the old props object, if different from the default
          */
         async function takeOverValues(input, param) {
             if (param.meta.type() == "text") return;
-            if (!that.#oldProperties) return;
+            if (!that.oldProperties) return;
                 
-            const oldParam = that.#oldProperties.getParameterDefinition(param.name);
-            const oldValue = that.#oldProperties.getParameterValue(param.name);
+            const oldParam = that.oldProperties.getParameterDefinition(param.name);
+            const oldValue = that.oldProperties.getParameterValue(param.name);
             
             if (oldValue !== null && oldValue != oldParam.meta.getDefaultValue()) {
                 await that.#setInputValue(input, param, oldValue);
@@ -67,16 +65,7 @@ class ActionProperties {
         function withComment(el, param, comment) {
             if (param && param.meta.data.hideComment) return el;
 
-            if (comment) {
-                tippy(el[0], {
-                    content: comment,
-                    theme: "actionparameter",
-                    placement: "left",
-                    duration: 0
-                });
-            }
-
-            return el;
+            return Tools.withComment(el, comment)
         }
 
         const that = this;
@@ -121,8 +110,7 @@ class ActionProperties {
                     if (!messages.length) {
                         // No messages: Hide if advanced
                         if (param.meta.data.advanced) {
-                            that.#registerAdvancedParameterRow(row, param);
-                            row.hide();
+                            that.registerAdvancedParameterRow(row, param);
                         }
 
                         return row;
@@ -149,8 +137,22 @@ class ActionProperties {
             )
         );
         
-        let tbody = null;
+        // Internal parameters (assign, hold etc.)
+        const internalRows = [].concat(
+            (await this.#internalRows.get()),
+            (await this.#pagers.get())            
+        )
+        .map(
+            (item) => {
+                return item ? withComment(
+                    item.element,
+                    null,
+                    item.comment
+                ) : null;
+            }
+        );
 
+        let tbody = null;
         const ret = $('<div class="action-properties" />').append(
             // Action name
             $('<div class="action-header" />')
@@ -167,57 +169,7 @@ class ActionProperties {
             $('<div class="action-parameters" />').append(
                 $('<table />').append(
                     tbody = $('<tbody />').append(
-
-                        // Hold option
-                        (this.actionDefinition.meta.data.target != "AdafruitSwitch") ? null :
-                        withComment(
-                            $('<tr />').append(                            
-                                $('<td />').append(
-                                    $('<span />').text("hold")
-                                ),
-    
-                                // Input
-                                $('<td />').append(
-                                    holdInput = $('<input type="checkbox" />')
-                                    .prop('checked', false)
-                                )
-                            ),
-                            null,
-                            "Trigger on long press"
-                        ),
-
-                        // Assign option
-                        assignRow = withComment(
-                            $('<tr />').append(                            
-                                $('<td />').append(
-                                    $('<span />').text("assign")
-                                ),
-    
-                                // Input
-                                $('<td />').append(
-                                    assignInput = $('<input type="text" />')
-                                    .val(await this.#getDefaultAssign())
-                                )
-                            ),
-                            null,
-                            "Define as separate assignment"
-                        ),
-
-                        pagerProxyRow = withComment(
-                            $('<tr />').append(                            
-                                $('<td />').append(
-                                    $('<span />').text("pager")
-                                ),
-        
-                                // Input
-                                $('<td />').append(
-                                    pagerProxyInput = (await this.#pagers.createProxyInput())
-                                ),
-                            )
-                            .hide(),
-                            null,
-                            "Pager to connect the action to"
-                        ),
+                        ...internalRows,
 
                         // Action parameters
                         parameters.flat()
@@ -229,23 +181,9 @@ class ActionProperties {
             ...(await this.#pagers.getButtons())
         );
 
-        if (this.actionDefinition.name != "PagerAction") {
-            assignRow.hide();
-
-            this.#registerAdvancedParameterRow(assignRow, {
-                name: "assign",
-                meta: {
-                    data: {
-                        advanced: 2
-                    }
-                }
-            });
-        }
-
-        if (this.actionDefinition.name == "PagerAction.proxy") {
-            pagerProxyRow.show();
-            this.inputs.set("pager", pagerProxyInput);
-        }
+        await this.#internalRows.setup();
+        await this.#pagers.setup();
+        await this.#encoderProps.setup();
 
         // Advanced parameters: Show all button
         if (this.#advancedRows.length > 0) {
@@ -269,27 +207,15 @@ class ActionProperties {
             )
         }
 
-        // Hold input
-        if (this.actionDefinition.meta.data.target == "AdafruitSwitch") {
-            this.inputs.set("hold", holdInput);
-            if (this.#oldProperties) {
-                await this.setHold(this.#oldProperties.hold());            
-            }
-        }
-
-        // Assign input
-        this.inputs.set("assign", assignInput);        
-        // if (this.#oldProperties) {
-        //     await this.setAssign(this.#oldProperties.assign());            
-        // }
-
         return ret;
     }
 
     /**
      * Adds an advanced parameter row to an array to show them later (the array is 2 dimensional, grouped by advanced value)
      */
-    #registerAdvancedParameterRow(row, param) {
+    registerAdvancedParameterRow(row, param) {
+        row.hide();
+
         const level = param.meta.data.advanced;
 
         // Check if level exists
@@ -323,16 +249,6 @@ class ActionProperties {
             // Last level
             advRow.hide();
         }
-    }
-
-    /**
-     * Returns the default assign value
-     */
-    async #getDefaultAssign() {
-        if (this.actionDefinition.name == "PagerAction") {
-            return this.#pagers.getNextPagerAssign();
-        }
-        return "";
     }
 
     /**
@@ -442,7 +358,7 @@ class ActionProperties {
             const param = this.getParameterDefinition(arg.name);
             const defaultValue = param.meta.getDefaultValue()
             if (defaultValue != arg.value) {
-                this.#showParameter(arg.name)
+                this.showParameter(arg.name)
             }
         }
 
@@ -470,7 +386,7 @@ class ActionProperties {
     /**
      * Shows an advanced parameter
      */
-    #showParameter(name) {
+    showParameter(name) {
         for (const level of this.#advancedRows) {
             for (const row of level) {
                 if (row.parameterName == name) {

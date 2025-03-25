@@ -659,7 +659,6 @@ class ParserFrontendInput {
     async #setActions(actions, hold, noUpdate) {
         if (!this.input) {
             // Create input
-            console.log(this.definition)
             this.input = await this.#parserFrontend.parser.input(this.definition.data.model.port, true);
         }
 

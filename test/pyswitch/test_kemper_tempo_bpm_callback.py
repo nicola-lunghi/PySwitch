@@ -60,17 +60,39 @@ class TestKemperBpmDisplayCallback(unittest.TestCase):
         self.assertEqual(label.text, "")
 
         # Set a value
-        mapping.value = 301
+        mapping.value = 133 * 64
 
         cb.update_label(label)
 
-        self.assertEqual(label.text, "301 bpm")
+        self.assertEqual(label.text, "133 bpm")
         
         # Set another value
-        mapping.value = 155
+        mapping.value = 155 * 64 + 1 # Must be rounded away
 
         cb.update_label(label)
 
         self.assertEqual(label.text, "155 bpm")
+
+        # 16383 is assigned to 256 manually
+        mapping.value = 16383
+
+        cb.update_label(label)
+
+        self.assertEqual(label.text, "256 bpm")
         
+        mapping.value = 16382
+
+        cb.update_label(label)
+
+        self.assertEqual(label.text, "256 bpm")
+        
+        mapping.value = 16320
+
+        cb.update_label(label)
+
+        self.assertEqual(label.text, "255 bpm")
+        
+
+
+
 

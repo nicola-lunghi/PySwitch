@@ -6,7 +6,7 @@ from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP
 from pyswitch.clients.kemper.actions.bank_up_down import BANK_DOWN
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
-from pyswitch.controller.EncoderAction import EncoderAction
+from pyswitch.controller.actions.EncoderAction import EncoderAction
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT_DISPLAY_TARGET_RIG
 from pyswitch.clients.kemper import KemperEffectSlot
 from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_GAIN

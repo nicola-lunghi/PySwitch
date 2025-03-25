@@ -81,4 +81,21 @@ class Tools {
     static stripQuotes(str) {
         return str.replaceAll('"', "").replaceAll("'", "");
     }
+
+    /**
+     * Returns the passed element with the passed comment on hover
+     */
+    static withComment(el, comment) {
+        if (comment) {
+            tippy(el[0], {
+                content: comment,
+                theme: "pyswitchtooltip",
+                placement: "top-end",
+                arrow: false,
+                duration: 0
+            });
+        }
+
+        return el;
+    }
 }

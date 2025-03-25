@@ -134,7 +134,9 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/clients/kemper/actions/rig_up_down.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/actions/rig_volume_boost.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/actions/tempo.py", circuitpyPath);
+        await this.#loadModule("pyswitch/clients/kemper/actions/tempo_bpm.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/kemper/actions/tuner.py", circuitpyPath);
+        await this.#loadModule("pyswitch/clients/kemper/actions/amp.py", circuitpyPath);
 
         this.pyodide.FS.mkdir("pyswitch/clients/kemper/mappings");
         await this.#loadModule("pyswitch/clients/kemper/mappings/__init__.py", circuitpyPath);
@@ -163,19 +165,22 @@ class PySwitchRunner {
         await this.#loadModule("pyswitch/clients/local/actions/binary_switch.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/local/actions/pager.py", circuitpyPath);
         await this.#loadModule("pyswitch/clients/local/actions/hid.py", circuitpyPath);
+        await this.#loadModule("pyswitch/clients/local/actions/encoder_button.py", circuitpyPath);
 
         this.pyodide.FS.mkdir("pyswitch/controller");
         await this.#loadModule("pyswitch/controller/__init__.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/actions.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/AnalogAction.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/Client.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/Controller.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/EncoderAction.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/ExploreModeController.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/InputControllers.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/MidiController.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/RuntimeMeasurement.py", circuitpyPath);
         await this.#loadModule("pyswitch/controller/strobe.py", circuitpyPath);
+
+        this.pyodide.FS.mkdir("pyswitch/controller/actions");
+        await this.#loadModule("pyswitch/controller/actions/__init__.py", circuitpyPath);
+        await this.#loadModule("pyswitch/controller/actions/AnalogAction.py", circuitpyPath);
+        await this.#loadModule("pyswitch/controller/actions/EncoderAction.py", circuitpyPath);
 
         this.pyodide.FS.mkdir("pyswitch/controller/callbacks");
         await this.#loadModule("pyswitch/controller/callbacks/__init__.py", circuitpyPath);

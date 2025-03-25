@@ -12,6 +12,9 @@
     - Added an extended variant which shows dedicated type names for each Kemper type ID. This gives more information, but also needs a bit more RAM, so use with care.
 - Added "max_bank" parameter to Bank Up/Down actions. Set this to 10 for the Player Level I. Only relevant if the preselect option is enabled.
 - Added HID (Human Interface Device) support, see the new Action "USB Keyboard". This basically emulates an USB Keyboard: with the new action you can send key commands to the USB host. This way, PySwitch can additionally become a page turner for example. Also sequences of keys can be sent with one switch.
+- Wheel Encoder: 
+    - Added preview display parameter: Can be set to a diplay label which will then show the values while adjusting
+    - Added parameter "accept_action" and a corresponding action "Accept Encoder Value" action. If these are used in conjunction, the wheel does not send any value until the accept switch is pushed. See the default PySwitch preset and the action info texts.
 - Minor refactorings:
     - Merged KemperParameterMapping and KemperTwoPartParameterMapping classes into the Client implementation
 

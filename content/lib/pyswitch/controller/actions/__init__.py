@@ -1,7 +1,7 @@
 from micropython import const
 from array import array
 from math import floor
-from ..misc import get_option, Updateable, PeriodCounter
+from ...misc import get_option, Updateable, PeriodCounter
 #from ..stats import RuntimeStatistics
 
 

@@ -68,12 +68,17 @@ class PySwitchParser:
         if not self.__csts:
             raise Exception("No data loaded")
         
+        # Remove first assign as this can lead to endless recursion and is not relevant anyway
+        inputs_py = inputs.to_py()
+        if "assign" in inputs_py: 
+            inputs_py["assign"] = None
+
         inputs_node = CodeGenerator(
-            self, 
-            "inputs_py", 
+            parser = self, 
+            file_id = "inputs_py", 
             insert_before_assign = "Inputs",
             format = True
-        ).generate(inputs.to_py())
+        ).generate(inputs_py)
         
         self.set_assignment("Inputs", inputs_node, "inputs_py")
 
@@ -109,12 +114,17 @@ class PySwitchParser:
         if not self.__csts:
             raise Exception("No data loaded")
 
+        # Remove first assign as this can lead to endless recursion and is not relevant anyway
+        splashes_py = splashes.to_py()
+        if "assign" in splashes_py: 
+            splashes_py["assign"] = None
+
         splashes_node = CodeGenerator(
-            self, 
-            "display_py", 
+            parser = self, 
+            file_id = "display_py", 
             insert_before_assign = "Splashes",
             format = True
-        ).generate(splashes.to_py())
+        ).generate(splashes_py)
         
         self.set_assignment("Splashes", splashes_node, "display_py")
 

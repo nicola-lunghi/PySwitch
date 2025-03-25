@@ -25,7 +25,7 @@ with patch.dict(sys.modules, {
         "lib.pyswitch.misc": MockMisc
     }):
         
-        from lib.pyswitch.controller.AnalogAction import AnalogAction
+        from lib.pyswitch.controller.actions.AnalogAction import AnalogAction
         from .mocks_appl import *
 
 

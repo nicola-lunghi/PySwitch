@@ -34,6 +34,12 @@ class ParameterRange {
 
         const min = await this.min();
         const max = await this.max();
+
+        if (!this.#parameterMeta.data.range.additionalValues) {
+            if (max - min > 100) {
+                return null;
+            }
+        }
         
         for(let i = min; i <= max; ++i) {
             values.push({

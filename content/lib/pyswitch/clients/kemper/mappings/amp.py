@@ -51,7 +51,7 @@ def MAPPING_AMP_STATE():
 # Amp gain
 def MAPPING_AMP_GAIN(): 
     return ClientParameterMapping(
-        name = "Amp Gain",
+        name = "Gain",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
             _NRPN_ADDRESS_PAGE_AMP,

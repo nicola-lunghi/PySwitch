@@ -3,7 +3,7 @@ import board
 from storage import disable_usb_drive, remount
 from digitalio import DigitalInOut, Direction, Pull
 from time import sleep
-# from supervisor import disable_autoreload
+from supervisor import disable_autoreload
 
 ############################################################################################
 
@@ -37,4 +37,4 @@ if not _is_switch_pressed(_switch_mount_usb):
 
 # # No autoreload in normal operation
 # if not _is_switch_pressed(_switch_autoreload):
-# 	disable_autoreload()
+disable_autoreload()

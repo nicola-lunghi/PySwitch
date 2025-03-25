@@ -20,8 +20,8 @@ from pyswitch.clients.local.actions.binary_switch import BINARY_SWITCH
 from pyswitch.clients.kemper.mappings.pedals import MAPPING_VOLUME_PEDAL, MAPPING_WAH_PEDAL
 from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_GAIN, MAPPING_AMP_STATE
 
-from pyswitch.controller.AnalogAction import AnalogAction
-from pyswitch.controller.EncoderAction import EncoderAction
+from pyswitch.controller.actions.AnalogAction import AnalogAction
+from pyswitch.controller.actions.EncoderAction import EncoderAction
 
 # ##################################################################
 

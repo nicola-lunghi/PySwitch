@@ -111,13 +111,13 @@ class VirtualKemperClientSetup {
         } });
 
         // Tempo BPM
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([4, 0]) }), value: this.#client.tempo.bpm(), callback: function(param, value) {
-            that.#client.tempo.set(value)
+        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([4, 0]) }), value: this.#client.tempo.bpm() * 64, callback: function(param, value) {
+            that.#client.tempo.set(Math.round((value == 16383) ? 256 : (value / 64)))
         } });
 
         this.#client.tempo.addChangeCallback(
             function(bpm) {
-                that.#client.parameters.get(new NRPNKey([4, 0])).setValue(bpm);
+                that.#client.parameters.get(new NRPNKey([4, 0])).setValue((bpm >= 256) ? 16383 : (bpm * 64));
             }
         );
     }

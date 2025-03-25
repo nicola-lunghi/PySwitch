@@ -90,7 +90,7 @@ class ParserInputAction extends ParserTreeElement {
                     value: that.#decodePages(arg)
                 }
             }
-
+            
             return {
                 name: arg.name ? arg.name : null,
                 value: this.parser.codeForNode(arg.value)

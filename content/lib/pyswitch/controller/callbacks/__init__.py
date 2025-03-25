@@ -251,7 +251,7 @@ class BinaryParameterCallback(Callback):
         
             self.set_switch_color(action, color)
             self.set_label_color(action, color)
-            self.__update_label_text(action)            
+            self.__update_label_text(action)
 
 
     # Evaluate a new value

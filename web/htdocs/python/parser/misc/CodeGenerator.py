@@ -11,10 +11,6 @@ class CodeGenerator:
 
     # Generate libcst nodes from the passed specification data.
     def generate(self, data):   
-        # Remove first assign as this can lead to endless recursion and is not relevant anyway
-        if "assign" in data: 
-            data["assign"] = None
-
         return self._generate(data, self.initial_level)
 
     ####################################################################################################################
@@ -27,15 +23,18 @@ class CodeGenerator:
         elif isinstance(data, dict):
             if "name" in data:
                 return self._generate_call_node(data, level)
-            else:
-                if "assign" in data and data["assign"] and "value" in data and data["value"]:
-                    d = self._generate(data["value"], self.initial_level)
-                    return self._resolve_assign(d, data)
-                else:
-                    if "arguments" in data:
-                        return self._generate_dict_node(data, level)
-                    elif "value" in data:
-                        return self._generate(data["value"], level)
+            
+            if "arguments" in data:
+                return self._generate_dict_node(data, level)
+            
+            if "assign" in data and data["assign"]:
+                return self._resolve_assign(
+                    node = self._generate(data["value"], self.initial_level) if "value" in data and data["value"] else None, 
+                    data = data
+                )                
+            
+            if "value" in data:
+                return self._generate(data["value"], level)
 
         return libcst.parse_expression(data)
         
@@ -107,29 +106,25 @@ class CodeGenerator:
             whitespace_before_args = self._generate_parenthesized_whitespace(libcst.SimpleWhitespace(""), level + 1) if len(args) > 0 else libcst.SimpleWhitespace("")
         )
 
-        return self._resolve_assign(call, data)       
+        return self._resolve_assign(call, data)
         
     # Resolve assigns. Not recursive: Assigns to assigns are realized with separate nodes.
     def _resolve_assign(self, node, data):
         if "assign" in data and data["assign"]:
-            if not self.file_id:
-                raise Exception("No file id for adding assignments")
-            
-            if not self.parser:
-                raise Exception("No parser for adding assignments")
-            
-            self.parser.set_assignment(
-                data["assign"],
-                node,
-                self.file_id, 
-                insert_before_assign = self.insert_before_assign
-            )
+            if self.parser and self.file_id:
+                if not node:
+                    raise Exception("You can only omit the value field when no parser is connected")
+                
+                self.parser.set_assignment(
+                    data["assign"],
+                    node,
+                    self.file_id, 
+                    insert_before_assign = self.insert_before_assign
+                )
 
-            ass = libcst.Name(
+            return libcst.Name(
                 value = data["assign"]
             )
-
-            return ass
 
         return node
 
@@ -143,7 +138,7 @@ class CodeGenerator:
     # Returns the value of an element
     def _element_value(self, element, level):
         if "value" in element and element["value"] != None:
-            return self._generate(element["value"], level)  
+            return self._generate(element["value"], level)
             
         raise Exception("Invalid node: " + repr(element))
     

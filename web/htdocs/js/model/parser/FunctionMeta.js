@@ -40,6 +40,7 @@ class FunctionMeta {
             case "EncoderAction": return this.#getDisplayNameEncoderAction(actionCallProxy);
             case "BINARY_SWITCH": return this.#getDisplayNameBinarySwitch(actionCallProxy);
             case "HID_KEYBOARD": return this.#getDisplayNameHidKeyboardShort(actionCallProxy);
+            case "ENCODER_BUTTON": return this.#getDisplayNameEncoderButtonShort(actionCallProxy);
         }
         return this.underscoreToDisplayName(this.functionDefinition.name);
     }
@@ -48,16 +49,14 @@ class FunctionMeta {
      * Returns a sort string for the action definition
      */
     async getSortString() {
-        if (this.functionDefinition.name.startsWith("PagerAction")) {
-            return "ZZZZZZZZ" + this.functionDefinition.name;
-        }
-        if (this.functionDefinition.name == "BINARY_SWITCH") {
-            return "ZZZZZ";
-        }
-        if (this.functionDefinition.name == "HID_KEYBOARD") {
-            return "ZZZZZZZ";
-        }
+        if (this.functionDefinition.name.startsWith("PagerAction")) return "ZZZZZ_100_" + this.functionDefinition.name;
+        if (this.functionDefinition.name == "BINARY_SWITCH")        return "ZZZZZ_010";
+        if (this.functionDefinition.name == "HID_KEYBOARD")         return "ZZZZZ_040";
+        if (this.functionDefinition.name == "ENCODER_BUTTON")       return "ZZZZZ_050";
 
+        if (this.functionDefinition.name == "EncoderAction")        return "ZZZZZ_010";
+        if (this.functionDefinition.name == "AnalogAction")        return "ZZZZZ_010";
+        
         return this.functionDefinition.name;
     }
 
@@ -73,7 +72,7 @@ class FunctionMeta {
      * Special implementation for AnalogAction
      */
     #getDisplayNameAnalogAction(actionCallProxy = null) {
-        if (!actionCallProxy) return "AnalogAction";
+        if (!actionCallProxy) return "Other Parameter";
         
         const mapping = this.getArgument(actionCallProxy, "mapping");
 
@@ -86,7 +85,7 @@ class FunctionMeta {
             );
         }
 
-        return "AnalogAction";
+        return "Other Parameter";
     }
 
     /**
@@ -136,7 +135,7 @@ class FunctionMeta {
      * Special implementation for EncoderAction
      */
     #getDisplayNameEncoderAction(actionCallProxy = null) {
-        if (!actionCallProxy) return "EncoderAction";
+        if (!actionCallProxy) return "Other Parameter";
         
         const mapping = this.getArgument(actionCallProxy, "mapping");
 
@@ -149,14 +148,14 @@ class FunctionMeta {
             );
         }
 
-        return "EncoderAction";
+        return "Other Parameter";
     }
 
     /**
      * Special implementation for Binary Switch action
      */
     #getDisplayNameBinarySwitch(actionCallProxy = null) {
-        if (!actionCallProxy) return "Other";
+        if (!actionCallProxy) return "Other Parameter";
 
         const mapping = this.getArgument(actionCallProxy, "mapping");
 
@@ -169,7 +168,7 @@ class FunctionMeta {
             );
         }
 
-        return "Other";
+        return "Other Parameter";
     }
 
     #getDisplayNameHidKeyboard(actionCallProxy = null) {
@@ -195,6 +194,10 @@ class FunctionMeta {
         }
 
         return "USB Key";
+    }
+
+    #getDisplayNameEncoderButtonShort(actionCallProxy = null) {
+        return "Encoder Button";
     }
 
     #formatKeycodes(codes) {

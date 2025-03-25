@@ -25,7 +25,7 @@ with patch.dict(sys.modules, {
         "lib.pyswitch.misc": MockMisc
     }):
         
-        from lib.pyswitch.controller.EncoderAction import EncoderAction
+        from lib.pyswitch.controller.actions.EncoderAction import EncoderAction
         from .mocks_appl import *
 
 
@@ -102,22 +102,22 @@ class TestEncoderAction(unittest.TestCase):
             start_pos = 0, 
             start_value = 0, 
             data = [
-                (1, 160),
-                (2, 320),
-                (3, 480),
-                (102, 16320),
-                (103, 16383),
-                (104, 16383),
-                (10000, 16383),
-                (9999, 16223),
-                (9989, 14623),
-                (9916, 2943),
-                (9898, 63),
-                (9897, 0),
-                (1, 0),
                 (2, 160),
-                (3, 320),
-                (5, 640)
+                (4, 320),
+                (6, 480),
+                (204, 16320),
+                (206, 16383),
+                (208, 16383),
+                (20000, 16383),
+                (19998, 16223),
+                (19978, 14623),
+                (19832, 2943),
+                (19796, 63),
+                (19794, 0),
+                (2, 0),
+                (4, 160),
+                (6, 320),
+                (10, 640)
             ]
         )
 

@@ -145,7 +145,7 @@ class TestKemper(unittest.TestCase):
 
         self.assertIn("Amp Name", MAPPING_AMP_NAME().name)
         self.assertIn("Amp State", MAPPING_AMP_STATE().name)
-        self.assertIn("Amp Gain", MAPPING_AMP_GAIN().name)
+        self.assertIn("Gain", MAPPING_AMP_GAIN().name)
 
         self.assertIn("Cab Name", MAPPING_CABINET_NAME().name)
         self.assertIn("Cab State", MAPPING_CABINET_STATE().name)
@@ -179,8 +179,8 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Wah", MAPPING_WAH_PEDAL().name)
         self.assertIn("Pitch", MAPPING_PITCH_PEDAL().name)
 
-        self.assertIn("DlyMix", MAPPING_DELAY_MIX_PEDAL().name)   
-        self.assertIn("DlyFB", MAPPING_DELAY_FEEDBACK_PEDAL().name)   
-        self.assertIn("RevMix", MAPPING_REVERB_MIX_PEDAL().name)
-        self.assertIn("RevTime", MAPPING_REVERB_TIME_PEDAL().name)
-        self.assertIn("OutVol", MAPPING_VOLUME_OUTPUT_PEDAL().name)
+        self.assertIn("Dly. Mix", MAPPING_DELAY_MIX_PEDAL().name)   
+        self.assertIn("Feedback", MAPPING_DELAY_FEEDBACK_PEDAL().name)   
+        self.assertIn("Rev. Mix", MAPPING_REVERB_MIX_PEDAL().name)
+        self.assertIn("Rev. Time", MAPPING_REVERB_TIME_PEDAL().name)
+        self.assertIn("Out Vol.", MAPPING_VOLUME_OUTPUT_PEDAL().name)

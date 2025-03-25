@@ -55,13 +55,21 @@ class DisplayLabel(DisplayElement):
         self.__initial_text_color = self.__layout.text_color        
 
         self.__scale = scale
-        self.__callback = callback
+        self.callback = callback
 
         self.__ui = None    
         self.__appl = None
         self.__background = None 
         self.__label = None
+
+        self.override_text = None
         
+    def update_label(self):
+        if self.override_text:
+            self.text = self.override_text
+        elif self.callback:
+            self.callback.update_label(self)
+
     # Adds the slot to the splash
     def init(self, ui, appl):
         self.__ui = ui
@@ -69,18 +77,17 @@ class DisplayLabel(DisplayElement):
 
         self.__update_font()
 
-        if self.__callback:
-            cb = self.__callback
+        if self.callback:
             that = self
 
             class _CallbackMappingListener:
                 def parameter_changed(self, mapping):
-                    cb.update_label(that)
+                    that.update_label()
 
                 def request_terminated(self, mapping):
-                    cb.update_label(that)       
+                    that.update_label()
 
-            self.__callback.init(appl, _CallbackMappingListener())
+            self.callback.init(appl, _CallbackMappingListener())
 
         # Append background, if any
         if self.__layout.back_color:

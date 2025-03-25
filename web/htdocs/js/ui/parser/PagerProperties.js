@@ -4,6 +4,8 @@ class PagerProperties {
 
     #buttons = [];
     #props = null;
+    #proxyInput = null;
+    #proxyRow = null;
 
     constructor(props) {
         this.#props = props;
@@ -13,8 +15,37 @@ class PagerProperties {
         if (this.pages) await this.pages.init();
     }
 
+    async get() {
+        return [
+            (this.#props.actionDefinition.name != "PagerAction.proxy") ? null :
+            {
+                element: this.#proxyRow = $('<tr />').append(
+                    $('<td />').append(
+                        $('<span />').text("pager")
+                    ),
+
+                    // Input
+                    $('<td />').append(
+                        this.#proxyInput = (await this.createProxyInput())
+                    ),
+                )
+            }
+        ]
+    }
+
+    async setup() {
+        if (this.#proxyInput) {
+            this.#props.inputs.set("pager", this.#proxyInput);
+        }
+
+        if (this.#props.actionDefinition.name == "PagerAction") {
+            this.#props.showParameter("assign");
+            this.#props.inputs.get("assign").val(await this.#getNextPagerAssign());
+        }
+    }
+
     async pagers() {
-        return await this.#props.parserFrontend.parser.pagerActions();
+        return await this.#props.parserFrontend.parser.actions("PagerAction");
     }
 
     async getButtons() {
@@ -174,7 +205,7 @@ class PagerProperties {
     /**
      * Returns an unused pager assign target name
      */
-    async getNextPagerAssign() {
+    async #getNextPagerAssign() {
         const pagerActions = await this.pagers();
 
         function pagerExists(assign) {

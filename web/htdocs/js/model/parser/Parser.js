@@ -302,9 +302,9 @@ class Parser {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns all PagerAction proxies
+     * Returns all actions with the given name
      */
-    async pagerActions() {
+    async actions(name) {
         const hw = await this.getHardwareInfo();
         
         const ret = [];
@@ -315,7 +315,7 @@ class Parser {
             const actions = input.actions(false).concat(input.actions(true));
 
             for (const action of actions) {
-                if (action.name != "PagerAction") continue;
+                if (action.name != name) continue;
 
                 ret.push(action);
             }
@@ -327,7 +327,7 @@ class Parser {
      * Returns a PagerAction proxy by assign target name
      */
     async getPagerAction(name) {
-        const pagers = await this.pagerActions();
+        const pagers = await this.actions("PagerAction");
         for (const pager of pagers) {
             if (pager.assign == name) {
                 return pager;

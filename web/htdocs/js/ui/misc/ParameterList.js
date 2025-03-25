@@ -66,27 +66,11 @@ class ParameterList {
     ///////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Returns the passed element with the passed comment on hover
-     */
-    withComment(el, comment) {
-        if (comment) {
-            tippy(el[0], {
-                content: comment,
-                theme: "actionparameter",
-                placement: "top-end",
-                duration: 0
-            });
-        }
-
-        return el;
-    }
-
-    /**
      * Creates a boolean input row
      */
     createBooleanInputRow(name, comment, value, onChange) {
         const that = this;
-        return this.withComment(
+        return Tools.withComment(
             $('<tr />').append(                            
                 $('<td />').append(
                     $('<span />').text(name)
@@ -115,7 +99,7 @@ class ParameterList {
      */
     createNumericInputRow(name, comment, value, onChange) {
         const that = this;
-        return this.withComment(
+        return Tools.withComment(
             $('<tr />').append(                            
                 $('<td />').append(
                     $('<span />').text(name)

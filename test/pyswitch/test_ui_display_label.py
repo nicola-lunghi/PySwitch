@@ -373,4 +373,29 @@ class TestDisplayLabel(unittest.TestCase):
         label.text = "foo2"
         self.assertIn("Memory", ui.splash.mock_content[0].mock_content[0].text)
         self.assertIn("Memory", label.text)
-        
+
+
+    def test_text_override(self):
+        cb = MockDisplayLabelCallback()
+        cb.label_text = "abc"
+
+        label = DisplayLabel(
+            layout = {
+                "font": "foo"
+            },
+            callback = cb,
+            bounds = DisplayBounds(20, 21, 200, 210)
+        )
+
+        label.update_label()
+        self.assertEqual(label.text, "abc")
+
+        label.override_text = "bar"
+        label.update_label()
+        self.assertEqual(label.text, "bar")
+
+        label.override_text = None
+        label.update_label()
+        self.assertEqual(label.text, "abc")
+
+

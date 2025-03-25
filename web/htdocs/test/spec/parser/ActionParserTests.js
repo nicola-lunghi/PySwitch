@@ -52,8 +52,8 @@ class ActionParserTests extends FunctionParserTestBase {
                 // Add general actions, not coming from the clients folder
                 let actionsGeneral = (
                         await fromClass({
-                            file: "pyswitch/controller/AnalogAction.py",
-                            importPath: "pyswitch.controller.AnalogAction",
+                            file: "pyswitch/controller/actions/AnalogAction.py",
+                            importPath: "pyswitch.controller.actions.AnalogAction",
                             className: "AnalogAction",
                             includeUnderscore: true,
                             functions: true
@@ -64,8 +64,8 @@ class ActionParserTests extends FunctionParserTestBase {
                 actionsGeneral = actionsGeneral.concat(
                     (
                         await fromClass({
-                            file: "pyswitch/controller/EncoderAction.py",
-                            importPath: "pyswitch.controller.EncoderAction",
+                            file: "pyswitch/controller/actions/EncoderAction.py",
+                            importPath: "pyswitch.controller.actions.EncoderAction",
                             className: "EncoderAction",
                             includeUnderscore: true,
                             functions: true

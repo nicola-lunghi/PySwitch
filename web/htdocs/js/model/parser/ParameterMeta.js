@@ -50,7 +50,13 @@ class ParameterMeta {
      * If possible, returns a list of values, null if not possible.
      */
     async getValues() {
-        if (this.parameter.name == "display" || this.parameter.name == "morph_display") {
+        // Return manually defined values, if any
+        if (this.data.values) {
+            return this.data.values;
+        }
+
+        // Display parameters for all kinds of actions
+        if (this.parameter.name == "display" || this.parameter.name == "morph_display" || this.parameter.name == "preview_display") {
             function formatUsages(usages) {
                 if (usages.length == 0) return "";
                 const usagemap = usages.map((item) => item.input.displayName());
@@ -72,23 +78,46 @@ class ParameterMeta {
                 )
         }
 
-        if (this.parameter.name == "mapping") {
-            return this.#generateMappingOptions();
+        // Button linkages for Encoder actions
+        if (this.parameter.name == "accept_action" || this.parameter.name == "cancel_action") {
+            return (await this.parser.actions("ENCODER_BUTTON"))
+                .filter((item) => !!item.assign)
+                .map((item) => {
+                    return {
+                        name: item.assign,
+                        value: item.assign
+                    }
+                })
+                .concat(
+                    [
+                        {
+                            name: "None",
+                            value: "None"
+                        }
+                    ]
+                );
         }
 
+        // Mapping lists
+        if (this.parameter.name == "mapping" || this.parameter.name == "preview_reset_mapping") {
+            return this.#generateMappingOptions(this.parameter.name == "preview_reset_mapping");
+        }
+
+        // HID Key codes
         if (this.parameter.name == "keycodes") {
             return this.#generateKeycodeOptions();
         }
    
+        // Get from range if any
         if (this.#range) return this.#range.getValues();
 
-        return this.data.values || null;
+        return null;
     }
 
     /**
      * Generates the mapping list for input
      */
-    async #generateMappingOptions() {
+    async #generateMappingOptions(addNone = false) {
         async function getMappingVariants(mapping) {
             if (mapping.parameters.length == 0) {
                 return [
@@ -129,7 +158,13 @@ class ParameterMeta {
 
         const clients = await this.parser.getAvailableMappings();
 
-        let ret = [];
+        let ret = addNone ? [
+             {
+                name: "None",
+                value: "None"
+            }
+        ] : [];
+
         for (const client of clients) {
             for(const mapping of client.mappings) {
                 ret = ret.concat(await getMappingVariants(mapping))
@@ -156,14 +191,14 @@ class ParameterMeta {
      * Determines the default value for the parameter
      */
     getDefaultValue() {
-        // If we have a parameter default, use it
-        if (this.parameter.default) {
-            return this.parameter.default;
-        }
-
         // If we have a default defined in the metadata, use it
         if (this.data.default) {
             return this.data.default;
+        }
+
+        // If we have a parameter default, use it
+        if (this.parameter.default) {
+            return this.parameter.default;
         }
 
         const that = this;

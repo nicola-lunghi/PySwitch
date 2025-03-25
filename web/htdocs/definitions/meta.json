@@ -270,6 +270,63 @@
                                 "value": "BinaryParameterCallback.NO_STATE_CHANGE"
                             }
                         ]
+                    },
+
+                    {
+                        "name": "max_value",
+                        "type": "any",
+                        "advanced": 1
+                    },
+                    {
+                        "name": "step_width",
+                        "type": "any",
+                        "advanced": 1
+                    },
+                    {
+                        "name": "preview_display",
+                        "type": "select"
+                    },
+                    {
+                        "name": "preview_timeout_millis",
+                        "type": "int",
+                        "advanced": 1,
+                        "range": {
+                            "min": 1,
+                            "max": 5000
+                        }
+                    },
+                    {
+                        "name": "preview_blink_period_millis",
+                        "type": "int",
+                        "advanced": 1,
+                        "range": {
+                            "min": 1,
+                            "max": 1000
+                        }
+                    },
+                    {
+                        "name": "preview_reset_mapping",
+                        "type": "select",
+                        "advanced": 1,
+                        "default": "KemperMappings.RIG_ID()"
+                    },
+                    {
+                        "name": "preview_blink_color",
+                        "type": "color",
+                        "advanced": 1
+                    },
+                    {
+                        "name": "convert_value",
+                        "type": "any",
+                        "advanced": 2
+                    },
+                    {
+                        "name": "accept_action",
+                        "type": "select"
+                    },
+                    {
+                        "name": "cancel_action",
+                        "type": "select"
                     }
                 ]
             },
@@ -536,6 +593,20 @@
             },
 
             {
+                "entityName": "ENCODER_BPM",
+                "category": "other",
+                "target": "AdafruitEncoder",
+                "parameters": []
+            },
+
+            {
+                "entityName": "AMP_GAIN",
+                "category": "amp",
+                "target": "AdafruitEncoder",
+                "parameters": []
+            },
+
+            {
                 "entityName": "MAPPING_EFFECT_BUTTON",
                 "parameters": [
                     {
@@ -593,6 +664,64 @@
                             "None"
                         ],
                         "comment": "Fixed text (overrides the action specific text if the action would generate one)"
+                    },
+
+                    {
+                        "name": "max_value",
+                        "type": "any",
+                        "advanced": 1
+                    },
+                    {
+                        "name": "step_width",
+                        "type": "any",
+                        "advanced": 1
+                        
+                    },
+                    {
+                        "name": "preview_display",
+                        "type": "select"
+                    },
+                    {
+                        "name": "preview_timeout_millis",
+                        "type": "int",
+                        "advanced": 1,
+                        "range": {
+                            "min": 1,
+                            "max": 5000
+                        }
+                    },
+                    {
+                        "name": "preview_blink_period_millis",
+                        "type": "int",
+                        "advanced": 1,
+                        "range": {
+                            "min": 1,
+                            "max": 1000
+                        }
+                    },
+                    {
+                        "name": "preview_reset_mapping",
+                        "type": "select",
+                        "advanced": 1,
+                        "default": "KemperMappings.RIG_ID()"
+                    },
+                    {
+                        "name": "preview_blink_color",
+                        "type": "color",
+                        "advanced": 1
+                    },
+                    {
+                        "name": "convert_value",
+                        "type": "any",
+                        "advanced": 2
+                    },
+                    {
+                        "name": "accept_action",
+                        "type": "select"
+                    },
+                    {
+                        "name": "cancel_action",
+                        "type": "select"
                     }
                 ]
             },
@@ -614,11 +743,6 @@
                         "type": "any"
                     },
                     {
-                        "name": "max_value",
-                        "advanced": 1,
-                        "type": "any"
-                    },
-                    {
                         "name": "num_steps",
                         "advanced": 1,
                         "type": "any"
@@ -630,11 +754,6 @@
                     },
                     {
                         "name": "transfer_function",
-                        "advanced": 2,
-                        "type": "any"
-                    },
-                    {
-                        "name": "enable_callback",
                         "advanced": 2,
                         "type": "any"
                     }
@@ -651,21 +770,6 @@
                         "type": "select",
                         "default": "MAPPING_AMP_GAIN()",
                         "comment": "Mapping to be used."
-                    },
-                    {
-                        "name": "max_value",
-                        "type": "any",
-                        "advanced": 1
-                    },
-                    {
-                        "name": "step_width",
-                        "type": "any",
-                        "advanced": 1
-                    },
-                    {
-                        "name": "enable_callback",
-                        "type": "any",
-                        "advanced": 2
                     }
                 ]
             },
@@ -776,6 +880,13 @@
                         "default": "Keycode.LEFT_ARROW"
                     }
                 ]
+            },
+
+            {
+                "entityName": "ENCODER_BUTTON",
+                "category": "other",
+                "target": "AdafruitSwitch",
+                "parameters": []
             }
         ]
     }

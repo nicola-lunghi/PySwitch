@@ -772,19 +772,26 @@ class DisplayParserTests extends TestBase {
         expect(parser.codeForNode([])).toEqual("[]");        
         expect(parser.codeForNode(["2","3","4"])).toEqual("[2, 3, 4]");
         expect(parser.codeForNode(["2","3",'"hjk"'])).toEqual('[2, 3, "hjk"]');
-        expect(parser.codeForNode(["2", { 
-            name: "foos", 
-            arguments: [
-                {
-                    name: "h",
-                    value: "67"
-                },
-                {
-                    name: "g",
-                    value: '"67"'
-                }
-            ]
-        }])).toEqual('[2, foos(h = 67, g = "67")]');
+        expect(parser.codeForNode([
+            "2", 
+            { 
+                name: "foos", 
+                arguments: [
+                    {
+                        name: "h",
+                        value: "67"
+                    },
+                    {
+                        name: "g",
+                        value: '"67"'
+                    }
+                ]
+            },
+            {
+                assign: "_assi",
+                name: "arbitraryCall"
+            }
+        ])).toEqual('[2, foos(h = 67, g = "67"), _assi]');
 
         // Dicts
         expect(parser.codeForNode({ arguments: [] })).toEqual("{}");
@@ -814,12 +821,18 @@ class DisplayParserTests extends TestBase {
                             {
                                 name: "i",
                                 value: ["2","3","4"]
-                            }
+                            }                            
                         ]
+                    }
+                },
+                {
+                    name: "g",
+                    value: {
+                        assign: "_assi"
                     }
                 }
             ]
-        })).toEqual('{"jk": "67", "jg": dd(j = 9, i = [2, 3, 4])}');
+        })).toEqual('{"jk": "67", "jg": dd(j = 9, i = [2, 3, 4]), "g": _assi}');
 
         // Calls
         expect(parser.codeForNode({
@@ -845,9 +858,33 @@ class DisplayParserTests extends TestBase {
                     value: {
                         name: "oo"
                     }
+                },
+                {
+                    name: "g",
+                    value: {
+                        assign: "_assi"
+                    }
                 }
             ]
-        })).toEqual('kk(l = "aa", a = oo())');
+        })).toEqual('kk(l = "aa", a = oo(), g = _assi)');
+
+        // Assigns on first level
+        expect(parser.codeForNode({
+            name: "kk",
+            assign: "_assi",
+            arguments: [
+                {
+                    name: "l",
+                    value: '"aa"'
+                },
+                {
+                    name: "a",
+                    value: {
+                        name: "oo"
+                    }
+                }
+            ]
+        })).toEqual('_assi');
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////

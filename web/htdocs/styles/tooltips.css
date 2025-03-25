@@ -1,4 +1,4 @@
-.tippy-box[data-theme~=actionparameter] {
+.tippy-box[data-theme~=pyswitchtooltip] {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-size: 15px;
 }
