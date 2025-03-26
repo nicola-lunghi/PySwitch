@@ -10,50 +10,31 @@ from adafruit_midi.program_change import ProgramChange
 # Midi mapping for a client command. Contains commands to set or request a parameter
 class ClientParameterMapping:
     
-    # Parameter types (used internally in mappings)
-    PARAMETER_TYPE_NUMERIC = const(0)   # Default, also used for on/off
-    PARAMETER_TYPE_STRING = const(1)
+    _mappings = []
 
-    # Takes MIDI messages as argument (ControlChange or SystemExclusive)
-    def __init__(self, name = "", set = None, request = None, response = None, value = None, type = 0):
-        self.name = name          # Mapping name (used for debug output only)
-        self.set = set            # MIDI Message to set the parameter
-        self.request = request    # MIDI Message to request the value
-        self.response = response  # Response template MIDI message for parsing the received answer        
-        self.value = value        # Value of the parameter (buffer). After receiving an answer, the value 
-                                  # is buffered here.
-        self.type = type          # NUmeric or string
-
-
-    def __eq__(self, other):
-        if not other:
-            return False
-        
-        if self.__class__ != other.__class__:
-            return False
-        
-        if self.response != None:
-            if other.response != None:
-                return self.__compare(self.response, other.response)
-            else:
-                return False
-
-        if self.set != None: 
-            if other.set != None:
-                return self.__compare(self.set, other.set)
-            else:
-                return False
-
-        if self.request != None:
-            if other.request != None:
-                return self.__compare(self.request, other.request)
-            else:
-                return False
+    # Singleton factory
+    @staticmethod
+    def get(name = "", set = None, request = None, response = None, value = None, type = 0, depends = None):
+        for m in ClientParameterMapping._mappings:
+            if m.name == name and ClientParameterMapping._compare(m.set, set) and ClientParameterMapping._compare(m.request, request) and ClientParameterMapping._compare(m.response, response) and type == m.type:
+                return m
             
-        return False
+        m = ClientParameterMapping(
+            name = name,
+            set = set,
+            request = request,
+            response = response,
+            value = value,
+            depends = depends
+        )
+
+        ClientParameterMapping._mappings.append(m)
+
+        return m
 
     # Compare message or list of messages
-    def __compare(self, a, b):
+    @staticmethod
+    def _compare(a, b):
         if isinstance(a, list):
             if isinstance(b, list):
                 if len(a) != len(b):
@@ -64,12 +45,56 @@ class ClientParameterMapping:
                         return False
                 return True
             else:
-                return False
+                return a == b
         else:
             if not isinstance(b, list):
                 return compare_midi_messages(a, b)
             else:
+                return a == b
+            
+    ##########################################################################################################################
+
+    # Parameter types (used internally in mappings)
+    PARAMETER_TYPE_NUMERIC = const(0)   # Default, also used for on/off
+    PARAMETER_TYPE_STRING = const(1)
+
+    # Takes MIDI messages as argument (ControlChange or SystemExclusive)
+    def __init__(self, name = "", set = None, request = None, response = None, value = None, type = 0, depends = None):
+        self.name = name          # Mapping name (used for debug output only)
+        self.set = set            # MIDI Message to set the parameter
+        self.request = request    # MIDI Message to request the value
+        self.response = response  # Response template MIDI message for parsing the received answer        
+        self.value = value        # Value of the parameter (buffer). After receiving an answer, the value 
+                                  # is buffered here.
+        self.type = type          # Numeric or string
+        self.depends = depends    # If another mapping is set here, this mapping will only be requested when the dependency has changed value
+
+    def __eq__(self, other):
+        if not other:
+            return False
+        
+        if self.__class__ != other.__class__:
+            return False
+        
+        if self.response != None:
+            if other.response != None:
+                return self._compare(self.response, other.response)
+            else:
                 return False
+
+        if self.set != None: 
+            if other.set != None:
+                return self._compare(self.set, other.set)
+            else:
+                return False
+
+        if self.request != None:
+            if other.request != None:
+                return self._compare(self.request, other.request)
+            else:
+                return False
+            
+        return False
             
     # Parse the incoming MIDI message and set its value on the mapping.
     # If the response template does not match, returns False, and
@@ -193,8 +218,30 @@ class ClientParameterMapping:
 # notified when the second message arrives.
 class ClientTwoPartParameterMapping(ClientParameterMapping):
 
-    def __init__(self, name = "", set = None, request = None, response = None, value = None, type = 0):
-        super().__init__(name = name, set = set, request = request, response = response, value = value, type = type)
+    # Singleton factory
+    @staticmethod
+    def get(name = "", set = None, request = None, response = None, value = None, type = 0, depends = None):
+        for m in ClientParameterMapping._mappings:
+            if m.name == name and ClientParameterMapping._compare(m.set, set) and ClientParameterMapping._compare(m.request, request) and ClientParameterMapping._compare(m.response, response) and type == m.type:
+                return m
+            
+        m = ClientTwoPartParameterMapping(
+            name = name,
+            set = set,
+            request = request,
+            response = response,
+            value = value,
+            depends = depends
+        )
+
+        ClientParameterMapping._mappings.append(m)
+
+        return m
+
+    ##########################################################################################################################
+
+    def __init__(self, name = "", set = None, request = None, response = None, value = None, type = 0, depends = None):
+        super().__init__(name = name, set = set, request = request, response = response, value = value, type = type, depends = depends)
 
         self.__value_1 = None
     

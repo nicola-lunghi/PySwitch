@@ -10,7 +10,7 @@ _CC_RIG_INDEX_PART_1 = const(32) # The second part will be sent as program chang
 
 
 def MAPPING_NEXT_BANK(): 
-    return ClientTwoPartParameterMapping(
+    return ClientTwoPartParameterMapping.get(
         name = "Next Bank",
         set = ControlChange(
             _CC_BANK_INCREASE,
@@ -28,7 +28,7 @@ def MAPPING_NEXT_BANK():
     )
 
 def MAPPING_PREVIOUS_BANK():
-    return ClientTwoPartParameterMapping(
+    return ClientTwoPartParameterMapping.get(
         name = "Prev Bank",
         set = ControlChange(
             _CC_BANK_DECREASE,

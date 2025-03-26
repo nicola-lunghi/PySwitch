@@ -1,8 +1,9 @@
 # PySwitch v2.4.1
-- Optimizations for performance, regarding parameters depending on each other
+- Optimizations for performance/RAM:
+    - Singletons for all Mappings: This led to huge RAM savings with larger constellations (up to 10kB, because of fewer MIDI message objects in memory). This especially helped when mappings are used multiple times (for example the morph state). No changes to config files necessary.
 
 ### Emulator 2.4.1.8
-- Added MIDI traffic stats to Virtual Kemper
+- Added MIDI traffic stats display to Virtual Kemper
 
 # PySwitch v2.4.0
 - Changed default preset to a MC10 example close to the original PaintAudio KPP firmware

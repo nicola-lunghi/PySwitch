@@ -438,7 +438,7 @@ Inputs = [
             PushButtonAction(
                 {
                     "callback": BinaryParameterCallback(
-                        mapping = ClientParameterMapping(
+                        mapping = ClientParameterMapping.get(
                             set = SystemExclusive(
                                 manufacturer_id = [0x00, 0x20, 0x33], 
                                 data = [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01] # Two value bytes will be added by PySwitch
@@ -484,7 +484,7 @@ Inputs = [
             PushButtonAction(
                 {
                     "callback": BinaryParameterCallback(
-                        mapping = ClientParameterMapping(
+                        mapping = ClientParameterMapping.get(
                             set = SystemExclusive(
                                 manufacturer_id = [0x00, 0x20, 0x33], 
                                 data = [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01] # Two value bytes will be added by PySwitch

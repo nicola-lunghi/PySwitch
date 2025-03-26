@@ -131,9 +131,8 @@ class TestKemper(unittest.TestCase):
 
         self.assertIn("Rig Name", KemperMappings.RIG_NAME().name)
         self.assertIn("Rig ID", KemperMappings.RIG_ID().name)
-
-        self.assertIn("Rig Date", MAPPING_RIG_DATE().name)
-
+        self.assertIn("Rig Date", KemperMappings.RIG_DATE().name)
+        
         self.assertIn("Tuner", KemperMappings.TUNER_MODE_STATE().name)
         self.assertIn("Tuner Note", KemperMappings.TUNER_NOTE().name)
         self.assertIn("Tuner", KemperMappings.TUNER_DEVIANCE().name)

@@ -8,7 +8,7 @@ _CC_TAP_TEMPO = const(30)
 
 # Switch tuner mode on/off (no receive possible!)
 def MAPPING_TAP_TEMPO(): 
-    return ClientParameterMapping(
+    return ClientParameterMapping.get(
         name = "Tap Tempo",
         set = ControlChange(
             _CC_TAP_TEMPO, 
@@ -17,7 +17,7 @@ def MAPPING_TAP_TEMPO():
     )
 
 def MAPPING_TEMPO_DISPLAY():
-    return ClientParameterMapping(
+    return ClientParameterMapping.get(
         name = "Tempo",
         response = KemperNRPNExtendedMessage(
             0x01,
@@ -30,12 +30,12 @@ def MAPPING_TEMPO_DISPLAY():
     )
 
 # MIDI Clock message, sent 24x every beat
-#MAPPING_MIDI_CLOCK = ClientParameterMapping(
+#MAPPING_MIDI_CLOCK = ClientParameterMapping.get(
 #    name = "Clock",
 #    response = MidiClockMessage()
 #)
 
-#MAPPING_MIDI_CLOCK_START = ClientParameterMapping(
+#MAPPING_MIDI_CLOCK_START = ClientParameterMapping.get(
 #    name = "Start",
 #    response = Start()
 #)

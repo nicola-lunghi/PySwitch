@@ -59,8 +59,7 @@ class PySwitchRunner:
             "rotaryio": WrapRotaryIO(self.dom_namespace),
             "time": WrapTime(),
             "usb_hid": WrapUsbHid(),
-            "adafruit_hid.keyboard": WrapUsbHidKeyboard,
-            # "adafruit_hid.keycode": WrapUsbHidKeycode
+            "adafruit_hid.keyboard": WrapUsbHidKeyboard
         }):            
             self.display_driver = WrapDisplayDriver(
                 width = 240,

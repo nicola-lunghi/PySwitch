@@ -63,12 +63,6 @@
                 "importPath": "pyswitch.clients.kemper.mappings.rig"
             },
             {
-                "name": "MAPPING_RIG_DATE",
-                "parameters": [],
-                "comment": "Rig date (request only)",
-                "importPath": "pyswitch.clients.kemper.mappings.rig"
-            },
-            {
                 "name": "MAPPING_RIG_VOLUME",
                 "parameters": [],
                 "comment": "Rig volume",
@@ -291,6 +285,14 @@
                     }
                 ],
                 "comment": "Effect slot type (request only)",
+                "importPath": "pyswitch.clients.kemper",
+                "importName": "KemperMappings"
+            },
+            {
+                "type": "function",
+                "name": "KemperMappings.RIG_DATE",
+                "parameters": [],
+                "comment": "Rig date (request only)",
                 "importPath": "pyswitch.clients.kemper",
                 "importName": "KemperMappings"
             },

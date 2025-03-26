@@ -380,6 +380,7 @@ _NRPN_EFFECT_PARAMETER_ADDRESS_STATE = const(0x03)
 
 # NRPN String parameters
 _NRPN_STRING_PARAMETER_ID_RIG_NAME = const(0x01)
+_NRPN_STRING_PARAMETER_ID_RIG_DATE = const(0x03)
 
 # Defines some useful MIDI mappings, at least all mappings used in the protocol are defined here centrally. 
 # More specific mappings exist in the mappings folder.
@@ -388,7 +389,7 @@ class KemperMappings:
     # Effect slot enable/disable
     @staticmethod
     def EFFECT_STATE(slot_id):
-        return ClientParameterMapping(
+        return ClientParameterMapping.get(
             name = f"Slot State { str(slot_id) }",
             set = ControlChange(
                 KemperEffectSlot.CC_EFFECT_SLOT_ENABLE[slot_id], 
@@ -409,7 +410,7 @@ class KemperMappings:
     # Effect slot type (request only)
     @staticmethod
     def EFFECT_TYPE(slot_id):
-        return ClientParameterMapping(
+        return ClientParameterMapping.get(
             name = f"Slot Type { str(slot_id) }",
             request = KemperNRPNMessage(               
                 NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
@@ -423,9 +424,27 @@ class KemperMappings:
             )
         )
 
+    # Rig date (request only)
+    def RIG_DATE(): 
+        return ClientParameterMapping.get(
+            name = "Rig Date",
+            request = KemperNRPNMessage(               
+                NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
+                NRPN_ADDRESS_PAGE_STRINGS,
+                _NRPN_STRING_PARAMETER_ID_RIG_DATE
+            ),
+            response = KemperNRPNMessage(
+                NRPN_FUNCTION_RESPONSE_STRING_PARAMETER, 
+                NRPN_ADDRESS_PAGE_STRINGS,
+                _NRPN_STRING_PARAMETER_ID_RIG_DATE
+            ),
+            type = ClientParameterMapping.PARAMETER_TYPE_STRING
+        )
+
     # Rig name (request only)
     def RIG_NAME(): 
-        return ClientParameterMapping(
+        return ClientParameterMapping.get(
+            depends = KemperMappings.RIG_DATE(),
             name = "Rig Name",
             request = KemperNRPNMessage(               
                 NRPN_FUNCTION_REQUEST_STRING_PARAMETER,             
@@ -442,7 +461,7 @@ class KemperMappings:
 
     # Switch tuner mode on/off (no receive possible when not in bidirectional mode)
     def TUNER_MODE_STATE(): 
-        return ClientParameterMapping(
+        return ClientParameterMapping.get(
             name = "Tuner Mode",
             set = ControlChange(
                 _CC_TUNER_MODE, 
@@ -457,7 +476,7 @@ class KemperMappings:
 
     # Tuner note (only sent in bidirectional mode)
     def TUNER_NOTE(): 
-        return ClientParameterMapping(
+        return ClientParameterMapping.get(
             name = "Tuner Note",
             response = KemperNRPNMessage(
                 0x01,
@@ -468,7 +487,7 @@ class KemperMappings:
 
     # Tuner deviance from "in tune" (only sent in bidirectional mode)
     def TUNER_DEVIANCE(): 
-        return ClientParameterMapping(
+        return ClientParameterMapping.get(
             name = "Tuner Deviance",
             response = KemperNRPNMessage(
                 0x01,
@@ -479,7 +498,7 @@ class KemperMappings:
 
     # Used for state sensing in bidirection communication
     def BIDIRECTIONAL_SENSING():
-        return ClientParameterMapping(
+        return ClientParameterMapping.get(
             name = "Sense",
             response = KemperNRPNExtendedMessage(
                 0x7e,
@@ -491,7 +510,7 @@ class KemperMappings:
     
     # Rig ID
     def RIG_ID():
-        return ClientTwoPartParameterMapping(
+        return ClientTwoPartParameterMapping.get(
             name = "Rig ID",
             response = [
                 ControlChange(

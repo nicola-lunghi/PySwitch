@@ -1,5 +1,5 @@
 from micropython import const
-from .. import KemperNRPNMessage
+from .. import KemperNRPNMessage, KemperMappings
 from ....controller.Client import ClientParameterMapping
 from .. import NRPN_FUNCTION_SET_SINGLE_PARAMETER, NRPN_FUNCTION_REQUEST_STRING_PARAMETER, NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, NRPN_ADDRESS_PAGE_STRINGS, NRPN_FUNCTION_RESPONSE_STRING_PARAMETER
 
@@ -9,7 +9,8 @@ _NRPN_STRING_PARAMETER_ID_CABINET_NAME = const(0x20)
 
 # Cab name (request only)
 def MAPPING_CABINET_NAME(): 
-    return ClientParameterMapping(
+    return ClientParameterMapping.get(
+        depends = KemperMappings.RIG_DATE(),
         name = "Cab Name",
         request = KemperNRPNMessage(               
             NRPN_FUNCTION_REQUEST_STRING_PARAMETER, 
@@ -26,7 +27,7 @@ def MAPPING_CABINET_NAME():
 
 # Cab on/off
 def MAPPING_CABINET_STATE(): 
-    return ClientParameterMapping(
+    return ClientParameterMapping.get(
         name = "Cab State",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 

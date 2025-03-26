@@ -8,7 +8,7 @@ _NRPN_PARAMETER_ID_BPM = 0x00
 
 # Tempo (BPM value)
 def MAPPING_TEMPO_BPM():
-    return ClientParameterMapping(
+    return ClientParameterMapping.get(
         name = "bpm",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 

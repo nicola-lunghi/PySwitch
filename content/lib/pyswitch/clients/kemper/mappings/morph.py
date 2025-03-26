@@ -11,7 +11,7 @@ _CC_MORPH_BUTTON = const(80)                     # Also includes ride/fall times
 _NRPN_ADDRESS_PAGE_ZERO = const(0x00)            # As of the notes of sumsar
 
 def MAPPING_MORPH_BUTTON(): 
-    return ClientParameterMapping(
+    return ClientParameterMapping.get(
         name = "Morph Button",
         set = ControlChange(
             _CC_MORPH_BUTTON, 
@@ -30,7 +30,7 @@ def MAPPING_MORPH_BUTTON():
     )
 
 def MAPPING_MORPH_PEDAL(): 
-    return ClientParameterMapping(
+    return ClientParameterMapping.get(
         name = "Morph Pedal",
         set = ControlChange(
             _CC_MORPH_PEDAL, 

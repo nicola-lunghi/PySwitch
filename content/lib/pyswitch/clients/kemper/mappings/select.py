@@ -11,7 +11,7 @@ _CC_RIG_INDEX_PART_1 = const(32) # The second part will be sent as program chang
 
 # Selects a rig of the current bank. Rig index must be in range [0..4]
 def MAPPING_RIG_SELECT(rig):
-    return ClientTwoPartParameterMapping(
+    return ClientTwoPartParameterMapping.get(
         name = "Rig Select",
         set = [
             # If only one command with value 1 is sent, the morph on rig select 
@@ -40,7 +40,7 @@ def MAPPING_RIG_SELECT(rig):
 
 # Pre-selects a bank.
 def MAPPING_BANK_SELECT():
-    return ClientTwoPartParameterMapping(
+    return ClientTwoPartParameterMapping.get(
         name = "Bank",
         set = [
             ControlChange(
@@ -62,7 +62,7 @@ def MAPPING_BANK_SELECT():
 
 # Selects a rig of a specific bank. Rig index must be in range [0..4]
 def MAPPING_BANK_AND_RIG_SELECT(rig):
-    return ClientTwoPartParameterMapping(
+    return ClientTwoPartParameterMapping.get(
         name = "Rig+Bank",
         set = [
             ControlChange(
