@@ -1,4 +1,4 @@
-# PySwitch v2.3.6
+# PySwitch v2.4.0
 - Changed default preset to a MC10 example close to the original PaintAudio KPP firmware
 - Option "hold_repeat" for Inputs: When enabled, the hold action is repeated again and again as long as the switch is held down.
 - Added Pushbutton Option "NO_STATE_CHANGE", to be able to have a completely passive action assigned to a switch, for example to just show the effect state of a lot without having a switch for that functionality
@@ -19,7 +19,7 @@
     - Merged KemperParameterMapping and KemperTwoPartParameterMapping classes into the Client implementation
 - Added instructions (README) and examples for creating multi-boot scenarios, to load the original firmware when some switch is pushed during bootup.
 
-### Emulator 2.3.6.6
+### Emulator 2.4.0.6
 - Added switch settings (new button beneath the "+" button): Here you can adjust the hold time as well as the new "Hold Repeat" option (see above)
 - More "realistic" rig names in the virtual Kemper client (the old ones suggested there is a rig ID by default)
 - Review of tooltips, descriptions etc.
