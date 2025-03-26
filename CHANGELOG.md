@@ -19,6 +19,9 @@
     - Merged KemperParameterMapping and KemperTwoPartParameterMapping classes into the Client implementation
 - Added instructions (README) and examples for creating multi-boot scenarios, to load the original firmware when some switch is pushed during bootup.
 
+### Emulator 2.4.0.7
+- Load time optimization (load python files in parallel)
+
 ### Emulator 2.4.0.6
 - Added switch settings (new button beneath the "+" button): Here you can adjust the hold time as well as the new "Hold Repeat" option (see above)
 - More "realistic" rig names in the virtual Kemper client (the old ones suggested there is a rig ID by default)
