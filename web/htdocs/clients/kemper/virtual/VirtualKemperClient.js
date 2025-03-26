@@ -146,8 +146,6 @@ class VirtualKemperClient extends VirtualClient {
      */
     async doSend(message) {
         try {
-            // message = message.toJs();
-
             // Try to parse message: Protocol
             if (this.protocol.parse(message)) return;
 
@@ -155,6 +153,7 @@ class VirtualKemperClient extends VirtualClient {
             if (this.parameters.parse(message)) return;
 
             // Unparsed!
+            this.stats.messageReceived(message, "Unparsed");
             console.warn(this.name + ": Unparsed message: ", message);
 
         } catch (e) {
