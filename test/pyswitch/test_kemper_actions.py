@@ -16,8 +16,6 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from adafruit_midi.system_exclusive import SystemExclusive
-    
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
     from lib.pyswitch.misc import Updater
@@ -25,6 +23,7 @@ with patch.dict(sys.modules, {
     from .mocks_appl import *
     from .mocks_callback import *
 
+    from lib.pyswitch.clients.kemper.actions.amp import *
     from lib.pyswitch.clients.kemper.actions.effect_state import *
     from lib.pyswitch.clients.kemper.actions.tempo import *
     from lib.pyswitch.clients.kemper.actions.effect_button import *
@@ -32,10 +31,14 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.actions.looper import *
     from lib.pyswitch.clients.kemper.actions.rig_volume_boost import *
     from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
+    from lib.pyswitch.clients.kemper.actions.tempo_bpm import *
 
     from lib.pyswitch.clients.kemper.mappings.tempo import *
     from lib.pyswitch.clients.kemper.mappings.morph import *
     from lib.pyswitch.clients.kemper.mappings.looper import *
+
+    from lib.pyswitch.clients.local.actions.encoder_button import *
+    from lib.pyswitch.controller.actions.EncoderAction import EncoderAction
     
 
 class MockController2(Updater):
@@ -567,3 +570,94 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(action.uses_switch_leds, True)
         self.assertEqual(action._Action__enable_callback, ecb)
         self.assertEqual(action._PushButtonAction__mode, PushButtonAction.MOMENTARY)
+
+    def test_tempo_bpm(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        accept = ENCODER_BUTTON()
+        cancel = ENCODER_BUTTON()
+
+        action = ENCODER_BPM(
+            step_width = 1,
+            accept_action = accept,
+            cancel_action = cancel,
+            preview_display = display,
+            preview_blink_color = (3, 4, 5),
+            preview_timeout_millis = 345,
+            id = 45, 
+            enable_callback = ecb
+        )
+
+        self.assertIsInstance(action, EncoderAction)
+
+        self.assertEqual(action._EncoderAction__mapping, MAPPING_TEMPO_BPM())
+        self.assertEqual(action.id, 45)
+        self.assertEqual(action._EncoderAction__enable_callback, ecb)
+        self.assertEqual(action._EncoderAction__step_width, 1)
+        self.assertEqual(action._EncoderAction__preselect, True)
+        self.assertEqual(action._EncoderAction__preview_display, display)
+        self.assertEqual(action._EncoderAction__preview_blink_color, (3, 4, 5))
+        self.assertEqual(action._EncoderAction__preview_period.interval, 345)
+
+        appl = MockController2()
+        action.init(appl)
+
+        switch = MockSwitch()
+        accept.init(appl, switch)
+        cancel.init(appl, switch)
+
+        action.process(0)
+        action.process(131 * 64)
+        action.update()
+
+        self.assertEqual(display.text, "131 bpm")
+        
+
+    def test_amp_gain(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        accept = ENCODER_BUTTON()
+        cancel = ENCODER_BUTTON()
+
+        action = AMP_GAIN(
+            step_width = 1,
+            accept_action = accept,
+            cancel_action = cancel,
+            preview_display = display,
+            preview_blink_color = (3, 4, 5),
+            preview_timeout_millis = 345,
+            id = 45, 
+            enable_callback = ecb
+        )
+
+        self.assertIsInstance(action, EncoderAction)
+
+        self.assertEqual(action._EncoderAction__mapping, MAPPING_AMP_GAIN())
+        self.assertEqual(action.id, 45)
+        self.assertEqual(action._EncoderAction__enable_callback, ecb)
+        self.assertEqual(action._EncoderAction__step_width, 1)
+        self.assertEqual(action._EncoderAction__preselect, True)
+        self.assertEqual(action._EncoderAction__preview_display, display)
+        self.assertEqual(action._EncoderAction__preview_blink_color, (3, 4, 5))
+        self.assertEqual(action._EncoderAction__preview_period.interval, 345)
+
+        appl = MockController2()
+        action.init(appl)
+
+        switch = MockSwitch()
+        accept.init(appl, switch)
+        cancel.init(appl, switch)
+
+        action.process(0)
+        action.process(8192)
+        action.update()
+
+        self.assertEqual(display.text, "Gain: 5.0")

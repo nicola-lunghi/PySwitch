@@ -54,11 +54,11 @@ class EncoderAction(Updateable):
             cancel_action.callback.register_encoder(self, True)
             
         self.__preselect = (accept_action != None)
-        self.__preview_display = preview_display
-        
+        self.__preselect_active = False
+
+        self.__preview_display = preview_display        
         if preview_display:
             self.__preview_period = PeriodCounter(preview_timeout_millis)
-            self.__preview_active = False
                 
             if accept_action:
                 self.__preview_blink_period = PeriodCounter(preview_blink_period_millis)
@@ -84,6 +84,16 @@ class EncoderAction(Updateable):
     def update(self):
         self.__appl.client.request(self.__mapping)
 
+        if self.__preview_display:
+            if self.__preselect_active and self.__preselect and self.__preview_blink_period.exceeded:
+                # Blink when preview is active
+                self.__preview_blink_state = not self.__preview_blink_state
+
+                if self.__preview_blink_state:
+                    self.__preview_display.text_color = self.__preview_blink_color
+                else:
+                    self.__preview_display.text_color = self.__preview_orig_color
+
     # Process the current encoder position
     def process(self, position):
         if self.__last_pos == -1:
@@ -98,28 +108,16 @@ class EncoderAction(Updateable):
 
         if self.__last_pos == position:
             if self.__preview_display:
-                if not self.__preview_active and self.__preview_display.override_text and self.__preview_period.exceeded:
+                if not self.__preselect_active and self.__preview_display.override_text and self.__preview_period.exceeded:
                     # Free preview display after a period
                     self.__preview_display.override_text = None
                     self.__preview_display.update_label()
                 
-                if self.__preview_active and self.__preselect and self.__preview_blink_period.exceeded:
-                    # Blink when preview is active
-                    self.__preview_blink_state = not self.__preview_blink_state
-
-                    if self.__preview_blink_state:
-                        self.__preview_display.text_color = self.__preview_blink_color
-                    else:
-                        self.__preview_display.text_color = self.__preview_orig_color
             return
                         
         if self.__mapping.value == None:
-            if not self.__mapping.response:
-                # Send-only mapping
-                self.__mapping.value = 0
-            else:
-                return
-
+            self.__mapping.value = 0
+            
         add_value = (position - self.__last_pos) * self.__step_width        
         self.__last_pos = position
 
@@ -138,12 +136,18 @@ class EncoderAction(Updateable):
             
             if not self.__preselect:
                 self.accept()
+            else:
+                self.__preselect_active = True
 
             if self.__preview_display:
-                if self.__preselect:
-                    self.__preview_active = True
+                if not self.__convert_value:
+                    prefix = f"{ self.__mapping.name }: " if self.__mapping.name else ""
+                    val = round(v * 100 / self.__max_value)
+
+                    self.__preview_display.override_text = f"{ prefix }{ str(val) }%"
+                else:
+                    self.__preview_display.override_text = self.__convert_value(v)
                 
-                self.__preview_display.override_text = f"{ f"{ self.__mapping.name }: " if self.__mapping.name else "" }{ str(round(v * 100 / self.__max_value)) }%" if not self.__convert_value else self.__convert_value(v)
                 self.__preview_display.update_label()
 
     # Send the last value and reset preview display
@@ -151,12 +155,12 @@ class EncoderAction(Updateable):
         if self.__last_value == -1:
             return
         
+        if self.__preselect and not self.__preselect_active:
+            return
+        
         # Send message
         self.__appl.client.set(self.__mapping, self.__last_value)
-
-        if not self.__mapping.response:
-            # Send-only mapping: Set the value here
-            self.__mapping.value = self.__last_value
+        self.__mapping.value = self.__last_value
 
         self.cancel()
 
@@ -165,7 +169,9 @@ class EncoderAction(Updateable):
 
     # Cancel preselection
     def cancel(self):
-        self.__preview_active = False
+        self.__preselect_active = False
+
+        self.__last_value = self.__mapping.value
 
         if self.__preview_display and self.__preselect:
             self.__preview_display.text_color = self.__preview_orig_color

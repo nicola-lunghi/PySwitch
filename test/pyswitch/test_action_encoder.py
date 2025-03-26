@@ -13,6 +13,9 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+    "displayio": MockDisplayIO(),
+    "adafruit_display_text": MockAdafruitDisplayText(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
@@ -26,13 +29,25 @@ with patch.dict(sys.modules, {
     }):
         
         from lib.pyswitch.controller.actions.EncoderAction import EncoderAction
+
+        from lib.pyswitch.misc import Updater
+        from lib.pyswitch.clients.local.actions.encoder_button import ENCODER_BUTTON
+        from lib.pyswitch.ui.elements import DisplayLabel
+
         from .mocks_appl import *
 
 
-class MockController2:
+class MockController2(Updater):
     def __init__(self):
+        super().__init__()
         self.client = MockClient()
 
+class MockFootSwitch:
+    def __init__(self, id = ""):
+        self.id = id
+        self.actions = []
+        self.pixels = []
+        self.colors = []
 
 ##################################################################################################################################
 
@@ -41,6 +56,7 @@ class TestEncoderAction(unittest.TestCase):
 
     def test_fix_range(self):
         self._test(
+            cc_mapping = False,
             max_value = 1023,
             step_width = 16,
             start_pos = 4, 
@@ -67,6 +83,7 @@ class TestEncoderAction(unittest.TestCase):
         )
 
         self._test(
+            cc_mapping = True,
             max_value = 127,
             step_width = 1,
             start_pos = 4, 
@@ -219,14 +236,14 @@ class TestEncoderAction(unittest.TestCase):
                 mapping.value = exp_value
 
 
-        # None
-        if mapping_with_response:
-            mapping.value = None
+        # # None
+        # if mapping_with_response:
+        #     mapping.value = None
             
-            appl.client.set_calls = []
-            action.process(7865)
+        #     appl.client.set_calls = []
+        #     action.process(7865)
             
-            self.assertEqual(appl.client.last_sent_message, None)
+        #     self.assertEqual(appl.client.last_sent_message, None)
 
 
     def test_none_value(self):
@@ -314,4 +331,421 @@ class TestEncoderAction(unittest.TestCase):
         self.assertEqual(action.enabled, True)
 
 
-    
+    #################################################################################
+
+
+    def test_with_display(self):
+        display = DisplayLabel(
+            layout = {
+                "font": "foo",
+                "backColor": (0, 0, 0)            
+            },
+            callback = MockDisplayLabelCallback(label_text = "foo")
+        )
+
+        mapping = MockParameterMapping(
+            name = "Some",
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            )
+        )
+
+        action = EncoderAction(
+            mapping = mapping,
+            preview_display = display,
+            preview_timeout_millis = 123,
+            max_value = 1000,
+            step_width = 1
+        )
+
+        appl = MockController2()
+        action.init(appl)
+
+        self.assertEqual(action._EncoderAction__preview_period.interval, 123)
+        action._EncoderAction__preview_period = MockPeriodCounter()
+        period = action._EncoderAction__preview_period
+
+        display.update_label()
+
+        action.process(0)
+
+        self.assertEqual(display.text, "foo")
+
+        action.process(10)
+
+        self.assertEqual(display.text, "Some: 1%")
+        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(mapping.value, 10)
+
+        action.process(200)
+
+        self.assertEqual(display.text, "Some: 20%")
+        self.assertEqual(len(appl.client.set_calls), 2)
+        self.assertEqual(mapping.value, 200)
+            
+        action.process(500)
+
+        self.assertEqual(display.text, "Some: 50%")
+        self.assertEqual(len(appl.client.set_calls), 3)
+        self.assertEqual(mapping.value, 500)
+
+        action.process(1000)
+
+        self.assertEqual(display.text, "Some: 100%")
+        self.assertEqual(len(appl.client.set_calls), 4)
+        self.assertEqual(mapping.value, 1000)
+
+        period.exceed_next_time = True
+        action.process(1000)
+
+        self.assertEqual(display.text, "foo")
+        self.assertEqual(len(appl.client.set_calls), 4)
+
+        action.process(500)
+
+        self.assertEqual(display.text, "Some: 50%")
+        self.assertEqual(len(appl.client.set_calls), 5)
+
+        period.exceed_next_time = True
+        action.process(500)
+
+        self.assertEqual(display.text, "foo")
+        self.assertEqual(len(appl.client.set_calls), 5)
+
+
+    def test_convert_value(self):
+        def convert_value(value):
+            return f"{ value * 2} units"
+        
+        display = DisplayLabel(
+            layout = {
+                "font": "foo",
+                "backColor": (0, 0, 0)            
+            },
+            callback = MockDisplayLabelCallback(label_text = "foo")
+        )
+
+        mapping = MockParameterMapping(
+            name = "Some",
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            )
+        )
+
+        action = EncoderAction(
+            mapping = mapping,
+            preview_display = display,
+            preview_timeout_millis = 123,
+            max_value = 1000,
+            step_width = 1,
+            convert_value = convert_value
+        )
+
+        appl = MockController2()
+        action.init(appl)
+
+        self.assertEqual(action._EncoderAction__preview_period.interval, 123)
+        action._EncoderAction__preview_period = MockPeriodCounter()
+        period = action._EncoderAction__preview_period
+
+        display.update_label()
+
+        action.process(0)
+
+        self.assertEqual(display.text, "foo")
+
+        action.process(10)
+
+        self.assertEqual(display.text, "20 units")
+        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(mapping.value, 10)
+
+        action.process(200)
+
+        self.assertEqual(display.text, "400 units")
+        self.assertEqual(len(appl.client.set_calls), 2)
+        self.assertEqual(mapping.value, 200)
+            
+        action.process(500)
+
+        self.assertEqual(display.text, "1000 units")
+        self.assertEqual(len(appl.client.set_calls), 3)
+        self.assertEqual(mapping.value, 500)
+
+        action.process(1000)
+
+        self.assertEqual(display.text, "2000 units")
+        self.assertEqual(len(appl.client.set_calls), 4)
+        self.assertEqual(mapping.value, 1000)
+
+        period.exceed_next_time = True
+        action.process(1000)
+
+        self.assertEqual(display.text, "foo")
+        self.assertEqual(len(appl.client.set_calls), 4)
+
+        action.process(500)
+
+        self.assertEqual(display.text, "1000 units")
+        self.assertEqual(len(appl.client.set_calls), 5)
+
+        period.exceed_next_time = True
+        action.process(500)
+
+        self.assertEqual(display.text, "foo")
+        self.assertEqual(len(appl.client.set_calls), 5)
+
+
+    def test_preselect(self):
+        mapping = MockParameterMapping(
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            )
+        )
+
+        accept = ENCODER_BUTTON()
+
+        action = EncoderAction(
+            mapping = mapping,
+            accept_action = accept,
+            max_value = 1000,
+            step_width = 1
+        )
+
+        appl = MockController2()        
+        action.init(appl)
+
+        switch = MockFootSwitch()
+        accept.init(appl, switch)
+
+        action.process(0)
+        action.accept() # Shall do nothing
+        self.assertEqual(appl.client.set_calls, [])
+
+        action.process(1)
+        self.assertEqual(appl.client.set_calls, [])
+
+        action.process(20)
+        self.assertEqual(appl.client.set_calls, [])
+            
+        action.process(20)
+        self.assertEqual(appl.client.set_calls, [])
+
+        accept.push()
+        accept.release()
+
+        self.assertEqual(appl.client.set_calls, [{ "mapping": mapping, "value": 19 }])
+
+
+    def test_preselect_with_display(self):
+        display = DisplayLabel(
+            layout = {
+                "font": "foo",
+                "backColor": (0, 0, 0),
+                "textColor": (4, 6, 8)          
+            },
+            callback = MockDisplayLabelCallback(label_text = "foo")
+        )
+
+        mapping = MockParameterMapping(
+            name = "Some",
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            )
+        )
+
+        accept = ENCODER_BUTTON()
+        cancel = ENCODER_BUTTON()
+
+        action = EncoderAction(
+            mapping = mapping,
+            accept_action = accept,
+            cancel_action = cancel,
+            preview_display = display,
+            preview_timeout_millis = 123,
+            preview_blink_period_millis = 345,
+            preview_blink_color = (2, 3, 4),
+            max_value = 1000,
+            step_width = 1
+        )
+
+        appl = MockController2()
+        action.init(appl)
+
+        switch = MockFootSwitch()
+        accept.init(appl, switch)
+        cancel.init(appl, switch)
+
+        self.assertEqual(action._EncoderAction__preview_period.interval, 123)
+        action._EncoderAction__preview_period = MockPeriodCounter()
+        period = action._EncoderAction__preview_period
+
+        self.assertEqual(action._EncoderAction__preview_blink_period.interval, 345)
+        action._EncoderAction__preview_blink_period = MockPeriodCounter()
+        period_blink = action._EncoderAction__preview_blink_period
+
+        display.update_label()
+
+        action.process(0)
+
+        self.assertEqual(display.text, "foo")
+        self.assertEqual(display.text_color, (4, 6, 8))
+
+        action.process(10)
+        action.update()
+
+        self.assertEqual(display.text, "Some: 1%")
+        self.assertEqual(appl.client.set_calls, [])
+        self.assertEqual(display.text_color, (4, 6, 8))
+
+        action.process(200)
+        action.update()
+
+        self.assertEqual(display.text, "Some: 20%")
+        self.assertEqual(appl.client.set_calls, [])
+        self.assertEqual(display.text_color, (4, 6, 8))
+
+        period_blink.exceed_next_time = True
+        action.process(200)
+        action.update()
+
+        self.assertEqual(display.text, "Some: 20%")
+        self.assertEqual(appl.client.set_calls, [])
+        self.assertEqual(display.text_color, (2, 3, 4))
+
+        action.process(500)
+        action.update()
+
+        self.assertEqual(display.text, "Some: 50%")
+        self.assertEqual(appl.client.set_calls, [])
+        self.assertEqual(display.text_color, (2, 3, 4))
+
+        period_blink.exceed_next_time = True
+        action.process(1000)
+        action.update()
+
+        self.assertEqual(display.text, "Some: 100%")
+        self.assertEqual(appl.client.set_calls, [])
+        self.assertEqual(display.text_color, (4, 6, 8))
+
+        accept.push()
+        accept.release()
+
+        self.assertEqual(display.text, "Some: 100%")
+        self.assertEqual(appl.client.set_calls, [{ "mapping": mapping, "value": 999 }])
+        self.assertEqual(display.text_color, (4, 6, 8))
+
+        period.exceed_next_time = True
+        period_blink.exceed_next_time = True
+        action.process(1000)
+        action.update()
+
+        self.assertEqual(display.text, "foo")
+        self.assertEqual(appl.client.set_calls, [{ "mapping": mapping, "value": 999 }])
+        self.assertEqual(display.text_color, (4, 6, 8))
+
+        action.process(500)
+        action.update()
+
+        self.assertEqual(display.text, "Some: 50%")
+        self.assertEqual(appl.client.set_calls, [{ "mapping": mapping, "value": 999 }])
+        self.assertEqual(display.text_color, (2, 3, 4))
+
+        cancel.push()
+        cancel.release()
+
+        period.exceed_next_time = True
+        action.process(500)
+        action.update()
+        
+        self.assertEqual(display.text, "foo")
+        self.assertEqual(appl.client.set_calls, [{ "mapping": mapping, "value": 999 }])
+        self.assertEqual(display.text_color, (4, 6, 8))
+
+        accept.push()
+        accept.release()
+
+        self.assertEqual(display.text, "foo")
+        self.assertEqual(appl.client.set_calls, [{ "mapping": mapping, "value": 999 }])
+        self.assertEqual(display.text_color, (4, 6, 8))
+
+
+    def test_preselect_with_reset_mapping(self):
+        display = DisplayLabel(
+            layout = {
+                "font": "foo",
+                "backColor": (0, 0, 0),
+                "textColor": (4, 6, 8)          
+            },
+            callback = MockDisplayLabelCallback(label_text = "foo")
+        )
+
+        mapping = MockParameterMapping(
+            name = "Some",
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            )
+        )
+
+        mapping_reset = MockParameterMapping(
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            )
+        )
+
+        accept = ENCODER_BUTTON()
+
+        action = EncoderAction(
+            mapping = mapping,
+            accept_action = accept,
+            preview_display = display,
+            preview_reset_mapping = mapping_reset,
+            max_value = 1000,
+            step_width = 1
+        )
+
+        appl = MockController2()
+        action.init(appl)
+
+        switch = MockFootSwitch()
+        accept.init(appl, switch)
+
+        action._EncoderAction__preview_period = MockPeriodCounter()
+        period = action._EncoderAction__preview_period
+
+        mapping_reset.value = 1
+
+        display.update_label()
+        action.process(0)
+
+        self.assertEqual(display.text, "foo")
+
+        action.process(10)
+        action.update()
+
+        self.assertEqual(display.text, "Some: 1%")
+        self.assertEqual(appl.client.set_calls, [])
+
+        mapping_reset.value = 2
+        period.exceed_next_time = True
+        action.process(10)
+
+        action.update()
+
+        self.assertEqual(display.text, "foo")
+        self.assertEqual(appl.client.set_calls, [])
+
+        accept.push()
+        accept.release()
+
+        action.process(10)
+        action.update()
+
+        self.assertEqual(display.text, "foo")
+        self.assertEqual(appl.client.set_calls, [])
