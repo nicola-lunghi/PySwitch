@@ -32,10 +32,6 @@ class PySwitchRunner {
     async init(basePath = "") {
         if (this.#initialized) return;
 
-        // Source paths
-        const localPythonPath = basePath + "python/";
-        const circuitpyPath = basePath + "circuitpy/lib/";
-
         // Set up pyodide
         console.log("Initialize Pyodide");
         this.pyodide = await loadPyodide();
@@ -43,175 +39,7 @@ class PySwitchRunner {
         // Load all files by GETing them and storing them to the virtual FS.
         // TODO this could be optimized
         console.log("Load files to Pyodide");
-
-        await this.#loadModule("PySwitchRunner.py", localPythonPath);
-        await this.#loadModule("mocks.py", localPythonPath);
-
-        this.pyodide.FS.mkdir("definitions");
-        await this.#loadModule("definitions/actions.json", basePath);
-        await this.#loadModule("definitions/mappings.json", basePath);
-
-        this.pyodide.FS.mkdir("parser");
-        await this.#loadModule("parser/PySwitchParser.py", localPythonPath);
-        await this.#loadModule("parser/PySwitchHardware.py", localPythonPath);
-        await this.#loadModule("parser/InputsExtractor.py", localPythonPath);
-        await this.#loadModule("parser/SplashesExtractor.py", localPythonPath);
-        
-        this.pyodide.FS.mkdir("parser/misc");
-        await this.#loadModule("parser/misc/VisitorsWithStack.py", localPythonPath);
-        await this.#loadModule("parser/misc/RemoveUnusedImportTransformer.py", localPythonPath);
-        await this.#loadModule("parser/misc/CollectCommentsTransformer.py", localPythonPath);
-        await this.#loadModule("parser/misc/AddImportsTransformer.py", localPythonPath);
-        await this.#loadModule("parser/misc/FunctionExtractor.py", localPythonPath);
-        await this.#loadModule("parser/misc/ClassItemExtractor.py", localPythonPath);
-        await this.#loadModule("parser/misc/ClassNameExtractor.py", localPythonPath);
-        await this.#loadModule("parser/misc/AssignmentExtractor.py", localPythonPath);
-        await this.#loadModule("parser/misc/AssignmentNameExtractor.py", localPythonPath);
-        await this.#loadModule("parser/misc/ImportExtractor.py", localPythonPath);
-        await this.#loadModule("parser/misc/ReplaceAssignmentTransformer.py", localPythonPath);
-        await this.#loadModule("parser/misc/AddAssignmentTransformer.py", localPythonPath);
-        await this.#loadModule("parser/misc/CodeExtractor.py", localPythonPath);
-        await this.#loadModule("parser/misc/CodeGenerator.py", localPythonPath);        
-
-        this.pyodide.FS.mkdir("wrappers");
-        await this.#loadModule("wrappers/__init__.py", localPythonPath);
-        await this.#loadModule("wrappers/wrap_io.py", localPythonPath);
-        await this.#loadModule("wrappers/wrap_adafruit_midi.py", localPythonPath);
-        await this.#loadModule("wrappers/wrap_adafruit_led.py", localPythonPath);
-        await this.#loadModule("wrappers/wrap_adafruit_display.py", localPythonPath);
-        await this.#loadModule("wrappers/wrap_time.py", localPythonPath);
-        await this.#loadModule("wrappers/wrap_hid.py", localPythonPath);
-        await this.#loadModule("wrappers/WrapDisplayDriver.py", localPythonPath);
-        
-        //////////////////////////////////////////////////////////////////////////////////////////////
-
-        this.pyodide.FS.mkdir("adafruit_midi");
-        await this.#loadModule("adafruit_midi/__init__.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/active_sensing.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/channel_pressure.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/control_change.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/midi_continue.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/midi_message.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/mtc_quarter_frame.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/note_off.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/note_on.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/pitch_bend.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/polyphonic_key_pressure.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/program_change.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/start.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/stop.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/system_exclusive.py", localPythonPath);
-        await this.#loadModule("adafruit_midi/timing_clock.py", localPythonPath);
-
-        this.pyodide.FS.mkdir("adafruit_hid");
-        await this.#loadModule("adafruit_hid/__init__.py", localPythonPath);
-        await this.#loadModule("adafruit_hid/keycode.py", localPythonPath);
-
-        //////////////////////////////////////////////////////////////////////////////////////////////
-
-        this.pyodide.FS.mkdir("pyswitch");
-        await this.#loadModule("pyswitch/__init__.py", circuitpyPath);
-        await this.#loadModule("pyswitch/misc.py", circuitpyPath);
-        await this.#loadModule("pyswitch/stats.py", circuitpyPath);
-
-        this.pyodide.FS.mkdir("pyswitch/clients");
-        await this.#loadModule("pyswitch/clients/__init__.py", circuitpyPath);
-
-        this.pyodide.FS.mkdir("pyswitch/clients/kemper");
-        await this.#loadModule("pyswitch/clients/kemper/__init__.py", circuitpyPath);
-        
-        this.pyodide.FS.mkdir("pyswitch/clients/kemper/actions");
-        await this.#loadModule("pyswitch/clients/kemper/actions/__init__.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/bank_select.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/bank_up_down.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/effect_button.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/effect_state.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/effect_state_extended_names.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/looper.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/morph.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/rig_select_and_morph_state.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/rig_select.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/rig_up_down.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/rig_volume_boost.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/tempo.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/tempo_bpm.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/tuner.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/actions/amp.py", circuitpyPath);
-
-        this.pyodide.FS.mkdir("pyswitch/clients/kemper/mappings");
-        await this.#loadModule("pyswitch/clients/kemper/mappings/__init__.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/amp.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/bank.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/cabinet.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/effects.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/freeze.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/looper.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/morph.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/pedals.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/rig.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/rotary.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/select.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/tempo.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/mappings/tempo_bpm.py", circuitpyPath);
-        
-        this.pyodide.FS.mkdir("pyswitch/clients/kemper/callbacks");
-        await this.#loadModule("pyswitch/clients/kemper/callbacks/__init__.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/kemper/callbacks/tempo_bpm.py", circuitpyPath);
-
-        this.pyodide.FS.mkdir("pyswitch/clients/local");
-        await this.#loadModule("pyswitch/clients/local/__init__.py", circuitpyPath);
-        
-        this.pyodide.FS.mkdir("pyswitch/clients/local/actions");
-        await this.#loadModule("pyswitch/clients/local/actions/binary_switch.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/local/actions/pager.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/local/actions/hid.py", circuitpyPath);
-        await this.#loadModule("pyswitch/clients/local/actions/encoder_button.py", circuitpyPath);
-
-        this.pyodide.FS.mkdir("pyswitch/controller");
-        await this.#loadModule("pyswitch/controller/__init__.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/Client.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/Controller.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/ExploreModeController.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/InputControllers.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/MidiController.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/RuntimeMeasurement.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/strobe.py", circuitpyPath);
-
-        this.pyodide.FS.mkdir("pyswitch/controller/actions");
-        await this.#loadModule("pyswitch/controller/actions/__init__.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/actions/AnalogAction.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/actions/EncoderAction.py", circuitpyPath);
-
-        this.pyodide.FS.mkdir("pyswitch/controller/callbacks");
-        await this.#loadModule("pyswitch/controller/callbacks/__init__.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/callbacks/effect_enable.py", circuitpyPath);
-        await this.#loadModule("pyswitch/controller/callbacks/parameter_display.py", circuitpyPath);
-
-        this.pyodide.FS.mkdir("pyswitch/hardware");  
-        await this.#loadModule("pyswitch/hardware/__init__.py", circuitpyPath);
-
-        this.pyodide.FS.mkdir("pyswitch/hardware/adafruit");  
-        await this.#loadModule("pyswitch/hardware/adafruit/__init__.py", circuitpyPath);
-        await this.#loadModule("pyswitch/hardware/adafruit/AdafruitDinMidiDevice.py", circuitpyPath);
-        await this.#loadModule("pyswitch/hardware/adafruit/AdafruitEncoder.py", circuitpyPath);
-        await this.#loadModule("pyswitch/hardware/adafruit/AdafruitPotentiometer.py", circuitpyPath);
-        await this.#loadModule("pyswitch/hardware/adafruit/AdafruitSwitch.py", circuitpyPath);
-        await this.#loadModule("pyswitch/hardware/adafruit/AdafruitUsbMidiDevice.py", circuitpyPath);
-
-        this.pyodide.FS.mkdir("pyswitch/hardware/devices");  
-        await this.#loadModule("pyswitch/hardware/devices/__init__.py", circuitpyPath);
-        await this.#loadModule("pyswitch/hardware/devices/pa_midicaptain_10.py", circuitpyPath);
-        await this.#loadModule("pyswitch/hardware/devices/pa_midicaptain_mini_6.py", circuitpyPath);
-        await this.#loadModule("pyswitch/hardware/devices/pa_midicaptain_nano_4.py", circuitpyPath);
-        await this.#loadModule("pyswitch/hardware/devices/pa_midicaptain.py", circuitpyPath);
-        
-        this.pyodide.FS.mkdir("pyswitch/ui");  
-        await this.#loadModule("pyswitch/ui/__init__.py", circuitpyPath);
-        await this.#loadModule("pyswitch/ui/elements.py", circuitpyPath);
-        await this.#loadModule("pyswitch/ui/DisplaySplitContainer.py", circuitpyPath);
-        await this.#loadModule("pyswitch/ui/layout.py", circuitpyPath);
-        await this.#loadModule("pyswitch/ui/ui.py", circuitpyPath);
-        await this.#loadModule("pyswitch/ui/UiController.py", circuitpyPath);
+        await this.#loadModules(basePath);
 
         await this.pyodide.loadPackage("libcst");
         
@@ -232,6 +60,188 @@ class PySwitchRunner {
         }
         
         this.#initialized = true;
+    }
+
+    /**
+     * Load all files needed
+     */
+    async #loadModules(basePath) {
+        // Source paths
+        const localPythonPath = basePath + "python/";
+        const circuitpyPath = basePath + "circuitpy/lib/";
+
+        await this.pyodide.FS.mkdir("definitions");
+        await this.pyodide.FS.mkdir("parser");
+        await this.pyodide.FS.mkdir("parser/misc");
+        await this.pyodide.FS.mkdir("wrappers");
+        await this.pyodide.FS.mkdir("adafruit_midi");
+        await this.pyodide.FS.mkdir("adafruit_hid");
+        await this.pyodide.FS.mkdir("pyswitch");
+        await this.pyodide.FS.mkdir("pyswitch/clients");
+        await this.pyodide.FS.mkdir("pyswitch/clients/kemper");
+        await this.pyodide.FS.mkdir("pyswitch/clients/kemper/actions");
+        await this.pyodide.FS.mkdir("pyswitch/clients/kemper/mappings");
+        await this.pyodide.FS.mkdir("pyswitch/clients/kemper/callbacks");
+        await this.pyodide.FS.mkdir("pyswitch/clients/local");
+        await this.pyodide.FS.mkdir("pyswitch/clients/local/actions");
+        await this.pyodide.FS.mkdir("pyswitch/controller");
+        await this.pyodide.FS.mkdir("pyswitch/controller/actions");
+        await this.pyodide.FS.mkdir("pyswitch/controller/callbacks");
+        await this.pyodide.FS.mkdir("pyswitch/hardware");  
+        await this.pyodide.FS.mkdir("pyswitch/hardware/adafruit");  
+        await this.pyodide.FS.mkdir("pyswitch/hardware/devices");  
+        await this.pyodide.FS.mkdir("pyswitch/ui");  
+            
+        return Promise.all([
+            this.#loadModule("PySwitchRunner.py", localPythonPath),
+            this.#loadModule("mocks.py", localPythonPath),
+            
+            this.#loadModule("definitions/actions.json", basePath),
+            this.#loadModule("definitions/mappings.json", basePath),
+
+            this.#loadModule("parser/PySwitchParser.py", localPythonPath),
+            this.#loadModule("parser/PySwitchHardware.py", localPythonPath),
+            this.#loadModule("parser/InputsExtractor.py", localPythonPath),
+            this.#loadModule("parser/SplashesExtractor.py", localPythonPath),
+            
+            this.#loadModule("parser/misc/VisitorsWithStack.py", localPythonPath),
+            this.#loadModule("parser/misc/RemoveUnusedImportTransformer.py", localPythonPath),
+            this.#loadModule("parser/misc/CollectCommentsTransformer.py", localPythonPath),
+            this.#loadModule("parser/misc/AddImportsTransformer.py", localPythonPath),
+            this.#loadModule("parser/misc/FunctionExtractor.py", localPythonPath),
+            this.#loadModule("parser/misc/ClassItemExtractor.py", localPythonPath),
+            this.#loadModule("parser/misc/ClassNameExtractor.py", localPythonPath),
+            this.#loadModule("parser/misc/AssignmentExtractor.py", localPythonPath),
+            this.#loadModule("parser/misc/AssignmentNameExtractor.py", localPythonPath),
+            this.#loadModule("parser/misc/ImportExtractor.py", localPythonPath),
+            this.#loadModule("parser/misc/ReplaceAssignmentTransformer.py", localPythonPath),
+            this.#loadModule("parser/misc/AddAssignmentTransformer.py", localPythonPath),
+            this.#loadModule("parser/misc/CodeExtractor.py", localPythonPath),
+            this.#loadModule("parser/misc/CodeGenerator.py", localPythonPath),        
+
+            this.#loadModule("wrappers/__init__.py", localPythonPath),
+            this.#loadModule("wrappers/wrap_io.py", localPythonPath),
+            this.#loadModule("wrappers/wrap_adafruit_midi.py", localPythonPath),
+            this.#loadModule("wrappers/wrap_adafruit_led.py", localPythonPath),
+            this.#loadModule("wrappers/wrap_adafruit_display.py", localPythonPath),
+            this.#loadModule("wrappers/wrap_time.py", localPythonPath),
+            this.#loadModule("wrappers/wrap_hid.py", localPythonPath),
+            this.#loadModule("wrappers/WrapDisplayDriver.py", localPythonPath),
+            
+            //////////////////////////////////////////////////////////////////////////////////////////////
+
+            this.#loadModule("adafruit_midi/__init__.py", localPythonPath),
+            this.#loadModule("adafruit_midi/active_sensing.py", localPythonPath),
+            this.#loadModule("adafruit_midi/channel_pressure.py", localPythonPath),
+            this.#loadModule("adafruit_midi/control_change.py", localPythonPath),
+            this.#loadModule("adafruit_midi/midi_continue.py", localPythonPath),
+            this.#loadModule("adafruit_midi/midi_message.py", localPythonPath),
+            this.#loadModule("adafruit_midi/mtc_quarter_frame.py", localPythonPath),
+            this.#loadModule("adafruit_midi/note_off.py", localPythonPath),
+            this.#loadModule("adafruit_midi/note_on.py", localPythonPath),
+            this.#loadModule("adafruit_midi/pitch_bend.py", localPythonPath),
+            this.#loadModule("adafruit_midi/polyphonic_key_pressure.py", localPythonPath),
+            this.#loadModule("adafruit_midi/program_change.py", localPythonPath),
+            this.#loadModule("adafruit_midi/start.py", localPythonPath),
+            this.#loadModule("adafruit_midi/stop.py", localPythonPath),
+            this.#loadModule("adafruit_midi/system_exclusive.py", localPythonPath),
+            this.#loadModule("adafruit_midi/timing_clock.py", localPythonPath),
+
+            this.#loadModule("adafruit_hid/__init__.py", localPythonPath),
+            this.#loadModule("adafruit_hid/keycode.py", localPythonPath),
+
+            //////////////////////////////////////////////////////////////////////////////////////////////
+
+            this.#loadModule("pyswitch/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/misc.py", circuitpyPath),
+            this.#loadModule("pyswitch/stats.py", circuitpyPath),
+
+            
+            this.#loadModule("pyswitch/clients/__init__.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/clients/kemper/__init__.py", circuitpyPath),
+            
+            this.#loadModule("pyswitch/clients/kemper/actions/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/bank_select.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/bank_up_down.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/effect_button.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/effect_state.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/effect_state_extended_names.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/looper.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/morph.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/rig_select_and_morph_state.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/rig_select.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/rig_up_down.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/rig_volume_boost.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/tempo.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/tempo_bpm.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/tuner.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/amp.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/clients/kemper/mappings/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/amp.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/bank.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/cabinet.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/effects.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/freeze.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/looper.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/morph.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/pedals.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/rig.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/rotary.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/select.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/tempo.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/tempo_bpm.py", circuitpyPath),
+            
+            this.#loadModule("pyswitch/clients/kemper/callbacks/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/callbacks/tempo_bpm.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/clients/local/__init__.py", circuitpyPath),
+            
+            this.#loadModule("pyswitch/clients/local/actions/binary_switch.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/local/actions/pager.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/local/actions/hid.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/local/actions/encoder_button.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/controller/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/Client.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/Controller.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/ExploreModeController.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/InputControllers.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/MidiController.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/RuntimeMeasurement.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/strobe.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/controller/actions/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/actions/AnalogAction.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/actions/EncoderAction.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/controller/callbacks/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/callbacks/effect_enable.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/callbacks/parameter_display.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/hardware/__init__.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/hardware/adafruit/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/hardware/adafruit/AdafruitDinMidiDevice.py", circuitpyPath),
+            this.#loadModule("pyswitch/hardware/adafruit/AdafruitEncoder.py", circuitpyPath),
+            this.#loadModule("pyswitch/hardware/adafruit/AdafruitPotentiometer.py", circuitpyPath),
+            this.#loadModule("pyswitch/hardware/adafruit/AdafruitSwitch.py", circuitpyPath),
+            this.#loadModule("pyswitch/hardware/adafruit/AdafruitUsbMidiDevice.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/hardware/devices/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/hardware/devices/pa_midicaptain_10.py", circuitpyPath),
+            this.#loadModule("pyswitch/hardware/devices/pa_midicaptain_mini_6.py", circuitpyPath),
+            this.#loadModule("pyswitch/hardware/devices/pa_midicaptain_nano_4.py", circuitpyPath),
+            this.#loadModule("pyswitch/hardware/devices/pa_midicaptain.py", circuitpyPath),
+            
+            this.#loadModule("pyswitch/ui/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/ui/elements.py", circuitpyPath),
+            this.#loadModule("pyswitch/ui/DisplaySplitContainer.py", circuitpyPath),
+            this.#loadModule("pyswitch/ui/layout.py", circuitpyPath),
+            this.#loadModule("pyswitch/ui/ui.py", circuitpyPath),
+            this.#loadModule("pyswitch/ui/UiController.py", circuitpyPath),
+        ]);
     }
 
     /**
