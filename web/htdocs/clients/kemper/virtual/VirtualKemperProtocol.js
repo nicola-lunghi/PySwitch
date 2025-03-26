@@ -52,7 +52,7 @@ class VirtualKemperProtocol {
     #sendKeepAlive(cnt) {
         const msg = [240, 0, 32, 51, this.#client.options.productType, 127, 126, 0, 127, cnt, 247];
 
-        this.#client.queueMessage(msg);
+        this.#client.queueMessage(msg, "Protocol Keep-Alive");
     }    
 
     /**
@@ -84,6 +84,9 @@ class VirtualKemperProtocol {
             // Send initial set of parameters
             this.#sendParameterSet();
         }
+
+        // Stats
+        this.#client.stats.messageReceived(message, "Protocol");
 
         return true;
     }

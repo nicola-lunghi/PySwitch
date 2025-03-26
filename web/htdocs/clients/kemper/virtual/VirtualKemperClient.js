@@ -40,6 +40,9 @@ class VirtualKemperClient extends VirtualClient {
         // Morph state handler
         this.morph = new VirtualKemperMorph(this, options.overrideTimeCallback);
 
+        // Statistics handler
+        this.stats = new VirtualKemperStats();
+
         // Initialize the parameters with values and types
         (new VirtualKemperClientSetup(this)).setup();
         
@@ -141,10 +144,10 @@ class VirtualKemperClient extends VirtualClient {
      * Called by PySwitch when a message should be sent to the client. 
      * Naming is misleading here: this effectively receives data!
      */
-    async send(message) {
+    async doSend(message) {
         try {
-            message = message.toJs();
-            
+            // message = message.toJs();
+
             // Try to parse message: Protocol
             if (this.protocol.parse(message)) return;
 
@@ -163,7 +166,10 @@ class VirtualKemperClient extends VirtualClient {
     /**
      * Add a raw message to the queue
      */
-    queueMessage(message) {   
+    queueMessage(message, hintText = "") {   
+        // Stats
+        this.stats.messageSent(message, hintText);
+
         // console.log(message)     
         this.messageQueue.push(message);
     }

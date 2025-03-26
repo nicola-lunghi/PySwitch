@@ -59,8 +59,12 @@ class VirtualKemperParameter {
      * Name for display
      */
     getDisplayName() {
-        if (this.options.keys) return this.options.keys.getDisplayName();
-        return "??";
+        const tokens = [];
+        if (this.options.name) tokens.push(this.options.name);
+        if (this.options.keys) tokens.push(this.options.keys.getDisplayName());
+
+        const ret = tokens.join(" ");
+        return ret.length ? ret : "??";
     }
 
     /**
@@ -200,19 +204,19 @@ class VirtualKemperParameter {
                 [247]
             );
             
-            this.client.queueMessage(msg);
+            this.client.queueMessage(msg, this.getDisplayName());
             this.#debugParam("send: (raw: " + this.value + ")" + msg);
         
         } else if (this.options.keys.send instanceof CCKey) {
             const msg = [176, this.options.keys.send.control, this.options.keys.send.encodeValue(this.value)]
             
-            this.client.queueMessage(msg);
+            this.client.queueMessage(msg, this.getDisplayName());
             this.#debugParam("send: (raw: " + this.value + ")" + msg);
 
         } else if (this.options.keys.send instanceof PCKey) {
             const msg = [192, this.options.keys.send.encodeValue(this.value)]
             
-            this.client.queueMessage(msg);
+            this.client.queueMessage(msg, this.getDisplayName());
             this.#debugParam("send: (raw: " + this.value + ")" + msg);
 
         } else {

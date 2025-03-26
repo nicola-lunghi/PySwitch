@@ -33,17 +33,19 @@ class VirtualKemperClientSetup {
             keys: new VirtualKemperParameterKeys({ send: new CCKey(32) }),
             value: 0,
             parameterSets: [1, 2, 3, 4],
-            noBuffer: true
+            noBuffer: true,
+            name: "Rig ID (CC)"
         });
         this.#client.parameters.init({ 
             keys: new VirtualKemperParameterKeys({ send: new PCKey() }),
             value: 0,
             parameterSets: [1, 2, 3, 4],
-            noBuffer: true
+            noBuffer: true,
+            name: "Rig ID (PC)"
         });
 
         // Bank preselect
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(47) }) });
+        this.#client.parameters.init({ name: "Bank Presel", keys: new VirtualKemperParameterKeys({ receive: new CCKey(47) }) });
         
         // Rig select
         let lastRigId = null;
@@ -74,11 +76,11 @@ class VirtualKemperClientSetup {
             }
         }
 
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(50) }), callback: onRigIdChange });
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(51) }), callback: onRigIdChange });
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(52) }), callback: onRigIdChange });
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(53) }), callback: onRigIdChange });
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(54) }), callback: onRigIdChange });
+        this.#client.parameters.init({ name: "Select Rig 1", keys: new VirtualKemperParameterKeys({ receive: new CCKey(50) }), callback: onRigIdChange });
+        this.#client.parameters.init({ name: "Select Rig 2", keys: new VirtualKemperParameterKeys({ receive: new CCKey(51) }), callback: onRigIdChange });
+        this.#client.parameters.init({ name: "Select Rig 3", keys: new VirtualKemperParameterKeys({ receive: new CCKey(52) }), callback: onRigIdChange });
+        this.#client.parameters.init({ name: "Select Rig 4", keys: new VirtualKemperParameterKeys({ receive: new CCKey(53) }), callback: onRigIdChange });
+        this.#client.parameters.init({ name: "Select Rig 5", keys: new VirtualKemperParameterKeys({ receive: new CCKey(54) }), callback: onRigIdChange });
 
         // Bank up/down
         function onBankChange(param, value) {
@@ -92,8 +94,8 @@ class VirtualKemperClientSetup {
             }
         }
 
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(48) }), callback: onBankChange, noBuffer: true });  // Up
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(49) }), callback: onBankChange, noBuffer: true });  // Down
+        this.#client.parameters.init({ name: "Bank up", keys: new VirtualKemperParameterKeys({ receive: new CCKey(48) }), callback: onBankChange, noBuffer: true });  // Up
+        this.#client.parameters.init({ name: "Bank down", keys: new VirtualKemperParameterKeys({ receive: new CCKey(49) }), callback: onBankChange, noBuffer: true });  // Down
     }
 
     /**
@@ -103,15 +105,15 @@ class VirtualKemperClientSetup {
         const that = this;
 
         // Tempo display
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([124, 0]) }), parameterSets: [1, 2, 3, 4] });
+        this.#client.parameters.init({ name: "Tempo Sensing", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([124, 0]) }), parameterSets: [1, 2, 3, 4] });
 
         // Tap tempo
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(30) }), callback: function(param, value) {
+        this.#client.parameters.init({ name: "Tap Tempo", keys: new VirtualKemperParameterKeys({ receive: new CCKey(30) }), callback: function(param, value) {
             that.#client.tempo.tap(value);
         } });
 
         // Tempo BPM
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([4, 0]) }), value: this.#client.tempo.bpm() * 64, callback: function(param, value) {
+        this.#client.parameters.init({ name: "Tempo BPM)", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([4, 0]) }), value: this.#client.tempo.bpm() * 64, callback: function(param, value) {
             that.#client.tempo.set(Math.round((value == 16383) ? 256 : (value / 64)))
         } });
 
@@ -132,13 +134,13 @@ class VirtualKemperClientSetup {
         function onTunerModeChange(param, value) {
             that.#client.tuner.running = (value == 1);
         }
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([127, 126]), receive: new CCKey(31) }), parameterSets: [1, 2, 3, 4], callback: onTunerModeChange });
+        this.#client.parameters.init({ name: "Tuner Mode", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([127, 126]), receive: new CCKey(31) }), parameterSets: [1, 2, 3, 4], callback: onTunerModeChange });
 
         // Tuner note
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([125, 84]) }), parameterSets: [1, 2, 3, 4] });
+        this.#client.parameters.init({ name: "Tuner Note", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([125, 84]) }), parameterSets: [1, 2, 3, 4] });
 
         // Tuner deviance
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([124, 15]) }), parameterSets: [1, 2, 3, 4], value: 8191 });
+        this.#client.parameters.init({ name: "Tuner Deviance", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([124, 15]) }), parameterSets: [1, 2, 3, 4], value: 8191 });
     }
 
     /**
@@ -148,10 +150,10 @@ class VirtualKemperClientSetup {
         const that = this;
 
         // Morph state
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 11]), receive: new CCKey(11, { scale: 128 }) }) });
+        this.#client.parameters.init({ name: "Morph State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 11]), receive: new CCKey(11, { scale: 128 }) }) });
 
         // Morph button
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ receive: new CCKey(80) }), callback: function(param, value) {
+        this.#client.parameters.init({ name: "Morph Button", keys: new VirtualKemperParameterKeys({ receive: new CCKey(80) }), callback: function(param, value) {
             // Update morph state
             if (value == 1) {
                 that.#client.morph.triggerButton();
@@ -164,15 +166,15 @@ class VirtualKemperClientSetup {
      */
     #setupParameters() {
         // Amp comment
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 16]) }), value: "Amp Comment" });
+        this.#client.parameters.init({ name: "Amp Comment", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 16]) }), value: "Amp Comment" });
 
         // FX Slot DLY
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 0]) }), value: 160 });  // DLY
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 3]), receive: [new CCKey(26), new CCKey(27)] }), value: 1 });    // On
+        this.#client.parameters.init({ name: "DLY Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 0]) }), value: 160 });  // DLY
+        this.#client.parameters.init({ name: "DLY State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 3]), receive: [new CCKey(26), new CCKey(27)] }), value: 1 });    // On
 
         // FX Slot REV
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([61, 0]) }), value: 180 });  // REV
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([61, 3]), receive: [new CCKey(28), new CCKey(29)] }), value: 1 });    // On
+        this.#client.parameters.init({ name: "REV Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([61, 0]) }), value: 180 });  // REV
+        this.#client.parameters.init({ name: "REV State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([61, 3]), receive: [new CCKey(28), new CCKey(29)] }), value: 1 });    // On
 
         // Parameter sets
         this.#setupParameterSet1();
@@ -184,28 +186,28 @@ class VirtualKemperClientSetup {
      */
     #setupParameterSet1() {
         // FX Slot A
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([50, 0]) }), value: 8, parameterSets: [1, 2, 3, 4] });  // Wah
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([50, 3]), receive: new CCKey(17) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
+        this.#client.parameters.init({ name: "A Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([50, 0]) }), value: 8, parameterSets: [1, 2, 3, 4] });  // Wah
+        this.#client.parameters.init({ name: "A State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([50, 3]), receive: new CCKey(17) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
         
         // FX Slot B
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([51, 0]) }), value: 13, parameterSets: [1, 2, 3, 4] });  // Pitch
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([51, 3]), receive: new CCKey(18) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
+        this.#client.parameters.init({ name: "B Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([51, 0]) }), value: 13, parameterSets: [1, 2, 3, 4] });  // Pitch
+        this.#client.parameters.init({ name: "B State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([51, 3]), receive: new CCKey(18) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
 
         // FX Slot C
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([52, 0]) }), value: 30, parameterSets: [1, 2, 3, 4] });  // Dist
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([52, 3]), receive: new CCKey(19) }), value: 0, parameterSets: [1, 2, 3, 4] });  // On
+        this.#client.parameters.init({ name: "C Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([52, 0]) }), value: 30, parameterSets: [1, 2, 3, 4] });  // Dist
+        this.#client.parameters.init({ name: "C State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([52, 3]), receive: new CCKey(19) }), value: 0, parameterSets: [1, 2, 3, 4] });  // On
 
         // FX Slot D
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([53, 0]) }), value: 50, parameterSets: [1, 2, 3, 4] });  // Comp
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([53, 3]), receive: new CCKey(20) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
+        this.#client.parameters.init({ name: "D Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([53, 0]) }), value: 50, parameterSets: [1, 2, 3, 4] });  // Comp
+        this.#client.parameters.init({ name: "D State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([53, 3]), receive: new CCKey(20) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
 
         // FX Slot X
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([56, 0]) }), value: 115, parameterSets: [1, 2, 3, 4] });  // EQ
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([56, 3]), receive: new CCKey(22) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
+        this.#client.parameters.init({ name: "X Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([56, 0]) }), value: 115, parameterSets: [1, 2, 3, 4] });  // EQ
+        this.#client.parameters.init({ name: "X State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([56, 3]), receive: new CCKey(22) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
 
         // FX Slot MOD
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([58, 0]) }), value: 100, parameterSets: [1, 2, 3, 4] });  // Phaser
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([58, 3]), receive: new CCKey(24) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
+        this.#client.parameters.init({ name: "MOD Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([58, 0]) }), value: 100, parameterSets: [1, 2, 3, 4] });  // Phaser
+        this.#client.parameters.init({ name: "MOD State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([58, 3]), receive: new CCKey(24) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
     }
 
     /**
@@ -213,6 +215,6 @@ class VirtualKemperClientSetup {
      */
     #setupParameterSet2() {
         // Rig name
-        this.#client.parameters.init({ keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 1]) }), value: "Rig Name", parameterSets: [2, 3, 4] });  // Rig Name
+        this.#client.parameters.init({ name: "Rig Name", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 1]) }), value: "Rig Name", parameterSets: [2, 3, 4] });  // Rig Name
     }
 }

@@ -104,7 +104,33 @@ class VirtualKemperClientUI {
         let rigIdInput = null;
         let tempoInput = null;
         let morphInput = null;
-        let rigBtnMorhInput = null;
+        let trafficInIndicator = null;
+        let trafficOutIndicator = null;
+
+        function formatMessages(messages, prefix) {
+            let ret = prefix + "in the last second:\n\n";
+
+            for (const msg of messages) {
+                ret += msg.hint + ": " + msg.message + "\n";
+            }
+
+            return ret;
+        }
+
+        function showTraffic(outbound = false) {
+            if (outbound) {
+                alert(formatMessages(
+                    that.#client.stats.data.messagesSent,
+                    "Sent messages "
+                ));
+   
+            } else {
+                alert(formatMessages(
+                    that.#client.stats.data.messagesReceived,
+                    "Received messages "
+                ));
+            }
+        }
 
         this.#createBox(
             "General",
@@ -159,7 +185,7 @@ class VirtualKemperClientUI {
                 $('<div class="label" />')
                 .text("Rig Btn Morph"),
 
-                rigBtnMorhInput = $('<input type="checkbox" autocomplete="off">')
+                $('<input type="checkbox" autocomplete="off">')
                 .prop("checked", that.#client.morph.rigBtnMorh)
                 .on('change', function() {
                     try {
@@ -167,7 +193,24 @@ class VirtualKemperClientUI {
                     } catch (e) {
                         console.error(e);
                     } 
-                })
+                }),
+
+                // MIDI Traffic indicators
+                $('<div class="label" />')
+                .text("MIDI In:")
+                .on('click', async function() {
+                    showTraffic(false);
+                }),
+
+                trafficInIndicator = $('<div class="value-output" />'),
+
+                $('<div class="label" />')
+                .text("MIDI Out:")
+                .on('click', async function() {
+                    showTraffic(true);
+                }),
+
+                trafficOutIndicator = $('<div class="value-output" />'),
             ]
         );
 
@@ -194,6 +237,12 @@ class VirtualKemperClientUI {
         // Morph state
         this.#client.parameters.get(new NRPNKey([0, 11])).addChangeCallback(async function(param, value) {
             morphInput.val(value);
+        });
+
+        // Stats
+        this.#client.stats.addChangeCallback(function(stats) {
+            trafficInIndicator.text(stats.receiveRate + "/s");
+            trafficOutIndicator.text(stats.sendRate + "/s");
         });
     }
 

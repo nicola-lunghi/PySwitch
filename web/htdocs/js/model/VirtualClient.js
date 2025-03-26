@@ -9,11 +9,19 @@ class VirtualClient {
     constructor(name) {
         this.name = name;
     }
-
+    
     /**
      * Send a MIDI message. Expects a byte array of raw data.
      */
-    async send(message) {        
+    async send(message) {  
+        const msgJs = message.toJs();
+        const that = this;
+        setTimeout(async function() {
+            await that.doSend(msgJs);
+        }, 0);
+    }
+
+    doSend(message) {
     }
 
     /**

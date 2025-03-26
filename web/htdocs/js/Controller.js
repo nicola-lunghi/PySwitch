@@ -3,7 +3,7 @@
  */
 class Controller {
 
-    VERSION = "2.4.0.7";        // For productive releases, the first three numbers should always match the PySwitch version. The last is the UI version.
+    VERSION = "2.4.1.8";        // For productive releases, the first three numbers should always match the PySwitch version. The last is the UI version.
 
     ui = null;                  // User Interface implementation
     routing = null;             // sammy.js router

@@ -1,3 +1,9 @@
+# PySwitch v2.4.1
+- Optimizations for performance, regarding parameters depending on each other
+
+### Emulator 2.4.1.8
+- Added MIDI traffic stats to Virtual Kemper
+
 # PySwitch v2.4.0
 - Changed default preset to a MC10 example close to the original PaintAudio KPP firmware
 - Option "hold_repeat" for Inputs: When enabled, the hold action is repeated again and again as long as the switch is held down.

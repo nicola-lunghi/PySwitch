@@ -25,12 +25,22 @@ class VirtualKemperParameters {
     parse(message) {
         // Try all parameters
         for (const [key, entry] of this.#data) {
-            if (entry.parse(message)) return true;
+            if (entry.parse(message)) {
+                // Stats
+                this.#client.stats.messageReceived(message, entry.getDisplayName());
+
+                return true;
+            }
         }
 
         // Not parsed: Try defaults
         for (const def of this.#defaults) {
-            if (def.parse(message)) return true;
+            if (def.parse(message)) {
+                // Stats
+                this.#client.stats.messageReceived(message, def.getDisplayName());
+
+                return true;
+            }
         }
 
         return false;
