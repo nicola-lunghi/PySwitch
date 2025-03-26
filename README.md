@@ -25,6 +25,8 @@ generic configuration script. Features are:
 - After creating your config in the Emulator, download it (see Save -> Download (ZIP)).
 - Mount your controller as USB drive (see Installation process), and put the files downloaded in the root folder of it (overwrite existing files).
 
+**NOTE**: If you want to run PySwitch in parallel with the original PaintAudio firmware, see below chapter "Multi-Boot"
+
 ## Configuration
 
 If you do not want to program your configuration yourself in Python (as described later) which offers any needed degree of freedom, you can also use the new [**PySwitch Emulator**](https://pyswitch.tunetown.de) to graphically create and test your patch easily:
@@ -981,6 +983,14 @@ Every incoming MIDI message will be parsed by all open requests. This is the lif
 2. When a value comes in (MIDI message):
     - Tell all listeners that the value has changed by calling parameter_changed() on each listener.
 3. When the mapping is not bidirectional, the request will be set to finished, which will trigger the client to clean it up. When the mapping is bidirectional, the request will never be finished and stay forever to receive further values.
+
+### Multi-Boot with Other Firmwares
+
+If you want to (for example) switch to the original PaintAudio firmware's different versions on boot by holding switches, this is possible. You have to do the following steps:
+
+1. Put all files of both PySwitch's content folder (as described in the Installation above) and the original Firmware you want to use on the MIDICAPTAIN drive. All files of both must exist at their correct places. Some files exist in both, in this case it doesnt matter which you take. You have to do this in deep folder by folder, if your computer does not support merging folders.
+
+2. Replace PySwitch's code.py file with one of the examples in the /examples/multiboot folder (or your own). There are several versions: one which features remembering the used firmware from the last boot (takes around 1.5kB of RAM), and some others. Generally, the simpler, the less extra RAM is needed. See the code.py files themselves for comments about which switch does what.
 
 ## Explore Mode: Discover unknown IO Ports
 

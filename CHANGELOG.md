@@ -17,6 +17,7 @@
     - Added parameter "accept_action" and a corresponding action "Accept Encoder Value" action. If these are used in conjunction, the wheel does not send any value until the accept switch is pushed. See the default PySwitch preset and the action info texts.
 - Minor refactorings:
     - Merged KemperParameterMapping and KemperTwoPartParameterMapping classes into the Client implementation
+- Added instructions (README) and examples for creating multi-boot scenarios, to load the original firmware when some switch is pushed during bootup.
 
 ### Emulator 2.3.6.6
 - Added switch settings (new button beneath the "+" button): Here you can adjust the hold time as well as the new "Hold Repeat" option (see above)

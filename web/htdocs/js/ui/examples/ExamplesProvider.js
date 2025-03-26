@@ -110,7 +110,7 @@ class ExamplesProvider extends BrowserProvider {
 
             for(const child_def of entry.children || []) {
                 // Exclude MIDI Routing examples
-                if (child_def.name.includes("MIDI Routings")) continue;
+                if (child_def.name.includes("MIDI Routings") || child_def.name.includes("Multiboot")) continue;
 
                 const child = crawl(child_def, prefix + entry.name + "/");
                 child.parent = ret;
