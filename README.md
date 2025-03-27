@@ -185,7 +185,7 @@ Continuous controllers like expression pedals and rotary encoders can also be ad
 For anything using the analog inputs of the board (like expression pedals), you have to use a AnalogAction instance like in this example:
 
 ```python
-from pyswitch.controller.AnalogAction import AnalogAction
+from pyswitch.controller.actions.AnalogAction import AnalogAction
 from pyswitch.clients.kemper.mappings.rig import MAPPING_RIG_VOLUME
 
 Inputs = [
@@ -226,7 +226,7 @@ There are several options to AnalogAction:
 For rotary encoders like the wheel on the PaintAudio MIDI Captain (10 switch version), use EncoderAction:
 
 ```python
-from pyswitch.controller.EncoderAction import EncoderAction
+from pyswitch.controller.actions.EncoderAction import EncoderAction
 from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_GAIN
 
 Inputs = [
@@ -428,7 +428,7 @@ If you want to send your own custom MIDI messages, you can also define your mapp
 ```python
 from pyswitch.controller.callbacks import BinaryParameterCallback
 from pyswitch.controller.actions import PushButtonAction
-from pyswitch.controller.Client import ClientParameterMapping
+from pyswitch.controller.client import ClientParameterMapping
 from adafruit_midi.system_exclusive import SystemExclusive
 
 Inputs = [
@@ -475,7 +475,7 @@ If you want only to send but not receive, you have to set the internal state ena
 ```python
 from pyswitch.controller.callbacks import BinaryParameterCallback
 from pyswitch.controller.actions import PushButtonAction
-from pyswitch.controller.Client import ClientParameterMapping
+from pyswitch.controller.client import ClientParameterMapping
 from adafruit_midi.system_exclusive import SystemExclusive
 
 Inputs = [
@@ -828,8 +828,8 @@ The Controller class in the **controller** folder represents the main applicatio
 
 ```python
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver, AdafruitNeoPixelDriver, AdafruitFontLoader
-from pyswitch.controller.Controller import Controller
-from pyswitch.controller.MidiController import MidiController
+from pyswitch.controller import Controller
+from pyswitch.controller.midi import MidiController
 from pyswitch.ui.UiController import UiController
 
 # Initialize Display first to get console output on setup/config errors (for users who do not connect to the serial console)

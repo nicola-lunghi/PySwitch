@@ -2,9 +2,12 @@
 - Optimizations for performance/RAM:
     - Modularized the misc.py code out, only loaded when debugging is active. This gave us another ~5-10kB from the start!
     - Singletons for all Mappings: This led to huge RAM savings with larger constellations (up to 10kB, because of fewer MIDI message objects in memory). This especially helped when mappings are used multiple times (for example the morph state in RIG_SELECT_AND_MORPH_STATE). No changes to config files necessary.
+- Refactorings: 
+    - Changes import structure. For most users using the standard MIDI routing delivered with PySwitch, there is nothing to change. If you implemented custom routings: There is one change to the communication.py file: The line "from pyswitch.controller.MidiController import MidiRouting" must be changed to "from pyswitch.controller.midi import MidiRouting".
 
 ### Emulator 2.4.1.8
 - Added MIDI traffic stats display to Virtual Kemper
+
 
 # PySwitch v2.4.0
 - Changed default preset to a MC10 example close to the original PaintAudio KPP firmware
@@ -37,6 +40,7 @@
 - Levels of advanced parameters: When clicking "show more...", the parameters will be unveiled by level of "advancedness". All nerdy parameters only show up in the last level. This keeps the technical parameters hidden except you really want to see them.
 - Fixed a visual bug with color inputs
 - Fixed a bug that did not show error messages in the PySwitch tick routine correctly
+
 
 # PySwitch v2.3.5
 - Changed parameters for PagerAction (all config options now accessible as parameters directly). Examples have been adjusted, some documentation can be found in the Emulator [README](https://github.com/Tunetown/PySwitch/blob/main/web/README.md).
