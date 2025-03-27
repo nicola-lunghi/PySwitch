@@ -1,6 +1,7 @@
 # PySwitch v2.4.1
 - Optimizations for performance/RAM:
-    - Singletons for all Mappings: This led to huge RAM savings with larger constellations (up to 10kB, because of fewer MIDI message objects in memory). This especially helped when mappings are used multiple times (for example the morph state). No changes to config files necessary.
+    - Modularized the misc.py code out, only loaded when debugging is active. This gave us another ~5-10kB from the start!
+    - Singletons for all Mappings: This led to huge RAM savings with larger constellations (up to 10kB, because of fewer MIDI message objects in memory). This especially helped when mappings are used multiple times (for example the morph state in RIG_SELECT_AND_MORPH_STATE). No changes to config files necessary.
 
 ### Emulator 2.4.1.8
 - Added MIDI traffic stats display to Virtual Kemper
