@@ -18,7 +18,7 @@ def MAPPING_TAP_TEMPO():
 
 def MAPPING_TEMPO_DISPLAY():
     return ClientParameterMapping.get(
-        name = "Tempo",
+        name = "Tempo Pulse",
         response = KemperNRPNExtendedMessage(
             0x01,
             [

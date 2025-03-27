@@ -4,7 +4,7 @@ from ....controller.callbacks import BinaryParameterCallback
 from ....misc import get_option, Colors
 
 from ..mappings.select import MAPPING_RIG_SELECT, MAPPING_BANK_AND_RIG_SELECT
-from .morph import KemperMorphCallback
+
 
 # Display text modes for RIG_SELECT (only regarded if a display is attached to the action)
 RIG_SELECT_DISPLAY_CURRENT_RIG = 10  # Show current rig ID (for example 2-1 for bank 2 rig 1)
@@ -207,7 +207,7 @@ class KemperRigSelectCallback(BinaryParameterCallback):
                     self.mapping_disable = MAPPING_BANK_AND_RIG_SELECT(curr_rig)
                 else:
                     self.mapping_disable = MAPPING_RIG_SELECT(curr_rig)
-
+                
             if self.__bank_off_auto and curr_bank != self.__bank - 1:
                 self.__bank_off = curr_bank + 1                    
                 self._value_disable[0] = curr_bank
@@ -278,8 +278,6 @@ class KemperRigSelectCallback(BinaryParameterCallback):
 
         if self.__bank == None:
             return BANK_COLORS[curr_bank % len(BANK_COLORS)]
-
-        # is_current = (curr_rig == (self.__rig - 1) and curr_bank == (self.__bank - 1))
 
         if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
             if self.__bank_off != None and is_current:

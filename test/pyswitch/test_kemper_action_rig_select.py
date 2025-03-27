@@ -954,10 +954,10 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         appl = MockController2()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
-
+        
         mapping = action.callback._BinaryParameterCallback__mapping   
 
-        mapping.value = bank * NUM_RIGS_PER_BANK + 1   # Not matching (Rig 1)
+        mapping.value = bank * NUM_RIGS_PER_BANK + 1   # Not matching (Rig 2)
         action.update_displays()
         self.assertEqual(action.state, False)
         
@@ -970,7 +970,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             "mapping": mapping,
             "value": [1, 0]
         })
-
+        
         mapping.value = bank * NUM_RIGS_PER_BANK + 2   # On rig
         action.update_displays()
         self.assertEqual(action.state, True)
@@ -978,7 +978,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         # Select off rig
         action.push()
         action.release()
-
+        
         self.assertEqual(action.callback.mapping_disable, MAPPING_RIG_SELECT(1))
 
         self.assertEqual(len(appl.client.set_calls), 2)
@@ -987,7 +987,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             "value": [1, 0]
         })
 
-        mapping.value = bank * NUM_RIGS_PER_BANK + 4  # Off rig (excluded)
+        mapping.value = bank * NUM_RIGS_PER_BANK + 3  # Off rig (excluded)
         action.update_displays()
         self.assertEqual(action.state, False)
 

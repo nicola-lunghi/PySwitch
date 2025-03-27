@@ -1,6 +1,3 @@
-#from ..misc import stringify_midi_message, do_print
-
-
 # MIDI Message types: These are all needed to be imported, despite not used: If not, no messages
 # will go through the MIDI routings. If you encounter that messages are not forwarded, the type 
 # might perhaps miss here. (not all are enabled by default to minimize RAM usage).

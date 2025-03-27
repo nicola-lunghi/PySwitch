@@ -458,7 +458,7 @@ class TestKemperActionDefinitionsRigDown(unittest.TestCase):
         else:
             self.assertEqual(len(appl.client.set_calls), 3)
             self.assertEqual(appl.client.set_calls[2], {
-                "mapping": MAPPING_BANK_AND_RIG_SELECT(0),
+                "mapping": MAPPING_BANK_AND_RIG_SELECT(4),
                 "value": [0, 1, 0]
             })
 

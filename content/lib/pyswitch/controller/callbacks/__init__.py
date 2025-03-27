@@ -15,7 +15,7 @@ class Callback(Updateable):
     # Must be used to register all mappings needed by the callback
     def register_mapping(self, mapping):
         if self.__initialized:
-            raise Exception() # TODO
+            raise Exception() # Mappings cannot be registered after the callback has been initialized
         
         self.__mappings.append(mapping)
 
@@ -44,12 +44,12 @@ class Callback(Updateable):
             self.__appl.client.request(m, self)
 
     def parameter_changed(self, mapping):
-        # Take over value before calling the listener
-        for m in self.__mappings:
-            if m != mapping:
-                continue
+        # # Take over value before calling the listener
+        # for m in self.__mappings:
+        #     if m != mapping:
+        #         continue
 
-            m.value = mapping.value
+        #     m.value = mapping.value
 
         if self.__listener:
             self.__listener.parameter_changed(mapping)

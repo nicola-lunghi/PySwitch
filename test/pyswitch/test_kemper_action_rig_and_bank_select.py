@@ -695,9 +695,9 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
     def test_messages_rig_off_with_preselect(self):
         action = RIG_SELECT(
-            rig = 1,
+            rig = 1,       # ID 5
             bank = 2,
-            rig_off = 2,
+            rig_off = 2,   # ID 16
             bank_off = 4
         )
 
@@ -737,7 +737,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
         self.assertEqual(len(appl.client.set_calls), 2)
         self.assertEqual(appl.client.set_calls[1], {
-            "mapping": mapping_disable,
+            "mapping": mapping,
             "value": [1, 1, 0]
         })
 
@@ -771,7 +771,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
         self.assertEqual(len(appl.client.set_calls), 4)
         self.assertEqual(appl.client.set_calls[3], {
-            "mapping": mapping_disable,
+            "mapping": mapping,
             "value": [1, 1, 0]
         })
 

@@ -169,7 +169,7 @@ class VirtualKemperClientSetup {
         this.#client.parameters.init({ name: "Amp Comment", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 16]) }), value: "Amp Comment" });
 
         // FX Slot DLY
-        this.#client.parameters.init({ name: "DLY Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 0]) }), value: 160 });  // DLY
+        this.#client.parameters.init({ name: "DLY Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 0]) }), value: 151 });  // DLY
         this.#client.parameters.init({ name: "DLY State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 3]), receive: [new CCKey(26), new CCKey(27)] }), value: 1 });    // On
 
         // FX Slot REV
@@ -194,7 +194,7 @@ class VirtualKemperClientSetup {
         this.#client.parameters.init({ name: "B State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([51, 3]), receive: new CCKey(18) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
 
         // FX Slot C
-        this.#client.parameters.init({ name: "C Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([52, 0]) }), value: 30, parameterSets: [1, 2, 3, 4] });  // Dist
+        this.#client.parameters.init({ name: "C Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([52, 0]) }), value: 38, parameterSets: [1, 2, 3, 4] });  // Dist
         this.#client.parameters.init({ name: "C State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([52, 3]), receive: new CCKey(19) }), value: 0, parameterSets: [1, 2, 3, 4] });  // On
 
         // FX Slot D
@@ -206,7 +206,7 @@ class VirtualKemperClientSetup {
         this.#client.parameters.init({ name: "X State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([56, 3]), receive: new CCKey(22) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
 
         // FX Slot MOD
-        this.#client.parameters.init({ name: "MOD Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([58, 0]) }), value: 100, parameterSets: [1, 2, 3, 4] });  // Phaser
+        this.#client.parameters.init({ name: "MOD Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([58, 0]) }), value: 104, parameterSets: [1, 2, 3, 4] });  // Phaser
         this.#client.parameters.init({ name: "MOD State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([58, 3]), receive: new CCKey(24) }), value: 1, parameterSets: [1, 2, 3, 4] });  // On
     }
 

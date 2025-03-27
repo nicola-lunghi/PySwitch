@@ -515,7 +515,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
-            "mapping": MAPPING_NEXT_BANK(),   # The two mappings do equal officially because they have the same responses. 
+            "mapping": MAPPING_NEXT_BANK() if up else MAPPING_PREVIOUS_BANK(),
             "value": 0
         })
         self.assertEqual(appl.client.set_calls[0]["mapping"].name, MAPPING_NEXT_BANK().name if up else MAPPING_PREVIOUS_BANK().name)
@@ -525,7 +525,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         
         self.assertEqual(len(appl.client.set_calls), 2)
         self.assertEqual(appl.client.set_calls[1], {
-            "mapping": MAPPING_NEXT_BANK(),   # The two mappings do equal officially because they have the same responses. 
+            "mapping": MAPPING_NEXT_BANK() if up else MAPPING_PREVIOUS_BANK(),
             "value": 0
         })
         self.assertEqual(appl.client.set_calls[1]["mapping"].name, MAPPING_NEXT_BANK().name if up else MAPPING_PREVIOUS_BANK().name)

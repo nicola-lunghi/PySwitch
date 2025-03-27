@@ -4,7 +4,7 @@ from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 from adafruit_midi.program_change import ProgramChange
 
-from ...misc import Colors, PeriodCounter, formatted_timestamp, do_print, PYSWITCH_VERSION
+from ...misc import Colors, PeriodCounter, do_print, PYSWITCH_VERSION
 from ...controller.callbacks import Callback
 from ...controller.Client import ClientParameterMapping, ClientTwoPartParameterMapping
 from ...ui.elements import TunerDisplay
@@ -701,5 +701,5 @@ class KemperBidirectionalProtocol: #(BidirectionalProtocol):
         return 0x00 | (i << 0) | (s << 1) | (e << 2) | (n << 3) | (c << 4) | (t << 5)
 
     def __print(self, msg):                     # pragma: no cover
-        do_print(f"Bidirectional { formatted_timestamp() }): { msg } (Received { repr(self.__count_relevant_messages) })")
+        do_print(f"Bidirectional: { msg } (Received { repr(self.__count_relevant_messages) })")
         self.__count_relevant_messages = 0

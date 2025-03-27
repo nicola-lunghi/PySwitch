@@ -27,7 +27,7 @@ class DisplayLabelLayout:
         self.font_path = get_option(layout, "font", None)
         self.max_text_width = get_option(layout, "maxTextWidth")
         self.line_spacing = get_option(layout, "lineSpacing", 1)
-        self.text = get_option(layout, "text", "")
+        self.text = str(get_option(layout, "text", ""))
         self.text_color = get_option(layout, "textColor", None)
         self.back_color = get_option(layout, "backColor", None)
         self.stroke = get_option(layout, "stroke", 0)
@@ -186,13 +186,15 @@ class DisplayLabel(DisplayElement):
         if self.__appl and hasattr(self.__appl, "low_memory_warning") and self.__appl.low_memory_warning:
             text = "Low Memory!"
         
-        if self.__layout.text == text:
+        text_str = str(text)
+
+        if self.__layout.text == text_str:
             return
         
-        self.__layout.text = text
+        self.__layout.text = text_str
 
         if self.__label:
-            self.__label.text = self.__wrap_text(text)
+            self.__label.text = self.__wrap_text(text_str)
 
     # Wrap text if requested
     def __wrap_text(self, text):

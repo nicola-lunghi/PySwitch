@@ -100,30 +100,30 @@ class TestCallback(unittest.TestCase):
         listener = MockClientRequestListener()
         cb.init(appl, listener)
 
-        mapping_value_2 = MockParameterMapping(
-            response = SystemExclusive(
-                manufacturer_id = [0x00, 0x11, 0x20],
-                data = [0x00, 0x00, 0x09]
-            )
-        )
-        mapping_value_2.value = 456
+        # mapping_value_2 = MockParameterMapping(
+        #     response = SystemExclusive(
+        #         manufacturer_id = [0x00, 0x11, 0x20],
+        #         data = [0x00, 0x00, 0x09]
+        #     )
+        # )
+        mapping_2.value = 456
 
-        cb.parameter_changed(mapping_value_2)
+        cb.parameter_changed(mapping_2)
 
         self.assertEqual(mapping_1.value, None)
         self.assertEqual(mapping_2.value, 456)
 
         self.assertEqual(listener.parameter_changed_calls, [mapping_2])
 
-        mapping_value_1 = MockParameterMapping(
-            response = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x00, 0x09]
-            )
-        )
-        mapping_value_1.value = 654
+        # mapping_value_1 = MockParameterMapping(
+        #     response = SystemExclusive(
+        #         manufacturer_id = [0x00, 0x10, 0x20],
+        #         data = [0x00, 0x00, 0x09]
+        #     )
+        # )
+        mapping_1.value = 654
 
-        cb.parameter_changed(mapping_value_1)
+        cb.parameter_changed(mapping_1)
 
         self.assertEqual(mapping_1.value, 654)
         self.assertEqual(mapping_2.value, 456)
@@ -131,7 +131,7 @@ class TestCallback(unittest.TestCase):
         self.assertEqual(listener.parameter_changed_calls, [mapping_2, mapping_1])
 
         # Terminate
-        cb.request_terminated(mapping_value_2)
+        cb.request_terminated(mapping_2)
 
         self.assertEqual(mapping_1.value, 654)
         self.assertEqual(mapping_2.value, None)
@@ -155,19 +155,13 @@ class TestCallback(unittest.TestCase):
 
         cb.init(appl)
 
-        mapping_value_1 = MockParameterMapping(
-            response = SystemExclusive(
-                manufacturer_id = [0x00, 0x10, 0x20],
-                data = [0x00, 0x00, 0x09]
-            )
-        )
-        mapping_value_1.value = 654
+        mapping_1.value = 654
 
-        cb.parameter_changed(mapping_value_1)
+        cb.parameter_changed(mapping_1)
 
         self.assertEqual(mapping_1.value, 654)
 
-        cb.request_terminated(mapping_value_1)
+        cb.request_terminated(mapping_1)
 
         self.assertEqual(mapping_1.value, None)
 

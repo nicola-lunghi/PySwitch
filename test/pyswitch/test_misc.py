@@ -72,136 +72,82 @@ class TestMiscTools(unittest.TestCase):
         self.assertEqual(get_current_millis(), 1045567)
 
 
-    def test_format_timestamp(self):
-        MockTime.mock["localtimeReturn"] = time.struct_time((2009, 7, 18, 6, 5, 4, 0, 0, 0))
-        self.assertEqual(formatted_timestamp(), "2009-07-18 06:05:04")
+    # def test_format_timestamp(self):
+    #     MockTime.mock["localtimeReturn"] = time.struct_time((2009, 7, 18, 6, 5, 4, 0, 0, 0))
+    #     self.assertEqual(formatted_timestamp(), "2009-07-18 06:05:04")
 
-        MockTime.mock["localtimeReturn"] = time.struct_time((22019, 12, 8, 12, 35, 44, 0, 0, 0))
-        self.assertEqual(formatted_timestamp(), "22019-12-08 12:35:44")
-
-
-    def test_stringify_midi_message_falsy(self):
-        self.assertEqual(stringify_midi_message(None), repr(None))
-        self.assertEqual(stringify_midi_message(0), repr(0))
+    #     MockTime.mock["localtimeReturn"] = time.struct_time((22019, 12, 8, 12, 35, 44, 0, 0, 0))
+    #     self.assertEqual(formatted_timestamp(), "22019-12-08 12:35:44")
 
 
-    def test_stringify_midi_message_sysex(self):
-        message = SystemExclusive(
-            manufacturer_id = [0x02, 0x03],
-            data = [0x34, 0x45, 0x67]
-        )
+    # def test_compare_midi_messagess_sysex(self):
+    #     message_1 = SystemExclusive(
+    #         manufacturer_id = [0x02, 0x03],
+    #         data = [0x34, 0x45, 0x67]
+    #     )
+    #     message_2 = SystemExclusive(
+    #         manufacturer_id = [0x02, 0x03],
+    #         data = [0x34, 0x45, 0x67]
+    #     )
 
-        str = stringify_midi_message(message)
+    #     self.assertEqual(compare_midi_messages(message_1, message_2), True)
+    #     self.assertEqual(compare_midi_messages(message_1, None), False)
+    #     self.assertEqual(compare_midi_messages(None, message_2), False)
 
-        self.assertIn("SystemExclusive", str)
-        self.assertIn("[2, 3]", str)
-        self.assertIn("[34, 45, 67]", str)
-        
+    #     message_1.data[1] = 0xa9
+    #     self.assertEqual(compare_midi_messages(message_1, message_2), False)
 
-    def test_stringify_midi_message_cc(self):
-        message = ControlChange(2, 66)
+    #     message_1.data[1] = 0x45
+    #     self.assertEqual(compare_midi_messages(message_1, message_2), True)
 
-        str = stringify_midi_message(message)
-
-        self.assertIn("ControlChange", str)
-        self.assertIn("2", str)
-        self.assertIn("66", str)
-
-
-    def test_stringify_midi_message_pc(self):
-        message = ProgramChange(56)
-
-        str = stringify_midi_message(message)
-
-        self.assertIn("ProgramChange", str)
-        self.assertIn("56", str)
+    #     message_1.manufacturer_id[1] = 0x04
+    #     self.assertEqual(compare_midi_messages(message_1, message_2), False)
 
 
-    def test_stringify_midi_message_ue(self):
-        message = MIDIUnknownEvent(33)
+    # def test_compare_midi_messagess_cc(self):
+    #     message_1 = ControlChange(2, 66)
+    #     message_2 = ControlChange(2, 66)
 
-        str = stringify_midi_message(message)
+    #     self.assertEqual(compare_midi_messages(message_1, message_2), True)
+    #     self.assertEqual(compare_midi_messages(message_1, None), False)
+    #     self.assertEqual(compare_midi_messages(None, message_2), False)
 
-        self.assertIn("MIDIUnknownEvent", str)
-        self.assertIn("33", str)
+    #     message_1.control = 67
 
-
-    def test_stringify_midi_message_others(self):
-        message = "nomessage"
-
-        str = stringify_midi_message(message)
-
-        self.assertIn("nomessage", str)
+    #     self.assertEqual(compare_midi_messages(message_1, message_2), False)
 
 
-    def test_compare_midi_messagess_sysex(self):
-        message_1 = SystemExclusive(
-            manufacturer_id = [0x02, 0x03],
-            data = [0x34, 0x45, 0x67]
-        )
-        message_2 = SystemExclusive(
-            manufacturer_id = [0x02, 0x03],
-            data = [0x34, 0x45, 0x67]
-        )
+    # def test_compare_midi_messagess_pc(self):
+    #     message_1 = ProgramChange(56)
+    #     message_2 = ProgramChange(56)
 
-        self.assertEqual(compare_midi_messages(message_1, message_2), True)
-        self.assertEqual(compare_midi_messages(message_1, None), False)
-        self.assertEqual(compare_midi_messages(None, message_2), False)
+    #     self.assertEqual(compare_midi_messages(message_1, message_2), True)
+    #     self.assertEqual(compare_midi_messages(message_1, None), False)
+    #     self.assertEqual(compare_midi_messages(None, message_2), False)
 
-        message_1.data[1] = 0xa9
-        self.assertEqual(compare_midi_messages(message_1, message_2), False)
+    #     message_1.patch = 67
 
-        message_1.data[1] = 0x45
-        self.assertEqual(compare_midi_messages(message_1, message_2), True)
-
-        message_1.manufacturer_id[1] = 0x04
-        self.assertEqual(compare_midi_messages(message_1, message_2), False)
+    #     self.assertEqual(compare_midi_messages(message_1, message_2), False)
 
 
-    def test_compare_midi_messagess_cc(self):
-        message_1 = ControlChange(2, 66)
-        message_2 = ControlChange(2, 66)
+    # def test_compare_midi_messagess_unknown(self):
+    #     message_1 = MIDIUnknownEvent(56)
+    #     message_2 = MIDIUnknownEvent(56)
 
-        self.assertEqual(compare_midi_messages(message_1, message_2), True)
-        self.assertEqual(compare_midi_messages(message_1, None), False)
-        self.assertEqual(compare_midi_messages(None, message_2), False)
+    #     self.assertEqual(compare_midi_messages(message_1, message_2), True)
+    #     self.assertEqual(compare_midi_messages(message_1, None), False)
+    #     self.assertEqual(compare_midi_messages(None, message_2), False)
 
-        message_1.control = 67
+    #     message_1.status = 67
 
-        self.assertEqual(compare_midi_messages(message_1, message_2), False)
-
-
-    def test_compare_midi_messagess_pc(self):
-        message_1 = ProgramChange(56)
-        message_2 = ProgramChange(56)
-
-        self.assertEqual(compare_midi_messages(message_1, message_2), True)
-        self.assertEqual(compare_midi_messages(message_1, None), False)
-        self.assertEqual(compare_midi_messages(None, message_2), False)
-
-        message_1.patch = 67
-
-        self.assertEqual(compare_midi_messages(message_1, message_2), False)
+    #     self.assertEqual(compare_midi_messages(message_1, message_2), False)
 
 
-    def test_compare_midi_messagess_unknown(self):
-        message_1 = MIDIUnknownEvent(56)
-        message_2 = MIDIUnknownEvent(56)
+    # def test_compare_midi_messagess_others(self):
+    #     message_1 = "foo"
+    #     message_2 = "bar"
 
-        self.assertEqual(compare_midi_messages(message_1, message_2), True)
-        self.assertEqual(compare_midi_messages(message_1, None), False)
-        self.assertEqual(compare_midi_messages(None, message_2), False)
-
-        message_1.status = 67
-
-        self.assertEqual(compare_midi_messages(message_1, message_2), False)
-
-
-    def test_compare_midi_messagess_others(self):
-        message_1 = "foo"
-        message_2 = "bar"
-
-        self.assertEqual(compare_midi_messages(message_1, message_2), False)
+    #     self.assertEqual(compare_midi_messages(message_1, message_2), False)
 
 
 

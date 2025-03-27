@@ -52,26 +52,4 @@ class MappingParserTests extends FunctionParserTestBase {
             }
         )
     }
-
-    // async getAvailableMappingsMeta() {
-    //     await this.init();
-        
-    //     const config = new MockConfiguration("", "");
-    //     await config.init(this.pyswitch);
-    //     const parser = config.parser;
-        
-    //     await this.checkDefinitions(
-    //         "mappings-with-meta.json",
-
-    //         // Load from buffer file
-    //         async function() {
-    //             return JSON.parse(await Tools.fetch("data/definitions/mappings-with-meta.json"));
-    //         },
-
-    //         // Generate from scratch
-    //         async function() {
-    //             return await parser.getAvailableMappings("../");
-    //         }
-    //     )
-    // }
 }

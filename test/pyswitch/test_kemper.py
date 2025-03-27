@@ -160,7 +160,7 @@ class TestKemper(unittest.TestCase):
 
         self.assertIn("Tempo", MAPPING_TEMPO_DISPLAY().name)
         self.assertIn("Tap", MAPPING_TAP_TEMPO().name)
-        self.assertIn("bpm", MAPPING_TEMPO_BPM().name)
+        self.assertIn("BPM", MAPPING_TEMPO_BPM().name)
 
         self.assertIn("Freeze", MAPPING_FREEZE_ALL_GLOBAL().name)
 

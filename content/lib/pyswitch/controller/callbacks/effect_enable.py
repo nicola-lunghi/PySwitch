@@ -25,12 +25,12 @@ class EffectEnableCallback(BinaryParameterCallback):
         self.mapping_fxtype = mapping_type
         
         self.__effect_category = self.CATEGORY_NONE  
-        self.__current_category = self.CATEGORY_INITIAL        
+        self.__current_kpp_type = None
         
     def reset(self):
         super().reset()
         
-        self.__current_category = self.CATEGORY_INITIAL
+        self.__current_kpp_type = None
 
     def update_displays(self, action):  
         self.__effect_category = self.get_effect_category(self.mapping_fxtype.value) if self.mapping_fxtype.value != None else self.CATEGORY_NONE
@@ -38,11 +38,11 @@ class EffectEnableCallback(BinaryParameterCallback):
         if self.__effect_category == self.CATEGORY_NONE:
             action.feedback_state(False)
 
-        if self.__current_category == self.__effect_category:
+        if self.__current_kpp_type == self.mapping_fxtype.value:
             super().update_displays(action)
             return
 
-        self.__current_category = self.__effect_category
+        self.__current_kpp_type = self.mapping_fxtype.value
 
         # Effect category text
         if action.label:

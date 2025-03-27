@@ -1,6 +1,6 @@
 from math import floor
 from micropython import const
-from ..misc import EventEmitter, PeriodCounter, Updateable, get_option, compare_midi_messages, stringify_midi_message, do_print
+from ..misc import EventEmitter, PeriodCounter, Updateable, get_option, do_print
 
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
@@ -16,7 +16,7 @@ class ClientParameterMapping:
     @staticmethod
     def get(name = "", set = None, request = None, response = None, value = None, type = 0, depends = None):
         for m in ClientParameterMapping._mappings:
-            if m.name == name and ClientParameterMapping._compare(m.set, set) and ClientParameterMapping._compare(m.request, request) and ClientParameterMapping._compare(m.response, response) and type == m.type:
+            if m.name == name:
                 return m
             
         m = ClientParameterMapping(
@@ -25,32 +25,12 @@ class ClientParameterMapping:
             request = request,
             response = response,
             value = value,
+            type = type,
             depends = depends
         )
 
         ClientParameterMapping._mappings.append(m)
-
         return m
-
-    # Compare message or list of messages
-    @staticmethod
-    def _compare(a, b):
-        if isinstance(a, list):
-            if isinstance(b, list):
-                if len(a) != len(b):
-                    return False
-                
-                for i in range(len(a)):
-                    if not compare_midi_messages(a[i], b[i]):
-                        return False
-                return True
-            else:
-                return a == b
-        else:
-            if not isinstance(b, list):
-                return compare_midi_messages(a, b)
-            else:
-                return a == b
             
     ##########################################################################################################################
 
@@ -69,33 +49,6 @@ class ClientParameterMapping:
         self.type = type          # Numeric or string
         self.depends = depends    # If another mapping is set here, this mapping will only be requested when the dependency has changed value
 
-    def __eq__(self, other):
-        if not other:
-            return False
-        
-        if self.__class__ != other.__class__:
-            return False
-        
-        if self.response != None:
-            if other.response != None:
-                return self._compare(self.response, other.response)
-            else:
-                return False
-
-        if self.set != None: 
-            if other.set != None:
-                return self._compare(self.set, other.set)
-            else:
-                return False
-
-        if self.request != None:
-            if other.request != None:
-                return self._compare(self.request, other.request)
-            else:
-                return False
-            
-        return False
-            
     # Parse the incoming MIDI message and set its value on the mapping.
     # If the response template does not match, returns False, and
     # vice versa. Returns True to notify the listeners of a value change.
@@ -222,7 +175,7 @@ class ClientTwoPartParameterMapping(ClientParameterMapping):
     @staticmethod
     def get(name = "", set = None, request = None, response = None, value = None, type = 0, depends = None):
         for m in ClientParameterMapping._mappings:
-            if m.name == name and ClientParameterMapping._compare(m.set, set) and ClientParameterMapping._compare(m.request, request) and ClientParameterMapping._compare(m.response, response) and type == m.type:
+            if m.name == name:
                 return m
             
         m = ClientTwoPartParameterMapping(
@@ -231,11 +184,11 @@ class ClientTwoPartParameterMapping(ClientParameterMapping):
             request = request,
             response = response,
             value = value,
+            type = type,
             depends = depends
         )
 
         ClientParameterMapping._mappings.append(m)
-
         return m
 
     ##########################################################################################################################
@@ -425,6 +378,7 @@ class Client: #(ClientRequestListener):
         if self.debug_exclude_types and midi_message.__class__.__name__ in self.debug_exclude_types:
             return
         
+        from ..debug_tools import stringify_midi_message
         do_print(stringify_midi_message(midi_message))
 
 
@@ -500,6 +454,7 @@ class ClientRequest(EventEmitter):
             return
 
         if self.client.debug_mapping == mapping:    # pragma: no cover
+            from ..debug_tools import stringify_midi_message
             do_print(f"{ mapping.name }: Received value '{ repr(mapping.value) }' from { stringify_midi_message(midi_message) }")
 
         # Call the listeners (the mapping has the values set already). Do not use notify_listeners() to keep the stack short.
