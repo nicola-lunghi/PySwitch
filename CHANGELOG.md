@@ -7,6 +7,7 @@
 
 ### Emulator 2.4.1.8
 - Added MIDI traffic stats display to Virtual Kemper
+- Optimized a bug that caused double the MIDI traffic needed when using the Virtual Kemper (no effect when connected to a real client)
 
 
 # PySwitch v2.4.0
