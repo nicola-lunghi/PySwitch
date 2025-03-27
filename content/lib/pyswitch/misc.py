@@ -1,7 +1,7 @@
 from time import monotonic
 
 # PySwitch version
-PYSWITCH_VERSION = "2.4.1"
+PYSWITCH_VERSION = "2.4.2"
 
 # Default background color for display slots
 DEFAULT_LABEL_COLOR = (50, 50, 50)   
