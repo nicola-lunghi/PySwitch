@@ -83,11 +83,8 @@ class VirtualKemperClient extends VirtualClient {
      * Updates everything to the current rig ID.
      */
     updateRig() {
-        const rigId = this.getRigId();
-
-        const rigName = this.#generateRigName(rigId);
-
-        this.parameters.get(new NRPNKey([0, 1])).setValue(rigName);
+        this.parameters.get(new NRPNKey([0, 1])).setValue(this.#generateRigName(this.getRigId()));
+        this.parameters.get(new NRPNKey([0, 3])).setValue(this.generateRigDate());
     }
 
     /**
@@ -136,6 +133,22 @@ class VirtualKemperClient extends VirtualClient {
         this.parameters.get(new PCKey()).setValue(rigId % 128);
 
         this.updateRig();
+    }
+
+    /**
+     * Returns the current timestamp
+     */
+    generateRigDate() {
+        return new Date().toLocaleString("de-DE", {
+            timeZone: 'Europe/Berlin',
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            fractionalSecondDigits: 3
+        });
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////

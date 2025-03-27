@@ -106,6 +106,7 @@ class VirtualKemperClientUI {
         let morphInput = null;
         let trafficInIndicator = null;
         let trafficOutIndicator = null;
+        let rigDate = null;
 
         function formatMessages(messages, prefix) {
             let ret = prefix + "in the last second:\n\n";
@@ -195,6 +196,29 @@ class VirtualKemperClientUI {
                     } 
                 }),
 
+                // Amp Name
+                $('<div class="label" />')
+                .text("Amp Name"),
+
+                $('<input type="text" class="longtext" autocomplete="off">')
+                .val(that.#client.parameters.get(new NRPNKey([0, 16])).value)
+                .on('change', function() {
+                    try {
+                        const value = $(this).val();
+                        that.#client.parameters.get(new NRPNKey([0, 16])).setValue(value)
+                        
+                    } catch (e) {
+                        console.error(e);
+                    } 
+                }),
+
+                // Rig Date
+                $('<div class="label" />')
+                .text("Rig Date:"),
+                
+                rigDate = $('<div class="value-output" />')
+                .text(that.#client.parameters.get(new NRPNKey([0, 3])).value),
+
                 // MIDI Traffic indicators
                 $('<div class="label" />')
                 .text("MIDI In:")
@@ -243,6 +267,11 @@ class VirtualKemperClientUI {
         this.#client.stats.addChangeCallback(function(stats) {
             trafficInIndicator.text(stats.receiveRate + "/s");
             trafficOutIndicator.text(stats.sendRate + "/s");
+        });
+
+        // Rig Date
+        this.#client.parameters.get(new NRPNKey([0, 3])).addChangeCallback(async function(param, value) {
+            rigDate.text(value);
         });
     }
 

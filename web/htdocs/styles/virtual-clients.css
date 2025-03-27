@@ -62,3 +62,8 @@
     font-size: 0.7em;
 }
 
+.container .virtual-client .box input[type="text"].longtext {
+    width: unset;
+    font-size: 0.7em;
+}
+

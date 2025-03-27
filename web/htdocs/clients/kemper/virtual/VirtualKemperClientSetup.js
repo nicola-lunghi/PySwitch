@@ -96,6 +96,9 @@ class VirtualKemperClientSetup {
 
         this.#client.parameters.init({ name: "Bank up", keys: new VirtualKemperParameterKeys({ receive: new CCKey(48) }), callback: onBankChange, noBuffer: true });  // Up
         this.#client.parameters.init({ name: "Bank down", keys: new VirtualKemperParameterKeys({ receive: new CCKey(49) }), callback: onBankChange, noBuffer: true });  // Down
+
+        // Rig Date
+        this.#client.parameters.init({ name: "Rig Date", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 3]) }), value: this.#client.generateRigDate() });
     }
 
     /**
@@ -165,8 +168,13 @@ class VirtualKemperClientSetup {
      * Sets up all "normal" parameter stuff
      */
     #setupParameters() {
+        const that = this;
+        
         // Amp comment
-        this.#client.parameters.init({ name: "Amp Comment", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 16]) }), value: "Amp Comment" });
+        this.#client.parameters.init({ name: "Amp Comment", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([0, 16]) }), value: "Amp Comment", callback: function() {
+            // Update rig date
+            that.#client.updateRig();
+        } });
 
         // FX Slot DLY
         this.#client.parameters.init({ name: "DLY Type", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([60, 0]) }), value: 151 });  // DLY

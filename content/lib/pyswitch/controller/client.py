@@ -232,6 +232,26 @@ class ClientTwoPartParameterMapping(ClientParameterMapping):
 # Implements all MIDI communication to and from the client device
 class Client: #(ClientRequestListener):
 
+    # Listener for dependency mappings
+    class _DependencyListener:
+        def __init__(self, client, orig_mapping, listener = None):
+            self.__client = client
+            self.__orig_mapping = orig_mapping
+            self.__last_value = None
+            self.__listener = listener
+
+        def parameter_changed(self, mapping):
+            print(mapping.name)
+            if mapping.value != self.__last_value:
+                self.__last_value = mapping.value
+
+                self.__client._register_mapping(self.__orig_mapping, self.__listener, True)           
+        
+        def request_terminated(self, mapping):
+            pass
+
+    ##########################################################################################################
+
     def __init__(self, midi, config):
         self.midi = midi
         
@@ -247,6 +267,9 @@ class Client: #(ClientRequestListener):
         # List of ClientRequest objects    
         self.__requests = []
 
+        # Dict of dependency listeners
+        self.__dependencies = {}
+
         self.__max_request_lifetime = get_option(config, "maxRequestLifetimeMillis", 2000)
 
         # Helper to only clean up hanging requests from time to time as this is not urgent at all
@@ -260,7 +283,7 @@ class Client: #(ClientRequestListener):
     # here this is redundant)
     def register(self, mapping, listener = None):
         if not mapping.request and mapping.response:
-            self.__register_mapping(mapping, listener, False)
+            self._register_mapping(mapping, listener, False)
 
     # Sends the SET message of a mapping. Value has to be a list if the mapping's set field is a list, too!
     def set(self, mapping, value):
@@ -288,13 +311,20 @@ class Client: #(ClientRequestListener):
     #@RuntimeStatistics.measure
     def request(self, mapping, listener = None):
         if not mapping.request or not mapping.response:
-            return            
+            return
         
-        self.__register_mapping(mapping, listener, True)
+        if mapping.depends:
+            if not mapping in self.__dependencies:
+                self.__dependencies[mapping] = self._DependencyListener(self, mapping, listener)
+
+            # Register the dependency rather than the mapping itself
+            self._register_mapping(mapping.depends, self.__dependencies[mapping], True)
+        else:
+            self._register_mapping(mapping, listener, True)
         
     # Registers a mapping request or adds the listener to an existing one. Optionally sends the
     # request message. Internal use only.
-    def __register_mapping(self, mapping, listener, send):
+    def _register_mapping(self, mapping, listener, send):
         # Add request to the list
         req = self.get_matching_request(mapping)
         if not req:
@@ -501,6 +531,7 @@ class BidirectionalClient(Client, Updateable):
     def register(self, mapping, listener = None):
         if self.protocol.is_bidirectional(mapping):
             mapping.request = None
+            mapping.depends = None
     
         Client.register(self, mapping, listener)
         
