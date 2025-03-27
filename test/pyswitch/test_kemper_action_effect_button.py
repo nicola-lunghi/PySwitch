@@ -23,18 +23,7 @@ with patch.dict(sys.modules, {
     from .mocks_appl import *
     from .mocks_callback import *
 
-    # from lib.pyswitch.clients.local.actions.binary_switch import *
-    # from lib.pyswitch.clients.kemper.actions.effect_state import *
-    # from lib.pyswitch.clients.kemper.actions.tempo import *
     from lib.pyswitch.clients.kemper.actions.effect_button import *
-    # from lib.pyswitch.clients.kemper.actions.morph import *
-    # from lib.pyswitch.clients.kemper.actions.looper import *
-    # from lib.pyswitch.clients.kemper.actions.rig_volume_boost import *
-    # from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
-
-    # from lib.pyswitch.clients.kemper.mappings.tempo import *
-    # from lib.pyswitch.clients.kemper.mappings.morph import *
-    # from lib.pyswitch.clients.kemper.mappings.looper import *
     
 
 class MockController2(Updater):

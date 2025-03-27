@@ -1,6 +1,5 @@
 from .ui import DisplayBounds
 from ..misc import Updateable, Updater
-#from ..stats import RuntimeStatistics
 
 
 class UiController(Updater, Updateable):

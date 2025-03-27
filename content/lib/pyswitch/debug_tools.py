@@ -1,4 +1,4 @@
-from .controller.MidiController import SystemExclusive, ControlChange, ProgramChange, MIDIUnknownEvent
+from .controller.midi import SystemExclusive, ControlChange, ProgramChange, MIDIUnknownEvent
 
 # Stringifies a MIDI message.
 def stringify_midi_message(midi_message):

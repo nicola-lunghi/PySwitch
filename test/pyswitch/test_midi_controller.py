@@ -17,7 +17,7 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     from adafruit_midi.midi_message import MIDIUnknownEvent
-    from lib.pyswitch.controller.MidiController import MidiController, MidiRouting
+    from lib.pyswitch.controller.midi import MidiController, MidiRouting
 
     from.mocks_appl import *
 

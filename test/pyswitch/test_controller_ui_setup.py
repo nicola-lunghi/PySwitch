@@ -26,7 +26,7 @@ with patch.dict(sys.modules, {
        
         from lib.pyswitch.ui.ui import DisplayElement
         from lib.pyswitch.ui.UiController import UiController
-        from lib.pyswitch.controller.Controller import Controller
+        from lib.pyswitch.controller import Controller
 
         from gc import gc_mock_data
         from .mocks_appl import *

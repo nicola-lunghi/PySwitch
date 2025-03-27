@@ -26,7 +26,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.controller.callbacks.effect_enable import EffectEnableCallback
     from lib.pyswitch.controller.actions import PushButtonAction
 
-    from lib.pyswitch.controller.Controller import Controller
+    from lib.pyswitch.controller import Controller
 
 
 class MockEffectEnableCallback(EffectEnableCallback):

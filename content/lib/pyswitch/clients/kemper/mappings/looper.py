@@ -1,6 +1,6 @@
 from micropython import const
 from .. import KemperNRPNMessage
-from ....controller.Client import ClientParameterMapping
+from ....controller.client import ClientParameterMapping
 from .. import NRPN_FUNCTION_SET_SINGLE_PARAMETER
 
 _NRPN_ADDRESS_PAGE_FREEZE = const(0x7d)

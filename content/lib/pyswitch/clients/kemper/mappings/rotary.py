@@ -1,6 +1,6 @@
 from micropython import const
 from .. import KemperNRPNMessage, KemperEffectSlot
-from ....controller.Client import ClientParameterMapping
+from ....controller.client import ClientParameterMapping
 from .. import NRPN_FUNCTION_SET_SINGLE_PARAMETER, NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER
 
 # _CC_ROTARY_SPEED = const(33)     # 1 = Fast, 0 = Slow

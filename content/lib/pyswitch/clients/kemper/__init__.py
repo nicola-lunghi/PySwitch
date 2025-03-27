@@ -6,7 +6,7 @@ from adafruit_midi.program_change import ProgramChange
 
 from ...misc import Colors, PeriodCounter, do_print, PYSWITCH_VERSION
 from ...controller.callbacks import Callback
-from ...controller.Client import ClientParameterMapping, ClientTwoPartParameterMapping
+from ...controller.client import ClientParameterMapping, ClientTwoPartParameterMapping
 from ...ui.elements import TunerDisplay
 
 

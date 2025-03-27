@@ -340,7 +340,7 @@ Inputs = [
 
 See below how the labels are defined.
 
-#### Custom Callbacks for Actions
+### Custom Callbacks for Actions
 
 Besides the general pushbutton or hold mechanisms, all functionality of the actions is implemented in callbacks. This works similar to the Enable callbacks described above (the mapping definition is the same), but these callbacks have to provide different member functions. The basis of this is the PushButtonAction:
 
@@ -396,7 +396,7 @@ Inputs = [
     }
 ```
 
-#### Binary Parameter Actions
+### Binary Parameter Actions
 
 To simply switch a parameter in an on/off fashion with values for on and off etc., the BinaryParameterAction is provided (which itself is a callback like in the last chapter). This is used by most of the predefined Kemper action definitions internally. Here an example which switches the rotary speed fast/slow:
 
@@ -421,7 +421,7 @@ Inputs = [
 ]
 ```
 
-#### Custom Actions
+### Custom Actions
 
 If you want to send your own custom MIDI messages, you can also define your mappings. This example is similar to the "Rig Volume Boost" action:
 
@@ -439,6 +439,7 @@ Inputs = [
                 {
                     "callback": BinaryParameterCallback(
                         mapping = ClientParameterMapping.get(
+                            name = "My Boost",   # This name MUST be unique! Use your own custom prefix for example.
                             set = SystemExclusive(
                                 manufacturer_id = [0x00, 0x20, 0x33], 
                                 data = [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01] # Two value bytes will be added by PySwitch
@@ -485,6 +486,7 @@ Inputs = [
                 {
                     "callback": BinaryParameterCallback(
                         mapping = ClientParameterMapping.get(
+                            name = "My Boost",   # This name MUST be unique! Use your own custom prefix for example.
                             set = SystemExclusive(
                                 manufacturer_id = [0x00, 0x20, 0x33], 
                                 data = [0x02, 0x7f, 0x01, 0x00, 0x04, 0x01] # Two value bytes will be added by PySwitch
@@ -510,6 +512,8 @@ For a complete list of options, see these two classes:
 
 - pyswitch/controller/actions/PushbuttonAction
 - pyswitch/controller/callbacks/BinaryParameterCallback
+
+The name of the mapping MUST be unique. Please choose a name not occurring anywhere else, or use the Python uuid module to generate an unique ID.
 
 ### TFT Display Layout Definition
 

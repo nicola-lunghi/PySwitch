@@ -68,8 +68,8 @@ class PySwitchRunner:
             )
             self.display_driver.init()
 
-            from pyswitch.controller.Controller import Controller
-            from pyswitch.controller.MidiController import MidiController, MidiRouting
+            from pyswitch.controller import Controller
+            from pyswitch.controller.midi import MidiController, MidiRouting
             from pyswitch.ui.UiController import UiController
             from pyswitch.hardware.adafruit.AdafruitUsbMidiDevice import AdafruitUsbMidiDevice
 

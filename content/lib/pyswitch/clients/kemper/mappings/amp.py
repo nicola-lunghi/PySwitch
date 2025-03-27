@@ -1,6 +1,6 @@
 from micropython import const
 from .. import KemperNRPNMessage, KemperMappings
-from ....controller.Client import ClientParameterMapping
+from ....controller.client import ClientParameterMapping
 from .. import NRPN_FUNCTION_SET_SINGLE_PARAMETER, NRPN_FUNCTION_REQUEST_STRING_PARAMETER, NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER, NRPN_ADDRESS_PAGE_STRINGS, NRPN_FUNCTION_RESPONSE_STRING_PARAMETER
 
 _NRPN_ADDRESS_PAGE_AMP = const(0x0a)

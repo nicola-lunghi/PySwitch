@@ -1,3 +1,4 @@
+from uuid import uuid4
 import sys
 import unittest
 from unittest.mock import patch   # Necessary workaround! Needs to be separated.
@@ -20,10 +21,17 @@ with patch.dict(sys.modules, {
     from adafruit_midi.control_change import ControlChange
     from adafruit_midi.program_change import ProgramChange
 
-    from lib.pyswitch.controller.Client import *
+    from lib.pyswitch.controller.client import *
 
 
-class TestClientParameterMappingParser(unittest.TestCase):
+class TestClientParameterMapping(unittest.TestCase):
+
+    def test_singleton_check(self):
+        # Test the Mock Parameter Mapping unique name checker routine
+        ClientParameterMapping.get(name = "footest")
+
+        with self.assertRaises(Exception):
+            ClientParameterMapping(name = "footest")
 
     def test_parse_sysex(self):
         msg_irrelevant_man_id = SystemExclusive(
@@ -80,7 +88,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
                 ]
             )            
 
-        mapping = ClientParameterMapping(
+        mapping = ClientParameterMapping.get(
+            name = uuid4(),
             response = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x00, 0x00, 0xd9, 0x01, 0x04, 0xaa, 0x00, 0x00]
@@ -140,7 +149,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
                 ] + hex_str + [0]
             )            
         
-        mapping = ClientParameterMapping(
+        mapping = ClientParameterMapping.get(
+            name = uuid4(),
             response = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x00, 0x00, 0xd9, 0x01, 0x04, 0xaa]
@@ -187,7 +197,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
             value = 0
         )           
                 
-        mapping = ClientParameterMapping(
+        mapping = ClientParameterMapping.get(
+            name = uuid4(),
             response = ControlChange(
                 control = 1,
                 value = 0
@@ -236,7 +247,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
             patch = 0
         )
                 
-        mapping = ClientParameterMapping(
+        mapping = ClientParameterMapping.get(
+            name = uuid4(),
             response = ProgramChange(
                 patch = 0
             )   
@@ -264,7 +276,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
 
 
     def test_parse_other(self):         
-        mapping = ClientParameterMapping(
+        mapping = ClientParameterMapping.get(
+            name = uuid4(),
             response = ProgramChange(
                 patch = 0
             )   
@@ -278,7 +291,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
 
 
     def test_set_value_sysex_numeric(self):
-        mapping = ClientParameterMapping(
+        mapping = ClientParameterMapping.get(
+            name = uuid4(),
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x00, 0x00, 0xd9, 0x01, 0x04, 0xaa]
@@ -321,7 +335,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
 
 
     def test_set_value_sysex_string(self):
-        mapping = ClientParameterMapping(
+        mapping = ClientParameterMapping.get(
+            name = uuid4(),
             set = SystemExclusive(
                 manufacturer_id = [0x00, 0x10, 0x20],
                 data = [0x00, 0x00, 0xd9, 0x01, 0x04, 0xaa]
@@ -334,7 +349,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
         
 
     def test_set_value_control_change(self):
-        mapping = ClientParameterMapping(
+        mapping = ClientParameterMapping.get(
+            name = uuid4(),
             set = ControlChange(
                 control = 8,
                 value = 0
@@ -354,7 +370,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
 
 
     def test_set_value_program_change(self):
-        mapping = ClientParameterMapping(
+        mapping = ClientParameterMapping.get(
+            name = uuid4(),
             set = ProgramChange(
                 patch = 8
             )      
@@ -375,7 +392,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
             def __init__(self, value):
                 self.value = value
 
-        mapping = ClientParameterMapping(
+        mapping = ClientParameterMapping.get(
+            name = uuid4(),
             set = FooMessage(9) 
         )
 
@@ -390,7 +408,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
 
 
     def test_set_value_list(self):
-        mapping = ClientParameterMapping(
+        mapping = ClientParameterMapping.get(
+            name = uuid4(),
             set = [
                 ProgramChange(
                     patch = 8
@@ -441,7 +460,8 @@ class TestClientParameterMappingParser(unittest.TestCase):
                 ]
             )            
 
-        mapping = ClientTwoPartParameterMapping(
+        mapping = ClientTwoPartParameterMapping.get(
+            name = uuid4(),
             response = [
                 ControlChange(
                     control = 112,

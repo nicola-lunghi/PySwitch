@@ -1,6 +1,8 @@
+from uuid import uuid4
+from functools import wraps
+
 from lib.pyswitch.controller.actions import Action, PushButtonAction
-#from lib.pyswitch.controller.Controller import Controller
-from lib.pyswitch.controller.Client import ClientParameterMapping
+from lib.pyswitch.controller.client import ClientParameterMapping
 from lib.pyswitch.misc import Updateable
 
 from .mocks_lib import *
@@ -104,10 +106,35 @@ class MockRotaryEncoder:
 
 ##################################################################################################################################
 
+def _check_unique_mapping_names(function):
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        if len(args) > 0:
+            name = args[0]
+        else:
+            name = kwargs["name"]
+
+        for m in ClientParameterMapping._mappings:
+            if m.name == name:
+                raise Exception("Mapping already defined: " + repr(name))
+
+        return function(*args, **kwargs)
+    return wrapper
+
+ClientParameterMapping.__init__ = _check_unique_mapping_names(ClientParameterMapping.__init__)
 
 class MockParameterMapping(ClientParameterMapping):
-    def __init__(self, name = "", set = None, request = None, response = None, value = None):
-        super().__init__(name = name, set = set, request = request, response = response, value = value)
+    def __init__(self, name = None, set = None, request = None, response = None, value = None, type = 0, depends = None):
+        super().__init__(
+            name = name if name != None else uuid4(), 
+            create_key = ClientParameterMapping, 
+            set = set, 
+            request = request, 
+            response = response, 
+            value = value, 
+            type = type, 
+            depends = depends
+        )
 
         self.outputs_parse = []
         self.output_result_finished = None

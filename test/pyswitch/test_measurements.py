@@ -6,15 +6,17 @@ from .mocks_lib import *
 
 # Import subject under test
 with patch.dict(sys.modules, {
+    "micropython": MockMicropython,
     "usb_midi": MockUsbMidi(),
     "adafruit_midi": MockAdafruitMIDI(),
     "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
-    "time": MockTime
+    "time": MockTime,
+    "gc": MockGC()
 }):
-    from lib.pyswitch.controller.RuntimeMeasurement import RuntimeMeasurement
+    from lib.pyswitch.controller.measure import RuntimeMeasurement
 
 
 class MockRuntimeMeasurementListener:

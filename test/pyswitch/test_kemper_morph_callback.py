@@ -21,7 +21,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.actions.morph import KemperMorphCallback
     from lib.pyswitch.misc import Colors
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
-    from lib.pyswitch.controller.Controller import Controller
+    from lib.pyswitch.controller import Controller
     
     from .mocks_appl import *
     from .mocks_callback import *

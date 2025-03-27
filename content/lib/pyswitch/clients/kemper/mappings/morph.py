@@ -1,6 +1,6 @@
 from micropython import const
 from .. import KemperNRPNMessage
-from ....controller.Client import ClientParameterMapping
+from ....controller.client import ClientParameterMapping
 from .. import NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER
 
 from adafruit_midi.control_change import ControlChange

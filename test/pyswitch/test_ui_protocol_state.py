@@ -21,7 +21,7 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.ui.ui import DisplayBounds, DisplayElement
     from lib.pyswitch.ui.elements import BidirectionalProtocolState
-    from lib.pyswitch.controller.Client import BidirectionalClient
+    from lib.pyswitch.controller.client import BidirectionalClient
     
     from .mocks_appl import MockBidirectionalProtocol, MockMidiController, MockClient
     from .mocks_ui import *

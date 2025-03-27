@@ -1,5 +1,5 @@
 from micropython import const
-from ....controller.Client import ClientParameterMapping
+from ....controller.client import ClientParameterMapping
 from .. import KemperNRPNMessage
 from .. import NRPN_FUNCTION_SET_SINGLE_PARAMETER, NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, NRPN_FUNCTION_RESPONSE_SINGLE_PARAMETER
 

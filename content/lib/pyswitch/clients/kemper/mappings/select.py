@@ -1,6 +1,6 @@
 from micropython import const
 
-from ....controller.Client import ClientTwoPartParameterMapping
+from ....controller.client import ClientTwoPartParameterMapping
 
 from adafruit_midi.control_change import ControlChange
 from adafruit_midi.program_change import ProgramChange

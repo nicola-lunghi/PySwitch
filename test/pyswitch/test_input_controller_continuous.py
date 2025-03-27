@@ -22,7 +22,7 @@ with patch.dict(sys.modules, {
         "lib.pyswitch.misc": MockMisc
     }):
         
-        from lib.pyswitch.controller.InputControllers import ContinuousController
+        from lib.pyswitch.controller.inputs import ContinuousController
         from lib.pyswitch.misc import Updater
         from .mocks_appl import *
 

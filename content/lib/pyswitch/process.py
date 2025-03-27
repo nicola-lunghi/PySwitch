@@ -9,8 +9,8 @@
 
 
 # Uncomment these two lines to enable memory monitoring
-#from pyswitch.stats import Memory as _Memory
-#_Memory.start()
+from pyswitch.stats import Memory as _Memory
+_Memory.start()
 
 from pyswitch.hardware.adafruit import AdafruitST7789DisplayDriver as _DisplayDriver, AdafruitNeoPixelDriver as _NeoPixelDriver, AdafruitFontLoader as _FontLoader
 from pyswitch.misc import get_option as _get_option
@@ -24,8 +24,8 @@ from config import Config as _Config
 
 if not _get_option(_Config, "exploreMode"):
     # Normal operation
-    from pyswitch.controller.Controller import Controller as _Controller
-    from pyswitch.controller.MidiController import MidiController as _MidiController
+    from pyswitch.controller import Controller as _Controller
+    from pyswitch.controller.midi import MidiController as _MidiController
     from pyswitch.ui.UiController import UiController as _UiController
 
     # Load communication configuration
@@ -82,7 +82,7 @@ if not _get_option(_Config, "exploreMode"):
 else:
     # Explore mode: Just shows the pressed GPIO port. This can be used to determine switch assignment 
     # on unknown devices, to create layouts for the configuration.
-    from pyswitch.controller.ExploreModeController import ExploreModeController as _ExploreModeController
+    from pyswitch.controller.explore import ExploreModeController as _ExploreModeController
     from pyswitch.ui.UiController import UiController as _UiController
     from pyswitch.hardware.adafruit.AdafruitSwitch import AdafruitSwitch as _Switch
     

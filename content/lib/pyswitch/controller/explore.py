@@ -1,4 +1,4 @@
-from .InputControllers import SwitchController
+from .inputs import SwitchController
 from .callbacks import Callback
 from .actions import Action
 from ..ui.layout import remove_from_bottom

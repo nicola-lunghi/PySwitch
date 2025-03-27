@@ -14,13 +14,17 @@ class ClientParameterMapping:
 
     # Singleton factory
     @staticmethod
-    def get(name = "", set = None, request = None, response = None, value = None, type = 0, depends = None):
+    def get(name, set = None, request = None, response = None, value = None, type = 0, depends = None):
+        if not name:
+            raise Exception() # You must provide an unique name!
+        
         for m in ClientParameterMapping._mappings:
             if m.name == name:
                 return m
             
         m = ClientParameterMapping(
             name = name,
+            create_key = ClientParameterMapping,
             set = set,
             request = request,
             response = response,
@@ -39,7 +43,10 @@ class ClientParameterMapping:
     PARAMETER_TYPE_STRING = const(1)
 
     # Takes MIDI messages as argument (ControlChange or SystemExclusive)
-    def __init__(self, name = "", set = None, request = None, response = None, value = None, type = 0, depends = None):
+    def __init__(self, name, create_key, set = None, request = None, response = None, value = None, type = 0, depends = None):
+        if create_key != ClientParameterMapping:
+            raise Exception() # Use the get method exclusively to create mappings!
+        
         self.name = name          # Mapping name (used for debug output only)
         self.set = set            # MIDI Message to set the parameter
         self.request = request    # MIDI Message to request the value
@@ -48,6 +55,7 @@ class ClientParameterMapping:
                                   # is buffered here.
         self.type = type          # Numeric or string
         self.depends = depends    # If another mapping is set here, this mapping will only be requested when the dependency has changed value
+                                  # NOTE: In 2.4.1, this is prepared but not realized already
 
     # Parse the incoming MIDI message and set its value on the mapping.
     # If the response template does not match, returns False, and
@@ -173,13 +181,14 @@ class ClientTwoPartParameterMapping(ClientParameterMapping):
 
     # Singleton factory
     @staticmethod
-    def get(name = "", set = None, request = None, response = None, value = None, type = 0, depends = None):
+    def get(name, set = None, request = None, response = None, value = None, type = 0, depends = None):
         for m in ClientParameterMapping._mappings:
             if m.name == name:
                 return m
             
         m = ClientTwoPartParameterMapping(
             name = name,
+            create_key = ClientParameterMapping,
             set = set,
             request = request,
             response = response,
@@ -193,8 +202,8 @@ class ClientTwoPartParameterMapping(ClientParameterMapping):
 
     ##########################################################################################################################
 
-    def __init__(self, name = "", set = None, request = None, response = None, value = None, type = 0, depends = None):
-        super().__init__(name = name, set = set, request = request, response = response, value = value, type = type, depends = depends)
+    def __init__(self, name, create_key, set = None, request = None, response = None, value = None, type = 0, depends = None):
+        super().__init__(name = name, create_key = create_key, set = set, request = request, response = response, value = value, type = type, depends = depends)
 
         self.__value_1 = None
     
