@@ -64,9 +64,9 @@ class TestKemperActionTunerMode(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.TUNER_MODE_STATE())
-        self.assertEqual(cb._BinaryParameterCallback__text, "Tuner")
-        self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
+        self.assertEqual(cb.mapping, KemperMappings.TUNER_MODE_STATE())
+        self.assertEqual(cb._text, "Tuner")
+        self.assertEqual(cb._color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -87,7 +87,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
         action.init(appl, switch)
 
         cb = action.callback
-        mapping = cb._BinaryParameterCallback__mapping
+        mapping = cb.mapping
         self.assertEqual(action.state, False)
 
         mapping.value = 1
@@ -95,7 +95,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
         self.assertEqual(action.state, True)
         self.assertEqual(appl.client.set_calls, [
             {
-                "mapping": cb._BinaryParameterCallback__mapping,
+                "mapping": cb.mapping,
                 "value": 1
             }
         ])
@@ -106,7 +106,7 @@ class TestKemperActionTunerMode(unittest.TestCase):
         self.assertEqual(action.state, False)
         self.assertEqual(appl.client.set_calls, [
             {
-                "mapping": cb._BinaryParameterCallback__mapping,
+                "mapping": cb.mapping,
                 "value": 0
             }
         ])

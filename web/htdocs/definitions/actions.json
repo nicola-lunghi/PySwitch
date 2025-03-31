@@ -1305,6 +1305,63 @@
                 "importPath": "pyswitch.clients.local.actions.encoder_button"
             },
             {
+                "name": "PARAMETER_UP_DOWN",
+                "parameters": [
+                    {
+                        "name": "mapping",
+                        "default": null,
+                        "comment": null
+                    },
+                    {
+                        "name": "offset",
+                        "default": null,
+                        "comment": "Offset to be added to the parameter value"
+                    },
+                    {
+                        "name": "max_value",
+                        "default": "None",
+                        "comment": "Max. value. If None, this is derived automatically from the mapping."
+                    },
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"\"",
+                        "comment": "Can contain {val} which will be replaced with the current parameter value"
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.LIGHT_GREEN",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness",
+                        "default": "0.3",
+                        "comment": "LED brightness for max value"
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    }
+                ],
+                "comment": "Generic switch action which can be used for all parameter mappings",
+                "importPath": "pyswitch.clients.local.actions.param_change"
+            },
+            {
                 "name": "HID_KEYBOARD",
                 "parameters": [
                     {

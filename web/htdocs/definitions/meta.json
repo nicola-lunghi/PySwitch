@@ -887,6 +887,30 @@
                 "category": "other",
                 "target": "AdafruitSwitch",
                 "parameters": []
+            },
+
+            {
+                "entityName": "PARAMETER_UP_DOWN",
+                "category": "other",
+                "target": "AdafruitSwitch",
+                "parameters": [
+                    {
+                        "name": "mapping",
+                        "type": "select",
+                        "default": "MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_REV)",
+                        "comment": "Mapping to be used."
+                    },
+                    {
+                        "name": "offset",
+                        "type": "int",
+                        "default": "512"
+                    },
+                    {
+                        "name": "text",
+                        "type": "text",
+                        "default": "{val}%"
+                    }
+                ]
             }
         ]
     }

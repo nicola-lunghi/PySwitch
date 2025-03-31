@@ -1,6 +1,8 @@
 # PySwitch v2.4.2
-    - Added some mapping dependencies
-    - Changed the internal interface of the action callbacks a bit. If you defined your own callbacks: The action parameter is removed from most methods, replace this with "self.action" if you need it. This saves some (minor but still) RAM again.
+    - Added some mapping dependencies (no functional changes)
+    - Changed the internal interface of the action callbacks a bit. If you defined your own callbacks: The action parameter is removed from most methods, replace this with "self.action" if you need it. This saves some (minor but still) RAM again. No other changes to the config files.
+    - Optimized Pager (in terms of RAM, no functional changes)
+    - Renamed mapping MAPPING_DELAY_MIX to MAPPING_DLY_REV_MIX (config needs to be changed only if you have this mapping adressed in the "Other" action or by code)
 
 ### Emulator 2.4.2.9
     nothing changed

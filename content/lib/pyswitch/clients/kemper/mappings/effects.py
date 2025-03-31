@@ -22,7 +22,7 @@ def MAPPING_EFFECT_BUTTON(num):
     )
 
 
-def MAPPING_DELAY_MIX(slot_id):
+def MAPPING_DLY_REV_MIX(slot_id):
     return ClientParameterMapping.get(
         name = f"Mix { str(slot_id) }",
         set = KemperNRPNMessage(

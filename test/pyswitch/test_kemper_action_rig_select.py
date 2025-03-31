@@ -212,7 +212,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -243,7 +243,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -315,7 +315,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -371,7 +371,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -414,7 +414,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         
         # On state
         mapping.value = NUM_RIGS_PER_BANK * 2
@@ -461,7 +461,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
         
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
 
         self.assertNotIn("morphStateOverride", appl.shared)
         
@@ -583,7 +583,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         mapping.value = 0
 
         with self.assertRaises(Exception):            
@@ -609,7 +609,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
 
         # Normal        
         mapping.value = 5 # Off rig
@@ -673,7 +673,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
         
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         
         mapping.value = rig + 1   # Not matching
         action.update_displays()
@@ -733,7 +733,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping   
+        mapping = action.callback.mapping   
         mapping_disable = action.callback.mapping_disable
 
         mapping.value = bank * NUM_RIGS_PER_BANK + 3   # Not matching (Rig 3)
@@ -820,7 +820,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action_select])
         action_select.init(appl, switch)
 
-        mapping_rig = action_select.callback._BinaryParameterCallback__mapping 
+        mapping_rig = action_select.callback.mapping 
         
         mapping_rig.value = 4  # off value
         ecb.output = False
@@ -872,7 +872,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping   
+        mapping = action.callback.mapping   
 
         mapping.value = bank * NUM_RIGS_PER_BANK + 1   # Not matching (Rig 1)
         action.update_displays()
@@ -955,7 +955,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
         
-        mapping = action.callback._BinaryParameterCallback__mapping   
+        mapping = action.callback.mapping   
 
         mapping.value = bank * NUM_RIGS_PER_BANK + 1   # Not matching (Rig 2)
         action.update_displays()

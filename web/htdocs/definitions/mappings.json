@@ -15,7 +15,7 @@
                 "importPath": "pyswitch.clients.kemper.mappings.effects"
             },
             {
-                "name": "MAPPING_DELAY_MIX",
+                "name": "MAPPING_DLY_REV_MIX",
                 "parameters": [
                     {
                         "name": "slot_id",

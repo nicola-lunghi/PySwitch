@@ -54,9 +54,9 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_TEMPO_DISPLAY())
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
+        self.assertEqual(cb.mapping, MAPPING_TEMPO_DISPLAY())
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -99,9 +99,9 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_TEMPO_DISPLAY())
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
+        self.assertEqual(cb.mapping, MAPPING_TEMPO_DISPLAY())
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)

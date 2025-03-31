@@ -71,12 +71,12 @@ class TestLocalActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, mapping_1)
+        self.assertEqual(cb.mapping, mapping_1)
         self.assertEqual(cb._value_enable, 3)
         self.assertEqual(cb._value_disable, 5)
         self.assertEqual(cb._BinaryParameterCallback__reference_value, 6)
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._color, (2, 3, 4))
         self.assertEqual(cb._BinaryParameterCallback__comparison_mode, BinaryParameterCallback.LESS)
 
         self.assertEqual(action.label, display)

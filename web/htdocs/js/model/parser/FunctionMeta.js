@@ -41,6 +41,7 @@ class FunctionMeta {
             case "BINARY_SWITCH": return this.#getDisplayNameBinarySwitch(actionCallProxy);
             case "HID_KEYBOARD": return this.#getDisplayNameHidKeyboardShort(actionCallProxy);
             case "ENCODER_BUTTON": return this.#getDisplayNameEncoderButtonShort(actionCallProxy);
+            case "PARAMETER_UP_DOWN": return this.#getDisplayNameChangeParam(actionCallProxy);
         }
         return this.underscoreToDisplayName(this.functionDefinition.name);
     }
@@ -51,11 +52,12 @@ class FunctionMeta {
     async getSortString() {
         if (this.functionDefinition.name.startsWith("PagerAction")) return "ZZZZZ_100_" + this.functionDefinition.name;
         if (this.functionDefinition.name == "BINARY_SWITCH")        return "ZZZZZ_010";
+        if (this.functionDefinition.name == "PARAMETER_UP_DOWN")    return "ZZZZZ_020";
         if (this.functionDefinition.name == "HID_KEYBOARD")         return "ZZZZZ_040";
         if (this.functionDefinition.name == "ENCODER_BUTTON")       return "ZZZZZ_050";
 
         if (this.functionDefinition.name == "EncoderAction")        return "ZZZZZ_010";
-        if (this.functionDefinition.name == "AnalogAction")        return "ZZZZZ_010";
+        if (this.functionDefinition.name == "AnalogAction")         return "ZZZZZ_010";
         
         return this.functionDefinition.name;
     }
@@ -131,6 +133,15 @@ class FunctionMeta {
         return splt[0];
     }
 
+    #stripMappingName(mapping) {
+        return this.underscoreToDisplayName(
+            mapping.value
+            .replace("MAPPING_", "")
+            .replace("KemperMappings.", "")
+            .replace(/\((.+?)*\)/g, "")
+        );
+    }
+
     /**
      * Special implementation for EncoderAction
      */
@@ -140,12 +151,7 @@ class FunctionMeta {
         const mapping = this.getArgument(actionCallProxy, "mapping");
 
         if (!(mapping == null || mapping.value == "None")) {
-            return this.underscoreToDisplayName(
-                mapping.value
-                .replace("MAPPING_", "")
-                .replace("KemperMappings.", "")
-                .replace(/\((.+?)*\)/g, "")
-            );
+            return this.#stripMappingName(mapping)
         }
 
         return "Other Parameter";
@@ -160,15 +166,28 @@ class FunctionMeta {
         const mapping = this.getArgument(actionCallProxy, "mapping");
 
         if (!(mapping == null || mapping.value == "None")) {
-            return this.underscoreToDisplayName(
-                mapping.value
-                .replace("MAPPING_", "")
-                .replace("KemperMappings.", "")
-                .replace(/\((.+?)*\)/g, "")
-            );
+            return this.#stripMappingName(mapping)
         }
 
         return "Other Parameter";
+    }
+
+    #getDisplayNameChangeParam(actionCallProxy = null) {
+        if (!actionCallProxy) return "Parameter Up/Down";
+
+        const mapping = this.getArgument(actionCallProxy, "mapping");
+        const offset = this.getArgument(actionCallProxy, "offset");
+
+        if (!(mapping == null || mapping.value == "None")) {
+            if (!(offset == null || offset.value == "None")) {
+                const offsetInt = parseInt(offset.value)
+                return this.#stripMappingName(mapping) + ((offsetInt > 0) ? " Up": " Down");
+            } else {
+                return this.#stripMappingName(mapping);
+            }            
+        }
+
+        return "Parameter Up/Down";
     }
 
     #getDisplayNameHidKeyboard(actionCallProxy = null) {

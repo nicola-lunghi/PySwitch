@@ -94,9 +94,9 @@ class TestKemperActionEffectButton(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_EFFECT_BUTTON(num))
-        self.assertEqual(cb._BinaryParameterCallback__text, exp_text)
-        self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
+        self.assertEqual(cb.mapping, MAPPING_EFFECT_BUTTON(num))
+        self.assertEqual(cb._text, exp_text)
+        self.assertEqual(cb._color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -114,7 +114,7 @@ class TestKemperActionEffectButton(unittest.TestCase):
         action.init(appl, switch)
 
         cb = action.callback
-        mapping = cb._BinaryParameterCallback__mapping
+        mapping = cb.mapping
         mapping_rig = cb._KemperEffectButtonCallback__rig_mapping
 
         cb.parameter_changed(mapping_rig)  # Trigger condition for False state

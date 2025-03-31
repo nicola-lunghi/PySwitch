@@ -71,9 +71,9 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_TAP_TEMPO())
-        self.assertEqual(cb._BinaryParameterCallback__text, "Tap")
-        self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
+        self.assertEqual(cb.mapping, MAPPING_TAP_TEMPO())
+        self.assertEqual(cb._text, "Tap")
+        self.assertEqual(cb._color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -101,9 +101,9 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_MORPH_BUTTON())
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        #self.assertEqual(cb._BinaryParameterCallback__color, (3, 4, 5))
+        self.assertEqual(cb.mapping, MAPPING_MORPH_BUTTON())
+        self.assertEqual(cb._text, "foo")
+        #self.assertEqual(cb._color, (3, 4, 5))
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
 
@@ -134,8 +134,8 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, KemperMorphCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_MORPH_BUTTON())
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb.mapping, MAPPING_MORPH_BUTTON())
+        self.assertEqual(cb._text, "foo")
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
 
@@ -168,8 +168,8 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, KemperMorphCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_MORPH_PEDAL())
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb.mapping, MAPPING_MORPH_PEDAL())
+        self.assertEqual(cb._text, "foo")
         self.assertEqual(cb._BinaryParameterCallback__comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
         self.assertEqual(cb._led_brightness_off, 0.3)
 
@@ -209,11 +209,11 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_RIG_VOLUME())
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb.mapping, MAPPING_RIG_VOLUME())
+        self.assertEqual(cb._text, "foo")
         self.assertEqual(cb._value_enable, exp_value_enable)
         self.assertEqual(cb._value_disable, exp_value_disable)
-        self.assertEqual(cb._BinaryParameterCallback__color, (4, 5, 6))
+        self.assertEqual(cb._color, (4, 5, 6))
 
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 67)
@@ -257,10 +257,10 @@ class TestKemperActionDefinitions(unittest.TestCase):
         cb_morph = action_morph.callback
 
         self.assertIsInstance(cb_select, BinaryParameterCallback)
-        self.assertEqual(cb_select._BinaryParameterCallback__mapping, MAPPING_RIG_SELECT(0))
+        self.assertEqual(cb_select.mapping, MAPPING_RIG_SELECT(0))
 
         self.assertIsInstance(cb_morph, KemperMorphCallback)
-        self.assertEqual(cb_morph._BinaryParameterCallback__mapping, MAPPING_MORPH_PEDAL())
+        self.assertEqual(cb_morph.mapping, MAPPING_MORPH_PEDAL())
         self.assertEqual(cb_morph._BinaryParameterCallback__comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
         self.assertEqual(cb_morph._led_brightness_off, 0.3)
         self.assertEqual(cb_morph._BinaryParameterCallback__display_dim_factor_off, 1)
@@ -314,10 +314,10 @@ class TestKemperActionDefinitions(unittest.TestCase):
     #     cb_morph = action_morph.callback
 
     #     self.assertIsInstance(cb_select, BinaryParameterCallback)
-    #     self.assertEqual(cb_select._BinaryParameterCallback__mapping, MAPPING_BANK_AND_RIG_SELECT(0))
+    #     self.assertEqual(cb_select.mapping, MAPPING_BANK_AND_RIG_SELECT(0))
 
     #     self.assertIsInstance(cb_morph, KemperMorphCallback)
-    #     self.assertEqual(cb_morph._BinaryParameterCallback__mapping, MAPPING_MORPH_PEDAL())
+    #     self.assertEqual(cb_morph.mapping, MAPPING_MORPH_PEDAL())
     #     self.assertEqual(cb_morph._BinaryParameterCallback__comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)
     #     self.assertEqual(cb_morph._led_brightness_off, 0.3)
     #     self.assertEqual(cb_morph._BinaryParameterCallback__display_dim_factor_off, 1)
@@ -357,11 +357,11 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_REC_PLAY_OVERDUB())
+        self.assertEqual(cb.mapping, MAPPING_LOOPER_REC_PLAY_OVERDUB())
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._color, (2, 3, 4))
         
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 45)
@@ -390,11 +390,11 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_STOP())
+        self.assertEqual(cb.mapping, MAPPING_LOOPER_STOP())
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._color, (2, 3, 4))
         
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 45)
@@ -423,11 +423,11 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_ERASE())
+        self.assertEqual(cb.mapping, MAPPING_LOOPER_ERASE())
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._color, (2, 3, 4))
         
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 45)
@@ -457,11 +457,11 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_CANCEL())
+        self.assertEqual(cb.mapping, MAPPING_LOOPER_CANCEL())
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._color, (2, 3, 4))
         
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 45)
@@ -491,11 +491,11 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_REVERSE())
+        self.assertEqual(cb.mapping, MAPPING_LOOPER_REVERSE())
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._color, (2, 3, 4))
         
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 45)
@@ -525,11 +525,11 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_TRIGGER())
+        self.assertEqual(cb.mapping, MAPPING_LOOPER_TRIGGER())
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._color, (2, 3, 4))
         
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 45)
@@ -559,11 +559,11 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertIsInstance(cb, BinaryParameterCallback)
         self.assertIsInstance(action, PushButtonAction)
 
-        self.assertEqual(cb._BinaryParameterCallback__mapping, MAPPING_LOOPER_HALF_SPEED())
+        self.assertEqual(cb.mapping, MAPPING_LOOPER_HALF_SPEED())
         self.assertEqual(cb._value_enable, 1)
         self.assertEqual(cb._value_disable, 0)
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
-        self.assertEqual(cb._BinaryParameterCallback__color, (2, 3, 4))
+        self.assertEqual(cb._text, "foo")
+        self.assertEqual(cb._color, (2, 3, 4))
         
         self.assertEqual(action.label, display)
         self.assertEqual(action.id, 45)

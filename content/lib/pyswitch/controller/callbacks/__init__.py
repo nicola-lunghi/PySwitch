@@ -144,21 +144,21 @@ class BinaryParameterCallback(Callback):
         ):
         super().__init__(mappings = [mapping])
 
-        self.__mapping = mapping
+        self.mapping = mapping
         self.mapping_disable = mapping_disable   # Can be changed from outside!
 
         self._value_enable = value_enable
         self._value_disable = value_disable
         self.__reference_value = reference_value if reference_value != None else ( self._value_enable if not isinstance(self._value_enable, list) else self._value_enable[0] )
-        self.__text = text
-        self.__text_disabled = text_disabled
+        self._text = text
+        self._text_disabled = text_disabled
         self.__comparison_mode = comparison_mode
         self.__display_dim_factor_on = display_dim_factor_on
         self.__display_dim_factor_off = display_dim_factor_off
         self._led_brightness_on = led_brightness_on
         self._led_brightness_off = led_brightness_off
-        self.__color = color
-        self.__color_callback = color_callback
+        self._color = color
+        self._color_callback = color_callback
         self.__use_internal_state = use_internal_state
 
         self.__current_value = self       # Just some value which will never occur as a mapping value ;)
@@ -202,13 +202,13 @@ class BinaryParameterCallback(Callback):
 
     def state_changed_by_user(self):
         if self.action.state:
-            set_mapping = self.__mapping
+            set_mapping = self.mapping
             value = self._value_enable
         else:
             if self.mapping_disable:
                 set_mapping = self.mapping_disable
             else:
-                set_mapping = self.__mapping
+                set_mapping = self.mapping
 
             value = self._value_disable
 
@@ -236,13 +236,13 @@ class BinaryParameterCallback(Callback):
 
 
     def update_displays(self):
-        value = self.__mapping.value
+        value = self.mapping.value
 
         if value != self.__current_value:
             self.__current_value = value
             self.evaluate_value(value)
 
-        color = self.__color_callback(self.action, value) if self.__color_callback else self.__color
+        color = self._color_callback(self.action, value) if self._color_callback else self._color
 
         # Set color, if new, or state have been changed
         if color != self._current_color or self._current_display_state != self.action.state:
@@ -306,7 +306,7 @@ class BinaryParameterCallback(Callback):
         # Update switch LED color 
         self.action.switch_color = color
 
-        if self.action.state == True and (self.__mapping.response or self.__use_internal_state):
+        if self.action.state == True and (self.mapping.response or self.__use_internal_state):
             # Switched on
             self.action.switch_brightness = self._led_brightness_on
         else:
@@ -319,7 +319,7 @@ class BinaryParameterCallback(Callback):
         if not self.action.label:
             return
             
-        if self.action.state == True and (self.__mapping.response or self.__use_internal_state):
+        if self.action.state == True and (self.mapping.response or self.__use_internal_state):
             self.action.label.back_color = self.dim_color(color, self.__display_dim_factor_on)
         else:
             self.action.label.back_color = self.dim_color(color, self.__display_dim_factor_off)
@@ -330,16 +330,16 @@ class BinaryParameterCallback(Callback):
         if not self.action.label:
             return
             
-        if not self.__text:
+        if not self._text:
             return
         
-        if self.action.state == True or not (self.__mapping.response or self.__use_internal_state):
-            self.action.label.text = self.__text
+        if self.action.state == True or not (self.mapping.response or self.__use_internal_state):
+            self.action.label.text = self._text
         else:
-            if self.__text_disabled:
-                self.action.label.text = self.__text_disabled
+            if self._text_disabled:
+                self.action.label.text = self._text_disabled
             else:
-                self.action.label.text = self.__text
+                self.action.label.text = self._text
 
 
     # Dims a passed color for display of disabled state

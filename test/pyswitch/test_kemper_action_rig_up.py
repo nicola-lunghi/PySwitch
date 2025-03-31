@@ -191,7 +191,7 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -221,7 +221,7 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -277,7 +277,7 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -319,7 +319,7 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         mapping.value = mapping_value
 
         action.update_displays()
@@ -355,7 +355,7 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         
         # On state
         mapping.value = 100
@@ -392,7 +392,7 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         mapping.value = 0
 
         with self.assertRaises(Exception):            
@@ -415,7 +415,7 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
         
-        mapping = action.callback._BinaryParameterCallback__mapping 
+        mapping = action.callback.mapping 
         
         mapping.value = 0
         action.update_displays()

@@ -200,8 +200,10 @@ class PySwitchRunner {
             
             this.#loadModule("pyswitch/clients/local/actions/binary_switch.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/local/actions/pager.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/local/actions/pager_direct.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/local/actions/hid.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/local/actions/encoder_button.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/local/actions/param_change.py", circuitpyPath),
 
             this.#loadModule("pyswitch/controller/__init__.py", circuitpyPath),
             this.#loadModule("pyswitch/controller/client.py", circuitpyPath),

@@ -66,7 +66,7 @@ class TestKemperMorphCallback(unittest.TestCase):
         )
 
         self.assertIsInstance(cb, BinaryParameterCallback)
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb._text, "foo")
 
         action_1 = PushButtonAction({
             "mode": PushButtonAction.MOMENTARY,
@@ -209,7 +209,7 @@ class TestKemperMorphCallback(unittest.TestCase):
         )
 
         self.assertIsInstance(cb, BinaryParameterCallback)
-        self.assertEqual(cb._BinaryParameterCallback__text, "foo")
+        self.assertEqual(cb._text, "foo")
 
         action_1 = PushButtonAction({
             "mode": PushButtonAction.MOMENTARY,

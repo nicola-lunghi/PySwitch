@@ -46,7 +46,7 @@ class TestKemperActionEffectStateExt(unittest.TestCase):
 
         cb = action.callback
         self.assertIsInstance(cb, KemperEffectEnableCallback)
-        self.assertEqual(cb._BinaryParameterCallback__mapping, KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_C))
+        self.assertEqual(cb.mapping, KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_C))
         self.assertEqual(cb.mapping_fxtype, KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_C))
 
         self.assertIsInstance(action, PushButtonAction)
