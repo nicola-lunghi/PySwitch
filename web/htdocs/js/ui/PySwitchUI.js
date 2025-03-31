@@ -84,7 +84,7 @@ class PySwitchUI {
                     $('<div class="about" />').append(
                         // Version
                         $('<div class="version"/>')
-                        .html("PySwitch Emulator<br>v" + this.#controller.VERSION)
+                        .html("PySwitch Emulator<br>v" + Controller.VERSION)
                         .on('click', async function() {
                             try {
                                 await that.showAbout();

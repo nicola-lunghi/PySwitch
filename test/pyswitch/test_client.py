@@ -606,3 +606,95 @@ class TestClient(unittest.TestCase):
 
         self.assertEqual(req.finished, True)
         
+
+##############################################################################################
+
+
+    def test_request_dependency(self):        
+        midi = MockAdafruitMIDI.MIDI()
+
+        client = Client(
+            midi = midi,
+            config = {},
+        )
+
+        mapping_dep = MockParameterMapping(
+            request = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            ),
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        mapping_1 = MockParameterMapping(
+            depends = mapping_dep,
+            request = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x19]
+            ),
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x19]
+            )
+        )
+
+        listener = MockClientRequestListener()
+
+        client.request(mapping_1, listener)
+
+        self.assertEqual(len(midi.messages_sent), 1)
+        self.assertEqual(midi.messages_sent[0], mapping_dep.request)
+        
+        # Receive dependency message
+        req = client.requests[0]
+        answer_msg = SystemExclusive(
+            manufacturer_id = [0x00, 0x10, 0x20],
+            data = [0x00, 0x00, 0x07, 0x45]
+        )
+
+        mapping_dep.outputs_parse = [
+            {
+                "message": answer_msg,
+                "value": 34
+            }
+        ]
+
+        client.receive(answer_msg)
+        self.assertEqual(listener.parameter_changed_calls, [])
+        self.assertEqual(mapping_dep.value, 34)
+        self.assertEqual(mapping_1.value, None)
+        self.assertEqual(req.finished, True)
+
+        # Receive dependency message
+        self.assertEqual(len(client.requests), 1)
+        req2 = client.requests[0]
+
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg,
+                "value": 12
+            }
+        ]
+
+        client.receive(answer_msg)
+        self.assertEqual(listener.parameter_changed_calls, [mapping_1])
+        self.assertEqual(mapping_1.value, 12)
+        self.assertEqual(req2.finished, True)
+        self.assertEqual(client.requests, [])
+
+        # Receive dependency (no value change)
+        mapping_1.outputs_parse = [
+            {
+                "message": answer_msg,
+                "value": 12
+            }
+        ]
+
+        client.receive(answer_msg)
+        self.assertEqual(listener.parameter_changed_calls, [mapping_1])
+        self.assertEqual(mapping_1.value, 12)
+        self.assertEqual(client.requests, [])
+

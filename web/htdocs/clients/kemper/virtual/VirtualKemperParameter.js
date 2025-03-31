@@ -12,7 +12,7 @@ class VirtualKemperParameter {
     valueType = null;
 
     // // Debug specific keys
-    debugParamKeys = [
+    // debugParamKeys = [
     //     // new NRPNKey([127, 126]),     // Tuner state
     //     // new NRPNKey([0, 11]),        // Morph state
     //     // new NRPNKey([60, 3]),        // DLY state
@@ -24,9 +24,9 @@ class VirtualKemperParameter {
     //     new CCKey(54),                   // Select rig
     //     new CCKey(11),                   // Morph Pedal
     //     new NRPNKey([0, 11])             // Morph Pedal
-         new NRPNKey([0, 1]),             // Rig name
-         new NRPNKey([0, 16])             // Amp name
-    ];
+    //      new NRPNKey([0, 1]),             // Rig name
+    //      new NRPNKey([0, 16])             // Amp name
+    // ];
 
     /**
      * {

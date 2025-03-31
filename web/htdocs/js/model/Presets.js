@@ -2,8 +2,8 @@ class Presets {
 
     #state = null;
 
-    constructor(controller) {
-        this.#state = new LocalState(controller, "presets", true); // No PySwitch version
+    constructor() {
+        this.#state = new LocalState("presets", true); // No PySwitch version
     }
 
     /**

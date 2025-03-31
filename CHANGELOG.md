@@ -1,3 +1,9 @@
+# PySwitch v2.4.2
+    - Added some mapping dependencies
+
+### Emulator 2.4.2.9
+    nothing changed
+
 # PySwitch v2.4.1
 - Optimizations for performance/RAM:
     - Modularized the misc.py code out, only loaded when debugging is active. This gave us another ~5-10kB from the start!

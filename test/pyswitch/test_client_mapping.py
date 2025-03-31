@@ -26,12 +26,24 @@ with patch.dict(sys.modules, {
 
 class TestClientParameterMapping(unittest.TestCase):
 
-    def test_singleton_check(self):
+    def test_singleton(self):
+        # Test the Mock Parameter Mapping unique name checker routine
+        with self.assertRaises(Exception):
+            ClientParameterMapping(name = "footest", create_key = 1)
+
+    def test_singleton_name_check(self):
         # Test the Mock Parameter Mapping unique name checker routine
         ClientParameterMapping.get(name = "footest")
 
         with self.assertRaises(Exception):
             ClientParameterMapping(name = "footest")
+
+    def test_no_name(self):
+        with self.assertRaises(Exception):
+            ClientParameterMapping.get(name = None)
+
+
+    #####################################################################################
 
     def test_parse_sysex(self):
         msg_irrelevant_man_id = SystemExclusive(

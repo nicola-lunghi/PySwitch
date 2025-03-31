@@ -20,7 +20,7 @@ class Tabs {
         this.#container = container;
         this.#showTabsButton = showTabsButton;
 
-        this.#state = new LocalState(controller, "tabs");
+        this.#state = new LocalState("tabs");
 
         this.init();
     }

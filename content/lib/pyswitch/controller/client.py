@@ -241,7 +241,6 @@ class Client: #(ClientRequestListener):
             self.__listener = listener
 
         def parameter_changed(self, mapping):
-            print(mapping.name)
             if mapping.value != self.__last_value:
                 self.__last_value = mapping.value
 
