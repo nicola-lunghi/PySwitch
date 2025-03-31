@@ -469,10 +469,18 @@ class TestLocalPagerAction(unittest.TestCase):
             select_page = 2
         )
 
-        proxy = pager.proxy(
-            page_id = 1,
-            use_leds = True
-        )
+        with patch.dict(sys.modules, {
+            "micropython": MockMicropython,
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "gc": MockGC()
+        }):
+            proxy = pager.proxy(
+                page_id = 1,
+                use_leds = True
+            )
 
         action_1 = MockAction({ "enableCallback": pager.enable_callback, "id": 1 })
         action_2 = MockAction({ "enableCallback": pager.enable_callback, "id": 2 })
@@ -575,10 +583,18 @@ class TestLocalPagerAction(unittest.TestCase):
             select_page = 2
         )
 
-        proxy = pager.proxy(
-            page_id = 1,
-            use_leds = True
-        )
+        with patch.dict(sys.modules, {
+            "micropython": MockMicropython,
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "gc": MockGC()
+        }):
+            proxy = pager.proxy(
+                page_id = 1,
+                use_leds = True
+            )
 
         action_1 = MockAction({ "enableCallback": pager.enable_callback, "id": 1 })
         action_2 = MockAction({ "enableCallback": pager.enable_callback, "id": 2 })
@@ -665,9 +681,17 @@ class TestLocalPagerAction(unittest.TestCase):
         action_1 = MockAction({ "enableCallback": pager.enable_callback, "id": 1 })
         action_2 = MockAction({ "enableCallback": pager.enable_callback, "id": 2 })
 
-        proxy = pager.proxy(
-            page_id = 10
-        )
+        with patch.dict(sys.modules, {
+            "micropython": MockMicropython,
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "gc": MockGC()
+        }):
+            proxy = pager.proxy(
+                page_id = 10
+            )
 
         switch = MockFootswitch(
             actions = [
@@ -743,15 +767,23 @@ class TestLocalPagerAction(unittest.TestCase):
             display = display
         )
 
-        proxy_1 = pager.proxy(
-            page_id = 1,
-            use_leds = True
-        )
+        with patch.dict(sys.modules, {
+            "micropython": MockMicropython,
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "gc": MockGC()
+        }):
+            proxy_1 = pager.proxy(
+                page_id = 1,
+                use_leds = True
+            )
 
-        proxy_2 = pager.proxy(
-            page_id = 2,
-            use_leds = True
-        )
+            proxy_2 = pager.proxy(
+                page_id = 2,
+                use_leds = True
+            )
 
         action_1 = MockAction({ "enableCallback": pager.enable_callback, "id": 1 })
         action_2 = MockAction({ "enableCallback": pager.enable_callback, "id": 2 })
@@ -864,15 +896,23 @@ class TestLocalPagerAction(unittest.TestCase):
             display = display
         )
 
-        proxy_1 = pager.proxy(
-            page_id = 1,
-            use_leds = True
-        )
+        with patch.dict(sys.modules, {
+            "micropython": MockMicropython,
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "gc": MockGC()
+        }):
+            proxy_1 = pager.proxy(
+                page_id = 1,
+                use_leds = True
+            )
 
-        proxy_2 = pager.proxy(
-            page_id = 2,
-            use_leds = True
-        )
+            proxy_2 = pager.proxy(
+                page_id = 2,
+                use_leds = True
+            )
 
         action_1 = MockAction({ "enableCallback": pager.enable_callback, "id": 1 })
         action_2 = MockAction({ "enableCallback": pager.enable_callback, "id": 2 })
@@ -980,9 +1020,17 @@ class TestLocalPagerAction(unittest.TestCase):
             led_brightness_off = 0.3
         )
 
-        proxy_1 = pager.proxy(
-            page_id = 1
-        )
+        with patch.dict(sys.modules, {
+            "micropython": MockMicropython,
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "gc": MockGC()
+        }):
+            proxy_1 = pager.proxy(
+                page_id = 1
+            )
 
         action_1 = MockAction({ "enableCallback": pager.enable_callback, "id": 1 })
         action_2 = MockAction({ "enableCallback": pager.enable_callback, "id": 2 })
@@ -1034,9 +1082,17 @@ class TestLocalPagerAction(unittest.TestCase):
         action_1 = MockAction({ "enableCallback": pager.enable_callback, "id": 1 })
         action_2 = MockAction({ "enableCallback": pager.enable_callback, "id": 2 })
 
-        proxy = pager.proxy(
-            page_id = 10
-        )
+        with patch.dict(sys.modules, {
+            "micropython": MockMicropython,
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "gc": MockGC()
+        }):
+            proxy = pager.proxy(
+                page_id = 10
+            )
 
         switch = MockFootswitch(
             actions = [

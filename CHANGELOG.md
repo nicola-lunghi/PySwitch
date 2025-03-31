@@ -1,6 +1,6 @@
 # PySwitch v2.4.2
     - Added some mapping dependencies
-    - Changed the internal interface of the action callbacks a bit. If you defined your own callbacks: The action parameter is removed from most methods, replace this with "self.action" if you need it.
+    - Changed the internal interface of the action callbacks a bit. If you defined your own callbacks: The action parameter is removed from most methods, replace this with "self.action" if you need it. This saves some (minor but still) RAM again.
 
 ### Emulator 2.4.2.9
     nothing changed
