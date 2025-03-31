@@ -142,17 +142,17 @@ class KemperMorphCallback(BinaryParameterCallback):
             appl.shared["morphStateOverride"] = 0
 
 
-    def state_changed_by_user(self, action):
+    def state_changed_by_user(self):
         if self.__suppress_send:
             return
         
-        super().state_changed_by_user(action)
+        super().state_changed_by_user()
 
-        if self.__set_internal_state and action.state:
+        if self.__set_internal_state and self.action.state:
             self.appl.shared["morphStateOverride"] = 0 if (self.appl.shared["morphStateOverride"] > 0) else 16383
 
     
-    def evaluate_value(self, action, value):
+    def evaluate_value(self, value):
         if self.__set_internal_state and value != None and value != self.__last_value:
             self.__last_value = value
 
@@ -162,4 +162,4 @@ class KemperMorphCallback(BinaryParameterCallback):
             else:
                 self.ignore_next_value = False
 
-        super().evaluate_value(action, value)
+        super().evaluate_value(value)

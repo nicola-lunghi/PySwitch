@@ -144,7 +144,7 @@ class KemperBankChangeCallback(BinaryParameterCallback):
             self.__appl.shared["preselectBlinkState"] = False
             self.__appl.shared["preselectCallback"] = None
 
-    def state_changed_by_user(self, action):
+    def state_changed_by_user(self):
         if self.__preselect:
             if self.__mapping.value == None:
                 return
@@ -169,19 +169,17 @@ class KemperBankChangeCallback(BinaryParameterCallback):
         if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectCallback"] == self and self.__preselect_blink_period.exceeded:
             self.__appl.shared["preselectBlinkState"] = not self.__appl.shared["preselectBlinkState"]
             
-            self.update_displays(self.__action)
+            self.update_displays()
 
-    def update_displays(self, action):
-        self.__action = action
-
+    def update_displays(self):
         if self.__mapping.value == None:
             # Fallback to default behaviour
-            if action.label:
-                action.label.text = self.__text
-                action.label.back_color = self.dim_color(Colors.WHITE, self.__dim_factor)
+            if self.action.label:
+                self.action.label.text = self.__text
+                self.action.label.back_color = self.dim_color(Colors.WHITE, self.__dim_factor)
 
-            action.switch_color = Colors.WHITE
-            action.switch_brightness = self.__led_brightness
+            self.action.switch_color = Colors.WHITE
+            self.action.switch_brightness = self.__led_brightness
             return
         
         # Calculate bank and rig numbers in range [0...]
@@ -190,7 +188,7 @@ class KemperBankChangeCallback(BinaryParameterCallback):
         target_bank = self.__get_next_bank(bank)
 
         if self.__color_callback:
-            bank_color = self.__color_callback(action, bank, rig)
+            bank_color = self.__color_callback(self.action, bank, rig)
         elif self.__color:
             bank_color = self.__color
         else:
@@ -200,26 +198,26 @@ class KemperBankChangeCallback(BinaryParameterCallback):
                 bank_color = BANK_COLORS[target_bank % len(BANK_COLORS)]
 
         # Label text
-        if action.label:
-            action.label.back_color = self.dim_color(bank_color, self.__dim_factor)
+        if self.action.label:
+            self.action.label.back_color = self.dim_color(bank_color, self.__dim_factor)
 
             if self.__text_callback:
                 if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                    action.label.text = self.__text_callback(action, bank, rig)
+                    self.action.label.text = self.__text_callback(self.action, bank, rig)
 
                 elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:                    
-                    action.label.text = self.__text_callback(action, target_bank, rig)
+                    self.action.label.text = self.__text_callback(self.action, target_bank, rig)
                 else:
                     raise Exception() #"Invalid display mode: " + repr(display_mode))
             else:
-                action.label.text = self.__text
+                self.action.label.text = self.__text
 
-        action.switch_color = bank_color
+        self.action.switch_color = bank_color
 
         if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectCallback"] == self: 
-            action.switch_brightness = self.__led_brightness if not self.__appl.shared["preselectBlinkState"] else self.__led_brightness_off
+            self.action.switch_brightness = self.__led_brightness if not self.__appl.shared["preselectBlinkState"] else self.__led_brightness_off
         else:
-            action.switch_brightness = self.__led_brightness
+            self.action.switch_brightness = self.__led_brightness
 
     def __get_next_bank(self, bank = None):
         if "preselectedBank" in self.__appl.shared:

@@ -32,7 +32,11 @@ class AnalogAction:
         self.__factor = 65536 / (max_value + 1)
         self.__max_value = max_value
         self.__period = PeriodCounter(1000 / max_frame_rate)
+        
         self.__enable_callback = enable_callback
+        if self.__enable_callback:
+            self.__enable_callback.action = self
+
         self.__step_width = int(65536 / num_steps)
         self.__last_value = -1
         self.__transfer_function = transfer_function

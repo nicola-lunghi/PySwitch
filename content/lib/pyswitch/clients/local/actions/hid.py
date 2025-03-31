@@ -44,14 +44,14 @@ class HidCallback(Callback):
         self.__led_brightness = led_brightness
         self.__keycodes = [keycodes] if not isinstance(keycodes, list) and not isinstance(keycodes, tuple) else keycodes
         
-    def state_changed_by_user(self, action):
+    def state_changed_by_user(self):
         for code in self.__keycodes:
             _kbd.send(code)
 
-    def update_displays(self, action):
-        action.switch_color = self.__color
-        action.switch_brightness = self.__led_brightness
+    def update_displays(self):
+        self.action.switch_color = self.__color
+        self.action.switch_brightness = self.__led_brightness
 
-        if action.label:
-            action.label.text = self.__text
-            action.label.back_color = self.__color
+        if self.action.label:
+            self.action.label.text = self.__text
+            self.action.label.back_color = self.__color

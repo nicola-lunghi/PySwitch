@@ -42,7 +42,11 @@ class EncoderAction(Updateable):
         self.__mapping = mapping
         self.__max_value = max_value
         self.__step_width = step_width
+
         self.__enable_callback = enable_callback
+        if self.__enable_callback:
+            self.__enable_callback.action = self
+
         self.__last_pos = -1
         self.__last_value = -1
         self.__convert_value = convert_value

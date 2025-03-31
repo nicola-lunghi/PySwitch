@@ -33,38 +33,38 @@ class TestActionPushButton(unittest.TestCase):
             "callback": cb
         })
 
-        self.assertEqual(len(cb.update_displays_calls), 0)
-        self.assertEqual(len(cb.state_changed_calls), 0)
+        self.assertEqual(cb.update_displays_calls, 0)
+        self.assertEqual(cb.state_changed_calls, 0)
         self.assertEqual(action_1.state, False)
 
         action_1.state = True
-        self.assertEqual(len(cb.update_displays_calls), 1)
-        self.assertEqual(len(cb.state_changed_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 1)
+        self.assertEqual(cb.state_changed_calls, 1)
         self.assertEqual(action_1.state, True)
 
         action_1.feedback_state(False)
-        self.assertEqual(len(cb.update_displays_calls), 1)
-        self.assertEqual(len(cb.state_changed_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 1)
+        self.assertEqual(cb.state_changed_calls, 1)
         self.assertEqual(action_1.state, False)
 
         action_1.feedback_state(True)
-        self.assertEqual(len(cb.update_displays_calls), 1)
-        self.assertEqual(len(cb.state_changed_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 1)
+        self.assertEqual(cb.state_changed_calls, 1)
         self.assertEqual(action_1.state, True)
 
         action_1.state = False
-        self.assertEqual(len(cb.update_displays_calls), 2)
-        self.assertEqual(len(cb.state_changed_calls), 2)
+        self.assertEqual(cb.update_displays_calls, 2)
+        self.assertEqual(cb.state_changed_calls, 2)
         self.assertEqual(action_1.state, False)
 
         action_1.state = True
-        self.assertEqual(len(cb.update_displays_calls), 3)
-        self.assertEqual(len(cb.state_changed_calls), 3)
+        self.assertEqual(cb.update_displays_calls, 3)
+        self.assertEqual(cb.state_changed_calls, 3)
         self.assertEqual(action_1.state, True)
 
         action_1.reset()
-        self.assertEqual(len(cb.update_displays_calls), 4)
-        self.assertEqual(len(cb.state_changed_calls), 3)
+        self.assertEqual(cb.update_displays_calls, 4)
+        self.assertEqual(cb.state_changed_calls, 3)
         self.assertEqual(action_1.state, False)
         
         
@@ -419,46 +419,46 @@ class TestActionPushButton(unittest.TestCase):
         # Build scene:
         # Step 1: Button pushed
         switch_1.shall_be_pushed = True
-        cb.update_displays_calls = []
-        cb.state_changed_calls = []
+        cb.update_displays_calls = 0
+        cb.state_changed_calls = 0
 
         appl.tick()
 
-        self.assertEqual(len(cb.update_displays_calls), 2)
-        self.assertEqual(len(cb.state_changed_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 2)
+        self.assertEqual(cb.state_changed_calls, 1)
 
         # Step 2: Button released    
         switch_1.shall_be_pushed = False
-        self.assertEqual(len(cb.update_displays_calls), 2)
-        self.assertEqual(len(cb.state_changed_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 2)
+        self.assertEqual(cb.state_changed_calls, 1)
 
         appl.tick()
         appl.tick()
 
-        self.assertEqual(len(cb.update_displays_calls), 3)
-        self.assertEqual(len(cb.state_changed_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 3)
+        self.assertEqual(cb.state_changed_calls, 1)
         
         # Step 3: Button pushed
         switch_1.shall_be_pushed = True
-        self.assertEqual(len(cb.update_displays_calls), 3)
-        self.assertEqual(len(cb.state_changed_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 3)
+        self.assertEqual(cb.state_changed_calls, 1)
 
         appl.tick()
         appl.tick()
 
-        self.assertEqual(len(cb.update_displays_calls), 4)
-        self.assertEqual(len(cb.state_changed_calls), 2)
+        self.assertEqual(cb.update_displays_calls, 4)
+        self.assertEqual(cb.state_changed_calls, 2)
         
         # Step 4: Button released
         switch_1.shall_be_pushed = False
-        self.assertEqual(len(cb.update_displays_calls), 4)
-        self.assertEqual(len(cb.state_changed_calls), 2)
+        self.assertEqual(cb.update_displays_calls, 4)
+        self.assertEqual(cb.state_changed_calls, 2)
 
         appl.tick()
         appl.tick()
 
-        self.assertEqual(len(cb.update_displays_calls), 5)
-        self.assertEqual(len(cb.state_changed_calls), 2)
+        self.assertEqual(cb.update_displays_calls, 5)
+        self.assertEqual(cb.state_changed_calls, 2)
 
 
 ###################################################################################
@@ -493,46 +493,46 @@ class TestActionPushButton(unittest.TestCase):
         # Build scene:
         # Step 1: Button pushed
         switch_1.shall_be_pushed = True
-        cb.update_displays_calls = []
-        cb.state_changed_calls = []
+        cb.update_displays_calls = 0
+        cb.state_changed_calls = 0
 
         appl.tick()
 
-        self.assertEqual(len(cb.update_displays_calls), 1)
-        self.assertEqual(len(cb.state_changed_calls), 0)
+        self.assertEqual(cb.update_displays_calls, 1)
+        self.assertEqual(cb.state_changed_calls, 0)
 
         # Step 2: Button released    
         switch_1.shall_be_pushed = False
-        self.assertEqual(len(cb.update_displays_calls), 1)
-        self.assertEqual(len(cb.state_changed_calls), 0)
+        self.assertEqual(cb.update_displays_calls, 1)
+        self.assertEqual(cb.state_changed_calls, 0)
 
         appl.tick()
         appl.tick()
 
-        self.assertEqual(len(cb.update_displays_calls), 1)
-        self.assertEqual(len(cb.state_changed_calls), 0)
+        self.assertEqual(cb.update_displays_calls, 1)
+        self.assertEqual(cb.state_changed_calls, 0)
         
         # Step 3: Button pushed
         switch_1.shall_be_pushed = True
-        self.assertEqual(len(cb.update_displays_calls), 1)
-        self.assertEqual(len(cb.state_changed_calls), 0)
+        self.assertEqual(cb.update_displays_calls, 1)
+        self.assertEqual(cb.state_changed_calls, 0)
 
         appl.tick()
         appl.tick()
 
-        self.assertEqual(len(cb.update_displays_calls), 1)
-        self.assertEqual(len(cb.state_changed_calls), 0)
+        self.assertEqual(cb.update_displays_calls, 1)
+        self.assertEqual(cb.state_changed_calls, 0)
         
         # Step 4: Button released
         switch_1.shall_be_pushed = False
-        self.assertEqual(len(cb.update_displays_calls), 1)
-        self.assertEqual(len(cb.state_changed_calls), 0)
+        self.assertEqual(cb.update_displays_calls, 1)
+        self.assertEqual(cb.state_changed_calls, 0)
 
         appl.tick()
         appl.tick()
 
-        self.assertEqual(len(cb.update_displays_calls), 1)
-        self.assertEqual(len(cb.state_changed_calls), 0)
+        self.assertEqual(cb.update_displays_calls, 1)
+        self.assertEqual(cb.state_changed_calls, 0)
 
         
 ###################################################################################

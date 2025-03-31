@@ -15,20 +15,20 @@ class MockActionCallback(MockCallback):
     def __init__(self, mappings = []):
         super().__init__(mappings)
 
-        self.update_displays_calls = []
+        self.update_displays_calls = 0
 
-    def update_displays(self, action):
-        self.update_displays_calls.append(action)
+    def update_displays(self):
+        self.update_displays_calls += 1
 
 
 class MockPushButtonActionCallback(MockActionCallback):
     def __init__(self, mappings = []):
         super().__init__(mappings)
 
-        self.state_changed_calls = []
+        self.state_changed_calls = 0
 
-    def state_changed_by_user(self, action):
-        self.state_changed_calls.append(action)
+    def state_changed_by_user(self):
+        self.state_changed_calls += 1
 
 
 class MockSplashCallback(MockCallback):

@@ -62,25 +62,16 @@ class _KemperEffectButtonCallback(BinaryParameterCallback):
 
         self.__rig_mapping = KemperMappings.RIG_ID()
         self.register_mapping(self.__rig_mapping)
-        
-        self.__action = None
-
-    def update_displays(self, action):
-        super().update_displays(action)
-        self.__action = action
 
     def parameter_changed(self, mapping):
         super().parameter_changed(mapping)
-
-        if not self.__action:
-            return
         
         if mapping != self.__rig_mapping:
             return
 
-        if self.__action.state:
-            self.__action.feedback_state(False)
-            self.update_displays(self.__action)
+        if self.action.state:
+            self.action.feedback_state(False)
+            self.update_displays()
 
 
 

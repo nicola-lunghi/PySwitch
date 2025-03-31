@@ -111,7 +111,7 @@ class _KemperRigChangeCallback(BinaryParameterCallback):
         self.__led_brightness = get_option(appl.config, "ledBrightnessOn", 0.3)
         self.__appl = appl
 
-    def state_changed_by_user(self, action):
+    def state_changed_by_user(self):
         if self.__mapping.value == None:
             return
         
@@ -135,49 +135,49 @@ class _KemperRigChangeCallback(BinaryParameterCallback):
 
         self.__appl.client.set(set_mapping, value)
 
-    def update_displays(self, action):
+    def update_displays(self):
         if self.__mapping.value == None:
-            if action.label:
-                action.label.text = ""
-                action.label.back_color = DEFAULT_LABEL_COLOR
+            if self.action.label:
+                self.action.label.text = ""
+                self.action.label.back_color = DEFAULT_LABEL_COLOR
 
-            action.switch_color = DEFAULT_SWITCH_COLOR
-            action.switch_brightness = self.__led_brightness
+            self.action.switch_color = DEFAULT_SWITCH_COLOR
+            self.action.switch_brightness = self.__led_brightness
             return
         
         # Calculate bank and rig numbers in range [0...]
         curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
         curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
         
-        bank_color = self._get_color(action, curr_bank, curr_rig, self.__mapping.value)
+        bank_color = self._get_color(curr_bank, curr_rig, self.__mapping.value)
 
         # Label text
-        if action.label:
-            action.label.back_color = bank_color
+        if self.action.label:
+            self.action.label.back_color = bank_color
 
             if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                action.label.text = self.__get_text(action, curr_bank, curr_rig) 
+                self.action.label.text = self.__get_text(curr_bank, curr_rig) 
             
             elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
                 next_rig_id = self.__get_next_rig(curr_rig, self.__mapping.value)
                 next_bank = int(next_rig_id / NUM_RIGS_PER_BANK)
                 next_rig = next_rig_id % NUM_RIGS_PER_BANK
         
-                action.label.text = self.__get_text(action, next_bank, next_rig)
+                self.action.label.text = self.__get_text(next_bank, next_rig)
 
             else:
                 raise Exception()  #"Invalid display mode: " + repr(display_mode))
 
         # LEDs
-        action.switch_color = bank_color
-        action.switch_brightness = self.__led_brightness
+        self.action.switch_color = bank_color
+        self.action.switch_brightness = self.__led_brightness
         
-    def _get_color(self, action, curr_bank, curr_rig, curr_rig_id):
+    def _get_color(self, curr_bank, curr_rig, curr_rig_id):
         if self.__color:
             return self.__color
         
         if self.__color_callback:
-            return self.__color_callback(action, curr_bank, curr_rig)
+            return self.__color_callback(self.action, curr_bank, curr_rig)
 
         if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
             next_rig_id = self.__get_next_rig(curr_rig, curr_rig_id)
@@ -191,9 +191,9 @@ class _KemperRigChangeCallback(BinaryParameterCallback):
         else:
             raise Exception() #"Invalid display mode: " + repr(display_mode))
         
-    def __get_text(self, action, bank, rig):
+    def __get_text(self, bank, rig):
         if self.__text_callback:
-            return self.__text_callback(action, bank, rig)
+            return self.__text_callback(self.action, bank, rig)
         
         if self.__text:
             return self.__text

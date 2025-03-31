@@ -123,7 +123,7 @@ class KemperRigSelectCallback(BinaryParameterCallback):
 
         self.__appl = appl
 
-    def state_changed_by_user(self, action):
+    def state_changed_by_user(self):
         if "preselectedBank" in self.__appl.shared:
             set_mapping = self.__mapping
             value = self._value_enable
@@ -131,7 +131,7 @@ class KemperRigSelectCallback(BinaryParameterCallback):
             # if self.__rig_btn_morph and self.__rig_off == None and self.__bank_off == None:
             self.__appl.shared["morphStateOverride"] = 0
         else:
-            if action.state:
+            if self.action.state:
                 set_mapping = self.__mapping
                 value = self._value_enable
             else:
@@ -170,36 +170,34 @@ class KemperRigSelectCallback(BinaryParameterCallback):
     
             if self.__last_blink_state != bs:
                 self.__last_blink_state = bs
-                self.update_displays(self.__action)
+                self.update_displays()
 
 
-    def update_displays(self, action):
-        self.__action = action
-
+    def update_displays(self):
         if self.__mapping.value == None:
-            if action.label:
-                action.label.text = ""
-                action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
+            if self.action.label:
+                self.action.label.text = ""
+                self.action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
 
-            action.switch_color = Colors.WHITE
-            action.switch_brightness = self.__default_led_brightness_off
+            self.action.switch_color = Colors.WHITE
+            self.action.switch_brightness = self.__default_led_brightness_off
             return
         
         # Calculate bank and rig numbers in range [0...]
         curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
         curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
         
-        if self.__mapping.value != self.__current_value or action.state != self.__current_state:
+        if self.__mapping.value != self.__current_value or self.action.state != self.__current_state:
             if self.__bank != None:
-                self.evaluate_value(action, self.__mapping.value)
+                self.evaluate_value(self.__mapping.value)
             else:
                 if self.__mapping.value != None:                        
-                    action.feedback_state(curr_rig == self.__rig - 1) 
+                    self.action.feedback_state(curr_rig == self.__rig - 1) 
                 else:
-                    action.feedback_state(False)            
+                    self.action.feedback_state(False)            
 
             self.__current_value = self.__mapping.value
-            self.__current_state = action.state
+            self.__current_state = self.action.state
 
             # Auto rig off: If we are not on the "on" rig, set the current rig as "off" rig
             if (not self.__auto_exclude_rigs or (curr_rig + 1) not in self.__auto_exclude_rigs) and self.__rig_off_auto and curr_rig != self.__rig - 1:
@@ -224,54 +222,54 @@ class KemperRigSelectCallback(BinaryParameterCallback):
             else:
                 is_current = (curr_rig == self.__rig - 1)
             
-        bank_color = self.__get_color(action, curr_bank, curr_rig, is_current)                    
+        bank_color = self.__get_color(curr_bank, curr_rig, is_current)                    
 
         # Label text
-        if action.label:
+        if self.action.label:
             if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                action.label.text = self.__get_text(action, curr_bank, curr_rig) 
-                action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
+                self.action.label.text = self.__get_text(curr_bank, curr_rig) 
+                self.action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
 
             elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
                 if "preselectedBank" in self.__appl.shared:
-                    action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off) 
-                    action.label.text = self.__get_text(action, self.__appl.shared["preselectedBank"], self.__rig - 1)
+                    self.action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off) 
+                    self.action.label.text = self.__get_text(self.__appl.shared["preselectedBank"], self.__rig - 1)
                 else:
-                    action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
+                    self.action.label.back_color = bank_color if self.action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
 
                     if self.__bank != None:
                         if is_current and self.__rig_off != None and self.__bank_off != None:
-                            action.label.text = self.__get_text(action, self.__bank_off - 1, self.__rig_off - 1)
+                            self.action.label.text = self.__get_text(self.__bank_off - 1, self.__rig_off - 1)
                         else:
-                            action.label.text = self.__get_text(action, self.__bank - 1, self.__rig - 1)
+                            self.action.label.text = self.__get_text(self.__bank - 1, self.__rig - 1)
                     else:
                         if is_current and self.__rig_off != None:                    
-                            action.label.text = self.__get_text(action, curr_bank, self.__rig_off - 1) 
+                            self.action.label.text = self.__get_text(curr_bank, self.__rig_off - 1) 
                         else:
-                            action.label.text = self.__get_text(action, curr_bank, self.__rig - 1)
+                            self.action.label.text = self.__get_text(curr_bank, self.__rig - 1)
 
             else:
                 raise Exception()  #"Invalid display mode: " + repr(display_mode))
 
         # LEDs
-        action.switch_color = bank_color
+        self.action.switch_color = bank_color
                 
         if "preselectedBank" in self.__appl.shared and "preselectBlinkState" in self.__appl.shared:                        
-            action.switch_brightness = self.__default_led_brightness_on if not self.__appl.shared["preselectBlinkState"] else self.__default_led_brightness_off
+            self.action.switch_brightness = self.__default_led_brightness_on if not self.__appl.shared["preselectBlinkState"] else self.__default_led_brightness_off
             
         else:
-            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and action.state:
-                action.switch_brightness = self.__default_led_brightness_on
+            if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and self.action.state:
+                self.action.switch_brightness = self.__default_led_brightness_on
             else:
-                action.switch_brightness = self.__default_led_brightness_off
+                self.action.switch_brightness = self.__default_led_brightness_off
 
 
-    def __get_color(self, action, curr_bank, curr_rig, is_current):
+    def __get_color(self, curr_bank, curr_rig, is_current):
         if self.__color:
             return self.__color
         
         if self.__color_callback:
-            return self.__color_callback(action, curr_bank, curr_rig)
+            return self.__color_callback(self.action, curr_bank, curr_rig)
 
         if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG and "preselectedBank" in self.__appl.shared:
             return BANK_COLORS[self.__appl.shared["preselectedBank"] % len(BANK_COLORS)]
@@ -291,9 +289,9 @@ class KemperRigSelectCallback(BinaryParameterCallback):
         else:
             raise Exception() #"Invalid display mode: " + repr(display_mode))
         
-    def __get_text(self, action, bank, rig):
+    def __get_text(self, bank, rig):
         if self.__text_callback:
-            return self.__text_callback(action, bank, rig)
+            return self.__text_callback(self.action, bank, rig)
         
         if self.__text:
             return self.__text

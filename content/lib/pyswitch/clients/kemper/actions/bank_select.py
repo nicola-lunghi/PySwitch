@@ -77,8 +77,6 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         if preselect:
             self.__preselect_blink_period = PeriodCounter(preselect_blink_interval)
 
-        self.__action = None
-
     def init(self, appl, listener = None):
         super().init(appl, listener)
 
@@ -96,11 +94,9 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1 and self.__preselect_blink_period.exceeded:
             self.__appl.shared["preselectBlinkState"] = not self.__appl.shared["preselectBlinkState"]
 
-            self.update_displays(self.__action)
+            self.update_displays()
 
-    def state_changed_by_user(self, action):
-        self.__action = action
-
+    def state_changed_by_user(self):
         # Bank and rig select
         if self.__mapping.value == None:
             return
@@ -134,7 +130,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
             self.__appl.shared["morphStateOverride"] = 0
 
         if self.__bank_off != None:
-            if action.state:
+            if self.action.state:
                 if curr_bank != self.__bank - 1:
                     self.__appl.client.set(set_mapping, value_bank)
             else:
@@ -147,27 +143,25 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         # # Request value
         # self.update()
 
-    def update_displays(self, action):
-        self.__action = action
-
+    def update_displays(self):
         if self.__mapping.value == None:
-            if action.label:
-                action.label.text = ""
-                action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
+            if self.action.label:
+                self.action.label.text = ""
+                self.action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
 
-            action.switch_color = Colors.WHITE
-            action.switch_brightness = self.__default_led_brightness_off
+            self.action.switch_color = Colors.WHITE
+            self.action.switch_brightness = self.__default_led_brightness_off
             return
         
         # Calculate bank and rig numbers in range [0...]
         curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
         curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK                
         
-        if self.__mapping.value != self.__current_value or action.state != self.__current_state:
-            action.feedback_state(curr_bank == (self.__bank - 1))
+        if self.__mapping.value != self.__current_value or self.action.state != self.__current_state:
+            self.action.feedback_state(curr_bank == (self.__bank - 1))
                             
             self.__current_value = self.__mapping.value
-            self.__current_state = action.state
+            self.__current_state = self.action.state
 
             # if "preselectedBank" in self.__appl.shared:
             #     del self.__appl.shared["preselectedBank"]
@@ -180,58 +174,58 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         if self.__color != None:
             bank_color = self.__color
         elif self.__color_callback:
-            bank_color = self.__color_callback(action, curr_bank, curr_rig)
+            bank_color = self.__color_callback(self.action, curr_bank, curr_rig)
         else:
-            bank_color = self._get_bank_color(action, curr_bank, self.__bank, self.__bank_off, self.__display_mode)
+            bank_color = self._get_bank_color(curr_bank, self.__bank, self.__bank_off, self.__display_mode)
                         
         # Label text
-        if action.label:
+        if self.action.label:
             if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
-                action.label.text = self._get_text(action, curr_bank, curr_rig) 
-                action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
+                self.action.label.text = self._get_text(curr_bank, curr_rig) 
+                self.action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
 
             elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
                 if self.__preselect and "preselectedBank" in self.__appl.shared:
-                    action.label.back_color = bank_color if is_current else self.dim_color(bank_color, self.__default_dim_factor_off) 
+                    self.action.label.back_color = bank_color if is_current else self.dim_color(bank_color, self.__default_dim_factor_off) 
                 else:
-                    action.label.back_color = bank_color if action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
+                    self.action.label.back_color = bank_color if self.action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
 
                 if is_current and self.__bank_off != None:
-                    action.label.text = self._get_text(action, self.__bank_off - 1, curr_rig)
+                    self.action.label.text = self._get_text(self.__bank_off - 1, curr_rig)
                 else:
-                    action.label.text = self._get_text(action, self.__bank - 1, curr_rig)
+                    self.action.label.text = self._get_text(self.__bank - 1, curr_rig)
 
             else:
                 raise Exception()  #"Invalid display mode: " + repr(display_mode))
 
         # LEDs
-        action.switch_color = bank_color
+        self.action.switch_color = bank_color
 
         if self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
             if self.__preselect and "preselectedBank" in self.__appl.shared:
                 if is_current:
-                    action.switch_brightness = self.__default_led_brightness_on
+                    self.action.switch_brightness = self.__default_led_brightness_on
                 else:
-                    action.switch_brightness = self.__default_led_brightness_off
+                    self.action.switch_brightness = self.__default_led_brightness_off
             else:
-                if action.state:
-                    action.switch_brightness = self.__default_led_brightness_on
+                if self.action.state:
+                    self.action.switch_brightness = self.__default_led_brightness_on
                 else:
-                    action.switch_brightness = self.__default_led_brightness_off
+                    self.action.switch_brightness = self.__default_led_brightness_off
         else:
-            action.switch_brightness = self.__default_led_brightness_off
+            self.action.switch_brightness = self.__default_led_brightness_off
 
     # Get text for the label
-    def _get_text(self, action, bank, rig):
+    def _get_text(self, bank, rig):
         if self.__text:
             return self.__text
         elif self.__text_callback:
-            return self.__text_callback(action, bank, rig)
+            return self.__text_callback(self.action, bank, rig)
         else:
             return "Bank " + repr(bank + 1)
             
     # Default color callback for bank color
-    def _get_bank_color(self, action, curr_bank, bank, bank_off, display_mode):
+    def _get_bank_color(self, curr_bank, bank, bank_off, display_mode):
         is_current = (curr_bank == (bank - 1))
 
         if display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:

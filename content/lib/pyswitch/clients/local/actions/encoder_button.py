@@ -30,12 +30,12 @@ class _EncoderButtonCallback(Callback):
         self.__encoders.append(encoder)
         self.__cancel_mode = cancel_mode
 
-    def state_changed_by_user(self, action):
+    def state_changed_by_user(self):
         for encoder in self.__encoders:
             if self.__cancel_mode:
                 encoder.cancel()
             else:
                 encoder.accept()
 
-    def update_displays(self, action):
+    def update_displays(self):
         pass

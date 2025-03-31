@@ -33,9 +33,9 @@ class _TunerModeCallback(BinaryParameterCallback):
         super().init(appl, listener)
         self.__appl = appl
 
-    def state_changed_by_user(self, action):
+    def state_changed_by_user(self):
         # Code from BinaryParameterCallback.state_changed_by_user (implemented here directly to reduce stack size)
-        self.__appl.client.set(self.__mapping, self._value_enable if action.state else self._value_disable)
+        self.__appl.client.set(self.__mapping, self._value_enable if self.action.state else self._value_disable)
         
         # Request value
         self.update()

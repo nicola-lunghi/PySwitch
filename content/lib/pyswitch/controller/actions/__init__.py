@@ -37,11 +37,17 @@ class Action(Updateable):
         self.uses_switch_leds = get_option(config, "useSwitchLeds", False)
 
         self.label = get_option(config, "display", None)
+
         self.callback = get_option(config, "callback", None)
+        if self.callback:
+            self.callback.action = self
 
         self.id = get_option(config, "id", None)
 
         self.__enable_callback = get_option(config, "enableCallback", None)
+        if self.__enable_callback:
+            self.__enable_callback.action = self
+
         self.__last_enabled = -1
 
     # Must be called before usage
@@ -136,7 +142,7 @@ class Action(Updateable):
             return
         
         if self.callback:
-            self.callback.update_displays(self)
+            self.callback.update_displays()
     
     # Reset the action
     def reset(self):
@@ -236,7 +242,7 @@ class PushButtonAction(Action):
         self.__state = state
         
         if self.callback:
-            self.callback.state_changed_by_user(self)
+            self.callback.state_changed_by_user()
 
         self.update_displays()
 

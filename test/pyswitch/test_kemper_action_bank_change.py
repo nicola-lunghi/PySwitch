@@ -767,7 +767,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
                 if rig_switch_should_blink:
                     cb_rigsel.update()
                 else:
-                    cb_rigsel.update_displays(action_rig_select)
+                    cb_rigsel.update_displays()
 
         # Off state (initial)
         update()

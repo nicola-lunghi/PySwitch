@@ -136,11 +136,11 @@ class TestAction(unittest.TestCase):
             "callback": cb
         })
 
-        self.assertEqual(len(cb.update_displays_calls), 0)
+        self.assertEqual(cb.update_displays_calls, 0)
 
         action_1.update_displays()
 
-        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 1)
         
 
     def test_callback_mappings(self):
@@ -183,17 +183,17 @@ class TestAction(unittest.TestCase):
         listener_1.parameter_changed(mapping_1)
 
         self.assertEqual(action_1.num_update_displays_calls, 1)
-        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 1)
 
         listener_1.parameter_changed(mapping_1)
 
         self.assertEqual(action_1.num_update_displays_calls, 2)
-        self.assertEqual(len(cb.update_displays_calls), 2)
+        self.assertEqual(cb.update_displays_calls, 2)
 
         listener_1.request_terminated(mapping_1)
 
         self.assertEqual(action_1.num_update_displays_calls, 3)
-        self.assertEqual(len(cb.update_displays_calls), 3)
+        self.assertEqual(cb.update_displays_calls, 3)
 
 
     def test_callback_mappings_disabled(self):
@@ -228,19 +228,19 @@ class TestAction(unittest.TestCase):
         listener_1.parameter_changed(mapping_1)
 
         self.assertEqual(action_1.num_update_displays_calls, 1)
-        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 1)
 
         cb_enabled.output = False
 
         listener_1.parameter_changed(mapping_1)
 
         self.assertEqual(action_1.num_update_displays_calls, 1)
-        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 1)
 
         listener_1.request_terminated(mapping_1)
 
         self.assertEqual(action_1.num_update_displays_calls, 1)
-        self.assertEqual(len(cb.update_displays_calls), 1)
+        self.assertEqual(cb.update_displays_calls, 1)
 
 
     #######################################################################################################
