@@ -30,7 +30,7 @@ def MAPPING_RIG_COMMENT():
 # Rig volume
 def MAPPING_RIG_VOLUME(): 
     return ClientParameterMapping.get(
-        name = "Rig Volume",
+        name = "RigVol",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
             _NRPN_ADDRESS_PAGE_RIG_PARAMETERS,

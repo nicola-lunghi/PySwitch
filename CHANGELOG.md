@@ -1,4 +1,9 @@
 # PySwitch v2.4.2
+- Features:
+    - Added the preview display parameters (like for the encoder) also to the pedal action (will display the exact value for 1.5s, then revert to the original display text)
+
+- Optimizations:
+    - Changed mapping names to fit better into the preview displays
     - Added some mapping dependencies (no functional changes)
     - Changed the internal interface of the action callbacks a bit. If you defined your own callbacks: The action parameter is removed from most methods, replace this with "self.action" if you need it. This saves some (minor but still) RAM again. No other changes to the config files.
     - Optimized Pager (in terms of RAM, no functional changes)

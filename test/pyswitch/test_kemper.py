@@ -19,7 +19,6 @@ with patch.dict(sys.modules, {
 }):
     from lib.pyswitch.clients.kemper import *
     
-    from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.misc import Updater
 
     from .mocks_appl import MockClient
@@ -115,14 +114,14 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Freeze", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
         self.assertIn("Freeze", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
 
-        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
-        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
-        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_C).name)
-        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_D).name)
-        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_X).name)
-        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
-        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
-        self.assertIn("Mix", MAPPING_DELAY_MIX(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
+        self.assertIn("Mix", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
+        self.assertIn("Mix", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
+        self.assertIn("Mix", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_C).name)
+        self.assertIn("Mix", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_D).name)
+        self.assertIn("Mix", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_X).name)
+        self.assertIn("Mix", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
+        self.assertIn("Mix", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
+        self.assertIn("Mix", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
 
         self.assertIn("Button 1", MAPPING_EFFECT_BUTTON(1).name)
         self.assertIn("Button 2", MAPPING_EFFECT_BUTTON(2).name)
@@ -138,9 +137,9 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Tuner", KemperMappings.TUNER_DEVIANCE().name)
 
         self.assertIn("Morph Button", MAPPING_MORPH_BUTTON().name)
-        self.assertIn("Morph Pedal", MAPPING_MORPH_PEDAL().name)
+        self.assertIn("Morph", MAPPING_MORPH_PEDAL().name)
 
-        self.assertIn("Volume", MAPPING_RIG_VOLUME().name)
+        self.assertIn("RigVol", MAPPING_RIG_VOLUME().name)
 
         self.assertIn("Amp Name", MAPPING_AMP_NAME().name)
         self.assertIn("Amp State", MAPPING_AMP_STATE().name)
@@ -178,8 +177,8 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Wah", MAPPING_WAH_PEDAL().name)
         self.assertIn("Pitch", MAPPING_PITCH_PEDAL().name)
 
-        self.assertIn("Dly. Mix", MAPPING_DELAY_MIX_PEDAL().name)   
-        self.assertIn("Feedback", MAPPING_DELAY_FEEDBACK_PEDAL().name)   
-        self.assertIn("Rev. Mix", MAPPING_REVERB_MIX_PEDAL().name)
-        self.assertIn("Rev. Time", MAPPING_REVERB_TIME_PEDAL().name)
-        self.assertIn("Out Vol.", MAPPING_VOLUME_OUTPUT_PEDAL().name)
+        self.assertIn("DlMix", MAPPING_DELAY_MIX_PEDAL().name)   
+        self.assertIn("Feed", MAPPING_DELAY_FEEDBACK_PEDAL().name)   
+        self.assertIn("RvMix", MAPPING_REVERB_MIX_PEDAL().name)
+        self.assertIn("RvTime", MAPPING_REVERB_TIME_PEDAL().name)
+        self.assertIn("OutVol", MAPPING_VOLUME_OUTPUT_PEDAL().name)

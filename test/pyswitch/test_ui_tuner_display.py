@@ -22,7 +22,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.ui.ui import DisplayBounds
     from lib.pyswitch.ui.elements import TunerDisplay, DisplayLabel
     from lib.pyswitch.ui.UiController import UiController
-    from lib.pyswitch.controller import Controller
+    from lib.pyswitch.controller.controller import Controller
 
     from .mocks_appl import *
     from .mocks_ui import MockDisplayDriver, MockFontLoader

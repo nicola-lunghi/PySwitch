@@ -20,7 +20,6 @@ with patch.dict(sys.modules, {
     from .mocks_callback import *
 
     from lib.pyswitch.clients.kemper import *
-    #from lib.pyswitch.controller.callbacks import BinaryParameterCallback, DEFAULT_LED_BRIGHTNESS_ON, DEFAULT_SLOT_DIM_FACTOR_ON
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.misc import Updater, Colors
 

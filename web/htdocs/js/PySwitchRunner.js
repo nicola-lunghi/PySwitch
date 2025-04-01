@@ -206,12 +206,14 @@ class PySwitchRunner {
             this.#loadModule("pyswitch/clients/local/actions/param_change.py", circuitpyPath),
 
             this.#loadModule("pyswitch/controller/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/controller.py", circuitpyPath),
             this.#loadModule("pyswitch/controller/client.py", circuitpyPath),
             this.#loadModule("pyswitch/controller/explore.py", circuitpyPath),
             this.#loadModule("pyswitch/controller/inputs.py", circuitpyPath),
             this.#loadModule("pyswitch/controller/midi.py", circuitpyPath),
             this.#loadModule("pyswitch/controller/measure.py", circuitpyPath),
             this.#loadModule("pyswitch/controller/strobe.py", circuitpyPath),
+            this.#loadModule("pyswitch/controller/preview.py", circuitpyPath),
 
             this.#loadModule("pyswitch/controller/actions/__init__.py", circuitpyPath),
             this.#loadModule("pyswitch/controller/actions/AnalogAction.py", circuitpyPath),

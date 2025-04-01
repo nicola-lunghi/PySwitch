@@ -24,7 +24,7 @@ from config import Config as _Config
 
 if not _get_option(_Config, "exploreMode"):
     # Normal operation
-    from pyswitch.controller import Controller as _Controller
+    from pyswitch.controller.controller import Controller as _Controller
     from pyswitch.controller.midi import MidiController as _MidiController
     from pyswitch.ui.UiController import UiController as _UiController
 

@@ -13,6 +13,9 @@ with patch.dict(sys.modules, {
     "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
     "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
+    "displayio": MockDisplayIO(),
+    "adafruit_display_text": MockAdafruitDisplayText(),
+    "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
@@ -26,6 +29,7 @@ with patch.dict(sys.modules, {
     }):
         
         from lib.pyswitch.controller.actions.AnalogAction import AnalogAction
+        from lib.pyswitch.ui.elements import DisplayLabel
         from .mocks_appl import *
 
 
@@ -508,3 +512,138 @@ class TestAnalogAction(unittest.TestCase):
             self.assertLessEqual(outval, transfer(65535))
 
 
+    #####################################################################################################################
+
+
+    def test_preview(self):
+        mapping = MockParameterMapping(
+            name = "PQ",
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            )
+        )
+
+        display = DisplayLabel(
+            layout = {
+                "font": "foo",
+                "backColor": (0, 0, 0),
+                "textColor": (4, 6, 8)          
+            },
+            callback = MockDisplayLabelCallback(label_text = "foo")
+        )
+        
+        action = AnalogAction(
+            mapping = mapping,
+            max_value = 100,
+            num_steps = 65536,
+            auto_calibrate = False,
+            preview_display = display,
+            preview_timeout_millis = 123
+        )
+
+        appl = MockController2()
+        action.init(appl)
+
+        display.update_label()
+
+        self.assertEqual(display.text, "foo")
+
+        action._AnalogAction__period = MockPeriodCounter()
+        period = action._AnalogAction__period
+
+        self.assertEqual(action._AnalogAction__preview._ValuePreview__period.interval, 123)
+        action._AnalogAction__preview._ValuePreview__period = MockPeriodCounter()
+        preview_period = action._AnalogAction__preview._ValuePreview__period
+
+        period.exceed_next_time = True
+        action.process(1024)
+        action.update()
+            
+        self.assertEqual(display.text, "PQ: 1%")
+
+        period.exceed_next_time = True
+        action.process(32768)
+        action.update()
+            
+        self.assertEqual(display.text, "PQ: 50%")
+
+        period.exceed_next_time = True
+        action.process(65535)
+        action.update()
+            
+        self.assertEqual(display.text, "PQ: 100%")
+
+        preview_period.exceed_next_time = True
+        action.update()
+        
+        self.assertEqual(display.text, "foo")
+
+
+    def test_preview_convert_value(self):
+        def convert_value(value):
+            return f"blubb { str(value) } bla"
+        
+        mapping = MockParameterMapping(
+            name = "PQ",
+            set = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x05, 0x07, 0x09]
+            )
+        )
+
+        display = DisplayLabel(
+            layout = {
+                "font": "foo",
+                "backColor": (0, 0, 0),
+                "textColor": (4, 6, 8)          
+            },
+            callback = MockDisplayLabelCallback(label_text = "foo")
+        )
+        
+        action = AnalogAction(
+            mapping = mapping,
+            max_value = 1000,
+            num_steps = 65536,
+            auto_calibrate = False,
+            preview_display = display,
+            preview_timeout_millis = 123,
+            convert_value = convert_value
+        )
+
+        appl = MockController2()
+        action.init(appl)
+
+        display.update_label()
+
+        self.assertEqual(display.text, "foo")
+
+        action._AnalogAction__period = MockPeriodCounter()
+        period = action._AnalogAction__period
+
+        self.assertEqual(action._AnalogAction__preview._ValuePreview__period.interval, 123)
+        action._AnalogAction__preview._ValuePreview__period = MockPeriodCounter()
+        preview_period = action._AnalogAction__preview._ValuePreview__period
+
+        period.exceed_next_time = True
+        action.process(1024)
+        action.update()
+            
+        self.assertEqual(display.text, "blubb 15 bla")
+
+        period.exceed_next_time = True
+        action.process(32768)
+        action.update()
+            
+        self.assertEqual(display.text, "blubb 500 bla")
+
+        period.exceed_next_time = True
+        action.process(65535)
+        action.update()
+            
+        self.assertEqual(display.text, "blubb 1000 bla")
+
+        preview_period.exceed_next_time = True
+        action.update()
+        
+        self.assertEqual(display.text, "foo")

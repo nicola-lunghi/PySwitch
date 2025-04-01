@@ -26,7 +26,7 @@ def MAPPING_WAH_PEDAL():
 
 def MAPPING_VOLUME_PEDAL(): 
     return ClientParameterMapping.get(
-        name = "Volume",
+        name = "Vol",
         set = ControlChange(
             _CC_VOLUME_PEDAL, 
             0
@@ -44,7 +44,7 @@ def MAPPING_PITCH_PEDAL():
 
 def MAPPING_DELAY_MIX_PEDAL(): 
     return ClientParameterMapping.get(
-        name = "Dly. Mix",
+        name = "DlMix",
         set = ControlChange(
             _CC_DELAY_MIX, 
             0
@@ -53,7 +53,7 @@ def MAPPING_DELAY_MIX_PEDAL():
 
 def MAPPING_DELAY_FEEDBACK_PEDAL(): 
     return ClientParameterMapping.get(
-        name = "Feedback",
+        name = "Feed",
         set = ControlChange(
             _CC_DELAY_FEEDBACK, 
             0
@@ -62,7 +62,7 @@ def MAPPING_DELAY_FEEDBACK_PEDAL():
 
 def MAPPING_REVERB_MIX_PEDAL(): 
     return ClientParameterMapping.get(
-        name = "Rev. Mix",
+        name = "RvMix",
         set = ControlChange(
             _CC_REVERB_MIX, 
             0
@@ -71,7 +71,7 @@ def MAPPING_REVERB_MIX_PEDAL():
 
 def MAPPING_REVERB_TIME_PEDAL(): 
     return ClientParameterMapping.get(
-        name = "Rev. Time",
+        name = "RvTime",
         set = ControlChange(
             _CC_REVERB_TIME, 
             0
@@ -80,7 +80,7 @@ def MAPPING_REVERB_TIME_PEDAL():
 
 def MAPPING_VOLUME_OUTPUT_PEDAL(): 
     return ClientParameterMapping.get(
-        name = "Out Vol.",
+        name = "OutVol",
         set = ControlChange(
             _CC_OUTPUT_VOLUME, 
             0

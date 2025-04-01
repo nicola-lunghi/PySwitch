@@ -594,7 +594,7 @@ class ConfigParserTests extends TestBase {
         // Add all actions available
         const clients = await parser.getAvailableActions();
         
-        const actions = [];
+        let actions = [];
         for (const client of clients) {
             for (const action of client.actions) {
                 if (action.meta.data.target != "AdafruitSwitch") continue;
@@ -605,10 +605,14 @@ class ConfigParserTests extends TestBase {
             }
         }
 
+        actions = actions.filter((item) => item != null)
+
         expect(actions.length).toBeGreaterThan(0);
 
+        // console.log(actions)
+
         input1.setActions(
-            actions.filter((item) => item != null)
+            actions
         );
         
         // console.log((await parser.config.get()).inputs_py);

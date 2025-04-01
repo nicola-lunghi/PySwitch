@@ -20,7 +20,7 @@ with patch.dict(sys.modules, {
     #from lib.pyswitch.controller.actions.actions import PushButtonAction
     from .mocks_appl import *
     from .mocks_callback import *
-    from lib.pyswitch.controller import Controller
+    from lib.pyswitch.controller.controller import Controller
 
 
 class TestActionPushButton(unittest.TestCase):

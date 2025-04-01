@@ -13,12 +13,11 @@ with patch.dict(sys.modules, {
     "gc": MockGC(),
     "time": MockTime
 }):
-    import time
-    
-    from adafruit_midi.system_exclusive import SystemExclusive
-    from adafruit_midi.control_change import ControlChange
-    from adafruit_midi.program_change import ProgramChange
-    from adafruit_midi.midi_message import MIDIUnknownEvent
+    # import time
+    # from adafruit_midi.system_exclusive import SystemExclusive
+    # from adafruit_midi.control_change import ControlChange
+    # from adafruit_midi.program_change import ProgramChange
+    # from adafruit_midi.midi_message import MIDIUnknownEvent
     
     from lib.pyswitch.misc import *
 

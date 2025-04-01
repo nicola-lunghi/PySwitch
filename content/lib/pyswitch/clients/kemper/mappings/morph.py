@@ -31,7 +31,7 @@ def MAPPING_MORPH_BUTTON():
 
 def MAPPING_MORPH_PEDAL(): 
     return ClientParameterMapping.get(
-        name = "Morph Pedal",
+        name = "Morph",
         set = ControlChange(
             _CC_MORPH_PEDAL, 
             0

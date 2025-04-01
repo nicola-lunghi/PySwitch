@@ -26,7 +26,7 @@ class TestControllerMeasurementsUpdate(unittest.TestCase):
                 from .mocks_appl import MockNeoPixelDriver, MockMidiController, MockSwitch, MockAction, MockPeriodCounter
                 
                 from lib.pyswitch.controller.measure import RuntimeMeasurement
-                from lib.pyswitch.controller import Controller
+                from lib.pyswitch.controller.controller import Controller
 
                 action_1 = MockAction()
                 period = MockPeriodCounter()

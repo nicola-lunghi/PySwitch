@@ -1,4 +1,5 @@
-from ...misc import Updateable, PeriodCounter
+from ...misc import Updateable
+
 from adafruit_midi.system_exclusive import SystemExclusive
 
 class EncoderAction(Updateable):
@@ -18,7 +19,6 @@ class EncoderAction(Updateable):
                                                     # If you use this, you will also need a preview display label (see below)
                  cancel_action = None,              # Action to cancel a preselection (only makes sense with accept_action set). Must also be of type Encoder Button.
                  preview_display = None,            # If assigned, the adjusted value will be displayed in the passed DisplayLabel when the encoder is adjusted. 
-                                                    # 
                                                     # This just makes sense in conjunction with an accept action (see above).
                  preview_timeout_millis = 1500,     # This is the amount of time (milliseconds) after which the 
                                                     # preview display will return to its normal state.
@@ -60,18 +60,21 @@ class EncoderAction(Updateable):
         self.__preselect = (accept_action != None)
         self.__preselect_active = False
 
-        self.__preview_display = preview_display        
         if preview_display:
-            self.__preview_period = PeriodCounter(preview_timeout_millis)
+            from ..preview import ValuePreview
+
+            self.__preview = ValuePreview.get(
+                label = preview_display,
+                timeout_millis = preview_timeout_millis,
+                blink_interval_millis = preview_blink_period_millis,
+                blink_color = preview_blink_color,                
+            )
                 
             if accept_action:
-                self.__preview_blink_period = PeriodCounter(preview_blink_period_millis)
-                self.__preview_blink_state = False
-                self.__preview_orig_color = preview_display.text_color
-                self.__preview_blink_color = preview_blink_color
-
                 self.__preview_reset_mapping = preview_reset_mapping
                 self.__preview_reset_last_value = None
+        else:
+            self.__preview = None
                 
     @property
     def enabled(self):
@@ -82,28 +85,21 @@ class EncoderAction(Updateable):
 
         appl.client.register(self.__mapping)
 
-        if self.__preview_display and self.__preselect and self.__preview_reset_mapping:
+        if self.__preview and self.__preselect and self.__preview_reset_mapping:
             appl.client.register(self.__preview_reset_mapping)
 
     def update(self):
         self.__appl.client.request(self.__mapping)
 
-        if self.__preview_display:
-            if self.__preselect_active and self.__preselect and self.__preview_blink_period.exceeded:
-                # Blink when preview is active
-                self.__preview_blink_state = not self.__preview_blink_state
-
-                if self.__preview_blink_state:
-                    self.__preview_display.text_color = self.__preview_blink_color
-                else:
-                    self.__preview_display.text_color = self.__preview_orig_color
+        if self.__preview:
+            self.__preview.update()
 
     # Process the current encoder position
     def process(self, position):
         if self.__last_pos == -1:
             self.__last_pos = position
 
-        if self.__preview_display and self.__preselect and self.__preview_reset_mapping:
+        if self.__preview and self.__preselect and self.__preview_reset_mapping:
             if self.__preview_reset_mapping.value != self.__preview_reset_last_value:
                 if self.__preview_reset_mapping.value != None and self.__preview_reset_last_value != None:
                     self.cancel()
@@ -111,12 +107,6 @@ class EncoderAction(Updateable):
                 self.__preview_reset_last_value = self.__preview_reset_mapping.value
 
         if self.__last_pos == position:
-            if self.__preview_display:
-                if not self.__preselect_active and self.__preview_display.override_text and self.__preview_period.exceeded:
-                    # Free preview display after a period
-                    self.__preview_display.override_text = None
-                    self.__preview_display.update_label()
-                
             return
                         
         if self.__mapping.value == None:
@@ -143,16 +133,23 @@ class EncoderAction(Updateable):
             else:
                 self.__preselect_active = True
 
-            if self.__preview_display:
+            if self.__preview:
                 if not self.__convert_value:
-                    prefix = f"{ self.__mapping.name }: " if self.__mapping.name else ""
-                    val = round(v * 100 / self.__max_value)
-
-                    self.__preview_display.override_text = f"{ prefix }{ str(val) }%"
+                    self.__preview.preview_mapping(
+                        mapping = self.__mapping,
+                        value = v,
+                        max_value = self.__max_value,
+                        blink = self.__preselect,
+                        stay = self.__preselect,
+                        client = self
+                    )
                 else:
-                    self.__preview_display.override_text = self.__convert_value(v)
-                
-                self.__preview_display.update_label()
+                    self.__preview.preview(
+                        text = self.__convert_value(v),
+                        blink = self.__preselect,
+                        stay = self.__preselect,
+                        client = self
+                    )
 
     # Send the last value and reset preview display
     def accept(self):
@@ -166,16 +163,13 @@ class EncoderAction(Updateable):
         self.__appl.client.set(self.__mapping, self.__last_value)
         self.__mapping.value = self.__last_value
 
-        self.cancel()
-
-        if self.__preview_display:
-            self.__preview_period.reset()
+        self.cancel(immediately = False)
 
     # Cancel preselection
-    def cancel(self):
+    def cancel(self, immediately = True):
         self.__preselect_active = False
 
         self.__last_value = self.__mapping.value
 
-        if self.__preview_display and self.__preselect:
-            self.__preview_display.text_color = self.__preview_orig_color
+        if self.__preview:
+            self.__preview.reset(immediately = immediately)

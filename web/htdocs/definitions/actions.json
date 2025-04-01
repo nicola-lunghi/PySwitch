@@ -1527,7 +1527,22 @@
                     {
                         "name": "transfer_function",
                         "default": "None",
-                        "comment": "Transfer function. Input is the raw encoder value in range [0..65535]. Must return the value to be sent for \nthe mapping, in its range. If used, this disables the num_steps and max_value parameters.\n\nNOTE: When designing your transfer function, take care that the output values do not change too often as this \nimposes performance issues! "
+                        "comment": "Transfer function. Input is the raw encoder value in range [0..65535]. Must return the value to be sent for \nthe mapping, in its range. If used, this disables the num_steps and max_value parameters.\n\nNOTE: When designing your transfer function, take care that the output values do not change too often as this \nimposes performance issues!"
+                    },
+                    {
+                        "name": "preview_display",
+                        "default": "None",
+                        "comment": "If assigned, the adjusted value will be displayed in the passed DisplayLabel when the pedal is adjusted. "
+                    },
+                    {
+                        "name": "preview_timeout_millis",
+                        "default": "1500",
+                        "comment": "This is the amount of time (milliseconds) after which the \npreview display will return to its normal state."
+                    },
+                    {
+                        "name": "convert_value",
+                        "default": "None",
+                        "comment": "Optional conversion routine for displaying values: (value) => string"
                     }
                 ],
                 "comment": "Use this action for all analog inputs like expression pedals.",
@@ -1576,7 +1591,7 @@
                     {
                         "name": "preview_display",
                         "default": "None",
-                        "comment": "If assigned, the adjusted value will be displayed in the passed DisplayLabel when the encoder is adjusted. \n\nThis just makes sense in conjunction with an accept action (see above)."
+                        "comment": "If assigned, the adjusted value will be displayed in the passed DisplayLabel when the encoder is adjusted. \nThis just makes sense in conjunction with an accept action (see above)."
                     },
                     {
                         "name": "preview_timeout_millis",

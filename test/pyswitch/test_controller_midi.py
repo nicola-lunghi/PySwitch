@@ -17,7 +17,7 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     from .mocks_appl import *
-    from lib.pyswitch.controller import Controller
+    from lib.pyswitch.controller.controller import Controller
 
 
 class TestControllerMidi(unittest.TestCase):

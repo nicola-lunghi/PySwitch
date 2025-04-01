@@ -362,9 +362,9 @@ class TestEncoderAction(unittest.TestCase):
         appl = MockController2()
         action.init(appl)
 
-        self.assertEqual(action._EncoderAction__preview_period.interval, 123)
-        action._EncoderAction__preview_period = MockPeriodCounter()
-        period = action._EncoderAction__preview_period
+        self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 123)
+        action._EncoderAction__preview._ValuePreview__period = MockPeriodCounter()
+        period = action._EncoderAction__preview._ValuePreview__period
 
         display.update_label()
 
@@ -398,6 +398,7 @@ class TestEncoderAction(unittest.TestCase):
 
         period.exceed_next_time = True
         action.process(1000)
+        action.update()
 
         self.assertEqual(display.text, "foo")
         self.assertEqual(len(appl.client.set_calls), 4)
@@ -409,6 +410,7 @@ class TestEncoderAction(unittest.TestCase):
 
         period.exceed_next_time = True
         action.process(500)
+        action.update()
 
         self.assertEqual(display.text, "foo")
         self.assertEqual(len(appl.client.set_calls), 5)
@@ -446,9 +448,9 @@ class TestEncoderAction(unittest.TestCase):
         appl = MockController2()
         action.init(appl)
 
-        self.assertEqual(action._EncoderAction__preview_period.interval, 123)
-        action._EncoderAction__preview_period = MockPeriodCounter()
-        period = action._EncoderAction__preview_period
+        self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 123)
+        action._EncoderAction__preview._ValuePreview__period = MockPeriodCounter()
+        period = action._EncoderAction__preview._ValuePreview__period
 
         display.update_label()
 
@@ -482,6 +484,7 @@ class TestEncoderAction(unittest.TestCase):
 
         period.exceed_next_time = True
         action.process(1000)
+        action.update()
 
         self.assertEqual(display.text, "foo")
         self.assertEqual(len(appl.client.set_calls), 4)
@@ -493,6 +496,7 @@ class TestEncoderAction(unittest.TestCase):
 
         period.exceed_next_time = True
         action.process(500)
+        action.update()
 
         self.assertEqual(display.text, "foo")
         self.assertEqual(len(appl.client.set_calls), 5)
@@ -580,13 +584,13 @@ class TestEncoderAction(unittest.TestCase):
         accept.init(appl, switch)
         cancel.init(appl, switch)
 
-        self.assertEqual(action._EncoderAction__preview_period.interval, 123)
-        action._EncoderAction__preview_period = MockPeriodCounter()
-        period = action._EncoderAction__preview_period
+        self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 123)
+        action._EncoderAction__preview._ValuePreview__period = MockPeriodCounter()
+        period = action._EncoderAction__preview._ValuePreview__period
 
-        self.assertEqual(action._EncoderAction__preview_blink_period.interval, 345)
-        action._EncoderAction__preview_blink_period = MockPeriodCounter()
-        period_blink = action._EncoderAction__preview_blink_period
+        self.assertEqual(action._EncoderAction__preview._ValuePreview__blink_period.interval, 345)
+        action._EncoderAction__preview._ValuePreview__blink_period = MockPeriodCounter()
+        period_blink = action._EncoderAction__preview._ValuePreview__blink_period
 
         display.update_label()
 
@@ -716,8 +720,8 @@ class TestEncoderAction(unittest.TestCase):
         switch = MockFootSwitch()
         accept.init(appl, switch)
 
-        action._EncoderAction__preview_period = MockPeriodCounter()
-        period = action._EncoderAction__preview_period
+        action._EncoderAction__preview._ValuePreview__period = MockPeriodCounter()
+        period = action._EncoderAction__preview._ValuePreview__period
 
         mapping_reset.value = 1
 
