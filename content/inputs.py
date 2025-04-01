@@ -7,8 +7,10 @@ from pyswitch.clients.kemper.actions.bank_up_down import BANK_DOWN
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 from pyswitch.clients.local.actions.encoder_button import ENCODER_BUTTON
+from pyswitch.controller.actions.AnalogAction import AnalogAction
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT_DISPLAY_TARGET_RIG
 from pyswitch.clients.kemper import KemperEffectSlot
+from pyswitch.clients.kemper.mappings.pedals import MAPPING_VOLUME_PEDAL
 from display import DISPLAY_HEADER_1
 from display import DISPLAY_HEADER_2
 from display import DISPLAY_FOOTER_1
@@ -85,7 +87,8 @@ Inputs = [
                 use_leds = False
             ),
             SHOW_TEMPO(
-                text = 'Tempo'
+                change_display = DISPLAY_RIG_NAME, 
+                text = '{bpm} bpm'
             ),
             
         ],
@@ -175,6 +178,17 @@ Inputs = [
         ],
         "actionsHold": [
             _cancel,
+            
+        ],
+        
+    },
+    {
+        "assignment": PA_MIDICAPTAIN_10_EXP_PEDAL_1,
+        "actions": [
+            AnalogAction(
+                mapping = MAPPING_VOLUME_PEDAL(), 
+                change_display = DISPLAY_RIG_NAME
+            ),
             
         ],
         

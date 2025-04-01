@@ -26,3 +26,8 @@ def MAPPING_TEMPO_BPM():
             _NRPN_PARAMETER_ID_BPM
         )
     )
+
+# Output conversion for BPM
+def convert_bpm(value):
+    return str(round(value / 64))
+

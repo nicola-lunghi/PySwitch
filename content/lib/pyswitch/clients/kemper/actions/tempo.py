@@ -1,4 +1,4 @@
-from ....controller.actions import PushButtonAction
+from ....controller.actions import PushButtonAction, Action
 from ....controller.callbacks import BinaryParameterCallback, Callback
 from ....clients.kemper import KemperMappings
 from ....misc import Colors
@@ -21,35 +21,118 @@ def TAP_TEMPO(display = None, color = Colors.DARK_GREEN, id = False, use_leds = 
     })
 
 # Show tempo (blinks on every beat)
-def SHOW_TEMPO(display = None, color = Colors.LIGHT_GREEN, text = "Tempo", id = False, use_leds = True, enable_callback = None, led_brightness_on = 0.02, led_brightness_off = 0):
-    return PushButtonAction({
-        "callback": BinaryParameterCallback(
-            mapping = MAPPING_TEMPO_DISPLAY(),
+def SHOW_TEMPO(display = None, 
+               change_display = None,             # If a display label is passed here, the BPM value will be shown there shortly when changed.
+               change_timeout_millis = 1500,      # If change_display is set, this determines how long the values shall be shown.
+               color = Colors.LIGHT_GREEN, 
+               text = "{bpm} bpm",                # Text for the main label. Can contain a {bpm} token which is replaced with the current BPM value.
+               id = False, 
+               use_leds = True, 
+               enable_callback = None, 
+               led_brightness = 0.02              # LED brightness in range [0..1]
+    ):
+    return Action({
+        "callback": _KemperShowTempoCallback(
+            change_display = change_display,
+            change_timeout_millis = change_timeout_millis,
             text = text,
             color = color,
-            led_brightness_on = led_brightness_on,
-            led_brightness_off = led_brightness_off
+            led_brightness = led_brightness,
+            resolve_bpm = display or change_display
         ),
         "display": display,
         "id": id,
         "useSwitchLeds": use_leds,
-        "enableCallback": _ShowTempoEnableCallback(enable_callback)
+        "enableCallback": enable_callback
     })
 
 
-class _ShowTempoEnableCallback(Callback):
-    def __init__(self, enable_callback):
+####################################################################################
+
+
+class _KemperShowTempoCallback(Callback):
+    def __init__(self, 
+                 change_display,
+                 change_timeout_millis,
+                 color, 
+                 text, 
+                 led_brightness,
+                 resolve_bpm
+        ):
+        
         super().__init__()
-        self.__enable_callback = enable_callback
+
+        self.__tempo_mapping = MAPPING_TEMPO_DISPLAY()
+        self.register_mapping(self.__tempo_mapping)        
 
         self.__tuner_mapping = KemperMappings.TUNER_MODE_STATE()
         self.register_mapping(self.__tuner_mapping)
 
-    def enabled(self, action):
-        if self.__tuner_mapping.value == 1:
-            # Tuner enabled
-            return False
-        elif self.__enable_callback:
-            return self.__enable_callback.enabled(action)
+        if resolve_bpm:
+            from ..mappings.tempo_bpm import MAPPING_TEMPO_BPM, convert_bpm
+
+            self.__convert_bpm = convert_bpm
+            self.__bpm_mapping = MAPPING_TEMPO_BPM()
+            self.register_mapping(self.__bpm_mapping)
         else:
-            return True
+            self.__bpm_mapping = None
+
+        if change_display:
+            from ....controller.preview import ValuePreview
+
+            self.__preview = ValuePreview.get(change_display)
+            self.__change_timeout_millis = change_timeout_millis
+        else:
+            self.__preview = None
+
+        self._text = text
+        self._color = color
+        self._led_brightness = led_brightness
+        self.__current_value = None
+        self.__last_bpm = None
+
+    def push(self):
+        pass
+
+    def release(self):
+        pass
+
+    def update(self):
+        super().update()
+
+        if self.__preview:
+            self.__preview.update()
+
+    def update_displays(self):
+        if self.__tuner_mapping.value == 1:
+            return
+
+        value = self.__tempo_mapping.value
+        if value != None and value != self.__current_value:
+            self.__current_value = value
+
+            # LED blinking
+            self.action.switch_color = self._color
+            self.action.switch_brightness = self._led_brightness if value > 0 else 0
+
+        # Text to show
+        text = None
+        if self.__bpm_mapping and self.__bpm_mapping.value != None:
+            if self.__bpm_mapping.value != self.__last_bpm:
+                val = self.__convert_bpm(self.__bpm_mapping.value)
+                text = self._text.replace('{bpm}', val)
+
+                if self.__last_bpm != None:
+                    if self.__preview:
+                        self.__preview.preview(
+                            text = text, 
+                            timeout_millis = self.__change_timeout_millis
+                        )
+
+                self.__last_bpm = self.__bpm_mapping.value
+
+        if self.action.label:
+            self.action.label.back_color = self._color
+
+            if text:
+                self.action.label.text = text

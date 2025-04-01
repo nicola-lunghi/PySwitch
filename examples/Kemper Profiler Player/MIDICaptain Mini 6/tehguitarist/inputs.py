@@ -57,7 +57,7 @@ Inputs = [
             ),
             SHOW_TEMPO(
                 color = (50, 255, 50),
-                led_brightness_on = 0.2
+                led_brightness = 0.2
             )
         ]
     },

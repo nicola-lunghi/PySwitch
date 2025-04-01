@@ -1,6 +1,6 @@
 from ...kemper import NUM_RIGS_PER_BANK, BANK_COLORS, NUM_BANKS, KemperMappings
-from ....controller.actions import PushButtonAction
-from ....controller.callbacks import BinaryParameterCallback
+from ....controller.actions import Action
+from ....controller.callbacks import Callback
 from ....misc import get_option, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR
 
 from ..mappings.select import MAPPING_RIG_SELECT, MAPPING_BANK_AND_RIG_SELECT
@@ -21,11 +21,7 @@ def RIG_UP(keep_bank = True,                               # If enabled, the ban
     ):
     
     # Finally we can create the action definition ;)
-    return PushButtonAction({
-        "display": display,
-        "mode": PushButtonAction.LATCH,
-        "id": id,
-        "useSwitchLeds": use_leds,
+    return Action({
         "callback": _KemperRigChangeCallback(            
             color = color,
             color_callback = color_callback,
@@ -35,6 +31,9 @@ def RIG_UP(keep_bank = True,                               # If enabled, the ban
             keep_bank = keep_bank,
             direction_up = True
         ),
+        "display": display,
+        "id": id,
+        "useSwitchLeds": use_leds,
         "enableCallback": enable_callback
     })  
 
@@ -53,11 +52,7 @@ def RIG_DOWN(keep_bank = True,                               # If enabled, the b
     ):
     
     # Finally we can create the action definition ;)
-    return PushButtonAction({
-        "display": display,
-        "mode": PushButtonAction.LATCH,
-        "id": id,
-        "useSwitchLeds": use_leds,
+    return Action({
         "callback": _KemperRigChangeCallback(            
             color = color,
             color_callback = color_callback,
@@ -67,6 +62,9 @@ def RIG_DOWN(keep_bank = True,                               # If enabled, the b
             keep_bank = keep_bank,
             direction_up = False
         ),
+        "display": display,
+        "id": id,
+        "useSwitchLeds": use_leds,
         "enableCallback": enable_callback
     })  
 
@@ -75,7 +73,7 @@ def RIG_DOWN(keep_bank = True,                               # If enabled, the b
 
 
 # Callback implementation for Rig Select, showing bank colors and rig/bank info
-class _KemperRigChangeCallback(BinaryParameterCallback):
+class _KemperRigChangeCallback(Callback):
     def __init__(self,
                  color,
                  color_callback,
@@ -88,10 +86,7 @@ class _KemperRigChangeCallback(BinaryParameterCallback):
         
         mapping = KemperMappings.RIG_ID()
     
-        super().__init__(
-            mapping = mapping,
-            comparison_mode = BinaryParameterCallback.NO_STATE_CHANGE
-        )
+        super().__init__(mappings = [mapping])
 
         self.__mapping = mapping
         
@@ -111,7 +106,7 @@ class _KemperRigChangeCallback(BinaryParameterCallback):
         self.__led_brightness = get_option(appl.config, "ledBrightnessOn", 0.3)
         self.__appl = appl
 
-    def state_changed_by_user(self):
+    def push(self):
         if self.__mapping.value == None:
             return
         
@@ -134,6 +129,9 @@ class _KemperRigChangeCallback(BinaryParameterCallback):
         self.__appl.shared["morphStateOverride"] = 0
 
         self.__appl.client.set(set_mapping, value)
+
+    def release(self):
+        pass
 
     def update_displays(self):
         if self.__mapping.value == None:

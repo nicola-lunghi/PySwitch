@@ -515,7 +515,7 @@ class TestAnalogAction(unittest.TestCase):
     #####################################################################################################################
 
 
-    def test_preview(self):
+    def test_change_display(self):
         mapping = MockParameterMapping(
             name = "PQ",
             set = SystemExclusive(
@@ -538,8 +538,8 @@ class TestAnalogAction(unittest.TestCase):
             max_value = 100,
             num_steps = 65536,
             auto_calibrate = False,
-            preview_display = display,
-            preview_timeout_millis = 123
+            change_display = display,
+            change_timeout_millis = 123
         )
 
         appl = MockController2()
@@ -551,10 +551,6 @@ class TestAnalogAction(unittest.TestCase):
 
         action._AnalogAction__period = MockPeriodCounter()
         period = action._AnalogAction__period
-
-        self.assertEqual(action._AnalogAction__preview._ValuePreview__period.interval, 123)
-        action._AnalogAction__preview._ValuePreview__period = MockPeriodCounter()
-        preview_period = action._AnalogAction__preview._ValuePreview__period
 
         period.exceed_next_time = True
         action.process(1024)
@@ -574,13 +570,17 @@ class TestAnalogAction(unittest.TestCase):
             
         self.assertEqual(display.text, "PQ: 100%")
 
+        self.assertEqual(action._AnalogAction__preview._ValuePreview__period.interval, 123)
+        action._AnalogAction__preview._ValuePreview__period = MockPeriodCounter()
+        preview_period = action._AnalogAction__preview._ValuePreview__period
+
         preview_period.exceed_next_time = True
         action.update()
         
         self.assertEqual(display.text, "foo")
 
 
-    def test_preview_convert_value(self):
+    def test_change_display_convert_value(self):
         def convert_value(value):
             return f"blubb { str(value) } bla"
         
@@ -606,8 +606,8 @@ class TestAnalogAction(unittest.TestCase):
             max_value = 1000,
             num_steps = 65536,
             auto_calibrate = False,
-            preview_display = display,
-            preview_timeout_millis = 123,
+            change_display = display,
+            change_timeout_millis = 123,
             convert_value = convert_value
         )
 
@@ -620,10 +620,6 @@ class TestAnalogAction(unittest.TestCase):
 
         action._AnalogAction__period = MockPeriodCounter()
         period = action._AnalogAction__period
-
-        self.assertEqual(action._AnalogAction__preview._ValuePreview__period.interval, 123)
-        action._AnalogAction__preview._ValuePreview__period = MockPeriodCounter()
-        preview_period = action._AnalogAction__preview._ValuePreview__period
 
         period.exceed_next_time = True
         action.process(1024)
@@ -642,6 +638,10 @@ class TestAnalogAction(unittest.TestCase):
         action.update()
             
         self.assertEqual(display.text, "blubb 1000 bla")
+
+        self.assertEqual(action._AnalogAction__preview._ValuePreview__period.interval, 123)
+        action._AnalogAction__preview._ValuePreview__period = MockPeriodCounter()
+        preview_period = action._AnalogAction__preview._ValuePreview__period
 
         preview_period.exceed_next_time = True
         action.update()

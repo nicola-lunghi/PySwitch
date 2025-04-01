@@ -24,7 +24,7 @@ def MAPPING_EFFECT_BUTTON(num):
 
 def MAPPING_DLY_REV_MIX(slot_id):
     return ClientParameterMapping.get(
-        name = f"Mix { str(slot_id) }",
+        name = f"Mix { KemperEffectSlot.EFFECT_SLOT_NAME[slot_id] }",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
             KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],

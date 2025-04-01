@@ -20,8 +20,7 @@ class EncoderAction(Updateable):
                  cancel_action = None,              # Action to cancel a preselection (only makes sense with accept_action set). Must also be of type Encoder Button.
                  preview_display = None,            # If assigned, the adjusted value will be displayed in the passed DisplayLabel when the encoder is adjusted. 
                                                     # This just makes sense in conjunction with an accept action (see above).
-                 preview_timeout_millis = 1500,     # This is the amount of time (milliseconds) after which the 
-                                                    # preview display will return to its normal state.
+                 preview_timeout_millis = 1500,     # This is the amount of time (milliseconds) after which the preview display will return to its normal state.
                  preview_blink_period_millis = 400, # Blink period for preview (if an accept action is set)
                  preview_blink_color = (200, 200, 200), # Alternative color to be used when blinking.
                  preview_reset_mapping = None,      # A parameter mapping (optional) which will be tracked. If the value changes, the preselect mode will be reset.
@@ -63,12 +62,10 @@ class EncoderAction(Updateable):
         if preview_display:
             from ..preview import ValuePreview
 
-            self.__preview = ValuePreview.get(
-                label = preview_display,
-                timeout_millis = preview_timeout_millis,
-                blink_interval_millis = preview_blink_period_millis,
-                blink_color = preview_blink_color,                
-            )
+            self.__preview = ValuePreview.get(preview_display)
+            self.__preview_timeout_millis = preview_timeout_millis
+            self.__blink_interval_millis = preview_blink_period_millis
+            self.__blink_color = preview_blink_color
                 
             if accept_action:
                 self.__preview_reset_mapping = preview_reset_mapping
@@ -139,16 +136,20 @@ class EncoderAction(Updateable):
                         mapping = self.__mapping,
                         value = v,
                         max_value = self.__max_value,
-                        blink = self.__preselect,
+                        client = self,
                         stay = self.__preselect,
-                        client = self
+                        timeout_millis = self.__preview_timeout_millis,
+                        blink_interval_millis = self.__blink_interval_millis if self.__preselect else None,
+                        blink_color = self.__blink_color
                     )
                 else:
                     self.__preview.preview(
                         text = self.__convert_value(v),
-                        blink = self.__preselect,
+                        client = self,
                         stay = self.__preselect,
-                        client = self
+                        timeout_millis = self.__preview_timeout_millis,
+                        blink_interval_millis = self.__blink_interval_millis if self.__preselect else None,
+                        blink_color = self.__blink_color
                     )
 
     # Send the last value and reset preview display

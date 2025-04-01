@@ -507,7 +507,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping 
+        mapping = action.callback._KemperBankChangeCallback__mapping 
         mapping.value = 8
         
         action.push()
@@ -568,7 +568,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         action.init(appl, switch)
         action_rig_select.init(appl, switch_2)
 
-        mapping = action.callback.mapping 
+        mapping = action.callback._KemperBankChangeCallback__mapping 
         mapping_rigsel = action_rig_select.callback.mapping 
 
         mapping.value = 14  # Bank 2
@@ -675,7 +675,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
 
         action.init(appl, switch)
         
-        mapping = action.callback.mapping 
+        mapping = action.callback._KemperBankChangeCallback__mapping 
         
         mapping.value = 14  # Bank 2
         

@@ -1,122 +1,143 @@
-from ..misc import PeriodCounter, Colors
+from ..misc import PeriodCounter
 
 # Handler which controle the DisplayLabel override_text mechanisms for usage 
 # as value preview or similar things. It handles the blinking and timeouts etc.
 class ValuePreview:
 
-    __labels = {}
-
     # There is only one ValuePreview handler for each label
     @staticmethod
-    def get(label,
-            timeout_millis = None,
-            blink_interval_millis = None,
-            blink_color = Colors.WHITE
-        ):
-
-        if not label in ValuePreview.__labels:            
-            ValuePreview.__labels[label] = ValuePreview(
+    def get(label):
+        if not hasattr(label, "value_preview"):
+            label.value_preview = ValuePreview(
                 create_key = ValuePreview,
-                label = label,
-                timeout_millis = timeout_millis,
-                blink_interval_millis = blink_interval_millis,
-                blink_color = blink_color
+                label = label
             )
 
-        return ValuePreview.__labels[label]
+        return label.value_preview
 
     ###################################################################################################
 
     def __init__(self,
                  create_key,
-                 label,
-                 timeout_millis,
-                 blink_interval_millis,
-                 blink_color,
+                 label
         ):
         if create_key != ValuePreview:
-            raise Exception()   # Private constructor
+            raise Exception()   # Pseudo private constructor
         
         self.label = label
 
-        self.__period = PeriodCounter(timeout_millis) if timeout_millis else None
-
-        self.__blink = False
+        self.__period = None
+        self.__blink_period = None
         self.__stay = False
-        self.__blink_period = PeriodCounter(blink_interval_millis) if blink_interval_millis else None
+
         self.__blink_state = False
         self.__orig_color = label.text_color
-        self.__blink_color = blink_color
 
-        self.__clients = [] # List of clients to be canceled when another client enters. Each one must have a cancel() method.
+        self.__clients = None # List of clients to be canceled when another client enters. Each one must have a cancel() method.
 
-    # Sets a preview (override) text on the label. This text will:
-    # - Blink before being reset (if blink is True)
-    # - Stay until reset is called (stay = True) or disappear after the timeout interval (stay = False)
-    #
-    # Inf a client is given, it must have a cancel() method which will be called when someone else enters preview.
-    def preview(self, text, blink = False, stay = False, client = None):
-        for c in self.__clients:
-            if c == client:
-                continue
+    # Sets a preview (override) text on the label.
+    def preview(self, 
+                text,
+                client = None,                 # If a client is given, it must have a cancel() method which will be called when someone else enters preview.
+                stay = False,                  # If True, the value will not disappear until reset is called.
+                timeout_millis = 1500,         # Set to a value to let the preview disappear after that amount of time. Set to None or 0 for no timeout.
+                blink_interval_millis = None,  # Set to a value for blinking. Set to None or 0 for no blinking.
+                blink_color = (200, 200, 200)  # Blinking color.
+        ):
 
-            c.cancel()
+        if self.__clients:
+            for c in self.__clients:
+                if c == client:
+                    continue
+
+                c.cancel()
+
+        self.__stay = stay
 
         self.label.override_text = text
         self.label.update_label()
 
-        if self.__period:
+        if timeout_millis:
+            if not self.__period:
+                self.__period = PeriodCounter(timeout_millis)
+            else:
+                self.__period.interval = timeout_millis                
+
             self.__period.reset()
-        
-        self.__stay = stay
+        else:
+            self.__period = None
 
-        if not self.__blink and blink and self.__blink_period:
-            self.__blink_period.reset()
+        if blink_interval_millis:
+            if not self.__blink_period:
+                self.__blink_period = PeriodCounter(blink_interval_millis)
+            else:
+                self.__blink_period.interval = blink_interval_millis
+        else:
+            self.__blink_period = None
 
-        self.__blink = blink
+        self.__blink_color = blink_color
 
-        if client and not client in self.__clients:
-            self.__clients.append(client)
+        if client:
+            if not self.__clients:
+                self.__clients = []
+
+            if not client in self.__clients:
+                self.__clients.append(client)
         
     # Preview a mapping value (percentage)
-    def preview_mapping(self, value, mapping, max_value, blink = False, stay = False, client = None):
+    def preview_mapping(self, 
+                        value,                         # Value to show
+                        mapping,                       # Mapping (for deriving the name)
+                        max_value,                     # Max. value (for calculating percentage)
+                        client = None,                 # If a client is given, it must have a cancel() method which will be called when someone else enters preview.
+                        stay = False,                  # If True, the value will not disappear until reset is called.
+                        timeout_millis = 1500,         # Set to a value to let the preview disappear after that amount of time. Set to None or 0 for no timeout.
+                        blink_interval_millis = None,  # Set to a value for blinking. Set to None or 0 for no blinking.
+                        blink_color = (200, 200, 200)  # Blinking color
+        ):
         prefix = f"{ mapping.name }: " if mapping.name else ""
         val = round(value * 100 / max_value)
         
         self.preview(
             text = f"{ prefix }{ str(val) }%",
-            blink = blink,
+            client = client,
             stay = stay,
-            client = client
+            timeout_millis = timeout_millis,
+            blink_interval_millis = blink_interval_millis,
+            blink_color = blink_color
         )        
 
     # Reset the display label to its default behaviour, either immediately or after the timeout period.
     def reset(self, immediately = False):
-        self.__blink = False
+        self.__blink_period = None
         self.__stay = False
 
         self.label.text_color = self.__orig_color
 
+        if not self.__period:
+            immediately = True
+
         if immediately:
             self.label.override_text = None
             self.label.update_label()
-
-        elif self.__period:
+            self.__period = None
+        else:
             self.__period.reset()
         
     # Must be called regularly
     def update(self):
-        # Free preview display after a period
-        if not self.__stay and self.label.override_text and self.__period and self.__period.exceeded:
-            self.label.override_text = None
-            self.label.update_label()
+        if self.label.override_text:
+            # Free preview display after a period
+            if not self.__stay and self.__period and self.__period.exceeded:
+                self.label.override_text = None
+                self.label.update_label()
 
-        # Blink
-        if self.__blink and self.label.override_text and self.__blink_period and self.__blink_period.exceeded:
-            self.__blink_state = not self.__blink_state
+            # Blink
+            if self.__blink_period and self.__blink_period.exceeded:
+                self.__blink_state = not self.__blink_state
 
-            if self.__blink_state:
-                self.label.text_color = self.__blink_color
-            else:
-                self.label.text_color = self.__orig_color
+                if self.__blink_state:
+                    self.label.text_color = self.__blink_color
+                else:
+                    self.label.text_color = self.__orig_color
 

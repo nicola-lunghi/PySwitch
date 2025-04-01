@@ -150,8 +150,8 @@ class ParserChecks {
             for (const action of actions || []) {
                 const args = action.arguments();
 
-                for (const arg of args) {  
-                    if (arg.value == displayId) {
+                for (const arg of args) { 
+                    if (arg.value == displayId && !arg.name.includes("preview") && !arg.name.includes("change")) {  // TODO put to Meta
                         ret.push(action);
                     }                                        
                 }

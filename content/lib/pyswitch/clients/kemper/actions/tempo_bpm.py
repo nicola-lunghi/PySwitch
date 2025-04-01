@@ -1,5 +1,5 @@
 from ....controller.actions.EncoderAction import EncoderAction
-from ..mappings.tempo_bpm import MAPPING_TEMPO_BPM
+from ..mappings.tempo_bpm import MAPPING_TEMPO_BPM, convert_bpm
 from .. import KemperMappings
 
 # Adjusts the BPM tempo with a rotary encoder.
@@ -31,8 +31,8 @@ def ENCODER_BPM(
         preview_timeout_millis = preview_timeout_millis,
         preview_blink_color = preview_blink_color,
         preview_reset_mapping = KemperMappings.RIG_ID(),
-        convert_value = _convert_bpm,
+        convert_value = _convert_value,
     )
 
-def _convert_bpm(value):
-    return f"{ str(round(value / 64)) } bpm"
+def _convert_value(value):
+    return convert_bpm(value) + " bpm"

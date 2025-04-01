@@ -287,7 +287,20 @@
                         "type": "select"
                     },
                     {
+                        "name": "change_display",
+                        "type": "select"
+                    },
+                    {
                         "name": "preview_timeout_millis",
+                        "type": "int",
+                        "advanced": 1,
+                        "range": {
+                            "min": 1,
+                            "max": 5000
+                        }
+                    },
+                    {
+                        "name": "change_timeout_millis",
                         "type": "int",
                         "advanced": 1,
                         "range": {
@@ -682,7 +695,20 @@
                         "type": "select"
                     },
                     {
+                        "name": "change_display",
+                        "type": "select"
+                    },
+                    {
                         "name": "preview_timeout_millis",
+                        "type": "int",
+                        "advanced": 1,
+                        "range": {
+                            "min": 1,
+                            "max": 5000
+                        }
+                    },
+                    {
+                        "name": "change_timeout_millis",
                         "type": "int",
                         "advanced": 1,
                         "range": {
@@ -906,9 +932,12 @@
                         "default": "512"
                     },
                     {
+                        "name": "change_timeout_millis",
+                        "type": "any"
+                    },
+                    {
                         "name": "text",
-                        "type": "text",
-                        "default": "'{val}%'"
+                        "type": "text"
                     }
                 ]
             }

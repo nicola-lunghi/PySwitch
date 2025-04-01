@@ -44,13 +44,6 @@ class Callback(Updateable):
             self.__appl.client.request(m, self)
 
     def parameter_changed(self, mapping):
-        # # Take over value before calling the listener
-        # for m in self.__mappings:
-        #     if m != mapping:
-        #         continue
-
-        #     m.value = mapping.value
-
         if self.__listener:
             self.__listener.parameter_changed(mapping)
 
@@ -65,6 +58,24 @@ class Callback(Updateable):
         if self.__listener:
             self.__listener.request_terminated(mapping)
 
+
+    # Dims a passed color for display of disabled state
+    def dim_color(self, color, factor):
+        if isinstance(color[0], tuple):
+            # Multi color
+            return [(
+                    int(c[0] * factor),
+                    int(c[1] * factor),
+                    int(c[2] * factor)
+                ) for c in color]            
+        else:
+            # Single color
+            return (
+                int(color[0] * factor),
+                int(color[1] * factor),
+                int(color[2] * factor)
+            )
+        
 
 ###########################################################################################################
 
@@ -342,20 +353,3 @@ class BinaryParameterCallback(Callback):
                 self.action.label.text = self._text
 
 
-    # Dims a passed color for display of disabled state
-    def dim_color(self, color, factor):
-        if isinstance(color[0], tuple):
-            # Multi color
-            return [(
-                    int(c[0] * factor),
-                    int(c[1] * factor),
-                    int(c[2] * factor)
-                ) for c in color]            
-        else:
-            # Single color
-            return (
-                int(color[0] * factor),
-                int(color[1] * factor),
-                int(color[2] * factor)
-            )
-        

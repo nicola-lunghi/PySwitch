@@ -11,7 +11,7 @@ _NRPN_EFFECT_PARAMETER_ADDRESS_ROTARY_SPEED = const(0x1e)  # 30
 # Rotary speed (fast/slow)
 def MAPPING_ROTARY_SPEED(slot_id):
     return ClientParameterMapping.get(
-        name = f"Rot. Speed { str(slot_id) }",
+        name = f"Rot. Speed { KemperEffectSlot.EFFECT_SLOT_NAME[slot_id] }",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
             KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],

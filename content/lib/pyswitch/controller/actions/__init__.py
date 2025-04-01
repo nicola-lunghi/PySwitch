@@ -129,11 +129,13 @@ class Action(Updateable):
 
     # Called when the switch is pushed down
     def push(self):
-        pass                                      # pragma: no cover
+        if self.callback:
+            self.callback.push()
 
     # Called when the switch is released
     def release(self):
-        pass                                      # pragma: no cover
+        if self.callback:
+            self.callback.release()
 
     # Called to update the displays (LEDs and label)
     #@RuntimeStatistics.measure

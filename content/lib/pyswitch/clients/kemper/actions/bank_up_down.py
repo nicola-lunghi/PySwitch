@@ -1,5 +1,5 @@
-from ....controller.actions import PushButtonAction
-from ....controller.callbacks import BinaryParameterCallback
+from ....controller.actions import Action
+from ....controller.callbacks import Callback
 from ...kemper import NUM_RIGS_PER_BANK, BANK_COLORS, NUM_BANKS
 from ....misc import Colors, get_option, PeriodCounter
 
@@ -23,7 +23,7 @@ def BANK_UP(display = None,
             preselect = False,                                # Preselect mode. If enabled, the bank is only pre-selected, the change will only take effect when you select a rig next time.
             max_bank = None                                   # Highest bank available. Only relevant if preselct is enabled.
     ):
-    return PushButtonAction({
+    return Action({
         "callback": KemperBankChangeCallback(
             mapping = MAPPING_NEXT_BANK() if not preselect else MAPPING_BANK_SELECT(),
             offset = 1,
@@ -37,7 +37,6 @@ def BANK_UP(display = None,
             preselect = preselect,
             max_bank = max_bank
         ),
-        "mode": PushButtonAction.ONE_SHOT,
         "display": display,
         "id": id,
         "useSwitchLeds": use_leds,
@@ -59,7 +58,7 @@ def BANK_DOWN(display = None,                                   # Reference to a
               preselect = False,                                # Preselect mode
               max_bank = None                                   # Highest bank available. Only relevant if preselct is enabled.
     ):
-    return PushButtonAction({
+    return Action({
         "callback": KemperBankChangeCallback(
             mapping = MAPPING_PREVIOUS_BANK() if not preselect else MAPPING_BANK_SELECT(),
             offset = -1,
@@ -73,7 +72,6 @@ def BANK_DOWN(display = None,                                   # Reference to a
             preselect = preselect,
             max_bank = max_bank
         ),
-        "mode": PushButtonAction.ONE_SHOT,
         "display": display,
         "id": id,
         "useSwitchLeds": use_leds,
@@ -82,25 +80,22 @@ def BANK_DOWN(display = None,                                   # Reference to a
 
 
 # Custom callback showing current bank color (only used by Bank up/down)
-class KemperBankChangeCallback(BinaryParameterCallback):
+class KemperBankChangeCallback(Callback):
     def __init__(self, 
-                    mapping, 
-                    offset,
-                    dim_factor,
-                    display_mode,
-                    led_brightness,
-                    color,
-                    color_callback,
-                    text,
-                    text_callback,
-                    preselect,
-                    max_bank,
-                    preselect_blink_interval = 400
+                 mapping, 
+                 offset,
+                 dim_factor,
+                 display_mode,
+                 led_brightness,
+                 color,
+                 color_callback,
+                 text,
+                 text_callback,
+                 preselect,
+                 max_bank,
+                 preselect_blink_interval = 400
         ):            
-        super().__init__(
-            mapping = mapping,
-            comparison_mode = self.NO_STATE_CHANGE
-        )
+        super().__init__(mappings = [mapping])
 
         self.__mapping = mapping
         self.__dim_factor_p = dim_factor
@@ -144,7 +139,7 @@ class KemperBankChangeCallback(BinaryParameterCallback):
             self.__appl.shared["preselectBlinkState"] = False
             self.__appl.shared["preselectCallback"] = None
 
-    def state_changed_by_user(self):
+    def push(self):
         if self.__preselect:
             if self.__mapping.value == None:
                 return
@@ -162,8 +157,11 @@ class KemperBankChangeCallback(BinaryParameterCallback):
         
         self.__appl.shared["morphStateOverride"] = 0
 
+    def release(self):
+        pass
+
     def update(self):
-        BinaryParameterCallback.update(self)
+        Callback.update(self)
 
         # if self.__mapping.value != None:
         if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectCallback"] == self and self.__preselect_blink_period.exceeded:

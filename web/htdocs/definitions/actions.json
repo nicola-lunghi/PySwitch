@@ -537,14 +537,24 @@
                         "comment": null
                     },
                     {
+                        "name": "change_display",
+                        "default": "None",
+                        "comment": "If a display label is passed here, the BPM value will be shown there shortly when changed."
+                    },
+                    {
+                        "name": "change_timeout_millis",
+                        "default": "1500",
+                        "comment": "If change_display is set, this determines how long the values shall be shown."
+                    },
+                    {
                         "name": "color",
                         "default": "Colors.LIGHT_GREEN",
                         "comment": null
                     },
                     {
                         "name": "text",
-                        "default": "\"Tempo\"",
-                        "comment": null
+                        "default": "\"{bpm} bpm\"",
+                        "comment": "Text for the main label. Can contain a {bpm} token which is replaced with the current BPM value."
                     },
                     {
                         "name": "id",
@@ -562,14 +572,9 @@
                         "comment": null
                     },
                     {
-                        "name": "led_brightness_on",
+                        "name": "led_brightness",
                         "default": "0.02",
-                        "comment": null
-                    },
-                    {
-                        "name": "led_brightness_off",
-                        "default": "0",
-                        "comment": null
+                        "comment": "LED brightness in range [0..1]"
                     }
                 ],
                 "comment": "Show tempo (blinks on every beat)",
@@ -1315,22 +1320,32 @@
                     {
                         "name": "offset",
                         "default": null,
-                        "comment": "Offset to be added to the parameter value"
+                        "comment": "Offset to be added to the parameter value. The range for this depends on whether the mapping's set message is a SysEx ([0..16383]) or ControlChange ([0..127])."
                     },
                     {
                         "name": "max_value",
                         "default": "None",
-                        "comment": "Max. value. If None, this is derived automatically from the mapping."
+                        "comment": "Max. value. If None, this is derived automatically from the mapping (SysEx: 16383, CC: 127)."
                     },
                     {
                         "name": "display",
                         "default": "None",
-                        "comment": null
+                        "comment": "Display label to show the value and color."
+                    },
+                    {
+                        "name": "change_display",
+                        "default": "None",
+                        "comment": "Can be assigned to an additonal display label which is used to show the changed values for a period of time."
+                    },
+                    {
+                        "name": "change_timeout_millis",
+                        "default": "1500",
+                        "comment": "Amount of time the value is shown in the change display, if change_display is set."
                     },
                     {
                         "name": "text",
-                        "default": "\"\"",
-                        "comment": "Can contain {val} which will be replaced with the current parameter value"
+                        "default": "\"{val}%\"",
+                        "comment": "Text for the main display parameter's label. Can contain {val} which will be replaced with the current parameter value (percentage in range [0..100])"
                     },
                     {
                         "name": "color",
@@ -1358,7 +1373,7 @@
                         "comment": null
                     }
                 ],
-                "comment": "Generic switch action which can be used for all parameter mappings",
+                "comment": "Can be used for all parameter mappings: Increases or decreases the parameter value by a given offset. \n\nOptionally, the current value can be shown in a display label, and/or be previewed in another display label (the rig name for example).",
                 "importPath": "pyswitch.clients.local.actions.param_change"
             },
             {
@@ -1530,14 +1545,14 @@
                         "comment": "Transfer function. Input is the raw encoder value in range [0..65535]. Must return the value to be sent for \nthe mapping, in its range. If used, this disables the num_steps and max_value parameters.\n\nNOTE: When designing your transfer function, take care that the output values do not change too often as this \nimposes performance issues!"
                     },
                     {
-                        "name": "preview_display",
+                        "name": "change_display",
                         "default": "None",
                         "comment": "If assigned, the adjusted value will be displayed in the passed DisplayLabel when the pedal is adjusted. "
                     },
                     {
-                        "name": "preview_timeout_millis",
+                        "name": "change_timeout_millis",
                         "default": "1500",
-                        "comment": "This is the amount of time (milliseconds) after which the \npreview display will return to its normal state."
+                        "comment": "This is the amount of time (milliseconds) after which the preview display will return to its normal state."
                     },
                     {
                         "name": "convert_value",
@@ -1596,7 +1611,7 @@
                     {
                         "name": "preview_timeout_millis",
                         "default": "1500",
-                        "comment": "This is the amount of time (milliseconds) after which the \npreview display will return to its normal state."
+                        "comment": "This is the amount of time (milliseconds) after which the preview display will return to its normal state."
                     },
                     {
                         "name": "preview_blink_period_millis",

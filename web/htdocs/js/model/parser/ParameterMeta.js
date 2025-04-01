@@ -56,7 +56,7 @@ class ParameterMeta {
         }
 
         // Display parameters for all kinds of actions
-        if (this.parameter.name == "display" || this.parameter.name == "morph_display" || this.parameter.name == "preview_display") {
+        if (this.parameter.name == "display" || this.parameter.name == "morph_display" || this.parameter.name == "preview_display" || this.parameter.name == "change_display") {
             function formatUsages(usages) {
                 if (usages.length == 0) return "";
                 const usagemap = usages.map((item) => item.input.displayName());

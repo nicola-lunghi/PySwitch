@@ -13,7 +13,7 @@ _NRPN_ADDRESS_PAGE_FREEZE = const(0x7d)
 # Freeze for slots
 def MAPPING_FREEZE(slot_id):
     return ClientParameterMapping.get(
-        name = f"Freeze { str(slot_id) }",
+        name = f"Freeze { KemperEffectSlot.EFFECT_SLOT_NAME[slot_id] }",
         set = KemperNRPNMessage(
             NRPN_FUNCTION_SET_SINGLE_PARAMETER, 
             _NRPN_ADDRESS_PAGE_FREEZE,

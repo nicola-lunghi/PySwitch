@@ -41,6 +41,7 @@ class MappingParserTests extends FunctionParserTestBase {
                             className: client.getInitMappingsClassName(),
                             functions: true
                         }))
+                        .filter((item) => !item.name.startsWith('convert_'))
                     }
                     
                     ret.push({

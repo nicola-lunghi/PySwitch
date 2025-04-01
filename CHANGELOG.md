@@ -1,6 +1,9 @@
 # PySwitch v2.4.2
 - Features:
-    - Added the preview display parameters (like for the encoder) also to the pedal action (will display the exact value for 1.5s, then revert to the original display text)
+    - Values in the Big Display Label:
+        - Added the preview display parameters (like for the encoder) also to the pedal action (will display the exact value for 1.5s, then revert to the original display text)
+        - Added the preview display parameters (like for the encoder) also to the Show Tempo action (which now can also show BPM in a header/footer display as well as in the Rig Name display when change_display is set)
+    - Added Parameter Up/Down action: This can for example be used to lower/raise the value of a parameter by a given offset. (Also for this there are several value display possibilities). This can replace missing expression pedals :) I personally use it for changing the Reverb Mix on the fly without sacrificing my Volume Pedal. See the Reverb Mix example for the Nano 4.
 
 - Optimizations:
     - Changed mapping names to fit better into the preview displays

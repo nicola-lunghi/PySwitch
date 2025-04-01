@@ -390,7 +390,7 @@ class KemperMappings:
     @staticmethod
     def EFFECT_STATE(slot_id):
         return ClientParameterMapping.get(
-            name = f"Slot State { str(slot_id) }",
+            name = f"Slot State { KemperEffectSlot.EFFECT_SLOT_NAME[slot_id] }",
             set = ControlChange(
                 KemperEffectSlot.CC_EFFECT_SLOT_ENABLE[slot_id], 
                 0    # Dummy value, will be overridden
@@ -411,7 +411,7 @@ class KemperMappings:
     @staticmethod
     def EFFECT_TYPE(slot_id):
         return ClientParameterMapping.get(
-            name = f"Slot Type { str(slot_id) }",
+            name = f"Slot Type { KemperEffectSlot.EFFECT_SLOT_NAME[slot_id] }",
             request = KemperNRPNMessage(               
                 NRPN_FUNCTION_REQUEST_SINGLE_PARAMETER, 
                 KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE[slot_id],

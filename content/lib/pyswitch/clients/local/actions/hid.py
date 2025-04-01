@@ -2,7 +2,7 @@ import usb_hid
 from adafruit_hid.keyboard import Keyboard
 
 from ....controller.callbacks import Callback
-from ....controller.actions import PushButtonAction
+from ....controller.actions import Action
 from ....misc import Colors
 
 # Set up a keyboard device.
@@ -20,14 +20,13 @@ def HID_KEYBOARD(
     use_leds = True, 
     enable_callback = None    
 ):
-    return PushButtonAction({
+    return Action({
         "callback": HidCallback(
             keycodes = keycodes,
             text = text,
             color = color,
             led_brightness = led_brightness         
         ),
-        "mode": PushButtonAction.LATCH,
         "display": display,
         "id": id,
         "useSwitchLeds": use_leds,
@@ -44,9 +43,12 @@ class HidCallback(Callback):
         self.__led_brightness = led_brightness
         self.__keycodes = [keycodes] if not isinstance(keycodes, list) and not isinstance(keycodes, tuple) else keycodes
         
-    def state_changed_by_user(self):
+    def push(self):
         for code in self.__keycodes:
             _kbd.send(code)
+
+    def release(self):
+        pass
 
     def update_displays(self):
         self.action.switch_color = self.__color

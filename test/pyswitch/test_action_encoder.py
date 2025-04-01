@@ -362,10 +362,6 @@ class TestEncoderAction(unittest.TestCase):
         appl = MockController2()
         action.init(appl)
 
-        self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 123)
-        action._EncoderAction__preview._ValuePreview__period = MockPeriodCounter()
-        period = action._EncoderAction__preview._ValuePreview__period
-
         display.update_label()
 
         action.process(0)
@@ -395,6 +391,10 @@ class TestEncoderAction(unittest.TestCase):
         self.assertEqual(display.text, "Some: 100%")
         self.assertEqual(len(appl.client.set_calls), 4)
         self.assertEqual(mapping.value, 1000)
+
+        self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 123)
+        action._EncoderAction__preview._ValuePreview__period = MockPeriodCounter()
+        period = action._EncoderAction__preview._ValuePreview__period
 
         period.exceed_next_time = True
         action.process(1000)
@@ -448,10 +448,6 @@ class TestEncoderAction(unittest.TestCase):
         appl = MockController2()
         action.init(appl)
 
-        self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 123)
-        action._EncoderAction__preview._ValuePreview__period = MockPeriodCounter()
-        period = action._EncoderAction__preview._ValuePreview__period
-
         display.update_label()
 
         action.process(0)
@@ -481,6 +477,10 @@ class TestEncoderAction(unittest.TestCase):
         self.assertEqual(display.text, "2000 units")
         self.assertEqual(len(appl.client.set_calls), 4)
         self.assertEqual(mapping.value, 1000)
+
+        self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 123)
+        action._EncoderAction__preview._ValuePreview__period = MockPeriodCounter()
+        period = action._EncoderAction__preview._ValuePreview__period
 
         period.exceed_next_time = True
         action.process(1000)
@@ -584,14 +584,6 @@ class TestEncoderAction(unittest.TestCase):
         accept.init(appl, switch)
         cancel.init(appl, switch)
 
-        self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 123)
-        action._EncoderAction__preview._ValuePreview__period = MockPeriodCounter()
-        period = action._EncoderAction__preview._ValuePreview__period
-
-        self.assertEqual(action._EncoderAction__preview._ValuePreview__blink_period.interval, 345)
-        action._EncoderAction__preview._ValuePreview__blink_period = MockPeriodCounter()
-        period_blink = action._EncoderAction__preview._ValuePreview__blink_period
-
         display.update_label()
 
         action.process(0)
@@ -604,14 +596,18 @@ class TestEncoderAction(unittest.TestCase):
 
         self.assertEqual(display.text, "Some: 1%")
         self.assertEqual(appl.client.set_calls, [])
-        self.assertEqual(display.text_color, (4, 6, 8))
+        self.assertEqual(display.text_color, (2, 3, 4))
 
         action.process(200)
         action.update()
 
         self.assertEqual(display.text, "Some: 20%")
         self.assertEqual(appl.client.set_calls, [])
-        self.assertEqual(display.text_color, (4, 6, 8))
+        self.assertEqual(display.text_color, (2, 3, 4))
+
+        self.assertEqual(action._EncoderAction__preview._ValuePreview__blink_period.interval, 345)
+        action._EncoderAction__preview._ValuePreview__blink_period = MockPeriodCounter()
+        period_blink = action._EncoderAction__preview._ValuePreview__blink_period
 
         period_blink.exceed_next_time = True
         action.process(200)
@@ -619,14 +615,14 @@ class TestEncoderAction(unittest.TestCase):
 
         self.assertEqual(display.text, "Some: 20%")
         self.assertEqual(appl.client.set_calls, [])
-        self.assertEqual(display.text_color, (2, 3, 4))
+        self.assertEqual(display.text_color, (4, 6, 8))
 
         action.process(500)
         action.update()
 
         self.assertEqual(display.text, "Some: 50%")
         self.assertEqual(appl.client.set_calls, [])
-        self.assertEqual(display.text_color, (2, 3, 4))
+        self.assertEqual(display.text_color, (4, 6, 8))
 
         period_blink.exceed_next_time = True
         action.process(1000)
@@ -634,7 +630,7 @@ class TestEncoderAction(unittest.TestCase):
 
         self.assertEqual(display.text, "Some: 100%")
         self.assertEqual(appl.client.set_calls, [])
-        self.assertEqual(display.text_color, (4, 6, 8))
+        self.assertEqual(display.text_color, (2, 3, 4))
 
         accept.push()
         accept.release()
@@ -642,6 +638,10 @@ class TestEncoderAction(unittest.TestCase):
         self.assertEqual(display.text, "Some: 100%")
         self.assertEqual(appl.client.set_calls, [{ "mapping": mapping, "value": 999 }])
         self.assertEqual(display.text_color, (4, 6, 8))
+
+        self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 123)
+        action._EncoderAction__preview._ValuePreview__period = MockPeriodCounter()
+        period = action._EncoderAction__preview._ValuePreview__period
 
         period.exceed_next_time = True
         period_blink.exceed_next_time = True
@@ -657,7 +657,7 @@ class TestEncoderAction(unittest.TestCase):
 
         self.assertEqual(display.text, "Some: 50%")
         self.assertEqual(appl.client.set_calls, [{ "mapping": mapping, "value": 999 }])
-        self.assertEqual(display.text_color, (2, 3, 4))
+        self.assertEqual(display.text_color, (4, 6, 8))
 
         cancel.push()
         cancel.release()

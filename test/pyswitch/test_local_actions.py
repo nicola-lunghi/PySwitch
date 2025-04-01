@@ -84,3 +84,5 @@ class TestLocalActionDefinitions(unittest.TestCase):
         self.assertEqual(action.uses_switch_leds, True)
         self.assertEqual(action._Action__enable_callback, ecb)
 
+
+    

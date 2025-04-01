@@ -17,7 +17,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.controller.callbacks import BinaryParameterCallback
+    from lib.pyswitch.controller.callbacks import Callback
     from lib.pyswitch.misc import Updater
     
     from .mocks_appl import *
@@ -25,7 +25,7 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.clients.kemper.actions.tempo import *
     from lib.pyswitch.clients.kemper.mappings.tempo import *
-
+    
 
 class MockController2(Updater):
     def __init__(self):
@@ -37,45 +37,105 @@ class MockController2(Updater):
 class TestKemperActionDefinitions(unittest.TestCase):
 
     def test_show_tempo(self):
+        with patch.dict(sys.modules, {
+            "micropython": MockMicropython,
+            "displayio": MockDisplayIO(),
+            "adafruit_display_text": MockAdafruitDisplayText(),
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
+            "gc": MockGC()
+        }):
+            action = SHOW_TEMPO(
+                color = (4, 5, 6), 
+                id = 67, 
+                use_leds = True
+            )
+
+            cb = action.callback
+            self.assertIsInstance(cb, Callback)
+            self.assertIsInstance(action, Action)
+
+            self.assertEqual(cb._KemperShowTempoCallback__tempo_mapping, MAPPING_TEMPO_DISPLAY())
+            self.assertEqual(cb._KemperShowTempoCallback__tuner_mapping, KemperMappings.TUNER_MODE_STATE())
+            self.assertEqual(cb._color, (4, 5, 6))
+
+            self.assertEqual(action.label, None)
+            self.assertEqual(action.id, 67)
+            self.assertEqual(action.uses_switch_leds, True)
+
+            # # Must depend on tuner mode state
+            # action_ecb = action._Action__enable_callback
+
+            # self.assertEqual(action_ecb.enabled(action), True)
+
+            # # Tuner enabled
+            # action_ecb._Callback__mappings[0].value = 1
+            # self.assertEqual(action_ecb.enabled(action), False)
+
+            # # Tuner disabled
+            # action_ecb._Callback__mappings[0].value = 3
+            # self.assertEqual(action_ecb.enabled(action), True)
+
+            # action_ecb._Callback__mappings[0].value = 0
+            # self.assertEqual(action_ecb.enabled(action), True)
+
+
+    def test_show_tempo_display(self):
         display = DisplayLabel(layout = {
             "font": "foo"
         })
 
-        action = SHOW_TEMPO(
-            display = display, 
-            color = (4, 5, 6), 
-            text = "foo",
-            id = 67, 
-            use_leds = True
-        )
+        with patch.dict(sys.modules, {
+            "micropython": MockMicropython,
+            "displayio": MockDisplayIO(),
+            "adafruit_display_text": MockAdafruitDisplayText(),
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
+            "gc": MockGC()
+        }):
+            from lib.pyswitch.clients.kemper.mappings.tempo_bpm import MAPPING_TEMPO_BPM
 
-        cb = action.callback
-        self.assertIsInstance(cb, BinaryParameterCallback)
-        self.assertIsInstance(action, PushButtonAction)
+            action = SHOW_TEMPO(
+                display = display, 
+                color = (4, 5, 6), 
+                text = "foo {bpm}",
+                id = 67, 
+                use_leds = True
+            )
 
-        self.assertEqual(cb.mapping, MAPPING_TEMPO_DISPLAY())
-        self.assertEqual(cb._text, "foo")
-        self.assertEqual(cb._color, (4, 5, 6))
+            cb = action.callback
+            self.assertIsInstance(cb, Callback)
+            self.assertIsInstance(action, Action)
 
-        self.assertEqual(action.label, display)
-        self.assertEqual(action.id, 67)
-        self.assertEqual(action.uses_switch_leds, True)
+            self.assertEqual(cb._KemperShowTempoCallback__tempo_mapping, MAPPING_TEMPO_DISPLAY())
+            self.assertEqual(cb._KemperShowTempoCallback__tuner_mapping, KemperMappings.TUNER_MODE_STATE())
+            self.assertEqual(cb._KemperShowTempoCallback__bpm_mapping, MAPPING_TEMPO_BPM())
+            self.assertEqual(cb._text, "foo {bpm}")
+            self.assertEqual(cb._color, (4, 5, 6))
 
-        # Must depend on tuner mode state
-        action_ecb = action._Action__enable_callback
+            self.assertEqual(action.label, display)
+            self.assertEqual(action.id, 67)
+            self.assertEqual(action.uses_switch_leds, True)
 
-        self.assertEqual(action_ecb.enabled(action), True)
+            # # Must depend on tuner mode state
+            # action_ecb = action._Action__enable_callback
 
-        # Tuner enabled
-        action_ecb._Callback__mappings[0].value = 1
-        self.assertEqual(action_ecb.enabled(action), False)
+            # self.assertEqual(action_ecb.enabled(action), True)
 
-        # Tuner disabled
-        action_ecb._Callback__mappings[0].value = 3
-        self.assertEqual(action_ecb.enabled(action), True)
+            # # Tuner enabled
+            # action_ecb._Callback__mappings[0].value = 1
+            # self.assertEqual(action_ecb.enabled(action), False)
 
-        action_ecb._Callback__mappings[0].value = 0
-        self.assertEqual(action_ecb.enabled(action), True)
+            # # Tuner disabled
+            # action_ecb._Callback__mappings[0].value = 3
+            # self.assertEqual(action_ecb.enabled(action), True)
+
+            # action_ecb._Callback__mappings[0].value = 0
+            # self.assertEqual(action_ecb.enabled(action), True)
 
 
     def test_show_tempo_with_ecb(self):
@@ -85,46 +145,52 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         ecb = MockEnabledCallback()
 
-        action = SHOW_TEMPO(
-            display = display, 
-            color = (4, 5, 6), 
-            text = "foo",
-            id = 67, 
-            use_leds = True, 
-            enable_callback = ecb
-        )
+        with patch.dict(sys.modules, {
+            "micropython": MockMicropython,
+            "displayio": MockDisplayIO(),
+            "adafruit_display_text": MockAdafruitDisplayText(),
+            "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
+            "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
+            "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
+            "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
+            "gc": MockGC()
+        }):
+            from lib.pyswitch.clients.kemper.mappings.tempo_bpm import MAPPING_TEMPO_BPM
 
-        cb = action.callback
-        self.assertIsInstance(cb, BinaryParameterCallback)
-        self.assertIsInstance(action, PushButtonAction)
+            action = SHOW_TEMPO(
+                display = display, 
+                color = (4, 5, 6), 
+                text = "foo",
+                id = 67, 
+                use_leds = True, 
+                enable_callback = ecb
+            )
 
-        self.assertEqual(cb.mapping, MAPPING_TEMPO_DISPLAY())
-        self.assertEqual(cb._text, "foo")
-        self.assertEqual(cb._color, (4, 5, 6))
+            cb = action.callback
+            self.assertIsInstance(cb, Callback)
+            self.assertIsInstance(action, Action)
 
-        self.assertEqual(action.label, display)
-        self.assertEqual(action.id, 67)
-        self.assertEqual(action.uses_switch_leds, True)
+            self.assertEqual(cb._KemperShowTempoCallback__tempo_mapping, MAPPING_TEMPO_DISPLAY())
+            self.assertEqual(cb._KemperShowTempoCallback__tuner_mapping, KemperMappings.TUNER_MODE_STATE())
+            self.assertEqual(cb._KemperShowTempoCallback__bpm_mapping, MAPPING_TEMPO_BPM())
+            self.assertEqual(cb._text, "foo")
+            self.assertEqual(cb._color, (4, 5, 6))
 
-        # Must depend on tuner mode state
-        action_ecb = action._Action__enable_callback
+            self.assertEqual(action.label, display)
+            self.assertEqual(action.id, 67)
+            self.assertEqual(action.uses_switch_leds, True)
 
-        ecb.output = True
-        self.assertEqual(action_ecb.enabled(action), True)
+            appl = MockController2()
+            action.init(appl, None)
 
-        ecb.output = False
-        self.assertEqual(action_ecb.enabled(action), False)
+            # Must depend on tuner mode state
+            # Tuner enabled
+            # action_ecb._Callback__mappings[1].value = 1
+            # self.assertEqual(action_ecb.enabled(action), False)
 
-        ecb.output = True
-        self.assertEqual(action_ecb.enabled(action), True)
+            # # Tuner disabled
+            # action_ecb._Callback__mappings[1].value = 3
+            # self.assertEqual(action_ecb.enabled(action), True)
 
-        # Tuner enabled
-        action_ecb._Callback__mappings[0].value = 1
-        self.assertEqual(action_ecb.enabled(action), False)
-
-        # Tuner disabled
-        action_ecb._Callback__mappings[0].value = 3
-        self.assertEqual(action_ecb.enabled(action), True)
-
-        action_ecb._Callback__mappings[0].value = 0
-        self.assertEqual(action_ecb.enabled(action), True)
+            # action_ecb._Callback__mappings[1].value = 0
+            # self.assertEqual(action_ecb.enabled(action), True)

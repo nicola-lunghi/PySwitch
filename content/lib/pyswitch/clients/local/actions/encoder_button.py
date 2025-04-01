@@ -1,4 +1,4 @@
-from ....controller.actions import PushButtonAction
+from ....controller.actions import Action
 from ....controller.callbacks import Callback
 
 # This simple action is used in conjunction with a rotary encoder: If you assign this to an encoder action using its "accept_action" parameter, the encoder will not send any value until this switch is pushed.
@@ -9,9 +9,8 @@ from ....controller.callbacks import Callback
 def ENCODER_BUTTON(id = False, 
                    enable_callback = None
     ):
-    return PushButtonAction({
+    return Action({
         "callback": _EncoderButtonCallback(),
-        "mode": PushButtonAction.ONE_SHOT,
         "id": id,
         "enableCallback": enable_callback
     })
@@ -30,12 +29,15 @@ class _EncoderButtonCallback(Callback):
         self.__encoders.append(encoder)
         self.__cancel_mode = cancel_mode
 
-    def state_changed_by_user(self):
+    def push(self):
         for encoder in self.__encoders:
             if self.__cancel_mode:
                 encoder.cancel()
             else:
                 encoder.accept()
+
+    def release(self):
+        pass
 
     def update_displays(self):
         pass

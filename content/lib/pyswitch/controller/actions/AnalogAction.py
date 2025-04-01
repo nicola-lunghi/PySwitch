@@ -19,9 +19,8 @@ class AnalogAction(Updateable):
                                                     # 
                                                     # NOTE: When designing your transfer function, take care that the output values do not change too often as this 
                                                     # imposes performance issues!
-                 preview_display = None,            # If assigned, the adjusted value will be displayed in the passed DisplayLabel when the pedal is adjusted. 
-                 preview_timeout_millis = 1500,     # This is the amount of time (milliseconds) after which the 
-                                                    # preview display will return to its normal state.
+                 change_display = None,             # If assigned, the adjusted value will be displayed in the passed DisplayLabel when the pedal is adjusted. 
+                 change_timeout_millis = 1500,      # This is the amount of time (milliseconds) after which the preview display will return to its normal state.
                  convert_value = None,              # Optional conversion routine for displaying values: (value) => string
         ):
         if isinstance(mapping.set, SystemExclusive):
@@ -51,13 +50,10 @@ class AnalogAction(Updateable):
         self.__cal_max = None
         self.__cal_min_window = int(65536 * cal_min_window)
 
-        if preview_display:
+        if change_display:
             from ..preview import ValuePreview
-
-            self.__preview = ValuePreview.get(
-                label = preview_display,
-                timeout_millis = preview_timeout_millis
-            )                
+            self.__preview = ValuePreview.get(change_display)
+            self.__change_timeout_millis = change_timeout_millis
         else:
             self.__preview = None
 
@@ -125,9 +121,11 @@ class AnalogAction(Updateable):
                         self.__preview.preview_mapping(
                             mapping = self.__mapping,
                             value = v,
-                            max_value = self.__max_value
+                            max_value = self.__max_value,
+                            timeout_millis = self.__change_timeout_millis
                         )
                     else:
                         self.__preview.preview(
-                            text = self.__convert_value(v)
+                            text = self.__convert_value(v),
+                            timeout_millis = self.__change_timeout_millis
                         )
