@@ -75,6 +75,25 @@ DISPLAY_FOOTER_2 = DisplayLabel(
     )
 )
 
+DISPLAY_RIG_NAME = DisplayLabel(
+    bounds = DisplayBounds(
+        x = 0, 
+        y = _SLOT_HEIGHT, 
+        w = _DISPLAY_WIDTH, 
+        h = _RIG_NAME_HEIGHT
+    ), 
+    layout = {
+        "font": "/fonts/PTSans-NarrowBold-40.pcf",
+        "lineSpacing": 0.8,
+        "maxTextWidth": 220,
+        "text": KemperRigNameCallback.DEFAULT_TEXT,
+        
+    }, 
+    callback = KemperRigNameCallback(
+        show_rig_id = True
+    )
+)
+
 
 Splashes = TunerDisplayCallback(
     splash_default = DisplayElement(
@@ -89,24 +108,7 @@ Splashes = TunerDisplayCallback(
             DISPLAY_HEADER_2,
             DISPLAY_FOOTER_1,
             DISPLAY_FOOTER_2,
-            DisplayLabel(
-                bounds = DisplayBounds(
-                    x = 0, 
-                    y = _SLOT_HEIGHT, 
-                    w = _DISPLAY_WIDTH, 
-                    h = _RIG_NAME_HEIGHT
-                ), 
-                layout = {
-                    "font": "/fonts/PTSans-NarrowBold-40.pcf",
-                    "lineSpacing": 0.8,
-                    "maxTextWidth": 220,
-                    "text": KemperRigNameCallback.DEFAULT_TEXT,
-                    
-                }, 
-                callback = KemperRigNameCallback(
-                    show_rig_id = True
-                )
-            ),
+            DISPLAY_RIG_NAME,
             BidirectionalProtocolState(
                 DisplayBounds(
                     x = 0, 

@@ -7,6 +7,7 @@ from display import DISPLAY_HEADER_1
 from display import DISPLAY_HEADER_2
 from display import DISPLAY_FOOTER_1
 from display import DISPLAY_FOOTER_2
+from display import DISPLAY_RIG_NAME
 from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
 
 
@@ -30,7 +31,8 @@ Inputs = [
                 use_leds = False
             ),
             SHOW_TEMPO(
-                text = 'Tempo'
+                change_display = DISPLAY_RIG_NAME, 
+                text = '{bpm} bpm'
             ),
             
         ],
