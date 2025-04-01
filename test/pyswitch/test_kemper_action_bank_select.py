@@ -21,7 +21,8 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.clients.kemper import *
     from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.misc import Updater, Colors
+    from lib.pyswitch.misc import Updater
+    from lib.pyswitch.colors import Colors
 
     from lib.pyswitch.clients.kemper.actions.bank_select import *
     from lib.pyswitch.clients.kemper.actions.rig_select import *

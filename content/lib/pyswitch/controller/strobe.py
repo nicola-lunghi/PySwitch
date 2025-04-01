@@ -1,4 +1,5 @@
-from ..misc import PeriodCounter, Colors
+from ..misc import PeriodCounter
+from ..colors import Colors
 
 class StrobeController:
 

@@ -1,7 +1,7 @@
 from ....controller.actions import PushButtonAction, Action
 from ....controller.callbacks import BinaryParameterCallback, Callback
 from ....clients.kemper import KemperMappings
-from ....misc import Colors
+from ....colors import Colors
 
 from ..mappings.tempo import MAPPING_TAP_TEMPO, MAPPING_TEMPO_DISPLAY
 

@@ -1,7 +1,7 @@
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
 from ...kemper import KemperMappings
-from ....misc import Colors, DEFAULT_SWITCH_COLOR
+from ....colors import DEFAULT_SWITCH_COLOR
 
 # Switch tuner mode on / off
 def TUNER_MODE(display = None, mode = PushButtonAction.HOLD_MOMENTARY, color = DEFAULT_SWITCH_COLOR, text = "Tuner", id = False, use_leds = True, enable_callback = None):

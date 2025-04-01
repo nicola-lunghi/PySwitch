@@ -8,7 +8,7 @@ from pyswitch.clients.kemper.actions.tempo import SHOW_TEMPO
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
 from pyswitch.clients.local.actions.pager import PagerAction
-from pyswitch.misc import Colors
+from pyswitch.colors import Colors
 from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT_DISPLAY_TARGET_RIG
 from display import DISPLAY_HEADER_1
 from display import DISPLAY_HEADER_2

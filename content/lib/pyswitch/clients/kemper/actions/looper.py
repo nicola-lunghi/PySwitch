@@ -1,6 +1,6 @@
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
-from ....misc import Colors
+from ....colors import Colors
 
 from ..mappings.looper import MAPPING_LOOPER_REC_PLAY_OVERDUB, MAPPING_LOOPER_STOP, MAPPING_LOOPER_ERASE, MAPPING_LOOPER_CANCEL, MAPPING_LOOPER_TRIGGER, MAPPING_LOOPER_HALF_SPEED, MAPPING_LOOPER_REVERSE
 

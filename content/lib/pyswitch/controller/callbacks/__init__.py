@@ -1,5 +1,6 @@
 from micropython import const
-from ...misc import DEFAULT_SWITCH_COLOR, Updateable, get_option
+from ...misc import Updateable, get_option
+from ...colors import DEFAULT_SWITCH_COLOR, dim_color
 
 
 class Callback(Updateable):
@@ -58,24 +59,6 @@ class Callback(Updateable):
         if self.__listener:
             self.__listener.request_terminated(mapping)
 
-
-    # Dims a passed color for display of disabled state
-    def dim_color(self, color, factor):
-        if isinstance(color[0], tuple):
-            # Multi color
-            return [(
-                    int(c[0] * factor),
-                    int(c[1] * factor),
-                    int(c[2] * factor)
-                ) for c in color]            
-        else:
-            # Single color
-            return (
-                int(color[0] * factor),
-                int(color[1] * factor),
-                int(color[2] * factor)
-            )
-        
 
 ###########################################################################################################
 
@@ -331,9 +314,9 @@ class BinaryParameterCallback(Callback):
             return
             
         if self.action.state == True and (self.mapping.response or self.__use_internal_state):
-            self.action.label.back_color = self.dim_color(color, self.__display_dim_factor_on)
+            self.action.label.back_color = dim_color(color, self.__display_dim_factor_on)
         else:
-            self.action.label.back_color = self.dim_color(color, self.__display_dim_factor_off)
+            self.action.label.back_color = dim_color(color, self.__display_dim_factor_off)
 
 
     # Update text if set

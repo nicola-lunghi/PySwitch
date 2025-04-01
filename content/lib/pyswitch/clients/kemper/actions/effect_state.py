@@ -2,7 +2,7 @@ from micropython import const
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks.effect_enable import EffectEnableCallback
 from ...kemper import KemperMappings, KemperEffectSlot
-from ....misc import Colors, DEFAULT_LABEL_COLOR
+from ....colors import Colors, DEFAULT_LABEL_COLOR
 
 # Switch an effect slot on / off
 def EFFECT_STATE(slot_id, 

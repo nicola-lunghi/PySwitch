@@ -4,7 +4,8 @@ from .actions import Action
 from ..ui.layout import remove_from_bottom
 from ..ui.elements import DisplayLabel, DisplayElement
 from ..ui.DisplaySplitContainer import DisplaySplitContainer
-from ..misc import Updater, Colors, do_print
+from ..misc import Updater, do_print
+from ..colors import Colors
 
 # Action to explore switch GPIO assignments (used internally only in explore mode!)
 # Also used to examine neopixel addressing.

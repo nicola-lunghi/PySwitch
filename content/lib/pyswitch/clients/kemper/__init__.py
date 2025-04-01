@@ -4,7 +4,8 @@ from adafruit_midi.control_change import ControlChange
 from adafruit_midi.system_exclusive import SystemExclusive
 from adafruit_midi.program_change import ProgramChange
 
-from ...misc import Colors, PeriodCounter, do_print, PYSWITCH_VERSION
+from ...misc import PeriodCounter, do_print, PYSWITCH_VERSION
+from ...colors import Colors
 from ...controller.callbacks import Callback
 from ...controller.client import ClientParameterMapping, ClientTwoPartParameterMapping
 from ...ui.elements import TunerDisplay

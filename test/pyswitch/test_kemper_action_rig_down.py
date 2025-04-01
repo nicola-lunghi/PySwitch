@@ -21,7 +21,8 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.clients.kemper import *
     from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.misc import Updater, DEFAULT_LABEL_COLOR, DEFAULT_SWITCH_COLOR
+    from lib.pyswitch.misc import Updater
+    from lib.pyswitch.colors import DEFAULT_LABEL_COLOR, DEFAULT_SWITCH_COLOR
 
     from lib.pyswitch.clients.kemper.actions.rig_up_down import *
     from lib.pyswitch.clients.kemper.actions.rig_select import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG

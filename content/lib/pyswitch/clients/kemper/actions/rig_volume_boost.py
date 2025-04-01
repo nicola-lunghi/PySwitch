@@ -1,7 +1,7 @@
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
 from ...kemper import NRPN_VALUE
-from ....misc import Colors
+from ....colors import Colors
 
 from ..mappings.rig import MAPPING_RIG_VOLUME
 

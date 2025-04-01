@@ -5,7 +5,7 @@
 ##############################################################################################################################################
 
 from micropython import const
-from pyswitch.misc import DEFAULT_LABEL_COLOR #, Colors
+from pyswitch.colors import DEFAULT_LABEL_COLOR
 
 from pyswitch.ui.ui import DisplayElement, DisplayBounds
 from pyswitch.ui.elements import DisplayLabel, BidirectionalProtocolState

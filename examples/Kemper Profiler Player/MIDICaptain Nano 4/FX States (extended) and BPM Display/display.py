@@ -2,7 +2,7 @@ from pyswitch.clients.kemper import KemperRigNameCallback
 from pyswitch.clients.kemper import TunerDisplayCallback
 from pyswitch.clients.kemper.callbacks.tempo_bpm import KemperTempoDisplayCallback
 from micropython import const
-from pyswitch.misc import DEFAULT_LABEL_COLOR
+from pyswitch.colors import DEFAULT_LABEL_COLOR
 from pyswitch.ui.ui import DisplayElement
 from pyswitch.ui.ui import DisplayBounds
 from pyswitch.ui.elements import DisplayLabel

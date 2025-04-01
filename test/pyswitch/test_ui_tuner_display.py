@@ -27,7 +27,7 @@ with patch.dict(sys.modules, {
     from .mocks_appl import *
     from .mocks_ui import MockDisplayDriver, MockFontLoader
     from .mocks_callback import *
-    from lib.pyswitch.misc import Colors
+    from lib.pyswitch.colors import Colors
 
 
 

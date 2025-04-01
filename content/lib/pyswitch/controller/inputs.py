@@ -1,4 +1,5 @@
-from ..misc import Colors, get_option, PeriodCounter, Updateable
+from ..misc import get_option, PeriodCounter, Updateable
+from ..colors import Colors
 from array import array
 
 # Controller class for a Foot Switch. Each foot switch has three Neopixels.

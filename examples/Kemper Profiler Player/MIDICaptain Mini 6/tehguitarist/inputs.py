@@ -1,5 +1,5 @@
 from pyswitch.hardware.devices.pa_midicaptain_mini_6 import *
-from pyswitch.misc import Colors
+from pyswitch.colors import Colors
 from pyswitch.controller.callbacks import Callback
 from pyswitch.clients.kemper import KemperEffectSlot, KemperMappings
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_HEADER_3, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_FOOTER_3

@@ -28,10 +28,6 @@ class MockMisc:
     fill_up_to = misc.fill_up_to
     get_current_millis = misc.get_current_millis
 
-    DEFAULT_SWITCH_COLOR = misc.DEFAULT_SWITCH_COLOR
-    DEFAULT_LABEL_COLOR = misc.DEFAULT_LABEL_COLOR
-        
-    Colors = misc.Colors
     Updater = misc.Updater
     Updateable = misc.Updateable
     EventEmitter = misc.EventEmitter

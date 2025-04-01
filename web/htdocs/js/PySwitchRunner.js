@@ -154,8 +154,9 @@ class PySwitchRunner {
 
             this.#loadModule("pyswitch/__init__.py", circuitpyPath),
             this.#loadModule("pyswitch/misc.py", circuitpyPath),
+            this.#loadModule("pyswitch/colors.py", circuitpyPath),
+            this.#loadModule("pyswitch/debug_tools.py", circuitpyPath),
             this.#loadModule("pyswitch/stats.py", circuitpyPath),
-
             
             this.#loadModule("pyswitch/clients/__init__.py", circuitpyPath),
 

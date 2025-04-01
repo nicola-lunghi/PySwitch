@@ -19,7 +19,7 @@ with patch.dict(sys.modules, {
     from adafruit_midi.system_exclusive import SystemExclusive
     
     from lib.pyswitch.clients.kemper.actions.morph import KemperMorphCallback
-    from lib.pyswitch.misc import Colors
+    from lib.pyswitch.colors import Colors
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
     from lib.pyswitch.controller.controller import Controller
     

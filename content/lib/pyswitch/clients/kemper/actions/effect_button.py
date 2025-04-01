@@ -1,6 +1,6 @@
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
-from ....misc import Colors
+from ....colors import Colors
 
 from ..mappings.effects import MAPPING_EFFECT_BUTTON
 from .. import KemperMappings

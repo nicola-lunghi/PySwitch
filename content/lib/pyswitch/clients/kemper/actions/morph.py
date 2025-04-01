@@ -1,6 +1,6 @@
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
-from ....misc import Colors
+from ....colors import Colors
 
 from ..mappings.morph import MAPPING_MORPH_BUTTON, MAPPING_MORPH_PEDAL
 

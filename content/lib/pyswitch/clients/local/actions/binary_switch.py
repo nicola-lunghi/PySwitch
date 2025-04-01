@@ -1,6 +1,6 @@
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
-from ....misc import Colors
+from ....colors import Colors
 
 # Generic switch action which can be used for all parameter mappings
 def BINARY_SWITCH(mapping, 

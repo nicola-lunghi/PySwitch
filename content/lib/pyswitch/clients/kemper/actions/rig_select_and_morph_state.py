@@ -1,4 +1,4 @@
-from ....misc import Colors
+from ....colors import Colors
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback, Callback
 

@@ -1,6 +1,6 @@
 from ....controller.actions import Action
 from ....controller.callbacks import Callback
-from ....misc import Colors
+from ....colors import Colors
 
 from adafruit_midi.system_exclusive import SystemExclusive
 

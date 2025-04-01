@@ -7,6 +7,7 @@
     - Added Parameter Up/Down action: This can for example be used to lower/raise the value of a parameter by a given offset. (Also for this there are several value display possibilities). This can replace missing expression pedals :) I personally use it for changing the Reverb Mix on the fly without sacrificing my Volume Pedal. See the "Parameter Up Down" example for the Nano 4 for demonstration.
 
 - Optimizations:
+    - Modularized colors out of misc.py (some RAM gain). This import path for color stuff has changed to "pyswitch.colors", if you use that in your config somewhere, it has to be adjusted. All examples are already adapted.
     - Changed mapping names to fit better into the preview displays
     - Added some mapping dependencies (no functional changes)
     - Changed the internal interface of the action callbacks a bit. If you defined your own callbacks: The action parameter is removed from most methods, replace this with "self.action" if you need it. This saves some (minor but still) RAM again. No other changes to the config files.

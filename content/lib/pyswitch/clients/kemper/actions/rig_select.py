@@ -1,7 +1,8 @@
 from ...kemper import NUM_RIGS_PER_BANK, BANK_COLORS
 from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
-from ....misc import get_option, Colors
+from ....misc import get_option
+from ....colors import Colors, dim_color
 
 from ..mappings.select import MAPPING_RIG_SELECT, MAPPING_BANK_AND_RIG_SELECT
 
@@ -177,7 +178,7 @@ class KemperRigSelectCallback(BinaryParameterCallback):
         if self.__mapping.value == None:
             if self.action.label:
                 self.action.label.text = ""
-                self.action.label.back_color = self.dim_color(Colors.WHITE, self.__default_dim_factor_off)
+                self.action.label.back_color = dim_color(Colors.WHITE, self.__default_dim_factor_off)
 
             self.action.switch_color = Colors.WHITE
             self.action.switch_brightness = self.__default_led_brightness_off
@@ -228,14 +229,14 @@ class KemperRigSelectCallback(BinaryParameterCallback):
         if self.action.label:
             if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
                 self.action.label.text = self.__get_text(curr_bank, curr_rig) 
-                self.action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off)
+                self.action.label.back_color = dim_color(bank_color, self.__default_dim_factor_off)
 
             elif self.__display_mode == RIG_SELECT_DISPLAY_TARGET_RIG:
                 if "preselectedBank" in self.__appl.shared:
-                    self.action.label.back_color = self.dim_color(bank_color, self.__default_dim_factor_off) 
+                    self.action.label.back_color = dim_color(bank_color, self.__default_dim_factor_off) 
                     self.action.label.text = self.__get_text(self.__appl.shared["preselectedBank"], self.__rig - 1)
                 else:
-                    self.action.label.back_color = bank_color if self.action.state else self.dim_color(bank_color, self.__default_dim_factor_off) 
+                    self.action.label.back_color = bank_color if self.action.state else dim_color(bank_color, self.__default_dim_factor_off) 
 
                     if self.__bank != None:
                         if is_current and self.__rig_off != None and self.__bank_off != None:

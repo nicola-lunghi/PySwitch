@@ -27,7 +27,7 @@ with patch.dict(sys.modules, {
         from .mocks_appl import *
         from .mocks_ui import *
         from lib.pyswitch.controller.explore import ExploreModeController
-        from lib.pyswitch.misc import Colors
+        from lib.pyswitch.colors import Colors
 
 
 class MockSwitchFactory:

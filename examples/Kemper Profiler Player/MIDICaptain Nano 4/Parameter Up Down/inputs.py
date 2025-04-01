@@ -1,5 +1,5 @@
 from pyswitch.clients.local.actions.param_change import PARAMETER_UP_DOWN
-from pyswitch.misc import Colors
+from pyswitch.colors import Colors
 from pyswitch.clients.kemper import KemperEffectSlot
 from pyswitch.clients.kemper.mappings.effects import MAPPING_DLY_REV_MIX
 from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_GAIN

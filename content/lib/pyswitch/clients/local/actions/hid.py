@@ -3,7 +3,7 @@ from adafruit_hid.keyboard import Keyboard
 
 from ....controller.callbacks import Callback
 from ....controller.actions import Action
-from ....misc import Colors
+from ....colors import Colors
 
 # Set up a keyboard device.
 _kbd = Keyboard(usb_hid.devices)

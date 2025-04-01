@@ -361,8 +361,8 @@ class Parser {
 
         const extractor = new ClassItemExtractor(this.runner);
         this.#colors = await extractor.get({
-            file: "pyswitch/misc.py",
-            importPath: "pyswitch.misc",
+            file: "pyswitch/colors.py",
+            importPath: "pyswitch.colors",
             className: "Colors",
             attributes: true
         });

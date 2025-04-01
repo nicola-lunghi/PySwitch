@@ -8,7 +8,7 @@ from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP
 from pyswitch.clients.kemper.actions.bank_up_down import BANK_DOWN
 from pyswitch.clients.kemper.actions.rig_select_and_morph_state import RIG_SELECT_AND_MORPH_STATE
 from pyswitch.clients.local.actions.pager import PagerAction
-from pyswitch.misc import Colors
+from pyswitch.colors import Colors
 from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_HEADER_1
 from display import DISPLAY_HEADER_2

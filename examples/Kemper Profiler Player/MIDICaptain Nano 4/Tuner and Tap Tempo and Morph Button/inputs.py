@@ -3,7 +3,7 @@ from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO
 from pyswitch.clients.kemper.actions.tempo import SHOW_TEMPO
 from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
-from pyswitch.misc import Colors
+from pyswitch.colors import Colors
 from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_HEADER_1
 from display import DISPLAY_HEADER_2

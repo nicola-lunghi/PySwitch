@@ -1,5 +1,5 @@
 from pyswitch.hardware.devices.pa_midicaptain_mini_6 import *
-from pyswitch.misc import Colors
+from pyswitch.colors import Colors
 from pyswitch.clients.kemper import KemperEffectSlot
 from display import DISPLAY_HEADER_1, DISPLAY_HEADER_2, DISPLAY_HEADER_3, DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_FOOTER_3, DISPLAY_PAGE
 from pyswitch.clients.kemper.actions.rig_volume_boost import RIG_VOLUME_BOOST

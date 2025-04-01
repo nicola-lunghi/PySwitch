@@ -209,11 +209,11 @@ class PySwitchParser:
 
             {
                 "name": "Colors",
-                "importPath": "pyswitch.misc"
+                "importPath": "pyswitch.colors"
             },
             {
                 "name": "DEFAULT_LABEL_COLOR",
-                "importPath": "pyswitch.misc"
+                "importPath": "pyswitch.colors"
             },
 
             {
@@ -250,11 +250,11 @@ class PySwitchParser:
             # Additional imports: Colors
             {
                 "name": "Colors",
-                "importPath": "pyswitch.misc"
+                "importPath": "pyswitch.colors"
             },
             {
                 "name": "DEFAULT_SWITCH_COLOR",
-                "importPath": "pyswitch.misc"
+                "importPath": "pyswitch.colors"
             },
 
             # RIG_SELECT display modes

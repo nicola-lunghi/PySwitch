@@ -20,7 +20,7 @@ with patch.dict(sys.modules, {
     from adafruit_midi.control_change import ControlChange
     from lib.pyswitch.clients.kemper import *
     from lib.pyswitch.clients.kemper.mappings.cabinet import *
-    from lib.pyswitch.misc import Colors
+    from lib.pyswitch.colors import Colors
 
     from .mocks_appl import *
     from .tools import *

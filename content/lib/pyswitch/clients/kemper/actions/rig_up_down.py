@@ -1,7 +1,8 @@
 from ...kemper import NUM_RIGS_PER_BANK, BANK_COLORS, NUM_BANKS, KemperMappings
 from ....controller.actions import Action
 from ....controller.callbacks import Callback
-from ....misc import get_option, DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR
+from ....misc import get_option
+from ....colors import DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR
 
 from ..mappings.select import MAPPING_RIG_SELECT, MAPPING_BANK_AND_RIG_SELECT
 from .rig_select import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG

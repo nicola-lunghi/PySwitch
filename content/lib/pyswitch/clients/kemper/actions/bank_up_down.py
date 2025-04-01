@@ -1,7 +1,8 @@
 from ....controller.actions import Action
 from ....controller.callbacks import Callback
 from ...kemper import NUM_RIGS_PER_BANK, BANK_COLORS, NUM_BANKS
-from ....misc import Colors, get_option, PeriodCounter
+from ....misc import get_option, PeriodCounter
+from ....colors import Colors, dim_color
 
 from ..mappings.bank import MAPPING_NEXT_BANK, MAPPING_PREVIOUS_BANK
 from ..mappings.select import MAPPING_BANK_SELECT
@@ -174,7 +175,7 @@ class KemperBankChangeCallback(Callback):
             # Fallback to default behaviour
             if self.action.label:
                 self.action.label.text = self.__text
-                self.action.label.back_color = self.dim_color(Colors.WHITE, self.__dim_factor)
+                self.action.label.back_color = dim_color(Colors.WHITE, self.__dim_factor)
 
             self.action.switch_color = Colors.WHITE
             self.action.switch_brightness = self.__led_brightness
@@ -197,7 +198,7 @@ class KemperBankChangeCallback(Callback):
 
         # Label text
         if self.action.label:
-            self.action.label.back_color = self.dim_color(bank_color, self.__dim_factor)
+            self.action.label.back_color = dim_color(bank_color, self.__dim_factor)
 
             if self.__text_callback:
                 if self.__display_mode == RIG_SELECT_DISPLAY_CURRENT_RIG:
