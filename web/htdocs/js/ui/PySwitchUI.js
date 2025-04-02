@@ -555,7 +555,7 @@ class PySwitchUI {
     async #initMidiMonitor() {
         if (this.midiMonitor) {
             this.midiMonitor.addComment("init")
-            return; //this.tabs.remove(this.midiMonitor);
+            return;
         }
         
         this.tabs.add(

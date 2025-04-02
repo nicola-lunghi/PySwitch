@@ -25,6 +25,16 @@ class VirtualKemperProtocol {
     }
 
     /**
+     * Tries to return a meaningful message name
+     */
+    getMessageName(message) {
+        const keppAliveMsg = [240, 0, 32, 51, this.#client.options.productType, 127, 126, 0, 127]
+        if (Tools.compareArrays(keppAliveMsg, message.slice(0, keppAliveMsg.length))) return "Protocol KeepAlive";
+
+        if (this.parse(message, true)) return "Protocol Init"
+    }
+
+    /**
      * Called regularly when the client is running
      */
     update() {
@@ -58,11 +68,15 @@ class VirtualKemperProtocol {
     /**
      * Parse raw message. Must return if successful.
      */
-    parse(message) {
+    parse(message, simulate = false) {
         if (!Tools.compareArrays(
             message.slice(0, 9),
             [240, 0, 32, 51, this.#client.options.productType, 127].concat([126, 0, 64])
         )) return false;
+
+        if (simulate) {
+            return true;
+        }
 
         // Decode 
         this.parameterSet = message[9];

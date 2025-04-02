@@ -20,8 +20,10 @@ class WrapMidiInput:
         return buf
             
     def _monitor(self, msg):
-        if externalRefs.midiMonitor:
-            externalRefs.midiMonitor.monitorInput(msg)
+        if not "midiMonitor" in externalRefs.to_py():
+            return
+
+        externalRefs.midiMonitor.monitorInput(msg)
 
 
 class WrapMidiOutput:
@@ -33,7 +35,9 @@ class WrapMidiOutput:
         externalRefs.midiWrapper.send(packet)
 
     def _monitor(self, msg):
-        if externalRefs.midiMonitor:
-            externalRefs.midiMonitor.monitorOutput(msg)
+        if not "midiMonitor" in externalRefs.to_py():
+            return
+         
+        externalRefs.midiMonitor.monitorOutput(msg)
 
 

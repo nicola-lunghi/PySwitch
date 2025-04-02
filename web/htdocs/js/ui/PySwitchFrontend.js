@@ -101,6 +101,8 @@ class PySwitchFrontend {
         const isAdditional = device.isAdditionalInput(model);
         const container = isAdditional ? this.#options.globalContainer : inputsContainer;
         
+        const that = this;
+
         switch (model.type) {
             case "AdafruitSwitch":
                 container.append(
@@ -122,8 +124,16 @@ class PySwitchFrontend {
                         .addClass(this.#options.domNamespace + '-switch-overlay')
                         .on('mousedown touchstart', async function(e) {
                             e.currentTarget.parentNode.dataset.pushed = true;
+
+                            if (that.#controller.ui.midiMonitor) {
+                                that.#controller.ui.midiMonitor.addComment("Switch " + inputDefinition.name + " pushed");
+                            }
                         })
                         .on('mouseup mouseout mouseleave touchend', async function(e) {
+                            if ((e.type == "mouseup" || e.type == "touchend") && e.currentTarget.parentNode.dataset.pushed && that.#controller.ui.midiMonitor) {
+                                that.#controller.ui.midiMonitor.addComment("Switch " + inputDefinition.name + " released");
+                            }
+
                             e.currentTarget.parentNode.dataset.pushed = false;
                         })
                     )

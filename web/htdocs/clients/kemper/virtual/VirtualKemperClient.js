@@ -53,7 +53,13 @@ class VirtualKemperClient extends VirtualClient {
      * Tries to return a meaningful message name
      */
     getMessageName(message) {
-        return this.parameters.getMessageName(message);
+        let paramName = this.parameters.getMessageName(message);
+        if (paramName) return "Kemper: " + paramName;
+
+        paramName = this.protocol.getMessageName(message)
+        if (paramName) return "Kemper: " + paramName;
+
+        return null;
     }
 
     /**

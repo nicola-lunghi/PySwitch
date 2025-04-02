@@ -15,10 +15,18 @@ class VirtualKemperParameters {
      */
     getMessageName(message) {
         for (const [key, entry] of this.#data) {
-            if (entry.parse(message, true)) {
+            // Try to parse the message
+            const parseResult = entry.parse(message, true)
+            if (parseResult) {
+                return ((typeof parseResult == "string") ? (parseResult + " ") : "") + entry.getDisplayName();
+            }
+
+            // Check if the message could be sent from the parameter
+            if (entry.parseSendMessage(message)) {
                 return entry.getDisplayName();
             }
         }
+
         return null;
     }
 

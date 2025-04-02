@@ -4,7 +4,7 @@
 class MidiMonitor extends Tab {
 
     #monitorElement = null;
-    #maxNumMessages = 60;
+    #maxNumMessages = 100;
     #run = true
     #virtualClients = [];
     
@@ -33,7 +33,20 @@ class MidiMonitor extends Tab {
             that.#run = !that.#run;
         });
 
-        controller.pyswitch.setMidiMonitor(this);        
+        controller.pyswitch.setMidiMonitor({
+            monitorInput: function(message) {
+                that.addMessage({
+                    message: message,
+                    direction: "in"
+                })
+            },
+            monitorOutput: function(message) {
+                that.addMessage({
+                    message: message,
+                    direction: "out"
+                })
+            }
+        });
     }
 
     async initMonitor() {
@@ -51,25 +64,25 @@ class MidiMonitor extends Tab {
         this.#monitorElement.empty();
     }
 
-    /**
-     * Called from python, to monitor an incoming message
-     */
-    monitorInput(message) {
-        this.addMessage({
-            message: message.toJs ? message.toJs() : message,
-            direction: "in"
-        })
-    }
+    // /**
+    //  * Called from python, to monitor an incoming message
+    //  */
+    // monitorInput(message) {
+    //     this.addMessage({
+    //         message: message.toJs ? message.toJs() : message,
+    //         direction: "in"
+    //     })
+    // }
 
-    /**
-     * Called from python, to monitor an outgoing message
-     */
-    monitorOutput(message) {
-        this.addMessage({
-            message: message.toJs ? message.toJs() : message,
-            direction: "out"
-        })
-    }
+    // /**
+    //  * Called from python, to monitor an outgoing message
+    //  */
+    // monitorOutput(message) {
+    //     this.addMessage({
+    //         message: message.toJs ? message.toJs() : message,
+    //         direction: "out"
+    //     })
+    // }
 
     /**
      * {
@@ -86,7 +99,7 @@ class MidiMonitor extends Tab {
         this.#monitorElement.append(
             tr = $('<tr class="midi-message midi-message-' + options.direction + '" />').append(
                 $('<td />').append(
-                    (options.direction == "in") ? "In " : "Out"
+                    options.direction
                 ),
                 $('<td />').append(
                     this.#messageName(options.message)

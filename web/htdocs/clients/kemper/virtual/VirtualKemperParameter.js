@@ -111,8 +111,9 @@ class VirtualKemperParameter {
     parse(message, simulate = false) {        
         // Try to parse with all keys
         for (const key of this.options.keys.receive) {
-            if (this.#parseKey(key, message, simulate)) {
-                return true;
+            const parseResult = this.#parseKey(key, message, simulate)
+            if (parseResult) {
+                return parseResult;
             }
         }
 
@@ -130,9 +131,9 @@ class VirtualKemperParameter {
                 [240, 0, 32, 51, this.client.options.productType, 127, this.requestFunctionCode, 0].concat(key.data)
             )) {   
                 if (!simulate) {
-                    this.send();                
+                    this.send();
                 }
-                return true;
+                return "request";
             }
 
             // NRPN: Set parameter
@@ -209,7 +210,7 @@ class VirtualKemperParameter {
 
         if (this.options.keys.send instanceof NRPNKey) {
             const msg = [240, 0, 32, 51, 0, 0, this.returnFunctionCode, 0].concat(
-                Array.from(this.options.keys.send.data),                 
+                Array.from(this.options.keys.send.data),
                 this.options.keys.send.encodeValue(this.value),
                 [247]
             );
@@ -232,6 +233,32 @@ class VirtualKemperParameter {
         } else {
             throw new Error("Invalid key type: " + (typeof this.options.keys.send));
         }
+    }
+
+    /**
+     * Returns if the message is matching the send message of this parameter
+     */
+    parseSendMessage(message) {
+        if (!this.options.keys.send) return false;
+
+        let msg = null;
+        if (this.options.keys.send instanceof NRPNKey) {
+            msg = [240, 0, 32, 51, 0, 0, this.returnFunctionCode, 0].concat(
+                Array.from(this.options.keys.send.data)
+            );
+        
+        } else if (this.options.keys.send instanceof CCKey) {
+            msg = [176, this.options.keys.send.control]
+
+        } else if (this.options.keys.send instanceof PCKey) {
+            msg = [192]
+
+        } else {
+            throw new Error("Invalid key type: " + (typeof this.options.keys.send));
+        }
+
+        if (!msg) return false;        
+        return Tools.compareArrays(msg, message.slice(0, msg.length));
     }
 
     /**

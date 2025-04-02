@@ -108,7 +108,7 @@ class VirtualKemperClientSetup {
         const that = this;
 
         // Tempo display
-        this.#client.parameters.init({ name: "Tempo Sensing", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([124, 0]) }), parameterSets: [1, 2, 3, 4] });
+        this.#client.parameters.init({ name: "Tempo Pulse", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([124, 0]) }), parameterSets: [1, 2, 3, 4] });
 
         // Tap tempo
         this.#client.parameters.init({ name: "Tap Tempo", keys: new VirtualKemperParameterKeys({ receive: new CCKey(30) }), callback: function(param, value) {
