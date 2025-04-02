@@ -15,7 +15,7 @@
     - Renamed mapping MAPPING_DELAY_MIX to MAPPING_DLY_REV_MIX (config needs to be changed only if you have this mapping adressed in the "Other" action or by code)
 
 ### Emulator 2.4.2.9
-    nothing changed
+    - Added an optional MIDI Traffic Monitor, showing all MIDI messages sent and received by the PySwitch emulator.
 
 # PySwitch v2.4.1
 - Optimizations for performance/RAM:

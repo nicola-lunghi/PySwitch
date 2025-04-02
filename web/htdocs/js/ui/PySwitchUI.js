@@ -18,6 +18,7 @@ class PySwitchUI {
     #virtualClientUI = null;
     #additionalInputsContainer = null;
     #additionalInputsButton = null;
+    midiMonitor = null;
     
     container = null;
 
@@ -544,6 +545,24 @@ class PySwitchUI {
         // Set new content on editors
         await this.editors.inputs.setConfig(config);
         await this.editors.display.setConfig(config);
+
+        await this.#initMidiMonitor(config);        
+    }
+
+    /**
+     * Setup the MIDI monitor if not already there
+     */
+    async #initMidiMonitor() {
+        if (this.midiMonitor) {
+            this.midiMonitor.addComment("init")
+            return; //this.tabs.remove(this.midiMonitor);
+        }
+        
+        this.tabs.add(
+            this.midiMonitor = new MidiMonitor(this.#controller, "MIDI Monitor")
+        );
+
+        await this.midiMonitor.initMonitor();
     }
 
     /**

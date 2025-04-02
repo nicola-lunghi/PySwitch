@@ -50,6 +50,13 @@ class VirtualKemperClient extends VirtualClient {
     }
 
     /**
+     * Tries to return a meaningful message name
+     */
+    getMessageName(message) {
+        return this.parameters.getMessageName(message);
+    }
+
+    /**
      * Start processing regular updates to send messages. If not set, the caller has to 
      * call update() regularly.
      */

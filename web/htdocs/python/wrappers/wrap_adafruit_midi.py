@@ -14,9 +14,14 @@ class WrapMidiInput:
             if cnt + len(msg) > num_bytes:
                 return buf
             
+            self._monitor(msg)
             buf += msg
 
         return buf
+            
+    def _monitor(self, msg):
+        if externalRefs.midiMonitor:
+            externalRefs.midiMonitor.monitorInput(msg)
 
 
 class WrapMidiOutput:
@@ -24,5 +29,11 @@ class WrapMidiOutput:
         if not "midiWrapper" in externalRefs.to_py() or not externalRefs.midiWrapper:
             return
         
+        self._monitor(packet)
         externalRefs.midiWrapper.send(packet)
+
+    def _monitor(self, msg):
+        if externalRefs.midiMonitor:
+            externalRefs.midiMonitor.monitorOutput(msg)
+
 

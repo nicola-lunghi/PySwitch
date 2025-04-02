@@ -108,10 +108,10 @@ class VirtualKemperParameter {
     /**
      * Parse a parameter request message. Must return if successful.
      */
-    parse(message) {        
+    parse(message, simulate = false) {        
         // Try to parse with all keys
         for (const key of this.options.keys.receive) {
-            if (this.#parseKey(key, message)) {
+            if (this.#parseKey(key, message, simulate)) {
                 return true;
             }
         }
@@ -122,14 +122,16 @@ class VirtualKemperParameter {
     /**
      * Parse one receive key 
      */
-    #parseKey(key, message) {
+    #parseKey(key, message, simulate = false) {
         if (key instanceof NRPNKey) {           
             // NRPN: Request parameter
             if (Tools.compareArrays(
                 message.slice(0, 8 + key.data.length),
                 [240, 0, 32, 51, this.client.options.productType, 127, this.requestFunctionCode, 0].concat(key.data)
             )) {   
-                this.send();                
+                if (!simulate) {
+                    this.send();                
+                }
                 return true;
             }
 
@@ -138,8 +140,10 @@ class VirtualKemperParameter {
                 message.slice(0, 8 + key.data.length),
                 [240, 0, 32, 51, this.client.options.productType, 127, this.setFunctionCode, 0].concat(key.data)
             )) {
-                const value = key.evaluateValue(message.slice(8 + key.data.length, 10 + key.data.length));
-                this.setValue(value);
+                if (!simulate) {
+                    const value = key.evaluateValue(message.slice(8 + key.data.length, 10 + key.data.length));
+                    this.setValue(value);    
+                }
                 return true;
             }
         
@@ -149,15 +153,19 @@ class VirtualKemperParameter {
                 message.slice(0, 2),
                 [176, key.control]
             )) {
-                const value = key.evaluateValue(message[2]);
-                this.setValue(value);
+                if (!simulate) {
+                    const value = key.evaluateValue(message[2]);
+                    this.setValue(value);
+                }
                 return true;
             }
 
         } else if (key instanceof PCKey) {
             // PC: Set parameter
             if (message[0] == 192) {
-                this.setValue(key.evaluateValue(message[1]));
+                if (!simulate) {
+                    this.setValue(key.evaluateValue(message[1]));
+                }
                 return true;
             }
 

@@ -11,6 +11,18 @@ class VirtualKemperParameters {
     }
 
     /**
+     * Tries to return a meaningful message name
+     */
+    getMessageName(message) {
+        for (const [key, entry] of this.#data) {
+            if (entry.parse(message, true)) {
+                return entry.getDisplayName();
+            }
+        }
+        return null;
+    }
+
+    /**
      * Adds a callback after init()
      * 
      * callback(param) => void

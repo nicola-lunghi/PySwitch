@@ -1,15 +1,21 @@
 class Client {
 
+    static #clients = null;    // Buffer
+
     /**
      * Returns all available client handlers
      */
     static async getAvailable(basePath = "") {
+        if (Client.#clients) return Client.#clients;
+
         const toc = JSON.parse(await Tools.fetch(basePath + "circuitpy/lib/pyswitch/clients/toc.php"));
 
-        return toc.children
+        Client.#clients = toc.children
             .filter((item) => item.type == "dir")
             .map((item) => ClientFactory.getInstance(item.name))
             .filter((item) => item != null);
+
+        return Client.#clients;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

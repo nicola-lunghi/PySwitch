@@ -42,4 +42,11 @@ class VirtualClient {
      */
     createUserInterface(container) {
     }
+
+    /**
+     * Tries to return a meaningful message name
+     */
+    getMessageName(message) {
+        return null;
+    }
 }

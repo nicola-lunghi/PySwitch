@@ -1,0 +1,44 @@
+.container .midi-monitor-container {
+    position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.container .midi-monitor-container .midi-monitor {
+    position: absolute;
+	border-spacing: 0;
+
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+
+	font-family: monospace;
+	white-space: pre;
+	user-select: text;
+
+	min-width: 100%;
+}
+
+.container .midi-monitor-container .midi-monitor tr {
+	min-width: 100%;
+}
+
+.container .midi-monitor-container .midi-monitor tr.midi-message > td {
+	padding-right: 0.5em;
+}
+
+.container .midi-monitor-container .midi-monitor tr.midi-message.midi-message-in {
+    background-color: rgb(255, 166, 1);
+	color: black;
+}
+
+.container .midi-monitor-container .midi-monitor tr.midi-message.midi-message-out {
+    background-color: green;
+	color: white;
+}
+
+.container .midi-monitor-container .midi-monitor tr.comment {
+	background-color: gray;
+	color: white;
+}
