@@ -265,15 +265,17 @@ class MockUsbHid:
 
 class MockUsbHidKeyboard:
     keyboards = []
+    except_on_init = None
 
     def reset():
-        if len(MockUsbHidKeyboard.keyboards) == 0:
-            return
-        
-        MockUsbHidKeyboard.keyboards[0].send_calls = []
+        MockUsbHidKeyboard.keyboards = []
+        MockUsbHidKeyboard.except_on_init = False
 
     class Keyboard:
         def __init__(self, devices):
+            if MockUsbHidKeyboard.except_on_init:
+                raise MockUsbHidKeyboard.except_on_init()
+            
             if not devices == [3,4,5]:
                 raise Exception()
             

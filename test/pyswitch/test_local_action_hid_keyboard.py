@@ -99,12 +99,12 @@ class TestLocalHidActions(unittest.TestCase):
         self.assertEqual(switch.color, (8, 9, 2))
         self.assertEqual(switch.brightness, 0.5)
 
-        self.assertEqual(len(MockUsbHidKeyboard.keyboards), 1)
-        keyboard = MockUsbHidKeyboard.keyboards[0]
-
         # Trigger
         action.push()
         action.release()
+
+        self.assertEqual(len(MockUsbHidKeyboard.keyboards), 1)
+        keyboard = MockUsbHidKeyboard.keyboards[0]
 
         self.assertEqual(keyboard.send_calls, [4])
         
@@ -112,7 +112,10 @@ class TestLocalHidActions(unittest.TestCase):
         action.push()
         action.release()
 
-        self.assertEqual(keyboard.send_calls, [4, 4])
+        self.assertEqual(len(MockUsbHidKeyboard.keyboards), 2)
+        keyboard = MockUsbHidKeyboard.keyboards[1]
+
+        self.assertEqual(keyboard.send_calls, [4])
 
 
     def test_list_of_codes(self):
@@ -142,12 +145,12 @@ class TestLocalHidActions(unittest.TestCase):
         self.assertEqual(switch.color, (8, 9, 2))
         self.assertEqual(switch.brightness, 0.5)
 
-        self.assertEqual(len(MockUsbHidKeyboard.keyboards), 1)
-        keyboard = MockUsbHidKeyboard.keyboards[0]
-
         # Trigger
         action.push()
         action.release()
+
+        self.assertEqual(len(MockUsbHidKeyboard.keyboards), 1)
+        keyboard = MockUsbHidKeyboard.keyboards[0]
 
         self.assertEqual(keyboard.send_calls, [4, 6, 5])
         
@@ -155,7 +158,10 @@ class TestLocalHidActions(unittest.TestCase):
         action.push()
         action.release()
 
-        self.assertEqual(keyboard.send_calls, [4, 6, 5, 4, 6, 5])
+        self.assertEqual(len(MockUsbHidKeyboard.keyboards), 2)
+        keyboard = MockUsbHidKeyboard.keyboards[1]
+
+        self.assertEqual(keyboard.send_calls, [4, 6, 5])
 
 
     def test_tuple_of_codes(self):
@@ -185,12 +191,12 @@ class TestLocalHidActions(unittest.TestCase):
         self.assertEqual(switch.color, (8, 9, 2))
         self.assertEqual(switch.brightness, 0.5)
 
-        self.assertEqual(len(MockUsbHidKeyboard.keyboards), 1)
-        keyboard = MockUsbHidKeyboard.keyboards[0]
-
         # Trigger
         action.push()
         action.release()
+
+        self.assertEqual(len(MockUsbHidKeyboard.keyboards), 1)
+        keyboard = MockUsbHidKeyboard.keyboards[0]
 
         self.assertEqual(keyboard.send_calls, [4, 6, 5])
         
@@ -198,7 +204,10 @@ class TestLocalHidActions(unittest.TestCase):
         action.push()
         action.release()
 
-        self.assertEqual(keyboard.send_calls, [4, 6, 5, 4, 6, 5])
+        self.assertEqual(len(MockUsbHidKeyboard.keyboards), 2)
+        keyboard = MockUsbHidKeyboard.keyboards[1]
+
+        self.assertEqual(keyboard.send_calls, [4, 6, 5])
 
 
     def test_with_label(self):
@@ -239,3 +248,38 @@ class TestLocalHidActions(unittest.TestCase):
         self.assertEqual(display.back_color, (8, 9, 2))
 
 
+    def test_os_error(self):
+        MockUsbHidKeyboard.reset()
+        MockUsbHidKeyboard.except_on_init = OSError
+
+        action = HID_KEYBOARD(
+            keycodes = Keycode.A
+        )
+
+        switch = MockFootswitch(
+            actions = [
+                action,
+            ]
+        )
+        
+        appl = MockController2(
+            inputs = [
+                switch
+            ]
+        )
+        
+        action.init(appl, switch)
+        action.update_displays()
+
+        # Trigger (must not throw)
+        action.push()
+        action.release()
+
+        self.assertEqual(len(MockUsbHidKeyboard.keyboards), 0)
+        
+        # Trigger again
+        action.push()
+        action.release()
+
+        self.assertEqual(len(MockUsbHidKeyboard.keyboards), 0)
+        
