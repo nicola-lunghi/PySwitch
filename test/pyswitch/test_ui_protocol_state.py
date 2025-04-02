@@ -23,14 +23,9 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.ui.elements import BidirectionalProtocolState
     from lib.pyswitch.controller.client import BidirectionalClient
     
-    from .mocks_appl import MockBidirectionalProtocol, MockMidiController, MockClient
+    from .mocks_appl import MockBidirectionalProtocol, MockMidiController, MockClient, MockController
     from .mocks_ui import *
     
-
-class MockController2:
-    def __init__(self, client):
-        self.client = client
-
 
 class TestProtocolState(unittest.TestCase):
 
@@ -43,7 +38,7 @@ class TestProtocolState(unittest.TestCase):
 
         protocol = MockBidirectionalProtocol()        
 
-        appl = MockController2(
+        appl = MockController(
             client = BidirectionalClient(
                 midi = MockMidiController(), 
                 config = {}, 
@@ -73,9 +68,7 @@ class TestProtocolState(unittest.TestCase):
             bounds = DisplayBounds(22, 33, 44, 55)
         )
 
-        appl = MockController2(
-            client = MockClient()
-        )
+        appl = MockController()
 
         ui = DisplayElement()
         ui.make_splash(None)

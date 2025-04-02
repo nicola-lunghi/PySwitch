@@ -21,45 +21,6 @@ with patch.dict(sys.modules, {
     
     from .mocks_appl import *
 
-
-class MockController2:
-    def __init__(self, inputs = []):
-        self.inputs = inputs
-
-
-class MockFootswitch:
-    def __init__(self, pixels = [0, 1, 2], actions = []):
-        self.pixels = pixels
-        self.actions = actions
-
-        self._colors = [(0, 0, 0) for i in pixels]
-        self._brightnesses = [0 for i in pixels]
-
-    @property
-    def color(self):
-        return self._colors[0]
-
-    @property
-    def colors(self):
-        return self._colors
-    
-    @colors.setter
-    def colors(self, colors):
-        self._colors = colors
-
-    @property
-    def brightness(self):
-        return self._brightnesses[0]
-
-    @property
-    def brightnesses(self):
-        return self._brightnesses
-    
-    @brightnesses.setter
-    def brightnesses(self, brightnesses):
-        self._brightnesses = brightnesses
-
-
 ######################################################
 
 
@@ -99,7 +60,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
         
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_pager
@@ -164,7 +125,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
         
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_pager
@@ -239,7 +200,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
         
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_pager
@@ -320,7 +281,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
         
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_pager
@@ -394,7 +355,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
         
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_pager
@@ -499,7 +460,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
         
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_pager
@@ -613,7 +574,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
         
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_pager
@@ -713,7 +674,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
         
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_pager
@@ -816,7 +777,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
 
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_pager,
@@ -945,7 +906,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
 
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_pager,
@@ -1049,7 +1010,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
 
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_proxy_1
@@ -1114,7 +1075,7 @@ class TestLocalPagerAction(unittest.TestCase):
             ]
         )
         
-        appl = MockController2(
+        appl = MockController(
             inputs = [
                 switch, 
                 switch_pager

@@ -25,7 +25,6 @@ with patch.dict(sys.modules, {
     from .mocks_appl import MockClient, MockAction, MockInputControllerDefinition
 
 
-
 class MockStrobe:
     class StrobeController:
         def __init__(self,

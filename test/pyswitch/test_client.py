@@ -25,10 +25,6 @@ with patch.dict(sys.modules, {
 class MockParameterMapping2(MockParameterMapping):
     pass
 
-class MockClient:
-    def __init__(self):
-        self.debug = False
-
 
 class TestClient(unittest.TestCase):
 

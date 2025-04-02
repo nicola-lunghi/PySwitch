@@ -23,14 +23,7 @@ with patch.dict(sys.modules, {
     }):
         
         from lib.pyswitch.controller.inputs import ContinuousController
-        from lib.pyswitch.misc import Updater
         from .mocks_appl import *
-
-
-class MockController2(Updater):
-    def __init__(self):
-        Updater.__init__(self)
-        self.client = MockClient()
 
 
 ##################################################################################################################################
@@ -44,7 +37,7 @@ class TestControllerInput(unittest.TestCase):
         action_1 = MockAnalogAction()
         action_2 = MockAnalogAction()
 
-        appl = MockController2()
+        appl = MockController()
 
         input = ContinuousController(appl, {
             "assignment": {
@@ -100,7 +93,7 @@ class TestControllerInput(unittest.TestCase):
         action_1 = MockEncoderAction()
         action_2 = MockEncoderAction()
 
-        appl = MockController2()
+        appl = MockController()
 
         input = ContinuousController(appl, {
             "assignment": {
@@ -158,7 +151,7 @@ class TestControllerInput(unittest.TestCase):
         action_3 = MockAnalogAction()
         action_4 = MockAnalogAction()
 
-        appl = MockController2()
+        appl = MockController()
 
         input = ContinuousController(appl, {
             "assignment": {

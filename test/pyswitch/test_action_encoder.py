@@ -30,24 +30,11 @@ with patch.dict(sys.modules, {
         
         from lib.pyswitch.controller.actions.EncoderAction import EncoderAction
 
-        from lib.pyswitch.misc import Updater
         from lib.pyswitch.clients.local.actions.encoder_button import ENCODER_BUTTON
         from lib.pyswitch.ui.elements import DisplayLabel
 
         from .mocks_appl import *
 
-
-class MockController2(Updater):
-    def __init__(self):
-        super().__init__()
-        self.client = MockClient()
-
-class MockFootSwitch:
-    def __init__(self, id = ""):
-        self.id = id
-        self.actions = []
-        self.pixels = []
-        self.colors = []
 
 ##################################################################################################################################
 
@@ -211,7 +198,7 @@ class TestEncoderAction(unittest.TestCase):
             step_width = step_width
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         self.assertEqual(action.enabled, True)
@@ -258,7 +245,7 @@ class TestEncoderAction(unittest.TestCase):
             mapping = mapping
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         self.assertEqual(action.enabled, True)
@@ -294,7 +281,7 @@ class TestEncoderAction(unittest.TestCase):
             mapping = mapping
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         action.update()
@@ -359,7 +346,7 @@ class TestEncoderAction(unittest.TestCase):
             step_width = 1
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         display.update_label()
@@ -445,7 +432,7 @@ class TestEncoderAction(unittest.TestCase):
             convert_value = convert_value
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         display.update_label()
@@ -519,10 +506,10 @@ class TestEncoderAction(unittest.TestCase):
             step_width = 1
         )
 
-        appl = MockController2()        
+        appl = MockController()        
         action.init(appl)
 
-        switch = MockFootSwitch()
+        switch = MockFootswitch()
         accept.init(appl, switch)
 
         action.process(0)
@@ -577,10 +564,10 @@ class TestEncoderAction(unittest.TestCase):
             step_width = 1
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
-        switch = MockFootSwitch()
+        switch = MockFootswitch()
         accept.init(appl, switch)
         cancel.init(appl, switch)
 
@@ -714,10 +701,10 @@ class TestEncoderAction(unittest.TestCase):
             step_width = 1
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
-        switch = MockFootSwitch()
+        switch = MockFootswitch()
         accept.init(appl, switch)
 
         action._EncoderAction__preview._ValuePreview__period = MockPeriodCounter()

@@ -21,47 +21,12 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.clients.kemper import *
     from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.misc import Updater
     from lib.pyswitch.colors import Colors
 
     from lib.pyswitch.clients.kemper.actions.rig_select import *
     from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
     
     from lib.pyswitch.clients.kemper.mappings.select import *
-
-
-class MockController2(Updater):
-    def __init__(self):
-        Updater.__init__(self)
-        self.client = MockClient()
-        self.config = {}
-        self.shared = {}
-
-
-class MockFootswitch:
-    def __init__(self, pixels = [0, 1, 2], actions = []):
-        self.pixels = pixels
-        self.actions = actions
-
-        self.colors = [(0, 0, 0) for i in pixels]
-        self.brightnesses = [0 for i in pixels]
-
-    @property
-    def color(self):
-        return self.colors[0]
-    
-    @color.setter
-    def color(self, color):
-        self.colors = [color for i in self.colors]
-
-
-    @property
-    def brightness(self):
-        return self.brightnesses[0]
-    
-    @brightness.setter
-    def brightness(self, brightness):
-        self.brightnesses = [brightness for i in self.brightnesses]
 
 
 ####################################################################################################
@@ -208,7 +173,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             enable_callback = ecb
         )
         
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -239,7 +204,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             enable_callback = ecb
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -311,7 +276,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             text_callback = text_cb
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -367,7 +332,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             color_callback = color_cb
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -410,7 +375,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             color = (5, 6, 7)
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -457,7 +422,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             rig_btn_morph = True
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
         
@@ -579,7 +544,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             enable_callback = ecb
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -605,7 +570,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             display_mode = RIG_SELECT_DISPLAY_TARGET_RIG
         )        
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -669,7 +634,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             rig = rig + 1
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
         
@@ -729,7 +694,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             rig_off = 3
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -816,7 +781,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             morph_only_when_enabled = morph_only_when_enabled        
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action_select])
         action_select.init(appl, switch)
 
@@ -868,7 +833,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             rig_off = "auto"
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -951,7 +916,7 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
             auto_exclude_rigs = exclude_rigs
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
         

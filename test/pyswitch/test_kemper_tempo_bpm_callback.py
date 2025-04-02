@@ -21,20 +21,9 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.mappings.tempo_bpm import MAPPING_TEMPO_BPM
     
     from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.misc import Updater
-
     from .mocks_appl import *
     from .mocks_ui import MockUiController
-    
-
-class MockController2(Updater):
-    def __init__(self, inputs = []):
-        Updater.__init__(self)
-
-        self.client = MockClient()
-        self.inputs = inputs
-        self.shared = {}
-      
+          
 
 class TestKemperBpmDisplayCallback(unittest.TestCase):
 
@@ -51,7 +40,7 @@ class TestKemperBpmDisplayCallback(unittest.TestCase):
             callback = cb
         )
 
-        appl = MockController2()
+        appl = MockController()
         ui = MockUiController()
         label.init(ui, appl)
 

@@ -1,6 +1,7 @@
 from ....controller.actions import Action
 from ....controller.callbacks import Callback
 from ....colors import Colors
+from ....misc import PeriodCounter
 
 from adafruit_midi.system_exclusive import SystemExclusive
 
@@ -10,6 +11,7 @@ from adafruit_midi.system_exclusive import SystemExclusive
 # Optionally, the current value can be shown in a display label, and/or be previewed in another display label (the rig name for example).
 def PARAMETER_UP_DOWN(mapping, 
                       offset,                            # Offset to be added to the parameter value. The range for this depends on whether the mapping's set message is a SysEx ([0..16383]) or ControlChange ([0..127]).
+                      repeat_interval_millis = 200,      # If set to a value different than 0 or None, the action is repeated when the switch is held down (only works if the action is not in a "hold" position). Also note that this cannot be faster than the general update period which is set to 200ms per default.
                       max_value = None,                  # Max. value. If None, this is derived automatically from the mapping (SysEx: 16383, CC: 127).
                       display = None,                    # Display label to show the value and color.
                       change_display = None,             # Can be assigned to an additonal display label which is used to show the changed values for a period of time.
@@ -30,7 +32,8 @@ def PARAMETER_UP_DOWN(mapping,
             color = color,
             led_brightness = led_brightness,
             change_display = change_display,
-            change_timeout_millis = change_timeout_millis
+            change_timeout_millis = change_timeout_millis,
+            repeat_interval_millis = repeat_interval_millis
         ),
         "display": display,
         "id": id,
@@ -48,7 +51,8 @@ class _ParameterChangeCallback(Callback):
                  text, 
                  led_brightness,
                  change_display,
-                 change_timeout_millis
+                 change_timeout_millis,
+                 repeat_interval_millis
         ):
         super().__init__(mappings = [mapping])
 
@@ -72,6 +76,9 @@ class _ParameterChangeCallback(Callback):
                 self._max_value = 16383
             else:
                 self._max_value = 127
+
+        self.__repeat_period = PeriodCounter(repeat_interval_millis) if repeat_interval_millis else None
+        self.__pushed = False
     
     def init(self, appl, listener = None):
         super().init(appl, listener)
@@ -83,6 +90,9 @@ class _ParameterChangeCallback(Callback):
 
         if self.__preview:
             self.__preview.update()
+
+        if self.__pushed and self.__repeat_period and self.__repeat_period.exceeded:
+            self.push()
 
     def push(self):
         v = self._mapping.value + self._offset
@@ -102,11 +112,17 @@ class _ParameterChangeCallback(Callback):
                 timeout_millis = self.__change_timeout_millis
             )
 
+        self.__pushed = True
+        if self.__repeat_period:
+            self.__repeat_period.reset()
+
     def release(self):
-        pass
+        self.__pushed = False
 
     def update_displays(self):
         dim_factor = (self._mapping.value / self._max_value) if self._mapping.value != None else 0
+        if self._offset < 0:
+            dim_factor = 1 - dim_factor
 
         if self.action.label:
             if self.action.label.back_color:

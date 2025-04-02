@@ -28,41 +28,6 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.local.actions.param_change import *
     
 
-class MockController2(Updater):
-    def __init__(self):
-        Updater.__init__(self)
-        self.client = MockClient()
-        self.config = {}
-        self.shared = {}
-
-
-class MockFootswitch:
-    def __init__(self, pixels = [0, 1, 2], actions = []):
-        self.pixels = pixels
-        self.actions = actions
-
-        self.colors = [(0, 0, 0) for i in pixels]
-        self.brightnesses = [0 for i in pixels]
-
-    @property
-    def color(self):
-        return self.colors[0]
-    
-    @color.setter
-    def color(self, color):
-        self.colors = [color for i in self.colors]
-
-
-    @property
-    def brightness(self):
-        return self.brightnesses[0]
-    
-    @brightness.setter
-    def brightness(self, brightness):
-        self.brightnesses = [brightness for i in self.brightnesses]
-
-
-
 class TestLocalActionParameterUpDown(unittest.TestCase):
 
     def test(self):
@@ -104,6 +69,7 @@ class TestLocalActionParameterUpDown(unittest.TestCase):
         action = PARAMETER_UP_DOWN(
             mapping = mapping,
             offset = offset,
+            repeat_interval_millis = None,
             max_value = max_value,
             display = display, 
             color = (100, 100, 100),
@@ -120,7 +86,7 @@ class TestLocalActionParameterUpDown(unittest.TestCase):
         self.assertEqual(action.uses_switch_leds, True)
         self.assertEqual(action._Action__enable_callback, ecb)
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -140,12 +106,13 @@ class TestLocalActionParameterUpDown(unittest.TestCase):
 
             # Label
             exp_perc = int(100 * (exp_value / max_value))
-            self.assertEqual(display.back_color, (exp_perc, exp_perc, exp_perc), exp_value)
+            exp_comp = exp_perc if offset > 0 else 100 - exp_perc
+            self.assertEqual(display.back_color, (exp_comp, exp_comp, exp_comp), exp_value)
             self.assertEqual(display.text, str(exp_perc) + "%", exp_value)
             
             # LEDs
             self.assertEqual(switch.color, (100, 100, 100), exp_value)
-            self.assertEqual(switch.brightness, (exp_value * 0.5 / max_value), exp_value)
+            self.assertEqual(switch.brightness, (exp_value * 0.5 / max_value) if offset > 0 else (1 - (exp_value / max_value)) * 0.5, exp_value)
 
     
     ##############################################################################################
@@ -178,7 +145,7 @@ class TestLocalActionParameterUpDown(unittest.TestCase):
 
         self.assertEqual(action.uses_switch_leds, False)
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -238,7 +205,7 @@ class TestLocalActionParameterUpDown(unittest.TestCase):
             change_timeout_millis = 124
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -304,3 +271,73 @@ class TestLocalActionParameterUpDown(unittest.TestCase):
         )
 
         self.assertEqual(action.callback._max_value, 127)
+
+
+    #######################################################################################
+
+
+    def test_repeat(self):
+        mapping = MockParameterMapping(
+            name = "PP",
+            response = SystemExclusive(
+                manufacturer_id = [0x00, 0x10, 0x20],
+                data = [0x00, 0x00, 0x09]
+            )
+        )
+
+        action = PARAMETER_UP_DOWN(
+            repeat_interval_millis = 101,
+            mapping = mapping,
+            offset = 100,
+            max_value = 1000
+        )
+
+        appl = MockController()
+        switch = MockFootswitch(actions = [action])
+        action.init(appl, switch)
+
+        self.assertEqual(action.callback._ParameterChangeCallback__repeat_period.interval, 101)
+        action.callback._ParameterChangeCallback__repeat_period = MockPeriodCounter()
+        period = action.callback._ParameterChangeCallback__repeat_period
+
+        mapping.value = 10
+
+        appl.client.set_calls = []
+
+        action.push()
+        action.release()
+
+        self.assertEqual(appl.client.last_sent_message, { "mapping": mapping, "value": 110 })
+        
+        mapping.value = 110
+
+        # Long push
+        action.push()
+
+        self.assertEqual(appl.client.last_sent_message, { "mapping": mapping, "value": 210 })
+
+        mapping.value = 210
+        period.exceed_next_time = True
+        action.callback.update()
+
+        self.assertEqual(appl.client.last_sent_message, { "mapping": mapping, "value": 310 })
+
+        mapping.value = 310
+        period.exceed_next_time = True
+        action.callback.update()
+
+        self.assertEqual(appl.client.last_sent_message, { "mapping": mapping, "value": 410 })
+
+        mapping.value = 410
+
+        # Release again
+        action.release()
+        period.exceed_next_time = True
+        action.callback.update()
+
+        self.assertEqual(appl.client.last_sent_message, { "mapping": mapping, "value": 410 })
+
+        period.exceed_next_time = True
+        action.callback.update()
+
+        self.assertEqual(appl.client.last_sent_message, { "mapping": mapping, "value": 410 })

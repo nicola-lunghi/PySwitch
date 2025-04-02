@@ -28,14 +28,6 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.local.actions.binary_switch import *
     
 
-class MockController2(Updater):
-    def __init__(self):
-        Updater.__init__(self)
-        self.client = MockClient()
-        self.config = {}
-        self.shared = {}
-
-
 class TestLocalActionDefinitions(unittest.TestCase):
 
     def test_binary_switch(self):

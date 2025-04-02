@@ -21,48 +21,12 @@ with patch.dict(sys.modules, {
 
     from lib.pyswitch.clients.kemper import *
     from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.misc import Updater
     from lib.pyswitch.colors import Colors
 
     from lib.pyswitch.clients.kemper.actions.bank_select import *
     from lib.pyswitch.clients.kemper.actions.rig_select import *
     from lib.pyswitch.clients.kemper.mappings.select import *
     
-
-class MockController2(Updater):
-    def __init__(self, inputs = []):
-        Updater.__init__(self)
-        self.client = MockClient()
-        self.config = {}
-        self.shared = {}
-        self.inputs = inputs
-
-
-class MockFootswitch:
-    def __init__(self, pixels = [0, 1, 2], actions = []):
-        self.pixels = pixels
-        self.actions = actions
-
-        self.colors = [(0, 0, 0) for i in pixels]
-        self.brightnesses = [0 for i in pixels]
-
-    @property
-    def color(self):
-        return self.colors[0]
-    
-    @color.setter
-    def color(self, color):
-        self.colors = [color for i in self.colors]
-
-
-    @property
-    def brightness(self):
-        return self.brightnesses[0]
-    
-    @brightness.setter
-    def brightness(self, brightness):
-        self.brightnesses = [brightness for i in self.brightnesses]
-
 
 ####################################################################################################
 
@@ -214,7 +178,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             enable_callback = ecb
         )
         
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -247,7 +211,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             enable_callback = ecb
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -320,7 +284,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             text_callback = text_cb
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -376,7 +340,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             color_callback = color_cb
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -419,7 +383,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             color = (5, 6, 7)
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -474,7 +438,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             enable_callback = ecb
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
@@ -501,7 +465,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             bank = 1            
         )
 
-        appl = MockController2()
+        appl = MockController()
         appl.shared = { "preselectedBank": 667 }
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
@@ -564,7 +528,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             bank_off = 4           
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
         
@@ -662,7 +626,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         switch_1 = MockFootswitch(actions = [action_other, action_rig_select])
         switch_2 = MockFootswitch(actions = [action])
-        appl = MockController2(inputs = [
+        appl = MockController(inputs = [
             switch_1,
             MockInputControllerDefinition(),
             switch_2,
@@ -801,7 +765,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
 
         switch_1 = MockFootswitch(actions = [action_other])
         switch_2 = MockFootswitch(actions = [action])
-        appl = MockController2(inputs = [
+        appl = MockController(inputs = [
             switch_1,
             MockInputControllerDefinition(),
             switch_2,

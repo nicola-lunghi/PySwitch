@@ -17,28 +17,12 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.misc import Updater
     
     from .mocks_appl import *
     from .mocks_callback import *
 
     from lib.pyswitch.clients.kemper.actions.tuner import *
 
-
-class MockController2(Updater):
-    def __init__(self, inputs = []):
-        Updater.__init__(self)
-        self.client = MockClient()
-        self.config = {}
-        self.inputs = inputs
-        self.shared = {}
-
-
-class MockFootSwitch:
-    def __init__(self, actions = []):
-        self.override_action = None
-        self.actions = actions
-        self.pixels = []
 
 
 class TestKemperActionTunerMode(unittest.TestCase):
@@ -77,13 +61,13 @@ class TestKemperActionTunerMode(unittest.TestCase):
     def test_state_change_by_user(self):
         action = TUNER_MODE()
 
-        switch = MockFootSwitch(
+        switch = MockFootswitch(
             actions = [
                 action
             ]
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl, switch)
 
         cb = action.callback

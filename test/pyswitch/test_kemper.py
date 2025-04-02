@@ -37,15 +37,6 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.mappings.pedals import *
 
 
-class MockController2(Updater):
-    def __init__(self, inputs = []):
-        Updater.__init__(self)
-
-        self.client = MockClient()
-        self.inputs = inputs
-        self.shared = {}
-      
-
 class TestKemper(unittest.TestCase):
 
     def test_nrpn_value(self):

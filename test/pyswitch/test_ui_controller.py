@@ -25,11 +25,6 @@ with patch.dict(sys.modules, {
     from .mocks_callback import *
 
 
-class MockController2(Updater):
-    def __init__(self):
-        Updater.__init__(self)
-        self.client = MockClient()
-
 
 class MockUiController(UiController):
     def __init__(self, display_driver, font_loader, splash_callback = None):
@@ -59,7 +54,7 @@ class TestUiController(unittest.TestCase):
 
         ui = UiController(display_driver, font_loader, cb)        
 
-        appl = MockController2()
+        appl = MockController()
         display.init(display, appl)
         ui.init(appl)
 
@@ -118,7 +113,7 @@ class TestUiController(unittest.TestCase):
 
         ui.set_callback(cb)
 
-        appl = MockController2()
+        appl = MockController()
         ui.init(appl)
 
         ui.show()
@@ -181,7 +176,7 @@ class TestUiController(unittest.TestCase):
         )
 
         ui = UiController(display_driver, MockFontLoader(), MockSplashCallback(output = display))
-        appl = MockController2()
+        appl = MockController()
         appl.add_updateable(ui)
         ui.init(appl)
         

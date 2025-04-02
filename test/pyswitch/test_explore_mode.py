@@ -48,63 +48,6 @@ class MockSwitchFactory:
                 continue
             return switch
         return None          
-    
-
-# # Used to build szenarios
-# class SceneStep:
-#     def __init__(self, num_pass_ticks = 0, prepare = None, evaluate = None, next = None):
-#         self.num_pass_ticks = num_pass_ticks
-#         self.prepare = prepare
-#         self.evaluate = evaluate
-#         self.next = next
-
-
-# class MockExploreModeController(ExploreModeController):
-#     def __init__(self, board, switch_factory, led_driver = None, ui = None, num_pixels_per_switch = 3, num_port_columns = 5):
-#         super().__init__(
-#             board = board, 
-#             switch_factory = switch_factory, 
-#             led_driver = led_driver, 
-#             ui = ui, 
-#             num_pixels_per_switch = num_pixels_per_switch, 
-#             num_port_columns = num_port_columns
-#         )
-
-#         self._next_step = None
-
-#     def tick(self):
-#         if not self._next_step:  
-#             return super().tick()
-        
-#         if callable(self._next_step.prepare):
-#             self._next_step.prepare()
-
-#         res = super().tick()
-#         if not res:
-#             raise Exception("tick() does not return True")
-        
-#         if not callable(self._next_step.evaluate):
-#             return False
-        
-#         ret = self._next_step.evaluate()
-
-#         self._next_step = self._next_step.next
-
-#         return ret        
-    
-#     @property
-#     def next_step(self): 
-#         return self._next_step
-    
-#     @next_step.setter
-#     def next_step(self, step):
-#         if not isinstance(step, SceneStep): 
-#             raise Exception("Invalid test step")
-        
-#         self._next_step = step
-
-
-##################################################################################################
 
 
 class TestExploreMode(unittest.TestCase):
@@ -115,9 +58,6 @@ class TestExploreMode(unittest.TestCase):
         appl.tick()
         appl.tick()
             
-
-##################################################################################################
-
 
     def test_console_gpio_detect(self):
         MockMisc.reset_mock()

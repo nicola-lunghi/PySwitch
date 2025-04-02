@@ -23,13 +23,6 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.misc import Updater
 
 
-class MockController2(Updater):
-    def __init__(self):
-        super().__init__()
-
-        self.client = MockClient()
-
-
 class TestCallback(unittest.TestCase):
 
     def test_init(self):
@@ -41,7 +34,7 @@ class TestCallback(unittest.TestCase):
             mapping_2
         ])
 
-        appl = MockController2()
+        appl = MockController()
         cb.init(appl)
 
         self.assertEqual(len(appl.client.register_calls), 2)
@@ -66,7 +59,7 @@ class TestCallback(unittest.TestCase):
             mapping_2
         ])
 
-        appl = MockController2()
+        appl = MockController()
         cb.init(appl)
 
         cb.update()
@@ -95,7 +88,7 @@ class TestCallback(unittest.TestCase):
             mapping_2
         ])
 
-        appl = MockController2()
+        appl = MockController()
 
         listener = MockClientRequestListener()
         cb.init(appl, listener)
@@ -151,7 +144,7 @@ class TestCallback(unittest.TestCase):
             mapping_1
         ])
 
-        appl = MockController2()
+        appl = MockController()
 
         cb.init(appl)
 

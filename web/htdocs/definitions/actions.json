@@ -1323,6 +1323,11 @@
                         "comment": "Offset to be added to the parameter value. The range for this depends on whether the mapping's set message is a SysEx ([0..16383]) or ControlChange ([0..127])."
                     },
                     {
+                        "name": "repeat_interval_millis",
+                        "default": "200",
+                        "comment": "If set to a value different than 0 or None, the action is repeated when the switch is held down (only works if the action is not in a \"hold\" position). Also note that this cannot be faster than the general update period which is set to 200ms per default."
+                    },
+                    {
                         "name": "max_value",
                         "default": "None",
                         "comment": "Max. value. If None, this is derived automatically from the mapping (SysEx: 16383, CC: 127)."
@@ -1420,7 +1425,7 @@
                         "comment": null
                     }
                 ],
-                "comment": "Sends a HID (Human Interface Device) command which emulates an USB keyboard. With this, the controller can work as an USB page turner for example.",
+                "comment": "Sends a HID (Human Interface Device) command which emulates an USB keyboard. \n\nWith this, the controller can work as an USB page turner for example.",
                 "importPath": "pyswitch.clients.local.actions.hid"
             },
             {

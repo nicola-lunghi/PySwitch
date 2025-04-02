@@ -24,22 +24,6 @@ with patch.dict(sys.modules, {
     from .mocks_appl import *
 
 
-class MockController2:
-    def __init__(self, inputs = []):
-        self.client = MockClient()
-        self.inputs = inputs
-
-
-class MockFootSwitch:
-    def __init__(self, id = "", order = 0):
-        self.id = id
-        self.color = (0, 0, 0)
-        self.brightness = 0
-        self.strobe_order = order
-        self.pixels = []
-
-
-
 class TestStrobeController(unittest.TestCase):
 
 
@@ -104,16 +88,16 @@ class TestStrobeController(unittest.TestCase):
             max_fps = 12   # Not regarded because the period counter is overridden
         )
 
-        switch_1 = MockFootSwitch(id = 1, order = 3)
-        switch_2 = MockFootSwitch(id = 2, order = 2)
-        switch_3 = MockFootSwitch(id = 3, order = 0)
-        switch_4 = MockFootSwitch(id = 4, order = 100)
-        switch_5 = MockFootSwitch(id = 5, order = 105)
-        switch_6 = MockFootSwitch(id = 6, order = 102)
-        switch_7 = MockFootSwitch(id = 7, order = 103)
-        switch_8 = MockFootSwitch(id = 8, order = 104)
-        switch_9 = MockFootSwitch(id = 9, order = 110)
-        switch_10 = MockFootSwitch(id = 10, order = 106)
+        switch_1 = MockFootswitch(id = 1, order = 3)
+        switch_2 = MockFootswitch(id = 2, order = 2)
+        switch_3 = MockFootswitch(id = 3, order = 0)
+        switch_4 = MockFootswitch(id = 4, order = 100)
+        switch_5 = MockFootswitch(id = 5, order = 105)
+        switch_6 = MockFootswitch(id = 6, order = 102)
+        switch_7 = MockFootswitch(id = 7, order = 103)
+        switch_8 = MockFootswitch(id = 8, order = 104)
+        switch_9 = MockFootswitch(id = 9, order = 110)
+        switch_10 = MockFootswitch(id = 10, order = 106)
 
         switches_sorted = [
             switch_3,
@@ -142,7 +126,7 @@ class TestStrobeController(unittest.TestCase):
         self.assertEqual(len(switches_unsorted), num_switches)
 
         # Create mock controller and init the Tuner display with it
-        appl = MockController2(
+        appl = MockController(
             inputs = switches_unsorted + [MockInputControllerDefinition()]
         )
         strobe.init(appl)
@@ -326,13 +310,13 @@ class TestStrobeController(unittest.TestCase):
             mapping_deviance = mapping_2
         )
 
-        switch_1 = MockFootSwitch(id = 1, order = 3)
+        switch_1 = MockFootswitch(id = 1, order = 3)
         switches = []
         if num_switches == 1:
             switches.append(switch_1)
 
         # Create mock controller and init the Tuner display with it
-        appl = MockController2(
+        appl = MockController(
             inputs = switches + [MockInputControllerDefinition()]
         )
         strobe.init(appl)

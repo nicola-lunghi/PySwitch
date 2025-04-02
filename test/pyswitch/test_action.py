@@ -18,28 +18,10 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     from lib.pyswitch.controller.actions import Action
-    from lib.pyswitch.misc import Updater
     
     from .mocks_ui import *
     from .mocks_appl import *
     from .mocks_callback import *
-
-
-class MockController2(Updater):
-    def __init__(self, config = {}, ui = None):
-        super().__init__()
-
-        self.config = config
-        self.ui = ui
-        self.client = MockClient()
-
-
-class MockFootSwitch:
-    def __init__(self, id = ""):
-        self.id = id
-        self.actions = []
-        self.pixels = []
-        self.colors = []
 
 
 class MockAction(Action):
@@ -104,9 +86,9 @@ class TestAction(unittest.TestCase):
             }
         )
 
-        appl = MockController2()
+        appl = MockController()
 
-        action_1.init(appl, MockFootSwitch())
+        action_1.init(appl, MockFootswitch())
 
         self.assertEqual([x["mapping"] for x in appl.client.register_calls], [mapping_1, mapping_2])
 
@@ -171,9 +153,9 @@ class TestAction(unittest.TestCase):
             }
         )
 
-        appl = MockController2()
+        appl = MockController()
 
-        action_1.init(appl, MockFootSwitch())
+        action_1.init(appl, MockFootswitch())
 
         self.assertEqual([x["mapping"] for x in appl.client.register_calls], [mapping_1, mapping_2])
         
@@ -219,9 +201,9 @@ class TestAction(unittest.TestCase):
             }
         )
 
-        appl = MockController2()
+        appl = MockController()
 
-        action_1.init(appl, MockFootSwitch())
+        action_1.init(appl, MockFootswitch())
 
         listener_1 = appl.client.register_calls[0]["listener"]
         
@@ -246,8 +228,8 @@ class TestAction(unittest.TestCase):
     #######################################################################################################
 
     def test_led_segments_one_action(self):
-        appl = MockController2()
-        switch = MockFootSwitch()
+        appl = MockController()
+        switch = MockFootswitch()
         
         action_1 = MockAction()
         action_2 = MockAction()
@@ -306,8 +288,8 @@ class TestAction(unittest.TestCase):
 
 
     def test_led_segments_three_actions(self):
-        appl = MockController2()
-        switch = MockFootSwitch()
+        appl = MockController()
+        switch = MockFootswitch()
         
         cb_1 = MockEnabledCallback(output = True)
         cb_2 = MockEnabledCallback(output = True)
@@ -395,8 +377,8 @@ class TestAction(unittest.TestCase):
 
 
     def test_property_set_switch_colors_brightness(self):
-        appl = MockController2()
-        switch = MockFootSwitch()
+        appl = MockController()
+        switch = MockFootswitch()
         
         action_1 = MockAction()
         action_2 = MockAction(use_leds = True)
@@ -474,8 +456,8 @@ class TestAction(unittest.TestCase):
 
 
     def test_property_set_switch_color_brightness_tuples(self):
-        appl = MockController2()
-        switch = MockFootSwitch()
+        appl = MockController()
+        switch = MockFootswitch()
         
         cb_4 = MockEnabledCallback(output = True)
         cb_5 = MockEnabledCallback(output = True)

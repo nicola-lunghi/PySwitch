@@ -17,17 +17,10 @@ with patch.dict(sys.modules, {
 }):
 
     from lib.pyswitch.controller.inputs import SwitchController
-    from lib.pyswitch.misc import Updater
 
-    from .mocks_appl import MockAction, MockPeriodCounter, MockSwitch
+    from .mocks_appl import MockAction, MockPeriodCounter, MockSwitch, MockController
     from .mocks_callback import *
 
-
-class MockController2(Updater):
-    def __init__(self, config = {}):
-        super().__init__()
-        
-        self.config = config
 
 
 class TestSwitchControllerHold(unittest.TestCase):
@@ -40,7 +33,7 @@ class TestSwitchControllerHold(unittest.TestCase):
         action_2 = MockAction()
         action_3 = MockAction()
     
-        appl = MockController2()
+        appl = MockController()
 
         fs = SwitchController(
             appl,
@@ -275,7 +268,7 @@ class TestSwitchControllerHold(unittest.TestCase):
         action_2 = MockAction()
         action_3 = MockAction()
     
-        appl = MockController2()
+        appl = MockController()
 
         fs = SwitchController(
             appl,
@@ -509,7 +502,7 @@ class TestSwitchControllerHold(unittest.TestCase):
         action_1 = MockAction()
         action_2 = MockAction()
     
-        appl = MockController2()
+        appl = MockController()
 
         fs = SwitchController(
             appl,
@@ -598,7 +591,7 @@ class TestSwitchControllerHold(unittest.TestCase):
         action_3 = MockAction()
         action_4 = MockAction(config = { "enableCallback": ec })
     
-        appl = MockController2()
+        appl = MockController()
 
         fs = SwitchController(
             appl,

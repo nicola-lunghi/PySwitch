@@ -3,7 +3,7 @@ from functools import wraps
 
 from lib.pyswitch.controller.actions import Action, PushButtonAction
 from lib.pyswitch.controller.client import ClientParameterMapping
-from lib.pyswitch.misc import Updateable
+from lib.pyswitch.misc import Updateable, Updater
 
 from .mocks_lib import *
 
@@ -296,6 +296,7 @@ class MockClient:
         self.request_calls = []
         self.set_calls = []
         self.num_notify_connection_lost_calls = 0
+        self.debug = False
 
     @property
     def last_sent_message(self):
@@ -399,4 +400,52 @@ class MockWriter:
     def write(self, data):
         self.contents += data
 
+
+##################################################################################################################################
+
+
+class MockFootswitch:
+    def __init__(self, pixels = [0, 1, 2], actions = [], order = 0, id = 0):
+        self.pixels = pixels
+        self.actions = actions
+
+        self.colors = [(0, 0, 0) for i in pixels]
+        self.brightnesses = [0 for i in pixels]
+        
+        self.override_action = None
+        self.strobe_order = order
+        self.id = id
+
+    @property
+    def color(self):
+        return self.colors[0]
+    
+    @color.setter
+    def color(self, color):
+        self.colors = [color for i in self.colors]
+
+
+    @property
+    def brightness(self):
+        return self.brightnesses[0]
+    
+    @brightness.setter
+    def brightness(self, brightness):
+        self.brightnesses = [brightness for i in self.brightnesses]
+
+
+##################################################################################################################################
+
+class MockController(Updater):
+    def __init__(self, config = {}, ui = None, inputs = [], num_leds = 0, client = None):
+        Updater.__init__(self)
+
+        self.client = MockClient() if not client else client
+        self.config = config
+        self.ui = ui
+        self.inputs = inputs
+        self.shared = {}
+
+        self.led_driver = MockNeoPixelDriver()
+        self.led_driver.init(num_leds)
 

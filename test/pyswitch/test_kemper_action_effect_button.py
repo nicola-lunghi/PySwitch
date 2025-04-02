@@ -18,47 +18,12 @@ with patch.dict(sys.modules, {
 }):
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
-    from lib.pyswitch.misc import Updater
     
     from .mocks_appl import *
     from .mocks_callback import *
 
     from lib.pyswitch.clients.kemper.actions.effect_button import *
     
-
-class MockController2(Updater):
-    def __init__(self):
-        Updater.__init__(self)
-        self.client = MockClient()
-        self.config = {}
-        self.shared = {}
-
-
-class MockFootswitch:
-    def __init__(self, pixels = [0, 1, 2], actions = []):
-        self.pixels = pixels
-        self.actions = actions
-
-        self.colors = [(0, 0, 0) for i in pixels]
-        self.brightnesses = [0 for i in pixels]
-
-    @property
-    def color(self):
-        return self.colors[0]
-    
-    @color.setter
-    def color(self, color):
-        self.colors = [color for i in self.colors]
-
-
-    @property
-    def brightness(self):
-        return self.brightnesses[0]
-    
-    @brightness.setter
-    def brightness(self, brightness):
-        self.brightnesses = [brightness for i in self.brightnesses]
-
 
 
 class TestKemperActionEffectButton(unittest.TestCase):
@@ -109,7 +74,7 @@ class TestKemperActionEffectButton(unittest.TestCase):
             num = 1            
         )
 
-        appl = MockController2()
+        appl = MockController()
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 

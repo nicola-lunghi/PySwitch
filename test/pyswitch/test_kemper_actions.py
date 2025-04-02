@@ -18,7 +18,6 @@ with patch.dict(sys.modules, {
 }):
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
-    from lib.pyswitch.misc import Updater
     
     from .mocks_appl import *
     from .mocks_callback import *
@@ -40,14 +39,6 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.local.actions.encoder_button import *
     from lib.pyswitch.controller.actions.EncoderAction import EncoderAction
     
-
-class MockController2(Updater):
-    def __init__(self):
-        Updater.__init__(self)
-        self.client = MockClient()
-        self.config = {}
-        self.shared = {}
-
 
 class TestKemperActionDefinitions(unittest.TestCase):
 
@@ -161,7 +152,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
             enable_callback = ecb
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl, None)
 
         cb = action.callback
@@ -249,7 +240,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
             morph_only_when_enabled = False
         )
 
-        appl = MockController2()
+        appl = MockController()
         action_select.init(appl, None)
         action_morph.init(appl, None)
 
@@ -306,7 +297,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
     #         morph_only_when_enabled = False
     #     )
 
-    #     appl = MockController2()
+    #     appl = MockController()
     #     action_select.init(appl, None)
     #     action_morph.init(appl, None)
 
@@ -603,7 +594,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         # self.assertEqual(action._EncoderAction__preview._ValuePreview__blink_color, (3, 4, 5))
         # self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 345)
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         switch = MockSwitch()
@@ -649,7 +640,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
         # self.assertEqual(action._EncoderAction__preview._ValuePreview__blink_color, (3, 4, 5))
         # self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 345)
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         switch = MockSwitch()

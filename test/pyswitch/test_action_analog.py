@@ -33,11 +33,6 @@ with patch.dict(sys.modules, {
         from .mocks_appl import *
 
 
-class MockController2:
-    def __init__(self):
-        self.client = MockClient()
-
-
 ##################################################################################################################################
 
 
@@ -207,7 +202,7 @@ class TestAnalogAction(unittest.TestCase):
             auto_calibrate = False
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         self.assertEqual(action.enabled, True)
@@ -303,7 +298,7 @@ class TestAnalogAction(unittest.TestCase):
             cal_min_window = 0.1
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         action._AnalogAction__period = MockPeriodCounter()
@@ -377,7 +372,7 @@ class TestAnalogAction(unittest.TestCase):
             cal_min_window = 0.1
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         action._AnalogAction__period = MockPeriodCounter()
@@ -455,7 +450,7 @@ class TestAnalogAction(unittest.TestCase):
             cal_min_window = 0.1
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         action._AnalogAction__period = MockPeriodCounter()
@@ -542,7 +537,7 @@ class TestAnalogAction(unittest.TestCase):
             change_timeout_millis = 123
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         display.update_label()
@@ -611,7 +606,7 @@ class TestAnalogAction(unittest.TestCase):
             convert_value = convert_value
         )
 
-        appl = MockController2()
+        appl = MockController()
         action.init(appl)
 
         display.update_label()

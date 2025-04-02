@@ -23,18 +23,9 @@ with patch.dict(sys.modules, {
     }):
         
         from lib.pyswitch.controller.inputs import SwitchController
-        from lib.pyswitch.misc import Updater
         from lib.pyswitch.colors import Colors
         from .mocks_appl import *
 
-
-class MockController2(Updater):
-    def __init__(self, config = {}, num_leds = 0):
-        Updater.__init__(self)
-
-        self.led_driver = MockNeoPixelDriver()
-        self.led_driver.init(num_leds)
-        self.config = config
 
 
 ##################################################################################################################################
@@ -43,7 +34,7 @@ class MockController2(Updater):
 class TestControllerSwitch(unittest.TestCase):
 
     def test_actions(self):
-        appl = MockController2(num_leds=5)
+        appl = MockController(num_leds=5)
         switch_1 = MockSwitch()
         
         action_1 = MockAction()
@@ -78,7 +69,7 @@ class TestControllerSwitch(unittest.TestCase):
 
 
     def test_actions_deep(self):
-        appl = MockController2(num_leds=5)
+        appl = MockController(num_leds=5)
         switch_1 = MockSwitch()
         
         action_1 = MockAction()
@@ -121,7 +112,7 @@ class TestControllerSwitch(unittest.TestCase):
     ####################################################################
 
     def test_actions_disabled(self):
-        appl = MockController2()
+        appl = MockController()
         switch_1 = MockSwitch()
 
         cb_1 = MockEnabledCallback(output = True)
@@ -229,7 +220,7 @@ class TestControllerSwitch(unittest.TestCase):
     ##############################################################################
 
     def test_minimal(self):
-        appl = MockController2()
+        appl = MockController()
         switch_1 = MockSwitch()
 
         fs = SwitchController(appl, {
@@ -247,7 +238,7 @@ class TestControllerSwitch(unittest.TestCase):
     ##############################################################################
 
     def test_default_color_and_brightness(self):
-        appl = MockController2(num_leds=5)
+        appl = MockController(num_leds=5)
         switch_1 = MockSwitch()
 
         fs = SwitchController(appl, {
@@ -269,7 +260,7 @@ class TestControllerSwitch(unittest.TestCase):
     ##############################################################################
 
     def test_set_color_and_brightness(self):
-        appl = MockController2(num_leds=5)
+        appl = MockController(num_leds=5)
         switch_1 = MockSwitch()
 
         fs = SwitchController(appl, {
@@ -312,7 +303,7 @@ class TestControllerSwitch(unittest.TestCase):
     ##############################################################################
 
     def test_invalid_colors_and_brightnesses(self):
-        appl = MockController2(num_leds=5)
+        appl = MockController(num_leds=5)
         switch_1 = MockSwitch()        
 
         fs = SwitchController(appl, {
@@ -334,7 +325,7 @@ class TestControllerSwitch(unittest.TestCase):
     ##############################################################################
 
     def test_no_pixels(self):
-        appl = MockController2(num_leds=5)
+        appl = MockController(num_leds=5)
         switch_1 = MockSwitch()        
 
         fs = SwitchController(appl, {
@@ -349,7 +340,7 @@ class TestControllerSwitch(unittest.TestCase):
     ##############################################################################
 
     def test_strobe_order(self):
-        appl = MockController2(num_leds=5)
+        appl = MockController(num_leds=5)
         switch_1 = MockSwitch()
 
         for order in range(0, 10):
@@ -366,7 +357,7 @@ class TestControllerSwitch(unittest.TestCase):
     ##############################################################################
 
     def test_default_strobe_order(self):
-        appl = MockController2(num_leds=5)
+        appl = MockController(num_leds=5)
         switch_1 = MockSwitch()
 
         fs = SwitchController(appl, {
@@ -381,7 +372,7 @@ class TestControllerSwitch(unittest.TestCase):
     ##############################################################################
 
     def test_override_action(self):
-        appl = MockController2(num_leds=5)
+        appl = MockController(num_leds=5)
         switch_1 = MockSwitch()
         
         action_1 = MockAction()
@@ -424,7 +415,7 @@ class TestControllerSwitch(unittest.TestCase):
     ##############################################################################
 
     def test_override_action_process_normal(self):
-        appl = MockController2(num_leds=5)
+        appl = MockController(num_leds=5)
         switch_1 = MockSwitch()
         
         action_1 = MockAction()
