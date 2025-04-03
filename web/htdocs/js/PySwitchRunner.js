@@ -206,6 +206,7 @@ class PySwitchRunner {
             this.#loadModule("pyswitch/clients/local/actions/hid.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/local/actions/encoder_button.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/local/actions/param_change.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/local/actions/custom.py", circuitpyPath),
 
             this.#loadModule("pyswitch/controller/__init__.py", circuitpyPath),
             this.#loadModule("pyswitch/controller/controller.py", circuitpyPath),

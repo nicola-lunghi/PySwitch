@@ -52,14 +52,24 @@ class VirtualKemperClient extends VirtualClient {
     /**
      * Tries to return a meaningful message name
      */
-    getMessageName(message) {
-        let paramName = this.parameters.getMessageName(message);
-        if (paramName) return "Kemper: " + paramName;
+    getMessageProperties(message) {
+        let props = this.parameters.getMessageProperties(message);
+        if (props) return {
+            name: "Kemper: " + props.name,
+            value: props.value
+        }
 
-        paramName = this.protocol.getMessageName(message)
-        if (paramName) return "Kemper: " + paramName;
+        props = this.protocol.getMessageProperties(message)
+        if (props) return {
+            name: "Kemper: " + props.name,
+            value: props.value
+        }
 
-        return null;
+        props = this.#determineMessageProperties(message);
+        if (props) return {
+            name: "Kemper: " + props.name,
+            value: props.value
+        }
     }
 
     /**
@@ -227,5 +237,56 @@ class VirtualKemperClient extends VirtualClient {
     log() {
         [].unshift.call(arguments, this.name + ":");
         console.log.apply(null, arguments);
+    }
+
+    /**
+     * Generic checking of a messages props
+     */
+    #determineMessageProperties(message) {
+        // NRPN
+        if (Tools.compareArrays(
+            message.slice(0, 4),
+            [240, 0, 32, 51]
+        )) {
+            if (message.length >= 8) {
+                const fcode = message[6];
+
+                const data = message.slice(8, -1)
+    
+                return {
+                    name: "NRPN Function " + fcode,
+                    value: data
+                }    
+            } else {
+                return {
+                    name: "SysEx",
+                    value: message.slice(4, -1)
+                }    
+            }
+        }
+
+        // Other types
+        if (message[0] >= 176) {
+            if (message[0] < 192) {
+                return {
+                    name: "CC " + message[1] + " (Channel " + (message[0] - 175) + ")",
+                    value: message[2]
+                }
+            }
+            else if (message[0] < 208) {
+                return {
+                    name: "PC (Channel " + (message[0] - 191) + ")",
+                    value: message[1]
+                }
+            }
+            else if (message[0] == 240) {
+                return {
+                    name: "SysEx",
+                    value: message
+                }
+            }
+        }
+
+        return null;
     }
 }

@@ -940,6 +940,19 @@
                         "type": "text"
                     }
                 ]
+            },
+
+            {
+                "entityName": "CUSTOM_MESSAGE",
+                "category": "other",
+                "target": "AdafruitSwitch",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "type": "any",
+                        "default": "[176, 33, 1]"
+                    }
+                ]
             }
         ]
     }

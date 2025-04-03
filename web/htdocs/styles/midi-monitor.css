@@ -2,30 +2,108 @@
     position: relative;
 	width: 100%;
 	height: 100%;
+
+	display: grid;
+	grid-template-columns: auto;
+	grid-template-rows: min-content auto;
+
+	font-family: monospace;
+}
+
+/**************************************************************************************/
+
+.container .midi-monitor-container .midi-controls {
+	/* background-color: red; */
+	margin: 0.2em;
+	display: grid;
+	grid-template-columns: auto min-content;
+	grid-template-rows: auto;
+}
+
+.container .midi-monitor-container .midi-controls .message-button {
+	cursor: pointer;
+	color: rgb(164, 164, 164);
+}
+
+.container .midi-monitor-container .midi-controls .message-button:hover {
+	color: black;
+}
+
+.container .midi-monitor-container .midi-controls .midi-buttons {
+	float: right;
+}
+
+.container .midi-monitor-container .midi-controls .midi-buttons > * {
+	display: inline;
+	padding: 0.5em;
+	cursor: pointer;
+
+	transition: color 0.1s;
+}
+
+.container .midi-monitor-container .midi-controls .midi-buttons > .inactive {
+	color: rgb(142, 142, 142);
+}
+
+.container .midi-monitor-container .midi-controls .midi-buttons > *:hover {
+	color: rgb(115, 115, 115);
+}
+
+/**************************************************************************************/
+
+.container .midi-monitor-container .midi-controls .midi-exclude {
+	background-color: white;
+	padding-left: 0.2em;
+	padding-right: 0.2em;
+}
+
+/**************************************************************************************/
+
+.container .midi-monitor-container .teaser {
+	margin-top: 2em;
+	text-decoration: underline;
+	cursor: pointer;
 }
 
 .container .midi-monitor-container .midi-monitor {
-    position: absolute;
-	border-spacing: 0;
-
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-
-	font-family: monospace;
 	white-space: pre;
 	user-select: text;
 
+	overflow: auto;
+}
+
+.container .midi-monitor-container .midi-monitor table {
+	border-spacing: 0;
 	min-width: 100%;
 }
 
-.container .midi-monitor-container .midi-monitor tr {
-	min-width: 100%;
+.container .midi-monitor-container .midi-monitor tr:hover {
+	filter: brightness(0.9);
+}
+
+.container .midi-monitor-container .midi-monitor tr > td {
+	width: 0;
+}
+
+.container .midi-monitor-container .midi-monitor tr > td:last-child {
+	width: unset;
 }
 
 .container .midi-monitor-container .midi-monitor tr.midi-message > td {
-	padding-right: 0.5em;
+	padding-right: 2em;
+}
+
+.container .midi-monitor-container .midi-monitor tr.midi-message > td:first-child {
+	padding-left: 0.5em;
+}
+
+.container .midi-monitor-container .midi-monitor tr.midi-message > td .message-button {
+	cursor: pointer;
+	color: rgb(164, 164, 164);
+}
+
+.container .midi-monitor-container .midi-monitor tr.midi-message > td .message-button:hover {
+	color: black;
 }
 
 .container .midi-monitor-container .midi-monitor tr.midi-message.midi-message-in {
@@ -39,6 +117,5 @@
 }
 
 .container .midi-monitor-container .midi-monitor tr.comment {
-	background-color: gray;
-	color: white;
+	color: black;
 }

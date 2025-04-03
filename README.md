@@ -421,7 +421,7 @@ Inputs = [
 ]
 ```
 
-### Custom Actions
+### Custom MIDI Messages
 
 If you want to send your own custom MIDI messages, you can also define your mappings. This example is similar to the "Rig Volume Boost" action:
 

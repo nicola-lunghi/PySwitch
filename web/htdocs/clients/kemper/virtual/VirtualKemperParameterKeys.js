@@ -84,6 +84,10 @@ class ParameterKey {
         throw new Error("Must be implemented in child classes");
     }
 
+    evaluateValue(valueOrData, valueType) {
+        return valueOrData;
+    }
+
     /**
      * Returns a representation for sending
      */
@@ -111,8 +115,21 @@ class NRPNKey extends ParameterKey {
         return "NRPN " + this.data.join("|");
     }
 
-    evaluateValue(value) {
-        return value[0] * 128 + value[1];
+    evaluateValue(data, valueType) {
+        switch (valueType) {
+            case "number":
+                return data[0] * 128 + data[1];
+
+            case "string":
+                let ret = "";
+                for (const c of data) {
+                    ret += String.fromCharCode(c);
+                }
+                return ret;
+
+            default:
+                throw new Error("Invalid value type: " + valueType);
+        }
     }
 
     /**
@@ -167,7 +184,7 @@ class CCKey extends ParameterKey {
         return value;
     }
 
-    evaluateValue(value) {
+    evaluateValue(value, valueType = null) {
         if (this.options.hasOwnProperty("scale")) {
             return value * this.options.scale;
         }

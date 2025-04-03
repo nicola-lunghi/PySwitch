@@ -297,6 +297,7 @@ class MockClient:
         self.set_calls = []
         self.num_notify_connection_lost_calls = 0
         self.debug = False
+        self.midi = MockMidiController()
 
     @property
     def last_sent_message(self):

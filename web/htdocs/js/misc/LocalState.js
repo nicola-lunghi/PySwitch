@@ -10,14 +10,26 @@ class LocalState {
      * stateObjectId is the sub-object name. If not set, the keys will be placed in the root object.
      */
     constructor(storageId, noVersion = false) {
-        this.#storageId = noVersion ? "pyswitch" : ("pyswitch-" + Controller.VERSION + "-" + storageId);
+        this.#storageId = (noVersion ? "pyswitch" : ("pyswitch-" + Controller.VERSION)) + "-" + storageId;
+    }
+
+    /**
+     * Returns if the key exists
+     */
+    has(key) {
+        const data = JSON.parse(localStorage.getItem(this.#storageId) || "{}");
+        return data.hasOwnProperty(key);
     }
 
     /**
      * Set a variable in local storage
      */
     set(key, value) {
-        const data = JSON.parse(localStorage.getItem(this.#storageId) || "{}");
+        let data = JSON.parse(localStorage.getItem(this.#storageId) || "{}");
+
+        if (typeof data != "object") {
+            data = {}
+        }
         
         data[key] = value;
         

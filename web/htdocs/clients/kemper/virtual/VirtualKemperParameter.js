@@ -107,6 +107,12 @@ class VirtualKemperParameter {
 
     /**
      * Parse a parameter request message. Must return if successful.
+     * 
+     * This returns an object with the properties or null.
+     * {
+     *      name,
+     *      value
+     * }
      */
     parse(message, simulate = false) {        
         // Try to parse with all keys
@@ -117,7 +123,7 @@ class VirtualKemperParameter {
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -133,7 +139,10 @@ class VirtualKemperParameter {
                 if (!simulate) {
                     this.send();
                 }
-                return "request";
+                return {
+                    name: "request " + this.getDisplayName(),
+                    value: ""
+                }
             }
 
             // NRPN: Set parameter
@@ -141,11 +150,14 @@ class VirtualKemperParameter {
                 message.slice(0, 8 + key.data.length),
                 [240, 0, 32, 51, this.client.options.productType, 127, this.setFunctionCode, 0].concat(key.data)
             )) {
+                const value = key.evaluateValue(message.slice(8 + key.data.length, -1), this.valueType);
                 if (!simulate) {
-                    const value = key.evaluateValue(message.slice(8 + key.data.length, 10 + key.data.length));
                     this.setValue(value);    
                 }
-                return true;
+                return {
+                    name: this.getDisplayName(),
+                    value: value
+                }
             }
         
         } else if (key instanceof CCKey) {
@@ -154,27 +166,34 @@ class VirtualKemperParameter {
                 message.slice(0, 2),
                 [176, key.control]
             )) {
+                const value = key.evaluateValue(message[2]);
                 if (!simulate) {
-                    const value = key.evaluateValue(message[2]);
                     this.setValue(value);
                 }
-                return true;
+                return {
+                    name: this.getDisplayName(),
+                    value: value
+                }
             }
 
         } else if (key instanceof PCKey) {
             // PC: Set parameter
             if (message[0] == 192) {
+                const value = key.evaluateValue(message[1]);
                 if (!simulate) {
-                    this.setValue(key.evaluateValue(message[1]));
+                    this.setValue(value);
                 }
-                return true;
+                return {
+                    name: this.getDisplayName(),
+                    value: value
+                }
             }
 
         } else {
             throw new Error("Invalid key type: " + (typeof key));
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -206,59 +225,72 @@ class VirtualKemperParameter {
      * Send a single parameter (numeric or string)
      */
     send() {
-        if (!this.options.keys.send) return;
+        const key = this.options.keys.send;
+        if (!key) return;
 
-        if (this.options.keys.send instanceof NRPNKey) {
+        if (key instanceof NRPNKey) {
             const msg = [240, 0, 32, 51, 0, 0, this.returnFunctionCode, 0].concat(
-                Array.from(this.options.keys.send.data),
-                this.options.keys.send.encodeValue(this.value),
+                Array.from(key.data),
+                key.encodeValue(this.value),
                 [247]
             );
             
             this.client.queueMessage(msg, this.getDisplayName());
             this.#debugParam("send: (raw: " + this.value + ")" + msg);
         
-        } else if (this.options.keys.send instanceof CCKey) {
-            const msg = [176, this.options.keys.send.control, this.options.keys.send.encodeValue(this.value)]
+        } else if (key instanceof CCKey) {
+            const msg = [176, key.control, key.encodeValue(this.value)]
             
             this.client.queueMessage(msg, this.getDisplayName());
             this.#debugParam("send: (raw: " + this.value + ")" + msg);
 
-        } else if (this.options.keys.send instanceof PCKey) {
-            const msg = [192, this.options.keys.send.encodeValue(this.value)]
+        } else if (key instanceof PCKey) {
+            const msg = [192, key.encodeValue(this.value)]
             
             this.client.queueMessage(msg, this.getDisplayName());
             this.#debugParam("send: (raw: " + this.value + ")" + msg);
 
         } else {
-            throw new Error("Invalid key type: " + (typeof this.options.keys.send));
+            throw new Error("Invalid key type: " + (typeof key));
         }
     }
 
     /**
-     * Returns if the message is matching the send message of this parameter
+     * Returns if the message is matching the send message of this parameter.
+     * 
+     * Returns the same props object as parse(), or null.
      */
     parseSendMessage(message) {
-        if (!this.options.keys.send) return false;
+        const key = this.options.keys.send;
+        if (!key) return false;
 
         let msg = null;
-        if (this.options.keys.send instanceof NRPNKey) {
+        let value = null;
+        if (key instanceof NRPNKey) {
             msg = [240, 0, 32, 51, 0, 0, this.returnFunctionCode, 0].concat(
-                Array.from(this.options.keys.send.data)
+                Array.from(key.data)
             );
+            value = key.evaluateValue(message.slice(8 + key.data.length, -1), this.valueType);
         
-        } else if (this.options.keys.send instanceof CCKey) {
-            msg = [176, this.options.keys.send.control]
+        } else if (key instanceof CCKey) {
+            msg = [176, key.control]
+            value = key.evaluateValue(message[2]);
 
-        } else if (this.options.keys.send instanceof PCKey) {
+        } else if (key instanceof PCKey) {
             msg = [192]
+            value = key.evaluateValue(message[1]);
 
         } else {
-            throw new Error("Invalid key type: " + (typeof this.options.keys.send));
+            throw new Error("Invalid key type: " + (typeof key.send));
         }
 
-        if (!msg) return false;        
-        return Tools.compareArrays(msg, message.slice(0, msg.length));
+        // See if the message fits
+        if (!Tools.compareArrays(msg, message.slice(0, msg.length))) return null;
+        
+        return {
+            name: this.getDisplayName(),
+            value: value
+        }
     }
 
     /**

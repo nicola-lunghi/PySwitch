@@ -153,18 +153,6 @@
                 "importPath": "pyswitch.clients.kemper.mappings.cabinet"
             },
             {
-                "name": "MAPPING_SLOT_NAME",
-                "parameters": [
-                    {
-                        "name": "slot",
-                        "default": null,
-                        "comment": null
-                    }
-                ],
-                "comment": "Slot Name. Slot must be in range [1..5]",
-                "importPath": "pyswitch.clients.kemper.mappings.slot_name"
-            },
-            {
                 "name": "MAPPING_FREEZE",
                 "parameters": [
                     {

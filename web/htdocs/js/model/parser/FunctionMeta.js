@@ -42,6 +42,7 @@ class FunctionMeta {
             case "HID_KEYBOARD": return this.#getDisplayNameHidKeyboardShort(actionCallProxy);
             case "ENCODER_BUTTON": return this.#getDisplayNameEncoderButtonShort(actionCallProxy);
             case "PARAMETER_UP_DOWN": return this.#getDisplayNameChangeParam(actionCallProxy);
+            case "CUSTOM_MESSAGE": return this.#getDisplayNameCustomMessage(actionCallProxy);
         }
         return this.underscoreToDisplayName(this.functionDefinition.name);
     }
@@ -51,13 +52,15 @@ class FunctionMeta {
      */
     async getSortString() {
         if (this.functionDefinition.name.startsWith("PagerAction")) return "ZZZZZ_100_" + this.functionDefinition.name;
+
         if (this.functionDefinition.name == "BINARY_SWITCH")        return "ZZZZZ_010";
+        if (this.functionDefinition.name == "EncoderAction")        return "ZZZZZ_010";
+        if (this.functionDefinition.name == "AnalogAction")         return "ZZZZZ_010";
+
         if (this.functionDefinition.name == "PARAMETER_UP_DOWN")    return "ZZZZZ_020";
         if (this.functionDefinition.name == "HID_KEYBOARD")         return "ZZZZZ_040";
         if (this.functionDefinition.name == "ENCODER_BUTTON")       return "ZZZZZ_050";
-
-        if (this.functionDefinition.name == "EncoderAction")        return "ZZZZZ_010";
-        if (this.functionDefinition.name == "AnalogAction")         return "ZZZZZ_010";
+        if (this.functionDefinition.name == "CUSTOM_MESSAGE")       return "ZZZZZ_100";
         
         return this.functionDefinition.name;
     }
@@ -188,6 +191,18 @@ class FunctionMeta {
         }
 
         return "Parameter Up/Down";
+    }
+
+    #getDisplayNameCustomMessage(actionCallProxy = null) {
+        if (!actionCallProxy) return "Custom MIDI Message";
+
+        // const message = this.getArgument(actionCallProxy, "message");
+
+        // if (!(message == null || message.value == "None")) {
+            
+        // }
+
+        return "Custom MIDI Message";
     }
 
     #getDisplayNameHidKeyboard(actionCallProxy = null) {

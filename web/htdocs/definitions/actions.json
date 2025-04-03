@@ -1310,6 +1310,58 @@
                 "importPath": "pyswitch.clients.local.actions.encoder_button"
             },
             {
+                "name": "CUSTOM_MESSAGE",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "default": null,
+                        "comment": "Raw MIDI message bytes (as list, for example [176, 80, 0] for a control change)"
+                    },
+                    {
+                        "name": "message_release",
+                        "default": "None",
+                        "comment": "Raw MIDI message to be sent on releasing the button"
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.WHITE",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness",
+                        "default": "0.15",
+                        "comment": "LED brighness in range [0..1]"
+                    },
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    }
+                ],
+                "comment": "Send a custom, arbitrary MIDI message.",
+                "importPath": "pyswitch.clients.local.actions.custom"
+            },
+            {
                 "name": "PARAMETER_UP_DOWN",
                 "parameters": [
                     {
