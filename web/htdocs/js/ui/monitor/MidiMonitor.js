@@ -145,6 +145,11 @@ class MidiMonitor extends Tab {
         this.#updateExcludeDisplay();
     }
 
+    deactivate() {
+        super.deactivate();
+        this.#stop();
+    }
+
     /**
      * Rebuilds the exclude messages display
      */
