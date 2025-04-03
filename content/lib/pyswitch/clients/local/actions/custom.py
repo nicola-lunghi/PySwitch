@@ -4,7 +4,9 @@ from ....colors import Colors
 from adafruit_midi.midi_message import MIDIMessage
 
 # Sends a raw, arbitrary MIDI message.
-def CUSTOM_MESSAGE(message,                 # Raw MIDI message bytes (as list, for example [176, 80, 0] for a control change)
+# 
+# The messages have to be raw bytes, so don't forget to also add the status and (in case of SysEx) closing bytes!
+def CUSTOM_MESSAGE(message,                 # Raw MIDI message bytes (as list, for example [176, 80, 0] for a control change). You can use hex values in format 0xab, too.
                    message_release = None,  # Raw MIDI message to be sent on releasing the button (default: None)
                    text = "",
                    color = Colors.WHITE,

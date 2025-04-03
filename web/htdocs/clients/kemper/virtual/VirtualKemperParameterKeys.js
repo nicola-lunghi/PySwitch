@@ -121,11 +121,7 @@ class NRPNKey extends ParameterKey {
                 return data[0] * 128 + data[1];
 
             case "string":
-                let ret = "";
-                for (const c of data) {
-                    ret += String.fromCharCode(c);
-                }
-                return ret;
+                return Tools.data2string(data);
 
             default:
                 throw new Error("Invalid value type: " + valueType);

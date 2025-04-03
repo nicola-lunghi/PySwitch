@@ -6,7 +6,7 @@
     
     - Added Parameter Up/Down action: This can for example be used to lower/raise the value of a parameter by a given offset. (Also for this there are several value display possibilities). This can replace missing expression pedals :) I personally use it for changing the Reverb Mix on the fly without sacrificing my Volume Pedal. See the "Parameter Up Down" example for the Nano 4 for demonstration.
 
-    - Added a custom MIDI message action. This (for now) just sends any arbitrary byte sequence set to the message parameter. Especially useful when exploring the MIDI specification of devices like the Kemper, in conjunction with the new MIDI monitor (see Emulator changes).
+    - Added a custom MIDI message action. This (for now) just sends a single arbitrary byte sequence, set by the message parameter. Especially useful when exploring the MIDI specification of devices like the Kemper, in conjunction with the new MIDI monitor (see Emulator changes).
 
 - Optimizations:
     - Modularized colors out of misc.py (some RAM gain). This import path for color stuff has changed to "pyswitch.colors", if you use that in your config somewhere, it has to be adjusted. All examples are already adapted.

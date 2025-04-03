@@ -252,10 +252,20 @@ class VirtualKemperClient extends VirtualClient {
                 const fcode = message[6];
 
                 const data = message.slice(8, -1)
+                let value = data
     
+                if (data.length == 2) {
+                    // Most likely a number parameter
+                    value = 128 * data[0] + data[1]
+                }
+                else if (data.length > 2) {
+                    // Try as string
+                    value = Tools.data2string(data);
+                }
+
                 return {
                     name: "NRPN Function " + fcode,
-                    value: data
+                    value: value
                 }    
             } else {
                 return {

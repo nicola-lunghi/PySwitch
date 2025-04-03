@@ -98,4 +98,15 @@ class Tools {
 
         return el;
     }
+
+    /**
+     * Converts a list of ord numbers to a string
+     */
+    static data2string(data) {
+        let ret = "";
+        for (const c of data) {
+            ret += String.fromCharCode(c);
+        }
+        return ret;
+    }    
 }
