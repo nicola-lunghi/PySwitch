@@ -5,7 +5,6 @@ from ....misc import get_option
 from ....colors import Colors, dim_color
 
 from ..mappings.select import MAPPING_RIG_SELECT, MAPPING_BANK_AND_RIG_SELECT
-# from ..mappings.slot_name import MAPPING_SLOT_NAME
 
 # Display text modes for RIG_SELECT (only regarded if a display is attached to the action)
 RIG_SELECT_DISPLAY_CURRENT_RIG = 10  # Show current rig ID (for example 2-1 for bank 2 rig 1)
@@ -115,9 +114,6 @@ class KemperRigSelectCallback(BinaryParameterCallback):
 
         self.__last_blink_state = None
 
-        # self.__mapping_slot_name = MAPPING_SLOT_NAME(rig)
-        # self.register_mapping(self.__mapping_slot_name)
-
     def init(self, appl, listener = None):
         super().init(appl, listener)
 
@@ -132,7 +128,6 @@ class KemperRigSelectCallback(BinaryParameterCallback):
             set_mapping = self.__mapping
             value = self._value_enable
 
-            # if self.__rig_btn_morph and self.__rig_off == None and self.__bank_off == None:
             self.__appl.shared["morphStateOverride"] = 0
         else:
             if self.action.state:
@@ -178,8 +173,6 @@ class KemperRigSelectCallback(BinaryParameterCallback):
 
 
     def update_displays(self):
-        # print(self.__mapping_slot_name.value)
-
         if self.__mapping.value == None:
             if self.action.label:
                 self.action.label.text = ""

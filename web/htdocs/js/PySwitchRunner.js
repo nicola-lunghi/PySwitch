@@ -191,7 +191,6 @@ class PySwitchRunner {
             this.#loadModule("pyswitch/clients/kemper/mappings/rig.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/mappings/rotary.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/mappings/select.py", circuitpyPath),
-            this.#loadModule("pyswitch/clients/kemper/mappings/slot_name.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/mappings/tempo.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/mappings/tempo_bpm.py", circuitpyPath),
             
