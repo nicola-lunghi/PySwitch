@@ -18,6 +18,7 @@
     - Changed the internal interface of the action callbacks a bit. If you defined your own callbacks: The action parameter is removed from most methods, replace this with "self.action" if you need it. This saves some (minor but still) RAM again. No other changes to the config files.
     - Optimized Pager (in terms of RAM, no functional changes)
     - Renamed mapping MAPPING_DELAY_MIX to MAPPING_DLY_REV_MIX (config needs to be changed only if you have this mapping adressed in the "Other" action or by code)
+    - Cosmetical: Reset all LEDs before processing (this way, unused LEDs are not randomly lit anymore)
 
 ### Emulator 2.4.2.9
     - Added a MIDI Traffic Monitor, showing all MIDI messages sent and received by the PySwitch emulator.
