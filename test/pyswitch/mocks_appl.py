@@ -49,12 +49,18 @@ class MockPeriodCounter():
 
 
 class MockNeoPixelDriver:
+    class LedList(list):
+        def fill(self, color):
+            pass
+
     def __init__(self):
         self.leds = None
         
     def init(self, num_leds):
-        self.leds = [None for i in range(num_leds)]
-
+        self.leds = self.LedList()
+        for i in range(num_leds):
+            self.leds.append(None)        
+        
 
 ##################################################################################################################################
 

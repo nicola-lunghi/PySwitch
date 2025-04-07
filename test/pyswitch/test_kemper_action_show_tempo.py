@@ -17,13 +17,13 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.controller.callbacks import Callback
     
     from .mocks_appl import *
     from .mocks_callback import *
 
     from lib.pyswitch.clients.kemper.actions.tempo import *
     from lib.pyswitch.clients.kemper.mappings.tempo import *
+    from lib.pyswitch.clients.kemper.mappings.tempo_bpm import *
     
 
 class TestKemperActionDefinitions(unittest.TestCase):
@@ -146,8 +146,6 @@ class TestKemperActionDefinitions(unittest.TestCase):
             "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
             "gc": MockGC()
         }):
-            from lib.pyswitch.clients.kemper.mappings.tempo_bpm import MAPPING_TEMPO_BPM
-
             action = SHOW_TEMPO(
                 display = display, 
                 color = (4, 6, 8), 
@@ -211,8 +209,6 @@ class TestKemperActionDefinitions(unittest.TestCase):
             "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
             "gc": MockGC()
         }):
-            from lib.pyswitch.clients.kemper.mappings.tempo_bpm import MAPPING_TEMPO_BPM
-
             display = DisplayLabel(
                 layout = {
                     "font": "foo",

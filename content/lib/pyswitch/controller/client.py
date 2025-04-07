@@ -174,6 +174,9 @@ class ClientParameterMapping:
     def result_finished(self):
         return True
     
+    # def __repr__(self):
+    #     return self.name
+    
 
 # Parser for two-part messages: The result value will be 128 * value1 + value2, 
 # notified when the second message arrives.

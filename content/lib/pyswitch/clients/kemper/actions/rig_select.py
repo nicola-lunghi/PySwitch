@@ -129,6 +129,8 @@ class KemperRigSelectCallback(BinaryParameterCallback):
             value = self._value_enable
 
             self.__appl.shared["morphStateOverride"] = 0
+            del self.__appl.shared["preselectedBank"]
+
         else:
             if self.action.state:
                 set_mapping = self.__mapping
@@ -209,10 +211,9 @@ class KemperRigSelectCallback(BinaryParameterCallback):
                 self.__bank_off = curr_bank + 1                    
                 self._value_disable[0] = curr_bank
 
-            if "preselectedBank" in self.__appl.shared:                
-                del self.__appl.shared["preselectedBank"]
+            # if "preselectedBank" in self.__appl.shared:                
+            #     del self.__appl.shared["preselectedBank"]
             
-
         if self.__bank != None:
             is_current = (curr_rig == (self.__rig - 1) and curr_bank == (self.__bank - 1))
         else:

@@ -16,7 +16,7 @@ class WrapNeoPixelDriver:
 
             led = document.getElementById(self.dom_namespace + "-led-" + str(key))
 
-            if not led:                
+            if not led:
                 print("Warning: LED " + str(key) + " not found in DOM")
                 return
             
@@ -39,6 +39,9 @@ class WrapNeoPixelDriver:
 
             led.style.backgroundColor = f"rgb({ value[0] }, { value[1] }, { value[2] })"
 
+        def fill(self, color):
+            for i in range(len(self)):
+                self[i] = color
 
     def __init__(self, dom_namespace):
         self.leds = None

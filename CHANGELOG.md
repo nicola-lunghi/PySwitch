@@ -8,6 +8,9 @@
 
     - Added a custom MIDI message action. This (for now) just sends a single arbitrary byte sequence, set by the message parameter. Especially useful when exploring the MIDI specification of devices like the Kemper, in conjunction with the new MIDI monitor (see Emulator changes).
 
+- Fixes:
+    - Bank Preselect: When you pre-select a bank, and then change the rig on the Kemper, the preselect stays valid in the Kemper. This behaviour (which is kind of unlogical) is now also reflected in PySwitch: You have to send a Rig Select message to end the preselection. This resembles the Kemper behaviour better.
+
 - Optimizations:
     - Modularized colors out of misc.py (some RAM gain). This import path for color stuff has changed to "pyswitch.colors", if you use that in your config somewhere, it has to be adjusted. All examples are already adapted.
     - Changed mapping names to fit better into the preview displays

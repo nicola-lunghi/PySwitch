@@ -161,14 +161,14 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         if self.__mapping.value != self.__current_value or self.action.state != self.__current_state:
             self.action.feedback_state(curr_bank == (self.__bank - 1))
                             
+            # if self.__mapping.value != self.__current_value and "preselectedBank" in self.__appl.shared:
+            #     del self.__appl.shared["preselectedBank"]
+
             self.__current_value = self.__mapping.value
             self.__current_state = self.action.state
 
-            # if "preselectedBank" in self.__appl.shared:
-            #     del self.__appl.shared["preselectedBank"]
-
         if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectedBank"] == self.__bank - 1:
-            is_current = self.__appl.shared["preselectBlinkState"] #self.__blink_state
+            is_current = self.__appl.shared["preselectBlinkState"]
         else:
             is_current = (curr_bank == (self.__bank - 1))
 

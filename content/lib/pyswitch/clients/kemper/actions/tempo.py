@@ -4,6 +4,7 @@ from ....clients.kemper import KemperMappings
 from ....colors import Colors
 
 from ..mappings.tempo import MAPPING_TAP_TEMPO, MAPPING_TEMPO_DISPLAY
+from ..mappings.tempo_bpm import MAPPING_TEMPO_BPM, convert_bpm
 
 # Tap tempo
 def TAP_TEMPO(display = None, 
@@ -74,9 +75,6 @@ class _KemperShowTempoCallback(Callback):
         self.register_mapping(self.__tuner_mapping)
 
         if resolve_bpm:
-            from ..mappings.tempo_bpm import MAPPING_TEMPO_BPM, convert_bpm
-
-            self.__convert_bpm = convert_bpm
             self.__bpm_mapping = MAPPING_TEMPO_BPM()
             self.register_mapping(self.__bpm_mapping)
         else:
@@ -87,6 +85,10 @@ class _KemperShowTempoCallback(Callback):
 
             self.__preview = ValuePreview.get(change_display)
             self.__change_timeout_millis = change_timeout_millis
+
+            # Also listen to rig changes to avoid display BPM after each rig change
+            self.__rig_id_mapping = KemperMappings.RIG_ID()
+            self.register_mapping(self.__rig_id_mapping)
         else:
             self.__preview = None
 
@@ -95,6 +97,7 @@ class _KemperShowTempoCallback(Callback):
         self._led_brightness = led_brightness
         self.__current_value = None
         self.__last_bpm = None
+        self.__last_rig = None
 
     def push(self):
         pass
@@ -109,14 +112,15 @@ class _KemperShowTempoCallback(Callback):
             self.__preview.update()
 
     def update_displays(self):
+        # Tuner mode: Do nothing
         if self.__tuner_mapping.value == 1:
             return
 
+        # LED blinking
         value = self.__tempo_mapping.value
         if value != None and value != self.__current_value:
             self.__current_value = value
 
-            # LED blinking
             self.action.switch_color = self._color
             self.action.switch_brightness = self._led_brightness if value > 0 else 0
 
@@ -124,17 +128,20 @@ class _KemperShowTempoCallback(Callback):
         text = None
         if self.__bpm_mapping and self.__bpm_mapping.value != None:
             if self.__bpm_mapping.value != self.__last_bpm:
-                val = self.__convert_bpm(self.__bpm_mapping.value)
-                text = self._text.replace('{bpm}', val)
+                bpm = convert_bpm(self.__bpm_mapping.value)
+                text = self._text.replace('{bpm}', bpm)
 
-                if self.__last_bpm != None:
-                    if self.__preview:
-                        self.__preview.preview(
-                            text = text, 
-                            timeout_millis = self.__change_timeout_millis
-                        )
+                # Show in preview display? Dont do this for the first value that comes in.
+                if self.__preview and self.__last_bpm != None and self.__rig_id_mapping.value == self.__last_rig:
+                    self.__preview.preview(
+                        text = text, 
+                        timeout_millis = self.__change_timeout_millis
+                    )
 
                 self.__last_bpm = self.__bpm_mapping.value
+
+                if self.__preview:
+                    self.__last_rig = self.__rig_id_mapping.value
 
         if self.action.label:
             self.action.label.back_color = self._color

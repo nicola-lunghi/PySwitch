@@ -6,6 +6,7 @@ from .. import NRPN_FUNCTION_SET_SINGLE_PARAMETER, NRPN_FUNCTION_REQUEST_SINGLE_
 _NRPN_ADDRESS_PAGE_RIG_PARAMETERS = const(0x04)
 _NRPN_PARAMETER_ID_BPM = 0x00
 
+
 # Tempo (BPM value)
 def MAPPING_TEMPO_BPM():
     return ClientParameterMapping.get(

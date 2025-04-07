@@ -19,9 +19,6 @@ with patch.dict(sys.modules, {
 }):
     from lib.pyswitch.clients.kemper import *
     
-    from lib.pyswitch.misc import Updater
-
-    from .mocks_appl import MockClient
     from lib.pyswitch.clients.kemper.mappings.select import *
     from lib.pyswitch.clients.kemper.mappings.rotary import *
     from lib.pyswitch.clients.kemper.mappings.freeze import *

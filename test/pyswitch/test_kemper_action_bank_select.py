@@ -666,7 +666,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
             "mapping": MAPPING_BANK_SELECT(),
             "value": [1]
         })
-
+        
         self._check_blinking(
             action = action, 
             switch = switch_2, 
