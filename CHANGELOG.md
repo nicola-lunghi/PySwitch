@@ -1,3 +1,6 @@
+# PySwitch v2.4.3
+
+
 # PySwitch v2.4.2
 - Features:
     - Values in the Big Display Label:
