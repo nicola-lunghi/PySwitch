@@ -1,15 +1,25 @@
-from pyswitch.hardware.devices.pa_midicaptain_10 import *
-from pyswitch.clients.kemper import KemperEffectSlot
-from pyswitch.controller.actions import PushButtonAction
-from display import DISPLAY_FOOTER_1, DISPLAY_FOOTER_2, DISPLAY_HEADER_1, DISPLAY_HEADER_2
-from pyswitch.clients.kemper.actions.effect_state import KemperEffectEnableCallback
-from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP, BANK_DOWN
-from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT, RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG
+from pyswitch.clients.kemper.actions.rig_transpose import ENCODER_RIG_TRANSPOSE
+from pyswitch.clients.kemper.actions.bank_up_down import BANK_UP
+from pyswitch.clients.kemper.actions.bank_up_down import BANK_DOWN
+from pyswitch.clients.kemper.actions.effect_state_extended_names import EFFECT_STATE_EXT
+from pyswitch.clients.kemper.actions.rig_select_and_morph_state import RIG_SELECT_AND_MORPH_STATE
+from pyswitch.clients.kemper.actions.rig_select import RIG_SELECT
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
+from pyswitch.clients.local.actions.encoder_button import ENCODER_BUTTON
+from pyswitch.colors import Colors
+from pyswitch.controller.actions import PushButtonAction
+from pyswitch.clients.kemper import KemperEffectSlot
+from display import DISPLAY_HEADER_1
+from display import DISPLAY_HEADER_2
+from display import DISPLAY_FOOTER_1
+from display import DISPLAY_FOOTER_2
+from display import DISPLAY_RIG_NAME
+from pyswitch.hardware.devices.pa_midicaptain_10 import *
+from pyswitch.clients.kemper.actions.effect_state import KemperEffectEnableCallback
 
 # Current Bank/Rig display: Define a custom text callback for all RIG_SELECTs, to get rid of the "Rig " prefix of the original.
 def _text_callback(action, bank, rig):
-    return f"{bank + 1} - {rig + 1}"
+    return f"{bank + 1}-{rig + 1}"
 
 # Category names: Instead of using EFFECT_STATE, you can define the PushButtonAction manually, overriding the
 # callback to deliver different effect category names: First override the respective method:
@@ -32,136 +42,161 @@ def MY_EFFECT_STATE(slot_id, display = None):
         "useSwitchLeds": True
     })
 
+_accept = ENCODER_BUTTON()
+
+_cancel = ENCODER_BUTTON()
+
 
 Inputs = [
-    # Switch 1
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_1,
         "actions": [
-            MY_EFFECT_STATE(                                              # Use our own effect state action
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C,
+            EFFECT_STATE_EXT(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C, 
                 display = DISPLAY_HEADER_1
-            )                       
-        ]
+            ),
+            
+        ],
+        
     },
-
-
-    # Switch 2
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_2,
         "actions": [
-            MY_EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_X,
+            EFFECT_STATE_EXT(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_X, 
                 display = DISPLAY_HEADER_2
-            )
-        ]
+            ),
+            
+        ],
+        
     },
-
-
-    # Switch 3
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_3,
         "actions": [
-            MY_EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD,
+            EFFECT_STATE_EXT(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD, 
                 display = DISPLAY_FOOTER_1
-            )
-        ]
+            ),
+            
+        ],
+        
     },
-    
-    # Switch 4
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_4,
         "actions": [
-            BANK_DOWN()
-        ]
+            BANK_UP(
+                preselect = True, 
+                text = 'Bank up'
+            ),
+            
+        ],
+        "actionsHold": [],
+        
     },
-
-
-    # Switch up
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_UP,
         "actions": [
-            BANK_UP()
+            BANK_DOWN(
+                preselect = True, 
+                text = 'Bank dn'
+            ),
+            
         ],
         "actionsHold": [
-            TUNER_MODE()
+            TUNER_MODE(),
+            
         ],
-        #"holdTimeMillis": 9999999   # Uncomment this to disable the tuner action (you have to hold for veeery long to activate it)
+        
     },
-
-    #####################################################################
-
-    # Switch A
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_A,
         "actions": [
-            RIG_SELECT(
-                rig = 1,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-            )
+            RIG_SELECT_AND_MORPH_STATE(
+                rig = 1, 
+                rig_btn_morph = True
+            ),
+            
         ],
-
-        # This action is disabled by setting the hold time to a very high value, and just serves as "driver" for DISPLAY_FOOTER_2
         "actionsHold": [
             RIG_SELECT(
-                rig = 1,
-                display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG,   # Use CURRENT instead of TARGET makes the RIG_SELECT action show the current 
-                                                                 # bank/rig ind bank color. This makes no difference to the LEDs as the target bank
-                                                                 # always is the current bank.
-
-                display = DISPLAY_FOOTER_2,                      # This action will control FOOTER_2
-                text_callback = _text_callback                   # Pass our own text formatter function
-            )
+                rig = 1, 
+                display = DISPLAY_FOOTER_2, 
+                use_leds = False, 
+                color = Colors.WHITE, 
+                text_callback = _text_callback
+            ),
+            
         ],
-        "holdTimeMillis": 9999999
+        "holdTimeMillis": 9999999,
+        
     },
-
-
-    # Switch B
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_B,
         "actions": [
-            RIG_SELECT(
-                rig = 2,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-            )
-        ]
+            RIG_SELECT_AND_MORPH_STATE(
+                rig = 2, 
+                rig_btn_morph = True
+            ),
+            
+        ],
+        
     },
-
-
-    # Switch C
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_C,
         "actions": [
-            RIG_SELECT(
-                rig = 3,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-            )
-        ]
+            RIG_SELECT_AND_MORPH_STATE(
+                rig = 3, 
+                rig_btn_morph = True
+            ),
+            
+        ],
+        
     },
-
-
-    # Switch D
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_D,
         "actions": [
-            RIG_SELECT(
-                rig = 4,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-            )
-        ]
+            RIG_SELECT_AND_MORPH_STATE(
+                rig = 4, 
+                rig_btn_morph = True
+            ),
+            
+        ],
+        
     },
-
-
-    # Switch down
     {
         "assignment": PA_MIDICAPTAIN_10_SWITCH_DOWN,
         "actions": [
-            RIG_SELECT(
-                rig = 5,
-                display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-	    )
-        ]
-    }
+            RIG_SELECT_AND_MORPH_STATE(
+                rig = 5, 
+                rig_btn_morph = True
+            ),
+            
+        ],
+        
+    },
+    {
+        "assignment": PA_MIDICAPTAIN_10_WHEEL_BUTTON,
+        "actions": [
+            _accept,
+            
+        ],
+        "actionsHold": [
+            _cancel,
+            
+        ],
+        
+    },
+    {
+        "assignment": PA_MIDICAPTAIN_10_WHEEL_ENCODER,
+        "actions": [
+            ENCODER_RIG_TRANSPOSE(
+                accept_action = _accept, 
+                cancel_action = _cancel, 
+                preview_display = DISPLAY_RIG_NAME
+            ),
+            
+        ],
+        
+    },
+    
 ]

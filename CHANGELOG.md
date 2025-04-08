@@ -9,6 +9,7 @@
     - Added a custom MIDI message action. This (for now) just sends a single arbitrary byte sequence, set by the message parameter. Especially useful when exploring the MIDI specification of devices like the Kemper, in conjunction with the new MIDI monitor (see Emulator changes).
 
     - Added mapping for global rig transpose, as well as a dedicated whell encoder action showing the correct values
+    - Added all fonts from the original firmware (they dont take up RAM if not loaded, but now they are all available)
 
 - Fixes:
     - Bank Preselect: When you pre-select a bank, and then change the rig on the Kemper, the preselect stays valid in the Kemper. This behaviour (which is kind of unlogical) is now also reflected in PySwitch: You have to send a Rig Select message to end the preselection. This resembles the Kemper behaviour better.
