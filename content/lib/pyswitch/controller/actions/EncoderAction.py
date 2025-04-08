@@ -8,6 +8,7 @@ class EncoderAction(Updateable):
     # not addressed here: This is represented as a separate switch, and can be linked to the same actions as a normal foot switch.
     def __init__(self, 
                  mapping,                           # Parameter mapping to be controlled
+                 min_value = 0,                     # Minimum value of the mapping
                  max_value = None,                  # Maximum value of the mapping (set to None for auto-detect: 16383 for NRPN, 127 for CC)
                  step_width = None,                 # Increment/Decrement for one encoder step. Set to None for auto-detect (NRPN: 80, CC: 1)
                  enable_callback = None,            # Callback to set enabled state (optional). Must contain an enabled(action) function.
@@ -39,6 +40,7 @@ class EncoderAction(Updateable):
 
         self.id = id
         self.__mapping = mapping
+        self.__min_value = min_value
         self.__max_value = max_value
         self.__step_width = step_width
 
@@ -117,8 +119,8 @@ class EncoderAction(Updateable):
         else:
             v = self.__last_value + add_value
 
-        if v < 0:
-            v = 0
+        if v < self.__min_value:
+            v = self.__min_value
         if v > self.__max_value:
             v = self.__max_value
 

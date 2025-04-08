@@ -28,6 +28,7 @@ class KemperFunctionMeta extends FunctionMeta {
             case "EFFECT_STATE_EXT": return this.#getDisplayNameEffectStateExt(actionCallProxy);
             case "LOOPER_REC_PLAY_OVERDUB": return "Looper Rec|Play|OD";
             case "ENCODER_BPM": return "Tempo (BPM)";
+            case "ENCODER_RIG_TRANSPOSE": return "Rig Transpose";
         }
         
         return super.getShortDisplayName(actionCallProxy);

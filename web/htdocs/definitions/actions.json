@@ -55,6 +55,48 @@
                 "importPath": "pyswitch.clients.kemper.actions.rig_volume_boost"
             },
             {
+                "name": "ENCODER_RIG_TRANSPOSE",
+                "parameters": [
+                    {
+                        "name": "accept_action",
+                        "default": "None",
+                        "comment": "Action to acknowledge the entered value. If None, the encoder directly sets values as you turn it. \nIf you pass an Encoder Button action, the value will just be displayed and the MIDI command to set \nit will be sent when the Button action is triggered.\n\nIf you use this, you will also need a preview display label (see below)"
+                    },
+                    {
+                        "name": "cancel_action",
+                        "default": "None",
+                        "comment": "Action to cancel a preselection (only makes sense with accept_action set). Must be of type Encoder Button, too."
+                    },
+                    {
+                        "name": "preview_display",
+                        "default": "None",
+                        "comment": "If assigned, the adjusted value will be displayed in the passed DisplayLabel when the encoder is adjusted. \n\nThis just makes sense in conjunction with an accept action (see above)."
+                    },
+                    {
+                        "name": "preview_blink_color",
+                        "default": "(200, 200, 200)",
+                        "comment": "Alternative color to be used when blinking."
+                    },
+                    {
+                        "name": "preview_timeout_millis",
+                        "default": "1500",
+                        "comment": "This is the amount of time (milliseconds) after which the \npreview display will return to its normal state."
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "None",
+                        "comment": null
+                    }
+                ],
+                "comment": "Adjusts the global rig transpose value.",
+                "importPath": "pyswitch.clients.kemper.actions.rig_transpose"
+            },
+            {
                 "name": "AMP_GAIN",
                 "parameters": [
                     {
@@ -1629,6 +1671,11 @@
                         "name": "mapping",
                         "default": null,
                         "comment": "Parameter mapping to be controlled"
+                    },
+                    {
+                        "name": "min_value",
+                        "default": "0",
+                        "comment": "Minimum value of the mapping"
                     },
                     {
                         "name": "max_value",

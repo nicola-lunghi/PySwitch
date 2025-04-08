@@ -174,6 +174,7 @@ class PySwitchRunner {
             this.#loadModule("pyswitch/clients/kemper/actions/rig_select.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/actions/rig_up_down.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/actions/rig_volume_boost.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/rig_transpose.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/actions/tempo.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/actions/tempo_bpm.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/actions/tuner.py", circuitpyPath),

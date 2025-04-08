@@ -128,6 +128,7 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Morph", MAPPING_MORPH_PEDAL().name)
 
         self.assertIn("RigVol", MAPPING_RIG_VOLUME().name)
+        self.assertIn("RigTrans", MAPPING_RIG_TRANSPOSE().name)
 
         self.assertIn("Amp Name", MAPPING_AMP_NAME().name)
         self.assertIn("Amp State", MAPPING_AMP_STATE().name)

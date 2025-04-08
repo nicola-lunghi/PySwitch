@@ -9,7 +9,7 @@ class AdafruitPotentiometer:
         self.__input = None
 
     # Initializes the input to the GPIO port
-    def init(self):        
+    def init(self):
         self.__input = _AnalogIn(self.port)
 
     # # Representational string for debug output (optional)

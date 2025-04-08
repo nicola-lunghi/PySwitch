@@ -613,6 +613,13 @@
             },
 
             {
+                "entityName": "ENCODER_RIG_TRANSPOSE",
+                "category": "other",
+                "target": "AdafruitEncoder",
+                "parameters": []
+            },
+
+            {
                 "entityName": "AMP_GAIN",
                 "category": "amp",
                 "target": "AdafruitEncoder",

@@ -69,6 +69,12 @@
                 "importPath": "pyswitch.clients.kemper.mappings.rig"
             },
             {
+                "name": "MAPPING_RIG_TRANSPOSE",
+                "parameters": [],
+                "comment": "Rig transpose",
+                "importPath": "pyswitch.clients.kemper.mappings.rig"
+            },
+            {
                 "name": "MAPPING_LOOPER_REC_PLAY_OVERDUB",
                 "parameters": [],
                 "comment": null,

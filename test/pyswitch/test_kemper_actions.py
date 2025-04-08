@@ -32,6 +32,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.actions.looper import *
     from lib.pyswitch.clients.kemper.actions.rig_volume_boost import *
     from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
+    from lib.pyswitch.clients.kemper.actions.rig_transpose import *
     from lib.pyswitch.clients.kemper.actions.tempo_bpm import *
 
     from lib.pyswitch.clients.kemper.mappings.tempo_bpm import *
@@ -609,7 +610,70 @@ class TestKemperActionDefinitions(unittest.TestCase):
         action.update()
 
         self.assertEqual(display.text, "131 bpm")
+
+
+    def test_rig_transpose(self):
+        display = DisplayLabel(layout = {
+            "font": "foo"
+        })
+
+        ecb = MockEnabledCallback()
+
+        accept = ENCODER_BUTTON()
+        cancel = ENCODER_BUTTON()
+
+        action = ENCODER_RIG_TRANSPOSE(
+            accept_action = accept,
+            cancel_action = cancel,
+            preview_display = display,
+            preview_blink_color = (3, 4, 5),
+            preview_timeout_millis = 345,
+            id = 45, 
+            enable_callback = ecb
+        )
+
+        self.assertIsInstance(action, EncoderAction)
+
+        self.assertEqual(action._EncoderAction__mapping, MAPPING_RIG_TRANSPOSE())
+        self.assertEqual(action.id, 45)
+        self.assertEqual(action._EncoderAction__enable_callback, ecb)
+        self.assertEqual(action._EncoderAction__step_width, 1)
+        self.assertEqual(action._EncoderAction__preselect, True)
+        self.assertEqual(action._EncoderAction__preview.label, display)
         
+        appl = MockController()
+        action.init(appl)
+
+        switch = MockSwitch()
+        accept.init(appl, switch)
+        cancel.init(appl, switch)
+
+        action.process(0)
+        action.process(28)
+        action.update()
+
+        self.assertEqual(display.text, "Transpose: -36")
+        
+        action.process(64)
+        action.update()
+
+        self.assertEqual(display.text, "Transpose: 0")
+
+        action.process(63)
+        action.update()
+
+        self.assertEqual(display.text, "Transpose: -1")
+
+        action.process(65)
+        action.update()
+
+        self.assertEqual(display.text, "Transpose: +1")
+
+        action.process(100)
+        action.update()
+
+        self.assertEqual(display.text, "Transpose: +36")
+
 
     def test_amp_gain(self):
         display = DisplayLabel(layout = {
