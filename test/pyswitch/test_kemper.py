@@ -32,6 +32,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.mappings.cabinet import *
     from lib.pyswitch.clients.kemper.mappings.looper import *
     from lib.pyswitch.clients.kemper.mappings.pedals import *
+    from lib.pyswitch.clients.kemper.mappings.system import *
 
 
 class TestKemper(unittest.TestCase):
@@ -171,3 +172,7 @@ class TestKemper(unittest.TestCase):
         self.assertIn("RvMix", MAPPING_REVERB_MIX_PEDAL().name)
         self.assertIn("RvTime", MAPPING_REVERB_TIME_PEDAL().name)
         self.assertIn("OutVol", MAPPING_VOLUME_OUTPUT_PEDAL().name)
+
+        self.assertIn("MainVol", MAPPING_MAIN_VOLUME().name)
+        self.assertIn("MonVol", MAPPING_MONITOR_VOLUME().name)
+        self.assertIn("LoopVol", MAPPING_LOOPER_VOLUME().name)

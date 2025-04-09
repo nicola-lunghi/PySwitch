@@ -27,6 +27,24 @@
                 "importPath": "pyswitch.clients.kemper.mappings.effects"
             },
             {
+                "name": "MAPPING_MAIN_VOLUME",
+                "parameters": [],
+                "comment": "Main volume",
+                "importPath": "pyswitch.clients.kemper.mappings.system"
+            },
+            {
+                "name": "MAPPING_MONITOR_VOLUME",
+                "parameters": [],
+                "comment": "Monitor volume",
+                "importPath": "pyswitch.clients.kemper.mappings.system"
+            },
+            {
+                "name": "MAPPING_LOOPER_VOLUME",
+                "parameters": [],
+                "comment": "Looper volume",
+                "importPath": "pyswitch.clients.kemper.mappings.system"
+            },
+            {
                 "name": "MAPPING_AMP_NAME",
                 "parameters": [],
                 "comment": "Amp name (request only)",

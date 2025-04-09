@@ -15,7 +15,7 @@ from wrappers.wrap_time import *
 from wrappers.wrap_hid import *
 
 class PySwitchRunner:
-    def __init__(self, container_id, dom_namespace, update_interval_ms, coverage):
+    def __init__(self, container_id, dom_namespace, update_interval_ms, coverage, explore_mode = False):
         self.container_id = container_id
 
         self.dom_namespace = dom_namespace
@@ -26,7 +26,9 @@ class PySwitchRunner:
         self.triggerStop = False
 
         self.protocol = None
-        self.frontend = None        
+        self.frontend = None
+
+        self.explore_mode = explore_mode   
 
     # Set up a PySwitch controller and let it run
     def run(self):
@@ -42,6 +44,29 @@ class PySwitchRunner:
             cov = coverage.Coverage()
             cov.start()
 
+        if self.explore_mode:
+            self._init_explore_mode()
+        else:
+            self._init_default()
+
+        # Local callback for set_timeout
+        def tick():            
+            if not self.triggerStop:
+                set_timeout(tick, self.update_interval_ms)
+
+                self.tick()
+            else:
+                self.running = False
+
+        if self.running:
+            tick()
+
+        if self.coverage:
+            cov.stop()
+            cov.save()
+            # print(cov.get_data())
+
+    def _init_default(self):
         with patch.dict(sys.modules, {
             "micropython": MockMicropython,
             "gc": MockGC(),
@@ -125,23 +150,53 @@ class PySwitchRunner:
 
             # Prepare to run the processing loop
             self.controller.init()
-                
-        # Local callback for set_timeout
-        def tick():            
-            if not self.triggerStop:
-                set_timeout(tick, self.update_interval_ms)
 
-                self.tick()
-            else:
-                self.running = False
+    def _init_explore_mode(self):
+        with patch.dict(sys.modules, {
+            "micropython": MockMicropython,
+            "gc": MockGC(),
+            "board": WrapBoard,
+            "displayio": WrapDisplayIO(),
+            "adafruit_display_text": WrapAdafruitDisplayText(self.dom_namespace),
+            "adafruit_display_shapes.rect": WrapDisplayShapes().rect(),
+            "busio": MockBusIO(),
+            "adafruit_misc.adafruit_st7789": MockAdafruit_ST7789,
+            "adafruit_misc.neopixel": MockNeoPixel,
+            "adafruit_bitmap_font": MockAdafruitBitmapFont,
+            "fontio": MockFontIO(),
+            "digitalio": WrapDigitalIO(self.dom_namespace),
+            "time": WrapTime()
+        }):
+            self.display_driver = WrapDisplayDriver(
+                width = 240,
+                height = 240,
+                dom_namespace = self.dom_namespace
+            )
+            self.display_driver.init()
 
-        if self.running:
-            tick()
+            from pyswitch.controller.explore import ExploreModeController
+            from pyswitch.ui.UiController import UiController
+            from pyswitch.hardware.adafruit.AdafruitSwitch import AdafruitSwitch
+            
+            import board as _board
 
-        if self.coverage:
-            cov.stop()
-            cov.save()
-            # print(cov.get_data())
+            # Switch factory
+            class _SwitchFactory:
+                def create_switch(self, port):
+                    return AdafruitSwitch(port)
+
+            self.controller = ExploreModeController(
+                board = _board, 
+                switch_factory = _SwitchFactory(), 
+                led_driver = WrapNeoPixelDriver(self.dom_namespace),
+                ui = UiController(
+                    display_driver = self.display_driver,
+                    font_loader = WrapFontLoader(),
+                )
+            )
+
+            # Prepare to run the processing loop
+            self.controller.init()
 
     # One tick of the controller
     def tick(self):
@@ -158,7 +213,10 @@ class PySwitchRunner:
         
         self.display_driver.update()
 
-        externalRefs.protocolState = self.protocol.state
+        if self.explore_mode:
+            externalRefs.protocolState = 20
+        else:
+            externalRefs.protocolState = self.protocol.state
 
     # Stop execution of the set_timeout handler by just not renewing it
     def stop(self):        

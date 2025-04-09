@@ -1,5 +1,13 @@
 # PySwitch v2.4.3
+- Features:
+    - Added mappings for some system parameters (can be used with the wheel encoder, pedals or the "Other Parameter" Actions):
+        - Main volume
+        - Monitor volume
+        - Looper volume
 
+### Emulator 2.4.3.10
+- Fixes:
+    - Sorting of mappings in the select dropdowns
 
 # PySwitch v2.4.2
 - Features:

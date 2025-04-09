@@ -170,7 +170,8 @@ class ParameterMeta {
                 ret = ret.concat(await getMappingVariants(mapping))
             }
         }
-        return ret;
+
+        return ret.sort((a, b) => (a.name > b.name) ? 1 : -1);
     }
 
     /**

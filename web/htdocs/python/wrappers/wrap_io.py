@@ -43,7 +43,8 @@ class WrapDigitalIO:
             self.element = document.getElementById(WrapDigitalIO.dom_namespace + "-switch-gp" + str(port))
 
             if not self.element:
-                print("Warning: Switch " + str(port) + " not found in DOM")
+                pass
+                #print("Warning: Switch " + str(port) + " not found in DOM")
 
         @property
         def value(self):

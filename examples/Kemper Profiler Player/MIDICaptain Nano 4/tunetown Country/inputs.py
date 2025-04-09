@@ -2,7 +2,9 @@ from pyswitch.clients.kemper.actions.tempo import TAP_TEMPO
 from pyswitch.clients.kemper.actions.tempo import SHOW_TEMPO
 from pyswitch.clients.kemper.actions.effect_state_extended_names import EFFECT_STATE_EXT
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
+from pyswitch.clients.local.actions.param_change import PARAMETER_UP_DOWN
 from pyswitch.clients.kemper import KemperEffectSlot
+from pyswitch.clients.kemper.mappings.effects import MAPPING_DLY_REV_MIX
 from display import DISPLAY_HEADER_1
 from display import DISPLAY_HEADER_2
 from display import DISPLAY_FOOTER_1
@@ -48,25 +50,45 @@ Inputs = [
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
+            PARAMETER_UP_DOWN(
+                mapping = MAPPING_DLY_REV_MIX(
+                    KemperEffectSlot.EFFECT_SLOT_ID_REV
+                ), 
+                offset = -256, 
+                change_display = DISPLAY_RIG_NAME, 
+                text = '{val}%'
+            ),
+            
+        ],
+        "actionsHold": [
             EFFECT_STATE_EXT(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B, 
                 display = DISPLAY_FOOTER_1
             ),
             
         ],
-        "actionsHold": [],
         
     },
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
+            PARAMETER_UP_DOWN(
+                mapping = MAPPING_DLY_REV_MIX(
+                    KemperEffectSlot.EFFECT_SLOT_ID_REV
+                ), 
+                offset = 256, 
+                change_display = DISPLAY_RIG_NAME, 
+                text = '{val}%'
+            ),
+            
+        ],
+        "actionsHold": [
             EFFECT_STATE_EXT(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD, 
                 display = DISPLAY_FOOTER_2
             ),
             
         ],
-        "actionsHold": [],
         
     },
     

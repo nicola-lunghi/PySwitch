@@ -178,7 +178,7 @@ class TestExploreMode(unittest.TestCase):
 
         self.assertEqual(label_0.back_color, Colors.RED)
         self.assertEqual(label_1.back_color, Colors.DARK_BLUE)
-        self.assertEqual(label_2.back_color, Colors.DARK_BLUE)
+        self.assertEqual(label_2.back_color, Colors.LIGHT_BLUE)
         
 
 ##################################################################################################

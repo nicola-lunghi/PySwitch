@@ -17,6 +17,7 @@ class PySwitchRunner {
      *      updateIntervalMillis: 10,        Tick interval in milliseconds. On CircuitPython, the program does as much ticks as it can (in a while True loop),
      *                                       which in a browser woult block all user interaction, so the ticks are triggered in intervals. Mandatory.
      *      coverage: False                  Measure coverage
+     *      exploreMode: False               Boot PySwitch into explore mode
      *      errorHandler: null               Optional error handler, providing a handle(exc) method
      *      messageHandler: null             Optional message handler, providing a message(msg, type) method
      * }
@@ -194,6 +195,7 @@ class PySwitchRunner {
             this.#loadModule("pyswitch/clients/kemper/mappings/select.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/mappings/tempo.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/mappings/tempo_bpm.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/system.py", circuitpyPath),
             
             this.#loadModule("pyswitch/clients/kemper/callbacks/__init__.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/callbacks/tempo_bpm.py", circuitpyPath),
@@ -354,7 +356,8 @@ class PySwitchRunner {
                 container_id = "` + this.#containerId + `", 
                 dom_namespace = "` + this.#options.domNamespace + `", 
                 update_interval_ms = "` + this.#options.updateIntervalMillis + `",
-                coverage = ` + (this.#options.coverage ? "True" : "False") + `
+                coverage = ` + (this.#options.coverage ? "True" : "False") + `,
+                explore_mode = ` + (this.#options.exploreMode ? "True" : "False") + `
             )
             runner.` + (dontTick ? 'init()' : 'run()') + `
             runner      # Returns the runner as a JS proxy

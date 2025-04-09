@@ -17,7 +17,7 @@ class WrapNeoPixelDriver:
             led = document.getElementById(self.dom_namespace + "-led-" + str(key))
 
             if not led:
-                print("Warning: LED " + str(key) + " not found in DOM")
+                #print("Warning: LED " + str(key) + " not found in DOM")
                 return
             
             # Store original value for testing

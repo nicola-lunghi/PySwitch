@@ -35,8 +35,9 @@ class ExploreAction(Action):
             self.appl.pixel_display.text = pixel_out
 
         if self.__label:
-            self.appl.reset_port_markers()
-            self.__label.back_color = Colors.RED
+            self.appl.set_latest_port_marker(self.__label)
+            # self.appl.reset_port_markers()
+            # self.__label.back_color = Colors.RED
             
     # Enlighten the next available switch LEDs and returns a report string.
     def __trigger_pixel_search(self):
@@ -84,6 +85,7 @@ class ExploreModeController(Updater):
                 pass
         
         self.client = FakeClient()
+        self.latest_marker = None
 
         # Get list of available ports
         available_ports = self.__get_available_ports()
@@ -100,6 +102,8 @@ class ExploreModeController(Updater):
             ports_assigned = self.__init_switches(available_ports)
 
             do_print(f"Explore mode: Assigned { repr(len(ports_assigned)) } ports")
+
+            self.reset_port_markers()
         else:
             # Try to initialize all available ports. This gets us the list of ports successfully assigned.
             ports_assigned = self.__init_switches(available_ports)
@@ -279,6 +283,16 @@ class ExploreModeController(Updater):
         for row in self.__ports_display_rows.children:
             for col in row.children:
                 col.back_color = Colors.DARK_BLUE
+
+    def set_latest_port_marker(self, label):
+        if self.latest_marker:
+            self.latest_marker.back_color = Colors.LIGHT_BLUE
+
+        for row in self.__ports_display_rows.children:
+            for col in row.children:
+                if label == col:
+                    self.latest_marker = col
+                    col.back_color = Colors.RED
 
     # Determine pixel addressing for a switch index, assuming they are linear
     def __calculate_pixels(self, index):

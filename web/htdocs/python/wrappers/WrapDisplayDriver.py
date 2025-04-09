@@ -52,6 +52,8 @@ class WrapDisplayDriver:
                  dom_namespace 
         ):
         self.tft = WrapTFT(width, height, dom_namespace)
+        self.width = width
+        self.height = height
         
     # Initialize the display
     def init(self):        

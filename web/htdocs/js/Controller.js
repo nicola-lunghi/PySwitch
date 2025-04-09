@@ -30,6 +30,8 @@ class Controller {
      * 
      *     updateIntervalMillis: 20,               Tick interval in milliseconds. On CircuitPython, the program does as much ticks as it can (in a while True loop),
      *                                             which in a browser woult block all user interaction, so the ticks are triggered in intervals. Optional, default is 20.
+     * 
+     *     exploreMode: False,                     Boot PySwitch into explore mode
      * }
      */
     constructor(options = {}) {
