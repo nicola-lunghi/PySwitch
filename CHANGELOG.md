@@ -5,6 +5,9 @@
         - Monitor volume
         - Looper volume
 
+- Minor improvements:
+    - Explore Mode: After a pin has been triggered, do never return it to dark blue but keep it light blue. This way no triggers will be missed if they are very short after each other.
+
 ### Emulator 2.4.3.10
 - Fixes:
     - Sorting of mappings in the select dropdowns
