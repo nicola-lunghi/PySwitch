@@ -7,6 +7,7 @@
 
 - Minor improvements:
     - Explore Mode: After a pin has been triggered, do never return it to dark blue but keep it light blue. This way no triggers will be missed if they are very short after each other.
+    - Added some undocumented effect type names for the "Effect State (extended)" action
 
 ### Emulator 2.4.3.10
 - Fixes:
