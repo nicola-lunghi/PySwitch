@@ -13,6 +13,9 @@
 - Fixes:
     - Sorting of mappings in the select dropdowns
 
+- Cosmetic improvements:
+    - Added a note to check versions when a python error is displayed (incl. link to older versions of the emulator)
+
 # PySwitch v2.4.2
 - Features:
     - Values in the Big Display Label:

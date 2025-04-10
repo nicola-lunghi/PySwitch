@@ -67,7 +67,7 @@ class Notifications {
 			msg = msgOrException;
 		}
 		
-		const msgEl = $('<div />').html(msg);
+		const msgEl = $('<div />');
 		const msgCont = $('<tr />').append($('<td />').append(msgEl));
 		let fadeTime = 0;
 		
@@ -80,6 +80,7 @@ class Notifications {
 			console.log(msg)
 			if (typeof msg == "string" && msg.includes("Traceback")) {
 				msgEl.addClass("message-traceback")
+				msg += "\n\n" + 'Please check if your PySwitch version matches ' + Controller.PYSWITCH_VERSION + '. If not, use the correct <a href="https://pyswitch.tunetown.de/versions" target="_blank">emulator version</a> for your controller.';
 			}
 
 			fadeTime = errorFadeTimeMs;   
@@ -106,6 +107,8 @@ class Notifications {
 			console.error(msgOrException);
 			break;
 		}
+
+		msgEl.html(msg);
 
 		// Click to remove
 		msgEl.click(function(event) {
