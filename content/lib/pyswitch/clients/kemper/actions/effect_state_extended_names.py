@@ -130,5 +130,13 @@ _EFFECT_TYPE_NAMES = {
     181: "Cirrus",
     182: "FormRev",
     183: "Sphere",
-    193: "Spring"
+    193: "Spring",
+
+    # Undocumented:
+    75: "Tremolo",
+    76: "HarmTrem",
+    77: "Pulse",
+    78: "Saw",
+    79: "PulsePan",
+    80: "SawPan"
 }

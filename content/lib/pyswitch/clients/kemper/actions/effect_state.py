@@ -154,6 +154,7 @@ class KemperEffectEnableCallback(EffectEnableCallback):
             return self.__text
         
         if self.__extended_type_names:
+            print(kpp_effect_type)
             if kpp_effect_type in self.__extended_type_names:
                 name = self.__extended_type_names[kpp_effect_type]
             else:
