@@ -1,12 +1,19 @@
 # PySwitch MIDI Controller Firmware
 
-This project provides an open source firmware for CircuitPy Microcontroller based MIDI controllers. It can control devices via MIDI based on a 
-generic configuration script. Features are:
+This project provides an open source firmware for CircuitPython Microcontroller based MIDI controllers. It can control devices via MIDI based on a 
+generic configuration script. 
 
-- Program (Foot)switches and expression pedals to send MIDI messages. Each switch or pedal can do any amount of actions. Programming is done by setup scripts, with lots of examples.
-- Establish a bidirectional communication with the client device to show the states correctly when changed on the client device (e.g. a Kemper Player). Implemented for the Kemper Profiler Player (all Levels), but can be adapted for the other Kemper devices or anything with similar protocol
-- Ready-to-go implementation for the Kemper Profiler Player (R), others (like Fractal / Line 6 Helix) can be added later.
-- Free MIDI routing capatbilities
+The project has been developed for controling Kemper Profilers, but the framework itself is generic, so it can be adapted for other devices easily.
+
+Features are:
+
+- Program (Foot)switches and expression pedals to send MIDI messages. Each switch or pedal can do any amount of actions. Programming is done by setup scripts or graphically using a MIDI enabled, web based configuration tool, with lots of examples.
+
+- Establishes a bidirectional communication to reflect the states correctly when changed on the Kemper. 
+
+- Compatible with the Kemper Profiler Head, Rack and Player (all Levels)
+
+- Free MIDI routing capatbilities for MIDI over USB and/or DIN
 
 ![Overview Image](https://github.com/user-attachments/assets/c48903b2-a5f7-4d78-b7eb-9fca98dbfbe0)
 
@@ -37,19 +44,17 @@ You can even control your actual Kemper from the browser to pre-test everything 
 
 ## Motivation
 
-The firmware has been developed to interface the PaintAudio MIDI Captain series of MIDI controller pedals to the Kemper Profiler Player, which can be controlled very deeply via MIDI. It is based on the great explorational work of @gstrotmann who did the hardware reverse engineering and provided the initial script this project is based on (https://github.com/gstrotmann/MidiCaptain4Kemper). 
+The firmware has been developed to interface the PaintAudio MIDI Captain series of MIDI controller pedals to the Kemper Profiler Player, which can be controlled very deeply via MIDI. It is based on the great explorational work of @gstrotmann who did a good part of hardware reverse engineering (https://github.com/gstrotmann/MidiCaptain4Kemper). 
 
 On the Kemper forums, the following thread is dedicated to the project:
 
 https://forum.kemper-amps.com/forum/thread/65206-pyswitch-an-alternative-customizable-firmware-for-paintaudio-midi-captain-contro/
 
-Before the dedicated thread has been started, all developemnt has been communicated in this thread:
+The manufacturer PaintAudio also provides a Kemper Player related firmware (<a href="https://cdn.shopify.com/s/files/1/0656/8312/8548/files/FW_MINI6_KPP_V3.51.zip?v=1711205983" target="_blank">PaintAudio firmware 3.5</a>) but this is hard wired all along and missing features. However, the open architecture of the controller also makes it possible to be more flexible.
 
-https://forum.kemper-amps.com/forum/thread/63569-custom-firmware-for-paintauido-midi-captain-mini-6/
+This project is developed generically, so it can basically be run on any board which runs CircuitPy, using the Adafruit libraries to run a TFT display and LEDs, to control basically any device which is controlled in a similar way as the Kemper devices and address any parameter or other information the controlled device provides. You just have to provide the apropriate adapter classes and mappings! 
 
-The manufacturer PaintAudio also provides a Kemper Player related firmware (<a href="https://cdn.shopify.com/s/files/1/0656/8312/8548/files/FW_MINI6_KPP_V3.51.zip?v=1711205983" target="_blank">PaintAudio firmware 3.5</a>) but this is hard wired all along, so it can only control few functions of the Player like enabling/disabling effect slots. 
-
-This project is developed generically, so it can basically be run on any board which runs CircuitPy, using the Adafruit libraries to run a TFT display and LEDs, to control basically any device which is controlled in a similar way as the Kemper devices (it can also be used to control all other Kemper Profiler products, however his has not been tested and might need slight changes in the pyswitch_kemper module) and address any parameter or other information the controlled device provides. You just have to provide the apropriate adapter classes and mappings!
+It would particularly be nice to add support for Line6 and FRactal devices, if anybody owning the one of them wants to be part of the project, we could implement that easily. Just reach me on the Kemper forum (see thread above).
 
 ## Startup Options
 
@@ -58,16 +63,16 @@ When the controller device is powered up with the pyswitch firmware installed, y
 
 ## Configuration Files
 
-The whole configuration is done in some files in the root directory (of the device drive). These are all python scripts and follow the corresponding syntax rules. 
+Most of the time you will configure PySwitch using the [Emulator](https://pyswitch.tunetown.de). Under the hood, the actual configuration is done in some files in the root directory (of the device drive). These are all python scripts and follow the corresponding syntax rules. 
 
-*Technical note: The pyswitch module does not import any of the files in the root folder directly. The code.py script (which is the CircuitPy entry point) loads all configuration by importing pyswitch/process.py*
-
-- **config.py**: Global configuration (MIDI channel, processing control, debug switches)
-- **inputs.py**: Defines which action(s) are triggered when a switch is pushed or an expression pedal is moved
+- **inputs.py**: Defines which action(s) are triggered when a switch is pushed or an expression pedal is moved.
 - **display.py**: Defines the layout of the TFT display and which data to show
-- **communication.py**: Defines the communication with the client, as well as generic MIDI routing between available MIDI ports
+- **config.py**: Global configuration (MIDI channel, processing control, debug switches). This is not edited by the emulator.
+- **communication.py**: Defines the communication with the client, as well as generic MIDI routing between available MIDI ports. This is not edited by the emulator.
 
 These files can make use of the objects contained in the **lib/pyswitch/clients/kemper** module which provide lots of mappings for the Kemper devices. This is currently only tested with the Profiler Player, but the MIDI specification is the same for most parts. Additional functionality for the Toaster/Stage versions can be added in kemper.py later if needed. Note that for using other devices than the Player you have to adjust the NRPN_PRODUCT_TYPE value accordingly (which should be the only necessary change). Contributors welcome!
+
+*Technical note: The pyswitch module does not import any of the files in the root folder directly. The code.py script (which is the CircuitPy entry point) loads all configuration by importing pyswitch/process.py*
 
 ### Global configuration
 
@@ -1138,6 +1143,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+## Trademarks
+
+Kemper, Kemper Profiler, Kemper Profiler Player are trademarks of Kemper GmbH (www.kemper-amps.com)
+Midi Captain, Midi Captain Nano 4, Midi Captain Mini 6 are trademarks of PaintAudio (www.paintaudio.com)
 
 ## Donate
 
