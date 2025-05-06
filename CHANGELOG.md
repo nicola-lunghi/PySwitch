@@ -8,6 +8,11 @@
 - Minor improvements:
     - Explore Mode: After a pin has been triggered, do never return it to dark blue but keep it light blue. This way no triggers will be missed if they are very short after each other.
     - Added some undocumented effect type names for the "Effect State (extended)" action
+    - Updated the "Expression Pedals and Wheel" example to use the newer wheel accept/cancel functions on the button
+
+- Bug Fixes:
+    - The LED lightup on boot caused crashes due to insufficient power from a toaster of one user on the forum (@seve), so it has been removed.
+    - Removed the Expression pedal assignment in the default preset
 
 ### Emulator 2.4.3.10
 - Fixes:

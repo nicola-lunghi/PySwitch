@@ -87,7 +87,6 @@ class Controller(Updater): #ClientRequestListener
             return ret
         
         self.led_driver.init(get_num_pixels(inputs))
-        #self.led_driver.leds.fill((90, 90, 90))
         
         # Periodic update handler (the client is only asked when a certain time has passed)
         self.period = period_counter
@@ -139,8 +138,6 @@ class Controller(Updater): #ClientRequestListener
             while True:
                 if not self.__midi.receive():
                     break
-
-        #self.led_driver.leds.fill((0, 0, 0))
 
     # Single tick in the processing loop. Must return True to keep the loop alive. Call this in an endless loop.
     def tick(self):
