@@ -13,6 +13,7 @@
 - Bug Fixes:
     - The LED lightup on boot caused crashes due to insufficient power from a toaster of one user on the forum (@seve), so it has been removed.
     - Removed the Expression pedal assignment in the default preset
+    - Parameter Up/Down action: This was interfering with the tuner mode LED control, causing the LEDs not to go dark when tuner mode is activated.
 
 ### Emulator 2.4.3.10
 - Fixes:

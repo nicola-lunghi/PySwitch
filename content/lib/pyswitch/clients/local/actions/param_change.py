@@ -79,11 +79,16 @@ class _ParameterChangeCallback(Callback):
 
         self.__repeat_period = PeriodCounter(repeat_interval_millis) if repeat_interval_millis else None
         self.__pushed = False
+
+        self.reset()
     
     def init(self, appl, listener = None):
         super().init(appl, listener)
 
         self.__appl = appl
+
+    def reset(self):
+        self.__last_value = -1
 
     def update(self):
         super().update()
@@ -120,6 +125,11 @@ class _ParameterChangeCallback(Callback):
         self.__pushed = False
 
     def update_displays(self):
+        if self._mapping.value == self.__last_value:
+            return
+        
+        self.__last_value = self._mapping.value
+
         dim_factor = (self._mapping.value / self._max_value) if self._mapping.value != None else 0
         if self._offset < 0:
             dim_factor = 1 - dim_factor
