@@ -3,8 +3,8 @@
  */
 class Controller {
 
-    static PYSWITCH_VERSION = "2.4.3";                           // Version of PySwitch this emulator is designed to run with
-    static VERSION = Controller.PYSWITCH_VERSION + ".10";        // PySwitch Emulator Version
+    static PYSWITCH_VERSION = "2.4.4";                           // Version of PySwitch this emulator is designed to run with
+    static VERSION = Controller.PYSWITCH_VERSION + ".11";        // PySwitch Emulator Version
 
     ui = null;                  // User Interface implementation
     routing = null;             // sammy.js router
@@ -136,6 +136,8 @@ class Controller {
         this.ui.reset();
 
         this.ui.resetDirtyState();
+
+        if (this.currentConfig) await this.currentConfig.destroy();
         this.currentConfig = null;
 
         // Initialize PySwitch (this starts Pyodide and copies all necessary sources to the Emscripten virtual file system)

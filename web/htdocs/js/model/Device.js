@@ -19,7 +19,8 @@ class Device {
             return new PaintAudioDevice('pa_midicaptain_10')
         }
         
-        throw new Error("Unknown device type");
+        // Default device type: MidiCaptain 10
+        return new PaintAudioDevice('pa_midicaptain_10');  //throw new Error("Unknown device type");
     }
 
     /**

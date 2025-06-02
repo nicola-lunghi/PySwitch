@@ -1,6 +1,15 @@
 # PySwitch v2.4.4
-- Bug Fix: Bank up/down LEDs are now reset correctly after exiting tuner mode (@MetalMauce)
+- Bug Fixes: 
+    - Bank up/down LEDs are now reset correctly after exiting tuner mode (@MetalMauce)
 
+### Emulator 2.4.4.11
+- Added support for opening folders on the local file system:
+    - "Open Directory..." lets you choose a folder containing your configuration (inputs.py and display.py)
+    - With CTRL-S you can save the currently loaded config to your file system (overwriting the loaded files)
+    - Changes made from external editors will immediately reload the emulator automatically, making it possible to work with external IDEs seamlessly
+    - "Save to Directory..." lets you save the current config to any local folder on your file system (you have to create the folder yourself)
+    
+    The feature is implemented using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API">File System API</a>, which must be supported to use the functionality. Also, you have to grant access to any folders you want to access.
 
 # PySwitch v2.4.3
 - Features:

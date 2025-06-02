@@ -45,10 +45,10 @@ class Upload {
 
                 for (const file of e.target.files) {
                     if (file.name == "inputs.py") {
-                        data.inputs_py = await that.#loadFile(file);
+                        data.inputs_py = await Tools.loadFile(file);
                     }
                     if (file.name == "display.py") {
-                        data.display_py = await that.#loadFile(file);
+                        data.display_py = await Tools.loadFile(file);
                     }
                 }
         
@@ -56,28 +56,4 @@ class Upload {
             }
         });
     }
-
-    /**
-     * Reads one file from the form input
-     */
-    async #loadFile(file) {
-		return new Promise((resolve, reject) => {
-    		var reader = new FileReader();
-
-    	    reader.onload = function(evt) {
-    	        try {
-    	    		resolve(evt.target.result);
-
-    	        } catch (e) {
-    	        	reject(e);
-    	        }    	        
-    	    }
-
-    	    reader.onerror = function(evt) {
-    	    	reject('Error reading ' + file.name);
-    	    }
-
-    	    reader.readAsText(file); 
-		});
-	}
 }

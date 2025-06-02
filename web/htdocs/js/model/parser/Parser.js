@@ -198,7 +198,10 @@ class Parser {
             return filteredArgs[0].value;
         }
 
-        const filtered = this.#trees.get("inputs_py").filter((inputData) => 
+        const inputs_py = this.#trees.get("inputs_py");
+        if (!inputs_py) return null;
+
+        const filtered = inputs_py.filter((inputData) => 
             getArgument(inputData, "assignment") == assignmentName
         );
 

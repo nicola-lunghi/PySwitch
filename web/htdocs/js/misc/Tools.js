@@ -12,6 +12,30 @@ class Tools {
     }
 
     /**
+     * Reads one File
+     */
+    static async loadFile(file) {
+		return new Promise((resolve, reject) => {
+    		var reader = new FileReader();
+
+    	    reader.onload = function(evt) {
+    	        try {
+    	    		resolve(evt.target.result);
+
+    	        } catch (e) {
+    	        	reject(e);
+    	        }    	        
+    	    }
+
+    	    reader.onerror = function(evt) {
+    	    	reject('Error reading ' + file.name);
+    	    }
+
+    	    reader.readAsText(file); 
+		});
+	}
+
+    /**
      * https://stackoverflow.com/questions/105034/how-do-i-create-a-guid-uuid
      */
     static uuid() {

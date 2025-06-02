@@ -7,8 +7,10 @@ class ConfigParserTests extends TestBase {
         await config.init(this.pyswitch, "../");
         const parser = config.parser;
 
-        await expectAsync(parser.input(1)).toBeRejected();
-        await expectAsync(parser.input(25)).toBeRejected();
+        expect(await parser.input(1)).toBe(null);
+        expect(await parser.input(25)).toBe(null);
+        // await expectAsync(parser.input(1)).toBeRejected();
+        // await expectAsync(parser.input(25)).toBeRejected();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////

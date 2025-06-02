@@ -86,6 +86,13 @@ class Routing {
                     new PresetConfiguration(that.#controller, decodeURI(id))
                 );
             })));
+
+            // Local folder
+            this.get('#localfolder', that.#queue.add(that.#executeRoute(async function() {
+                await that.#controller.loadConfiguration(
+                    new LocalFolderConfiguration(that.#controller)
+                );
+            })));
         });
 
         // Error handling

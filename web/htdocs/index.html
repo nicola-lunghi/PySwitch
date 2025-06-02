@@ -52,6 +52,14 @@
         window.downloadZip = downloadZip;
     </script>
 
+    <script type="module">
+        import { get, set } from "./lib/idb-keyval/idb-keyval.js"; 
+        window.idbKeyval = {
+            get: get,
+            set: set
+        }
+    </script>
+
     <!-- Application CSS -->
     <link rel="stylesheet" type="text/css" href="styles/general.css">
     <link rel="stylesheet" type="text/css" href="styles/tabs.css">
@@ -102,6 +110,7 @@
     <script type="text/javascript" src="js/model/configurations/ControllerConfiguration.js"></script>
     <script type="text/javascript" src="js/model/configurations/WebConfiguration.js"></script>
     <script type="text/javascript" src="js/model/configurations/PresetConfiguration.js"></script>
+    <script type="text/javascript" src="js/model/configurations/LocalFolderConfiguration.js"></script>
 
     <!-- Parser(s) -->
     <script type="text/javascript" src="js/model/parser/Parser.js"></script>
@@ -171,6 +180,9 @@
     <!-- Data providers for loading -->
     <script type="text/javascript" src="js/ui/examples/ExamplesProvider.js"></script>
     <script type="text/javascript" src="js/ui/examples/TemplatesProvider.js"></script>
+
+    <!-- Local Folder access -->
+    <script type="text/javascript" src="js/ui/localfolder/LocalFolderSelection.js"></script>
 
     <!-- Clients -->
     <script type="text/javascript" src="clients/ClientFactory.js"></script>

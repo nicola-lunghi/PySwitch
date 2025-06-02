@@ -16,6 +16,9 @@ class Configuration {
         this.#name = name;
     }
 
+    async destroy() {        
+    }
+
     /**
      * Init the parser
      */
