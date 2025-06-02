@@ -664,7 +664,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
             "mapping": MAPPING_BANK_SELECT(),
-            "value": [1]
+            "value": 1
         })
         
         self._check_blinking(
@@ -692,7 +692,7 @@ class TestKemperActionDefinitionsBankSelect(unittest.TestCase):
         self.assertEqual(len(appl.client.set_calls), 2)
         self.assertEqual(appl.client.set_calls[1], {
             "mapping": MAPPING_BANK_SELECT(),
-            "value": [1]
+            "value": 1
         })
 
         self._check_blinking(

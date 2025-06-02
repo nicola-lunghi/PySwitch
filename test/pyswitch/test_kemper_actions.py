@@ -589,7 +589,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         self.assertIsInstance(action, EncoderAction)
 
-        self.assertEqual(action._EncoderAction__mapping, MAPPING_TEMPO_BPM())
+        self.assertEqual(action._mapping, MAPPING_TEMPO_BPM())
         self.assertEqual(action.id, 45)
         self.assertEqual(action._EncoderAction__enable_callback, ecb)
         self.assertEqual(action._EncoderAction__step_width, 1)
@@ -634,7 +634,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         self.assertIsInstance(action, EncoderAction)
 
-        self.assertEqual(action._EncoderAction__mapping, MAPPING_RIG_TRANSPOSE())
+        self.assertEqual(action._mapping, MAPPING_RIG_TRANSPOSE())
         self.assertEqual(action.id, 45)
         self.assertEqual(action._EncoderAction__enable_callback, ecb)
         self.assertEqual(action._EncoderAction__step_width, 1)
@@ -698,7 +698,7 @@ class TestKemperActionDefinitions(unittest.TestCase):
 
         self.assertIsInstance(action, EncoderAction)
 
-        self.assertEqual(action._EncoderAction__mapping, MAPPING_AMP_GAIN())
+        self.assertEqual(action._mapping, MAPPING_AMP_GAIN())
         self.assertEqual(action.id, 45)
         self.assertEqual(action._EncoderAction__enable_callback, ecb)
         self.assertEqual(action._EncoderAction__step_width, 1)

@@ -107,7 +107,7 @@ class KemperBankSelectCallback(BinaryParameterCallback):
         if self.__preselect:
             set_mapping = MAPPING_BANK_SELECT()
 
-            value_bank = [self.__bank - 1]
+            value_bank = self.__bank - 1
             if "preselectedBank" in self.__appl.shared or curr_bank != self.__bank - 1:
                 self.__appl.shared["preselectedBank"] = self.__bank - 1
                 self.__appl.shared["preselectCallback"] = self

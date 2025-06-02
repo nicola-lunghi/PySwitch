@@ -613,6 +613,13 @@
             },
 
             {
+                "entityName": "ENCODER_BANK_SELECT",
+                "category": "other",
+                "target": "AdafruitEncoder",
+                "parameters": []
+            },
+
+            {
                 "entityName": "ENCODER_RIG_TRANSPOSE",
                 "category": "other",
                 "target": "AdafruitEncoder",

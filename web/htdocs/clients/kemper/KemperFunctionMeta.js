@@ -29,6 +29,7 @@ class KemperFunctionMeta extends FunctionMeta {
             case "LOOPER_REC_PLAY_OVERDUB": return "Looper Rec|Play|OD";
             case "ENCODER_BPM": return "Tempo (BPM)";
             case "ENCODER_RIG_TRANSPOSE": return "Rig Transpose";
+            case "ENCODER_BANK_SELECT": return "Bank Select";
         }
         
         return super.getShortDisplayName(actionCallProxy);

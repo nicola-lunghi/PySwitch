@@ -150,7 +150,7 @@ class KemperBankChangeCallback(Callback):
             self.__appl.shared["preselectedBank"] = value
             self.__appl.shared["preselectCallback"] = self
 
-            value = [value]
+            # value = [value]
         else:
             value = 0
 

@@ -560,7 +560,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         self.assertEqual(len(appl.client.set_calls), 1)
         self.assertEqual(appl.client.set_calls[0], {
             "mapping": MAPPING_BANK_SELECT(),
-            "value": [3] if up else [1]
+            "value": 3 if up else 1
         })
         
         action.push()
@@ -581,7 +581,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         self.assertEqual(len(appl.client.set_calls), 2)
         self.assertEqual(appl.client.set_calls[1], {
             "mapping": MAPPING_BANK_SELECT(),
-            "value": [4] if up else [0]
+            "value": 4 if up else 0
         })
         
         action.push()
@@ -602,7 +602,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         self.assertEqual(len(appl.client.set_calls), 3)
         self.assertEqual(appl.client.set_calls[2], {
             "mapping": MAPPING_BANK_SELECT(),
-            "value": [5] if up else [124]
+            "value": 5 if up else 124
         })
 
         appl.shared = {}  # Remove preselect mark

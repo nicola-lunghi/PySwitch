@@ -1,15 +1,19 @@
 # PySwitch v2.4.4
+- Features:
+    - Added Bank Preselect Action for the Wheel Encoder
+
 - Bug Fixes: 
     - Bank up/down LEDs are now reset correctly after exiting tuner mode (@MetalMauce)
 
 ### Emulator 2.4.4.11
-- Added support for opening folders on the local file system:
-    - "Open Directory..." lets you choose a folder to open, containing your configuration (inputs.py and display.py)
-    - After changing, you can save anytime with CTRL-S, overwriting the loaded files
-    - Changes made from external editors will immediately reload the emulator automatically if no unsaved changes exist, making it possible to work with external IDEs seamlessly
-    - "Save to Directory..." lets you save the current config to any folder on your file system (you have to create the folder yourself first, which is possible in the selection dialog directly)
-    
-    The feature is implemented using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API">File System API</a>, which must be supported to use the functionality. Also, you have to grant access to any folders you want to access.
+- Featurs: 
+    - Added support for opening folders on the local file system:
+        - "Open Directory..." lets you choose a folder to open, containing your configuration (inputs.py and display.py)
+        - After changing, you can save anytime with CTRL-S, overwriting the loaded files
+        - Changes made from external editors will immediately reload the emulator automatically if no unsaved changes exist, making it possible to work with external IDEs seamlessly
+        - "Save to Directory..." lets you save the current config to any folder on your file system (you have to create the folder yourself first, which is possible in the selection dialog directly)
+        
+        The feature is implemented using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API">File System API</a>, which must be supported to use the functionality. Also, you have to grant access to any folders you want to access.
 
 # PySwitch v2.4.3
 - Features:

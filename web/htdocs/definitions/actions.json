@@ -675,6 +675,23 @@
                 "importPath": "pyswitch.clients.kemper.actions.effect_state"
             },
             {
+                "name": "ENCODER_BANK_SELECT",
+                "parameters": [
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "None",
+                        "comment": null
+                    }
+                ],
+                "comment": "Preselects the bank with a rotary encoder. \n\nAfter this, the bank change will be done after a rig has been selected.",
+                "importPath": "pyswitch.clients.kemper.actions.bank_select_encoder"
+            },
+            {
                 "name": "BANK_UP",
                 "parameters": [
                     {

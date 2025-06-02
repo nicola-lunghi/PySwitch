@@ -42,12 +42,10 @@ def MAPPING_RIG_SELECT(rig):
 def MAPPING_BANK_SELECT():
     return ClientTwoPartParameterMapping.get(
         name = "Select Bank",
-        set = [
-            ControlChange(
-                _CC_BANK_PRESELECT,
-                0    # Dummy value, will be overridden
-            )
-        ],
+        set = ControlChange(
+            _CC_BANK_PRESELECT,
+            0    # Dummy value, will be overridden
+        ),
 
         response = [
             ControlChange(

@@ -202,7 +202,7 @@ class TestEncoderAction(unittest.TestCase):
         action.init(appl)
 
         self.assertEqual(action.enabled, True)
-        self.assertEqual(action._EncoderAction__mapping, mapping)
+        self.assertEqual(action._mapping, mapping)
         
         if mapping_with_response or start_value != 0:
             mapping.value = start_value
@@ -249,7 +249,7 @@ class TestEncoderAction(unittest.TestCase):
         action.init(appl)
 
         self.assertEqual(action.enabled, True)
-        self.assertEqual(action._EncoderAction__mapping, mapping)
+        self.assertEqual(action._mapping, mapping)
         
         mapping.value = None
 
@@ -487,7 +487,7 @@ class TestEncoderAction(unittest.TestCase):
 
         self.assertEqual(display.text, "foo")
         self.assertEqual(len(appl.client.set_calls), 5)
-
+        
 
     def test_preselect(self):
         mapping = MockParameterMapping(
