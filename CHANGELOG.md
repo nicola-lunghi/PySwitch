@@ -1,3 +1,7 @@
+# PySwitch v2.4.4
+- Bug Fix: Bank up/down LEDs are now reset correctly after exiting tuner mode (@MetalMauce)
+
+
 # PySwitch v2.4.3
 - Features:
     - Added mappings for some system parameters (can be used with the wheel encoder, pedals or the "Other Parameter" Actions):
