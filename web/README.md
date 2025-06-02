@@ -66,8 +66,9 @@ In the emulator, configurations each have their own URLs. You can load/save conf
 
 - **Examples:** You can run any example provided with PySwitch directly.
 - **Controllers:** You can load from/save to any connected Controller device directly. This is realized via a proprietary MIDI SysEx protocol.
-- **Local Presets:** You can store configuration locally in your browser. These presets will persist untile someone clears your browser's cache manually.
-- **Upload/Download:** You can upload configuration files, and download the current configuration as files.
+- **Local Presets:** You can store/load configurations locally in your browser. These presets will persist untile someone clears your browser's cache manually.
+- **Open Directory / Save to Directory:** You can open a local folder on your file system, containing inputs.py and display.py files. After opening, the emulator can save back to those files with CTRL-S quickly. Also, if the files are changed by an external program, the emulator automatically reloads the configuration from the changed files (if no unsaved changes exist in the emulator itself, of course). This makes working with external IDEs pretty easy.
+- **Upload/Download:** You can upload configuration files, and download the current configuration as ZIP.
 
 There are two buttons at the top right for loading and saving stuff. See there, its pretty self explanatory ;)
 
