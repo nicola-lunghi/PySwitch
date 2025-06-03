@@ -1,12 +1,14 @@
 # PySwitch v2.4.4
 - Features:
-    - Added Bank Preselect Action for the Wheel Encoder
+    - Added Bank Preselect Action for the Wheel Encoder.
+        - Added the possibility to set None for the Rig Select action(s). This enables to use it as push action for the wheel when used as bank preselector, to acknowledge the current rig with the preselected bank.
 
 - Bug Fixes: 
-    - Bank up/down LEDs are now reset correctly after exiting tuner mode (@MetalMauce)
+    - **Rig Select, Rig Select & Morph Display, Bank Select, Bank Up/Down, Rig Up/Down** Actions: Now the rig select trigger sequence is correct, sending 1 at push and 0 at release, instead of sending them both on push. This enables the Kemper rig button morph function to work also in momentary mode. (@NickMrChaos)
+    - **Bank up/down** Action: LEDs are now reset correctly after exiting tuner mode (@MetalMauce and others)
 
 ### Emulator 2.4.4.11
-- Featurs: 
+- Features: 
     - Added support for opening folders on the local file system:
         - "Open Directory..." lets you choose a folder to open, containing your configuration (inputs.py and display.py)
         - After changing, you can save anytime with CTRL-S, overwriting the loaded files

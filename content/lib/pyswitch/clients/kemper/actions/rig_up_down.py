@@ -4,7 +4,7 @@ from ....controller.callbacks import Callback
 from ....misc import get_option
 from ....colors import DEFAULT_SWITCH_COLOR, DEFAULT_LABEL_COLOR
 
-from ..mappings.select import MAPPING_RIG_SELECT, MAPPING_BANK_AND_RIG_SELECT
+from ..mappings.select import MAPPING_RIG_SELECT, MAPPING_BANK_SELECT
 from .rig_select import RIG_SELECT_DISPLAY_CURRENT_RIG, RIG_SELECT_DISPLAY_TARGET_RIG
 
 # Select next rig
@@ -101,6 +101,8 @@ class _KemperRigChangeCallback(Callback):
         self.__direction_up = direction_up
         self.__keep_bank = keep_bank
 
+        self.__sent_rig_mapping = None
+
     def init(self, appl, listener = None):
         super().init(appl, listener)
 
@@ -120,19 +122,21 @@ class _KemperRigChangeCallback(Callback):
         next_bank = int(next_rig_id / NUM_RIGS_PER_BANK)
         next_rig = next_rig_id % NUM_RIGS_PER_BANK
         
-        if next_bank == curr_bank:
-            set_mapping = MAPPING_RIG_SELECT(next_rig)
-            value = [1, 0]
-        else:
-            set_mapping = MAPPING_BANK_AND_RIG_SELECT(next_rig)
-            value = [next_bank, 1, 0]
+        if next_bank != curr_bank:
+            self.__appl.client.set(MAPPING_BANK_SELECT(), next_bank)
+            
+        self.__sent_rig_mapping = MAPPING_RIG_SELECT(next_rig)
+        self.__appl.client.set(self.__sent_rig_mapping, 1)
         
         self.__appl.shared["morphStateOverride"] = 0
 
-        self.__appl.client.set(set_mapping, value)
-
     def release(self):
-        pass
+        # Send release (0) value if necessary
+        if not self.__sent_rig_mapping:
+            return
+        
+        self.__appl.client.set(self.__sent_rig_mapping, 0)
+        self.__sent_rig_mapping = None
 
     def update_displays(self):
         if self.__mapping.value == None:

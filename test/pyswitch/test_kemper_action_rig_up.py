@@ -392,10 +392,14 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
 
         self.assertEqual(appl.shared["morphStateOverride"], 0)
 
-        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(len(appl.client.set_calls), 2)
         self.assertEqual(appl.client.set_calls[0], {
             "mapping": MAPPING_RIG_SELECT(1),
-            "value": [1, 0]
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[1], {
+            "mapping": MAPPING_RIG_SELECT(1),
+            "value": 0
         })
 
         mapping.value = 6
@@ -405,10 +409,14 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
         action.push()
         action.release()
 
-        self.assertEqual(len(appl.client.set_calls), 2)
-        self.assertEqual(appl.client.set_calls[1], {
+        self.assertEqual(len(appl.client.set_calls), 4)
+        self.assertEqual(appl.client.set_calls[2], {
             "mapping": MAPPING_RIG_SELECT(2),
-            "value": [1, 0]
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[3], {
+            "mapping": MAPPING_RIG_SELECT(2),
+            "value": 0
         })
 
         mapping.value = 9
@@ -418,12 +426,20 @@ class TestKemperActionDefinitionsRigUp(unittest.TestCase):
         action.release()
 
         if keep_bank:
-            self.assertEqual(len(appl.client.set_calls), 2)    
+            self.assertEqual(len(appl.client.set_calls), 4)    
         else:
-            self.assertEqual(len(appl.client.set_calls), 3)
-            self.assertEqual(appl.client.set_calls[2], {
-                "mapping": MAPPING_BANK_AND_RIG_SELECT(0),
-                "value": [2, 1, 0]
+            self.assertEqual(len(appl.client.set_calls), 7)
+            self.assertEqual(appl.client.set_calls[4], {
+                "mapping": MAPPING_BANK_SELECT(),
+                "value": 2
+            })
+            self.assertEqual(appl.client.set_calls[5], {
+                "mapping": MAPPING_RIG_SELECT(0),
+                "value": 1
+            })
+            self.assertEqual(appl.client.set_calls[6], {
+                "mapping": MAPPING_RIG_SELECT(0),
+                "value": 0
             })
 
         action.update_displays()

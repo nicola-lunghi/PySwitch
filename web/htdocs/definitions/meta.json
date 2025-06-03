@@ -41,7 +41,13 @@
                         "type": "int",
                         "range": {
                             "min": 1,
-                            "max": "NUM_RIGS_PER_BANK"
+                            "max": "NUM_RIGS_PER_BANK",
+                            "additionalValues": [
+                                {
+                                    "name": "None",
+                                    "value": "None"
+                                }
+                            ]
                         }
                     },
                     {

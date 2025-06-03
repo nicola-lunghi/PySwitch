@@ -55,7 +55,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping
+        mapping = action.callback._KemperRigSelectCallback__mapping
         mapping.value = 0
 
         with self.assertRaises(Exception):            
@@ -251,7 +251,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping
+        mapping = action.callback._KemperRigSelectCallback__mapping
         mapping.value = mapping_value
 
         action.update_displays()
@@ -286,7 +286,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping
+        mapping = action.callback._KemperRigSelectCallback__mapping
         mapping.value = mapping_value
 
         action.update_displays()
@@ -366,7 +366,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping
+        mapping = action.callback._KemperRigSelectCallback__mapping
         mapping.value = mapping_value
 
         action.update_displays()
@@ -426,7 +426,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping
+        mapping = action.callback._KemperRigSelectCallback__mapping
         mapping.value = mapping_value
 
         action.update_displays()
@@ -470,12 +470,12 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping
+        mapping = action.callback._KemperRigSelectCallback__mapping
         
         # On rig
         mapping.value = 5  
         action.update_displays()
-        self.assertEqual(action.state, True)
+        self.assertEqual(action.callback.state, True)
 
         self.assertEqual(switch.color, (7, 8, 9))
         self.assertEqual(switch.brightness, 0.3)
@@ -487,7 +487,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         # Off rig
         mapping.value = 6  
         action.update_displays()
-        self.assertEqual(action.state, False)
+        self.assertEqual(action.callback.state, False)
 
         self.assertEqual(switch.color, (7, 8, 9))
         self.assertEqual(switch.brightness, 0.02)
@@ -522,11 +522,11 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping        
+        mapping = action.callback._KemperRigSelectCallback__mapping        
 
         mapping.value = rig + 1  # Not matching
         action.update_displays()
-        self.assertEqual(action.state, False)
+        self.assertEqual(action.callback.state, False)
 
         # Select rig the first time 
         action.push()
@@ -534,36 +534,52 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
         self.assertEqual(appl.shared["morphStateOverride"], 0)
 
-        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(len(appl.client.set_calls), 3)
         self.assertEqual(appl.client.set_calls[0], {
-            "mapping": mapping,
-            "value": [2, 1, 0]
+            "mapping": MAPPING_BANK_SELECT(),
+            "value": 2
+        })
+        self.assertEqual(appl.client.set_calls[1], {
+            "mapping": MAPPING_RIG_SELECT(rig),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[2], {
+            "mapping": MAPPING_RIG_SELECT(rig),
+            "value": 0
         })
 
         mapping.value = rig + 10  # On rig
         action.update_displays()
-        self.assertEqual(action.state, True)
+        self.assertEqual(action.callback.state, True)
 
         # Select rig again        
         action.push()
         action.release()
 
-        self.assertEqual(len(appl.client.set_calls), 2)
-        self.assertEqual(appl.client.set_calls[1], {
-            "mapping": mapping,
-            "value": [2, 1, 0]
+        self.assertEqual(len(appl.client.set_calls), 6)
+        self.assertEqual(appl.client.set_calls[3], {
+            "mapping": MAPPING_BANK_SELECT(),
+            "value": 2
+        })
+        self.assertEqual(appl.client.set_calls[4], {
+            "mapping": MAPPING_RIG_SELECT(rig),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[5], {
+            "mapping": MAPPING_RIG_SELECT(rig),
+            "value": 0
         })
 
         action.update_displays()
-        self.assertEqual(action.state, True)
+        self.assertEqual(action.callback.state, True)
 
         # Receive other rig
         mapping.value = rig + 11  # Not matching
         action.update_displays()
 
-        self.assertEqual(action.state, False)
+        self.assertEqual(action.callback.state, False)
 
-        self.assertEqual(len(appl.client.set_calls), 2)
+        self.assertEqual(len(appl.client.set_calls), 6)
 
 
 ###################################################################################################################
@@ -581,79 +597,110 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping
-        mapping_disable = action.callback.mapping_disable
-
+        mapping = action.callback._KemperRigSelectCallback__mapping
+        
         mapping.value = 33   # Not matching
         action.update_displays()
-        self.assertEqual(action.state, False)            
+        self.assertEqual(action.callback.state, False)            
 
         # Select rig the first time
         action.push()
         action.release()
 
-        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(len(appl.client.set_calls), 3)
         self.assertEqual(appl.client.set_calls[0], {
-            "mapping": mapping,
-            "value": [1, 1, 0]
+            "mapping": MAPPING_BANK_SELECT(),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[1], {
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[2], {
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 0
         })
 
         mapping.value = 5  # On rig
         action.update_displays()
 
-        self.assertEqual(action.state, True)
+        self.assertEqual(action.callback.state, True)
 
         # Select off rig
         action.push()
         action.release()
 
-        self.assertEqual(len(appl.client.set_calls), 2)
-        self.assertEqual(appl.client.set_calls[1], {
-            "mapping": mapping_disable,
-            "value": [3, 1, 0]
+        self.assertEqual(len(appl.client.set_calls), 6)
+        self.assertEqual(appl.client.set_calls[3], {
+            "mapping": MAPPING_BANK_SELECT(),
+            "value": 3
+        })
+        self.assertEqual(appl.client.set_calls[4], {
+            "mapping": MAPPING_RIG_SELECT(1),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[5], {
+            "mapping": MAPPING_RIG_SELECT(1),
+            "value": 0
         })
 
         mapping.value = 16  # Off rig
         action.update_displays()
 
-        self.assertEqual(action.state, False)
+        self.assertEqual(action.callback.state, False)
 
         # Select rig again
         action.push()
         action.release()
 
-        self.assertEqual(len(appl.client.set_calls), 3)
-        self.assertEqual(appl.client.set_calls[2], {
-            "mapping": mapping,
-            "value": [1, 1, 0]
+        self.assertEqual(len(appl.client.set_calls), 9)
+        self.assertEqual(appl.client.set_calls[6], {
+            "mapping": MAPPING_BANK_SELECT(),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[7], {
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[8], {
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 0
         })
 
         mapping.value = 5  # On rig
         action.update_displays()
 
-        self.assertEqual(action.state, True)
+        self.assertEqual(action.callback.state, True)
 
         # Select off rig again
         action.push()
         action.release()
 
-        self.assertEqual(len(appl.client.set_calls), 4)
-        self.assertEqual(appl.client.set_calls[3], {
-            "mapping": mapping_disable,
-            "value": [3, 1, 0]
+        self.assertEqual(len(appl.client.set_calls), 12)
+        self.assertEqual(appl.client.set_calls[9], {
+            "mapping": MAPPING_BANK_SELECT(),
+            "value": 3
+        })
+        self.assertEqual(appl.client.set_calls[10], {
+            "mapping": MAPPING_RIG_SELECT(1),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[11], {
+            "mapping": MAPPING_RIG_SELECT(1),
+            "value": 0
         })
 
         action.update_displays()
 
-        self.assertEqual(action.state, True)
+        self.assertEqual(action.callback.state, True)
 
         # Other rig selected
         mapping.value = 172  # Not matching
         action.update_displays()
 
-        self.assertEqual(action.state, False)
+        self.assertEqual(action.callback.state, False)
 
-        self.assertEqual(len(appl.client.set_calls), 4)
+        self.assertEqual(len(appl.client.set_calls), 12)
 
 
 ###################################################################################################################
@@ -671,12 +718,12 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping
-        mapping_disable = action.callback.mapping_disable
+        mapping = action.callback._KemperRigSelectCallback__mapping
+        #mapping_disable = action.callback.mapping_disable
 
         mapping.value = 33   # Not matching
         action.update_displays()
-        self.assertEqual(action.state, False)            
+        self.assertEqual(action.callback.state, False)            
 
         # Select rig the first time
         appl.shared = { "preselectedBank": 4 }  
@@ -684,16 +731,20 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         action.release()
         self.assertNotIn("preselectedBank", appl.shared)
 
-        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(len(appl.client.set_calls), 2)
         self.assertEqual(appl.client.set_calls[0], {
-            "mapping": mapping,
-            "value": [1, 1, 0]
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[1], {
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 0
         })
 
         mapping.value = 5  # On rig
         action.update_displays()
 
-        self.assertEqual(action.state, True)
+        self.assertEqual(action.callback.state, True)
 
         # Select off rig
         appl.shared = { "preselectedBank": 4 }  
@@ -701,16 +752,20 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         action.release()
         self.assertNotIn("preselectedBank", appl.shared)
 
-        self.assertEqual(len(appl.client.set_calls), 2)
-        self.assertEqual(appl.client.set_calls[1], {
-            "mapping": mapping,
-            "value": [1, 1, 0]
+        self.assertEqual(len(appl.client.set_calls), 4)
+        self.assertEqual(appl.client.set_calls[2], {
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[3], {
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 0
         })
 
         mapping.value = 16  # Off rig
         action.update_displays()
 
-        self.assertEqual(action.state, False)
+        self.assertEqual(action.callback.state, False)
 
         # Select rig again
         appl.shared = { "preselectedBank": 4 }  
@@ -718,16 +773,20 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         action.release()
         self.assertNotIn("preselectedBank", appl.shared)
 
-        self.assertEqual(len(appl.client.set_calls), 3)
-        self.assertEqual(appl.client.set_calls[2], {
-            "mapping": mapping,
-            "value": [1, 1, 0]
+        self.assertEqual(len(appl.client.set_calls), 6)
+        self.assertEqual(appl.client.set_calls[4], {
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[5], {
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 0
         })
 
         mapping.value = 5  # On rig
         action.update_displays()
 
-        self.assertEqual(action.state, True)
+        self.assertEqual(action.callback.state, True)
 
         # Select off rig again
         appl.shared = { "preselectedBank": 4 }  
@@ -735,23 +794,27 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         action.release()
         self.assertNotIn("preselectedBank", appl.shared)
 
-        self.assertEqual(len(appl.client.set_calls), 4)
-        self.assertEqual(appl.client.set_calls[3], {
-            "mapping": mapping,
-            "value": [1, 1, 0]
+        self.assertEqual(len(appl.client.set_calls), 8)
+        self.assertEqual(appl.client.set_calls[6], {
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[7], {
+            "mapping": MAPPING_RIG_SELECT(0),
+            "value": 0
         })
 
         action.update_displays()
 
-        self.assertEqual(action.state, True)
+        self.assertEqual(action.callback.state, True)
 
         # Other rig selected
         mapping.value = 172  # Not matching
         action.update_displays()
 
-        self.assertEqual(action.state, False)
+        self.assertEqual(action.callback.state, False)
 
-        self.assertEqual(len(appl.client.set_calls), 4)
+        self.assertEqual(len(appl.client.set_calls), 8)
 
 
 ###################################################################################################################
@@ -774,7 +837,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping                
+        mapping = action.callback._KemperRigSelectCallback__mapping                
         mapping.value = 3
 
         with self.assertRaises(Exception):                        
@@ -816,7 +879,7 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action_select])
         action_select.init(appl, switch)
 
-        mapping_rig = action_select.callback.mapping 
+        mapping_rig = action_select.callback._KemperRigSelectCallback__mapping 
         
         mapping_rig.value = 4  # off value
         ecb.output = False
@@ -869,64 +932,92 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
         switch = MockFootswitch(actions = [action])
         action.init(appl, switch)
 
-        mapping = action.callback.mapping   
+        mapping = action.callback._KemperRigSelectCallback__mapping   
 
         mapping.value = 0 * NUM_RIGS_PER_BANK + 1   # Not matching (Rig 1-2)
         action.update_displays()
-        self.assertEqual(action.state, False)
+        self.assertEqual(action.callback.state, False)
         
         # Select on rig
         action.push()
         action.release()
 
-        self.assertEqual(len(appl.client.set_calls), 1)
+        self.assertEqual(len(appl.client.set_calls), 3)
         self.assertEqual(appl.client.set_calls[0], {
-            "mapping": mapping,
-            "value": [1, 1, 0]
+            "mapping": MAPPING_BANK_SELECT(),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[1], {
+            "mapping": MAPPING_RIG_SELECT(2),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[2], {
+            "mapping": MAPPING_RIG_SELECT(2),
+            "value": 0
         })
 
         mapping.value = 1 * NUM_RIGS_PER_BANK + 2   # On rig
         action.update_displays()
-        self.assertEqual(action.state, True)
+        self.assertEqual(action.callback.state, True)
 
         # Select off rig
         action.push()
         action.release()
 
-        self.assertEqual(action.callback.mapping_disable, MAPPING_BANK_AND_RIG_SELECT(1))
-
-        self.assertEqual(len(appl.client.set_calls), 2)
-        self.assertEqual(appl.client.set_calls[1], {
-            "mapping": action.callback.mapping_disable,
-            "value": [0, 1, 0]
+        self.assertEqual(len(appl.client.set_calls), 6)
+        self.assertEqual(appl.client.set_calls[3], {
+            "mapping": MAPPING_BANK_SELECT(),
+            "value": 0
+        })
+        self.assertEqual(appl.client.set_calls[4], {
+            "mapping": MAPPING_RIG_SELECT(1),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[5], {
+            "mapping": MAPPING_RIG_SELECT(1),
+            "value": 0
         })
 
         mapping.value = 6 * NUM_RIGS_PER_BANK + 4  # Off rig
         action.update_displays()
-        self.assertEqual(action.state, False)
+        self.assertEqual(action.callback.state, False)
 
         # Select on rig
         action.push()
         action.release()
 
-        self.assertEqual(len(appl.client.set_calls), 3)
-        self.assertEqual(appl.client.set_calls[2], {
-            "mapping": mapping,
-            "value": [1, 1, 0]
+        self.assertEqual(len(appl.client.set_calls), 9)
+        self.assertEqual(appl.client.set_calls[6], {
+            "mapping": MAPPING_BANK_SELECT(),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[7], {
+            "mapping": MAPPING_RIG_SELECT(2),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[8], {
+            "mapping": MAPPING_RIG_SELECT(2),
+            "value": 0
         })
 
         mapping.value = 1 * NUM_RIGS_PER_BANK + 2 # On rig
         action.update_displays()
-        self.assertEqual(action.state, True)
+        self.assertEqual(action.callback.state, True)
 
         # Select off rig
         action.push()
         action.release()
 
-        self.assertEqual(action.callback.mapping_disable, MAPPING_BANK_AND_RIG_SELECT(4))
-
-        self.assertEqual(len(appl.client.set_calls), 4)
-        self.assertEqual(appl.client.set_calls[3], {
-            "mapping": action.callback.mapping_disable,
-            "value": [6, 1, 0]
+        self.assertEqual(len(appl.client.set_calls), 12)
+        self.assertEqual(appl.client.set_calls[9], {
+            "mapping": MAPPING_BANK_SELECT(),
+            "value": 6
+        })
+        self.assertEqual(appl.client.set_calls[10], {
+            "mapping": MAPPING_RIG_SELECT(4),
+            "value": 1
+        })
+        self.assertEqual(appl.client.set_calls[11], {
+            "mapping": MAPPING_RIG_SELECT(4),
+            "value": 0
         })

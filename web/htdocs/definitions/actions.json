@@ -1124,7 +1124,7 @@
                     {
                         "name": "rig",
                         "default": null,
-                        "comment": "Rig to select. Range: [1..5]"
+                        "comment": "Rig to select. Range: [1..5] or None to re-select the current rig. "
                     },
                     {
                         "name": "rig_off",

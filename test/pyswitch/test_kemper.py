@@ -143,8 +143,6 @@ class TestKemper(unittest.TestCase):
 
         self.assertIn("Rig", MAPPING_RIG_SELECT(rig = 2).name)
 
-        self.assertIn("Bank", MAPPING_BANK_AND_RIG_SELECT(rig = 3).name)
-
         self.assertIn("Sense", KemperMappings.BIDIRECTIONAL_SENSING().name)
 
         self.assertIn("Tempo", MAPPING_TEMPO_DISPLAY().name)

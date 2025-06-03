@@ -534,7 +534,7 @@ class TestKemperActionDefinitionsBankChange(unittest.TestCase):
         action_rig_select.init(appl, switch_2)
 
         mapping = action.callback._KemperBankChangeCallback__mapping 
-        mapping_rigsel = action_rig_select.callback.mapping 
+        mapping_rigsel = action_rig_select.callback._KemperRigSelectCallback__mapping 
 
         mapping.value = 14  # Bank 2
         mapping_rigsel.value = mapping.value

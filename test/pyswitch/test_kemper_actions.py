@@ -251,9 +251,8 @@ class TestKemperActionDefinitions(unittest.TestCase):
         cb_select = action_select.callback
         cb_morph = action_morph.callback
 
-        self.assertIsInstance(cb_select, BinaryParameterCallback)
-        self.assertEqual(cb_select.mapping, MAPPING_RIG_SELECT(0))
-
+        self.assertIsInstance(cb_select, Callback)
+        
         self.assertIsInstance(cb_morph, KemperMorphCallback)
         self.assertEqual(cb_morph.mapping, MAPPING_MORPH_PEDAL())
         self.assertEqual(cb_morph._BinaryParameterCallback__comparison_mode, BinaryParameterCallback.NO_STATE_CHANGE)

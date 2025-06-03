@@ -213,18 +213,6 @@
                 "importPath": "pyswitch.clients.kemper.mappings.select"
             },
             {
-                "name": "MAPPING_BANK_AND_RIG_SELECT",
-                "parameters": [
-                    {
-                        "name": "rig",
-                        "default": null,
-                        "comment": null
-                    }
-                ],
-                "comment": "Selects a rig of a specific bank. Rig index must be in range [0..4]",
-                "importPath": "pyswitch.clients.kemper.mappings.select"
-            },
-            {
                 "name": "MAPPING_WAH_PEDAL",
                 "parameters": [],
                 "comment": null,
