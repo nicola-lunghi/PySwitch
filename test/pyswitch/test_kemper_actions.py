@@ -595,8 +595,6 @@ class TestKemperActionDefinitions(unittest.TestCase):
         self.assertEqual(action._EncoderAction__step_width, 1)
         self.assertEqual(action._EncoderAction__preselect, True)
         self.assertEqual(action._EncoderAction__preview.label, display)
-        # self.assertEqual(action._EncoderAction__preview._ValuePreview__blink_color, (3, 4, 5))
-        # self.assertEqual(action._EncoderAction__preview._ValuePreview__period.interval, 345)
 
         appl = MockController()
         action.init(appl)

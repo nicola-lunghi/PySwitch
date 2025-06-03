@@ -34,6 +34,34 @@ with patch.dict(sys.modules, {
 
 class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
 
+    def test_display_mode_invalid(self):
+        display = DisplayLabel(layout = {
+            "font": "foo",
+            "backColor": (0, 0, 0)
+        })
+
+        ecb = MockEnabledCallback(output = True)
+
+        action = RIG_SELECT(
+            display = display,
+            rig = 1,
+            display_mode = "ggg",                   # Invalid value ;)
+            id = 45, 
+            use_leds = True, 
+            enable_callback = ecb
+        )
+
+        appl = MockController()
+        switch = MockFootswitch(actions = [action])
+        action.init(appl, switch)
+
+        mapping = action.callback.mapping
+        mapping.value = 0
+
+        with self.assertRaises(Exception):            
+            action.update_displays()
+
+
     def test_bank_colors(self):
         # Current
         self._test_bank_colors(mapping_value = None,  display_mode = RIG_SELECT_DISPLAY_CURRENT_RIG)
@@ -413,34 +441,6 @@ class TestKemperActionDefinitionsRigAndBankSelect(unittest.TestCase):
             int(exp_color[1] * factor),
             int(exp_color[2] * factor)
         ))
-
-
-    def test_invalid_display_mode(self):
-        display = DisplayLabel(layout = {
-            "font": "foo",
-            "backColor": (0, 0, 0)
-        })
-
-        ecb = MockEnabledCallback(output = True)
-
-        action = RIG_SELECT(
-            display = display,
-            rig = 1,
-            display_mode = self,                   # Invalid value ;)
-            id = 45, 
-            use_leds = True, 
-            enable_callback = ecb
-        )
-
-        appl = MockController()
-        switch = MockFootswitch(actions = [action])
-        action.init(appl, switch)
-
-        mapping = action.callback.mapping
-        mapping.value = 0
-
-        with self.assertRaises(Exception):            
-            action.update_displays()
 
 
 ###################################################################################################################

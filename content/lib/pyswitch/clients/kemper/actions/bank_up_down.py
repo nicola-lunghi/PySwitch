@@ -164,7 +164,6 @@ class KemperBankChangeCallback(Callback):
     def update(self):
         Callback.update(self)
 
-        # if self.__mapping.value != None:
         if self.__preselect and "preselectedBank" in self.__appl.shared and self.__appl.shared["preselectCallback"] == self and self.__preselect_blink_period.exceeded:
             self.__appl.shared["preselectBlinkState"] = not self.__appl.shared["preselectBlinkState"]
             

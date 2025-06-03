@@ -97,6 +97,51 @@ class TestEncoderAction(unittest.TestCase):
             ]
         )
 
+    def test_custom_range(self):
+        self._test(
+            cc_mapping = True,
+            max_value = 63,
+            step_width = 0.5,
+            start_pos = 1,
+            start_value = 1,
+            data = [
+                (2, 2),
+                (3, 2),
+                (4, 3),
+                (5, 3),
+                (6, 4),
+                (7, 4),
+                (8, 5),
+                (9, 5),
+                (10, 6),
+                (11, 6),
+                (12, 7),
+                (13, 7),
+                (14, 8),
+                (28, 15),
+                (64, 33),
+                (120, 61),
+                (121, 61),
+                (122, 62),
+                (123, 62),
+                (124, 63),
+                (125, 63),
+                (126, 63),
+                (127, 63),
+                (200, 63),
+                (199, 62),
+                (198, 62),
+                (197, 61),
+                (0, 0),
+                (-1, 0),
+                (-2, 0),
+                (-30, 0),
+                (-29, 1),
+                (-28, 1),
+                (-27, 2)
+            ]
+        )
+
 
     def test_auto_range(self):
         self._test(
@@ -221,16 +266,6 @@ class TestEncoderAction(unittest.TestCase):
             # Simulate that the mapping value had been changed by an incoming message
             if mapping_with_response:
                 mapping.value = exp_value
-
-
-        # # None
-        # if mapping_with_response:
-        #     mapping.value = None
-            
-        #     appl.client.set_calls = []
-        #     action.process(7865)
-            
-        #     self.assertEqual(appl.client.last_sent_message, None)
 
 
     def test_none_value(self):

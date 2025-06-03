@@ -54,17 +54,17 @@ def RIG_SELECT(rig,                                            # Rig to select. 
 # Callback implementation for Rig Select, showing bank colors and rig/bank info
 class KemperRigSelectCallback(BinaryParameterCallback):
     def __init__(self,
-                    rig,
-                    rig_off,                     
-                    bank,
-                    bank_off,
-                    color,
-                    color_callback,
-                    display_mode,
-                    text,
-                    text_callback,
-                    auto_exclude_rigs = None,
-                    rig_btn_morph = False
+                 rig,
+                 rig_off,                     
+                 bank,
+                 bank_off,
+                 color,
+                 color_callback,
+                 display_mode,
+                 text,
+                 text_callback,
+                 auto_exclude_rigs = None,
+                 rig_btn_morph = False
         ):
         
         if rig_off != None and bank != None and bank_off == None:

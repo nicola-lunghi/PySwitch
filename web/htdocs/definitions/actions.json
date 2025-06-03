@@ -678,6 +678,16 @@
                 "name": "ENCODER_BANK_SELECT",
                 "parameters": [
                     {
+                        "name": "preview_display",
+                        "default": "None",
+                        "comment": "If assigned, the adjusted value will be displayed in the passed DisplayLabel when the encoder is adjusted. \n\nBank Preselect is always shown in the Rig Name/ID display, regardless of this option. However, the preselect display is not updated too often so it makes total sense to set your rig name display here, too."
+                    },
+                    {
+                        "name": "step_width",
+                        "default": "0.5",
+                        "comment": "Step width. Can be set to any value greater than 0 (including float values)."
+                    },
+                    {
                         "name": "enable_callback",
                         "default": "None",
                         "comment": null
@@ -1702,7 +1712,7 @@
                     {
                         "name": "step_width",
                         "default": "None",
-                        "comment": "Increment/Decrement for one encoder step. Set to None for auto-detect (NRPN: 80, CC: 1)"
+                        "comment": "Increment/Decrement for one encoder step. Set to None for auto-detect (NRPN: 80, CC: 1). Can be set to any value greater than 0 (including float values)."
                     },
                     {
                         "name": "enable_callback",
