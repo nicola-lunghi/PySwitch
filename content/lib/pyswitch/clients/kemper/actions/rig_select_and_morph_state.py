@@ -29,7 +29,8 @@ def RIG_SELECT_AND_MORPH_STATE(rig,                                            #
                                morph_only_when_enabled = True,                 # Only show the morph state when the "on" rig is selected
                                morph_color_base = Colors.RED,                  # See MORPH_DISPLAY
                                morph_color_morphed = Colors.BLUE,              # See MORPH_DISPLAY
-                               rig_btn_morph = False                           # If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified.
+                               rig_btn_morph = False,                          # If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified.
+                               momentary_morph = False                         # If set true, the simulated morph state will operate in momentary mode. Use this if you have use momentary morph mode in your rigs.
 
 ):
     rig_select = RIG_SELECT(
@@ -46,7 +47,8 @@ def RIG_SELECT_AND_MORPH_STATE(rig,                                            #
         color = color,
         text_callback = text_callback,
         text = text,
-        rig_btn_morph = rig_btn_morph
+        rig_btn_morph = rig_btn_morph,
+        momentary_morph = momentary_morph
     )        
     
     return [

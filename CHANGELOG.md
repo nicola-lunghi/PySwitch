@@ -4,6 +4,7 @@
 
 - Bug Fixes: 
     - **Rig Select, Rig Select & Morph Display, Bank Select, Bank Up/Down, Rig Up/Down**: Now the rig select trigger sequence is correct, sending 1 at push and 0 at release, instead of sending them both on push. This enables the Kemper rig button morph function to work also in momentary mode. (@NickMrChaos)
+        - Added an option "momentary_morph" to the Rig Select action(s) which adjusts the "simulated" morph state in accordance to that. Set this to True if you use momentary morph in your rigs.
     - **Bank up/down** Action: LEDs are now reset correctly after exiting tuner mode (@MetalMauce and others)
     - Updated examples: 
         - Nano 4 / tunetown KBDN
@@ -20,6 +21,7 @@
         The feature is implemented using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API">File System API</a>, which must be supported to use the functionality. Also, you have to grant access to any folders you want to access.
 
 - Some minor cosmetical changes
+- Rework of the publishing helper scripts (internal)
 
 # PySwitch v2.4.3
 - Features:

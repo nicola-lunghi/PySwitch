@@ -526,6 +526,115 @@ class TestKemperActionDefinitionsRigSelect(unittest.TestCase):
 
 ###################################################################################################################
 
+    def test_rig_btn_morph_momentary(self):
+        action = RIG_SELECT(
+            rig = 1,
+            rig_btn_morph = True,
+            momentary_morph = True
+        )
+
+        appl = MockController()
+        switch = MockFootswitch(actions = [action])
+        action.init(appl, switch)
+        
+        mapping = action.callback._KemperRigSelectCallback__mapping 
+
+        self.assertNotIn("morphStateOverride", appl.shared)
+        
+        # Select rig the first time
+        mapping.value = 1   # Not matching
+        action.update_displays()
+        self.assertEqual(action.callback.state, False)
+        
+        action.push()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.callback.state, True)
+
+        action.push()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 16383)
+
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.callback.state, True)
+
+        action.push()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 16383)
+
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.callback.state, True)
+
+        action.push()
+        
+        self.assertEqual(appl.shared["morphStateOverride"], 16383)
+
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        # Select rig the first time
+        mapping.value = 1   # Not matching
+        action.update_displays()
+        self.assertEqual(action.callback.state, False)
+        
+        action.push()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.callback.state, True)
+
+        action.push()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 16383)
+
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+        # Select rig again 
+        mapping.value = 0   # On rig
+        action.update_displays()
+        self.assertEqual(action.callback.state, True)
+
+        action.push()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 16383)
+
+        action.release()
+
+        self.assertEqual(appl.shared["morphStateOverride"], 0)
+
+
+###################################################################################################################
+
 
     def test_invalid_display_mode(self):
         display = DisplayLabel(layout = {

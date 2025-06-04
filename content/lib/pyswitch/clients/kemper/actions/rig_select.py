@@ -26,7 +26,8 @@ def RIG_SELECT(rig,                                            # Rig to select. 
                text_callback = None,                           # Optional callback for setting the text. Footprint: def callback(action, bank, rig) -> String where bank and rig are int starting from 0.
                text = None,                                    # Text override (if no text callback is passed)
                auto_exclude_rigs = None,                       # If rig_off is "auto", this can be filled with a tuple or list of rigs to exclude from "remembering" when disabled
-               rig_btn_morph = False                           # If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified.
+               rig_btn_morph = False,                          # If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified.
+               momentary_morph = False                         # If set true, the simulated morph state will operate in momentary mode. Use this if you have use momentary morph mode in your rigs.
     ):
     
     # Finally we can create the action definition ;)
@@ -46,7 +47,8 @@ def RIG_SELECT(rig,                                            # Rig to select. 
             text = text,
             text_callback = text_callback,
             auto_exclude_rigs = auto_exclude_rigs,
-            rig_btn_morph = rig_btn_morph
+            rig_btn_morph = rig_btn_morph,
+            momentary_morph = momentary_morph
         ),
         "enableCallback": enable_callback
     })  
@@ -64,7 +66,8 @@ class _KemperRigSelectCallback(Callback):
                  text,
                  text_callback,
                  auto_exclude_rigs = None,
-                 rig_btn_morph = False
+                 rig_btn_morph = False,
+                 momentary_morph = False
         ):
         
         super().__init__()
@@ -72,28 +75,7 @@ class _KemperRigSelectCallback(Callback):
         if rig_off != None and bank != None and bank_off == None:
             raise Exception() #"Also provide bank_off")        
 
-        # if bank == None:
-        #     mapping = MAPPING_RIG_SELECT(rig - 1)
-        #     mapping_disable = None if (rig_off == None or rig_off == "auto") else MAPPING_RIG_SELECT(rig_off - 1)
-        #     value_enable = [1, 0]
-        #     value_disable = [1, 0]
-        # else:
-        #     mapping = MAPPING_BANK_AND_RIG_SELECT(rig - 1)
-        #     mapping_disable = None if (rig_off == None or rig_off == "auto") else MAPPING_BANK_AND_RIG_SELECT(rig_off - 1)
-        #     value_enable = [bank - 1, 1, 0]
-        #     value_disable = [bank - 1, 1, 0] if (bank_off == None or bank_off == "auto") else [bank_off - 1, 1, 0]
-
-        # super().__init__(
-        #     mapping = mapping,
-        #     mapping_disable = mapping_disable,
-        #     value_enable = value_enable,
-        #     value_disable = value_disable,
-        #     reference_value = (bank - 1) * NUM_RIGS_PER_BANK + (rig - 1) if bank != None else None,
-        #     comparison_mode = self.EQUAL if bank != None else BinaryParameterCallback.GREATER_EQUAL 
-        # )
-
         self.__current_value = -1
-        # self.__current_state = -1
 
         self.__mapping = KemperMappings.RIG_ID()
         self.register_mapping(self.__mapping)
@@ -116,6 +98,7 @@ class _KemperRigSelectCallback(Callback):
 
         self.__auto_exclude_rigs = auto_exclude_rigs
         self.__rig_btn_morph = rig_btn_morph
+        self.__momentary_morph = momentary_morph
 
         self.__last_blink_state = None
         self.__sent_rig_mapping = None
@@ -176,7 +159,11 @@ class _KemperRigSelectCallback(Callback):
                     if self.__rig == curr_rig + 1 and (not self.__bank or self.__bank == curr_bank + 1):
                         if not "morphStateOverride" in self.__appl.shared:
                             self.__appl.shared["morphStateOverride"] = 0
-                        self.__appl.shared["morphStateOverride"] = 0 if (self.__appl.shared["morphStateOverride"] > 0) else 16383
+
+                        if self.__momentary_morph:
+                            self.__appl.shared["morphStateOverride"] = 16383
+                        else:
+                            self.__appl.shared["morphStateOverride"] = 0 if (self.__appl.shared["morphStateOverride"] > 0) else 16383
                     else:
                         self.__appl.shared["morphStateOverride"] = 0
                 else:
@@ -204,52 +191,20 @@ class _KemperRigSelectCallback(Callback):
 
     # Called when the switch is released
     def release(self):
+        # Release momentary morph if selected
+        if self.__mapping.value != None:
+            if self.__rig_btn_morph and self.__rig_off == None and self.__bank_off == None:
+                curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
+                curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
+
+                if self.__rig == curr_rig + 1 and (not self.__bank or self.__bank == curr_bank + 1):
+                    if self.__momentary_morph:
+                        self.__appl.shared["morphStateOverride"] = 0
+
         # Send release (0) value if necessary
-        if not self.__sent_rig_mapping:
-            return
-        
-        self.__appl.client.set(self.__sent_rig_mapping, 0)
-        self.__sent_rig_mapping = None
-
-    # def state_changed_by_user(self):
-    #     if "preselectedBank" in self.__appl.shared:
-    #         set_mapping = self.__mapping
-    #         value = self._value_enable
-
-    #         self.__appl.shared["morphStateOverride"] = 0
-    #         del self.__appl.shared["preselectedBank"]
-
-    #     else:
-    #         if self.action.state:
-    #             set_mapping = self.__mapping
-    #             value = self._value_enable
-    #         else:
-    #             if self.mapping_disable:
-    #                 set_mapping = self.mapping_disable
-    #             else:
-    #                 set_mapping = self.__mapping
-
-    #             value = self._value_disable
-
-    #         # If the current rig has not changed, toggle global morphing state
-    #         if self.__mapping.value != None:
-    #             curr_bank = int(self.__mapping.value / NUM_RIGS_PER_BANK)
-    #             curr_rig = self.__mapping.value % NUM_RIGS_PER_BANK
-
-    #             if self.__rig_btn_morph and self.__rig_off == None and self.__bank_off == None:
-    #                 if self.__rig == curr_rig + 1 and (not self.__bank or self.__bank == curr_bank + 1):
-    #                     if not "morphStateOverride" in self.__appl.shared:
-    #                         self.__appl.shared["morphStateOverride"] = 0
-    #                     self.__appl.shared["morphStateOverride"] = 0 if (self.__appl.shared["morphStateOverride"] > 0) else 16383
-    #                 else:
-    #                     self.__appl.shared["morphStateOverride"] = 0
-    #             else:
-    #                 self.__appl.shared["morphStateOverride"] = 0
-    #         else:
-    #             self.__appl.shared["morphStateOverride"] = 0
-
-    #     self.__appl.client.set(set_mapping, value)
-
+        if self.__sent_rig_mapping:
+            self.__appl.client.set(self.__sent_rig_mapping, 0)
+            self.__sent_rig_mapping = None
 
     def update(self):
         Callback.update(self)

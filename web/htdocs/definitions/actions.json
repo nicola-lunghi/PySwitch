@@ -999,6 +999,11 @@
                         "name": "rig_btn_morph",
                         "default": "False",
                         "comment": "If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified."
+                    },
+                    {
+                        "name": "momentary_morph",
+                        "default": "False",
+                        "comment": "If set true, the simulated morph state will operate in momentary mode. Use this if you have use momentary morph mode in your rigs."
                     }
                 ],
                 "comment": "Adds morph state display on one LED to the rig select action. The morph display will only be enabled when the rig in question is currently selected.",
@@ -1195,6 +1200,11 @@
                         "name": "rig_btn_morph",
                         "default": "False",
                         "comment": "If set True, second press will trigger toggling the internal morphing state (no command is sent, just the displays are toggled). Only if no rig_off or bank_off are specified."
+                    },
+                    {
+                        "name": "momentary_morph",
+                        "default": "False",
+                        "comment": "If set true, the simulated morph state will operate in momentary mode. Use this if you have use momentary morph mode in your rigs."
                     }
                 ],
                 "comment": "Selects a specific rig, or toggles between two rigs (if rig_off is also provided).",
