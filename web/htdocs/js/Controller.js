@@ -11,7 +11,7 @@ class Controller {
 
     midi = null;                // MIDI handler
     device = null;              // Device handler (Controller, like Midi Captain)
-    client = null;              // Client handler (like Kemper Player)
+    client = null;              // Client handler (like Kemper Profiler)
     presets = null;             // Presets handler
     pyswitch = null;            // PySwitch runner (in browser)
 
