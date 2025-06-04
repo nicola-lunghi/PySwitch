@@ -52,7 +52,7 @@ class DisplayEditor extends ParameterList {
     }
 
     #initDragging(element) {
-        if (element != this.#preview) {            
+        if (element != this.#preview) {     // TODO exclude root element       
             this.#initInteract(element);
         }
 
