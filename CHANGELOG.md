@@ -1,11 +1,13 @@
 # PySwitch v2.4.4
 - Features:
-    - Added Bank Preselect Action for the Wheel Encoder.
-        - Added the possibility to set None for the Rig Select action(s). This enables to use it as push action for the wheel when used as bank preselector, to acknowledge the current rig with the preselected bank.
+    - Added **Bank Select Action for the Wheel Encoder**. Turning the wheel preselects the bank. To use the wheel pushbutton to acknowledge the bank keeping the current rig, the possibility to set rig = None for the Rig Select action(s) has been added. This enables to use it as push action for the wheel when used as bank preselector, to acknowledge the preselected bank with the current rig.
 
 - Bug Fixes: 
-    - **Rig Select, Rig Select & Morph Display, Bank Select, Bank Up/Down, Rig Up/Down** Actions: Now the rig select trigger sequence is correct, sending 1 at push and 0 at release, instead of sending them both on push. This enables the Kemper rig button morph function to work also in momentary mode. (@NickMrChaos)
+    - **Rig Select, Rig Select & Morph Display, Bank Select, Bank Up/Down, Rig Up/Down**: Now the rig select trigger sequence is correct, sending 1 at push and 0 at release, instead of sending them both on push. This enables the Kemper rig button morph function to work also in momentary mode. (@NickMrChaos)
     - **Bank up/down** Action: LEDs are now reset correctly after exiting tuner mode (@MetalMauce and others)
+    - Updated examples: 
+        - Nano 4 / tunetown KBDN
+        - Nano 4 / tunetown Session with Looper and Pages
 
 ### Emulator 2.4.4.11
 - Features: 

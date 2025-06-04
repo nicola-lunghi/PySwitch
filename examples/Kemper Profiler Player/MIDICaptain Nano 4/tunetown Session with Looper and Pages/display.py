@@ -107,7 +107,6 @@ DISPLAY_RIG_NAME = DisplayLabel(
 )
 
 Splashes = TunerDisplayCallback(
-    strobe = True, 
     splash_default = DisplayElement(
         bounds = DisplayBounds(
             x = 0, 

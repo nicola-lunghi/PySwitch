@@ -15,7 +15,8 @@ Inputs = [
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
         "actions": [
             TUNER_MODE(
-                display = DISPLAY_HEADER_1
+                display = DISPLAY_HEADER_1,
+                use_leds = False
             ),
             MORPH_DISPLAY()        
         ]
@@ -38,11 +39,13 @@ Inputs = [
         "actions": [
             RIG_SELECT(
                 rig = 3,
+                bank = 3,
                 rig_off = 1,
+                bank_off = 3,
                 display = DISPLAY_FOOTER_1,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
                 color = Colors.PINK,
-                text = "Synth-3"
+                text = "Synth 3"
             )            
         ]
     },
@@ -53,10 +56,12 @@ Inputs = [
         "actions": [
             RIG_SELECT(
                 rig = 2,
+                bank = 3,
                 rig_off = 1,
+                bank_off = 3,
                 display = DISPLAY_FOOTER_2,
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG,
-                text = "Lead-2"
+                text = "Lead 2"
             )
         ]
     }
