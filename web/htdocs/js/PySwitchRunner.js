@@ -346,11 +346,18 @@ class PySwitchRunner {
         
         await this.stop();
 
-        // Copy the configuration to the virtual FS
-        this.pyodide.FS.writeFile("/home/pyodide/inputs.py", config.inputs_py);
-        this.pyodide.FS.writeFile("/home/pyodide/display.py", config.display_py);
+        const data = await config.get();
 
-        // Run PySwitch!
+        // Copy the configuration to the virtual FS
+        this.pyodide.FS.writeFile("/home/pyodide/inputs.py", data.inputs_py);
+        this.pyodide.FS.writeFile("/home/pyodide/display.py", data.display_py);
+
+        // Determine display dimensions
+        const displayDimensions = (await Device.getInstance(config)).getDisplayDimensions();
+        const displayWidth = displayDimensions[0];
+        const displayHeight = displayDimensions[1];
+
+        // Create runner proxy
         this.#runner = await this.pyodide.runPython(`
             from PySwitchRunner import PySwitchRunner
             runner = PySwitchRunner(
@@ -360,9 +367,16 @@ class PySwitchRunner {
                 coverage = ` + (this.#options.coverage ? "True" : "False") + `,
                 explore_mode = ` + (this.#options.exploreMode ? "True" : "False") + `
             )
-            runner.` + (dontTick ? 'init()' : 'run()') + `
             runner      # Returns the runner as a JS proxy
         `);
+
+        if (dontTick) {
+            // Initialize, but dont run PySwitch
+            this.#runner.init(displayWidth, displayHeight);
+        } else {
+            // Run PySwitch!
+            this.#runner.run(displayWidth, displayHeight);
+        }
     }
 
     /**

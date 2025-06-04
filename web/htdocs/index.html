@@ -71,7 +71,6 @@
     <link rel="stylesheet" type="text/css" href="styles/client-select.css">
     <link rel="stylesheet" type="text/css" href="styles/pyswitch.css">
     <link rel="stylesheet" type="text/css" href="styles/virtual-clients.css">
-    <link rel="stylesheet" type="text/css" href="styles/editor.css">
     <link rel="stylesheet" type="text/css" href="styles/parser-frontend.css">
     <link rel="stylesheet" type="text/css" href="styles/parser-action-properties.css">
     <link rel="stylesheet" type="text/css" href="styles/parser-actions.css">
@@ -82,6 +81,7 @@
     <link rel="stylesheet" type="text/css" href="styles/tooltips.css">
     <link rel="stylesheet" type="text/css" href="styles/parameter-list.css">
     <link rel="stylesheet" type="text/css" href="styles/display-editor.css">
+    <link rel="stylesheet" type="text/css" href="styles/code-editor.css">
     <link rel="stylesheet" type="text/css" href="styles/midi-monitor.css">
     
     <!-- Main classes -->
@@ -112,7 +112,7 @@
     <script type="text/javascript" src="js/model/configurations/PresetConfiguration.js"></script>
     <script type="text/javascript" src="js/model/configurations/LocalFolderConfiguration.js"></script>
 
-    <!-- Parser(s) -->
+    <!-- Parser -->
     <script type="text/javascript" src="js/model/parser/Parser.js"></script>
     <script type="text/javascript" src="js/model/parser/FunctionMeta.js"></script>
     <script type="text/javascript" src="js/model/parser/ParameterMeta.js"></script>
@@ -122,6 +122,7 @@
     <script type="text/javascript" src="js/model/parser/ParserInput.js"></script>
     <script type="text/javascript" src="js/model/parser/ParserInputAction.js"></script>
     <script type="text/javascript" src="js/model/parser/ClassItemExtractor.js"></script>
+    <script type="text/javascript" src="js/model/parser/Resolver.js"></script>
 
     <!-- MIDI related classes -->
     <script type="text/javascript" src="js/midi/MidiHandler.js"></script>
@@ -165,17 +166,15 @@
     <script type="text/javascript" src="js/ui/parser/ActionPropertiesInternal.js"></script>
     <script type="text/javascript" src="js/ui/parser/ActionPropertiesEncoder.js"></script>
 
-    <!-- Display editor -->
-    <script type="text/javascript" src="js/ui/displays/DisplayEditor.js"></script>
-
     <!-- MIDI Monitor -->
     <script type="text/javascript" src="js/ui/monitor/MidiMonitor.js"></script>
 
     <!-- Presets -->
     <script type="text/javascript" src="js/ui/presets/LocalPresetsProvider.js"></script>
 
-    <!-- Code editor -->
-    <script type="text/javascript" src="js/ui/editor/CodeEditor.js"></script>
+    <!-- Editors -->
+    <script type="text/javascript" src="js/ui/editors/CodeEditor.js"></script>
+    <script type="text/javascript" src="js/ui/editors/DisplayEditor.js"></script>
 
     <!-- Data providers for loading -->
     <script type="text/javascript" src="js/ui/examples/ExamplesProvider.js"></script>

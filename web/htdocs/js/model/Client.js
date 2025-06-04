@@ -81,4 +81,12 @@ class Client {
     getDisplayName() {
         return this.id;
     }
+
+    /**
+     * Given a DisplayEditor instance, this has to render the client's implementations of DisplayElement.
+     * Must return a DOM node or null.
+     */
+    async renderDisplayElement(node, editor) {
+        return null;
+    }
 }

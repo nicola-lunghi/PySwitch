@@ -57,4 +57,22 @@ class KemperClient extends Client {
     getInitMappingsClassName() {
         return "KemperMappings";
     }
+
+    /**
+     * Given a DisplayEditor instance, this has to render the client's implementations of DisplayElement.
+     */
+    async renderDisplayElement(node, editor) {  
+        switch(node.name) {
+            case "TunerDisplayCallback":
+                return this.#renderTunerDisplayCallback(node, editor);
+        }
+        return null;
+    }
+
+    async #renderTunerDisplayCallback(node, editor) {
+        const splashDefault = Tools.getArgument(node, "splash_default");
+        if (!splashDefault) return null;
+        
+        return editor.renderDisplayElement(splashDefault.value);        
+    }
 }

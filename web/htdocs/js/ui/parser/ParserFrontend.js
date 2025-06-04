@@ -37,9 +37,9 @@ class ParserFrontend {
     }
 
     /**
-     * Shows the action edit/create dialog. The passed displayCanvas will be mirrored.
+     * Shows the action edit/create dialog.
      */
-    async showDisplayEditor(displayCanvas) {
+    async showDisplayEditor() {
         async function commit() {
             browser.hide();
         }
@@ -52,7 +52,6 @@ class ParserFrontend {
 
         const props = new DisplayEditor(
             this.#controller,
-            displayCanvas,
             commit
         );
 
@@ -64,7 +63,7 @@ class ParserFrontend {
             "Display Configuration"
         );
 
-        props.init();
+        await props.init();
 
         return browser;
     }

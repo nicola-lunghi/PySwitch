@@ -51,4 +51,11 @@ class Device {
     isAdditionalInput(model) {
         return false;
     }
+
+    /**
+     * Must return an array with [width, height]
+     */
+    getDisplayDimensions() {
+        return [0, 0]
+    }
 }

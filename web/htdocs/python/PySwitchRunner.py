@@ -31,13 +31,13 @@ class PySwitchRunner:
         self.explore_mode = explore_mode   
 
     # Set up a PySwitch controller and let it run
-    def run(self):
+    def run(self, display_width, display_height):
         self.running = True
         self.triggerStop = False
 
-        self.init()
+        self.init(display_width, display_height)
 
-    def init(self):
+    def init(self, display_width, display_height):
         if self.coverage:
             import coverage
 
@@ -45,9 +45,9 @@ class PySwitchRunner:
             cov.start()
 
         if self.explore_mode:
-            self._init_explore_mode()
+            self._init_explore_mode(display_width, display_height)
         else:
-            self._init_default()
+            self._init_default(display_width, display_height)
 
         # Local callback for set_timeout
         def tick():            
@@ -66,7 +66,7 @@ class PySwitchRunner:
             cov.save()
             # print(cov.get_data())
 
-    def _init_default(self):
+    def _init_default(self, display_width, display_height):
         with patch.dict(sys.modules, {
             "micropython": MockMicropython,
             "gc": MockGC(),
@@ -87,8 +87,8 @@ class PySwitchRunner:
             "adafruit_hid.keyboard": WrapUsbHidKeyboard
         }):            
             self.display_driver = WrapDisplayDriver(
-                width = 240,
-                height = 240,
+                width = display_width,
+                height = display_height,
                 dom_namespace = self.dom_namespace
             )
             self.display_driver.init()
@@ -151,7 +151,7 @@ class PySwitchRunner:
             # Prepare to run the processing loop
             self.controller.init()
 
-    def _init_explore_mode(self):
+    def _init_explore_mode(self, display_width, display_height):
         with patch.dict(sys.modules, {
             "micropython": MockMicropython,
             "gc": MockGC(),
@@ -168,8 +168,8 @@ class PySwitchRunner:
             "time": WrapTime()
         }):
             self.display_driver = WrapDisplayDriver(
-                width = 240,
-                height = 240,
+                width = display_width,
+                height = display_height,
                 dom_namespace = self.dom_namespace
             )
             self.display_driver.init()

@@ -132,5 +132,17 @@ class Tools {
             ret += String.fromCharCode(c);
         }
         return ret;
-    }    
+    }
+
+    /**
+     * Helper to get an argument from a raw data node, like coming from the python parser.
+     */
+    static getArgument(node, argName, defaultValue = null) {
+        for (const arg of node.arguments) {
+            if (arg.name != argName) continue;
+
+            return arg;
+        }
+        return defaultValue;
+    }
 }

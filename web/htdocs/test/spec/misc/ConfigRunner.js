@@ -55,7 +55,7 @@ class ConfigRunner {
         });
 
         // Run without ticking
-        await this.pyswitch.run(await config.get(), true);
+        await this.pyswitch.run(config, true);
 
         // Do the tests
         if (performTestsCallback) {

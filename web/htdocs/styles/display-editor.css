@@ -1,7 +1,21 @@
-.container .display-editor .canvas-container {
-    text-align: center;
+.container .display-editor {
+    
 }
 
-.container .display-editor .canvas-container > * {
-    margin-top: 1em;
+.container .display-editor .display-preview {
+    background-color: rgb(212, 212, 212);
+
+    display: inline-block;
+    position: relative;
 }
+
+.container .display-editor .display-preview .display-element {
+    position: absolute;
+    padding: 0.4em;
+}
+
+.container .display-editor .display-preview .display-label {
+    background-color: rgba(0, 0, 0, 0.02);
+    border: 1px solid black;
+}
+

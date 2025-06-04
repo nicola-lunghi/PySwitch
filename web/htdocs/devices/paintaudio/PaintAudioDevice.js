@@ -55,4 +55,12 @@ class PaintAudioDevice extends Device {
         }
         return false;
     }
+
+    /**
+     * Must return an array with [width, height]
+     */
+    getDisplayDimensions() {
+        return [240, 240]
+    }
+
 }
