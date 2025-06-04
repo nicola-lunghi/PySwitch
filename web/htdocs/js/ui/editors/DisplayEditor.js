@@ -46,6 +46,102 @@ class DisplayEditor extends ParameterList {
         this.#preview.append(
             await this.renderDisplayElement(splashes)
         );
+
+        // Setup Interact.js after the DOM is ready
+        this.#initDragging(this.#preview);
+    }
+
+    #initDragging(element) {
+        if (element != this.#preview) {            
+            this.#initInteract(element);
+        }
+
+        const that = this;
+        element.children().each(function() {
+            that.#initDragging($(this));
+        });
+    }
+
+    #initInteract(element) {
+        const that = this;
+
+        interact(element[0])
+            .draggable({
+                listeners: {
+                    /*start (event) {
+                        console.log(event.type, event.target)
+                    },*/
+                    move (event) {
+                        element.data("x", element.data("x") + event.dx);
+                        element.data("y", element.data("y") + event.dy);
+
+                        element.css("left", element.data("x") + "px");
+                        element.css("top", element.data("y") + "px");
+                    }
+                },
+
+                modifiers: [
+                    interact.modifiers.snap({
+                        targets: [
+                            interact.snappers.grid({ x: 10 * that.#scaleFactor, y: 10 * that.#scaleFactor })  // TODO not working for non-rect screens
+                        ],
+                        range: Infinity,
+                        relativePoints: [ { x: 0, y: 0 } ]
+                    }),
+
+                    interact.modifiers.restrict({
+                        restriction: element[0].parentNode,
+                        elementRect: { top: 0, left: 0, bottom: 1, right: 1 }                    
+                    })                    
+                ],
+
+                inertia: true,
+                origin: 'parent'
+            })
+            .resizable({
+                // Resize from all edges and corners
+                edges: { right: true, bottom: true },
+
+                listeners: {
+                    move (event) {
+                        // Update the element's style
+                        element.css("width", event.rect.width + 'px');
+                        element.css("height", event.rect.height + 'px');
+
+                        // // Translate when resizing from top or left edges
+                        // x += event.deltaRect.left;
+                        // y += event.deltaRect.top;
+
+                        // element.data("x", element.data("x") + event.deltaRect.left);
+                        // element.data("y", element.data("y") + event.deltaRect.top);
+                        
+                        // element.css("left", element.data("x") + "px");
+                        // element.css("top", element.data("y") + "px");
+                    }
+                },
+
+                modifiers: [
+                    interact.modifiers.snap({
+                        targets: [
+                            interact.snappers.grid({ x: 10 * that.#scaleFactor, y: 10 * that.#scaleFactor })  // TODO not working for non-rect screens
+                        ],
+                        range: Infinity,
+                        relativePoints: [ { x: 0, y: 0 } ]
+                    }),
+
+                    // Keep the edges inside the parent
+                    interact.modifiers.restrictEdges({
+                        outer: 'parent'
+                    }),
+
+                    // Minimum size
+                    interact.modifiers.restrictSize({
+                        min: { width: that.#scaleFactor, height: that.#scaleFactor }
+                    })
+                ],
+
+                origin: 'parent'
+            });
     }
 
     /**
@@ -140,7 +236,7 @@ class DisplayEditor extends ParameterList {
         const w = getBoundsParam("w");
         const h = getBoundsParam("h");
 
-        console.log(x, y, w, h)
+        // console.log(x, y, w, h)
 
         function getText() {
             if (node.hasOwnProperty("assign")) return node.assign;
@@ -156,6 +252,8 @@ class DisplayEditor extends ParameterList {
             .css('top', y + "px")
             .css('width', w + "px")
             .css('height', h + "px")
+            .data("x", x)
+            .data("y", y)
             .text(getText())
     }
 }
