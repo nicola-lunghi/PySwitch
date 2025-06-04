@@ -1,0 +1,13 @@
+services:
+  pyswitch-publish-helper:
+    build: ../
+    container_name: apache-pyswitch-publish-helper
+    ports:
+      - "8080:80"
+    volumes:
+      - ./htdocs:/var/www/html
+      
+      - ./apache2-conf:/etc/apache2/sites-available
+      - ./apache2-log:/var/log/apache2
+      
+  

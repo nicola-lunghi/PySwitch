@@ -1,0 +1,9 @@
+**/.DS_Store
+
+htdocs/*
+!htdocs/versions
+
+htdocs/versions/create/.htaccess
+htdocs/versions/create/.htpasswd
+
+apache2-log

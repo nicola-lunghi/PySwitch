@@ -1,4 +1,14 @@
-<!DOCTYPE html>
+<?php 
+
+// ini_set('display_errors', true);
+// error_reporting(E_ALL);
+
+include "src/PySwitchVersions.php";
+
+// This handler loads and renders all versions
+$versions = new PySwitchVersions();
+
+?><!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -15,10 +25,12 @@
     </style>
 </head>
 <body>
-    
+    <br>
     <h1>Available PySwitch Emulator versions:</h1>
+    <br>
+    <br>
     
-    <a href="/2.3.4/PySwitch/web/htdocs">PySwitch Emulator for Version 2.3.4 (latest)</a>    
+    <?php $versions->render_version_links(); ?>
     
 </body>
 </html>
