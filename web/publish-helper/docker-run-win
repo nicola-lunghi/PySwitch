@@ -2,6 +2,6 @@
 
 docker compose up -d
 
-winpty docker exec -it pyswitch-test bash
+winpty docker exec -it apache-pyswitch-publish-helper bash
 
 docker compose down

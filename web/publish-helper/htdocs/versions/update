@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "Updating .htaccess"
+php -r 'include "src/PySwitchUpdater.php"; (new PySwitchUpdater())->process("../");'

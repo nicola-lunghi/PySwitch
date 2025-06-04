@@ -1,0 +1,9 @@
+<Files "create">  
+  Order Allow,Deny
+  Deny from all
+</Files>
+
+<Files "update">  
+  Order Allow,Deny
+  Deny from all
+</Files>

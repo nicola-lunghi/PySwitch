@@ -50,6 +50,8 @@ RUN apt-get --no-install-recommends --no-install-suggests --yes --quiet install 
     zlib1g-dev \
     libapache2-mod-php8.2
 
+RUN apt-get --no-install-recommends --no-install-suggests --yes --quiet install git
+
 # INSTALL ODBC DRIVER & TOOLS
 
 

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Check input
+if [ "$#" -ne 1 ]; then
+    echo "Usage: <scriptname> <version_name>"
+	exit 1
+fi
+
+version_path=../$1
+
+# Check if exists
+if [ -d $version_path ]; then
+    echo "Directory $version_path exists, please clean up first"
+    exit 2
+fi
+
+# Create folders
+echo "Creating folders for $version_path"
+mkdir $version_path
+mkdir $version_path/PySwitch
+
+# Cloning
+echo "Cloning version $version_path"
+git clone https://github.com/Tunetown/PySwitch.git $version_path/PySwitch
+
+# Copy files
+echo "Copy files"
+cp -r $version_path/PySwitch/examples $version_path/PySwitch/web/htdocs/examples
+cp -r $version_path/PySwitch/content $version_path/PySwitch/web/htdocs/circuitpy
+
+# Adjust .htaccess
+./update
+
+# Done
+echo " -> Done." 

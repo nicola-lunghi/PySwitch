@@ -1,42 +1,19 @@
 <?php
 
 /**
- * Shows all PySwitch versions
+ * Determines all PySwitch versions in a location on the file system.
  * 
  * @author thomasweber
  */
 class PySwitchVersions {
     
     /**
-     * Renders the list of available versions.
-     */
-    public function render_version_links():void {
-        $versions = $this->get_versions();
-        
-        $addtext = ' (latest)';
-        foreach ($versions as $version) {
-            $vtext = $version->name;
-            
-            ?>
-                <a href="/<?php echo $vtext; ?>/PySwitch/web/htdocs"
-                   target="_blank">
-                	PySwitch Emulator for Version <?php echo $vtext . $addtext; ?>
-                </a>    
-                <br>
-                <br>
-            <?php
-            
-            $addtext = '';
-        }
-    }
-    
-    /**
-     * Determine versions. These are all folders in the parent directory which do not start with "versions".
+     * Determine versions. These are all folders in the passed directory which do not start with "versions".
      * 
-     * @return array of objects with name and mtime properties, sorted in descending order by last modified timestamp.
+     * @return array of objects with name and mtime properties.
      */
-    public function get_versions():array {
-        $dir = new DirectoryIterator('../');
+    public function get(string $path):array {
+        $dir = new DirectoryIterator($path);
         
         $versions = array();
         foreach ($dir as $node) {

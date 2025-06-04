@@ -1,7 +1,7 @@
 services:
   python:
     build: .
-    container_name: python3
+    container_name: pyswitch-test
     command: sleep infinity
     #ports:
       #- "80:80"

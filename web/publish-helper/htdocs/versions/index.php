@@ -3,10 +3,42 @@
 // ini_set('display_errors', true);
 // error_reporting(E_ALL);
 
-include "src/PySwitchVersions.php";
+include 'src/PySwitchVersions.php';
 
-// This handler loads and renders all versions
-$versions = new PySwitchVersions();
+/**
+ * Shows all PySwitch versions
+ * 
+ * @author thomasweber
+ */
+class PySwitchVersionsPage {
+    
+    /**
+     * Renders the list of available versions.
+     */
+    public function render():void {
+        $versions = (new PySwitchVersions())->get('../');
+        
+        $addtext = ' (latest)';
+        foreach ($versions as $version) {
+            $vtext = $version->name;
+            
+            ?>
+                <a href="/<?php echo $vtext; ?>/PySwitch/web/htdocs"
+                   target="_blank">
+                	PySwitch Emulator for Version <?php echo $vtext . $addtext; ?>
+                </a>    
+                <br>
+                <br>
+            <?php
+            
+            $addtext = '';
+        }
+    }    
+}
+
+$appl = new PySwitchVersionsPage();
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ?><!DOCTYPE html>
 <html>
@@ -30,7 +62,8 @@ $versions = new PySwitchVersions();
     <br>
     <br>
     
-    <?php $versions->render_version_links(); ?>
-    
+    <?php 
+        $appl->render(); 
+    ?>
 </body>
 </html>

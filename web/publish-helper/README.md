@@ -1,17 +1,17 @@
 # PySwitch Emulator Publisher
 
-This is a PHP based website which manages published PySwitch versions, to always be able to have multiple versions accessible. It is a standalone project, coming with its own docker container.
+This project can publish multiple versions of PySwitch Emulator. It is a standalone project, coming with its own docker configuration, bound to port 8080 on the host machine. Run the container with ./docker-run and you will get a terminal login directly, to test the create/update scripts.
 
 ## How to install on a web server
-1. Copy everything in the web/publish-helper/htdocs to your web root.
-2. Update the .htaccess file in /versions/create to protect the folder with a login
-3. If needed, grant the PHP web user access to modify files in the web root.
+Copy everything in the web/publish-helper/htdocs to your web root.
 
 ## Create Versions
 
-Call the page "/versions/create" to create versions: This page will create a new versions by pulling the current main branch of the PySwitch repository and setting everything up. The .htaccess is updated so the latest version will be shown (depending on the time cloned).
+Log in to your web server, cd to the versions folder in the web root, and run the create script with the name of the version to be created.
 
-## Usage
+The update script is called at the end of create, but can also be called independently to update the .htaccess file to the current available versions.
+
+## For the End User
 
 Calling the web root will always redirect to the latest version.
 Calling /versions will show a page linking to all available versions.
