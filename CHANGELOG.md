@@ -19,6 +19,8 @@
         
         The feature is implemented using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API">File System API</a>, which must be supported to use the functionality. Also, you have to grant access to any folders you want to access.
 
+- Some minor cosmetical changes
+
 # PySwitch v2.4.3
 - Features:
     - Added mappings for some system parameters (can be used with the wheel encoder, pedals or the "Other Parameter" Actions):
