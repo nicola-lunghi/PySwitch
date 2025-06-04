@@ -1,4 +1,4 @@
-# PySwitch v2.4.4
+# PySwitch v2.4.5
 - Features:
     - Added **Bank Select Action for the Wheel Encoder**. Turning the wheel preselects the bank. To use the wheel pushbutton to acknowledge the bank keeping the current rig, the possibility to set rig = None for the Rig Select action(s) has been added. This enables to use it as push action for the wheel when used as bank preselector, to acknowledge the preselected bank with the current rig.
 
@@ -10,7 +10,7 @@
         - Nano 4 / tunetown KBDN
         - Nano 4 / tunetown Session with Looper and Pages
 
-### Emulator 2.4.4.11
+### Emulator 2.4.5.11
 - Features: 
     - Added support for opening folders on the local file system:
         - "Open Directory..." lets you choose a folder to open, containing your configuration (inputs.py and display.py)

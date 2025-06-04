@@ -3,7 +3,7 @@
  */
 class Controller {
 
-    static PYSWITCH_VERSION = "2.4.4";                           // Version of PySwitch this emulator is designed to run with
+    static PYSWITCH_VERSION = "2.4.5";                           // Version of PySwitch this emulator is designed to run with
     static VERSION = Controller.PYSWITCH_VERSION + ".11";        // PySwitch Emulator Version
 
     ui = null;                  // User Interface implementation
