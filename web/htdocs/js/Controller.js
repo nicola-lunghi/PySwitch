@@ -4,7 +4,7 @@
 class Controller {
 
     static PYSWITCH_VERSION = "2.4.5";                           // Version of PySwitch this emulator is designed to run with
-    static VERSION = Controller.PYSWITCH_VERSION + ".12";        // PySwitch Emulator Version
+    static VERSION = Controller.PYSWITCH_VERSION + ".13";        // PySwitch Emulator Version
 
     ui = null;                  // User Interface implementation
     routing = null;             // sammy.js router

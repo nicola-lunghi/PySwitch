@@ -83,10 +83,16 @@ class Client {
     }
 
     /**
-     * Given a DisplayEditor instance, this has to render the client's implementations of DisplayElement.
-     * Must return a DOM node or null.
+     * Must return the Display Element which is the display root.
      */
-    async renderDisplayElement(node, editor) {
-        return null;
+    async getSplashesRootElement(splashes) {
+        return splashes;
+    }
+
+    /**
+     * Replaces the root splash element in the passed splashes object and returns the if successful
+     */
+    async setSplashesRootElement(splashes, rootElement) {
+        return false;
     }
 }

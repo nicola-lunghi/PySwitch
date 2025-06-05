@@ -145,4 +145,34 @@ class Tools {
         }
         return defaultValue;
     }
+
+    /**
+     * Console output of DOM structures
+     *
+    static debugDOM(el, callback = null, level = 0, childIndex = 0) {
+        const ret = {
+            element: el,
+            level: level,
+            index: childIndex,
+            children: []
+        }
+
+        if (callback) {
+            callback(el, ret);
+        }
+
+        let cnt = 0;
+        el.children().each(function() {
+            ret.children.push(
+                Tools.debugDOM(
+                    $(this), 
+                    callback, 
+                    level + 1, 
+                    cnt++
+                )
+            );
+        });
+
+        return ret;
+    }*/
 }

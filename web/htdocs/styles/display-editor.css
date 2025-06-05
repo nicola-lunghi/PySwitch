@@ -3,7 +3,7 @@
 }
 
 .container .display-editor .display-preview {
-    background-color: rgb(234, 234, 234);
+    background-color: rgb(240, 240, 240);
 
     display: inline-block;
     position: relative;
@@ -11,8 +11,8 @@
 
 .container .display-editor .display-preview .display-element {
     position: absolute;
-    background-color: rgb(212, 212, 212);
     padding: 0.4em;
+    overflow: hidden;
 }
 
 /*.container .display-editor .display-preview .display-element:hover {
@@ -20,7 +20,11 @@
 }*/
 
 .container .display-editor .display-preview .display-label {
-    background-color: rgba(0, 0, 0, 0.02);
+    background-color: rgb(216, 216, 216);
     border: 1px solid black;
+}
+
+.container .display-editor .display-preview .selected {
+    background-color: rgb(166, 166, 166);
 }
 

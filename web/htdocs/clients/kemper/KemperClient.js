@@ -59,20 +59,32 @@ class KemperClient extends Client {
     }
 
     /**
-     * Given a DisplayEditor instance, this has to render the client's implementations of DisplayElement.
+     * Must return the Display Element which is the display root.
      */
-    async renderDisplayElement(node, editor) {  
-        switch(node.name) {
+    async getSplashesRootElement(splashes) {
+        switch(splashes.name) {
             case "TunerDisplayCallback":
-                return this.#renderTunerDisplayCallback(node, editor);
+                const splashDefault = Tools.getArgument(splashes, "splash_default");
+                if (!splashDefault) throw new Error("No splash_default parameter found for TunerDisplayCallback");
+
+                return splashDefault.value;
         }
-        return null;
+        return splashes;
     }
 
-    async #renderTunerDisplayCallback(node, editor) {
-        const splashDefault = Tools.getArgument(node, "splash_default");
-        if (!splashDefault) return null;
-        
-        return editor.renderDisplayElement(splashDefault.value);        
+    /**
+     * Replaces the root splash element in the passed splashes object and returns if successful
+     */
+    async setSplashesRootElement(splashes, rootElement) {
+        switch(splashes.name) {
+            case "TunerDisplayCallback":
+                const splashDefault = Tools.getArgument(splashes, "splash_default");
+                if (!splashDefault) throw new Error("No splash_default parameter found for TunerDisplayCallback");
+
+                splashDefault.value = rootElement;
+                return true;
+        }
+        return false;
     }
+
 }
