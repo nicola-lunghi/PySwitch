@@ -17,6 +17,16 @@ class DisplayEditorPreviewNode {
         this.#preview.references.set(node, this);
     }
 
+    destroy() {
+        (new DisplayEditorPreviewNodeDrag(this.#preview, this)).kill();
+
+        const children = this.getChildren();
+        
+        for (const child of children) {
+            child.destroy();
+        }
+    }
+
     /**
      * Sets up the element and returns it (recursive)
      */

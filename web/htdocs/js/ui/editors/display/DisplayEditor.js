@@ -11,6 +11,12 @@ class DisplayEditor {
         this.controller = controller;        
     }
     
+    destroy() {
+        if (this.#preview) {
+            this.#preview.destroy();
+        }
+    }
+
     /**
      * Generate the DOM for the properties panel, or null if no options are present.
      */

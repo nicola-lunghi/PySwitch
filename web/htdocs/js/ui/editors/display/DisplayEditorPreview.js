@@ -12,12 +12,19 @@ class DisplayEditorPreview {
     references = null;  // Memory for node references
     
     selected;           // Selected node handler (managed by the node handlers)
+    #resizeObserver = null;
 
     controller = null;
 
     constructor(editor) {
         this.#editor = editor;
         this.controller = editor.controller;
+    }
+
+    destroy() {
+        if (this.#resizeObserver) {
+            this.#resizeObserver.disconnect();
+        }
     }
     
     /**
@@ -53,16 +60,21 @@ class DisplayEditorPreview {
         // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
         this.#rootNode = JSON.parse(JSON.stringify(await this.#getRootNode()));
 
-        // Get scale factor (determined by the device)
-        this.scaleFactor = await this.#determineScaleFactor();
-
-        // Root dimensions
-        const displayDimensions = (await Device.getInstance(this.#editor.getConfig())).getDisplayDimensions();
-        this.#element
-            .width(displayDimensions[0] * this.scaleFactor)
-            .height(displayDimensions[1] * this.scaleFactor);
-
         await this.#update();
+
+        this.#initResizeObserver();
+    }
+
+    /**
+     * When the parent is resized, we want to recalculate
+     */
+    #initResizeObserver() {
+        const that = this;
+        this.#resizeObserver = new ResizeObserver(async (entries) => {
+            //await that.#update();
+        });
+
+        this.#resizeObserver.observe(this.#editor.controller.ui.container[0]);
     }
 
     /**
@@ -79,12 +91,23 @@ class DisplayEditorPreview {
     }
 
     /**
-     * Update the editor to the current state
+     * Update the editor to the current state of the model
      */
     async #update() {
         // Clear
+        this.selected = null;
         this.#element.empty();
         this.references = new Map();
+        if (this.root) this.root.destroy();
+
+        // Get scale factor (determined by the device)
+        this.scaleFactor = await this.#determineScaleFactor();
+
+        // Root dimensions
+        const displayDimensions = (await Device.getInstance(this.#editor.getConfig())).getDisplayDimensions();
+        this.#element
+            .width(displayDimensions[0] * this.scaleFactor)
+            .height(displayDimensions[1] * this.scaleFactor);
 
         // Create root
         this.root = new DisplayEditorPreviewNode(
@@ -103,23 +126,21 @@ class DisplayEditorPreview {
      * Determines scale factor and sets it. Returns the display dimensions on screen.
      */
     async #determineScaleFactor() {
-        // const displayDimensions = (await Device.getInstance(config)).getDisplayDimensions();
-        // const displayWidth = displayDimensions[0];
-        // const displayHeight = displayDimensions[1];
+        const displayDimensions = (await Device.getInstance(this.#editor.getConfig())).getDisplayDimensions();
+        const displayWidth = displayDimensions[0];
+        const displayHeight = displayDimensions[1];
+        const displayRatio = displayWidth / displayHeight;
 
-        return 2;
-        // TODO
-        
+        const availableWidth = this.#editor.container.width() - 3
+        const availableHeight = this.#editor.container.height() - 3
+        const availableRatio = availableWidth / availableHeight;
 
-        // const availableWidth = this.#container.width()
-        // const availableHeight = this.#container.height()
-
-        // if (availableHeight < availableWidth) {
-        //     this.#scaleFactor = availableHeight / displayHeight;
-        //     return availableHeight - 2;
-        // } else {
-        //     this.#scaleFactor = availableWidth / displayWidth;
-        //     return availableWidth - 2;
-        // }
+        if (availableRatio > displayRatio) {
+            // Available is wider than the display: Height counts
+            return availableHeight / displayHeight;
+        } else {
+            // Display is wider than available: Width counts
+            return availableWidth / displayWidth;
+        }
     }
 }
