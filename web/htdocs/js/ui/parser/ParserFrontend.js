@@ -41,18 +41,25 @@ class ParserFrontend {
      */
     async showDisplayEditor() {
         async function commit() {
+            await props.apply();
+
             browser.hide();
         }
 
         const browser = this.#controller.ui.getPopup({
             onReturnKey: commit,
-            additionalClasses: "display-editor",
+            buttons: [
+                {
+                    text: "Apply",
+                    onClick: commit
+                }
+            ],
+            additionalClasses: "display-editor-popup",
             wide: true
         });
 
         const props = new DisplayEditor(
-            this.#controller,
-            commit
+            this.#controller
         );
 
         const propsContent = await props.get();

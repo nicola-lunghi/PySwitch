@@ -6,8 +6,8 @@ class InputSettings extends ParameterList {
     #definition = null;
     #input = null;
 
-    constructor(controller, definition, input, onCommit) {
-        super(controller, onCommit)
+    constructor(controller, definition, input) {
+        super(controller)
         this.#definition = definition;
         this.#input = input;
     }

@@ -510,19 +510,26 @@ class ParserFrontendInput {
      * Shows the action edit/create dialog
      */
     async promptInputSettings() {
+        const that = this;
+
         async function commit() {
             browser.hide();
         }
-
+        
         const browser = this.#controller.ui.getPopup({
-            onReturnKey: commit
+            onReturnKey: commit,
+            buttons: [
+                {
+                    text: "Done",
+                    onClick: commit
+                }
+            ]
         });
 
         const props = new InputSettings(
             this.#controller,
             this.definition,
-            this.input,
-            commit
+            this.input
         );
 
         const propsContent = await props.get();

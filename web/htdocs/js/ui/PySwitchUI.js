@@ -164,8 +164,7 @@ class PySwitchUI {
                         .addClass('fa-ellipsis-v')
                         .on("click", async function() {
                             try {
-                                const newVisible = that.#additionalInputsContainer.hasClass('hidden')
-                                that.#toggleAdditionalInputs(newVisible);
+                                that.showAdditionalInputs(!that.additionalInputsShown());
                                 
                             } catch (e) {
                                 that.#controller.handle(e);
@@ -257,11 +256,18 @@ class PySwitchUI {
     /**
      * Shows/hides the additional inputs panel
      */
-    #toggleAdditionalInputs(show) {
+    showAdditionalInputs(show) {
         this.#additionalInputsContainer.toggleClass('hidden', !show);
                                 
         this.#additionalInputsButton.toggleClass('fa-ellipsis-v', !show);
         this.#additionalInputsButton.toggleClass('fa-times', show);
+    }
+
+    /**
+     * Returns if the additional inputs are visible.
+     */
+    additionalInputsShown() {
+        return !this.#additionalInputsContainer.hasClass('hidden');
     }
 
     /**

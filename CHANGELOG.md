@@ -23,6 +23,13 @@
 - Some minor cosmetical changes
 - Rework of the publishing helper scripts (internal)
 
+### Emulator 2.4.5.12
+- Features:
+    - Added a link to the MC10 wheel which opens/closes the additional inputs panel at the bottom.
+
+- Bug Fixes:
+    - Input Settings could not be changed due to an error.
+
 # PySwitch v2.4.3
 - Features:
     - Added mappings for some system parameters (can be used with the wheel encoder, pedals or the "Other Parameter" Actions):

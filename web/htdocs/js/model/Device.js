@@ -58,4 +58,11 @@ class Device {
     getDisplayDimensions() {
         return [0, 0]
     }
+
+    /**
+     * For the parser frontend, this can create additional content DOM added to the inputs container.
+     */
+    async createAdditionalInputs(controller) {
+        return null;
+    }
 }

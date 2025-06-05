@@ -63,7 +63,7 @@ class PySwitchFrontend {
         this.#container.append(
             canvasElement = $('<canvas id="' + this.#options.domNamespace + '-display" />')
             .on('click', async function() {
-                await that.parserFrontend.showDisplayEditor();
+                //await that.parserFrontend.showDisplayEditor();
             })
         );
         this.#elementsToHide.push(canvasElement);
@@ -78,6 +78,11 @@ class PySwitchFrontend {
         // Create container for all inputs
         const inputsContainer = $('<div id="' + this.#options.domNamespace + '-inputs" />');
         this.#container.append(inputsContainer);
+
+        // Create additional DOM items, depending on the device
+        inputsContainer.append(
+            await (await Device.getInstance(parser.config)).createAdditionalInputs(this.#controller)
+        );
         
         // Create all inputs
         for (const inputDefinition of hw) {

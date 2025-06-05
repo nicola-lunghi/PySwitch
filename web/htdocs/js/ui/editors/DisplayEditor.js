@@ -1,12 +1,17 @@
 /**
  * Implements the display editor
  */
-class DisplayEditor extends ParameterList {
+class DisplayEditor {
     
     #preview = null;
     #container = null;
+    #controller = null;
 
     #scaleFactor = 1;
+
+    constructor(controller) {
+        this.#controller = controller;
+    }
     
     /**
      * Generate the DOM for the properties panel, or null if no options are present.
@@ -15,6 +20,13 @@ class DisplayEditor extends ParameterList {
         return this.#container = $('<div class="display-editor" />').append(
             this.#preview = $('<div class="display-preview" />')
         )
+    }
+
+    /**
+     * Apply the changes to the current config
+     */
+    async apply() {
+
     }
 
     /**
@@ -28,7 +40,7 @@ class DisplayEditor extends ParameterList {
      * Update the editor to the current state
      */
     async #update() {
-        const config = this.controller.currentConfig;
+        const config = this.#controller.currentConfig;
 
         // Get raw splashes tree
         const splashes = config.parser.splashes();
@@ -51,8 +63,11 @@ class DisplayEditor extends ParameterList {
         this.#initDragging(this.#preview);
     }
 
+    /**
+     * After the DOM is ready, init interact.js for all draggable labels.
+     */
     #initDragging(element) {
-        if (element != this.#preview) {     // TODO exclude root element       
+        if (this.#isDisplayLabel(element)) {
             this.#initInteract(element);
         }
 
@@ -62,6 +77,9 @@ class DisplayEditor extends ParameterList {
         });
     }
 
+    /**
+     * Make the passed element draggable
+     */
     #initInteract(element) {
         const that = this;
 
@@ -213,31 +231,24 @@ class DisplayEditor extends ParameterList {
     /**
      * Renders a DisplayLabel node. Returns DOM.
      */
-    async #renderDisplayLabel(label) {
+    async #renderDisplayLabel(node) {
         return $('<span class="display-label" />');
+    }
+
+    /**
+     * Returns if the DOM element is a DisplayLabel 
+     */
+    #isDisplayLabel(element) {
+        return element.hasClass("display-label");
     }
 
     /**
      * Sets the bounds of a DisplayElement node on the passed DOM element.
      */
     #setupDisplayElement(node, domElement) {
-        const bounds = Tools.getArgument(node, "bounds");
-        if (!bounds) return;
-
         const that = this;
-        function getBoundsParam(name) {
-            const node = Tools.getArgument(bounds.value, name);
-            if (!node) return 0;
-            return (new Resolver()).resolve(node.value) * that.#scaleFactor;
-        }
 
-        const x = getBoundsParam("x");
-        const y = getBoundsParam("y");
-        const w = getBoundsParam("w");
-        const h = getBoundsParam("h");
-
-        // console.log(x, y, w, h)
-
+        // Label text
         function getText() {
             if (node.hasOwnProperty("assign")) return node.assign;
             
@@ -247,13 +258,34 @@ class DisplayEditor extends ParameterList {
             return "";
         }
 
+        // Get coordinate from bounds
+        function getBoundsParam(name) {
+            const node = Tools.getArgument(bounds.value, name);
+            if (!node) return 0;
+            return (new Resolver()).resolve(node.value) * that.#scaleFactor;
+        }
+
+        const bounds = Tools.getArgument(node, "bounds");
+        if (!bounds) return;
+
+        const x = getBoundsParam("x");
+        const y = getBoundsParam("y");
+        const w = getBoundsParam("w");
+        const h = getBoundsParam("h");
+
         domElement
+
+            // Dimensions
             .css('left', x + "px")
             .css('top', y + "px")
             .css('width', w + "px")
             .css('height', h + "px")
+
+            // X/Y for interact.js (must be set to the start position)
             .data("x", x)
             .data("y", y)
+
+            // Text
             .text(getText())
     }
 }

@@ -226,7 +226,7 @@ class Controller {
                 await that.ui.applyConfig(that.currentConfig);
 
                 // Restart configuration
-                await that.pyswitch.run(await that.currentConfig.get());
+                await that.pyswitch.run(that.currentConfig);
 
                 if (options.message != "none") {
                     that.ui.message(options.message ? options.message : ("Reloaded " + (await that.currentConfig.name())), "S");

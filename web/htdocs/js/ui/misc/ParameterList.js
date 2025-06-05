@@ -1,11 +1,9 @@
 class ParameterList {
 
     controller = null;
-    onCommit = null;
 
-    constructor(controller, onCommit) {
+    constructor(controller) {
         this.controller = controller;
-        this.onCommit = onCommit;
     }
 
     /**
@@ -17,7 +15,6 @@ class ParameterList {
 
         const headline = await this.getHeadline();
 
-        const that = this;
         return $('<span class="parameter-list-container" />').append(
             $('<div class="parameter-list" />').append(
                 !headline ? null :
@@ -31,20 +28,6 @@ class ParameterList {
                         )
                     )
                 )
-            ),
-
-            // Commit button
-            $('<div class="buttons" />').append(
-                $('<div class="button" />')
-                .text("Done")
-                .on('click', async function() {
-                    try {
-                        await that.onCommit();
-    
-                    } catch(e) {
-                        that.controller.handle(e);
-                    }
-                })
             )
         )
     }

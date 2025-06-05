@@ -14,6 +14,12 @@ class Popup {
      *      container:                Container DOM element. Will be hidden/shown along with the popups.
      *      additionalClasses:        Optional CSS classes for the popup element
      *      onReturnKey:              Callback when the user hits the Return key
+     *      buttons: [                Optional buttons
+     *          {
+     *              text: 
+     *              onClick: async function() {}
+     *          }
+     *      ],
      *      onClose:                  Called on hide (not awaited!)
      *      errorHandler:             Optional error handler. must provide a handle(ex) => void method.
      * }
@@ -67,6 +73,9 @@ class Popup {
                             // Content
                             content
                         )
+                        .append(
+                            this.#generateButtons()
+                        )
                         .append(                            
                             // Close button
                             $('<span class="fa fa-times close-button"/>')
@@ -108,5 +117,38 @@ class Popup {
                 that.hide();
             });    
         }, 0)
+    }
+
+    /**
+     * Error handling
+     */
+    handle(e) {
+        if (this.options.errorHandler) {
+            this.options.errorHandler.handle(e);
+            return;
+        }
+
+        console.error(e);
+    }
+
+    #generateButtons() {
+        if (!this.options.buttons) return null;
+
+        const that = this;
+
+        return $('<div class="buttons" />').append(
+            this.options.buttons.map((el) => {
+                return $('<div class="button" />')
+                    .text(el.text)
+                    .on('click', async function() {
+                        try {
+                            await el.onClick();
+        
+                        } catch(e) {
+                            that.handle(e);
+                        }
+                    })
+            })
+        )
     }
 }

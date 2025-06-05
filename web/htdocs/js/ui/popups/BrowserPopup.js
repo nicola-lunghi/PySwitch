@@ -236,17 +236,4 @@ class BrowserPopup extends Popup {
             await this.#infoPanelOnClick();
         }
     }
-
-    /**
-     * Error handling
-     */
-    handle(e) {
-        if (this.options.errorHandler) {
-            this.options.errorHandler.handle(e);
-            return;
-        }
-
-        console.error(e);
-    }
-
 }
