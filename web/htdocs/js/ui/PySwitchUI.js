@@ -133,6 +133,17 @@ class PySwitchUI {
                             }
                         }),
 
+                        // Display Editor
+                        showTabsButton = $('<div class="appl-button fas fa-tv" data-toggle="tooltip" title="Open display editor..."/>')
+                        .on('click', async function() {
+                            try {
+                                await that.frontend.parserFrontend.showDisplayEditor();
+
+                            } catch (e) {
+                                that.#controller.handle(e);
+                            }
+                        }),
+
                         // Show/hide tabs
                         showTabsButton = $('<div class="appl-button fas fa-code" data-toggle="tooltip" title="Show code"/>')
                         .on('click', async function() {

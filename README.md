@@ -74,6 +74,12 @@ These files can make use of the objects contained in the **lib/pyswitch/clients/
 
 *Technical note: The pyswitch module does not import any of the files in the root folder directly. The code.py script (which is the CircuitPy entry point) loads all configuration by importing pyswitch/process.py*
 
+## Using an external IDE
+
+Using the "Open Directory..." option in the Load menu at the top left, the configuration files in the folder (inputs.py and display.py) are synced automatically when changed from external editors. This way, you can integrate your favorite IDE: The Emulator automatically refreshes when changes have been made. From the emulator, CTRL-S directly saves the files to the opened folder.
+
+Of course you have to grant the website to edit the opened folder when asked.
+
 ### Global configuration
 
 The file **config.py** contains the global device configuration, and only defines one dictionary named "Config", which is empty by default. Please refer to the comments in the delivered config.py file for all available options and their defaults.
