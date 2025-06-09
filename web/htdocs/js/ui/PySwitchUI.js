@@ -354,10 +354,10 @@ class PySwitchUI {
                         const sel = new LocalFolderSelection();
 
                         // Select a directory (which is stored in indexedDB)
-                        await sel.select();
-
+                        if (!await sel.select()) return;
+                        
                         // Call the local folder config (which loads the dir handle from indexedDB)
-                        await sel.call(that.#controller);
+                        await sel.call(that.#controller);                        
                     },
                     sortString: "XXXXXXXXXXXXXXXX1"
                 }),
@@ -478,8 +478,8 @@ class PySwitchUI {
                         }
 
                         // Select a directory (which is stored in indexedDB)
-                        const sel = new LocalFolderSelection();
-                        await sel.select();
+                        const sel = new LocalFolderSelection();                        
+                        if (!await sel.select()) return;
 
                         // Save the configuration
                         const dummyConfig = new LocalFolderConfiguration(that.#controller);

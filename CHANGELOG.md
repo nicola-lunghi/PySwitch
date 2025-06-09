@@ -32,7 +32,8 @@
 
 ### Emulator 2.4.5.13
 - Features:
-    - Added favicon
+    
+- Minor cosmetical improvements
 
 # PySwitch v2.4.3
 - Features:

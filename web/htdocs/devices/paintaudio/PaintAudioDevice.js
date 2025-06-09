@@ -62,7 +62,7 @@ class PaintAudioDevice extends Device {
     async createAdditionalInputs(controller) {
         if (!this.hasAdditionalInputs()) return null;
 
-        return $('<span class="midicaptain midicaptain-10 additional-inputs-link" />')
+        return $('<span class="midicaptain midicaptain-10 additional-inputs-link" data-toggle="tooltip" title="Show/hide additional inputs" />')
         .on('click', async function() {
             try {
                 controller.ui.showAdditionalInputs(!controller.ui.additionalInputsShown());

@@ -10,13 +10,24 @@ class LocalFolderSelection {
 
         // Let the user choose the folder to open (this must be done here because the File API does not 
         // support calling this from a load function, it requires user interaction)
-        const dirHandle = await window.showDirectoryPicker({
-            mode: "readwrite"
-        });
-        if (!dirHandle) return;
+        try {
+            const dirHandle = await window.showDirectoryPicker({
+                mode: "readwrite"
+            });
+            if (!dirHandle) return;
 
-        // Store dir handle in indexedDB and call the localfolder configuration which will load the handle again
-        (new LocalFolderSelection()).setHandle(dirHandle);        
+            // Store dir handle in indexedDB and call the localfolder configuration which will load the handle again
+            (new LocalFolderSelection()).setHandle(dirHandle);
+
+            return true;
+
+        } catch (e) {
+            if (e.name != "AbortError") {
+                throw e;
+            }
+
+            return false;
+        }
     }
 
     /**
