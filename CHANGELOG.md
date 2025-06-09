@@ -30,6 +30,10 @@
 - Bug Fixes:
     - Input Settings could not be changed due to an error.
 
+### Emulator 2.4.5.13
+- Features:
+    - Added favicon
+
 # PySwitch v2.4.3
 - Features:
     - Added mappings for some system parameters (can be used with the wheel encoder, pedals or the "Other Parameter" Actions):
