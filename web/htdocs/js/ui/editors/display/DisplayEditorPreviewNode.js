@@ -21,7 +21,6 @@ class DisplayEditorPreviewNode {
         (new DisplayEditorPreviewNodeDrag(this.#preview, this)).kill();
 
         const children = this.getChildren();
-        
         for (const child of children) {
             child.destroy();
         }
@@ -30,7 +29,7 @@ class DisplayEditorPreviewNode {
     /**
      * Sets up the element and returns it (recursive)
      */
-    initElement() {
+    setup() {
         this.element = $('<span class="display-element" />');
         
         switch(this.node.name) {
@@ -58,7 +57,7 @@ class DisplayEditorPreviewNode {
             )
 
             this.element.append(
-                childHandler.initElement()
+                childHandler.setup()
             );
         }
 
@@ -165,7 +164,7 @@ class DisplayEditorPreviewNode {
     }
 
     /**
-     * Returns the children of the node (as raw data models)
+     * Returns the children of the node (as raw data model nodes)
      */
     getChildrenRaw() {
         const children = Tools.getArgument(this.node, "children")
@@ -181,8 +180,10 @@ class DisplayEditorPreviewNode {
      */
     getChildren() {
         const raw = this.getChildrenRaw();
-
-        return raw.map((el) => this.#preview.references.get(el));
+        const that = this;
+        return raw.map((node) => {
+            return that.#preview.references.get(node);
+        });
     }
 
     /**

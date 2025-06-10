@@ -4,7 +4,7 @@
 class DisplayEditor {
     
     #preview = null;
-    container = null;
+    #container = null;
     controller = null;
 
     constructor(controller) {
@@ -21,13 +21,19 @@ class DisplayEditor {
      * Generate the DOM for the properties panel, or null if no options are present.
      */
     async get() {
-        this.container = $('<div class="display-editor" />')
+        this.#container = $('<div class="display-editor" />')
 
-        this.container.append(
-            await (this.#preview = new DisplayEditorPreview(this)).get()
-        )
+        let previewContainer = null;
+        this.#container.append(
+            previewContainer = $('<div class="display-preview-container" />'),
+            $('<div class="display-parameters-container" />')
+        );
 
-        return this.container;
+        previewContainer.append(
+            await (this.#preview = new DisplayEditorPreview(this, previewContainer)).get()
+        );
+
+        return this.#container;
     }
 
     /**

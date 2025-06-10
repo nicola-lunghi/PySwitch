@@ -5,6 +5,7 @@ class DisplayEditorPreview {
     
     #editor = null;
     #element = null;
+    #container = null;
     #rootNode = null;   // Raw data tree
 
     scaleFactor = 1;
@@ -13,14 +14,19 @@ class DisplayEditorPreview {
     
     selected;           // Selected node handler (managed by the node handlers)
     #resizeObserver = null;
+    #resizeUpdateHandle = null;
 
     controller = null;
 
-    constructor(editor) {
+    constructor(editor, container) {
         this.#editor = editor;
         this.controller = editor.controller;
+        this.#container = container;
     }
 
+    /**
+     * Destroy the preview
+     */
     destroy() {
         if (this.#resizeObserver) {
             this.#resizeObserver.disconnect();
@@ -58,7 +64,7 @@ class DisplayEditorPreview {
      */
     async init() {
         // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
-        this.#rootNode = JSON.parse(JSON.stringify(await this.#getRootNode()));
+        this.#rootNode = JSON.parse(JSON.stringify(await this.#createRootNode()));
 
         await this.#update();
 
@@ -71,7 +77,13 @@ class DisplayEditorPreview {
     #initResizeObserver() {
         const that = this;
         this.#resizeObserver = new ResizeObserver(async (entries) => {
-            //await that.#update();
+            if (that.#resizeUpdateHandle) {
+                clearTimeout(that.#resizeUpdateHandle);
+            }
+
+            that.#resizeUpdateHandle = setTimeout(async () => {
+                await that.#update();
+            }, 100)            
         });
 
         this.#resizeObserver.observe(this.#editor.controller.ui.container[0]);
@@ -80,7 +92,7 @@ class DisplayEditorPreview {
     /**
      * Returns the root node for the editor
      */
-    async #getRootNode() {
+    async #createRootNode() {
         const splashes = this.#editor.getConfig().parser.splashes();
 
         // The root element may be client dependent
@@ -96,15 +108,18 @@ class DisplayEditorPreview {
     async #update() {
         // Clear
         this.selected = null;
-        this.#element.empty();
-        this.references = new Map();
         if (this.root) this.root.destroy();
-
+        this.references = new Map();
+        this.#element
+            .empty()
+            .css('width', 'unset')
+            .css('height', 'unset');
+        
         // Get scale factor (determined by the device)
         this.scaleFactor = await this.#determineScaleFactor();
 
-        // Root dimensions
-        const displayDimensions = (await Device.getInstance(this.#editor.getConfig())).getDisplayDimensions();
+        // Root element dimensions
+        const displayDimensions = (await Device.getInstance(this.#editor.getConfig())).getDisplayDimensions();   // 240x240
         this.#element
             .width(displayDimensions[0] * this.scaleFactor)
             .height(displayDimensions[1] * this.scaleFactor);
@@ -116,7 +131,7 @@ class DisplayEditorPreview {
         );
 
         // Render elements
-        this.#element.append(this.root.initElement());
+        this.#element.append(this.root.setup());
 
         // Init after the hierarchy is set up
         this.root.init();
@@ -126,13 +141,15 @@ class DisplayEditorPreview {
      * Determines scale factor and sets it. Returns the display dimensions on screen.
      */
     async #determineScaleFactor() {
+        // Display (240x240)
         const displayDimensions = (await Device.getInstance(this.#editor.getConfig())).getDisplayDimensions();
         const displayWidth = displayDimensions[0];
         const displayHeight = displayDimensions[1];
         const displayRatio = displayWidth / displayHeight;
 
-        const availableWidth = this.#editor.container.width() - 3
-        const availableHeight = this.#editor.container.height() - 3
+        // Container size
+        const availableWidth = this.#container.width() - 3
+        const availableHeight = this.#container.height() - 3
         const availableRatio = availableWidth / availableHeight;
 
         if (availableRatio > displayRatio) {
