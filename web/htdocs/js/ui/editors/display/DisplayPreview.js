@@ -1,18 +1,14 @@
 /**
- * Implements the display editor
+ * Display editor preview (where displays can be dragged around)
  */
-class DisplayEditorPreview {
+class DisplayPreview {
     
     #editor = null;
     #element = null;
     #container = null;
-    #rootNode = null;   // Raw data tree
 
     scaleFactor = 1;
-    root = null;        // Root node handler
-    references = null;  // Memory for node references
     
-    selected;           // Selected node handler (managed by the node handlers)
     #resizeObserver = null;
     #resizeUpdateHandle = null;
 
@@ -27,9 +23,9 @@ class DisplayEditorPreview {
     /**
      * Destroy the preview
      */
-    destroy() {
+    async destroy() {
         if (this.#resizeObserver) {
-            this.#resizeObserver.disconnect();
+            await this.#resizeObserver.disconnect();
         }
     }
     
@@ -41,33 +37,9 @@ class DisplayEditorPreview {
     }
 
     /**
-     * Returns a new splashes object to be set on the configuration
-     */
-    async createSplashes() {
-        const splashes = JSON.parse(JSON.stringify(this.#editor.getConfig().parser.splashes()));
-
-        // The root element may be client dependent
-        const client = ClientFactory.getInstance(splashes.client ? splashes.client : "local");
-
-        // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
-        if (await client.setSplashesRootElement(splashes, this.#rootNode)) {
-            return splashes;
-        }
-
-        this.#rootNode.assign = "Splashes";
-
-        return this.#rootNode;
-    }
-
-    /**
      * Called after get()
      */
     async init() {
-        // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
-        this.#rootNode = JSON.parse(JSON.stringify(await this.#createRootNode()));
-
-        await this.#update();
-
         this.#initResizeObserver();
     }
 
@@ -82,7 +54,7 @@ class DisplayEditorPreview {
             }
 
             that.#resizeUpdateHandle = setTimeout(async () => {
-                await that.#update();
+                await that.#editor.reset();
             }, 100)            
         });
 
@@ -90,26 +62,10 @@ class DisplayEditorPreview {
     }
 
     /**
-     * Returns the root node for the editor
+     * Reset the editor to the current state of the model
      */
-    async #createRootNode() {
-        const splashes = this.#editor.getConfig().parser.splashes();
-
-        // The root element may be client dependent
-        const client = ClientFactory.getInstance(splashes.client ? splashes.client : "local");
-
-        // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
-        return client.getSplashesRootElement(splashes);
-    }
-
-    /**
-     * Update the editor to the current state of the model
-     */
-    async #update() {
+    async reset() {
         // Clear
-        this.selected = null;
-        if (this.root) this.root.destroy();
-        this.references = new Map();
         this.#element
             .empty()
             .css('width', 'unset')
@@ -124,21 +80,12 @@ class DisplayEditorPreview {
             .width(displayDimensions[0] * this.scaleFactor)
             .height(displayDimensions[1] * this.scaleFactor);
 
-        // Create root
-        this.root = new DisplayEditorPreviewNode(
-            this,
-            this.#rootNode
-        );
-
-        // Render elements
-        this.#element.append(this.root.setup());
-
-        // Init after the hierarchy is set up
-        this.root.init();
+        // Append to DOM
+        this.#element.append(this.#editor.root.preview.element);
     }
 
     /**
-     * Determines scale factor and sets it. Returns the display dimensions on screen.
+     * Determines scale factor.
      */
     async #determineScaleFactor() {
         // Display (240x240)
@@ -148,8 +95,8 @@ class DisplayEditorPreview {
         const displayRatio = displayWidth / displayHeight;
 
         // Container size
-        const availableWidth = this.#container.width() - 3
-        const availableHeight = this.#container.height() - 3
+        const availableWidth = this.#container.width() //- 3
+        const availableHeight = this.#container.height() //- 3
         const availableRatio = availableWidth / availableHeight;
 
         if (availableRatio > displayRatio) {

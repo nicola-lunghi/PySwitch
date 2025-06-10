@@ -32,6 +32,7 @@
 
 ### Emulator 2.4.5.13
 - Features:
+    - The Emulator can now be installed as PWA (<a href="https://developer.mozilla.org/en/docs/Web/Progressive_web_apps">Progressive Web App</a>). In Chrome, select "Install PySwitch Emulator" at the right of your address bar, and you will get a standalone App separated from Chrome itself.
     
 - Minor cosmetical improvements
 

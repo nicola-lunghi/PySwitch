@@ -20,48 +20,45 @@ class InputSettings extends ParameterList {
     }
 
     /**
-     * Must return the option table rows (array of TR elements) or null if no options are available.
+     * Set up inputs
      */
-    async getOptions() {
+    async setup() {
         const that = this;
 
-        const holdTimeMillis = this.#input ? this.#input.holdTimeMillis() : 0
-
         function getSwitchOptions() {
-            return [
-                that.createBooleanInputRow(
-                    "Hold Repeat",
-                    "This option keeps repeating the hold actions again and again as long as the switch is held.",
-                    that.#input ? that.#input.holdRepeat() : false,
-                    async function(value) {
-                        that.#input.setHoldRepeat(value);
+            const holdTimeMillis = that.#input ? that.#input.holdTimeMillis() : 0
+    
+            that.createBooleanInput(
+                "Hold Repeat",
+                "This option keeps repeating the hold actions again and again as long as the switch is held.",
+                that.#input ? that.#input.holdRepeat() : false,
+                async function(value) {
+                    that.#input.setHoldRepeat(value);
 
-                        await that.controller.restart({
-                            message: "none"
-                        });
-                    }
-                ),
-                
-                that.createNumericInputRow(
-                    "Hold Time", 
-                    "Amount of time you have to press the switch for the hold actions to be triggered (Milliseconds).",
-                    holdTimeMillis ? holdTimeMillis : 600,
-                    async function(value) {
-                        that.#input.setHoldTimeMillis(value);
+                    await that.controller.restart({
+                        message: "none"
+                    });
+                }
+            );
+                    
+            that.createNumericInput(
+                "Hold Time", 
+                "Amount of time you have to press the switch for the hold actions to be triggered (Milliseconds).",
+                holdTimeMillis ? holdTimeMillis : 600,
+                async function(value) {
+                    that.#input.setHoldTimeMillis(value);
 
-                        await that.controller.restart({
-                            message: "none"
-                        });
-                    }
-                )
-            ]
+                    await that.controller.restart({
+                        message: "none"
+                    });
+                }
+            );
         }
 
         switch (this.#definition.data.model.type) {
-            case "AdafruitSwitch": return getSwitchOptions();
+            case "AdafruitSwitch": 
+                getSwitchOptions();
+                break;
         }
-        
-        // No options available
-        return null;
     }
 }

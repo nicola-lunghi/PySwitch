@@ -1,25 +1,53 @@
 .container .display-editor {
-    background-color: yellow;
+    /* background-color: yellow; */
 
     display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: auto;
+    overflow: hidden;
 }
 
 .container .display-editor .display-preview-container {
-    background-color: green;
-    text-align: center;
+    /* background-color: green; */
 }
 
 .container .display-editor .display-parameters-container {
     background-color: lightgoldenrodyellow;
     display: inline-block;
+    /* overflow: auto; */
+    width: 100%;
+    position: relative;
+}
+
+.container .display-editor .display-parameters-container > * {
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+}
+
+.container .display-editor .display-parameters-container .muuri-item-dragging {
+  z-index: 3;
+}
+.container .display-editor .display-parameters-container .muuri-item-releasing {
+  z-index: 2;
+}
+.container .display-editor .display-parameters-container .muuri-item-hidden {
+  z-index: 0;
+}
+
+.container .display-editor .display-parameters-container > * > * {
+    position: relative;
+    width: 100%;
 }
 
 @container popup-content (max-width: 650px) {
     .container .display-editor {
         grid-template-columns: auto;
         grid-template-rows: 50% 50%;
+    }
+
+    .container .display-editor .display-preview-container {
+        text-align: center;
     }
 
     .container .display-editor .display-parameters-container {
@@ -31,7 +59,7 @@
 /**********************************************************************************/
 
 .container .display-editor .display-preview {
-    background-color: rgb(240, 240, 240);
+    background-color: rgb(0, 0, 0);
 
     display: inline-block;
     position: relative;
@@ -49,15 +77,24 @@
 
 .container .display-editor .display-preview .display-label {
     background-color: rgb(216, 216, 216);
-    border: 1px solid black;
+    border: 1px solid rgb(110, 110, 110);
 }
 
 .container .display-editor .display-preview .selected {
-    background-color: rgb(166, 166, 166);
+    background-color: rgb(165, 165, 165);
+    border: 1px solid rgb(65, 65, 65);
 }
 
 /************************************************************************************/
 
 .container .display-editor .display-parameters {
-    
+    width: 100%;
+    background-color: rgb(226, 226, 226);
+    margin: 0.1em;
+    border-radius: 1em;
+    padding: 1em;
+}
+
+.container .display-editor .display-parameters-container .selected {
+    background-color: rgb(207, 207, 207);
 }

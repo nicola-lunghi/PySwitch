@@ -1,7 +1,7 @@
 /**
- * Implements the display editor
+ * Enable/kill drag functionality for a node handler
  */
-class DisplayEditorPreviewNodeDrag {
+class DisplayNodeDrag {
 
     #nodeHandler = null;
     #preview = null;
@@ -11,8 +11,11 @@ class DisplayEditorPreviewNodeDrag {
         this.#nodeHandler = nodeHandler;
     }
 
+    /**
+     * Stop interact.js
+     */
     kill() {
-        interact(this.#nodeHandler.element[0]).unset();
+        interact(this.#nodeHandler.preview.element[0]).unset();
     }
 
     /**
@@ -20,7 +23,7 @@ class DisplayEditorPreviewNodeDrag {
      */
     init() {
         const that = this;
-        const element = this.#nodeHandler.element;
+        const element = this.#nodeHandler.preview.element;
 
         interact(element[0])
             .draggable({

@@ -1,80 +1,87 @@
 /**
- * Implements the display editor
+ * Node handler, connection data model and UI
  */
-class DisplayEditorPreviewNode {
+class DisplayNode {
 
     node = null;
-    element = null;
     parent = null;
 
-    #preview = null;
+    editor = null;
 
-    constructor(preview, node, parentNodeHandler = null) {
-        this.#preview = preview;
+    editable = false;
+    preview = null;
+    parameters = null;
+    
+    constructor(editor, node, parentNodeHandler = null) {
+        this.editor = editor;
         this.node = node;
         this.parent = parentNodeHandler;
 
-        this.#preview.references.set(node, this);
+        this.editor.references.set(node, this);
     }
 
-    destroy() {
-        (new DisplayEditorPreviewNodeDrag(this.#preview, this)).kill();
+    async destroy() {
+        if (this.preview) {
+            await this.preview.destroy();
+        }  
+        if (this.parameters) {
+            await this.parameters.destroy();
+        }        
 
         const children = this.getChildren();
         for (const child of children) {
-            child.destroy();
+            await child.destroy();
         }
     }
 
     /**
      * Sets up the element and returns it (recursive)
      */
-    setup() {
-        this.element = $('<span class="display-element" />');
-        
+    async setup() {
         switch(this.node.name) {
             case "DisplayLabel":
-                this.#renderDisplayLabel();
+                this.editable = true;
                 break;
         }
+        
+        this.preview = new DisplayNodePreview(this);
+        await this.preview.setup();
 
-        // Label text
-        const text = this.#getDisplayElementText();
-        this.element
-            .text(text)
-            .attr('data-toggle', 'tooltip')
-            .attr('title', text);
+        if (this.editable) {
+            this.parameters = new DisplayNodeParameters(this);
+            await this.parameters.setup();
+
+            // Collect editable parameters
+            this.editor.parameters.container.append(
+                this.parameters.element
+            )
+        }
 
         // Recurse to children, if any. Fist let the client determine which children to show.
         const children = this.getChildrenRaw();
         
         // We have children: Recurse and append them
         for (const child of children) {
-            const childHandler = new DisplayEditorPreviewNode(
-                this.#preview,
+            const childHandler = new DisplayNode(
+                this.editor,
                 child, 
                 this
             )
 
-            this.element.append(
-                childHandler.setup()
+            await childHandler.setup();
+
+            // Build preview hierarchy
+            this.preview.element.append(
+                childHandler.preview.element
             );
         }
-
-        // Set properties
-        this.#update();
-
-        return this.element;
     }
 
     /**
      * Initialize after the hierarchy has been set up
      */
     init() {
-        if (this.editable()) {
-            // Make editable
-            (new DisplayEditorPreviewNodeDrag(this.#preview, this)).init();
-        }
+        this.preview.init();
 
         const children = this.getChildren();
         for(const child of children) {
@@ -83,68 +90,30 @@ class DisplayEditorPreviewNode {
     }
 
     /**
-     * Renders a DisplayLabel node. Returns DOM.
+     * Sets the properties of the element from the model
      */
-    #renderDisplayLabel() {
-        const that = this;
-        this.element
-            .addClass('display-label')
-            .addClass('editable')
-            .on('click', async function() {
-                try {
-                    that.select();
-                    
-                } catch (e) {
-                    that.#preview.controller.handle(e);
-                }
-            })
+    update() {
+        this.preview.update();
+        if (this.parameters) {
+            this.parameters.update();
+        }
+
+        const children = this.getChildren();
+        for(const child of children) {
+            child.update();
+        }
     }
 
     /**
      * Generates the label text
      */
-    #getDisplayElementText() {
+    getText() {
         if (this.node.hasOwnProperty("assign")) return this.node.assign;
         
         const callback = Tools.getArgument(this.node, "callback");
         if (callback) return callback.value.name;
         
         return "";
-    }
-
-    /**
-     * Sets the properties of the element from the model
-     */
-    #update() {
-        // Bounds
-        try {
-            const bounds = this.getModelBounds();
-            this.#setDisplayElementBounds({
-                x: bounds.x * this.#preview.scaleFactor,
-                y: bounds.y * this.#preview.scaleFactor,
-                width: bounds.width * this.#preview.scaleFactor,
-                height: bounds.height * this.#preview.scaleFactor,
-            })
-
-        } catch(e) {
-            // console.warn(e);
-            this.#setDisplayElementBounds({
-                x: 0,
-                y: 0,
-                width: 0,
-                height: 0
-            });
-        }
-
-        // Order
-        this.element.css('z-index', this.getChildIndex());
-    }
-
-    /**
-     * Returns if the node can be edited
-     */
-    editable() {
-        return this.element.hasClass('editable');
     }
 
     /**
@@ -182,7 +151,7 @@ class DisplayEditorPreviewNode {
         const raw = this.getChildrenRaw();
         const that = this;
         return raw.map((node) => {
-            return that.#preview.references.get(node);
+            return that.editor.references.get(node);
         });
     }
 
@@ -202,8 +171,8 @@ class DisplayEditorPreviewNode {
         })
         
         for (const siblingNode of siblings.value) {
-            const handler = this.#preview.references.get(siblingNode);
-            handler.#update();
+            const handler = this.editor.references.get(siblingNode);
+            handler.update();
         }
     }
 
@@ -250,60 +219,36 @@ class DisplayEditorPreviewNode {
         setDim('w', bounds.width);
         setDim('h', bounds.height);
 
-        // Set dimensions on DOM element
-        function scaleDim(v) {
-            return v * that.#preview.scaleFactor;
+        this.preview.update();
+        if (this.parameters) {
+            this.parameters.update();
         }
-
-        this.#setDisplayElementBounds({
-            x: scaleDim(bounds.x),
-            y: scaleDim(bounds.y),
-            width: scaleDim(bounds.width),
-            height: scaleDim(bounds.height),
-        });
-    }
-
-    /**
-     * Retunrs the bounds of a display element
-     *
-    #getDisplayElementBounds() {
-        return {
-            x: parseFloat(this.element.css('left')),
-            y: parseFloat(this.element.css('top')),
-            width: parseFloat(this.element.css('width')),
-            height: parseFloat(this.element.css('height'))
-        }
-    }
-
-    /**
-     * Sets the bounds of a display element (model coords)
-     */
-    #setDisplayElementBounds(bounds) {
-        this.element
-            .css('left', bounds.x + "px")
-            .css('top', bounds.y + "px")
-            .css('width', bounds.width + "px")
-            .css('height', bounds.height + "px")
     }
 
     /**
      * Select this node (not recursive)
      */
     select() {
-        if (this.#preview.selected == this) return;
+        if (this.editor.selected == this) return;
 
-        this.#preview.root.deselectAll();
+        this.editor.root.deselectAll();
 
-        this.element.addClass('selected');
+        this.preview.setSelected(true);
+        if (this.parameters) {
+            this.parameters.setSelected(true);
+        }
 
-        this.#preview.selected = this;
+        this.editor.selected = this;
     }
 
     /**
      * Clear the selection (recursive)
      */
     deselectAll() {
-        this.element.removeClass('selected');
+        this.preview.setSelected(false);
+        if (this.parameters) {
+            this.parameters.setSelected(false);
+        }
 
         const children = this.getChildren();
         for(const child of children) {

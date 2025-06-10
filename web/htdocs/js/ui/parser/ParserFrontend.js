@@ -42,16 +42,16 @@ class ParserFrontend {
     async showDisplayEditor() {
         async function commit() {
             await props.apply();
-            destroy();
+            await destroy();
             browser.hide();
         }
 
-        function destroy() {
-            props.destroy();
+        async function destroy() {
+            await props.destroy();
         }
 
         const browser = this.#controller.ui.getPopup({
-            onReturnKey: commit,
+            // onReturnKey: commit,
             onClose: destroy,
             buttons: [
                 {

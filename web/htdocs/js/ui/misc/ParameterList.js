@@ -1,6 +1,7 @@
 class ParameterList {
 
     controller = null;
+    #inputs = [];
 
     constructor(controller) {
         this.controller = controller;
@@ -10,9 +11,10 @@ class ParameterList {
      * Generate the DOM for the properties panel, or null if no options are present.
      */
     async get() {
-        const options = await this.getOptions();
-        if (!options) return null;
+        this.#inputs = [];
+        await this.setup();
 
+        const options = this.#getRows();
         const headline = await this.getHeadline();
 
         return $('<span class="parameter-list-container" />').append(
@@ -21,6 +23,7 @@ class ParameterList {
                 $('<div class="parameter-comment" />')
                 .html(headline),
 
+                !options ? null :
                 $('<div class="parameters" />').append(
                     $('<table />').append(
                         $('<tbody />').append(
@@ -40,69 +43,111 @@ class ParameterList {
     }
 
     /**
-     * Must return the option table rows (array of TR elements) or null if no options are available.
+     * Must set up all inputs by calling the create* methods.
      */
-    async getOptions() {
-        throw new Error("Must be implemented in child classes");
+    async setup() {
+        // Implement in child classes
     }
     
     ///////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Creates a boolean input row
+     * Creates a boolean input
      */
-    createBooleanInputRow(name, comment, value, onChange) {
+    createBooleanInput(name, comment, value, onChange) {
         const that = this;
-        return Tools.withComment(
-            $('<tr />').append(                            
-                $('<td />').append(
-                    $('<span />').text(name)
-                ),
 
-                // Input
-                $('<td />').append(
-                    $('<input type="checkbox" />')
-                    .on('change', async function() {
-                        try {
-                            await onChange(!!$(this).prop('checked'))
-                        
-                        } catch (e) {
-                            that.controller.handle(e);
-                        }
-                    })
-                    .prop('checked', value)
-                )
-            ),
-            comment
+        let input = null;
+        const inputCell = $('<td />').append(
+            input = $('<input type="checkbox" />')
+            .on('change', async function() {
+                try {
+                    await onChange(!!$(this).prop('checked'))
+                
+                } catch (e) {
+                    that.controller.handle(e);
+                }
+            })
+            .prop('checked', value)
         )
+
+        this.#inputs.push({
+            row: Tools.withComment(
+                $('<tr />').append(                            
+                    $('<td />').append(
+                        $('<span />').text(name)
+                    ),
+
+                    inputCell
+                ),
+                comment
+            ),
+            input: input
+        })
     }
 
     /**
-     * Creates a numeric input row
+     * Creates a numeric input
      */
-    createNumericInputRow(name, comment, value, onChange) {
+    createNumericInput(name, comment, value, onChange) {
         const that = this;
-        return Tools.withComment(
-            $('<tr />').append(                            
-                $('<td />').append(
-                    $('<span />').text(name)
-                ),
 
-                // Input
-                $('<td />').append(
-                    $('<input type="number" />')
-                    .on('change', async function() {
-                        try {
-                            await onChange($(this).val())
-                        
-                        } catch (e) {
-                            that.controller.handle(e);
-                        }
-                    })
-                    .val(value)
-                )
-            ),
-            comment
+        let input = null;
+        const inputCell = $('<td />').append(
+            input = $('<input type="number" />')
+            .on('change', async function() {
+                try {
+                    await onChange($(this).val())
+                
+                } catch (e) {
+                    that.controller.handle(e);
+                }
+            })
+            .val(value)
         )
+
+        this.#inputs.push({
+            name: name,
+            row: Tools.withComment(
+                $('<tr />').append(                            
+                    $('<td />').append(
+                        $('<span />').text(name)
+                    ),
+
+                    inputCell
+                ),
+                comment
+            ),
+            input: input
+        })
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Sets the value of a parameter
+     */
+    set(name, value) {
+        for(const input of this.#inputs) {
+            if (input.name == name) {
+                input.input.val(value);
+                return;
+            }
+        }
+
+        throw new Error("Parameter " + name + " not found")
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Returns an array of option rows
+     */
+    #getRows() {
+        const ret = [];
+        for (const input of this.#inputs) {
+            ret.push(input.row);
+        }
+        return ret;
     }
 }
