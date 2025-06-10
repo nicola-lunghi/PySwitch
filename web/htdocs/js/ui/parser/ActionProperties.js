@@ -485,8 +485,8 @@ class ActionProperties {
         }        
 
         return $('<input type="text" />')
-        .on('change', onChange)
-        .val(param.meta.getDefaultValue())
+            .on('change', onChange)
+            .val(param.meta.getDefaultValue())
     }
 
     /**

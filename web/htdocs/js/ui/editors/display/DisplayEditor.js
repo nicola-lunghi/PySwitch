@@ -3,9 +3,11 @@
  */
 class DisplayEditor {
     
-    #preview = null;
     #container = null;
     controller = null;
+
+    #preview = null;
+    #params = null;
 
     constructor(controller) {
         this.controller = controller;        
@@ -25,8 +27,13 @@ class DisplayEditor {
 
         let previewContainer = null;
         this.#container.append(
+            // Preview
             previewContainer = $('<div class="display-preview-container" />'),
-            $('<div class="display-parameters-container" />')
+
+            // Parameters
+            $('<div class="display-parameters-container" />').append(
+                await (this.#params = new DisplayEditorParameters(this.controller)).get()
+            )
         );
 
         previewContainer.append(
