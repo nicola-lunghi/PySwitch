@@ -20,9 +20,7 @@ class DisplayNodeParameters {
     async setup() {
         let inner = null;
         this.element = $('<div class="display-parameters-item" />').append(
-            $('<div class="display-parameters-content" />').append(
-                inner = $('<div class="display-parameters" />')
-            )
+            inner = $('<div class="display-parameters" />')
         )
         
         switch(this.#handler.node.name) {
@@ -43,7 +41,7 @@ class DisplayNodeParameters {
     }
 
     setSelected(selected) {
-        this.element.children().children().toggleClass('selected', selected);
+        this.element.children().toggleClass('selected', selected);
     }    
 
     /**

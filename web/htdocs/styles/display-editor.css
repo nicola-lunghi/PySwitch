@@ -90,9 +90,9 @@
 .container .display-editor .display-parameters {
     width: 100%;
     background-color: rgb(226, 226, 226);
-    margin: 0.1em;
-    border-radius: 1em;
-    padding: 1em;
+    margin: 0 0 0.3em 0;
+    border-radius: 0.6em;
+    padding: 0.6em;
 }
 
 .container .display-editor .display-parameters-container .selected {
