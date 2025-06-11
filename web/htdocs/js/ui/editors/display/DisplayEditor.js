@@ -109,6 +109,53 @@ class DisplayEditor {
     }
 
     /**
+     * Create a new element on top
+     */
+    async createElement() {
+        this.root.addChild({
+            name: "DisplayLabel",
+            //assign: "",
+            arguments: [
+                {
+                    name: "bounds",
+                    value: {
+                        name: "DisplayBounds",
+                        arguments: [
+                            {
+                                name: 'x',
+                                value: '0'
+                            },
+                            {
+                                name: 'y',
+                                value: '0'
+                            },
+                            {
+                                name: 'w',
+                                value: '60'
+                            },
+                            {
+                                name: 'h',
+                                value: '60'
+                            }
+                        ]
+                    }
+                },
+                {
+                    name: "layout",
+                    value: {
+                        arguments: [
+                            {
+                                name: "font",
+                                value: '"/fonts/H20.pcf"'
+                            }
+                        ]
+                    }
+                }
+            ]
+        });
+    }
+
+    /**
      * Apply the changes to the current config
      */
     async apply() {

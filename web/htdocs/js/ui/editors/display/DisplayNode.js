@@ -237,6 +237,7 @@ class DisplayNode {
      * Lets the node appear selected (UI only)
      */
     setSelected(selected) {
+        if (!this.preview) return;
         this.preview.setSelected(selected);
     }
 
@@ -306,6 +307,22 @@ class DisplayNode {
         siblings.value[childIndex + 1] = this.node;
 
         this.#updatePeers(siblings.value);  
+    }
+
+    /**
+     * Adds a child from the given raw data node
+     */
+    addChild(node) {
+        const handler = new DisplayNode(
+            this.editor,
+            node,
+            this
+        )
+
+        const children = Tools.getArgument(this.node, "children");
+        children.value.push(node);
+
+        return handler;
     }
 
     /**

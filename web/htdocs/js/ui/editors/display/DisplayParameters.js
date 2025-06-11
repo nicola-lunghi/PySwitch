@@ -36,7 +36,7 @@ class DisplayParameters {
             .append(
                 $('<span class="display-parameters-header" />"').append(
                     // Selector
-                    this.#selector = $('<select />')
+                    this.#selector = $('<select class="display-selector" data-toggle="tooltip" title="Select an element to edit its parameters" />')
                     .prop('name', 'select-display')
                     .on('change', async function() {
                         try {
@@ -52,21 +52,21 @@ class DisplayParameters {
                         }
                     }),
 
-                    // // Add button
-                    // $('<span class="button fas fa-create" />')
-                    // .on('click', async function() {
-                    //     try {
-                    //         that.#createLabel
+                    // Add button
+                    $('<span class="button fas fa-plus" data-toggle="tooltip" title="Add a new element" />')
+                    .on('click', async function() {
+                        try {
+                            await that.#editor.createElement();
 
-                    //         that.#editor.update();
+                            await that.#editor.reset();
 
-                    //     } catch (e) {
-                    //         that.#editor.controller.handle(e);
-                    //     }
-                    // }),
+                        } catch (e) {
+                            that.#editor.controller.handle(e);
+                        }
+                    }),
 
                     // Remove button
-                    $('<span class="button fas fa-trash" />')
+                    $('<span class="button fas fa-trash" data-toggle="tooltip" title="Remove the selected element..." />')
                     .on('click', async function() {
                         try {
                             const selected = that.#editor.selected;

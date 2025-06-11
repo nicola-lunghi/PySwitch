@@ -48,7 +48,7 @@ class DisplayParameterList extends ParameterList {
             value: this.#handler.getChildIndex(),
             additionalContent: [
                 // Move up button
-                $('<span class="button fas fa-chevron-up" />')
+                $('<span class="button fas fa-chevron-up" data-toggle="tooltip" title="Move up in depth" />')
                 .on('click', async function() {
                     try {
                         that.#handler.moveUp();
@@ -59,7 +59,7 @@ class DisplayParameterList extends ParameterList {
                 }),
 
                 // Move down button
-                $('<span class="button fas fa-chevron-down" />')
+                $('<span class="button fas fa-chevron-down" data-toggle="tooltip" title="Move down in depth" />')
                 .on('click', async function() {
                     try {
                         that.#handler.moveDown();
