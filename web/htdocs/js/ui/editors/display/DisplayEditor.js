@@ -3,21 +3,25 @@
  */
 class DisplayEditor {
     
-    #container = null;
     controller = null;
+    #container = null;   // Container element
 
-    preview = null;
-    parameters = null;
+    preview = null;      // Preview area handler
+    parameters = null;   // Parameters area handler
 
-    #rootNode = null;    // Raw data tree
+    #rootNode = null;    // Raw data tree root
     root = null;         // Root node handler
     references = null;   // Memory for node references (node -> handler)
-    selected;            // Selected node handler (managed by the node handlers themselves)
+    
+    selected = null;     // Selected node handler, if any
 
     constructor(controller) {
         this.controller = controller;        
     }
     
+    /**
+     * Destroy the editor
+     */
     async destroy() {
         if (this.preview) {
             await this.preview.destroy();
@@ -58,7 +62,7 @@ class DisplayEditor {
 
         await this.reset();
 
-        await this.preview.init();        
+        await this.preview.init();
     }
 
     /**
@@ -83,8 +87,6 @@ class DisplayEditor {
         if (this.root) await this.root.destroy();
 
         this.references = new Map();
-        await this.parameters.destroy();
-        this.parameters.clear();
         
         // Create new root from the existing data model
         this.root = new DisplayNode(
@@ -97,14 +99,13 @@ class DisplayEditor {
 
         // Attach to DOM
         await this.preview.reset();
+        await this.parameters.reset();
 
         // Update view
         this.root.update();
 
         // Init interact.js etc. after the hierarchy is set up and attached
-        this.root.init();
-
-        await this.parameters.init();
+        await this.root.init();
     }
 
     /**
@@ -146,5 +147,28 @@ class DisplayEditor {
      */
     getConfig() {
         return this.controller.currentConfig;
+    }
+
+    /**
+     * Selects a node handler
+     */
+    async select(node) {
+        if (!(node == null || node instanceof DisplayNode)) throw new Error('Invalid node');
+        if (this.selected == node) return;
+
+        this.deselect();
+        this.selected = node;
+
+        node.setSelected(true);
+        await this.parameters.select(node);
+    }
+
+    /**
+     * Clear the selection
+     */
+    deselect() {
+        this.root.deselectAll();
+
+        this.selected = null;
     }
 }

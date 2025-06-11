@@ -783,7 +783,7 @@ The examples also contains samples for setting up MIDICaptain USB and DIN commun
 - ProgramChange
 - SystemExclusive
 
-There are several other types defined in the <a href="https://docs.circuitpython.org/projects/midi/en/latest/" target="_blank">>adafruit_midi library</a>. If you need them to be processed, see file lib/pyswitch/hardware/adafruit.py and add the message types you need in the import section at the top (importing the types is sufficient, no further code changes needed). For types not listed (like MIDI Clock) these can be defined manually, see comments.
+There are several other types defined in the <a href="https://docs.circuitpython.org/projects/midi/en/latest/" target="_blank">adafruit_midi library</a>. If you need them to be processed, see file lib/pyswitch/hardware/adafruit.py and add the message types you need in the import section at the top (importing the types is sufficient, no further code changes needed). For types not listed (like MIDI Clock) these can be defined manually, see comments.
 
 #### Bidirectional Communication
 

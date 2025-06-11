@@ -109,12 +109,12 @@ class Tools {
     /**
      * Returns the passed element with the passed comment on hover
      */
-    static withComment(el, comment) {
+    static withComment(el, comment, placement = "top-end") {
         if (comment) {
             tippy(el[0], {
                 content: comment,
                 theme: "pyswitchtooltip",
-                placement: "top-end",
+                placement: placement,
                 arrow: false,
                 duration: 0
             });

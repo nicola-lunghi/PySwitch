@@ -28,31 +28,31 @@ class InputSettings extends ParameterList {
         function getSwitchOptions() {
             const holdTimeMillis = that.#input ? that.#input.holdTimeMillis() : 0
     
-            that.createBooleanInput(
-                "Hold Repeat",
-                "This option keeps repeating the hold actions again and again as long as the switch is held.",
-                that.#input ? that.#input.holdRepeat() : false,
-                async function(value) {
+            that.createBooleanInput({
+                name: "Hold Repeat",
+                comment: "This option keeps repeating the hold actions again and again as long as the switch is held.",
+                value: that.#input ? that.#input.holdRepeat() : false,
+                onChange: async function(value) {
                     that.#input.setHoldRepeat(value);
 
                     await that.controller.restart({
                         message: "none"
                     });
                 }
-            );
+            });
                     
-            that.createNumericInput(
-                "Hold Time", 
-                "Amount of time you have to press the switch for the hold actions to be triggered (Milliseconds).",
-                holdTimeMillis ? holdTimeMillis : 600,
-                async function(value) {
+            that.createNumericInput({
+                name: "Hold Time", 
+                comment: "Amount of time you have to press the switch for the hold actions to be triggered (Milliseconds).",
+                value: holdTimeMillis ? holdTimeMillis : 600,
+                onChange: async function(value) {
                     that.#input.setHoldTimeMillis(value);
 
                     await that.controller.restart({
                         message: "none"
                     });
                 }
-            );
+            });
         }
 
         switch (this.#definition.data.model.type) {

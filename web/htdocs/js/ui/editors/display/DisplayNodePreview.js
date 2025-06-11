@@ -2,64 +2,59 @@ class DisplayNodePreview {
     
     element = null;
     #handler = null;
+    #textElement = null;
 
     constructor(handler) {
         this.#handler = handler;
     }
 
     async destroy() {
-        (new DisplayNodeDrag(this.#handler.editor.preview, this.#handler)).kill();
+        (new DisplayNodePreviewDrag(this.#handler.editor.preview, this.#handler)).kill();
     }
 
     /**
      * Sets up the element
      */
     async setup() {
-        this.element = $('<span class="display-element" />');
-        
-        switch(this.#handler.node.name) {
-            case "DisplayLabel":
-                this.#renderDisplayLabel();
-                break;
-        }
-
-        // Label text
-        const text = this.#handler.getText();
-        this.element
-            .text(text)
-            .attr('data-toggle', 'tooltip')
-            .attr('title', text);
-    }
-
-    setSelected(selected) {
-        this.element.toggleClass('selected', selected);
-    }    
-
-    /**
-     * Renders a DisplayLabel node. Returns DOM.
-     */
-    #renderDisplayLabel() {
         const that = this;
-        this.element
-            .addClass('display-label')
-            // .addClass('editable')
+        this.element = $('<span class="display-element" />')
+            .append(
+                this.#textElement = $('<span class="display-element-text" />')
+            )
             .on('click', async function() {
                 try {
+                    if (!that.#handler.type.editable()) return;
+
                     that.#handler.select();
                     
                 } catch (e) {
                     that.#handler.editor.controller.handle(e);
                 }
-            })
+            });
+        
+        this.#handler.type.setupPreviewElement(this.element);
     }
 
+    /**
+     * Let the node appear selected (UI only, internal)
+     */
+    setSelected(selected) {
+        this.element.toggleClass('selected', selected);
+    }    
+
+    /**
+     * Called after DOM is ready
+     */
     init() {
-        if (this.#handler.editable) {
+        if (this.#handler.type.editable()) {
             // Make editable
-            (new DisplayNodeDrag(this.#handler.editor.preview, this.#handler)).init();
+            (new DisplayNodePreviewDrag(this.#handler.editor.preview, this.#handler)).init();
         }
     }
 
+    /**
+     * Update according to data model
+     */
     update() {
         if (!this.#handler.editor.preview.scaleFactor) throw new Error("Preview not initialized");
 
@@ -86,6 +81,20 @@ class DisplayNodePreview {
 
         // Order
         this.element.css('z-index', this.#handler.getChildIndex());
+
+        // Text
+        this.#updateText();
+    }
+
+    /**
+     * Update the text according to the data model
+     */
+    #updateText() {
+        const text = this.#handler.type.getPreviewText();
+        this.#textElement
+            .text(text)
+            .attr('data-toggle', 'tooltip')
+            .attr('title', text);
     }
 
     /**

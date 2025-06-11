@@ -1,32 +1,33 @@
 /**
- * Node handler, connection data model and UI
+ * Node handler, representing a display label
  */
 class DisplayNode {
 
-    node = null;
-    parent = null;
+    id = null;         // Unique ID string
 
-    editor = null;
+    node = null;       // Raw data node
+    parent = null;     // Parent DisplayNode handler
 
-    editable = false;
-    preview = null;
-    parameters = null;
+    preview = null;    // Preview handler for the node
+    type = null;       // DisplayNodeType handler (implementing all type specific stuff)
     
+    editor = null;     // DisplayEditor base instance
+
     constructor(editor, node, parentNodeHandler = null) {
         this.editor = editor;
         this.node = node;
         this.parent = parentNodeHandler;
 
+        this.type = new DisplayNodeType(this)
         this.editor.references.set(node, this);
+
+        this.id = Tools.uuid();
     }
 
     async destroy() {
         if (this.preview) {
             await this.preview.destroy();
         }  
-        if (this.parameters) {
-            await this.parameters.destroy();
-        }        
 
         const children = this.getChildren();
         for (const child of children) {
@@ -38,24 +39,10 @@ class DisplayNode {
      * Sets up the element and returns it (recursive)
      */
     async setup() {
-        switch(this.node.name) {
-            case "DisplayLabel":
-                this.editable = true;
-                break;
-        }
+        await this.type.setup();
         
         this.preview = new DisplayNodePreview(this);
         await this.preview.setup();
-
-        if (this.editable) {
-            this.parameters = new DisplayNodeParameters(this);
-            await this.parameters.setup();
-
-            // Collect editable parameters
-            this.editor.parameters.container.append(
-                this.parameters.element
-            )
-        }
 
         // Recurse to children, if any. Fist let the client determine which children to show.
         const children = this.getChildrenRaw();
@@ -94,26 +81,11 @@ class DisplayNode {
      */
     update() {
         this.preview.update();
-        if (this.parameters) {
-            this.parameters.update();
-        }
 
         const children = this.getChildren();
         for(const child of children) {
             child.update();
         }
-    }
-
-    /**
-     * Generates the label text
-     */
-    getText() {
-        if (this.node.hasOwnProperty("assign")) return this.node.assign;
-        
-        const callback = Tools.getArgument(this.node, "callback");
-        if (callback) return callback.value.name;
-        
-        return "";
     }
 
     /**
@@ -156,35 +128,68 @@ class DisplayNode {
     }
 
     /**
-     * Puts the element to front inside its parent
+     * Gets all siblings of the node (incl. the node itself)
      */
-    toFront() {
-        if (!this.parent) return;
-
-        const siblings = Tools.getArgument(this.parent.node, "children")
-
-        const that = this;
-        siblings.value.sort((a, b) => {
-            if (a == that.node) return 1;
-            if (b == that.node) return -1;
-            return 0;
-        })
+    getSiblings() {
+        if (!this.parent) return [this];
         
-        for (const siblingNode of siblings.value) {
-            const handler = this.editor.references.get(siblingNode);
-            handler.update();
+        return this.parent.getChildren();
+    }
+
+    /**
+     * Returns a flat list of node handlers contained (incl. this node).
+     * options: {
+     *     editable: true      Only collect editable nodes
+     * }
+     */
+    flatten(options = {}) {
+        function crawl(node) {
+            let ret = [];
+
+            if (options.editable) {
+                if (node.type.editable()) {
+                    ret.push(node);
+                }
+            } else {
+                ret.push(node);
+            }
+
+            const children = node.getChildren();
+            for(const child of children) {
+                ret = ret.concat(crawl(child));
+            }
+
+            return ret;
         }
+
+        return crawl(this);
+    }
+
+    /**
+     * Searches for a node with the passed ID. Returns null if not found.
+     */
+    searchById(id) {
+        if (this.id == id) return this;
+
+        const children = this.getChildren();
+        for(const child of children) {
+            const ret = child.searchById(id);
+            if (ret) return ret;
+        }
+        return null;
     }
 
     /**
      * Returns the model dimensions.
      */
     getModelBounds() {
-        const boundsNode = Tools.getArgument(this.node, "bounds");
-        if (!boundsNode) throw new Error("No bounds parameter found for node");
+        const boundsNode = this.type.getBoundsNode();
+        if (!boundsNode) {
+            throw new Error("No bounds parameter found for node");
+        }
         
         function getDim(name) {
-            const bnode = Tools.getArgument(boundsNode.value, name);
+            const bnode = Tools.getArgument(boundsNode, name);
             if (!bnode) return 0;
             return parseInt((new Resolver()).resolve(bnode.value));
         }
@@ -201,14 +206,12 @@ class DisplayNode {
      * Sets model dimensions
      */
     setModelBounds(bounds) {
-        const that = this;
-
         // Set dimensions on model
-        const boundsNode = Tools.getArgument(this.node, "bounds");
+        const boundsNode = this.type.getBoundsNode();
         if (!boundsNode) throw new Error("No bounds parameter found for node");
         
         function setDim(name, value) {
-            const bnode = Tools.getArgument(boundsNode.value, name);
+            const bnode = Tools.getArgument(boundsNode, name);
             if (!bnode) throw new Error("Dimension " + name + " not found");
             
             bnode.value = "" + Math.round(value);
@@ -219,40 +222,121 @@ class DisplayNode {
         setDim('w', bounds.width);
         setDim('h', bounds.height);
 
-        this.preview.update();
-        if (this.parameters) {
-            this.parameters.update();
-        }
+        if (this.preview) this.preview.update();
+        this.editor.parameters.update();
     }
 
     /**
      * Select this node (not recursive)
      */
-    select() {
-        if (this.editor.selected == this) return;
-
-        this.editor.root.deselectAll();
-
-        this.preview.setSelected(true);
-        if (this.parameters) {
-            this.parameters.setSelected(true);
-        }
-
-        this.editor.selected = this;
+    async select() {
+        await this.editor.select(this);
     }
 
     /**
-     * Clear the selection (recursive)
+     * Lets the node appear selected (UI only)
+     */
+    setSelected(selected) {
+        this.preview.setSelected(selected);
+    }
+
+    /**
+     * Clear the selection (recursive, internal use)
      */
     deselectAll() {
-        this.preview.setSelected(false);
-        if (this.parameters) {
-            this.parameters.setSelected(false);
-        }
+        this.setSelected(false);
 
         const children = this.getChildren();
         for(const child of children) {
             child.deselectAll();
         }
+    }
+
+    /**
+     * Puts the element to front inside its parent
+     */
+    toFront() {
+        if (!this.parent) return;
+
+        const siblings = Tools.getArgument(this.parent.node, "children")
+
+        const that = this;
+        siblings.value.sort((a, b) => {
+            if (a == that.node) return 1;
+            if (b == that.node) return -1;
+            return 0;
+        })
+        
+        this.#updatePeers(siblings.value);
+    }
+
+    /**
+     * Moves the label one step down among its siblings
+     */
+    moveDown() {
+        if (!this.parent) return;
+
+        const siblings = Tools.getArgument(this.parent.node, "children")
+
+        const childIndex = this.getChildIndex();
+
+        if (childIndex == 0) return;
+
+        // Swap siblings
+        siblings.value[childIndex] = siblings.value[childIndex - 1];
+        siblings.value[childIndex - 1] = this.node;
+
+        this.#updatePeers(siblings.value);        
+    }
+
+    /**
+     * Moves the label one step up among its siblings
+     */
+    moveUp() {
+        if (!this.parent) return;
+
+        const siblings = Tools.getArgument(this.parent.node, "children")
+
+        const childIndex = this.getChildIndex();
+
+        if (childIndex >= siblings.value.length - 1) return;
+
+        // Swap siblings
+        siblings.value[childIndex] = siblings.value[childIndex + 1];
+        siblings.value[childIndex + 1] = this.node;
+
+        this.#updatePeers(siblings.value);  
+    }
+
+    /**
+     * Remove node
+     */
+    remove() {
+        if (!this.parent) return;
+        this.parent.removeChild(this);
+    }
+
+    /**
+     * Removes a child handler if found
+     */
+    removeChild(child) {
+        const children = Tools.getArgument(this.node, "children")
+        console.log(children.value);
+        children.value = children.value.filter((node) => (node != child.node));
+        console.log(children.value);
+    }
+
+    /**
+     * Update the passed nodes and the parameter panel from the data model.
+     */
+    #updatePeers(nodesToUpdate = null) {
+        for (const node of nodesToUpdate || []) {
+            const handler = this.editor.references.get(node);
+            if (!handler) throw new Error('Node not found in refs')
+
+            handler.update();
+        }
+
+        this.editor.parameters.update();
     }
 }

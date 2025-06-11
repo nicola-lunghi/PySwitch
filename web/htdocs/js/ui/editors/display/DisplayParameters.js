@@ -6,125 +6,158 @@ class DisplayParameters {
     #editor = null;
     container = null;
 
-    #grid = null;
+    #selector = null;
+    #parametersElement = null;
+    #parametersList = null;
 
     constructor(editor) {
         this.#editor = editor;
     }
 
-    async get() {
-        return this.container = $('<div class="display-parameters-container" />');
-    }
-
     async destroy() {        
-        if (this.#grid) await this.#grid.destroy();
-    }
-
-    async init() {
-        await this.#initGrid(this.container);
-    }
-
-    async clear() {
-        // Clear
-        this.container.empty();
     }
 
     /**
-     * Init the grid (Muuri)
+     * Creates the DOM
      */
-    async #initGrid(gridElement) {
-        // Init grid
+    async get() {
+        return this.container = $('<div class="display-parameters-container" />')
+    }
+
+    /**
+     * Re-build according to the data model
+     */
+    async reset() {
         const that = this;
-        this.#grid = new Muuri(gridElement[0], {
-        /**
-         * Drag options
-         */
-        dragEnabled: true,
 
-//         // dragContainer: document.body,
-//         // dragSort: function () {
-//         //     return that.#parserFrontend.inputs
-//         //         .filter((item) => !!item.#grid && item.definition.data.model.type == that.definition.data.model.type)
-//         //         .map((item) => item.#grid);
-//         // },
+        // Clear
+        this.container
+            .empty()
+            .append(
+                $('<span class="display-parameters-header" />"').append(
+                    // Selector
+                    this.#selector = $('<select />')
+                    .prop('name', 'select-display')
+                    .on('change', async function() {
+                        try {
+                            const id = $(this).val();
+                            if (!id) return;
+                            
+                            const node = that.#editor.root.searchById(id);
+
+                            await node.select();
+
+                        } catch (e) {
+                            that.#editor.controller.handle(e);
+                        }
+                    }),
+
+                    // // Add button
+                    // $('<span class="button fas fa-create" />')
+                    // .on('click', async function() {
+                    //     try {
+                    //         that.#createLabel
+
+                    //         that.#editor.update();
+
+                    //     } catch (e) {
+                    //         that.#editor.controller.handle(e);
+                    //     }
+                    // }),
+
+                    // Remove button
+                    $('<span class="button fas fa-trash" />')
+                    .on('click', async function() {
+                        try {
+                            const selected = that.#editor.selected;
+                            if (!selected) return;
+
+                            if (!confirm('Do you really want to delete the selected element?')) return;
+                            
+                            selected.remove();
+                            
+                            await that.#editor.reset();
+
+                        } catch (e) {
+                            that.#editor.controller.handle(e);
+                        }
+                    })
+                ),
+
+                // Parameters
+                this.#parametersElement = $('<div class="display-parameters" />')
+            );
+
+        this.#updateSelector();
+    }
+
+    /**
+     * Selects the passed node (UI only, internal)
+     */
+    async select(node) {
+        if (!node) {
+            this.#selector.val("");
+            return;
+        }
+
+        if (!(node instanceof DisplayNode)) throw new Error('Invalid node');
+        this.#selector.val(node.id);
+
+        await this.#showNode(node);
+    }
+
+    /**
+     * Updates the selected parameters from the data model
+     */
+    update() {
+        // Parameters of selected node
+        if (this.#parametersList) {
+            this.#parametersList.update()
+        }
+
+        // Selector
+        this.#updateSelector();
+    }
+
+    /**
+     * Shows parameters for the node
+     */
+    async #showNode(node) {
+        this.#parametersElement
+            .empty()
+            .append(
+                await (this.#parametersList = new DisplayParameterList(node)).get()
+            );
+    }
+
+    /**
+     * Set up the displays selector
+     */
+    #updateSelector() {
+        if (!this.#selector) return;
         
-//         dragStartPredicate: function (item, e) {
-//             // // Fix some items
-//             // if ($(item.getElement()).find('.fixed').length > 0) return false;
+        const that = this;
+        this.#selector
+            .empty()
+            .append(
+                $('<option />')
+                .prop('value', '')
+                .text('Select a label...'),
 
-//             if (e.deltaTime > 50 && e.distance > 20) {
-//                 return Muuri.ItemDrag.defaultStartPredicate(item, e);
-//             }
-//         },
+                this.#editor.root.flatten({
+                    editable: true
+                })
+                .map(function(node) {
+                    const ret = $('<option />')
+                        .prop('value', node.id)
+                        .text(node.type.getName());
 
-//         dragSortPredicate: function (item) {
-//             const result = Muuri.ItemDrag.defaultSortPredicate(item, {
-//                 action: 'swap',
-//                 threshold: 50
-//             });
+                    if (that.#editor.selected == node) {
+                        ret.prop('selected', true)
+                    }
 
-//             // if (result) {
-//                 // Get target item
-//                 // const target = $(item.getElement()).parent().children().eq(result.index);
-//                 // if (target.find('.fixed').length > 0) {
-//                 //     return false;
-//                 // }
-//             // }
-
-//             return result;
-//         },
-
-//         /**
-//          * Custom layout
-//          */
-//         // layout: function (grid, layoutId, items, width, height, callback) {
-//         //     const layout = {
-//         //         id: layoutId,
-//         //         items: items,
-//         //         slots: [],
-//         //         styles: {},
-//         //     };
-
-//         //     let y = 0;
-//         //     let w = 0;
-//         //     let h = 0;
-
-//         //     for (let i = 0; i < items.length; ++i) {
-//         //         const item = items[i];
-
-//         //         y += h;
-//         //         const m = item.getMargin();
-
-//         //         const itemWidth = item.getWidth() + m.left + m.right;
-//         //         if (itemWidth > w) w = itemWidth;
-                
-//         //         h = item.getHeight() + m.top + m.bottom;
-                
-//         //         layout.slots.push(0, y);
-//         //     }
-
-//         //     h += y;
-
-//         //     // Set the CSS styles that should be applied
-//         //     // to the grid element.
-//         //     layout.styles.width = w + 'px';
-//         //     layout.styles.height = h + 'px';
-
-//         //     callback(layout);
-//         // }
-//     });
-
-//     // // Grid events: On drag end we just schedule this grid for updating the config
-//     // this.#grid.on('dragEnd', async function(item, event) {            
-//     //     that.#parserFrontend.scheduleForUpdate(that);
-//     // });
-
-//     // // On release end (which is after dragEnd), we also schedule the input and trigger the update.
-//     // this.#grid.on('dragReleaseEnd', async function(item, event) {
-//     //     that.#parserFrontend.scheduleForUpdate(that);
-        
-//     //     // No await!
-//     //     that.#parserFrontend.updateConfig();
-        });          
+                    return ret;
+                })
+            );
     }
 }

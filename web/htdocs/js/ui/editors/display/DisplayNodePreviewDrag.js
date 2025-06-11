@@ -1,21 +1,21 @@
 /**
  * Enable/kill drag functionality for a node handler
  */
-class DisplayNodeDrag {
+class DisplayNodePreviewDrag {
 
-    #nodeHandler = null;
+    #handler = null;
     #preview = null;
 
     constructor(preview, nodeHandler) {
         this.#preview = preview;
-        this.#nodeHandler = nodeHandler;
+        this.#handler = nodeHandler;
     }
 
     /**
      * Stop interact.js
      */
     kill() {
-        interact(this.#nodeHandler.preview.element[0]).unset();
+        interact(this.#handler.preview.element[0]).unset();
     }
 
     /**
@@ -23,27 +23,27 @@ class DisplayNodeDrag {
      */
     init() {
         const that = this;
-        const element = this.#nodeHandler.preview.element;
+        const element = this.#handler.preview.element;
 
         interact(element[0])
             .draggable({
                 listeners: {
-                    start (event) {
+                    async start (event) {
                         try {
-                            that.#nodeHandler.select();
-                            that.#nodeHandler.toFront();
+                            await that.#handler.select();
+                            that.#handler.toFront();
 
                         } catch (e) {
                             that.#preview.controller.handle(e);
                         }
                     },
                     move (event) {
-                        const bounds = that.#nodeHandler.getModelBounds();
+                        const bounds = that.#handler.getModelBounds();
 
                         bounds.x += event.dx / that.#preview.scaleFactor;
                         bounds.y += event.dy / that.#preview.scaleFactor;
 
-                        that.#nodeHandler.setModelBounds(bounds);
+                        that.#handler.setModelBounds(bounds);
                     }
                 },
 
@@ -64,28 +64,32 @@ class DisplayNodeDrag {
 
                 inertia: true,
                 origin: 'parent'
-            })
+            });
+
+        if (!this.#handler.type.resizable()) return;
+
+        interact(element[0])
             .resizable({
                 // Resize from all edges and corners
                 edges: { right: true, bottom: true },
 
                 listeners: {
-                    start (event) {
+                    async start (event) {
                         try {
-                            that.#nodeHandler.select();
-                            that.#nodeHandler.toFront();
+                            await that.#handler.select();
+                            that.#handler.toFront();
 
                         } catch (e) {
                             that.#preview.controller.handle(e);
                         }
                     },
                     move (event) {
-                        const bounds = that.#nodeHandler.getModelBounds();
+                        const bounds = that.#handler.getModelBounds();
 
                         bounds.width = event.rect.width / that.#preview.scaleFactor;
                         bounds.height = event.rect.height / that.#preview.scaleFactor;
 
-                        that.#nodeHandler.setModelBounds(bounds);
+                        that.#handler.setModelBounds(bounds);
 
                         // // Translate when resizing from top or left edges
                         // x += event.deltaRect.left;

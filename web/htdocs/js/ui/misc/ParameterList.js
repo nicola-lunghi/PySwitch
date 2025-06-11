@@ -14,7 +14,7 @@ class ParameterList {
         this.#inputs = [];
         await this.setup();
 
-        const options = this.#getRows();
+        const rows = this.#getRows();
         const headline = await this.getHeadline();
 
         return $('<span class="parameter-list-container" />').append(
@@ -23,11 +23,11 @@ class ParameterList {
                 $('<div class="parameter-comment" />')
                 .html(headline),
 
-                !options ? null :
+                !rows ? null :
                 $('<div class="parameters" />').append(
                     $('<table />').append(
                         $('<tbody />').append(
-                            options
+                            rows
                         )
                     )
                 )
@@ -46,77 +46,132 @@ class ParameterList {
      * Must set up all inputs by calling the create* methods.
      */
     async setup() {
-        // Implement in child classes
+        // Implement in child classes to set up the inputs
     }
     
     ///////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Creates a boolean input
+     * Creates a boolean input. Options:
+     * 
+     * {
+     *     name,
+     *     displayName, (optional, default: name)
+     *     comment,
+     *     value,
+     *     onChange: async (checked) => void (optional),
+     *     additionalContent: Additional DOM content (optional)
+     *     commentPlacement: Tippy placement option (default: top-end)
+     * }
      */
-    createBooleanInput(name, comment, value, onChange) {
-        const that = this;
+    createBooleanInput(options) {
+        options.type = 'checkbox';        
+        options.getValue = (input) => !!input.prop('checked');
+        options.setValue = (input, value) => input.prop('checked', value);
 
-        let input = null;
-        const inputCell = $('<td />').append(
-            input = $('<input type="checkbox" />')
-            .on('change', async function() {
-                try {
-                    await onChange(!!$(this).prop('checked'))
-                
-                } catch (e) {
-                    that.controller.handle(e);
-                }
-            })
-            .prop('checked', value)
-        )
-
-        this.#inputs.push({
-            row: Tools.withComment(
-                $('<tr />').append(                            
-                    $('<td />').append(
-                        $('<span />').text(name)
-                    ),
-
-                    inputCell
-                ),
-                comment
-            ),
-            input: input
-        })
+        this.createInput(options);
     }
 
     /**
-     * Creates a numeric input
+     * Creates a boolean input. Options:
+     * 
+     * {
+     *     name,
+     *     displayName, (optional, default: name)
+     *     comment,
+     *     value,
+     *     onChange: async (value) => void (optional),
+     *     additionalContent: Additional DOM content (optional)
+     *     commentPlacement: Tippy placement option (default: top-end)
+     * }
      */
-    createNumericInput(name, comment, value, onChange) {
+    createNumericInput(options) {
+        options.type = 'number';
+
+        this.createInput(options);
+    }
+
+    /**
+     * Creates a text input. Options:
+     * 
+     * {
+     *     name,
+     *     displayName, (optional, default: name)
+     *     comment,
+     *     value,
+     *     onChange: async (value) => void (optional),
+     *     additionalContent: Additional DOM content (optional)
+     *     commentPlacement: Tippy placement option (default: top-end)
+     * }
+     */
+    createTextInput(options) {
+        options.type = 'text';
+
+        this.createInput(options);
+    }
+
+    /**
+     * Creates an input. Options:
+     * 
+     * {
+     *     type,
+     *     name,
+     *     displayName, (optional, default: name)
+     *     comment,
+     *     value,
+     *     getValue: (input) => value (optional, default is .val())
+     *     setValue: (input, value) => void (optional, default is val())
+     *     onChange: async (value) => void (optional),
+     *     additionalContent: Additional DOM content (optional),
+     *     commentPlacement: Tippy placement option (default: top-end)
+     * }
+     */
+    createInput(options) {
         const that = this;
 
         let input = null;
         const inputCell = $('<td />').append(
-            input = $('<input type="number" />')
+            input = $('<input />')
             .on('change', async function() {
                 try {
-                    await onChange($(this).val())
+                    if (options.onChange) {
+                        const value = options.getValue ? options.getValue($(this)) : $(this).val();
+                        await options.onChange(value);
+                    }
                 
                 } catch (e) {
                     that.controller.handle(e);
                 }
             })
-            .val(value)
+            .prop('type', options.type)
+            .prop('name', options.name),
+            
+            options.additionalContent
         )
 
+        if (options.setValue) {
+            options.setValue(input, options.value);
+        } else {
+            input.val(options.value);
+        }
+
+        if (!options.onChange) {
+            input.prop('readonly', true);
+        }
+
         this.#inputs.push({
-            name: name,
+            type: options.type,
+            name: options.name,
             row: Tools.withComment(
                 $('<tr />').append(                            
                     $('<td />').append(
-                        $('<span />').text(name)
+                        $('<span />').text(options.displayName ? options. displayName : options.name)
                     ),
 
                     inputCell
                 ),
-                comment
+                options.comment,
+                options.commentPlacement ? options.commentPlacement : "top-end"
             ),
             input: input
         })

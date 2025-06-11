@@ -16,28 +16,6 @@
     display: inline-block;
     /* overflow: auto; */
     width: 100%;
-    position: relative;
-}
-
-.container .display-editor .display-parameters-container > * {
-    position: absolute;
-    width: 100%;
-    z-index: 1;
-}
-
-.container .display-editor .display-parameters-container .muuri-item-dragging {
-  z-index: 3;
-}
-.container .display-editor .display-parameters-container .muuri-item-releasing {
-  z-index: 2;
-}
-.container .display-editor .display-parameters-container .muuri-item-hidden {
-  z-index: 0;
-}
-
-.container .display-editor .display-parameters-container > * > * {
-    position: relative;
-    width: 100%;
 }
 
 @container popup-content (max-width: 650px) {
@@ -76,12 +54,18 @@
 }*/
 
 .container .display-editor .display-preview .display-label {
-    background-color: rgb(216, 216, 216);
+    background-color: rgba(216, 216, 216, 0.92);
     border: 1px solid rgb(110, 110, 110);
 }
 
+.container .display-editor .display-preview .display-dot {
+    background-color: rgba(128, 213, 121, 0.92);
+    border: 1px solid rgb(110, 110, 110);
+    border-radius: 100%;
+}
+
 .container .display-editor .display-preview .selected {
-    background-color: rgb(165, 165, 165);
+    background-color: rgba(165, 165, 165, 0.92);
     border: 1px solid rgb(65, 65, 65);
 }
 
@@ -90,11 +74,9 @@
 .container .display-editor .display-parameters {
     width: 100%;
     background-color: rgb(226, 226, 226);
-    margin: 0 0 0.3em 0;
-    border-radius: 0.6em;
-    padding: 0.6em;
+    container-type: size;
 }
 
-.container .display-editor .display-parameters-container .selected {
-    background-color: rgb(207, 207, 207);
+.container .display-editor .display-parameters-header {
+    width: 100%;
 }
