@@ -21,6 +21,7 @@ class Popup {
      *          }
      *      ],
      *      onClose:                  Called on hide (not awaited!)
+     *      confirmClose:             If given and returns false, closing will be exited. (not awaited!)
      *      errorHandler:             Optional error handler. must provide a handle(ex) => void method.
      * }
      */
@@ -56,6 +57,14 @@ class Popup {
     show(content, headline = null) {
         this.hide(true);
 
+        const that = this;
+        function confirmAndHide() {
+            if (that.options.confirmClose) {
+                if (!that.options.confirmClose()) return;
+            }
+            that.hide();
+        }
+
         this.options.container.append(
             this.#container = $('<div class="list-block" />').append(
                 this.element = $('<div class="list-browser"/>')
@@ -80,7 +89,7 @@ class Popup {
                             // Close button
                             $('<span class="fa fa-times close-button"/>')
                             .on('click', function() {
-                                that.hide();
+                                confirmAndHide();
                             })
                         )
                     )
@@ -92,11 +101,10 @@ class Popup {
         }
 
         // ESC to close
-        const that = this;
         $(window).on('keydown.' + this.#id, async function(event) {
             if (event.key === "Escape") {
                 event.preventDefault();
-                that.hide();
+                confirmAndHide();
             }
             
             if (event.key === "Enter") {
@@ -114,7 +122,7 @@ class Popup {
 
         setTimeout(function() {
             $(window).on('click.' + that.#id, async function() {
-                that.hide();
+                confirmAndHide();
             });    
         }, 0)
     }

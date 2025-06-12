@@ -61,7 +61,7 @@ class KemperClient extends Client {
     /**
      * Must return the Display Element which is the display root.
      */
-    async getSplashesRootElement(splashes) {
+    getSplashesRootElement(splashes) {
         switch(splashes.name) {
             case "TunerDisplayCallback":
                 const splashDefault = Tools.getArgument(splashes, "splash_default");
@@ -75,7 +75,7 @@ class KemperClient extends Client {
     /**
      * Replaces the root splash element in the passed splashes object and returns if successful
      */
-    async setSplashesRootElement(splashes, rootElement) {
+    setSplashesRootElement(splashes, rootElement) {
         switch(splashes.name) {
             case "TunerDisplayCallback":
                 const splashDefault = Tools.getArgument(splashes, "splash_default");

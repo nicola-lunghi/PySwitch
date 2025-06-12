@@ -40,3 +40,32 @@
 .container .parameter-list-container .parameter-list tr:last-child td {
     border-bottom: none;
 }
+
+/**************************************************************/
+
+.container .parameter-list-container .parameter-check-messages > * {
+    display: block;
+    font-size: 0.9em;
+    margin-top: 0.4em;
+}
+
+.container .parameter-list-container .parameter-check-messages .error {
+    color: #d43f3a;
+}
+
+.container .parameter-list-container .parameter-check-messages .warning {
+    color: #eea236;
+}
+
+.container .parameter-list-container .parameter-check-messages .info {
+    color: rgb(166, 166, 166);
+}
+
+
+.container .parameter-list-container input.error {
+    color: #d43f3a;
+}
+
+.container .parameter-list-container input.warning {
+    color: #eea236;
+}

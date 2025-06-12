@@ -15,11 +15,13 @@ class DisplayParameterList extends ParameterList {
      */
     async setup() {
         // Order
-        this.#setupOrderParameter();
-        this.#setupAssignParameter();
+        await this.#setupOrderParameter();
+        await this.#setupAssignParameter();
 
         // Others, depending on the type of node
-        this.#handler.type.setupParameters(this);
+        await this.#handler.type.setupParameters(this);
+
+        this.update();
     }
 
     /**
@@ -27,10 +29,31 @@ class DisplayParameterList extends ParameterList {
      */
     update() {
         // Order
-        this.set('z', this.#handler.getChildIndex());
+        this.setParameter('z', this.#handler.getChildIndex());
+
+        // Order
+        this.setParameter('assign', this.#handler.node.assign);
 
         // Others, depending on the type of node
         this.#handler.type.updateParameters(this);
+
+        // Check
+        this.check();
+    }
+
+    /**
+     * Check messages
+     */
+    check() {
+        this.inputs.forEach((input) => {
+            input.log.clear();
+        });
+
+        const that = this;
+        this.#handler.getMessages().forEach((msg) => {
+            if (!msg.input) return;
+            that.getParameter(msg.input).log.message(msg.message, msg.type);
+        });
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,17 +101,26 @@ class DisplayParameterList extends ParameterList {
     async #setupAssignParameter() {
         const that = this;
 
+        async function onChange(value, setValue) {
+            // Strip unallowed chars
+            let newValue = value.replace(/[^a-zA-Z0-9_]/g, '_');
+
+            // Remove preceeding underscores
+            while (newValue.startsWith('_')) newValue = newValue.slice(1);
+
+            that.#handler.node.assign = newValue;
+
+            that.#handler.editor.update();
+
+            setValue(newValue);
+        }
+
         this.createTextInput({
             name: "assign",
             displayName: "Export as",
             comment: "If you assign a name here, the label can be used in the actions. (This creates an assignment for the label instance which can be exported)",
-            value: that.#handler.node.assign ? that.#handler.node.assign : "",
-            onChange: async function(value) {
-                that.#handler.node.assign = value;
-
-                that.#handler.update();
-                that.#handler.editor.parameters.update();
-            }
+            value: this.#handler.node.assign ? this.#handler.node.assign : "",
+            onChange: this.#handler.isReferenced() ? null : onChange
         });
     }
 

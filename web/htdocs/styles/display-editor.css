@@ -69,6 +69,14 @@
     border: 1px solid rgb(65, 65, 65);
 }
 
+.container .display-editor .display-preview .display-element.warning {
+    background-color: #eea236;
+}
+
+.container .display-editor .display-preview .display-element.error {
+    background-color: #d43f3a;
+}
+
 /************************************************************************************/
 
 .container .display-editor .display-parameters {

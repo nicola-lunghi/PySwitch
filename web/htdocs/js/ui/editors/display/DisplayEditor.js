@@ -58,7 +58,7 @@ class DisplayEditor {
      */
     async init() {
         // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
-        this.#rootNode = JSON.parse(JSON.stringify(await this.#createRootNode()));
+        this.#rootNode = JSON.parse(JSON.stringify(this.#getPersistentRootNode()));
 
         await this.reset();
 
@@ -68,7 +68,7 @@ class DisplayEditor {
     /**
      * Returns the root node for the editor
      */
-    async #createRootNode() {
+    #getPersistentRootNode() {
         const splashes = this.getConfig().parser.splashes();
 
         // The root element may be client dependent
@@ -106,6 +106,14 @@ class DisplayEditor {
 
         // Init interact.js etc. after the hierarchy is set up and attached
         await this.root.init();
+    }
+
+    /**
+     * Update everything to the data model.
+     */
+    update() {
+        this.root.update();
+        this.parameters.update();
     }
 
     /**
@@ -159,7 +167,7 @@ class DisplayEditor {
      * Apply the changes to the current config
      */
     async apply() {
-        const newSplashes = await this.#createSplashes();
+        const newSplashes = this.#createSplashes();
         const parser = this.getConfig().parser;
 
         await this.controller.restart({
@@ -173,14 +181,15 @@ class DisplayEditor {
     /**
      * Returns a new splashes object to be set on the configuration
      */
-    async #createSplashes() {
+    #createSplashes() {
+        // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
         const splashes = JSON.parse(JSON.stringify(this.getConfig().parser.splashes()));
 
         // The root element may be client dependent
         const client = ClientFactory.getInstance(splashes.client ? splashes.client : "local");
 
-        // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
-        if (await client.setSplashesRootElement(splashes, this.#rootNode)) {
+        // Set the new root node in the splashes
+        if (client.setSplashesRootElement(splashes, this.#rootNode)) {
             return splashes;
         }
 
@@ -194,6 +203,20 @@ class DisplayEditor {
      */
     getConfig() {
         return this.controller.currentConfig;
+    }
+
+    /**
+     * Returns all messages
+     */
+    getMessages() {
+        return this.root.getMessagesDeep();
+    }
+
+    /**
+     * True if the user did changes.
+     */
+    isDirty() {
+        return JSON.stringify(this.#getPersistentRootNode()) != JSON.stringify(this.root.node);
     }
 
     /**

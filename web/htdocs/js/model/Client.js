@@ -85,14 +85,14 @@ class Client {
     /**
      * Must return the Display Element which is the display root.
      */
-    async getSplashesRootElement(splashes) {
+    getSplashesRootElement(splashes) {
         return splashes;
     }
 
     /**
      * Replaces the root splash element in the passed splashes object and returns the if successful
      */
-    async setSplashesRootElement(splashes, rootElement) {
+    setSplashesRootElement(splashes, rootElement) {
         return false;
     }
 }

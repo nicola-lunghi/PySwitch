@@ -84,6 +84,11 @@ class DisplayNodePreview {
 
         // Text
         this.#updateText();
+
+        // Errors / Warnings
+        const messages = this.#handler.getMessages();
+        this.element.toggleClass('error', messages.filter((item) => (item.type == 'E')).length > 0);
+        this.element.toggleClass('warning', messages.filter((item) => (item.type == 'W')).length > 0);
     }
 
     /**

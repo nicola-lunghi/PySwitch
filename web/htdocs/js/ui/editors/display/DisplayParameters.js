@@ -41,7 +41,10 @@ class DisplayParameters {
                     .on('change', async function() {
                         try {
                             const id = $(this).val();
-                            if (!id) return;
+                            if (!id) {
+                                $(this).val(that.#editor.selected.id);
+                                return;
+                            }
                             
                             const node = that.#editor.root.searchById(id);
 

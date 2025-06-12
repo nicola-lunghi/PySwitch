@@ -41,9 +41,18 @@ class ParserFrontend {
      */
     async showDisplayEditor() {
         async function commit() {
+            if (props.getMessages().filter((msg) => (msg.type == 'E')).length > 0) {
+                alert("The display configuration still contains errors. Please fix them before applying.");
+                return;
+            }
+
             await props.apply();
             await destroy();
             browser.hide();
+        }
+
+        function confirmClose() {
+            return !props.isDirty() || confirm('Do you want to exit the display editor? Changes will get lost.');
         }
 
         async function destroy() {
@@ -52,7 +61,8 @@ class ParserFrontend {
 
         const browser = this.#controller.ui.getPopup({
             // onReturnKey: commit,
-            onClose: destroy,
+            onClose: destroy,               // Not awaited here!
+            confirmClose: confirmClose,
             buttons: [
                 {
                     text: "Apply",

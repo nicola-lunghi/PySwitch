@@ -125,15 +125,15 @@ class DisplayNodeType {
     /**
      * Sets up parameters on the passed ParameterList instance, according to the type of display element.
      */
-    setupParameters(list) {
+    async setupParameters(list) {
         switch (this.#handler.node.name) {
             case "DisplayLabel":
-                list.setupPositionParameters();
-                list.setupSizeParameters();
+                await list.setupPositionParameters();
+                await list.setupSizeParameters();
                 break;
 
             case "BidirectionalProtocolState":
-                list.setupPositionParameters();
+                await list.setupPositionParameters();
                 break;
         }
     }
@@ -145,15 +145,15 @@ class DisplayNodeType {
         const bounds = this.#handler.getModelBounds();
         switch (this.#handler.node.name) {
             case "DisplayLabel":
-                list.set('x', bounds.x);
-                list.set('y', bounds.y);
-                list.set('width', bounds.width);
-                list.set('height', bounds.height);
+                list.setParameter('x', bounds.x);
+                list.setParameter('y', bounds.y);
+                list.setParameter('width', bounds.width);
+                list.setParameter('height', bounds.height);
                 break;
 
             case "BidirectionalProtocolState":
-                list.set('x', bounds.x);
-                list.set('y', bounds.y);
+                list.setParameter('x', bounds.x);
+                list.setParameter('y', bounds.y);
                 break;
         }
     }

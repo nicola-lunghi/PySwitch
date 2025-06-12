@@ -12,6 +12,7 @@ class DisplayNode {
     type = null;       // DisplayNodeType handler (implementing all type specific stuff)
     
     editor = null;     // DisplayEditor base instance
+    usages = [];
 
     constructor(editor, node, parentNodeHandler = null) {
         this.editor = editor;
@@ -44,6 +45,8 @@ class DisplayNode {
         this.preview = new DisplayNodePreview(this);
         await this.preview.setup();
 
+        this.usages = await this.#determineUsages();
+
         // Recurse to children, if any. Fist let the client determine which children to show.
         const children = this.getChildrenRaw();
         
@@ -63,6 +66,15 @@ class DisplayNode {
             );
         }
     }
+
+    /**
+     * Returns all usages in inputs.py, if assigned
+     */
+    async #determineUsages() {
+        if (!this.node.assign) return [];
+        return this.editor.getConfig().parser.checks.getDisplayUsages(this.node.assign);
+    }
+
 
     /**
      * Initialize after the hierarchy has been set up
@@ -177,6 +189,18 @@ class DisplayNode {
             if (ret) return ret;
         }
         return null;
+    }
+
+    /**
+     * Executes the callback for this node and all of its children (deep)
+     */
+    async each(callback) {
+        await callback(this);        
+
+        const children = this.getChildren();
+        for(const child of children) {
+            await child.each(callback);
+        }
     }
 
     /**
@@ -355,5 +379,85 @@ class DisplayNode {
         }
 
         this.editor.parameters.update();
+    }
+
+    /**
+     * Checks if the label is used in inputs.py
+     */
+    isReferenced() {
+        return this.usages.length > 0;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Gets a list of all messages for this node.
+     */
+    getMessages() {
+        return [].concat(
+            this.#checkAssignmentExists(),
+            this.#checkAssignmentReferenced()
+        );
+    }
+
+    getMessagesDeep() {
+        let ret = this.getMessages();
+
+        const children = this.getChildren();
+        for(const child of children) {
+            ret = ret.concat(child.getMessages());
+        }
+
+        return ret;
+    }
+
+    /**
+     * Checks if the assignment already exists
+     */
+    #checkAssignmentExists() {
+        const ret = [];
+
+        if (this.node.assign == "Splashes") {
+            ret.push({
+                type: 'E',
+                message: 'Splashes is not an allowed display element name.',
+                input: "assign"
+            });
+        }
+
+        const that = this;
+        this.editor.root
+            .flatten()
+            .forEach((node) => {
+                if (node == that) return;
+                if (!that.node.assign) return;
+
+                if (node.node.assign == that.node.assign) {
+                    ret.push({
+                        type: 'E',
+                        message: "Assignment " + that.node.assign + " already exists.",
+                        input: "assign"
+                    });
+                }
+            });
+        
+        return ret;
+    }
+
+    /**
+     * Checks if the assignment is referenced
+     */
+    #checkAssignmentReferenced() {
+        const ret = [];
+
+        for(const usage of this.usages) {
+            ret.push({
+                type: 'I',
+                message: 'Used in ' + usage.input.assignment.displayName,
+                input: 'assign'
+            })
+        }
+
+        return ret;
     }
 }
