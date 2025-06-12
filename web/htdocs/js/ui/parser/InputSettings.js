@@ -45,6 +45,9 @@ class InputSettings extends ParameterList {
                 name: "Hold Time", 
                 comment: "Amount of time you have to press the switch for the hold actions to be triggered (Milliseconds).",
                 value: holdTimeMillis ? holdTimeMillis : 600,
+                range: {
+                    min: 0
+                },
                 onChange: async function(value) {
                     that.#input.setHoldTimeMillis(value);
 
