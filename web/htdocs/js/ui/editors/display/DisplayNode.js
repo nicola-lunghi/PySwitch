@@ -19,7 +19,7 @@ class DisplayNode {
         this.node = node;
         this.parent = parentNodeHandler;
 
-        this.type = new DisplayNodeType(this)
+        this.type = DisplayNodeType.getInstance(this);
         this.editor.references.set(node, this);
 
         this.id = Tools.uuid();
@@ -261,8 +261,8 @@ class DisplayNode {
 
         setDim('x', bounds.x);
         setDim('y', bounds.y);
-        setDim('w', bounds.width);
-        setDim('h', bounds.height);
+        setDim('w', (bounds.width >= 1) ? bounds.width : 1);
+        setDim('h', (bounds.height >= 1) ? bounds.height : 1);
 
         if (this.preview) this.preview.update();
         this.editor.parameters.update();

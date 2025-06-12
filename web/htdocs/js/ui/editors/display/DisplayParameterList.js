@@ -177,6 +177,9 @@ class DisplayParameterList extends ParameterList {
             displayName: "Width",
             //comment: "Width",
             value: bounds.width,
+            range: {
+                min: 1
+            },
             onChange: async function(value) {
                 const bounds2 = that.#handler.getModelBounds();
                 bounds2.width = value;
@@ -191,6 +194,9 @@ class DisplayParameterList extends ParameterList {
             displayName: "Height",
             //comment: "Height",
             value: bounds.height,
+            range: {
+                min: 1
+            },
             onChange: async function(value) {
                 const bounds2 = that.#handler.getModelBounds();
                 bounds2.height = value;

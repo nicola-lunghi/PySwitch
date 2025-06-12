@@ -34,7 +34,14 @@ class ParameterList {
     }
 
     /**
-     * Creates a boolean input.
+     * Creates a boolean input. Additional options: 
+     * {
+     *     range: {
+     *          min,
+     *          max,
+     *          step
+     *     }
+     * }
      */
     createNumericInput(options) {
         options.type = 'number';
@@ -47,6 +54,23 @@ class ParameterList {
      */
     createTextInput(options) {
         options.type = 'text';
+
+        this.createInput(options);
+    }
+
+    /**
+     * Create a select input. Additional options:
+     * {
+     *     options: [
+     *         {
+     *             value:
+     *             text
+     *         }
+     *     ]
+     * }
+     */
+    createSelectInput(options) {
+        options.type = 'select';
 
         this.createInput(options);
     }
@@ -70,11 +94,28 @@ class ParameterList {
     createInput(options) {
         const that = this;
 
-        let input = null;
+        let input = (options.type == 'select') 
+            ? 
+                $('<select />').append(
+                    options.options.map((entry) => {
+                        if (typeof entry == "object") {   
+                            return $('<option />')
+                                .prop('value', entry.value)
+                                .text(entry.text ? entry.text : entry.value)
+                        }
+                        return $('<option />')
+                            .prop('value', entry)
+                            .text(entry) 
+                    })
+                )
+            : 
+                $('<input />')
+                .prop('type', options.type)
+
         let messages = null;
 
         const inputCell = $('<td />').append(
-            input = $('<input />')
+            input
             .on('change', async function() {
                 try {
                     if (options.onChange) {
@@ -94,7 +135,6 @@ class ParameterList {
                     that.controller.handle(e);
                 }
             })
-            .prop('type', options.type)
             .prop('name', options.name),
             
             options.additionalContent,
@@ -110,6 +150,18 @@ class ParameterList {
 
         if (!options.onChange) {
             input.prop('readonly', true);
+        }
+
+        if (options.range) {
+            if (options.range.min) {
+                input.prop('min', options.range.min);
+            }
+            if (options.range.max) {
+                input.prop('max', options.range.max);
+            }
+            if (options.range.step) {
+                input.prop('step', options.range.step);
+            }
         }
 
         const log = {

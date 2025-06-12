@@ -161,6 +161,14 @@ class DisplayEditor {
                             {
                                 name: "font",
                                 value: '"/fonts/H20.pcf"'
+                            },
+                            {
+                                name: "backColor",
+                                value: '(0, 0, 0)'
+                            },
+                            {
+                                name: "stroke",
+                                value: '1'
                             }
                         ]
                     }

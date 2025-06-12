@@ -14,6 +14,7 @@ class Parser {
     #availableActions = null;        // Buffer
     #availableMappings = null;       // Buffer
     #availableKeycodes = null;       // Buffer
+    #availableFonts = null;          // Buffer
     #bufferHardwareInfo = null;      // Buffer
     #colors = null;                  // Buffer
     #inputs = null;                  // Buffer for input instances
@@ -393,6 +394,17 @@ class Parser {
         this.#availableKeycodes = JSON.parse(await Tools.fetch(this.basePath + "definitions/keycodes.json"));
 
         return this.#availableKeycodes;
+    }
+
+    /**
+     * Returns a list of available fonts
+     */
+    async getAvailableFonts() {
+    if (this.#availableFonts) return this.#availableFonts;
+
+        this.#availableFonts = JSON.parse(await Tools.fetch(this.basePath + "definitions/fonts.json"));
+
+        return this.#availableFonts;
     }
 
     /**
