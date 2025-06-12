@@ -22,6 +22,7 @@ class DisplayLabelTypeLayout {
 
         this.#createInput(list, {
             name: "maxTextWidth",
+            comment: "Max. text size before wrapping. NOTE: If scale is set, you have to adjust this by the same factor.",
             text: "Max. Text Width",
             type: 'text'
         });
@@ -36,12 +37,14 @@ class DisplayLabelTypeLayout {
 
         this.#createInput(list, {
             name: "text",
+            comment: "Optional initial text. If set, the label shows the passed text until some action or callback overwrites it.",
             text: "Initial Text",
             type: 'text'
         });
 
         this.#createInput(list, {
             name: "stroke",
+            comment: "Optional stroke size. This does not really generate a real stroke (because of RAM issues) but instead just reduces the size by the entered amount.",
             text: "Stroke",
             type: 'text'
         });
@@ -64,6 +67,7 @@ class DisplayLabelTypeLayout {
         list.createInput({
             type: options.type,
             name: options.name,
+            comment: options.comment,
             displayName: options.text,
             value: value,
             options: options.options,

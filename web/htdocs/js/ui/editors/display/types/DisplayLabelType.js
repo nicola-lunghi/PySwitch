@@ -63,6 +63,7 @@ class DisplayLabelType extends DisplayNodeType {
         const that = this;
         list.createNumericInput({
             name: "scale",
+            comment: "Scale the text in the label. NOTE: If you have a Max. Text Width set, you have to adapt it by the same factor.",
             displayName: "Scale by",
             value: valueNode ? valueNode.value : 1,
             range: {
