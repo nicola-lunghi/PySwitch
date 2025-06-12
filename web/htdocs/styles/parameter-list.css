@@ -69,3 +69,7 @@
 .container .parameter-list-container input.warning {
     color: #eea236;
 }
+
+.container .parameter-list-container input[type=number] {
+    width: 4em;
+}

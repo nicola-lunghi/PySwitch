@@ -26,14 +26,13 @@ class DisplayNodeType {
      * at the top right corner of the bounds, with fixed size. For the editor, we 
      * recalculate that to the correct dot size.
      */
-    #recalculateDotSize(width, height, internalMargin) {
+    #recalculateDotSize(width, height) {
         const bounds = this.#handler.getModelBounds();
         if (bounds.width == width && bounds.height == height) return;
 
         console.log(" -> Recalculate dot bounds for " + this.#handler.node.name);
 
         bounds.x += bounds.width - width;
-        //bounds.y += internalMargin;
         bounds.width = width;
         bounds.height = height;
 
