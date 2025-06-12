@@ -32,6 +32,7 @@
 
 ### Emulator 2.4.5.13
 - Features:
+    - Added a new **Graphical Display Editor** making it possible to edit the display layout (display.py) in a user friendly way. Open it by clicking on the display or the new button on the top right. See README for details on usage.
     - The Emulator can now be installed as PWA (<a href="https://developer.mozilla.org/en/docs/Web/Progressive_web_apps">Progressive Web App</a>). In Chrome, select "Install PySwitch Emulator" at the right of your address bar, and you will get a standalone App separated from Chrome itself.
     
 - Minor cosmetical improvements
