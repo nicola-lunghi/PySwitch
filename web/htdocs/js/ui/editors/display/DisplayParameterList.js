@@ -4,6 +4,7 @@
 class DisplayParameterList extends ParameterList {
     
     #handler = null;  // DisplayNode instance
+    #loaded = false;
 
     constructor(handler) {
         super(handler.editor.controller)
@@ -21,6 +22,8 @@ class DisplayParameterList extends ParameterList {
         // Others, depending on the type of node
         await this.#handler.type.setupParameters(this);
 
+        this.#loaded = true;
+
         this.update();
     }
 
@@ -28,6 +31,8 @@ class DisplayParameterList extends ParameterList {
      * Update inputs from the data model
      */
     update() {
+        if (!this.#loaded) return;
+        
         // Order
         this.setParameter('z', this.#handler.getChildIndex());
 

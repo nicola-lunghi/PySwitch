@@ -59,9 +59,7 @@ class DisplayParameters {
                     $('<span class="button fas fa-plus" data-toggle="tooltip" title="Add a new element" />')
                     .on('click', async function() {
                         try {
-                            await that.#editor.createElement();
-
-                            await that.#editor.reset();
+                            await that.#editor.createElement();                            
 
                         } catch (e) {
                             that.#editor.controller.handle(e);
@@ -74,6 +72,10 @@ class DisplayParameters {
                         try {
                             const selected = that.#editor.selected;
                             if (!selected) return;
+                            if (selected.isReferenced()) {
+                                alert('Please remove all usages of ' + selected.type.getName() + ' from inputs.py first');
+                                return;
+                            }
 
                             if (!confirm('Do you really want to delete the selected element?')) return;
                             

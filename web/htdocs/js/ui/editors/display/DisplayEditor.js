@@ -120,9 +120,15 @@ class DisplayEditor {
      * Create a new element on top
      */
     async createElement() {
+        let assign = "DISPLAY_LABEL_1";
+        let cnt = 2;
+        while (this.root.flatten().filter((node) => node.node.assign == assign).length > 0) {
+            assign = "DISPLAY_LABEL_" + cnt++;
+        }
+
         this.root.addChild({
             name: "DisplayLabel",
-            //assign: "",
+            assign: assign,
             arguments: [
                 {
                     name: "bounds",
@@ -139,11 +145,11 @@ class DisplayEditor {
                             },
                             {
                                 name: 'w',
-                                value: '60'
+                                value: '100'
                             },
                             {
                                 name: 'h',
-                                value: '60'
+                                value: '30'
                             }
                         ]
                     }
@@ -161,6 +167,11 @@ class DisplayEditor {
                 }
             ]
         });
+
+        await this.reset();
+
+        // The new label is always on top, so we can just select the top element
+        this.root.lastChild().select();
     }
 
     /**

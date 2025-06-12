@@ -136,7 +136,25 @@ class DisplayNode {
         const that = this;
         return raw.map((node) => {
             return that.editor.references.get(node);
-        });
+        });    
+    }
+
+    /**
+     * Returns the last child or null
+     */
+    firstChild() {
+        const raw = this.getChildrenRaw();
+        if (!raw) return null;
+        return this.editor.references.get(raw[0]);
+    }
+
+    /**
+     * Returns the last child or null
+     */
+    lastChild() {
+        const raw = this.getChildrenRaw();
+        if (!raw) return null;
+        return this.editor.references.get(raw[raw.length-1]);
     }
 
     /**
@@ -362,9 +380,7 @@ class DisplayNode {
      */
     removeChild(child) {
         const children = Tools.getArgument(this.node, "children")
-        console.log(children.value);
         children.value = children.value.filter((node) => (node != child.node));
-        console.log(children.value);
     }
 
     /**
