@@ -402,7 +402,12 @@ class Parser {
     async getAvailableFonts() {
     if (this.#availableFonts) return this.#availableFonts;
 
-        this.#availableFonts = JSON.parse(await Tools.fetch(this.basePath + "definitions/fonts.json"));
+        function getSortCriteria(item) {
+            return parseInt(item.replace(/[^0-9]/g, ''));
+        }
+
+        this.#availableFonts = JSON.parse(await Tools.fetch(this.basePath + "definitions/fonts.json"))
+            .sort((a, b) => getSortCriteria(a) - getSortCriteria(b));
 
         return this.#availableFonts;
     }

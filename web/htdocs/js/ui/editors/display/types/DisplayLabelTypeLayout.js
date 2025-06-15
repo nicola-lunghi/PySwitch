@@ -13,11 +13,21 @@ class DisplayLabelTypeLayout {
      * Sets up some parameters
      */
     async setupParameters(list) {
+        function getFontSize(item) {
+            return parseInt(item.replace(/[^0-9]/g, ''));
+        }
+
         this.#createInput(list, {
             name: "font",
             text: "Font",
             type: 'select',
-            options: (await this.#handler.editor.getConfig().parser.getAvailableFonts()).map((font) => ('"' + font + '"'))            
+            options: (await this.#handler.editor.getConfig().parser.getAvailableFonts())
+                .map((font) => {
+                    return {
+                        value: '"' + font + '"',
+                        text: font.replace('/fonts/', '') + " (" + getFontSize(font) + "px)"
+                    }
+                })  
         });
 
         this.#createInput(list, {
