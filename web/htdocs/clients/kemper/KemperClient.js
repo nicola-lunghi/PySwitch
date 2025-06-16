@@ -59,6 +59,15 @@ class KemperClient extends Client {
     }
 
     /**
+     * If the client has callbacks implementations in __init__.py, this can return the class names for them.
+     */
+    getInitCallbacks() {
+        return [
+            'KemperRigNameCallback'
+        ];
+    }
+
+    /**
      * Must return the Display Element which is the display root.
      */
     getSplashesRootElement(splashes) {

@@ -4,16 +4,16 @@ class CallbackParserTests extends FunctionParserTestBase {
         await this.init();
         
         const basePath = "../";
-        // const that = this;
+        const that = this;
 
         const extractor = new ClassNamesExtractor(this.pyswitch);
         const itemExtractor = new ClassItemExtractor(this.pyswitch);        
         const clients = await Client.getAvailable(basePath);
 
-        // async function fromClass(options) {
-        //     const extractor = new ClassItemExtractor(that.pyswitch);
-        //     return await extractor.get(options);
-        // }
+        async function fromClass(options) {
+            const extractor = new ClassItemExtractor(that.pyswitch);
+            return await extractor.get(options);
+        }
         
         async function cleanClasses(classes) {
             const ret = [];
@@ -56,17 +56,25 @@ class CallbackParserTests extends FunctionParserTestBase {
                         targetPath: "pyswitch/clients/" + client.id + "/callbacks"
                     });
 
-                    const classesCleaned = await cleanClasses(classes);
+                    let classesCleaned = await cleanClasses(classes);
+                    console.log(classesCleaned)
 
-                    // // Add callbacks from __init__.py
-                    // if (client.getInitActionsClassName()) {
-                    //     actions = actions.concat(await fromClass({
-                    //         file: "pyswitch/clients/" + client.id + "/__init__.py",
-                    //         importPath: "pyswitch.clients." + client.id,
-                    //         className: client.getInitActionsClassName(),
-                    //         functions: true
-                    //     }))
-                    // }
+                    // Add callbacks from __init__.py
+                    for (const initCls of client.getInitCallbacks()) {
+                        const funcs = await fromClass({
+                            file: "pyswitch/clients/" + client.id + "/__init__.py",
+                            importPath: "pyswitch.clients." + client.id,
+                            className: initCls,
+                            functions: true,
+                            includeUnderscore: true
+                        });
+
+                        for (const func of funcs) {
+                            if (func.name.includes('.')) continue;
+
+                            classesCleaned.push(func)
+                        }                        
+                    }
 
                     ret.push({
                         client: client.id,

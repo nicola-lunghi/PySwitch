@@ -76,6 +76,13 @@ class Client {
     }
 
     /**
+     * If the client has callbacks implementations in __init__.py, this can return the class names for them.
+     */
+    getInitCallbacks() {
+        return [];
+    }
+
+    /**
      * Returns a display name for the client
      */
     getDisplayName() {

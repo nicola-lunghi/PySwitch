@@ -6,6 +6,25 @@
                 "name": "KemperTempoDisplayCallback",
                 "importPath": "pyswitch.clients.kemper.callbacks.tempo_bpm",
                 "parameters": []
+            },
+            {
+                "type": "function",
+                "name": "KemperRigNameCallback",
+                "parameters": [
+                    {
+                        "name": "show_name",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "show_rig_id",
+                        "default": "False",
+                        "comment": null
+                    }
+                ],
+                "comment": null,
+                "importPath": "pyswitch.clients.kemper",
+                "importName": "KemperRigNameCallback"
             }
         ]
     },
