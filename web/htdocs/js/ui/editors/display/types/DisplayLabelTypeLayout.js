@@ -68,8 +68,9 @@ class DisplayLabelTypeLayout {
                 .text('Show PySwitch version on boot')
                 .on('click', function() {
                     try {
-                        list.setParameter('text', 'KemperRigNameCallback.DEFAULT_TEXT');
-                        that.setParameter('text', 'KemperRigNameCallback.DEFAULT_TEXT');
+                        const v = 'f"PySwitch { PYSWITCH_VERSION }"';
+                        list.setParameter('text', v);
+                        that.setParameter('text', v);
                         
                     } catch (e) {
                         that.#handler.editor.controller.handle(e);

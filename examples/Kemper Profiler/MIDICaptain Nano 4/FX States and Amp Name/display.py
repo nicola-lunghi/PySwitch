@@ -5,7 +5,7 @@ from pyswitch.ui.elements import DisplayLabel, BidirectionalProtocolState
 from pyswitch.controller.callbacks import Callback
 from pyswitch.clients.kemper import KemperRigNameCallback, TunerDisplayCallback
 from pyswitch.clients.kemper.mappings.amp import MAPPING_AMP_NAME
-
+from pyswitch.misc import PYSWITCH_VERSION
 
 _ACTION_LABEL_LAYOUT = {
     "font": "/fonts/H20.pcf",
@@ -84,7 +84,7 @@ Splashes = TunerDisplayCallback(
                     "font": "/fonts/PTSans-NarrowBold-40.pcf",
                     "lineSpacing": 0.8,
                     "maxTextWidth": 220,
-                    "text": KemperRigNameCallback.DEFAULT_TEXT,
+                    "text": f"PySwitch { PYSWITCH_VERSION }",
                 },
 
                 callback = KemperRigNameCallback()

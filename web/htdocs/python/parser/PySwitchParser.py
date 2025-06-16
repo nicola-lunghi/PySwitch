@@ -231,6 +231,10 @@ class PySwitchParser:
             {
                 "name": "BidirectionalProtocolState",
                 "importPath": "pyswitch.ui.elements"
+            },
+            {
+                "name": "PYSWITCH_VERSION",
+                "importPath": "pyswitch.misc"
             }
         ]
     
@@ -289,6 +293,10 @@ class PySwitchParser:
             {
                 "name": "Keycode",
                 "importPath": "adafruit_hid.keycode"
+            },
+            {
+                "name": "PYSWITCH_VERSION",
+                "importPath": "pyswitch.misc"
             }
         ]
     

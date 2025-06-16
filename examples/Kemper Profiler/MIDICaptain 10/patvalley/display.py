@@ -2,6 +2,7 @@ from pyswitch.clients.kemper import KemperRigNameCallback
 from pyswitch.clients.kemper import TunerDisplayCallback
 from micropython import const
 from pyswitch.colors import DEFAULT_LABEL_COLOR
+from pyswitch.misc import PYSWITCH_VERSION
 from pyswitch.ui.ui import DisplayElement
 from pyswitch.ui.ui import DisplayBounds
 from pyswitch.ui.elements import DisplayLabel
@@ -90,7 +91,7 @@ DISPLAY_RIG_NAME = DisplayLabel(
         "font": "/fonts/PTSans-NarrowBold-40.pcf",
         "lineSpacing": 0.8,
         "maxTextWidth": 220,
-        "text": KemperRigNameCallback.DEFAULT_TEXT,
+        "text": f"PySwitch { PYSWITCH_VERSION }",
         
     }, 
     callback = KemperRigNameCallback()

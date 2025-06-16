@@ -7,7 +7,7 @@ from pyswitch.ui.ui import DisplayElement
 from pyswitch.ui.ui import DisplayBounds
 from pyswitch.ui.elements import DisplayLabel
 from pyswitch.ui.elements import BidirectionalProtocolState
-
+from pyswitch.misc import PYSWITCH_VERSION
 
 _ACTION_LABEL_LAYOUT = {
     "font": "/fonts/H20.pcf",
@@ -101,7 +101,7 @@ Splashes = TunerDisplayCallback(
                     "font": "/fonts/PTSans-NarrowBold-40.pcf",
                     "lineSpacing": 0.8,
                     "maxTextWidth": 220,
-                    "text": KemperRigNameCallback.DEFAULT_TEXT,
+                    "text": f"PySwitch { PYSWITCH_VERSION }",
                     
                 }, 
                 callback = KemperRigNameCallback()

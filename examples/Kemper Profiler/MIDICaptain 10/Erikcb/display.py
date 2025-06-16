@@ -6,6 +6,7 @@
 
 from micropython import const
 from pyswitch.colors import DEFAULT_LABEL_COLOR
+from pyswitch.misc import PYSWITCH_VERSION
 
 from pyswitch.ui.ui import DisplayElement, DisplayBounds
 from pyswitch.ui.elements import DisplayLabel, BidirectionalProtocolState
@@ -82,7 +83,7 @@ Splashes = TunerDisplayCallback(
                     "font": "/fonts/PTSans-NarrowBold-40.pcf",
                     "lineSpacing": 0.8,
                     "maxTextWidth": 220,
-                    "text": KemperRigNameCallback.DEFAULT_TEXT,
+                    "text": f"PySwitch { PYSWITCH_VERSION }",
                 },
 
                 callback = KemperRigNameCallback()
