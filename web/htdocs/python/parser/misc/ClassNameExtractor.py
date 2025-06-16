@@ -7,7 +7,7 @@ class ClassNameExtractor:
         self.import_path = import_path
         self.include_underscore = include_underscore        
 
-    # Returns a list of all public functions and/or attributes defined on module level
+    # Returns a list of all public classes defined on module level
     def get(self):
         ret = []
 

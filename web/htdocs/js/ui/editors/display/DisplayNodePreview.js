@@ -11,7 +11,7 @@ class DisplayNodePreview {
     async destroy() {
         (new DisplayNodePreviewDrag(this.#handler.editor.preview, this.#handler)).kill();
 
-        $(window).off('.displaypreview-' + this.#handler.id);
+        // $(window).off('.displaypreview-' + this.#handler.id);
     }
 
     /**
@@ -52,29 +52,29 @@ class DisplayNodePreview {
             // Make editable
             (new DisplayNodePreviewDrag(this.#handler.editor.preview, this.#handler)).init();
 
-            // Remove on DEL/Backspace
-            const that = this;
-            $(window).on(
-                'keydown.displaypreview-' + this.#handler.id, 
-                async function(event) {
-                    if (event.key === "Delete" || event.key == "Backspace") {
-                        event.preventDefault();
+            // // Remove on DEL/Backspace (removed because it interferes with inputs)
+            // const that = this;
+            // $(window).on(
+            //     'keydown.displaypreview-' + this.#handler.id, 
+            //     async function(event) {
+            //         if (event.key === "Delete" || event.key == "Backspace") {
+            //             event.preventDefault();
 
-                        try {
-                            if (!that.#handler.selected()) return;
+            //             try {
+            //                 if (!that.#handler.selected()) return;
                             
-                            if (!confirm('Do you really want to delete ' + that.#handler.type.getName() + '?')) return;
+            //                 if (!confirm('Do you really want to delete ' + that.#handler.type.getName() + '?')) return;
                             
-                            that.#handler.remove();
+            //                 that.#handler.remove();
 
-                            await that.#handler.editor.reset();
+            //                 await that.#handler.editor.reset();
 
-                        } catch (e) {
-                            that.#handler.editor.controller.handle(e);
-                        }
-                    }
-                }
-            );
+            //             } catch (e) {
+            //                 that.#handler.editor.controller.handle(e);
+            //             }
+            //         }
+            //     }
+            // );
         }
     }
 

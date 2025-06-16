@@ -192,7 +192,7 @@ class PySwitchParser:
         visitor = AddImportsTransformer(self.__available_display_imports)
         self.__csts["display_py"] = self.__csts["display_py"].visit(visitor)
             
-    # Generates all client specific display assigns (everything from the client's __init__.py file)
+    # Generates all client specific display assigns (everything from the client's __init__.py file and some standards)
     def _generate_display_imports(self):
         ret = []
         for client in self.clients:

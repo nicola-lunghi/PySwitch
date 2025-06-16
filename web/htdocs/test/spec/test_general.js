@@ -5,6 +5,7 @@ describe('General', function() {
     });
 });
 
+
 class TestGeneral extends TestBase {
     async process() {
         await this.init();

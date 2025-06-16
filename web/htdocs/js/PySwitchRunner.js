@@ -112,6 +112,7 @@ class PySwitchRunner {
             this.#loadModule("parser/misc/FunctionExtractor.py", localPythonPath),
             this.#loadModule("parser/misc/ClassItemExtractor.py", localPythonPath),
             this.#loadModule("parser/misc/ClassNameExtractor.py", localPythonPath),
+            this.#loadModule("parser/misc/ClassNamesExtractor.py", localPythonPath),
             this.#loadModule("parser/misc/AssignmentExtractor.py", localPythonPath),
             this.#loadModule("parser/misc/AssignmentNameExtractor.py", localPythonPath),
             this.#loadModule("parser/misc/ImportExtractor.py", localPythonPath),

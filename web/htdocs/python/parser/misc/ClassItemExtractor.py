@@ -4,7 +4,7 @@ from .CollectCommentsTransformer import CollectCommentsTransformer
 
 class ClassItemExtractor:
 
-    def __init__(self, file, className, importPath, include_underscore = False):
+    def __init__(self, file, className, importPath, include_underscore = False):   # TODO Refactor importPath => import_path
         self.file = file
         self.className = className
         self.importPath = importPath
