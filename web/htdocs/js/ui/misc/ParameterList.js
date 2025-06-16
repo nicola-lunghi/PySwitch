@@ -2,9 +2,11 @@ class ParameterList {
 
     controller = null;
     inputs = [];
+    parser = null;        // Only needed when a color input is used
 
-    constructor(controller) {
+    constructor(controller, parser = null) {
         this.controller = controller;
+        this.parser = parser;
     }
 
     /**
@@ -25,12 +27,12 @@ class ParameterList {
     /**
      * Creates a boolean input.
      */
-    createBooleanInput(options) {
+    async createBooleanInput(options) {
         options.type = 'checkbox';        
         options.getValue = (input) => !!input.prop('checked');
         options.setValue = (input, value) => input.prop('checked', value);
 
-        this.createInput(options);
+        await this.createInput(options);
     }
 
     /**
@@ -43,19 +45,28 @@ class ParameterList {
      *     }
      * }
      */
-    createNumericInput(options) {
+    async createNumericInput(options) {
         options.type = 'number';
 
-        this.createInput(options);
+        await this.createInput(options);
     }
 
     /**
      * Creates a text input.
      */
-    createTextInput(options) {
+    async createTextInput(options) {
         options.type = 'text';
 
-        this.createInput(options);
+        await this.createInput(options);
+    }
+
+    /**
+     * Creates a color input.
+     */
+    async createColorInput(options) {
+        options.type = 'color';
+
+        await this.createInput(options);
     }
 
     /**
@@ -69,17 +80,17 @@ class ParameterList {
      *     ]
      * }
      */
-    createSelectInput(options) {
+    async createSelectInput(options) {
         options.type = 'select';
 
-        this.createInput(options);
+        await this.createInput(options);
     }
 
     /**
      * Creates an input. Options:
      * 
      * {
-     *     type,
+     *     type,        "number", "select", "text", "color"
      *     name,
      *     displayName, (optional, default: name)
      *     comment,
@@ -91,45 +102,57 @@ class ParameterList {
      *     commentPlacement: Tippy placement option (default: top-end)
      * }
      */
-    createInput(options) {
+    async createInput(options) {
         const that = this;
 
         const input = this.#createInput(options);
-
-        let messages = null;
-        const inputCell = $('<td />').append(
-            input
-            .on('change', async function() {
-                try {
-                    if (options.onChange) {
-                        const value = options.getValue ? options.getValue($(this)) : $(this).val();
-                        await options.onChange(value, function(newValue) {
-                            if (value == newValue) return;
-                            
-                            if (options.setValue) {
-                                options.setValue(input, newValue);
-                                return;
-                            }
-                            input.val(newValue);
-                        });                        
-                    }
-                
-                } catch (e) {
-                    that.controller.handle(e);
-                }
-            })
-            .prop('name', options.name),
-            
-            options.additionalContent,
-
-            messages = $('<span class="parameter-check-messages" />')
-        )
 
         if (options.setValue) {
             options.setValue(input, options.value);
         } else {
             input.val(options.value);
         }
+
+        async function onChange() {
+            try {
+                if (options.onChange) {
+                    const value = options.getValue ? options.getValue(input) : input.val();
+                    await options.onChange(value, function(newValue) {
+                        if (value == newValue) return;
+                        
+                        if (options.setValue) {
+                            options.setValue(input, newValue);
+                            return;
+                        }
+                        input.val(newValue);
+                    });                        
+                }
+            
+            } catch (e) {
+                that.controller.handle(e);
+            }
+        }
+
+        let messages = null;
+        const inputCell = $('<td />').append(
+            input
+            .on('change', onChange)
+            .prop('name', options.name)
+        );
+
+        if (options.type == "color") {
+            inputCell.append(
+                await this.#createAdditionalColorInputOptions(input, options.name, onChange)
+            );
+        }
+
+        inputCell.append(
+            options.additionalContent
+        );
+
+        inputCell.append(
+            messages = $('<span class="parameter-check-messages" />')
+        );
 
         if (!options.onChange) {
             input.prop('readonly', true);
@@ -221,7 +244,67 @@ class ParameterList {
                 )
             : 
                 $('<input />')
-                .prop('type', options.type)
+                .prop('type', (options.type == "color") ? "text" : options.type)
+    }
+
+    /**
+     * Additional stuff for color inputs
+     */
+    async #createAdditionalColorInputOptions(input, paramName, onChange) {
+        if (!this.parser) return null;
+
+        let colorInput = null;
+        const that = this;
+
+        async function updateColorInput() {
+            const color = await that.parser.resolveColor(input.val());
+            if (color) {
+                colorInput.val(Tools.rgbToHex(color))
+            }
+        }
+
+        const ret = [
+            $('<select class="parameter-option parameter-color-select" />').append(
+                (await this.parser.getAvailableColors())
+                .concat([{
+                    name: "Select color..."
+                }])
+                .map((item) => 
+                    $('<option value="' + item.name + '" />')
+                    .text(item.name)
+                )
+            )
+            .on('change', async function() {
+                const color = $(this).val();
+                if (color == "Select color...") return;
+
+                that.setParameter(paramName, color);
+                //await that.setArgument(paramName, color);
+
+                $(this).val("Select color...")
+
+                await updateColorInput();
+
+                await onChange();
+            })
+            .val("Select color..."),
+
+            colorInput = $('<input type="color" class="parameter-option" />')
+            .on('change', async function() {
+                const rgb = Tools.hexToRgb($(this).val());
+                const value = "(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ")";
+
+                that.setParameter(paramName, value);
+                //await that.setArgument(paramName, "(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ")");
+
+                await onChange();
+            })
+        ];
+
+        input.on('change', updateColorInput)
+        await updateColorInput();
+
+        return ret;
     }
 
     ///////////////////////////////////////////////////////////////////////////

@@ -101,7 +101,7 @@
 
 .container .action-properties select {
     font-size: 0.88888em;
-    max-width: 25em;
+    max-width: 8em;
 }
 
 .container .action-properties input[type=text] {

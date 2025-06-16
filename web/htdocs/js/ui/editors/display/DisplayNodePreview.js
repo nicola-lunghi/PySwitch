@@ -85,6 +85,9 @@ class DisplayNodePreview {
         // Text
         this.#updateText();
 
+        // Colors
+        this.#updateColors();
+
         // Errors / Warnings
         const messages = this.#handler.getMessages();
         this.element.toggleClass('error', messages.filter((item) => (item.type == 'E')).length > 0);
@@ -100,6 +103,42 @@ class DisplayNodePreview {
             .text(text)
             .attr('data-toggle', 'tooltip')
             .attr('title', text);
+    }
+
+    /**
+     * Update colors according to the data model
+     */
+    #updateColors() {
+        this.#updateColor(
+            this.#textElement, 
+            this.#handler.type.getPreviewTextColor(),
+            'color', 
+            'inherit'
+        );
+        
+        this.#updateColor(
+            this.element, 
+            this.#handler.type.getPreviewBackColor(), 
+            'background-color', 
+            'revert-layer'
+        );
+    }
+
+    /**
+     * Updates one color
+     */
+    #updateColor(element, color, propName, defaultValue) {
+        element.css(propName, defaultValue);
+        if (!color) return;
+
+        this.#handler.editor.getConfig().parser.resolveColor(color)
+        .then(function(resolvedColor) {
+            const hex = Tools.rgbToHex(resolvedColor)
+            element.css(propName, hex);
+        })
+        .catch(function (e) {
+            console.warn(e);            
+        });
     }
 
     /**

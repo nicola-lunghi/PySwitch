@@ -13,11 +13,13 @@ class DisplayLabelTypeLayout {
      * Sets up some parameters
      */
     async setupParameters(list) {
+        const that = this;
+
         function getFontSize(item) {
             return parseInt(item.replace(/[^0-9]/g, ''));
         }
 
-        this.#createInput(list, {
+        await this.#createInput(list, {
             name: "font",
             text: "Font",
             type: 'select',
@@ -30,42 +32,53 @@ class DisplayLabelTypeLayout {
                 })  
         });
 
-        this.#createInput(list, {
+        await this.#createInput(list, {
             name: "backColor",
             comment: "Background color. Must be set for labels which will get a background later because of RAM saving constraints.",
             text: "Back Color",
             type: 'color'
         });
 
-        this.#createInput(list, {
+        await this.#createInput(list, {
             name: "textColor",
             text: "Text Color",
             type: 'color'
         });
 
-        this.#createInput(list, {
+        await this.#createInput(list, {
             name: "maxTextWidth",
             comment: "Max. text size before wrapping. NOTE: If scale is set, you have to adjust this by the same factor.",
             text: "Max. Text Width",
             type: 'text'
         });
         
-        this.#createInput(list, {
+        await this.#createInput(list, {
             name: "lineSpacing",
             text: "Line Spacing",
             type: 'text'
         });
 
-        // TODO colors
-
-        this.#createInput(list, {
+        await this.#createInput(list, {
             name: "text",
-            comment: "Optional initial text. If set, the label shows the passed text until some action or callback overwrites it.",
+            comment: "Optional initial text. If set, the label shows the passed text until some action or callback overwrites it. NOTE: For string literals, you have to add quotes!",
             text: "Initial Text",
-            type: 'text'
+            type: 'text',
+            additionalContent: [
+                $('<span class="parameter-option parameter-link" />')
+                .text('Show PySwitch version on boot')
+                .on('click', function() {
+                    try {
+                        list.setParameter('text', 'KemperRigNameCallback.DEFAULT_TEXT');
+                        that.setParameter('text', 'KemperRigNameCallback.DEFAULT_TEXT');
+                        
+                    } catch (e) {
+                        that.#handler.editor.controller.handle(e);
+                    }
+                })
+            ]
         });
 
-        this.#createInput(list, {
+        await this.#createInput(list, {
             name: "stroke",
             comment: "Optional stroke size. This does not really generate a real stroke (because of RAM issues) but instead just reduces the size by the entered amount.",
             text: "Stroke",
@@ -74,45 +87,76 @@ class DisplayLabelTypeLayout {
     }
 
     /**
+     * Returns a layout parameter value from the data model
+     */
+    getParameter(name) {
+        const node = Tools.getArgument(this.#layout.value, name);
+        return node ? node.value : null;
+    }
+
+    /**
+     * Sets a parameter on the data model
+     */
+    setParameter(name, value) {
+        if (value == "") {
+            // Remove parameter
+            this.#layout.value.arguments = this.#layout.value.arguments.filter((entry) => (entry.name != name));
+
+        } else {
+            // Set/add parameter
+            let valueNode = Tools.getArgument(this.#layout.value, name);
+            if (!valueNode) {
+                this.#layout.value.arguments.push(valueNode = {
+                    name: name
+                })
+            }
+            valueNode.value = value;
+        }
+
+        this.#handler.update();
+    }
+
+    /**
      * {
      *      type,
      *      name,
      *      text,
-     *      options:  (select only)      
+     *      options:  (select only),
+     *      additionalContent
      * }
      */
-    #createInput(list, options) {
+    async #createInput(list, options) {
         const that = this;
 
-        const valueNode = Tools.getArgument(this.#layout.value, options.name);
-        const value = valueNode ? valueNode.value : "";
-
-        list.createInput({
+        await list.createInput({
             type: options.type,
             name: options.name,
             comment: options.comment,
             displayName: options.text,
-            value: value,
+            value: this.getParameter(options.name),
             options: options.options,
             onChange: async function(value) {
                 // Remove assignment, if any
                 delete that.#layout.value.assign;
 
-                if (value == "") {
-                    // Remove parameter
-                    that.#layout.value.arguments = that.#layout.value.arguments.filter((entry) => (entry.name != options.name));
+                that.setParameter(options.name, value);
 
-                } else {
-                    // Set/add parameter
-                    let valueNode = Tools.getArgument(that.#layout.value, options.name);
-                    if (!valueNode) {
-                        that.#layout.value.arguments.push(valueNode = {
-                            name: options.name
-                        })
-                    }
-                    valueNode.value = value;
-                }
-            }
+                // if (value == "") {
+                //     // Remove parameter
+                //     that.#layout.value.arguments = that.#layout.value.arguments.filter((entry) => (entry.name != options.name));
+
+                // } else {
+                //     // Set/add parameter
+                //     let valueNode = Tools.getArgument(that.#layout.value, options.name);
+                //     if (!valueNode) {
+                //         that.#layout.value.arguments.push(valueNode = {
+                //             name: options.name
+                //         })
+                //     }
+                //     valueNode.value = value;
+                // }
+            },
+            additionalContent: options.additionalContent
         });
     }
 }

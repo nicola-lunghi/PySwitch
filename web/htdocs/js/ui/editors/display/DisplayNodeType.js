@@ -80,6 +80,20 @@ class DisplayNodeType {
         return this.handler.node.name;  
     }
 
+    /**
+     * Background color for preview or null for no specific color is wanted
+     */
+    getPreviewBackColor() {
+        return null;
+    }
+
+    /**
+     * Text color for preview or null for no specific color is wanted
+     */
+    getPreviewTextColor() {
+        return null;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

@@ -73,3 +73,12 @@
 .container .parameter-list-container input[type=number] {
     width: 4em;
 }
+
+.container .parameter-list-container .parameter-color-select {
+    font-size: 0.88888em;
+    max-width: 8em;
+}
+
+.container .parameter-list-container .parameter-option {
+    margin-left: 0.6em;
+}

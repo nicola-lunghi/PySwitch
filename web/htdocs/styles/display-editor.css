@@ -58,18 +58,21 @@
 }*/
 
 .container .display-editor .display-preview .display-label {
-    background-color: rgba(216, 216, 216, 0.92);
+    background-color: rgb(216, 216, 216);
+    opacity: 0.92;
     border: 1px solid rgb(110, 110, 110);
 }
 
 .container .display-editor .display-preview .display-dot {
-    background-color: rgba(128, 213, 121, 0.92);
+    background-color: rgb(128, 213, 121);
+    opacity: 0.92;
     border: 1px solid rgb(110, 110, 110);
     border-radius: 100%;
 }
 
 .container .display-editor .display-preview .selected {
-    background-color: rgba(165, 165, 165, 0.92);
+    background-color: rgb(165, 165, 165);
+    opacity: 0.98;
     border: 1px solid rgb(65, 65, 65);
 }
 
@@ -106,4 +109,14 @@
 .container .display-editor .display-parameters-container .button { 
     margin-left: 0.6em;
     font-size: 0.6em;
+}
+
+.container .display-editor .display-parameters-container .parameter-link {
+    text-decoration: underline;
+    font-size: 0.8em;
+    cursor: pointer;
+}
+
+.container .display-editor .display-parameters-container .parameter-link:hover {
+    opacity: 0.9;
 }

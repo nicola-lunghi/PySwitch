@@ -25,10 +25,10 @@ class InputSettings extends ParameterList {
     async setup() {
         const that = this;
 
-        function getSwitchOptions() {
+        async function getSwitchOptions() {
             const holdTimeMillis = that.#input ? that.#input.holdTimeMillis() : 0
     
-            that.createBooleanInput({
+            await that.createBooleanInput({
                 name: "Hold Repeat",
                 comment: "This option keeps repeating the hold actions again and again as long as the switch is held.",
                 value: that.#input ? that.#input.holdRepeat() : false,
@@ -41,7 +41,7 @@ class InputSettings extends ParameterList {
                 }
             });
                     
-            that.createNumericInput({
+            await that.createNumericInput({
                 name: "Hold Time", 
                 comment: "Amount of time you have to press the switch for the hold actions to be triggered (Milliseconds).",
                 value: holdTimeMillis ? holdTimeMillis : 600,
@@ -60,7 +60,7 @@ class InputSettings extends ParameterList {
 
         switch (this.#definition.data.model.type) {
             case "AdafruitSwitch": 
-                getSwitchOptions();
+                await getSwitchOptions();
                 break;
         }
     }

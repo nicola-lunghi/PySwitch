@@ -7,7 +7,7 @@ class DisplayParameterList extends ParameterList {
     #loaded = false;
 
     constructor(handler) {
-        super(handler.editor.controller)
+        super(handler.editor.controller, handler.editor.getConfig().parser)
         this.#handler = handler;
     }
 
@@ -69,7 +69,7 @@ class DisplayParameterList extends ParameterList {
     async #setupOrderParameter() {
         const that = this;
 
-        this.createNumericInput({
+        await this.createNumericInput({
             name: "z",
             displayName: "Depth",
             //comment: "Z-Index (depth order index)",
@@ -120,7 +120,7 @@ class DisplayParameterList extends ParameterList {
             setValue(newValue);
         }
 
-        this.createTextInput({
+        await this.createTextInput({
             name: "assign",
             displayName: "Export as",
             comment: "If you assign a name here, the label can be used in the actions. (This creates an assignment for the label instance which can be exported)",
@@ -136,7 +136,7 @@ class DisplayParameterList extends ParameterList {
         const bounds = this.#handler.getModelBounds();
         const that = this;
 
-        this.createNumericInput({
+        await this.createNumericInput({
             name: "x",
             displayName: "X",
             //comment: "Vertical position",
@@ -150,7 +150,7 @@ class DisplayParameterList extends ParameterList {
             }
         });
 
-        this.createNumericInput({
+        await this.createNumericInput({
             name: "y",
             displayName: "Y",
             //comment: "Horizontal position",
@@ -172,7 +172,7 @@ class DisplayParameterList extends ParameterList {
         const bounds = this.#handler.getModelBounds();
         const that = this;
 
-        this.createNumericInput({
+        await this.createNumericInput({
             name: "width",
             displayName: "Width",
             //comment: "Width",
@@ -189,7 +189,7 @@ class DisplayParameterList extends ParameterList {
             }
         });
 
-        this.createNumericInput({
+        await this.createNumericInput({
             name: "height",
             displayName: "Height",
             //comment: "Height",
