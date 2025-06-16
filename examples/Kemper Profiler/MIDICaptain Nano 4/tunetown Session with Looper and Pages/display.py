@@ -83,7 +83,7 @@ DISPLAY_PAGE = DisplayLabel(
     }, 
     bounds = DisplayBounds(
         x = 0, 
-        y = _FOOTER_Y - 20, 
+        y = 180, 
         w = _DISPLAY_WIDTH, 
         h = 20
     )

@@ -168,7 +168,8 @@ class KemperBankChangeCallback(Callback):
             self.update_displays()
 
     def reset(self):
-        self.update_displays()
+        if self.action.enabled:
+            self.update_displays()
 
     def update_displays(self):
         if self.__mapping.value == None:

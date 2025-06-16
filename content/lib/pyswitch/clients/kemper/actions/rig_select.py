@@ -132,7 +132,8 @@ class _KemperRigSelectCallback(Callback):
         self.__appl = appl
 
     def reset(self):
-        self.update_displays()
+        if self.action.enabled:
+            self.update_displays()
 
     # Called when the switch is pushed down
     def push(self):
