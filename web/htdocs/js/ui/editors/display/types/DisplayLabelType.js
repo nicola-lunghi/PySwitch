@@ -67,6 +67,8 @@ class DisplayLabelType extends DisplayNodeType {
         await this.#setupScaleParameter(list);
 
         await this.layout.setupParameters(list);
+
+        await this.#setupCallbackParameter(list);
     }
 
     /**
@@ -84,22 +86,49 @@ class DisplayLabelType extends DisplayNodeType {
                 min: 1
             },
             onChange: async function(value) {
-                if (value == 1) {
-                    // Remove parameter
-                    that.handler.node.arguments = that.handler.node.arguments.filter((entry) => (entry.name != 'scale'));
-
-                } else {
-                    // Set/add parameter
-                    let valueNode2 = Tools.getArgument(that.handler.node, 'scale');
-                    if (!valueNode2) {
-                        that.handler.node.arguments.push(valueNode2 = {
-                            name: 'scale'
-                        })
-                    }
-                    valueNode2.value = value;
-                }
+                that.setParameter('scale', value, 1);
             }
         });
+    }
+
+    /**
+     * Sets up the callback parameter
+     */
+    async #setupCallbackParameter(list) {
+        const valueNode = Tools.getArgument(this.handler.node, "callback");
+        
+        const that = this;
+        await list.createTextInput({
+            name: "callback",
+            comment: "Optional callback. This is used to set the label text independent of an action. If you set the label in a 'display' parameter of an action, this is NOT necessary!",
+            displayName: "Callback",
+            value: valueNode ? valueNode.value.name : "None",
+            onChange: async function(value) {
+                that.setParameter('callback', value, "None");
+            }
+        });
+    }
+
+    /**
+     * Sets a parameter on the data model
+     */
+    setParameter(name, value, defaultValue = null) {
+        if (value == defaultValue) {
+            // Remove parameter
+            this.handler.node.arguments = this.handler.node.arguments.filter((entry) => (entry.name != name));
+
+        } else {
+            // Set/add parameter
+            let valueNode2 = Tools.getArgument(this.handler.node, name);
+            if (!valueNode2) {
+                this.handler.node.arguments.push(valueNode2 = {
+                    name: name
+                })
+            }
+            valueNode2.value = value;
+        }
+
+        this.handler.update();
     }
 
     /**
