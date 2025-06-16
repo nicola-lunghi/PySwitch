@@ -112,7 +112,7 @@ class Notifications {
 
 		// Click to remove
 		msgEl.click(function(event) {
-			//event.stpPropagation(); 
+			event.stopPropagation(); 
 			msgCont.remove();
 			
 			if (options.callback) {

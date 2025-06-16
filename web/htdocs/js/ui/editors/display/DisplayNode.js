@@ -296,6 +296,13 @@ class DisplayNode {
     }
 
     /**
+     * Is this node selected?
+     */
+    selected() {
+        return this.editor.selected == this;
+    }
+
+    /**
      * Puts the element to front inside its parent
      */
     toFront() {
@@ -372,6 +379,7 @@ class DisplayNode {
      */
     remove() {
         if (!this.parent) return;
+
         this.parent.removeChild(this);
     }
 
@@ -379,6 +387,10 @@ class DisplayNode {
      * Removes a child handler if found
      */
     removeChild(child) {
+        if (child.isReferenced()) {
+            throw new Error('Please remove all usages of ' + child.type.getName() + ' from inputs.py first');
+        }
+
         const children = Tools.getArgument(this.node, "children")
         children.value = children.value.filter((node) => (node != child.node));
     }

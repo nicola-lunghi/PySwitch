@@ -10,6 +10,8 @@ class DisplayNodePreview {
 
     async destroy() {
         (new DisplayNodePreviewDrag(this.#handler.editor.preview, this.#handler)).kill();
+
+        $(window).off('.displaypreview-' + this.#handler.id);
     }
 
     /**
@@ -49,6 +51,30 @@ class DisplayNodePreview {
         if (this.#handler.type.editable()) {
             // Make editable
             (new DisplayNodePreviewDrag(this.#handler.editor.preview, this.#handler)).init();
+
+            // Remove on DEL/Backspace
+            const that = this;
+            $(window).on(
+                'keydown.displaypreview-' + this.#handler.id, 
+                async function(event) {
+                    if (event.key === "Delete" || event.key == "Backspace") {
+                        event.preventDefault();
+
+                        try {
+                            if (!that.#handler.selected()) return;
+                            
+                            if (!confirm('Do you really want to delete ' + that.#handler.type.getName() + '?')) return;
+                            
+                            that.#handler.remove();
+
+                            await that.#handler.editor.reset();
+
+                        } catch (e) {
+                            that.#handler.editor.controller.handle(e);
+                        }
+                    }
+                }
+            );
         }
     }
 

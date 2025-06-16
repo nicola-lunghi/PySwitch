@@ -72,15 +72,11 @@ class DisplayParameters {
                         try {
                             const selected = that.#editor.selected;
                             if (!selected) return;
-                            if (selected.isReferenced()) {
-                                alert('Please remove all usages of ' + selected.type.getName() + ' from inputs.py first');
-                                return;
-                            }
-
-                            if (!confirm('Do you really want to delete the selected element?')) return;
+                            
+                            if (!confirm('Do you really want to delete ' + selected.type.getName() + '?')) return;
                             
                             selected.remove();
-                            
+
                             await that.#editor.reset();
 
                         } catch (e) {

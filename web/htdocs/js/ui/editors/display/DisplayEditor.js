@@ -29,6 +29,9 @@ class DisplayEditor {
         if (this.parameters) {
             await this.parameters.destroy();
         }
+        if (this.root) {
+            await this.root.destroy();
+        }
     }
 
     /**
@@ -164,7 +167,7 @@ class DisplayEditor {
                             },
                             {
                                 name: "backColor",
-                                value: '(0, 0, 0)'
+                                value: 'DEFAULT_LABEL_COLOR'
                             },
                             {
                                 name: "stroke",
