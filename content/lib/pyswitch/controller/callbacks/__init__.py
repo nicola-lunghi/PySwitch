@@ -141,9 +141,9 @@ class BinaryParameterCallback(Callback):
         self.mapping = mapping
         self.mapping_disable = mapping_disable   # Can be changed from outside!
 
-        self._value_enable = value_enable
-        self._value_disable = value_disable
-        self.__reference_value = reference_value if reference_value != None else ( self._value_enable if not isinstance(self._value_enable, list) else self._value_enable[0] )
+        self._value_enable = int(value_enable) if not isinstance(value_enable, list) else value_enable
+        self._value_disable = int(value_disable) if value_disable != 'auto' and not isinstance(value_disable, list) else value_disable
+        self.__reference_value = int(reference_value) if reference_value != None else ( self._value_enable if not isinstance(self._value_enable, list) else self._value_enable[0] )
         self._text = text
         self._text_disabled = text_disabled
         self.__comparison_mode = comparison_mode

@@ -1,6 +1,10 @@
 # PySwitch v2.4.6
 - Features:
-    - Added Mapping for Space Intensity (@quemper)
+    - Added **Mapping for Space Intensity** to clients/kemper/mappings/system.py (@quemper)
+
+- Bug Fixes / Optimizations:
+    - **Bank Up/Down, Bank Select, Rig Select** Actions: These were updating their displays also when not enabled. This led to wrong displays when a Pager is used. (@quemper)
+    - **Other Parameter** (BINARY_SWITCH) Action: Auto-quantize the input values of the parameters "value_enable", "value_disable" and "reference_value" to integer. Float values never make sense here.
 
 ### Emulator 2.4.6.13
 - Features:
@@ -8,7 +12,7 @@
     - Added **Save to last used Controller** option (CTRL-T)
     - The Emulator can now be installed as **PWA** (<a href="https://developer.mozilla.org/en/docs/Web/Progressive_web_apps">Progressive Web App</a>). In Chrome, select "Install PySwitch Emulator" at the right of your address bar, and you will get a standalone App separated from Chrome.
     
-- Minor cosmetical improvements
+- Cosmetical improvements
 
 # PySwitch v2.4.5
 - Features:
