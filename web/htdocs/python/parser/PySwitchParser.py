@@ -195,6 +195,16 @@ class PySwitchParser:
     # Generates all client specific display assigns (everything from the client's __init__.py file and some standards)
     def _generate_display_imports(self):
         ret = []
+
+        # Load callback definitions from file
+        with open('definitions/callbacks.json') as f: available_callbacks_json = f.read()
+        
+        clients = json.loads(available_callbacks_json)
+        
+        for client in clients:
+            ret += client["callbacks"]
+
+        # Get __init__ classes of clients
         for client in self.clients:
             ret += ClassNameExtractor(
                 file = "pyswitch/clients/" + client + "/__init__.py", 
@@ -247,7 +257,7 @@ class PySwitchParser:
         actions = []
 
         for client in clients:
-            actions = actions + client["actions"]
+            actions += client["actions"]
 
         # Add additional potentially needed imports besides the actions.
         return actions + [

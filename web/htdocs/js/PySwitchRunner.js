@@ -99,7 +99,8 @@ class PySwitchRunner {
             
             this.#loadModule("definitions/actions.json", basePath),
             this.#loadModule("definitions/mappings.json", basePath),
-
+            this.#loadModule("definitions/callbacks.json", basePath),
+            
             this.#loadModule("parser/PySwitchParser.py", localPythonPath),
             this.#loadModule("parser/PySwitchHardware.py", localPythonPath),
             this.#loadModule("parser/InputsExtractor.py", localPythonPath),

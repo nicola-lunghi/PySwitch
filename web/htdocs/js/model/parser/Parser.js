@@ -16,6 +16,7 @@ class Parser {
     #availableKeycodes = null;       // Buffer
     #availableFonts = null;          // Buffer
     #bufferHardwareInfo = null;      // Buffer
+    #availableDisplayLabelCallbacks = null; // Buffer
     #colors = null;                  // Buffer
     #inputs = null;                  // Buffer for input instances
 
@@ -445,6 +446,23 @@ class Parser {
             }    
         }
         return null;
+    }
+
+    /**
+     * Returns a list of all available DisplayLabel callbacks, with mixed in meta information
+     */
+    async getAvailableDisplayLabelCallbacks() {
+        if (this.#availableDisplayLabelCallbacks) return this.#availableDisplayLabelCallbacks;
+
+        // This just loads the buffered version. To create the list, see the parser tests.
+        this.#availableDisplayLabelCallbacks = JSON.parse(await Tools.fetch(this.basePath + "definitions/callbacks.json"));
+        
+        // Put in meta info where exists
+        for (const client of this.#availableDisplayLabelCallbacks) {
+            await this.#mixInMetaInformation(client.callbacks, ClientFactory.getInstance(client.client));
+        }
+        
+        return this.#availableDisplayLabelCallbacks;
     }
 
     /**

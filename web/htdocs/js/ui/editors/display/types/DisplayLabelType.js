@@ -97,6 +97,21 @@ class DisplayLabelType extends DisplayNodeType {
     async #setupCallbackParameter(list) {
         const valueNode = Tools.getArgument(this.handler.node, "callback");
         
+        const availableCallbacks = await this.handler.editor.getConfig().parser.getAvailableDisplayLabelCallbacks();
+
+        const options = [];
+        for (const client of availableCallbacks) {
+            for(const cb of client.callbacks || []) {
+                options.push(
+                    $('<option />')
+                        .prop('value', cb.name)
+                        .text(cb.name)
+                )
+            }
+        }
+
+        let select = null;
+
         const that = this;
         await list.createTextInput({
             name: "callback",
@@ -105,7 +120,27 @@ class DisplayLabelType extends DisplayNodeType {
             value: valueNode ? valueNode.value.name : "None",
             onChange: async function(value) {
                 that.setParameter('callback', value, "None");
-            }
+            },
+            additionalContent: [
+                select = $('<select />')
+                    .append(
+                        $('<option />')
+                        .prop('value', "")
+                        .text('Select Callback...')                    
+                    )
+                    .append(options)
+                    .on('change', async function() {
+                        try {
+                            that.setParameter('callback', select.val() + "()");
+                            list.setParameter('callback', select.val() + "()");
+
+                            select.val("")
+
+                        } catch(e) {
+                            that.handler.editor.controller.handle(e);
+                        }
+                    })
+            ]
         });
     }
 
