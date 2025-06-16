@@ -28,7 +28,6 @@ class ClassItemExtractor:
         # Get parameters list
         def get_params(statement):
             params = []
-
             for param in statement.params.params:
                 if param.name.value == "self": 
                     continue
@@ -68,7 +67,7 @@ class ClassItemExtractor:
                 
                 if not self.main.include_underscore and node.name.value.startswith("_"):
                     return False
-                
+
                 ret.append({
                     "type": "function",
                     "name": self.main.className + (("." + node.name.value) if node.name.value != "__init__" else ""),

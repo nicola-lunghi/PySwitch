@@ -4,12 +4,39 @@ class CallbackParserTests extends FunctionParserTestBase {
         await this.init();
         
         const basePath = "../";
-        const that = this;
+        // const that = this;
 
-        async function fromClass(options) {
-            const extractor = new ClassItemExtractor(that.pyswitch);
-            return await extractor.get(options);
-        }                 
+        const extractor = new ClassNamesExtractor(this.pyswitch);
+        const itemExtractor = new ClassItemExtractor(this.pyswitch);        
+        const clients = await Client.getAvailable(basePath);
+
+        // async function fromClass(options) {
+        //     const extractor = new ClassItemExtractor(that.pyswitch);
+        //     return await extractor.get(options);
+        // }
+        
+        async function cleanClasses(classes) {
+            const ret = [];
+            for (const cls of classes) {
+                const items = await itemExtractor.get({
+                    file: cls.importPath.replaceAll('.', '/') + ".py",
+                    className: cls.name,
+                    importPath: cls.importPath,
+                    functions: true,
+                    includeUnderscore: true  
+                });
+
+                for (const item of items) {
+                    if (item.name.includes('.')) continue;
+
+                    cls.parameters = item.parameters;
+
+                    ret.push(cls);
+                    break;
+                }
+            }
+            return ret;
+        }
 
         await this.checkDefinitions(
             "callbacks.json",
@@ -21,10 +48,6 @@ class CallbackParserTests extends FunctionParserTestBase {
 
             // Generate from scratch
             async function() {
-                const extractor = new ClassNamesExtractor(that.pyswitch);
-        
-                const clients = await Client.getAvailable(basePath);
-
                 const ret = [];
                 for (const client of clients) {
                     let classes = await extractor.get({
@@ -32,6 +55,8 @@ class CallbackParserTests extends FunctionParserTestBase {
                         subPath: client.id + "/callbacks",
                         targetPath: "pyswitch/clients/" + client.id + "/callbacks"
                     });
+
+                    const classesCleaned = await cleanClasses(classes);
 
                     // // Add callbacks from __init__.py
                     // if (client.getInitActionsClassName()) {
@@ -45,78 +70,12 @@ class CallbackParserTests extends FunctionParserTestBase {
 
                     ret.push({
                         client: client.id,
-                        callbacks: classes
+                        callbacks: classesCleaned
                     })
                 }
-
-            //     // Add general actions, not coming from the clients folder
-            //     let actionsGeneral = (
-            //             await fromClass({
-            //                 file: "pyswitch/controller/actions/AnalogAction.py",
-            //                 importPath: "pyswitch.controller.actions.AnalogAction",
-            //                 className: "AnalogAction",
-            //                 includeUnderscore: true,
-            //                 functions: true
-            //             })
-            //         )
-            //         .filter((item) => item.name == "AnalogAction");
-
-            //     actionsGeneral = actionsGeneral.concat(
-            //         (
-            //             await fromClass({
-            //                 file: "pyswitch/controller/actions/EncoderAction.py",
-            //                 importPath: "pyswitch.controller.actions.EncoderAction",
-            //                 className: "EncoderAction",
-            //                 includeUnderscore: true,
-            //                 functions: true
-            //             })
-            //         )
-            //         .filter((item) => item.name == "EncoderAction"),
-
-            //         (
-            //             await fromClass({
-            //                 file: "pyswitch/clients/local/actions/pager.py",
-            //                 importPath: "pyswitch.clients.local.actions.pager",
-            //                 className: "PagerAction",
-            //                 includeUnderscore: true,
-            //                 functions: true
-            //             })
-            //         )
-            //         .filter((item) => item.name == "PagerAction" || item.name == "PagerAction.proxy")
-            //     );
-
-            //     ret.push({
-            //         client: "local",
-            //         actions: actionsGeneral
-            //     })
 
                 return ret;
             }
         )
     }
-
-    /**
-     * Check metadata
-     */
-    // async getAvailableActionsMeta() {
-    //     await this.init();
-        
-    //     const config = new MockConfiguration("", "");
-    //     await config.init(this.pyswitch, "../");
-    //     const parser = config.parser;
-        
-    //     const clients = await parser.getAvailableActions();
-
-    //     for(const client of clients) {
-    //         for (const action of client.actions) {
-    //             expect(action.meta).toBeInstanceOf(FunctionMeta);
-                
-    //             expect(action.meta.getDisplayName().length).toBeGreaterThan(0)
-    //             expect(action.meta.getShortDisplayName().length).toBeGreaterThan(0)
-
-    //             expect(action.meta.data.category.length).toBeGreaterThan(0)
-    //             expect(action.meta.data.target.length).toBeGreaterThan(0)
-    //         }
-    //     }
-    // }
 }
