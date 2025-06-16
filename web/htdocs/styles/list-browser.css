@@ -255,6 +255,10 @@
     color: lightgreen;
 }
 
+.container .list-browser td > .fa-save {
+    color: rgb(255, 191, 71);
+}
+
 .container .list-browser td > .clickable {
     cursor: pointer;
     width: 1.7em;

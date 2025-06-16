@@ -232,7 +232,7 @@ class PySwitchUI {
         // Show or hide tabs
         this.tabs = new Tabs(this.#controller, tabsElement, showTabsButton);
 
-        // CTRL-S key to save
+        // CTRL-S key to save to current location
         $(window).on('keydown', async function(event) {
             try {
                 if (event.ctrlKey || event.metaKey) {
@@ -242,7 +242,7 @@ class PySwitchUI {
                             
                             try {
                                 await that.#controller.currentConfig.save();
-                                that.#controller.ui.notifications.message("Successfully saved configuration to " + (await that.#controller.currentConfig.name()), "S");    
+                                that.notifications.message("Successfully saved configuration to " + (await that.#controller.currentConfig.name()), "S");    
                                 
                             } catch(e) {
                                 console.error(e);
@@ -251,7 +251,26 @@ class PySwitchUI {
                                 await that.saveBrowser.browse();
                             }
                             
-                            break;		        
+                            break;	
+                            
+                        case 't':
+                            event.preventDefault();
+                            
+                            try {
+                                const portName = (new LocalState("controllers")).get("last");
+                                if (!portName) {
+                                    throw new Error("No last used controller found to save to")
+                                }
+                                await that.#saveToController(portName, true);
+
+                            } catch(e) {
+                                console.error(e);
+
+                                that.saveBrowser.options.selectedValue = that.#controller.currentConfig ? (await that.#controller.currentConfig.name()) : null;
+                                await that.saveBrowser.browse();
+                            }
+                            
+                            break;	
                     }
                 }
             } catch (e) {
@@ -395,6 +414,7 @@ class PySwitchUI {
         this.saveBrowser = this.getBrowserPopup({
             wide: true,
             headline: "Please select a destination to store the current configuration",
+            iconOpen: "fa-save",
             providers: [
                 // Save to current location
                 new SingleEntryProvider({
@@ -402,12 +422,27 @@ class PySwitchUI {
                         return that.#controller.currentConfig ? that.#controller.currentConfig.canBeSaved() : false;
                     },
                     text: async function(entry) {
-                        return "Save to " + (await that.#controller.currentConfig.name()) + " (Ctrl+S)";
+                        return "Save current configuration (" + (await that.#controller.currentConfig.name()) + ") [Ctrl+S]";
                     },
                     onSelect: async function(entry) {
                         that.saveBrowser.hide();
                         await that.#controller.currentConfig.save();
-                        that.#controller.ui.notifications.message("Successfully saved configuration to " + (await that.#controller.currentConfig.name()), "S");
+                        that.notifications.message("Successfully saved configuration to " + (await that.#controller.currentConfig.name()), "S");
+                    },
+                    sortString: "________________"
+                }),
+
+                // Save to last used controller
+                new SingleEntryProvider({
+                    showCallback: async function() {
+                        return !!(new LocalState("controllers")).get("last");
+                    },
+                    text: async function(entry) {
+                        return "Save to last used controller (" + (new LocalState("controllers")).get("last") + ") [Ctrl+T]";
+                    },
+                    onSelect: async function(entry) {
+                        const portName = (new LocalState("controllers")).get("last");
+                        await that.#saveToController(portName, true);
                     },
                     sortString: "________________"
                 }),
@@ -416,26 +451,7 @@ class PySwitchUI {
                 new PortsProvider(this.#controller, {
                     rootText: "Connected Controllers",
                     onSelect: async function(entry) {
-                        let data = null;
-                        try {
-                            data = await that.#controller.currentConfig.get();
-
-                        } catch(e) {
-                            console.log(e);
-                            throw new Error("No data to save");
-                        }
-
-                        if (!confirm("Save current configuration to " + entry.value + "?")) return;
-
-                        that.saveBrowser.hide();
-
-                        const dummyConfig = new ControllerConfiguration(that.#controller, entry.value);
-                        dummyConfig.set(data);
-                        await dummyConfig.save();    
-
-                        that.#controller.currentConfig.resetDirtyState();
-                        
-                        that.#controller.ui.notifications.message("Successfully saved configuration to " + entry.value, "S");
+                        await that.#saveToController(entry.value);
                     }
                 }),
 
@@ -470,7 +486,7 @@ class PySwitchUI {
 
                         that.#controller.currentConfig.resetDirtyState();
 
-                        that.#controller.ui.notifications.message("Successfully saved preset " + presetId, "S");
+                        that.notifications.message("Successfully saved preset " + presetId, "S");
                         that.#controller.routing.call(encodeURI("preset/" + presetId));
                     }
                 }),
@@ -499,7 +515,7 @@ class PySwitchUI {
 
                         that.#controller.currentConfig.resetDirtyState();
 
-                        that.#controller.ui.notifications.message("Successfully saved the configuration to the local folder", "S");
+                        that.notifications.message("Successfully saved the configuration to the local folder", "S");
                         
                         await sel.call(that.#controller);
                     },
@@ -570,6 +586,34 @@ class PySwitchUI {
                 })
             ]
         });
+    }
+
+    /**
+     * Save current config to a controller
+     */
+    async #saveToController(portName, noConfirm = false) {
+        let data = null;
+        try {
+            data = await this.#controller.currentConfig.get();
+
+        } catch(e) {
+            console.log(e);
+            throw new Error("No data to save");
+        }
+
+        if (!noConfirm) {
+            if (!confirm("Save current configuration to " + portName + "?")) return;
+        }
+
+        this.saveBrowser.hide();
+
+        const dummyConfig = new ControllerConfiguration(this.#controller, portName);
+        dummyConfig.set(data);
+        await dummyConfig.save();    
+
+        this.#controller.currentConfig.resetDirtyState();
+        
+        this.notifications.message("Successfully saved configuration to " + portName, "S");
     }
 
     /**

@@ -174,3 +174,4 @@ class TestKemper(unittest.TestCase):
         self.assertIn("MainVol", MAPPING_MAIN_VOLUME().name)
         self.assertIn("MonVol", MAPPING_MONITOR_VOLUME().name)
         self.assertIn("LoopVol", MAPPING_LOOPER_VOLUME().name)
+        self.assertIn("SpaceInt", MAPPING_SPACE_INTENSITY().name)

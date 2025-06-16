@@ -31,6 +31,19 @@ class DisplayLabelTypeLayout {
         });
 
         this.#createInput(list, {
+            name: "backColor",
+            comment: "Background color. Must be set for labels which will get a background later because of RAM saving constraints.",
+            text: "Back Color",
+            type: 'color'
+        });
+
+        this.#createInput(list, {
+            name: "textColor",
+            text: "Text Color",
+            type: 'color'
+        });
+
+        this.#createInput(list, {
             name: "maxTextWidth",
             comment: "Max. text size before wrapping. NOTE: If scale is set, you have to adjust this by the same factor.",
             text: "Max. Text Width",

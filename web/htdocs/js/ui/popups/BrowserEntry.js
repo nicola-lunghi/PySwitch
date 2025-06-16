@@ -142,6 +142,8 @@ class BrowserEntry {
 
         const tr = $('<tr/>');
 
+        const iconOpen = this.browser.options.iconOpen ? this.browser.options.iconOpen : 'fa-play';
+
         for(const col of layout) {
             const td = $('<td/>');
             tr.append(td);                
@@ -167,7 +169,7 @@ class BrowserEntry {
                     td.append(
                         // Listing entry link
                         $('<span class="fa"/>')
-                        .addClass(this.isCallable() ? "fa-play" : "fa-folder")
+                        .addClass(this.isCallable() ? iconOpen : "fa-folder")
                     )
                     break;
 

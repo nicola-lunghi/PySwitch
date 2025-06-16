@@ -21,6 +21,7 @@ class BrowserPopup extends Popup {
      *      dontCloseOnSelect: false
      *      onReturnKey:              Callback when the user hits the Return key,
      *      noTable:                  Do not embed the generated items in a table statement (bool, default: false)
+     *      iconOpen:                 Optional icon classes for opening entries. Default: fa-play
      * }
      */
     constructor(options) {

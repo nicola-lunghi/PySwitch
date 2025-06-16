@@ -30,6 +30,9 @@ class ControllerConfiguration extends Configuration {
         //     new PySwitchVersionCheck(that.#controller).check();
         // }, 100);        
 
+        // Remember last used controller
+        this.#remember();
+
         return data;
     }
 
@@ -45,5 +48,15 @@ class ControllerConfiguration extends Configuration {
      */
     async doSave() {
         await this.controller.device.saveConfig(this, this.#portName);
+
+        // Remember last used controller
+        this.#remember();
+    }
+
+    /**
+     * Remember this as the last used controller
+     */
+    #remember() {
+        (new LocalState("controllers")).set("last", this.#portName);
     }
 }

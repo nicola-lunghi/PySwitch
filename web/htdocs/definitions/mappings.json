@@ -45,6 +45,12 @@
                 "importPath": "pyswitch.clients.kemper.mappings.system"
             },
             {
+                "name": "MAPPING_SPACE_INTENSITY",
+                "parameters": [],
+                "comment": "Space Intensity",
+                "importPath": "pyswitch.clients.kemper.mappings.system"
+            },
+            {
                 "name": "MAPPING_AMP_NAME",
                 "parameters": [],
                 "comment": "Amp name (request only)",

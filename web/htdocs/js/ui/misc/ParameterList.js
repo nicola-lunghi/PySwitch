@@ -94,26 +94,9 @@ class ParameterList {
     createInput(options) {
         const that = this;
 
-        let input = (options.type == 'select') 
-            ? 
-                $('<select />').append(
-                    options.options.map((entry) => {
-                        if (typeof entry == "object") {   
-                            return $('<option />')
-                                .prop('value', entry.value)
-                                .text(entry.text ? entry.text : entry.value)
-                        }
-                        return $('<option />')
-                            .prop('value', entry)
-                            .text(entry) 
-                    })
-                )
-            : 
-                $('<input />')
-                .prop('type', options.type)
+        const input = this.#createInput(options);
 
         let messages = null;
-
         const inputCell = $('<td />').append(
             input
             .on('change', async function() {
@@ -219,6 +202,26 @@ class ParameterList {
             input: input,
             log: log
         })
+    }
+
+    #createInput(options) {
+        return (options.type == 'select') 
+            ? 
+                $('<select />').append(
+                    options.options.map((entry) => {
+                        if (typeof entry == "object") {   
+                            return $('<option />')
+                                .prop('value', entry.value)
+                                .text(entry.text ? entry.text : entry.value)
+                        }
+                        return $('<option />')
+                            .prop('value', entry)
+                            .text(entry) 
+                    })
+                )
+            : 
+                $('<input />')
+                .prop('type', options.type)
     }
 
     ///////////////////////////////////////////////////////////////////////////

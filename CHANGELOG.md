@@ -1,3 +1,15 @@
+# PySwitch v2.4.6
+- Features:
+    - Added Mapping for Space Intensity (@quemper)
+
+### Emulator 2.4.6.13
+- Features:
+    - Added a new **Graphical Display Editor** making it possible to edit the display layout (display.py) in a user friendly way. Open it by clicking on the display or the new button on the top right. See README for details on usage.
+    - Added **Save to last used Controller** option (CTRL-T)
+    - The Emulator can now be installed as **PWA** (<a href="https://developer.mozilla.org/en/docs/Web/Progressive_web_apps">Progressive Web App</a>). In Chrome, select "Install PySwitch Emulator" at the right of your address bar, and you will get a standalone App separated from Chrome.
+    
+- Minor cosmetical improvements
+
 # PySwitch v2.4.5
 - Features:
     - Added **Bank Select Action for the Wheel Encoder**. Turning the wheel preselects the bank. To use the wheel pushbutton to acknowledge the bank keeping the current rig, the possibility to set rig = None for the Rig Select action(s) has been added. This enables to use it as push action for the wheel when used as bank preselector, to acknowledge the preselected bank with the current rig.
@@ -29,13 +41,6 @@
 
 - Bug Fixes:
     - Input Settings could not be changed due to an error.
-
-### Emulator 2.4.5.13
-- Features:
-    - Added a new **Graphical Display Editor** making it possible to edit the display layout (display.py) in a user friendly way. Open it by clicking on the display or the new button on the top right. See README for details on usage.
-    - The Emulator can now be installed as PWA (<a href="https://developer.mozilla.org/en/docs/Web/Progressive_web_apps">Progressive Web App</a>). In Chrome, select "Install PySwitch Emulator" at the right of your address bar, and you will get a standalone App separated from Chrome itself.
-    
-- Minor cosmetical improvements
 
 # PySwitch v2.4.3
 - Features:
