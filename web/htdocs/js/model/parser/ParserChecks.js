@@ -134,9 +134,12 @@ class ParserChecks {
 
     /**
      * Returns an array of usages containing the display as an argument (buffered)
+     * 
+     * If all is false, preview and change displays will be ignored.
      */
-    async getDisplayUsages(displayId) {
-        if (this.#usages.has(displayId)) return this.#usages.get(displayId);
+    async getDisplayUsages(displayId, all = false) {
+        const bufferId = displayId + (all ? '-all' : '');
+        if (this.#usages.has(bufferId)) return this.#usages.get(bufferId);
 
         /**
          * Returns an array of actions containing the display as an argument
@@ -151,8 +154,14 @@ class ParserChecks {
                 const args = action.arguments();
 
                 for (const arg of args) { 
-                    if (arg.value == displayId && !arg.name.includes("preview") && !arg.name.includes("change")) {  // TODO put to Meta
-                        ret.push(action);
+                    if (arg.value == displayId) {
+                        if (all) {
+                            ret.push(action);
+                        } else {
+                            if (!arg.name.includes("preview") && !arg.name.includes("change")) {  // TODO put to Meta
+                                ret.push(action);
+                            }
+                        }
                     }                                        
                 }
             }
@@ -172,7 +181,7 @@ class ParserChecks {
             usages = usages.concat(contained, containedHold);
         }
 
-        this.#usages.set(displayId, usages);
+        this.#usages.set(bufferId, usages);
 
         return usages;        
     }

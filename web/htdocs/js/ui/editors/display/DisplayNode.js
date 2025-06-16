@@ -72,7 +72,7 @@ class DisplayNode {
      */
     async #determineUsages() {
         if (!this.node.assign) return [];
-        return this.editor.getConfig().parser.checks.getDisplayUsages(this.node.assign);
+        return this.editor.getConfig().parser.checks.getDisplayUsages(this.node.assign, true);
     }
 
 
