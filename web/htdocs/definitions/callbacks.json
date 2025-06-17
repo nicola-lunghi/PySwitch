@@ -14,12 +14,12 @@
                     {
                         "name": "show_name",
                         "default": "True",
-                        "comment": null
+                        "comment": "Show the rig name in the label"
                     },
                     {
                         "name": "show_rig_id",
                         "default": "False",
-                        "comment": null
+                        "comment": "Show the rig ID (like 1-1) in the label"
                     }
                 ],
                 "comment": null,

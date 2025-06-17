@@ -522,4 +522,37 @@ class DisplayNode {
 
         this.update();
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Set a new node type (overrides name and arguments)
+     */
+    async setType(type, client) {
+        if (this.node.name == type) return;
+
+        this.node.name = type;
+        this.node.client = client;
+
+        const boundsNode = this.type.getBoundsNode();
+        if (!boundsNode) throw new Error("No bounds parameter found for node");
+
+        // Get new args. For this we use a dummy type handler
+        this.node.arguments = DisplayNodeType.getInstance(this).getDefaultArguments().concat({
+            name: "bounds",
+            value: boundsNode
+        });
+        console.log(this.node.arguments)
+
+        // Now there are all params, we can initialize the final type handler
+        this.type = DisplayNodeType.getInstance(this);
+        await this.type.setup();
+
+        // Update preview
+        await this.preview.destroy();
+        await this.preview.setup();
+        await this.preview.init();
+
+        this.preview.update();
+    }
 }

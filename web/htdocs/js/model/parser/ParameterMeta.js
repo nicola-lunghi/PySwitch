@@ -115,6 +115,18 @@ class ParameterMeta {
     }
 
     /**
+     * Returns the display name for the parameter
+     */
+    getDisplayName() {
+        return this.parameter.name
+            .split("_")
+            .map((word) => {
+                return word[0].toUpperCase() + word.substr(1)
+            })
+            .join(" ");
+    }
+
+    /**
      * Generates the mapping list for input
      */
     async #generateMappingOptions(addNone = false) {

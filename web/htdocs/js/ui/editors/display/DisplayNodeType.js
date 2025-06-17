@@ -94,6 +94,13 @@ class DisplayNodeType {
         return null;
     }
 
+    /**
+     * Gets a data node list for the default arguments of the type.
+     */
+    getDefaultArguments() {
+        return [];
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**

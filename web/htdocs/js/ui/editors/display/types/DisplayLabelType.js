@@ -55,6 +55,33 @@ class DisplayLabelType extends DisplayNodeType {
         return this.layout.getParameter('textColor');
     }
 
+    /**
+     * Gets a data node list for the default arguments of the type.
+     */
+    getDefaultArguments() {
+        return [
+            {
+                name: "layout",
+                value: {
+                    arguments: [
+                        {
+                            name: "font",
+                            value: '"/fonts/H20.pcf"'
+                        },
+                        {
+                            name: "backColor",
+                            value: 'DEFAULT_LABEL_COLOR'
+                        },
+                        {
+                            name: "stroke",
+                            value: '1'
+                        }
+                    ]
+                }
+            }
+        ];
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -135,7 +162,7 @@ class DisplayLabelType extends DisplayNodeType {
                     .append(
                         $('<option />')
                         .prop('value', "")
-                        .text('Select Callback...')                    
+                        .text('Select Callback...')
                     )
                     .append(options)
                     .on('change', async function() {
@@ -164,23 +191,56 @@ class DisplayLabelType extends DisplayNodeType {
             current.name,
             current.client
         );
-        // console.log(definition)
         if (!definition) return;
+
+        function getCallbackParameter(name) {
+            const node = Tools.getArgument(current, name);
+            return node ? node.value : null;
+        }
+
+        function getCurrentValue(param) {
+            let val = getCallbackParameter(param.name);
+            if (!val) {
+                val = param.meta.getDefaultValue();
+            }
+            
+            return list.convertValue(param.meta.type(), val);
+        }
+
+        function setCurrentValue(param, value) {
+            const defaultValue = param.meta.getDefaultValue();
+            const valueConverted = list.unconvertValue(param.meta.type(), value);
+
+            let node = Tools.getArgument(current, param.name);
+            if (!node) {
+                current.arguments.push(node = {
+                    name: param.name
+                })
+            }
+
+            if (valueConverted == defaultValue) {
+                current.arguments = current.arguments.filter((entry) => (entry.name != param.name));                
+            } else {
+                node.value = valueConverted;
+            }
+        }
 
         // Add parameters
         for(const param of definition.parameters) {
             const type = param.meta.type();
+            const listType = list.convertType(type);
 
             // Get current value or default if not set
-            const value = null; // TODO
+            const currentValue = getCurrentValue(param);
 
             await list.createInput({
-                type: list.convertType(type),
+                type: listType,
                 name: param.name,
+                displayName: param.meta.getDisplayName(),
                 comment: param.comment,
-                value: value,
+                value: currentValue,
                 onChange: async function(value) {
-                    console.log(value) // TODO  
+                    setCurrentValue(param, value);
                 }
             });
         }
@@ -196,6 +256,7 @@ class DisplayLabelType extends DisplayNodeType {
         if (current && current.name == name) return;
 
         const definition = await this.handler.editor.getConfig().parser.getDisplayLabelCallbackDefinition(name);
+
         if (!definition) {
             this.handler.setParameter('callback', {
                 name: name,

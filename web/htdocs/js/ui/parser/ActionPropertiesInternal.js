@@ -16,7 +16,7 @@ class ActionPropertiesInternal {
             {
                 element: $('<tr />').append(                            
                     $('<td />').append(
-                        $('<span />').text("hold")
+                        $('<span />').text("Hold")
                     ),
 
                     // Input
@@ -32,13 +32,12 @@ class ActionPropertiesInternal {
             {
                 element: this.#assignRow = $('<tr />').append(                            
                     $('<td />').append(
-                        $('<span />').text("assign")
+                        $('<span />').text("Assign")
                     ),
 
                     // Input
                     $('<td />').append(
                         this.#assignInput = $('<input type="text" />')
-                        // .val(await this.#getDefaultAssign())
                     )
                 ),
                 comment: "Define as separate assignment"
@@ -67,9 +66,5 @@ class ActionPropertiesInternal {
                 }
             }
         });
-
-        // if (this.#props.oldProperties) {
-        //     await this.#props.setAssign(this.#props.oldProperties.assign());            
-        // }
     }
 }

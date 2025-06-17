@@ -21,7 +21,7 @@ class PagerProperties {
             {
                 element: this.#proxyRow = $('<tr />').append(
                     $('<td />').append(
-                        $('<span />').text("pager")
+                        $('<span />').text("Pager")
                     ),
 
                     // Input

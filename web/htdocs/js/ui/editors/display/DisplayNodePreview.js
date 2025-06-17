@@ -19,7 +19,16 @@ class DisplayNodePreview {
      */
     async setup() {
         const that = this;
-        this.element = $('<span class="display-element" />')
+
+        if (!this.element) {
+            this.element = $('<span />')
+        }
+
+        this.element
+            .removeClass()
+            .removeAttr("style")
+            .addClass("display-element")
+            .empty()
             .append(
                 this.#textElement = $('<span class="display-element-text" />')
             )

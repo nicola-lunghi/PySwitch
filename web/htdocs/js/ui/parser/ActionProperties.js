@@ -7,12 +7,12 @@ class ActionProperties {
     inputs = null;
     parserFrontend = null;
     controller = null;
+    oldProperties = null;
 
     #messages = null;
     #pagers = null;
     #internalRows = null;
     #encoderProps = null;
-    oldProperties = null;
     #advancedRows = null;
     #advancedLevel = 0;
 
@@ -91,7 +91,7 @@ class ActionProperties {
                         $('<tr class="selectable" />').append(
                             // Parameter Name                        
                             $('<td />').append(
-                                $('<span />').text(param.name)
+                                $('<span />').text(param.meta.getDisplayName())
                             ),                     
 
                                 

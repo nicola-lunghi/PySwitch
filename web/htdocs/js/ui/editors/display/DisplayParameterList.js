@@ -15,7 +15,7 @@ class DisplayParameterList extends ParameterList {
      * Sets up the parameters
      */
     async setup() {
-        // Order
+        await this.#setupNodeTypeParameter();
         await this.#setupOrderParameter();
         await this.#setupAssignParameter();
 
@@ -62,6 +62,48 @@ class DisplayParameterList extends ParameterList {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
+
+    async #setupNodeTypeParameter() {
+        const that = this;
+
+        let select = null;
+        await this.createTextInput({
+            name: "display_element_type",
+            displayName: "Label Type",
+            value: this.#handler.node.name,
+            additionalClasses: "wide",
+            onChange: async function(value) {
+                await that.#handler.setType(value);
+                await that.rebuild();
+            },
+            additionalContent: [
+                select = $('<select class="parameter-option" />')
+                    .append(
+                        $('<option />')
+                            .prop('value', "")
+                            .text('Select type...'),
+
+                        $('<option />')
+                            .prop('value', "DisplayLabel")
+                            .text('DisplayLabel'),
+
+                        $('<option />')
+                            .prop('value', "BidirectionalProtocolState")
+                            .text('BidirectionalProtocolState'),
+
+                    )
+                    .on('change', async function() {
+                        try {
+                            await that.#handler.setType(select.val(), "local")
+                            await that.rebuild();
+
+                        } catch(e) {
+                            that.#handler.editor.controller.handle(e);
+                        }
+                    })
+            ]
+        });
+    }
 
     /**
      * Add Z parameter

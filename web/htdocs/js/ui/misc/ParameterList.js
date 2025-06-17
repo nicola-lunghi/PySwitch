@@ -293,7 +293,6 @@ class ParameterList {
                 if (color == "Select color...") return;
 
                 that.setParameter(paramName, color);
-                //await that.setArgument(paramName, color);
 
                 $(this).val("Select color...")
 
@@ -309,7 +308,6 @@ class ParameterList {
                 const value = "(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ")";
 
                 that.setParameter(paramName, value);
-                //await that.setArgument(paramName, "(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ")");
 
                 await onChange();
             })
@@ -389,15 +387,6 @@ class ParameterList {
         throw new Error("Parameter " + name + " not found")
     }
 
-    // /**
-    //  * Remove a parameter by name
-    //  */
-    // removeParameter(name) {
-    //     const input = this.getParameter(name);
-    //     input.row.remove();
-    //     this.inputs = this.inputs.filter((item) => (item.name != name));
-    // }
-
     /**
      * Convert metadata types to list input types
      */
@@ -406,6 +395,28 @@ class ParameterList {
             case 'int': return 'number';
             case 'bool': return 'checkbox';
             default: return metaType;
+        }
+    }
+
+    /**
+     * Convert metadata values to list input type values
+     */
+    convertValue(metaType, value) {
+        switch(metaType) {
+            case 'int': return parseInt(value);
+            case 'bool': return (value == 'True');
+            default: return value;
+        }
+    }
+
+    /**
+     * Converts list input values to metadata values
+     */
+    unconvertValue(metaType, value) {
+        switch(metaType) {
+            case 'int': return '"' + parseInt(value) + '"';
+            case 'bool': return value ? 'True' : 'False';
+            default: return value;
         }
     }
 }

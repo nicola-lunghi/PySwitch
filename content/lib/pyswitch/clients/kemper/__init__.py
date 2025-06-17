@@ -64,11 +64,14 @@ def NRPN_VALUE(value):
 ####################################################################################################################
 
 
-# Callback for DisplayLabel to show the rig name
+# Callback for DisplayLabel to show the rig name and/or ID.
 class KemperRigNameCallback(Callback):
     DEFAULT_TEXT = f"PySwitch { PYSWITCH_VERSION }"   # Deprecated! Dont use this for new configurations! Use f"PySwitch { PYSWITCH_VERSION }" instead.
 
-    def __init__(self, show_name = True, show_rig_id = False):
+    def __init__(self, 
+                 show_name = True,     # Show the rig name in the label
+                 show_rig_id = False   # Show the rig ID (like 1-1) in the label
+    ):
         Callback.__init__(self)
 
         # Rig name

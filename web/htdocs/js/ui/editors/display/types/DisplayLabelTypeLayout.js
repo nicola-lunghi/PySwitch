@@ -141,21 +141,6 @@ class DisplayLabelTypeLayout {
                 delete that.#layout.value.assign;
 
                 that.setParameter(options.name, value);
-
-                // if (value == "") {
-                //     // Remove parameter
-                //     that.#layout.value.arguments = that.#layout.value.arguments.filter((entry) => (entry.name != options.name));
-
-                // } else {
-                //     // Set/add parameter
-                //     let valueNode = Tools.getArgument(that.#layout.value, options.name);
-                //     if (!valueNode) {
-                //         that.#layout.value.arguments.push(valueNode = {
-                //             name: options.name
-                //         })
-                //     }
-                //     valueNode.value = value;
-                // }
             },
             additionalContent: options.additionalContent
         });
