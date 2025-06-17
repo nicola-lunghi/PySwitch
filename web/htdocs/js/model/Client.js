@@ -102,4 +102,11 @@ class Client {
     setSplashesRootElement(splashes, rootElement) {
         return false;
     }
+
+    /**
+     * Returns optional global display parameters for the client as a ParameterList instance
+     */
+    getDisplayParameterList(editor) {
+        return null;
+    }
 }

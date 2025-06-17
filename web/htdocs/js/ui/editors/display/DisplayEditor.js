@@ -75,7 +75,7 @@ class DisplayEditor {
         const splashes = this.getConfig().parser.splashes();
 
         // The root element may be client dependent
-        const client = ClientFactory.getInstance(splashes.client ? splashes.client : "local");
+        const client = this.getClient(); //ClientFactory.getInstance(splashes.client ? splashes.client : "local");
 
         // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
         return client.getSplashesRootElement(splashes);
@@ -208,7 +208,7 @@ class DisplayEditor {
         const splashes = JSON.parse(JSON.stringify(this.getConfig().parser.splashes()));
 
         // The root element may be client dependent
-        const client = ClientFactory.getInstance(splashes.client ? splashes.client : "local");
+        const client = this.getClient(); //ClientFactory.getInstance(splashes.client ? splashes.client : "local");
 
         // Set the new root node in the splashes
         if (client.setSplashesRootElement(splashes, this.#rootNode)) {
@@ -218,6 +218,14 @@ class DisplayEditor {
         this.#rootNode.assign = "Splashes";
 
         return this.#rootNode;
+    }
+
+    /**
+     * Determine the client for the configuration
+     */
+    getClient() {
+        const splashes = this.getConfig().parser.splashes();
+        return ClientFactory.getInstance(splashes.client ? splashes.client : "local");
     }
 
     /**
@@ -245,13 +253,15 @@ class DisplayEditor {
      * Selects a node handler
      */
     async select(node) {
-        if (!(node == null || node instanceof DisplayNode)) throw new Error('Invalid node');
+        // if (!(node instanceof DisplayNode)) throw new Error('Invalid node');
         if (this.selected == node) return;
 
         this.deselect();
         this.selected = node;
 
-        node.setSelected(true);
+        if (node) {
+            node.setSelected(true);
+        }
         await this.parameters.select(node);
     }
 

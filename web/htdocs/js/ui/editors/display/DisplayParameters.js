@@ -42,12 +42,11 @@ class DisplayParameters {
                         try {
                             const id = $(this).val();
                             if (!id) {
-                                $(this).val(that.#editor.selected.id);
+                                await that.#editor.select();
                                 return;
                             }
                             
                             const node = that.#editor.root.searchById(id);
-
                             await node.select();
 
                         } catch (e) {
@@ -98,13 +97,11 @@ class DisplayParameters {
     async select(node) {
         if (!node) {
             this.#selector.val("");
-            return;
+            await this.#showGeneralParams();
+        } else {
+            this.#selector.val(node.id);
+            await this.#showNode(node);
         }
-
-        if (!(node instanceof DisplayNode)) throw new Error('Invalid node');
-        this.#selector.val(node.id);
-
-        await this.#showNode(node);
     }
 
     /**
@@ -132,6 +129,20 @@ class DisplayParameters {
     }
 
     /**
+     * Shows the general parameters
+     */
+    async #showGeneralParams() {
+        this.#parametersElement.empty();
+
+        this.#parametersList = this.#editor.getClient().getDisplayParameterList(this.#editor);
+        if (!this.#parametersList) return;
+            
+        this.#parametersElement.append(
+            await this.#parametersList.get()
+        );
+    }
+
+    /**
      * Set up the displays selector
      */
     #updateSelector() {
@@ -143,7 +154,7 @@ class DisplayParameters {
             .append(
                 $('<option />')
                 .prop('value', '')
-                .text('Select a label...'),
+                .text('General Attributes'),
 
                 this.#editor.root.flatten({
                     editable: true

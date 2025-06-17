@@ -96,4 +96,10 @@ class KemperClient extends Client {
         return false;
     }
 
+    /**
+     * Returns optional global display parameters for the client as a ParameterList instance
+     */
+    getDisplayParameterList(editor) {
+        return new KemperDisplayParameterList(editor);
+    }
 }
