@@ -74,11 +74,20 @@
     width: 4em;
 }
 
-.container .parameter-list-container .parameter-color-select {
+.container .parameter-list-container select {
     font-size: 0.88888em;
-    max-width: 8em;
+}
+
+.container .parameter-list-container select.parameter-option {
+    max-width: 9em;
+}
+
+.container .parameter-list-container input.wide {
+    width: 15em;
 }
 
 .container .parameter-list-container .parameter-option {
     margin-left: 0.6em;
 }
+
+

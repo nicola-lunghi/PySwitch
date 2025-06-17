@@ -33,7 +33,7 @@ class ParameterMeta {
      * Tries to derive the parameter type from its default value. Returns null if not successful.
      */
     type() {
-        if (this.data.type) return this.data.type;;
+        if (this.data.type) return this.data.type;
 
         const defaultValue = this.getDefaultValue();
         switch (defaultValue) {

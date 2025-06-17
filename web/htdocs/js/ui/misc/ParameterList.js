@@ -3,6 +3,7 @@ class ParameterList {
     controller = null;
     inputs = [];
     parser = null;        // Only needed when a color input is used
+    #container = null;
 
     constructor(controller, parser = null) {
         this.controller = controller;
@@ -29,8 +30,6 @@ class ParameterList {
      */
     async createBooleanInput(options) {
         options.type = 'checkbox';        
-        options.getValue = (input) => !!input.prop('checked');
-        options.setValue = (input, value) => input.prop('checked', value);
 
         await this.createInput(options);
     }
@@ -90,7 +89,7 @@ class ParameterList {
      * Creates an input. Options:
      * 
      * {
-     *     type,        "number", "select", "text", "color"
+     *     type,        "number", "select", "text", "color", "checkbox"
      *     name,
      *     displayName, (optional, default: name)
      *     comment,
@@ -100,10 +99,21 @@ class ParameterList {
      *     setValue: (input, value) => void (optional, default is val())
      *     additionalContent: Additional DOM content (optional),
      *     commentPlacement: Tippy placement option (default: top-end)
+     *     additionalClasses: Additional CSS classes for the input element
      * }
      */
     async createInput(options) {
         const that = this;
+
+        if (options.type == "checkbox") {
+            if (!options.getValue) {
+                options.getValue = (input) => !!input.prop('checked');
+            }
+
+            if (!options.setValue) {
+                options.setValue = (input, value) => input.prop('checked', value);
+            }
+        }
 
         const input = this.#createInput(options);
 
@@ -168,6 +178,10 @@ class ParameterList {
             if (options.range.step) {
                 input.prop('step', options.range.step);
             }
+        }
+
+        if (options.additionalClasses) {
+            input.addClass(options.additionalClasses)
         }
 
         const log = {
@@ -316,25 +330,36 @@ class ParameterList {
         this.inputs = [];
         await this.setup();
 
-        const rows = this.#getRows();
+        const rows = this.inputs.map((item) => item.row);
         const headline = await this.getHeadline();
 
-        return $('<span class="parameter-list-container" />').append(
-            $('<div class="parameter-list" />').append(
-                !headline ? null :
-                $('<div class="parameter-comment" />')
-                .html(headline),
+        if (!this.#container) {
+            this.#container = $('<span class="parameter-list-container" />');
+        }
 
-                !rows ? null :
-                $('<div class="parameters" />').append(
-                    $('<table />').append(
-                        $('<tbody />').append(
-                            rows
+        this.#container
+            .empty()
+            .append(
+                $('<div class="parameter-list" />').append(
+                    !headline ? null :
+                    $('<div class="parameter-comment" />')
+                    .html(headline),
+
+                    $('<div class="parameters" />').append(
+                        $('<table />').append(
+                            $('<tbody />').append(
+                                rows
+                            )
                         )
                     )
                 )
-            )
-        )
+            );
+
+        return this.#container;
+    }
+
+    async rebuild() {
+        await this.get();
     }
 
     /**
@@ -364,16 +389,23 @@ class ParameterList {
         throw new Error("Parameter " + name + " not found")
     }
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /**
+    //  * Remove a parameter by name
+    //  */
+    // removeParameter(name) {
+    //     const input = this.getParameter(name);
+    //     input.row.remove();
+    //     this.inputs = this.inputs.filter((item) => (item.name != name));
+    // }
 
     /**
-     * Returns an array of option rows
+     * Convert metadata types to list input types
      */
-    #getRows() {
-        const ret = [];
-        for (const input of this.inputs) {
-            ret.push(input.row);
+    convertType(metaType) {
+        switch(metaType) {
+            case 'int': return 'number';
+            case 'bool': return 'checkbox';
+            default: return metaType;
         }
-        return ret;
     }
 }

@@ -488,4 +488,38 @@ class DisplayNode {
 
         return ret;
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Returns an arguments value
+     */
+    getParameter(name, defaultValue = null) {
+        const valueNode = Tools.getArgument(this.node, name);
+
+        if (!valueNode) return defaultValue;
+        return valueNode.value;
+    }
+
+    /**
+     * Sets a parameter on the data model
+     */
+    setParameter(name, value, defaultValue = null) {
+        if (value == defaultValue) {
+            // Remove parameter
+            this.node.arguments = this.node.arguments.filter((entry) => (entry.name != name));
+
+        } else {
+            // Set/add parameter
+            let valueNode2 = Tools.getArgument(this.node, name);
+            if (!valueNode2) {
+                this.node.arguments.push(valueNode2 = {
+                    name: name
+                })
+            }
+            valueNode2.value = value;
+        }
+
+        this.update();
+    }
 }

@@ -432,12 +432,12 @@ class Parser {
 
     /**
      * Returns an actions definition by name/clientId or null if not found
-     */
-    async getActionDefinition(name, clientId) {
+     *
+    async getActionDefinition(name, clientId = null) {
         const clients = await this.getAvailableActions();
 
         for (const client of clients) {
-            if (!client.id == clientId) continue;
+            if (clientId && client.client != clientId) continue;
 
             for (const action of client.actions) {
                 if (action.name == name) {
@@ -466,6 +466,24 @@ class Parser {
     }
 
     /**
+     * Returns the definition for a callback, or null if not found
+     */
+    async getDisplayLabelCallbackDefinition(name, clientId) {
+        const clients = await this.getAvailableDisplayLabelCallbacks();
+
+        for (const client of clients) {
+            if (clientId && client.client != clientId) continue;
+
+            for (const callback of client.callbacks) {
+                if (callback.name == name) {
+                    return callback
+                }
+            }    
+        }
+        return null;
+    }
+
+    /**
      * Returns a list of all available actions, with mixed in meta information
      */
     async getAvailableMappings() {
@@ -485,7 +503,7 @@ class Parser {
     /**
      * For a list of function descriptors, this adds meta descriptor information (unbuffered)
      */
-    async #mixInMetaInformation(functions, client) {
+    async #mixInMetaInformation(data, client) {
         const that = this;
         const meta = JSON.parse(await Tools.fetch(this.basePath + "definitions/meta.json"));
 
@@ -557,12 +575,12 @@ class Parser {
         }
 
         // Scan function definitions
-        for (const func of functions) {
-            for (const param of func.parameters) {
-                param.meta = await getParameterMeta(func, param);
+        for (const entry of data) {
+            for (const param of entry.parameters) {
+                param.meta = await getParameterMeta(entry, param);
             }
 
-            func.meta = await getFunctionMeta(func);
+            entry.meta = await getFunctionMeta(entry);
         }
     }
 }

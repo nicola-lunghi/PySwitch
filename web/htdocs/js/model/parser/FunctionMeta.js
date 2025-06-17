@@ -196,12 +196,6 @@ class FunctionMeta {
     #getDisplayNameCustomMessage(actionCallProxy = null) {
         if (!actionCallProxy) return "Custom MIDI Message";
 
-        // const message = this.getArgument(actionCallProxy, "message");
-
-        // if (!(message == null || message.value == "None")) {
-            
-        // }
-
         return "Custom MIDI Message";
     }
 
