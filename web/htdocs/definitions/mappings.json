@@ -366,6 +366,13 @@
     },
     {
         "client": "local",
-        "mappings": []
+        "mappings": [
+            {
+                "name": "MAPPING_SEND_PROGRAM_CHANGE",
+                "parameters": [],
+                "comment": "Send a simple PC message",
+                "importPath": "pyswitch.clients.local.mappings.generic"
+            }
+        ]
     }
 ]

@@ -1621,6 +1621,26 @@
                         "name": "comparison_mode",
                         "default": "BinaryParameterCallback.GREATER_EQUAL",
                         "comment": null
+                    },
+                    {
+                        "name": "display_dim_factor_on",
+                        "default": "None",
+                        "comment": "Dim factor in range [0..1] for on state (display label) Optional.\nIf None, the global config value will be used\nIf \"off\", the global off config value will be used."
+                    },
+                    {
+                        "name": "display_dim_factor_off",
+                        "default": "None",
+                        "comment": "Dim factor in range [0..1] for off state (display label) Optional.\nIf None, the global config value will be used\nIf \"on\", the global on config value will be used."
+                    },
+                    {
+                        "name": "led_brightness_on",
+                        "default": "None",
+                        "comment": "LED brightness [0..1] for on state (Switch LEDs) Optional.\nIf None, the global config value will be used    \nIf \"off\", the global off config value will be used."
+                    },
+                    {
+                        "name": "led_brightness_off",
+                        "default": "None",
+                        "comment": "LED brightness [0..1] for off state (Switch LEDs) Optional.\nIf None, the global config value will be used\nIf \"on\", the global on config value will be used."
                     }
                 ],
                 "comment": "Generic switch action which can be used for all parameter mappings",
