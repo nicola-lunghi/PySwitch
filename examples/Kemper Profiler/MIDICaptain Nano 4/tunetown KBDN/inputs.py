@@ -18,7 +18,11 @@ Inputs = [
                 display = DISPLAY_HEADER_1, 
                 use_leds = False
             ),
-            MORPH_DISPLAY(),
+            MORPH_DISPLAY(
+                text = 'Morph', 
+                morph_color_base = Colors.BLACK, 
+                morph_color_morphed = Colors.GREEN
+            ),
             
         ],
         
@@ -32,7 +36,7 @@ Inputs = [
                 display = DISPLAY_HEADER_2, 
                 rig_off = 1, 
                 color = (0, 213, 255), 
-                text = 'L7'
+                text = 'L7 3'
             ),
             
         ],
@@ -46,7 +50,7 @@ Inputs = [
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, 
                 display = DISPLAY_FOOTER_1, 
                 rig_off = 1, 
-                color = Colors.PINK, 
+                color = (255, 187, 0), 
                 text = 'Synth 3'
             ),
             
@@ -61,6 +65,7 @@ Inputs = [
                 display_mode = RIG_SELECT_DISPLAY_TARGET_RIG, 
                 display = DISPLAY_FOOTER_2, 
                 rig_off = 1, 
+                color = Colors.RED, 
                 text = 'Lead 2'
             ),
             
