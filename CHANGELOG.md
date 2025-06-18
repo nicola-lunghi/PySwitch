@@ -1,3 +1,10 @@
+# PySwitch v2.4.7
+- Features
+    - Added support for the Boomerang III Phrase Sampler (Added generic Program Change Mapping and an example, thanks to @manderscripts)
+
+### Emulator 2.4.7.14
+- Metadata updated
+
 # PySwitch v2.4.6
 - Features:
     - Added **Mapping for Space Intensity** to clients/kemper/mappings/system.py (@quemper)
