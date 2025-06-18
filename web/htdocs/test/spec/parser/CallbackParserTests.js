@@ -6,36 +6,81 @@ class CallbackParserTests extends FunctionParserTestBase {
         const basePath = "../";
         const that = this;
 
-        const extractor = new ClassNamesExtractor(this.pyswitch);
-        const itemExtractor = new ClassItemExtractor(this.pyswitch);        
         const clients = await Client.getAvailable(basePath);
 
-        async function fromClass(options) {
-            const extractor = new ClassItemExtractor(that.pyswitch);
-            return await extractor.get(options);
+        function hasParentClass(cls, name) {
+            return cls.extends.filter((item) => (item == name)).length > 0;
+        }
+
+        function hasMethod(cls, items, name) {
+            return items.filter((item) => (item.name == cls.name + "." + name)).length > 0;
+        }
+
+        function determineTarget(cls, items) {
+            // Some parents are known directly
+            if (hasParentClass(cls, "ParameterDisplayCallback")) return "DisplayLabel";
+
+            // Splashes root
+            if (hasMethod(cls, items, "get_root")) return "Splashes";
+
+            // DisplayLabel callback
+            if (hasMethod(cls, items, "update_label")) return "DisplayLabel";
+
+            // No known callback
+            return null;
         }
         
-        async function cleanClasses(classes) {
+        async function loadClasses(classes, init = false) {
+            const itemExtractor = new ClassItemExtractor(that.pyswitch);        
+        
             const ret = [];
             for (const cls of classes) {
                 const items = await itemExtractor.get({
-                    file: cls.importPath.replaceAll('.', '/') + ".py",
+                    file: cls.importPath.replaceAll('.', '/') + (init ? "/__init__" : "") + ".py",
                     className: cls.name,
                     importPath: cls.importPath,
                     functions: true,
-                    includeUnderscore: true  
+                    includeUnderscore: true
                 });
 
+                const target = determineTarget(cls, items);
+                if (!target) continue;
+
                 for (const item of items) {
-                    if (item.name.includes('.')) continue;
+                    if (item.name != cls.name) continue;  // __init__
 
                     cls.parameters = item.parameters;
+                    cls.target = target;
 
                     ret.push(cls);
                     break;
                 }
             }
             return ret;
+        }
+
+        async function getFolderCallbacks(client) {
+            const extractor = new ClassNamesExtractor(that.pyswitch);
+            
+            const classes = await extractor.get({
+                tocPath: basePath + "circuitpy/lib/pyswitch/clients/toc.php",
+                subPath: client.id + "/callbacks",
+                targetPath: "pyswitch/clients/" + client.id + "/callbacks"
+            });
+
+            return loadClasses(classes, false);
+        }
+
+        async function getInitCallbacks(client) {
+            const extractor = new ClassNameExtractor(that.pyswitch);
+
+            const classes = await extractor.get({
+                file: "pyswitch/clients/" + client.id + "/__init__.py",
+                importPath: "pyswitch.clients." + client.id,
+                includeUnderscore: false
+            });
+
+            return loadClasses(classes, true);
         }
 
         await this.checkDefinitions(
@@ -50,35 +95,12 @@ class CallbackParserTests extends FunctionParserTestBase {
             async function() {
                 const ret = [];
                 for (const client of clients) {
-                    let classes = await extractor.get({
-                        tocPath: basePath + "circuitpy/lib/pyswitch/clients/toc.php",
-                        subPath: client.id + "/callbacks",
-                        targetPath: "pyswitch/clients/" + client.id + "/callbacks"
-                    });
-
-                    let classesCleaned = await cleanClasses(classes);
-                    console.log(classesCleaned)
-
-                    // Add callbacks from __init__.py
-                    for (const initCls of client.getInitCallbacks()) {
-                        const funcs = await fromClass({
-                            file: "pyswitch/clients/" + client.id + "/__init__.py",
-                            importPath: "pyswitch.clients." + client.id,
-                            className: initCls,
-                            functions: true,
-                            includeUnderscore: true
-                        });
-
-                        for (const func of funcs) {
-                            if (func.name.includes('.')) continue;
-
-                            classesCleaned.push(func)
-                        }                        
-                    }
-
                     ret.push({
                         client: client.id,
-                        callbacks: classesCleaned
+                        callbacks: [].concat(
+                            await getFolderCallbacks(client),
+                            await getInitCallbacks(client)
+                        )
                     })
                 }
 

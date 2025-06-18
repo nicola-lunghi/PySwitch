@@ -131,11 +131,13 @@ class DisplayLabelType extends DisplayNodeType {
     async #setupSelectCallbackParameter(list) {
         const valueNode = Tools.getArgument(this.handler.node, "callback");
         
-        const availableCallbacks = await this.handler.editor.getConfig().parser.getAvailableDisplayLabelCallbacks();
+        // const availableCallbacks (await this.handler.editor.getConfig().parser.getAvailableCallbacks());
 
         const options = [];
-        for (const client of availableCallbacks) {
+        for (const client of this.handler.editor.availableCallbacks) {
             for(const cb of client.callbacks || []) {
+                if (cb.target != "DisplayLabel") continue;
+                
                 options.push(
                     $('<option />')
                         .prop('value', cb.name)
@@ -187,7 +189,7 @@ class DisplayLabelType extends DisplayNodeType {
         if (!current) return;
 
         // Get definition
-        const definition = await this.handler.editor.getConfig().parser.getDisplayLabelCallbackDefinition(
+        const definition = await this.handler.editor.getConfig().parser.getCallbackDefinition(
             current.name,
             current.client
         );
@@ -255,7 +257,7 @@ class DisplayLabelType extends DisplayNodeType {
         // Only set if changed
         if (current && current.name == name) return;
 
-        const definition = await this.handler.editor.getConfig().parser.getDisplayLabelCallbackDefinition(name);
+        const definition = await this.handler.editor.getConfig().parser.getCallbackDefinition(name);
 
         if (!definition) {
             this.handler.setParameter('callback', {

@@ -20,7 +20,6 @@ with patch.dict(sys.modules, {
     
     from lib.pyswitch.ui.elements import DisplayLabel
     from lib.pyswitch.controller.callbacks import BinaryParameterCallback
-    from lib.pyswitch.misc import Updater
     
     from .mocks_appl import *
     from .mocks_callback import *

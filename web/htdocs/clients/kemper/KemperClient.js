@@ -57,49 +57,4 @@ class KemperClient extends Client {
     getInitMappingsClassName() {
         return "KemperMappings";
     }
-
-    /**
-     * If the client has callbacks implementations in __init__.py, this can return the class names for them.
-     */
-    getInitCallbacks() {
-        return [
-            'KemperRigNameCallback'
-        ];
-    }
-
-    /**
-     * Must return the Display Element which is the display root.
-     */
-    getSplashesRootElement(splashes) {
-        switch(splashes.name) {
-            case "TunerDisplayCallback":
-                const splashDefault = Tools.getArgument(splashes, "splash_default");
-                if (!splashDefault) throw new Error("No splash_default parameter found for TunerDisplayCallback");
-
-                return splashDefault.value;
-        }
-        return splashes;
-    }
-
-    /**
-     * Replaces the root splash element in the passed splashes object and returns if successful
-     */
-    setSplashesRootElement(splashes, rootElement) {
-        switch(splashes.name) {
-            case "TunerDisplayCallback":
-                const splashDefault = Tools.getArgument(splashes, "splash_default");
-                if (!splashDefault) throw new Error("No splash_default parameter found for TunerDisplayCallback");
-
-                splashDefault.value = rootElement;
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns optional global display parameters for the client as a ParameterList instance
-     */
-    getDisplayParameterList(editor) {
-        return new KemperDisplayParameterList(editor);
-    }
 }

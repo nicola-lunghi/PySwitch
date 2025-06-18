@@ -23,7 +23,8 @@ class ClassNameExtractor:
             def visit_ClassDef(self, node):
                 ret.append({
                     "name": node.name.value,
-                    "importPath": self.main.import_path
+                    "importPath": self.main.import_path,
+                    "extends": [base.value.value for base in node.bases] if node.bases else []
                 })
 
         cst.visit(ClassVisitor(self))

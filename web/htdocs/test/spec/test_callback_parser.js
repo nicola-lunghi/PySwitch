@@ -1,4 +1,4 @@
-describe('Parser for available DisplayLabel callbacks', function() {
+describe('Parser for available callbacks', function() {
     
     const tests = new CallbackParserTests();
 

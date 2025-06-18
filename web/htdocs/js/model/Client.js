@@ -76,37 +76,9 @@ class Client {
     }
 
     /**
-     * If the client has callbacks implementations in __init__.py, this can return the class names for them.
-     */
-    getInitCallbacks() {
-        return [];
-    }
-
-    /**
      * Returns a display name for the client
      */
     getDisplayName() {
         return this.id;
-    }
-
-    /**
-     * Must return the Display Element which is the display root.
-     */
-    getSplashesRootElement(splashes) {
-        return splashes;
-    }
-
-    /**
-     * Replaces the root splash element in the passed splashes object and returns the if successful
-     */
-    setSplashesRootElement(splashes, rootElement) {
-        return false;
-    }
-
-    /**
-     * Returns optional global display parameters for the client as a ParameterList instance
-     */
-    getDisplayParameterList(editor) {
-        return null;
     }
 }

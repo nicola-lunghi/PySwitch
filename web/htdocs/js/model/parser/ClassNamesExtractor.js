@@ -1,5 +1,5 @@
 /**
- * Adapter to the python based ClassNameExtractor (which can extract all public classes of a file)
+ * Adapter to the python based ClassNamesExtractor (which can extract all public classes in a folder)
  */
 class ClassNamesExtractor {
 

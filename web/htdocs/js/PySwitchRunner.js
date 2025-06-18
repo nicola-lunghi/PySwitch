@@ -85,6 +85,7 @@ class PySwitchRunner {
         await this.pyodide.FS.mkdir("pyswitch/clients/kemper/callbacks");
         await this.pyodide.FS.mkdir("pyswitch/clients/local");
         await this.pyodide.FS.mkdir("pyswitch/clients/local/actions");
+        await this.pyodide.FS.mkdir("pyswitch/clients/local/callbacks");
         await this.pyodide.FS.mkdir("pyswitch/controller");
         await this.pyodide.FS.mkdir("pyswitch/controller/actions");
         await this.pyodide.FS.mkdir("pyswitch/controller/callbacks");
@@ -212,6 +213,8 @@ class PySwitchRunner {
             this.#loadModule("pyswitch/clients/local/actions/encoder_button.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/local/actions/param_change.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/local/actions/custom.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/clients/local/callbacks/splashes.py", circuitpyPath),
 
             this.#loadModule("pyswitch/controller/__init__.py", circuitpyPath),
             this.#loadModule("pyswitch/controller/controller.py", circuitpyPath),

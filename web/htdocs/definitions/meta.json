@@ -651,6 +651,11 @@
                         }
                     }
                 ]
+            },
+
+            {
+                "entityName": "TunerDisplayCallback",
+                "splashRootParameter": "splash_default"
             }
         ]
     },

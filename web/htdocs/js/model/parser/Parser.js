@@ -16,7 +16,7 @@ class Parser {
     #availableKeycodes = null;       // Buffer
     #availableFonts = null;          // Buffer
     #bufferHardwareInfo = null;      // Buffer
-    #availableDisplayLabelCallbacks = null; // Buffer
+    #availableCallbacks = null; // Buffer
     #colors = null;                  // Buffer
     #inputs = null;                  // Buffer for input instances
 
@@ -449,27 +449,27 @@ class Parser {
     }
 
     /**
-     * Returns a list of all available DisplayLabel callbacks, with mixed in meta information
+     * Returns a list of all available callbacks, with mixed in meta information
      */
-    async getAvailableDisplayLabelCallbacks() {
-        if (this.#availableDisplayLabelCallbacks) return this.#availableDisplayLabelCallbacks;
+    async getAvailableCallbacks() {
+        if (this.#availableCallbacks) return this.#availableCallbacks;
 
         // This just loads the buffered version. To create the list, see the parser tests.
-        this.#availableDisplayLabelCallbacks = JSON.parse(await Tools.fetch(this.basePath + "definitions/callbacks.json"));
+        this.#availableCallbacks = JSON.parse(await Tools.fetch(this.basePath + "definitions/callbacks.json"));
         
         // Put in meta info where exists
-        for (const client of this.#availableDisplayLabelCallbacks) {
+        for (const client of this.#availableCallbacks) {
             await this.#mixInMetaInformation(client.callbacks, ClientFactory.getInstance(client.client));
         }
         
-        return this.#availableDisplayLabelCallbacks;
+        return this.#availableCallbacks;
     }
 
     /**
      * Returns the definition for a callback, or null if not found
      */
-    async getDisplayLabelCallbackDefinition(name, clientId) {
-        const clients = await this.getAvailableDisplayLabelCallbacks();
+    async getCallbackDefinition(name, clientId) {
+        const clients = await this.getAvailableCallbacks();
 
         for (const client of clients) {
             if (clientId && client.client != clientId) continue;
@@ -532,7 +532,7 @@ class Parser {
             const definition = searchFunctionDefinition(funcName);
             if (!definition) return null;
 
-            for (const param of definition.parameters) {
+            for (const param of definition.parameters || []) {
                 if (param.name == paramName) {                            
                     return param;
                 }
@@ -576,7 +576,7 @@ class Parser {
 
         // Scan function definitions
         for (const entry of data) {
-            for (const param of entry.parameters) {
+            for (const param of entry.parameters || []) {
                 param.meta = await getParameterMeta(entry, param);
             }
 

@@ -134,12 +134,12 @@ class DisplayParameters {
     async #showGeneralParams() {
         this.#parametersElement.empty();
 
-        this.#parametersList = this.#editor.getClient().getDisplayParameterList(this.#editor);
-        if (!this.#parametersList) return;
+        // this.#parametersList = this.#editor.getClient().getDisplayParameterList(this.#editor);
+        // if (!this.#parametersList) return;
             
-        this.#parametersElement.append(
-            await this.#parametersList.get()
-        );
+        // this.#parametersElement.append(
+        //     await this.#parametersList.get()
+        // );
     }
 
     /**

@@ -9,11 +9,15 @@ class DisplayEditor {
     preview = null;      // Preview area handler
     parameters = null;   // Parameters area handler
 
-    #rootNode = null;    // Raw data tree root
+    #splashes = null;    // Splashes data node
+    #rootNode = null;    // Editor container data node
+
     root = null;         // Root node handler
     references = null;   // Memory for node references (node -> handler)
     
     selected = null;     // Selected node handler, if any
+
+    availableCallbacks = null;   // Buffer
 
     constructor(controller) {
         this.controller = controller;        
@@ -60,8 +64,14 @@ class DisplayEditor {
      * Called after get()
      */
     async init() {
+        // Available callbacks
+        this.availableCallbacks = (await this.getConfig().parser.getAvailableCallbacks());
+
         // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
-        this.#rootNode = JSON.parse(JSON.stringify(this.#getPersistentRootNode()));
+        this.#splashes = JSON.parse(JSON.stringify(this.getConfig().parser.splashes()));
+
+        // Get the editing root node
+        this.#rootNode = this.#getSplashesRootElement(this.#splashes);
 
         await this.reset();
 
@@ -73,12 +83,41 @@ class DisplayEditor {
      */
     #getPersistentRootNode() {
         const splashes = this.getConfig().parser.splashes();
+        return this.#getSplashesRootElement(splashes);
+    }
 
-        // The root element may be client dependent
-        const client = this.getClient(); //ClientFactory.getInstance(splashes.client ? splashes.client : "local");
+    /**
+     * Returns the Display Element which is the parent for all labels (root element).
+     */
+    #getSplashesRootElement(splashes) {
+        const that = this;
 
-        // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
-        return client.getSplashesRootElement(splashes);
+        function getCallbackDefinition(name, clientId) {
+            for (const cl of that.availableCallbacks) {
+                if (cl.client != clientId) continue;
+
+                for (const cb of cl.callbacks) {
+                    if (cb.target != "Splashes") continue;
+                    if (cb.name != name) continue;
+
+                    return cb;
+                }
+            }
+        }
+
+        const definition = getCallbackDefinition(splashes.name, splashes.client);
+
+        if (!definition) {
+            throw new Error('No definition found for ' + splashes.name);
+        }
+        if (!definition.meta.data.splashRootParameter) {
+            throw new Error('No splashRootParameter defined for ' + splashes.name);
+        }
+
+        const splash = Tools.getArgument(splashes, definition.meta.data.splashRootParameter);
+        if (!splash) throw new Error("No " + definition.meta.data.splashRootParameter + " parameter found for " + splashes.name);
+
+        return splash.value;
     }
 
     /**
@@ -189,7 +228,7 @@ class DisplayEditor {
      * Apply the changes to the current config
      */
     async apply() {
-        const newSplashes = this.#createSplashes();
+        const newSplashes = this.#splashes; //this.#createSplashes();
         const parser = this.getConfig().parser;
 
         await this.controller.restart({
@@ -198,26 +237,6 @@ class DisplayEditor {
                 await parser.setSplashes(newSplashes);
             }
         });
-    }
-
-    /**
-     * Returns a new splashes object to be set on the configuration
-     */
-    #createSplashes() {
-        // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
-        const splashes = JSON.parse(JSON.stringify(this.getConfig().parser.splashes()));
-
-        // The root element may be client dependent
-        const client = this.getClient(); //ClientFactory.getInstance(splashes.client ? splashes.client : "local");
-
-        // Set the new root node in the splashes
-        if (client.setSplashesRootElement(splashes, this.#rootNode)) {
-            return splashes;
-        }
-
-        this.#rootNode.assign = "Splashes";
-
-        return this.#rootNode;
     }
 
     /**
