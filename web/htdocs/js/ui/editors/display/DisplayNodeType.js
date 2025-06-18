@@ -101,17 +101,12 @@ class DisplayNodeType {
         return [];
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
-     * Sets up parameters on the passed ParameterList instance, according to the type of display element.
+     * Returns DOM for parameter lists
      */
-    async setupParameters(list) {        
-    }
-
-    /**
-     * Updates the parameters on the passed ParameterList instance according to the node.
-     */
-    updateParameters(list) {        
+    async getParameterLists() {
+        return [
+            new DisplayParameterList(this.handler)
+        ]
     }
 }

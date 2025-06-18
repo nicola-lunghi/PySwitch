@@ -25,6 +25,7 @@
     vertical-align: top;
     position: relative;
     z-index: 10;
+    vertical-align: baseline;
 }
 
 .container .parameter-list-container .parameter-list td > * {

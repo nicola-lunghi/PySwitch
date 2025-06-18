@@ -8,7 +8,7 @@ class DisplayParameters {
 
     #selector = null;
     #parametersElement = null;
-    #parametersList = null;
+    #parameterLists = null;
 
     constructor(editor) {
         this.#editor = editor;
@@ -54,11 +54,22 @@ class DisplayParameters {
                         }
                     }),
 
+                    // General settings button
+                    $('<span class="button fas fa-wrench" data-toggle="tooltip" title="General settings" />')
+                    .on('click', async function() {
+                        try {
+                            await that.#editor.select();
+
+                        } catch (e) {
+                            that.#editor.controller.handle(e);
+                        }
+                    }),
+
                     // Add button
                     $('<span class="button fas fa-plus" data-toggle="tooltip" title="Add a new element" />')
                     .on('click', async function() {
                         try {
-                            await that.#editor.createElement();                            
+                            await that.#editor.createElement();
 
                         } catch (e) {
                             that.#editor.controller.handle(e);
@@ -89,6 +100,12 @@ class DisplayParameters {
             );
 
         this.#updateSelector();
+
+        await this.#showGeneralParams();
+    }
+
+    async rebuild() {
+        await this.select(this.#editor.selected);
     }
 
     /**
@@ -109,10 +126,12 @@ class DisplayParameters {
      */
     update() {
         // Parameters of selected node
-        if (this.#parametersList) {
-            this.#parametersList.update()
+        if (this.#parameterLists) {
+            for (const list of this.#parameterLists) {
+                list.update();
+            }
         }
-
+        
         // Selector
         this.#updateSelector();
     }
@@ -121,25 +140,47 @@ class DisplayParameters {
      * Shows parameters for the node
      */
     async #showNode(node) {
-        this.#parametersElement
-            .empty()
-            .append(
-                await (this.#parametersList = new DisplayParameterList(node)).get()
-            );
+        await this.#setParameterLists(
+            await node.type.getParameterLists()
+        );
     }
 
     /**
      * Shows the general parameters
      */
     async #showGeneralParams() {
-        this.#parametersElement.empty();
+        await this.#setParameterLists([
+            // General Params
+            new DisplayGeneralParameterList(this.#editor),
 
-        // this.#parametersList = this.#editor.getClient().getDisplayParameterList(this.#editor);
-        // if (!this.#parametersList) return;
-            
-        // this.#parametersElement.append(
-        //     await this.#parametersList.get()
-        // );
+            // Callback params
+            new DisplayCallbackParameterList(
+                this.#editor.controller,
+                this.#editor.getConfig().parser,
+                this.#editor.splashes,
+                async function(param) {
+                    return param.meta.visible()
+                }
+            )
+        ]);
+    }
+
+    /**
+     * Sets a list of ParameterList instances
+     */
+    async #setParameterLists(lists) {
+        this.#parameterLists = lists;
+
+        const content = [];
+        for (const list of lists) {
+            content.push(await list.get());
+        }
+
+        this.#parametersElement
+            .empty()
+            .append(
+                content
+            );
     }
 
     /**

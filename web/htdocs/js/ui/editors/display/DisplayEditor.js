@@ -9,7 +9,7 @@ class DisplayEditor {
     preview = null;      // Preview area handler
     parameters = null;   // Parameters area handler
 
-    #splashes = null;    // Splashes data node
+    splashes = null;     // Splashes data node
     #rootNode = null;    // Editor container data node
 
     root = null;         // Root node handler
@@ -68,10 +68,10 @@ class DisplayEditor {
         this.availableCallbacks = (await this.getConfig().parser.getAvailableCallbacks());
 
         // Get raw splashes tree (deep copy, because we do not want to alter the parser data yet)
-        this.#splashes = JSON.parse(JSON.stringify(this.getConfig().parser.splashes()));
+        this.splashes = JSON.parse(JSON.stringify(this.getConfig().parser.splashes()));
 
         // Get the editing root node
-        this.#rootNode = this.#getSplashesRootElement(this.#splashes);
+        this.#rootNode = this.#getSplashesRootElement(this.splashes);
 
         await this.reset();
 
@@ -87,25 +87,66 @@ class DisplayEditor {
     }
 
     /**
+     * Buffered
+     */
+    getCallbackDefinition(name, clientId = null, target = null) {
+        for (const cl of this.availableCallbacks) {
+            if (clientId && cl.client != clientId) continue;
+
+            for (const cb of cl.callbacks) {
+                if (target && cb.target != target) continue;
+                if (cb.name != name) continue;
+
+                return cb;
+            }
+        }
+    }
+
+    /**
+     * Sets a new splashes callback
+     */
+    async setSplashesCallback(name) {
+        if (this.splashes.name == name) return;
+
+        const definition = this.getCallbackDefinition(name);
+        if (!definition) {
+            throw new Error("Unknown Callbacks cannot be changed.");
+        }
+
+        if (!definition.meta.data.splashRootParameter) {
+            throw new Error('No splashRootParameter defined for ' + name);
+        }
+
+        this.splashes = {
+            name: name,
+            client: definition.meta.client.id,
+            arguments: definition.parameters          // Only add params without defaults
+                .filter((param) => !param.default)
+                .map((param) => {
+                    if (param.name == definition.meta.data.splashRootParameter) {
+                        return {
+                            name: definition.meta.data.splashRootParameter,
+                            value: this.#rootNode
+                        }
+                    } else {
+                        return {
+                            name: param.name,
+                            value: param.meta.getDefaultValue()
+                        }
+                    }
+                })
+        }
+
+        await this.reset()
+    }
+
+    /**
      * Returns the Display Element which is the parent for all labels (root element).
      */
     #getSplashesRootElement(splashes) {
         const that = this;
 
-        function getCallbackDefinition(name, clientId) {
-            for (const cl of that.availableCallbacks) {
-                if (cl.client != clientId) continue;
-
-                for (const cb of cl.callbacks) {
-                    if (cb.target != "Splashes") continue;
-                    if (cb.name != name) continue;
-
-                    return cb;
-                }
-            }
-        }
-
-        const definition = getCallbackDefinition(splashes.name, splashes.client);
+        const definition = this.getCallbackDefinition(splashes.name, splashes.client, "Splashes");
 
         if (!definition) {
             throw new Error('No definition found for ' + splashes.name);
@@ -228,7 +269,7 @@ class DisplayEditor {
      * Apply the changes to the current config
      */
     async apply() {
-        const newSplashes = this.#splashes; //this.#createSplashes();
+        const newSplashes = this.splashes; //this.#createSplashes();
         const parser = this.getConfig().parser;
 
         await this.controller.restart({
@@ -272,7 +313,6 @@ class DisplayEditor {
      * Selects a node handler
      */
     async select(node) {
-        // if (!(node instanceof DisplayNode)) throw new Error('Invalid node');
         if (this.selected == node) return;
 
         this.deselect();

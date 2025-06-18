@@ -356,6 +356,12 @@ class ParameterList {
         return this.#container;
     }
 
+    /**
+     * Update inputs from the data model
+     */
+    update() {
+    }
+
     async rebuild() {
         await this.get();
     }

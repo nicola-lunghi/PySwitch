@@ -47,6 +47,13 @@ class ParameterMeta {
     }
 
     /**
+     * Returns if the parameter is visible
+     */
+    visible() {
+        return !this.data.hidden;
+    }
+
+    /**
      * If possible, returns a list of values, null if not possible.
      */
     async getValues() {

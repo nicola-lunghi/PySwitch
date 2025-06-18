@@ -655,7 +655,33 @@
 
             {
                 "entityName": "TunerDisplayCallback",
-                "splashRootParameter": "splash_default"
+                "splashRootParameter": "splash_default",
+                "parameters": [
+                    {
+                        "name": "splash_default",
+                        "hidden": true
+                    },
+                    {
+                        "name": "splash_tuner",
+                        "hidden": true
+                    },
+                    {
+                        "name": "color_in_tune",
+                        "type": "color"
+                    },
+                    {
+                        "name": "color_out_of_tune",
+                        "type": "color"
+                    },
+                    {
+                        "name": "color_neutral",
+                        "type": "color"
+                    },
+                    {
+                        "name": "strobe_color",
+                        "type": "color"
+                    }
+                ]
             }
         ]
     },
@@ -976,6 +1002,17 @@
                         "name": "message",
                         "type": "any",
                         "default": "[176, 33, 1]"
+                    }
+                ]
+            },
+            
+            {
+                "entityName": "SplashesCallback",
+                "splashRootParameter": "splashes",
+                "parameters": [
+                    {
+                        "name": "splashes",
+                        "hidden": true
                     }
                 ]
             }

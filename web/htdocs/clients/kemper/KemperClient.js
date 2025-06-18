@@ -18,6 +18,13 @@ class KemperClient extends Client {
     }
 
     /**
+     * Factory for ParameterMeta instances
+     */
+    async createParameterMeta(parser, meta, paramDef) {
+        return new KemperParameterMeta(parser, this, meta, paramDef);
+    }
+
+    /**
      * Returns a ClientDetector instance for the client, or none if not implemented
      */
     async getClientDetector() {

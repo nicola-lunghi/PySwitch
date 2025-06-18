@@ -91,13 +91,16 @@
     /* background-color: rgb(226, 226, 226); */
 }
 
+.container .display-editor .display-parameters .parameter-list {
+    border-top: 1px solid black;
+}    
+
 .container .display-editor .display-parameters-header {
     width: 100%;
 
     display: flex;
     align-items: center;
 
-    border-bottom: 1px solid black;
     padding-bottom: 0.6em;
 }
 

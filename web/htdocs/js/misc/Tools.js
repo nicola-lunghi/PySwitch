@@ -111,13 +111,16 @@ class Tools {
      */
     static withComment(el, comment, placement = "top-end") {
         if (comment) {
-            tippy(el[0], {
-                content: comment,
-                theme: "pyswitchtooltip",
-                placement: placement,
-                arrow: false,
-                duration: 0
-            });
+            setTimeout(function() {
+                tippy(el[0], {
+                    content: comment,
+                    theme: "pyswitchtooltip",
+                    placement: placement,
+                    arrow: false,
+                    duration: 0,
+                    delay: [600, 0]
+                });
+            }, 600)
         }
 
         return el;

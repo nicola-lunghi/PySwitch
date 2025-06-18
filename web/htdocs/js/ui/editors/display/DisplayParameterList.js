@@ -3,12 +3,12 @@
  */
 class DisplayParameterList extends ParameterList {
     
-    #handler = null;  // DisplayNode instance
+    handler = null;  // DisplayNode instance
     #loaded = false;
 
     constructor(handler) {
         super(handler.editor.controller, handler.editor.getConfig().parser)
-        this.#handler = handler;
+        this.handler = handler;
     }
 
     /**
@@ -20,11 +20,17 @@ class DisplayParameterList extends ParameterList {
         await this.#setupAssignParameter();
 
         // Others, depending on the type of node
-        await this.#handler.type.setupParameters(this);
+        await this.setupTypeParameters();
 
         this.#loaded = true;
 
         this.update();
+    }
+
+    /**
+     * Add type specific parameters in child classes
+     */
+    async setupTypeParameters() {        
     }
 
     /**
@@ -33,17 +39,20 @@ class DisplayParameterList extends ParameterList {
     update() {
         if (!this.#loaded) return;
         
-        // Order
-        this.setParameter('z', this.#handler.getChildIndex());
-
-        // Order
-        this.setParameter('assign', this.#handler.node.assign);
+        this.setParameter('z', this.handler.getChildIndex());
+        this.setParameter('assign', this.handler.node.assign);
 
         // Others, depending on the type of node
-        this.#handler.type.updateParameters(this);
+        this.updateTypeParameters();
 
         // Check
         this.check();
+    }
+
+    /**
+     * Update type specific parameters in child classes
+     */
+    updateTypeParameters() {        
     }
 
     /**
@@ -55,7 +64,7 @@ class DisplayParameterList extends ParameterList {
         });
 
         const that = this;
-        this.#handler.getMessages().forEach((msg) => {
+        this.handler.getMessages().forEach((msg) => {
             if (!msg.input) return;
             that.getParameter(msg.input).log.message(msg.message, msg.type);
         });
@@ -66,15 +75,19 @@ class DisplayParameterList extends ParameterList {
     async #setupNodeTypeParameter() {
         const that = this;
 
+        async function setType(type) {
+            await that.handler.setType(type);
+            await that.handler.editor.parameters.select(that.handler.editor.selected);
+        }
+
         let select = null;
         await this.createTextInput({
             name: "display_element_type",
             displayName: "Label Type",
-            value: this.#handler.node.name,
+            value: this.handler.node.name,
             additionalClasses: "wide",
             onChange: async function(value) {
-                await that.#handler.setType(value);
-                await that.rebuild();
+                await setType(value);
             },
             additionalContent: [
                 select = $('<select class="parameter-option" />')
@@ -94,11 +107,10 @@ class DisplayParameterList extends ParameterList {
                     )
                     .on('change', async function() {
                         try {
-                            await that.#handler.setType(select.val(), "local")
-                            await that.rebuild();
+                            await setType(select.val());                            
 
                         } catch(e) {
-                            that.#handler.editor.controller.handle(e);
+                            that.handler.editor.controller.handle(e);
                         }
                     })
             ]
@@ -115,13 +127,13 @@ class DisplayParameterList extends ParameterList {
             name: "z",
             displayName: "Depth",
             //comment: "Z-Index (depth order index)",
-            value: this.#handler.getChildIndex(),
+            value: this.handler.getChildIndex(),
             additionalContent: [
                 // Move up button
                 $('<span class="button fas fa-chevron-up" data-toggle="tooltip" title="Move up in depth" />')
                 .on('click', async function() {
                     try {
-                        that.#handler.moveUp();
+                        that.handler.moveUp();
 
                     } catch (e) {
                         that.controller.handle(e);
@@ -132,7 +144,7 @@ class DisplayParameterList extends ParameterList {
                 $('<span class="button fas fa-chevron-down" data-toggle="tooltip" title="Move down in depth" />')
                 .on('click', async function() {
                     try {
-                        that.#handler.moveDown();
+                        that.handler.moveDown();
 
                     } catch (e) {
                         that.controller.handle(e);
@@ -155,9 +167,9 @@ class DisplayParameterList extends ParameterList {
             // Remove preceeding underscores
             while (newValue.startsWith('_')) newValue = newValue.slice(1);
 
-            that.#handler.node.assign = newValue;
+            that.handler.node.assign = newValue;
 
-            that.#handler.editor.update();
+            that.handler.editor.update();
 
             setValue(newValue);
         }
@@ -166,8 +178,8 @@ class DisplayParameterList extends ParameterList {
             name: "assign",
             displayName: "Export as",
             comment: "If you assign a name here, the label can be used in the actions. (This creates an assignment for the label instance which can be exported)",
-            value: this.#handler.node.assign ? this.#handler.node.assign : "",
-            onChange: this.#handler.isReferenced() ? null : onChange
+            value: this.handler.node.assign ? this.handler.node.assign : "",
+            onChange: this.handler.isReferenced() ? null : onChange
         });
     }
 
@@ -175,7 +187,7 @@ class DisplayParameterList extends ParameterList {
      * Add x and y parameters
      */
     async setupPositionParameters() {
-        const bounds = this.#handler.getModelBounds();
+        const bounds = this.handler.getModelBounds();
         const that = this;
 
         await this.createNumericInput({
@@ -184,11 +196,11 @@ class DisplayParameterList extends ParameterList {
             //comment: "Vertical position",
             value: bounds.x,
             onChange: async function(value) {
-                const bounds2 = that.#handler.getModelBounds();
+                const bounds2 = that.handler.getModelBounds();
                 bounds2.x = value;
-                that.#handler.setModelBounds(bounds2);
+                that.handler.setModelBounds(bounds2);
                 
-                that.#handler.update();
+                that.handler.update();
             }
         });
 
@@ -198,11 +210,11 @@ class DisplayParameterList extends ParameterList {
             //comment: "Horizontal position",
             value: bounds.y,
             onChange: async function(value) {
-                const bounds2 = that.#handler.getModelBounds();
+                const bounds2 = that.handler.getModelBounds();
                 bounds2.y = value;
-                that.#handler.setModelBounds(bounds2);
+                that.handler.setModelBounds(bounds2);
                 
-                that.#handler.update();
+                that.handler.update();
             }
         });
     }
@@ -211,7 +223,7 @@ class DisplayParameterList extends ParameterList {
      * Add width and height parameters
      */
     async setupSizeParameters() {
-        const bounds = this.#handler.getModelBounds();
+        const bounds = this.handler.getModelBounds();
         const that = this;
 
         await this.createNumericInput({
@@ -223,11 +235,11 @@ class DisplayParameterList extends ParameterList {
                 min: 1
             },
             onChange: async function(value) {
-                const bounds2 = that.#handler.getModelBounds();
+                const bounds2 = that.handler.getModelBounds();
                 bounds2.width = value;
-                that.#handler.setModelBounds(bounds2);
+                that.handler.setModelBounds(bounds2);
                 
-                that.#handler.update();
+                that.handler.update();
             }
         });
 
@@ -240,11 +252,11 @@ class DisplayParameterList extends ParameterList {
                 min: 1
             },
             onChange: async function(value) {
-                const bounds2 = that.#handler.getModelBounds();
+                const bounds2 = that.handler.getModelBounds();
                 bounds2.height = value;
-                that.#handler.setModelBounds(bounds2);
+                that.handler.setModelBounds(bounds2);
                 
-                that.#handler.update();
+                that.handler.update();
             }
         });
     }

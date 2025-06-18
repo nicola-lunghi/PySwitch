@@ -542,7 +542,6 @@ class DisplayNode {
             name: "bounds",
             value: boundsNode
         });
-        console.log(this.node.arguments)
 
         // Now there are all params, we can initialize the final type handler
         this.type = DisplayNodeType.getInstance(this);
