@@ -5,9 +5,9 @@ This is the personal preset for my MIDICaptain Nano 4, which i am using mainly w
 |            |                                    |
 |------------|------------------------------------|
 | Switch 1   | Tuner Mode + Morph State           |
-| Switch 2   | Effect Slot X on/off               |
-| Switch A   | Toggle Rigs 3/1 of bank 3          |
-| Switch B   | Toggle Rigs 2/1 of bank 3          |
+| Switch 2   | Select Rigs 4 of curr. bank        |
+| Switch A   | Select Rigs 3 of curr. bank        |
+| Switch B   | Select Rigs 2 of curr. bank        |
 
 
 
