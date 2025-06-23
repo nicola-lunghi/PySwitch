@@ -1,23 +1,65 @@
-## Example Description
+What it does:
 
-Direct access to the first 50 Rigs with only 2 button presses. Also toggle of four FX block states.
- 
+# TOP ROW SWITCHES (LEDs of non active switches/banks are all dim)
 
-|            | Action: Short Press          | Action: Long Press       | LED 1                    | LED 2                  |LED 3                          |
-|------------|------------------------------|--------------------------|--------------------------|------------------------|-------------------------------|
-| Switch 1   | Effect A                     | Select Bank 1, keep rig  | Effect Type/State        | like LED 1             | Bank 1 color (blue) (\**)    |
-| Switch 2   | Effect B                     | Select Bank 2, keep rig  | Effect Type/State        | like LED 1             | Bank 2 color (yellow) (\**)  |
-| Switch 3   | Effect DLY                   | Select Bank 3, keep rig  | Effect Type/State        | like LED 1             | Bank 3 color (red) (\**)     |
-| Switch 4   | Effect REV                   | Select Bank 4, keep rig  | Effect Type/State        | like LED 1             | Bank 4 color (green) (\**)   |
-| Switch Up  | Tuner Mode                   | Select Bank 5, keep rig  | Tuner Mode State         | like LED 1             | Bank 5 color (purple) (\**)  |
-| Switch A   | Select Rig 1 of current bank | Select Bank 6, keep rig  | Current Bank color (\*) | Morph State Color      | Bank 6 color (blue) (\**)    |
-| Switch B   | Select Rig 2 of current bank | Select Bank 7, keep rig  | Current Bank color (\*) | Morph State Color      | Bank 7 color (yellow) (\**)  |
-| Switch C   | Select Rig 3 of current bank | Select Bank 8, keep rig  | Current Bank color (\*) | Morph State Color      | Bank 8 color (red) (\**)     |
-| Switch D   | Select Rig 4 of current bank | Select Bank 9, keep rig  | Current Bank color (\*) | Morph State Color      | Bank 9 color (green) (\**)   |
-| Switch Dn  | Select Rig 5 of current bank | Select Bank 10, keep rig | Current Bank color (\*) | Morph State Color      | Bank 10 color (purple) (\**) |
+short press selects BANK 1
+LED turns bright blue
+DISPLAY shows blue header
+long press selects BANK 6
+only one LED is bright blue
+DISPLAY shows blue FOOTER
 
-(\*) Bright if the respective target rig is selected, dimmed if not
+short press selects PANK 2
+LED turns bright yellow
+DISPLAY shows yellow HEADER
+long press selects BANK 7
+only one LED is bright yellow
+DISPLAY shows yellow FOOTER
 
-(\**) Bright if the respective target bank is selected, dimmed if not
+short press selects BANK 3
+LED turns bright red
+DISPLAY shows red HEADER
+long press selects BANK 8
+only one LED is bright red
+DISPLAY shows red FOOTER
 
+short press selects BANK 4
+LED turns bright green
+DISPLAY shows green HEADER
+long press selects BANK 9
+only one LED is bright green
 
+short press selects BANK 5
+LED turns bright purple
+DISPLAY shows purple header
+long press selects BANK 10
+only one LED is bright purple
+DISPLAY shows purple FOOTER
+
+# BOTTOM ROW SWITCHES:(LEDs of non active switches/banks are all dim)
+
+short press selects RIG 1
+two bottom LEDs show BANK color
+top LED shows predicted MORPH state red
+second press MORPHS
+top LED shows predicted MORPH state blue
+
+short press selects RIB 2
+top LED shows predicted MORPH state red
+second press MORPHS
+top LED shows predicted MORPH state blue
+
+short press selects RIG 3
+top LED shows predicted MORPH state red
+second press MORPHS
+top LED shows predicted MORPH state blue
+
+short press selects RIG 4
+top LED shows predicted MORPH state red
+second press MORPHS
+top LED shows predicted MORPH state blue
+
+short press selects RIG 5
+top LED shows predicted MORPH state red
+second press MORPHS
+top LED shows predicted MORPH state blue
