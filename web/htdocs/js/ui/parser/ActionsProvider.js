@@ -58,6 +58,9 @@ class ActionsProvider extends BrowserProvider {
             for (const action of client.actions) {   
                 if (action.meta.data.target != this.#options.target) continue;
 
+                const clientHandler = ClientFactory.getInstance(client.client)
+                const sortString = ((client.client == "local") ? "ZZZZZZZZZZZZ" : clientHandler.getSortString()) + "_" + (await action.meta.getSortString())
+
                 const entry = new BrowserEntry(
                     browser,
                     {
@@ -66,7 +69,7 @@ class ActionsProvider extends BrowserProvider {
                         parent: this.#toc,
                         onSelect: this.#options.onSelect,
                         actionDefinition: action,
-                        sortString: await action.meta.getSortString()
+                        sortString: sortString
                     }
                 )
 

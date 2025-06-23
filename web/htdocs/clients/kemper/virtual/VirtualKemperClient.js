@@ -229,6 +229,7 @@ class VirtualKemperClient extends VirtualClient {
     getUserInterface(container) {
         if (this.#ui) this.#ui.destroy();
         this.#ui = new VirtualKemperClientUI(container, this);
+        return this.#ui;
     }
 
     /**

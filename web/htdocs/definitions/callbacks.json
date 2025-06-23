@@ -1,5 +1,9 @@
 [
     {
+        "client": "boomerang",
+        "callbacks": []
+    },
+    {
         "client": "kemper",
         "callbacks": [
             {

@@ -22,8 +22,6 @@ with patch.dict(sys.modules, {
     from .mocks_appl import *
     from .mocks_callback import *
 
-    from lib.pyswitch.clients.kemper import KemperMappings
-
     from lib.pyswitch.clients.kemper.actions.amp import *
     from lib.pyswitch.clients.kemper.actions.effect_state import *
     from lib.pyswitch.clients.kemper.actions.tempo import *

@@ -63,3 +63,9 @@
 .container .select-actions .listing-link.category-pager {
     background-color: rgb(245 247 198);
 }
+
+/***********************************************************************/
+
+.container .select-actions .listing-link.category-boomerang-generic {
+    background-color: rgb(217, 152, 251);
+}

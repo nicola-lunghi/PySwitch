@@ -27,6 +27,14 @@ class Client {
     }
 
     /**
+     * Returns code which is being executed to generate a custom client specific protocol.
+     * Must set the protocol at self.protocol (see implementations). This is run with exec in PySwitchRunner.py.
+     */
+    getProtocolCode() {
+        return null;
+    }
+
+    /**
      * Factory for ParameterMeta instances
      */
     async createParameterMeta(parser, meta, paramDef) {
@@ -51,7 +59,7 @@ class Client {
      * Can return a virtual client, or null if the parsers config does not support a virtual client.
      */
     async getVirtualClient(options) {
-        return null;
+        return new VirtualClient(this.id);
     }    
 
     /**
@@ -79,6 +87,13 @@ class Client {
      * Returns a display name for the client
      */
     getDisplayName() {
+        return this.id;
+    }
+
+    /**
+     * Sort string among all clients available
+     */
+    getSortString() {
         return this.id;
     }
 }

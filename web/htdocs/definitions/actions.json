@@ -1,5 +1,634 @@
 [
     {
+        "client": "boomerang",
+        "actions": [
+            {
+                "name": "BOOMERANG_PLAY_STOP_ALL",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"PlayStp\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.GREEN",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Play/Stop all for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            },
+            {
+                "name": "BOOMERANG_SYNC_SERIAL",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"SyncSerial\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.YELLOW",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Sync Serial for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            },
+            {
+                "name": "BOOMERANG_MUTE_THRU",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"MuteThru\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.PURPLE",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Mute/Thru for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            },
+            {
+                "name": "BOOMERANG_PANIC",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"PANIC\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.RED",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Panic for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            },
+            {
+                "name": "BOOMERANG_ERASE",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"ERASE\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.RED",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Erase for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            },
+            {
+                "name": "BOOMERANG_ERASE_ALL",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"ERASEALL\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.RED",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Erase all for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            },
+            {
+                "name": "BOOMERANG_STACK",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"Stack\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.YELLOW",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Stack for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            },
+            {
+                "name": "BOOMERANG_COPY",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"Copy\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.BLUE",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Copy for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            },
+            {
+                "name": "BOOMERANG_FADE",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"Fade\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.LIGHT_BLUE",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Fade for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            },
+            {
+                "name": "BOOMERANG_OCTAVE",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"Octave\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.WHITE",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Octave for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            },
+            {
+                "name": "BOOMERANG_ONCE",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"Once\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.LIGHT_GREEN",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Once for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            },
+            {
+                "name": "BOOMERANG_REVERSE",
+                "parameters": [
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "text",
+                        "default": "\"Reverse\"",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "Colors.TURQUOISE",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_1",
+                        "default": "0.3",
+                        "comment": null
+                    },
+                    {
+                        "name": "led_brightness_2",
+                        "default": "0.02",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": null
+                    }
+                ],
+                "comment": "Reverse for the Boomerang III Phrase Sampler",
+                "importPath": "pyswitch.clients.boomerang.actions.boomerang"
+            }
+        ]
+    },
+    {
         "client": "kemper",
         "actions": [
             {
@@ -1437,7 +2066,7 @@
                         "comment": null
                     }
                 ],
-                "comment": "Sends a raw, arbitrary MIDI message.\n\nThe messages have to be raw bytes, so don't forget to also add the status and (in case of SysEx) closing bytes!",
+                "comment": "Sends a single raw, arbitrary MIDI message.\n\nThe messages have to be raw bytes, so don't forget to also add the status and (in case of SysEx) closing bytes!",
                 "importPath": "pyswitch.clients.local.actions.custom"
             },
             {
@@ -1641,10 +2270,77 @@
                         "name": "led_brightness_off",
                         "default": "None",
                         "comment": "LED brightness [0..1] for off state (Switch LEDs) Optional.\nIf None, the global config value will be used\nIf \"on\", the global on config value will be used."
+                    },
+                    {
+                        "name": "use_internal_state",
+                        "default": "False",
+                        "comment": "If enabled, the callback will not wait until a MIDI value comes in, the state is displayed as-is any time."
                     }
                 ],
-                "comment": "Generic switch action which can be used for all parameter mappings",
+                "comment": "Generic switch action which can be used for all parameter mappings. This is designed to work with \nparameters providing Feedback from the client by requesting parameters actively (like the Kemper is able to do).\n\nIf you want to just send MIDI messages or control devices with no feedback, use the Custom MIDI Message instead.",
                 "importPath": "pyswitch.clients.local.actions.binary_switch"
+            },
+            {
+                "name": "ROTATING_MESSAGES",
+                "parameters": [
+                    {
+                        "name": "messages",
+                        "default": "None",
+                        "comment": "Raw MIDI messages bytes (as list of rotating messages in list format, for example [[176, 80, 0], [176, 89, 1]] for two alternating control change messages). You can use hex values in format 0xab, too."
+                    },
+                    {
+                        "name": "messages_release",
+                        "default": "None",
+                        "comment": "Raw MIDI messages to be sent on releasing the button. Same format and handling as the messages parameter. "
+                    },
+                    {
+                        "name": "led_colors",
+                        "default": "None",
+                        "comment": "List of colors to rotate for the LEDs                      "
+                    },
+                    {
+                        "name": "led_brightness",
+                        "default": "0.15",
+                        "comment": "LED brighness in range [0..1]                      "
+                    },
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "display_colors",
+                        "default": "None",
+                        "comment": "List of colors to rotate for the display label. If not set, the led colors will be used."
+                    },
+                    {
+                        "name": "texts",
+                        "default": "\"\"",
+                        "comment": "List of texts for each of the rotating states"
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "id",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "num_leds",
+                        "default": "1",
+                        "comment": "If greater than one, led_colors must be a list of lists, each entry having exactly this amount of colors, which will be rotated."
+                    }
+                ],
+                "comment": "Sends a bunch of messages in rotating fashion. The messages as well as the colors and texts will be rotated on each press. \n\nThe messages have to be raw bytes, so don't forget to also add the status and (in case of SysEx) closing bytes!\nYou can use lists or tuples for all parameters where multiple values are passed.",
+                "importPath": "pyswitch.clients.local.actions.rotate"
             }
         ]
     },

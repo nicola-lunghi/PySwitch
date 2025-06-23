@@ -1,5 +1,5 @@
 /**
- * CLient implementations for Kemper devices
+ * Client implementations for Kemper devices
  */
 class KemperClient extends Client {
     
@@ -8,6 +8,18 @@ class KemperClient extends Client {
      */
     getDisplayName() {
         return "Kemper";
+    }
+
+    /**
+     * Returns code which is being executed to generate a custom client specific protocol.
+     * Must set the protocol at self.protocol (see implementations). This is run with exec in PySwitchRunner.py.
+     */
+    getProtocolCode() {
+        // Indentation plays a role here, so this is a bit ugly ;)
+        return `
+from pyswitch.clients.kemper import KemperBidirectionalProtocol
+self.protocol = KemperBidirectionalProtocol(time_lease_seconds = 30)
+        `;
     }
     
     /**

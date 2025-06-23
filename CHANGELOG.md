@@ -1,9 +1,11 @@
 # PySwitch v2.4.7
 - Features
     - Added support for the Boomerang III Phrase Sampler (Added generic Program Change Mapping and an example, thanks to @manderscripts)
+    - Added some parameters to the "Other Parameter" action which is now called "Other Paremeter with Feedback" (which it is: If you just want to send messages, there is the new "Rotating MIDI Messages" action you can use with just one message)
+    - Added a Rotating MIDI Messages action. This can be used to set up certain scenarios with rotating messages, texts, colors (LED and/or display) etc. Has been added as a side-product of the boomerang support.
 
 ### Emulator 2.4.7.14
-- Metadata updated
+- Metadata updated, new actions added, some optimizations
 
 # PySwitch v2.4.6
 - Features:

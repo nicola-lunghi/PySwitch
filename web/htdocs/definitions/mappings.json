@@ -1,5 +1,9 @@
 [
     {
+        "client": "boomerang",
+        "mappings": []
+    },
+    {
         "client": "kemper",
         "mappings": [
             {

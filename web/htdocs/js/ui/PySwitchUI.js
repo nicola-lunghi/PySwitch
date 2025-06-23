@@ -702,18 +702,24 @@ class PySwitchUI {
         }
         
         if (client) {
+            // Try to create an UI
             let virtualClientElement = null;
-
-            // Add tab
-            this.tabs.add(
-                this.#virtualClientTab = new Tab(
-                    // Virtual client if enabled
-                    virtualClientElement = $('<div class="virtual-client"/>'),
-                    client.name ? client.name : "Virtual Client"
-                )
-            );
+            this.#virtualClientTab = new Tab(
+                virtualClientElement = $('<div class="virtual-client"/>'),
+                client.name ? client.name : "Virtual Client"
+            )
 
             this.#virtualClientUI = client.getUserInterface(virtualClientElement);    
+
+            if (this.#virtualClientUI) {
+                // Add tab
+                this.tabs.add(
+                    this.#virtualClientTab
+                );
+            } else {
+                // No UI
+                this.#virtualClientTab = null;
+            }
         }
     }
 

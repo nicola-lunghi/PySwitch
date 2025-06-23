@@ -58,7 +58,8 @@ class ClientConnectionButton {
     #getCurrentState() {
         if (!this.#controller.pyswitch.hasMidiWrapper()) return ClientConnectionButton.STATE_NOT_CONNECTED;
 
-        if (this.#controller.pyswitch.getProtocolState() == 20) return ClientConnectionButton.STATE_CONNECTED;
+        if (this.#controller.pyswitch.getProtocolState() == -10) return ClientConnectionButton.STATE_CONNECTED;  // No protocol
+        if (this.#controller.pyswitch.getProtocolState() == 20) return ClientConnectionButton.STATE_CONNECTED;   // Connected
 
         return ClientConnectionButton.STATE_WAITING;
     }

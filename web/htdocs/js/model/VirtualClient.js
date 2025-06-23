@@ -32,6 +32,12 @@ class VirtualClient {
     }
 
     /**
+     * When running, this is called regularly to update the protocol and other timed stuff
+     */
+    update() {
+    }
+
+    /**
      * Stop listening to the input, and remove all UIs
      */
     detach() {        
@@ -40,13 +46,13 @@ class VirtualClient {
     /**
      * If supported, can create a user interface in the passed container DOM element
      */
-    createUserInterface(container) {
+    getUserInterface(container) {
     }
 
     /**
-     * Tries to return a meaningful message name
+     * Tries to return a meaningful message name etc.
      */
-    getMessageName(message) {
+    getMessageProperties(message) {
         return null;
     }
 }

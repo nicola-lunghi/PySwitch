@@ -3,7 +3,7 @@ from ....controller.actions import Action
 from ....colors import Colors
 from adafruit_midi.midi_message import MIDIMessage
 
-# Sends a raw, arbitrary MIDI message.
+# Sends a single raw, arbitrary MIDI message.
 # 
 # The messages have to be raw bytes, so don't forget to also add the status and (in case of SysEx) closing bytes!
 def CUSTOM_MESSAGE(message,                 # Raw MIDI message bytes (as list, for example [176, 80, 0] for a control change). You can use hex values in format 0xab, too.

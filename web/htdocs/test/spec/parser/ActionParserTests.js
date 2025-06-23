@@ -111,11 +111,11 @@ class ActionParserTests extends FunctionParserTestBase {
             for (const action of client.actions) {
                 expect(action.meta).toBeInstanceOf(FunctionMeta);
                 
-                expect(action.meta.getDisplayName().length).toBeGreaterThan(0)
-                expect(action.meta.getShortDisplayName().length).toBeGreaterThan(0)
+                expect(action.meta.getDisplayName().length).toBeGreaterThan(0, "No display name for action " + action.name + " of client " + client.client)
+                expect(action.meta.getShortDisplayName().length).toBeGreaterThan(0, "No short display name for action " + action.name + " of client " + client.client)
 
-                expect(action.meta.data.category.length).toBeGreaterThan(0)
-                expect(action.meta.data.target.length).toBeGreaterThan(0)
+                expect((action.meta.data.category || []).length).toBeGreaterThan(0, "No category for action " + action.name + " of client " + client.client)
+                expect((action.meta.data.target || []).length).toBeGreaterThan(0, "No target for action " + action.name + " of client " + client.client)
             }
         }
     }

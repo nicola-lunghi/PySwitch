@@ -79,14 +79,6 @@ class PySwitchRunner {
         await this.pyodide.FS.mkdir("adafruit_hid");
         await this.pyodide.FS.mkdir("pyswitch");
         await this.pyodide.FS.mkdir("pyswitch/clients");
-        await this.pyodide.FS.mkdir("pyswitch/clients/kemper");
-        await this.pyodide.FS.mkdir("pyswitch/clients/kemper/actions");
-        await this.pyodide.FS.mkdir("pyswitch/clients/kemper/mappings");
-        await this.pyodide.FS.mkdir("pyswitch/clients/kemper/callbacks");
-        await this.pyodide.FS.mkdir("pyswitch/clients/local");
-        await this.pyodide.FS.mkdir("pyswitch/clients/local/actions");
-        await this.pyodide.FS.mkdir("pyswitch/clients/local/mappings");
-        await this.pyodide.FS.mkdir("pyswitch/clients/local/callbacks");        
         await this.pyodide.FS.mkdir("pyswitch/controller");
         await this.pyodide.FS.mkdir("pyswitch/controller/actions");
         await this.pyodide.FS.mkdir("pyswitch/controller/callbacks");
@@ -94,7 +86,20 @@ class PySwitchRunner {
         await this.pyodide.FS.mkdir("pyswitch/hardware/adafruit");  
         await this.pyodide.FS.mkdir("pyswitch/hardware/devices");  
         await this.pyodide.FS.mkdir("pyswitch/ui");  
-            
+
+        await this.pyodide.FS.mkdir("pyswitch/clients/kemper");
+        await this.pyodide.FS.mkdir("pyswitch/clients/kemper/actions");
+        await this.pyodide.FS.mkdir("pyswitch/clients/kemper/mappings");
+        await this.pyodide.FS.mkdir("pyswitch/clients/kemper/callbacks");
+        
+        await this.pyodide.FS.mkdir("pyswitch/clients/boomerang");
+        await this.pyodide.FS.mkdir("pyswitch/clients/boomerang/actions");
+        
+        await this.pyodide.FS.mkdir("pyswitch/clients/local");
+        await this.pyodide.FS.mkdir("pyswitch/clients/local/actions");
+        await this.pyodide.FS.mkdir("pyswitch/clients/local/mappings");
+        await this.pyodide.FS.mkdir("pyswitch/clients/local/callbacks");        
+                    
         return Promise.all([
             this.#loadModule("PySwitchRunner.py", localPythonPath),
             this.#loadModule("mocks.py", localPythonPath),
@@ -214,10 +219,16 @@ class PySwitchRunner {
             this.#loadModule("pyswitch/clients/local/actions/encoder_button.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/local/actions/param_change.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/local/actions/custom.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/local/actions/rotate.py", circuitpyPath),
 
             this.#loadModule("pyswitch/clients/local/callbacks/splashes.py", circuitpyPath),
 
             this.#loadModule("pyswitch/clients/local/mappings/generic.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/clients/boomerang/__init__.py", circuitpyPath),
+
+            this.#loadModule("pyswitch/clients/boomerang/actions/__init__.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/boomerang/actions/boomerang.py", circuitpyPath),
 
             this.#loadModule("pyswitch/controller/__init__.py", circuitpyPath),
             this.#loadModule("pyswitch/controller/controller.py", circuitpyPath),
@@ -378,12 +389,14 @@ class PySwitchRunner {
             runner      # Returns the runner as a JS proxy
         `);
 
+        const client = ClientFactory.getInstance(await ClientFactory.estimateClient(config));
+            
         if (dontTick) {
             // Initialize, but dont run PySwitch
-            this.#runner.init(displayWidth, displayHeight);
+            this.#runner.init(displayWidth, displayHeight, client);
         } else {
             // Run PySwitch!
-            this.#runner.run(displayWidth, displayHeight);
+            this.#runner.run(displayWidth, displayHeight, client);
         }
     }
 

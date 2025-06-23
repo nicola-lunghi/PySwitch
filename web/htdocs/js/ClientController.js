@@ -97,7 +97,7 @@ class ClientController {
                 clearTimeout(timeout);
 
                 // Remove listener (else the detector would parse all messages, too)
-                that.#controller.midi.removeListener(listener);
+                if (listener) that.#controller.midi.removeListener(listener);
             }
 
             function doResolve(/*data*/) {
@@ -115,7 +115,7 @@ class ClientController {
             }
 
             // Use the detector to check if there is a client listening
-            const listener = await detector.test(that.#controller.midi, input, output, doResolve);
+            let listener = detector ? (await detector.test(that.#controller.midi, input, output, doResolve)) : null;
 
             // Timeout
             const timeout = setTimeout(doReject, timeoutMillis);
@@ -145,7 +145,8 @@ class ClientController {
             const virtualClient = await client.getVirtualClient();
             
             if (!virtualClient) {
-                this.#controller.ui.message("Client " + clientId + " does not support a virtual client device", "W");
+                //this.#controller.ui.message("Client " + clientId + " does not support a virtual client device", "W");
+                console.warn("Client " + clientId + " does not support a virtual client device");
                 this.#controller.ui.showVirtualClient(null);
                 return;
             }

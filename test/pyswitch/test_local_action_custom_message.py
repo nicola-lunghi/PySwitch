@@ -27,7 +27,6 @@ with patch.dict(sys.modules, {
 class TestLocalCustomMessage(unittest.TestCase):
 
     def test(self):
-        
         display = DisplayLabel(layout = {
             "font": "foo",
             "backColor": (0, 0, 0)

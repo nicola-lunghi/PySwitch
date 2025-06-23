@@ -2,7 +2,10 @@ from ....controller.actions import PushButtonAction
 from ....controller.callbacks import BinaryParameterCallback
 from ....colors import Colors
 
-# Generic switch action which can be used for all parameter mappings
+# Generic switch action which can be used for all parameter mappings. This is designed to work with 
+# parameters providing Feedback from the client by requesting parameters actively (like the Kemper is able to do).
+# 
+# If you want to just send MIDI messages or control devices with no feedback, use the Custom MIDI Message instead.
 def BINARY_SWITCH(mapping, 
                   display = None, 
                   text = "", 
@@ -24,9 +27,10 @@ def BINARY_SWITCH(mapping,
                   led_brightness_on = None,                                   # LED brightness [0..1] for on state (Switch LEDs) Optional.
                                                                               # If None, the global config value will be used    
                                                                               # If "off", the global off config value will be used.
-                  led_brightness_off = None                                   # LED brightness [0..1] for off state (Switch LEDs) Optional.
+                  led_brightness_off = None,                                  # LED brightness [0..1] for off state (Switch LEDs) Optional.
                                                                               # If None, the global config value will be used
                                                                               # If "on", the global on config value will be used.
+                  use_internal_state = False                                  # If enabled, the callback will not wait until a MIDI value comes in, the state is displayed as-is any time.
     ):
     return PushButtonAction({
         "callback": BinaryParameterCallback(

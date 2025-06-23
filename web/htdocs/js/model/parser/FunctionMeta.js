@@ -43,6 +43,7 @@ class FunctionMeta {
             case "ENCODER_BUTTON": return this.#getDisplayNameEncoderButtonShort(actionCallProxy);
             case "PARAMETER_UP_DOWN": return this.#getDisplayNameChangeParam(actionCallProxy);
             case "CUSTOM_MESSAGE": return this.#getDisplayNameCustomMessage(actionCallProxy);
+            case "ROTATING_MESSAGES": return this.#getDisplayNameRotatingMessage(actionCallProxy);            
         }
         return this.underscoreToDisplayName(this.functionDefinition.name);
     }
@@ -51,7 +52,7 @@ class FunctionMeta {
      * Returns a sort string for the action definition
      */
     async getSortString() {
-        if (this.functionDefinition.name.startsWith("PagerAction")) return "ZZZZZ_100_" + this.functionDefinition.name;
+        if (this.functionDefinition.name.startsWith("PagerAction")) return "ZZZZZ_900_" + this.functionDefinition.name;
 
         if (this.functionDefinition.name == "BINARY_SWITCH")        return "ZZZZZ_010";
         if (this.functionDefinition.name == "EncoderAction")        return "ZZZZZ_010";
@@ -61,6 +62,7 @@ class FunctionMeta {
         if (this.functionDefinition.name == "HID_KEYBOARD")         return "ZZZZZ_040";
         if (this.functionDefinition.name == "ENCODER_BUTTON")       return "ZZZZZ_050";
         if (this.functionDefinition.name == "CUSTOM_MESSAGE")       return "ZZZZZ_100";
+        if (this.functionDefinition.name == "ROTATING_MESSAGES")    return "ZZZZZ_110";
         
         return this.functionDefinition.name;
     }
@@ -164,7 +166,7 @@ class FunctionMeta {
      * Special implementation for Binary Switch action
      */
     #getDisplayNameBinarySwitch(actionCallProxy = null) {
-        if (!actionCallProxy) return "Other Parameter";
+        if (!actionCallProxy) return "Other Parameter (w.FB)";
 
         const mapping = this.getArgument(actionCallProxy, "mapping");
 
@@ -172,7 +174,7 @@ class FunctionMeta {
             return this.#stripMappingName(mapping)
         }
 
-        return "Other Parameter";
+        return "Other Parameter (w.FB)";
     }
 
     #getDisplayNameChangeParam(actionCallProxy = null) {
@@ -194,9 +196,16 @@ class FunctionMeta {
     }
 
     #getDisplayNameCustomMessage(actionCallProxy = null) {
-        if (!actionCallProxy) return "Custom MIDI Message";
+        const text = this.getArgument(actionCallProxy, "text");
+        if (!(text == null || text.value == "None" || text.value == "''")) {
+            return Tools.stripQuotes(text.value);
+        }
 
         return "Custom MIDI Message";
+    }
+
+    #getDisplayNameRotatingMessage(actionCallProxy = null) {
+        return "Rotating MIDI Messages";
     }
 
     #getDisplayNameHidKeyboard(actionCallProxy = null) {

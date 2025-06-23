@@ -31,13 +31,13 @@ class PySwitchRunner:
         self.explore_mode = explore_mode   
 
     # Set up a PySwitch controller and let it run
-    def run(self, display_width, display_height):
+    def run(self, display_width, display_height, client):
         self.running = True
         self.triggerStop = False
 
-        self.init(display_width, display_height)
+        self.init(display_width, display_height, client)
 
-    def init(self, display_width, display_height):
+    def init(self, display_width, display_height, client):
         if self.coverage:
             import coverage
 
@@ -47,7 +47,7 @@ class PySwitchRunner:
         if self.explore_mode:
             self._init_explore_mode(display_width, display_height)
         else:
-            self._init_default(display_width, display_height)
+            self._init_default(display_width, display_height, client)
 
         # Local callback for set_timeout
         def tick():            
@@ -66,7 +66,7 @@ class PySwitchRunner:
             cov.save()
             # print(cov.get_data())
 
-    def _init_default(self, display_width, display_height):
+    def _init_default(self, display_width, display_height, client):
         with patch.dict(sys.modules, {
             "micropython": MockMicropython,
             "gc": MockGC(),
@@ -85,7 +85,7 @@ class PySwitchRunner:
             "time": WrapTime(),
             "usb_hid": WrapUsbHid(),
             "adafruit_hid.keyboard": WrapUsbHidKeyboard
-        }):            
+        }):
             self.display_driver = WrapDisplayDriver(
                 width = display_width,
                 height = display_height,
@@ -98,7 +98,7 @@ class PySwitchRunner:
             from pyswitch.ui.UiController import UiController
             from pyswitch.hardware.adafruit.AdafruitUsbMidiDevice import AdafruitUsbMidiDevice
 
-            from pyswitch.clients.kemper import KemperBidirectionalProtocol
+            # from pyswitch.clients.kemper import KemperBidirectionalProtocol
 
             from display import Splashes
             from inputs import Inputs
@@ -112,9 +112,12 @@ class PySwitchRunner:
                 in_buf_size = 100
             )
 
-            self.protocol = KemperBidirectionalProtocol(
-                time_lease_seconds = 30
-            )
+            protocol_generator_code = client.getProtocolCode()
+            if protocol_generator_code:
+                exec(protocol_generator_code)
+                
+                if not self.protocol:
+                    raise Exception("Protocol has not been generated")
 
             # Controller instance (runs the processing loop and keeps everything together)
             self.controller = Controller(
@@ -216,7 +219,10 @@ class PySwitchRunner:
         if self.explore_mode:
             externalRefs.protocolState = 20
         else:
-            externalRefs.protocolState = self.protocol.state
+            if self.protocol:
+                externalRefs.protocolState = self.protocol.state
+            else:
+                externalRefs.protocolState = -10   # No protocol
 
     # Stop execution of the set_timeout handler by just not renewing it
     def stop(self):        
