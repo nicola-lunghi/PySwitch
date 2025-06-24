@@ -10,6 +10,8 @@ class Configuration {
     
     parser = null;
     controller = null;
+
+    globalConfiguration = {}
     
     constructor(controller, name = "") {
         this.controller = controller;

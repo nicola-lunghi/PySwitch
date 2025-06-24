@@ -33,8 +33,11 @@ class Tabs {
         this.#container.append(
             $('<div class="header" />').append(
                 // Header (tab headers)
-                this.#header = $('<div class="header-tabs" />'),
-
+                $('<div class="header-tabs-container" />').append(
+                    // Header (tab headers)
+                    this.#header = $('<div class="header-tabs" />'),
+                ),
+            
                 // Header buttons
                 $('<div class="header-buttons" />').append(
                     // Tab specific buttons

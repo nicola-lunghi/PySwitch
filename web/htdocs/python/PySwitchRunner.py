@@ -14,12 +14,13 @@ from wrappers.wrap_adafruit_midi import *
 from wrappers.wrap_time import *
 from wrappers.wrap_hid import *
 
+from pyswitch.misc import get_option
+
 class PySwitchRunner:
-    def __init__(self, container_id, dom_namespace, update_interval_ms, coverage, explore_mode = False):
+    def __init__(self, container_id, dom_namespace, coverage, tickInterval = 10):
         self.container_id = container_id
 
         self.dom_namespace = dom_namespace
-        self.update_interval_ms = update_interval_ms
         self.coverage = coverage
 
         self.running = False
@@ -27,32 +28,33 @@ class PySwitchRunner:
 
         self.protocol = None
         self.frontend = None
-
-        self.explore_mode = explore_mode   
+        self.tickInterval = tickInterval
 
     # Set up a PySwitch controller and let it run
-    def run(self, display_width, display_height, client):
+    def run(self, display_width, display_height, client, config_py, comm_settings):
         self.running = True
         self.triggerStop = False
 
-        self.init(display_width, display_height, client)
+        self.init(display_width, display_height, client, config_py, comm_settings)
 
-    def init(self, display_width, display_height, client):
+    def init(self, display_width, display_height, client, config_py, comm_settings):
+        config_py = config_py.to_py()
+
         if self.coverage:
             import coverage
 
             cov = coverage.Coverage()
             cov.start()
 
-        if self.explore_mode:
+        if get_option(config_py, "exploreMode", False):
             self._init_explore_mode(display_width, display_height)
         else:
-            self._init_default(display_width, display_height, client)
+            self._init_default(display_width, display_height, client, config_py, comm_settings)
 
         # Local callback for set_timeout
         def tick():            
             if not self.triggerStop:
-                set_timeout(tick, self.update_interval_ms)
+                set_timeout(tick, self.tickInterval)
 
                 self.tick()
             else:
@@ -66,7 +68,7 @@ class PySwitchRunner:
             cov.save()
             # print(cov.get_data())
 
-    def _init_default(self, display_width, display_height, client):
+    def _init_default(self, display_width, display_height, client, config_py, comm_settings):
         with patch.dict(sys.modules, {
             "micropython": MockMicropython,
             "gc": MockGC(),
@@ -106,10 +108,18 @@ class PySwitchRunner:
             midi_in = WrapMidiInput()
             midi_out = WrapMidiOutput()
 
+            in_channel = comm_settings.inChannel if hasattr(comm_settings, "inChannel") else None
+            out_channel = comm_settings.outChannel if hasattr(comm_settings, "outChannel") else 0
+
+            if hasattr(comm_settings, "debug") and comm_settings.debug:
+                print(f"Connecting to MIDI (Input channel(s): { in_channel if in_channel != None else "All" }, Output channel: { out_channel })")
+
             midi = AdafruitUsbMidiDevice(
                 port_in = midi_in,
                 port_out = midi_out,
-                in_buf_size = 100
+                in_buf_size = 100,
+                in_channel = in_channel,
+                out_channel = out_channel,
             )
 
             protocol_generator_code = client.getProtocolCode()
@@ -138,11 +148,7 @@ class PySwitchRunner:
                         ),
                     }
                 ),
-                config = {
-                    # "debugBidirectionalProtocol": True,
-                    # "updateInterval": 2000,
-                    # "debugSentMessages": True
-                },
+                config = config_py,
                 inputs = Inputs,
                 ui = UiController(
                     display_driver = self.display_driver,
@@ -216,13 +222,10 @@ class PySwitchRunner:
         
         self.display_driver.update()
 
-        if self.explore_mode:
-            externalRefs.protocolState = 20
+        if self.protocol:
+            externalRefs.protocolState = self.protocol.state
         else:
-            if self.protocol:
-                externalRefs.protocolState = self.protocol.state
-            else:
-                externalRefs.protocolState = -10   # No protocol
+            externalRefs.protocolState = -10   # No protocol
 
     # Stop execution of the set_timeout handler by just not renewing it
     def stop(self):        

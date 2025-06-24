@@ -653,7 +653,8 @@ class PySwitchUI {
         await this.editors.inputs.setConfig(config);
         await this.editors.display.setConfig(config);
 
-        await this.#initMidiMonitor(config);        
+        await this.#initMidiMonitor(config);
+        await this.#initSettings(config);
     }
 
     /**
@@ -670,6 +671,21 @@ class PySwitchUI {
         );
 
         await this.midiMonitor.initMonitor();
+    }
+
+    /**
+     * Setup the MIDI settings if not already there
+     */
+    async #initSettings() {
+        if (this.emulatorSettings) {
+            return;
+        }
+        
+        this.tabs.add(
+            this.emulatorSettings = new EmulatorSettings(this.#controller, "Settings")
+        );
+
+        // await this.emulatorSettings.initSettings();
     }
 
     /**

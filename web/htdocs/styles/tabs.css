@@ -1,6 +1,6 @@
 .container .tabs {
     position: relative;
-    width: 35cqw;  /* initial width, before resizing */
+    width: 42cqw;  /* initial width, before resizing */
 
     background-color: rgb(110, 110, 110);
 
@@ -13,6 +13,8 @@
 
     min-width: 10em;
     max-width: 80cqw;
+
+    container-type: size;
 }
 
 @media all and (width <= 900px) {
@@ -36,7 +38,7 @@
 .container .tabs .header {
     position: relative;
     background-color: rgb(110, 110, 110);
-    overflow-y: hidden;
+    width: 100cqw;
 }
 
 .container .tabs .content {
@@ -46,6 +48,11 @@
 }
 
 /******************************************************************/
+
+.container .tabs .header-tabs-container {
+    overflow-y: hidden;
+    width: 100%;
+}
 
 .container .tabs .header-tabs {
     display: flex;

@@ -108,6 +108,10 @@
     width: 15em;
 }
 
+.container .action-properties input[type=checkbox] {
+    text-align: left;
+}
+
 /**********************************************************************************/
 
 .container .action-properties .show-advanced {

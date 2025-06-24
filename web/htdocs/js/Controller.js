@@ -16,6 +16,8 @@ class Controller {
     pyswitch = null;            // PySwitch runner (in browser)
 
     currentConfig = null;       // Currently loaded Configuration instance
+    configFile = null;          // Global configuration (config.py)
+    commSettings = null;        // Global communication settings handler
     
     /**
      * Options:
@@ -48,6 +50,12 @@ class Controller {
         }
 
         options.errorHandler = this;
+
+        this.configFile = new ConfigFile(this);
+        options.configProvider = this.configFile;
+
+        this.commSettings = new CommunicationSettings();
+        options.commSettingsProvider = this.commSettings;
         
         // Set up handlers
         this.ui = new PySwitchUI(this, options);

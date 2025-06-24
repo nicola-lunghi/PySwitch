@@ -1,0 +1,81 @@
+.container .emulator-settings-container {
+    height: 100%;
+    
+    overflow: auto;
+    display: block;
+
+    padding: 1em;
+}
+
+.container .emulator-settings-container .box {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    grid-gap: 0.5em 1em;
+
+    border-radius: 0.3em;
+    
+    padding: 0.5em;
+    margin: 0.1em;
+
+    width: fit-content;
+
+    background-color: lightgray;    
+}
+
+
+.container .emulator-settings-container .box * {
+    font-weight: normal;
+    text-align: left;
+}
+
+.container .emulator-settings-container .box .title {
+    grid-column: 1 / 3;
+    grid-row: 1;
+    font-weight: bold;    
+}
+
+.container .emulator-settings-container .box .comment {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    color: rgb(141 141 141);
+    margin-bottom: 1em;
+    /* font-style: italic; */
+}
+
+.container .emulator-settings-container .box .setting-buttons {
+    grid-column: 1 / 3;
+    margin-top: 1em;
+    text-align: right;
+}
+
+.container .emulator-settings-container .box .label {
+    color: black;
+    grid-column: 1;
+    white-space: pre;
+}
+
+.container .emulator-settings-container .box input {
+    position: relative;
+
+    top: -0.2em;
+    grid-column: 2; 
+}
+
+.container .emulator-settings-container .box input[type="checkbox"] {
+}
+
+.container .emulator-settings-container .box input[type="text"] {
+    width: 4em;
+    font-size: 0.7em;
+}
+
+.container .emulator-settings-container .box input[type="text"].longtext {
+    width: unset;
+    font-size: 0.7em;
+}
+
+/******************************************************************/
+
+.container .emulator-settings-container .setting-buttons > * {
+    margin-left: 0.5em;
+}

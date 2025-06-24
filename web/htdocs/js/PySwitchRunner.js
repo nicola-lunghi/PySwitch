@@ -14,11 +14,11 @@ class PySwitchRunner {
      * Options:
      * {
      *      domNamespace: "pyswitch",        ID prefix for access to DOM elements from Python code. All generated elements will be prefixed with this. Mandatory.
-     *      updateIntervalMillis: 10,        Tick interval in milliseconds. On CircuitPython, the program does as much ticks as it can (in a while True loop),
-     *                                       which in a browser woult block all user interaction, so the ticks are triggered in intervals. Mandatory.
+     *      updateIntervalMillis,
      *      coverage: False                  Measure coverage
-     *      exploreMode: False               Boot PySwitch into explore mode
      *      errorHandler: null               Optional error handler, providing a handle(exc) method
+     *      configProvider: null,            Optional config.py provider, provifing an async get() method
+     *      commSettingsProvider: null,      Optional comm settings provider, provifing an async get() method
      *      messageHandler: null             Optional message handler, providing a message(msg, type) method
      * }
      */
@@ -353,7 +353,7 @@ class PySwitchRunner {
      */
     isRunning() {
         if (!this.#runner) return false;
-        console.log(this.#runner.running)
+        
         return this.#runner.running;
     }
 
@@ -378,25 +378,28 @@ class PySwitchRunner {
 
         // Create runner proxy
         this.#runner = await this.pyodide.runPython(`
+            import json
             from PySwitchRunner import PySwitchRunner
             runner = PySwitchRunner(
                 container_id = "` + this.#containerId + `", 
                 dom_namespace = "` + this.#options.domNamespace + `", 
-                update_interval_ms = "` + this.#options.updateIntervalMillis + `",
                 coverage = ` + (this.#options.coverage ? "True" : "False") + `,
-                explore_mode = ` + (this.#options.exploreMode ? "True" : "False") + `
+                tickInterval = ` + this.#options.updateIntervalMillis + `,
             )
             runner      # Returns the runner as a JS proxy
         `);
 
         const client = ClientFactory.getInstance(await ClientFactory.estimateClient(config));
-            
+        
+        const config_py = this.#options.configProvider ? (await this.#options.configProvider.get()) : {};
+        const comm_settings = this.#options.commSettingsProvider ? (await this.#options.commSettingsProvider.get()) : {};
+
         if (dontTick) {
             // Initialize, but dont run PySwitch
-            this.#runner.init(displayWidth, displayHeight, client);
+            this.#runner.init(displayWidth, displayHeight, client, config_py, comm_settings);
         } else {
             // Run PySwitch!
-            this.#runner.run(displayWidth, displayHeight, client);
+            this.#runner.run(displayWidth, displayHeight, client, config_py, comm_settings);
         }
     }
 
