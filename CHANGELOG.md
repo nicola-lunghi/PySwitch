@@ -5,7 +5,7 @@
     - Added a Rotating MIDI Messages action. This can be used to set up certain scenarios with rotating messages, texts, colors (LED and/or display) etc. Has been added as a side-product of the boomerang support.
 
 ### Emulator 2.4.7.14
-- Metadata updated, new actions added, some optimizations
+- Metadata updated, new actions added, some optimizations, some minor bug fixes
 
 # PySwitch v2.4.6
 - Features:

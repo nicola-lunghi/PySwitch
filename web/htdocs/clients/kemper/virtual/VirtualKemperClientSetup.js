@@ -46,6 +46,7 @@ class VirtualKemperClientSetup {
 
         // Bank preselect
         this.#client.parameters.init({ name: "Bank Presel", keys: new VirtualKemperParameterKeys({ receive: new CCKey(47) }) });
+        this.#client.parameters.get(new CCKey(47)).setValue(null);
         
         // Rig select
         let lastRigId = null;

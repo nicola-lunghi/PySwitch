@@ -101,7 +101,7 @@
 
 .container .action-properties select {
     font-size: 0.88888em;
-    max-width: 8em;
+    /* max-width: 8em; */
 }
 
 .container .action-properties input[type=text] {
@@ -124,4 +124,8 @@
 
 .container .action-properties .parameter-option.parameter-link {
     text-decoration: underline;
+}
+
+.container .action-properties select.parameter-option {
+    max-width: 8em;
 }
