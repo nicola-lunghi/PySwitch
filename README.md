@@ -1,17 +1,17 @@
 # PySwitch MIDI Controller Firmware
 
-This project provides an open source firmware for CircuitPython Microcontroller based MIDI controllers. It can control devices via MIDI based on a 
-generic configuration script. 
+This project provides an open source firmware for CircuitPython Microcontroller based MIDI controllers. It can control devices via MIDI based on a generic configuration script. 
 
-The project has been developed for controling Kemper Profilers, but the framework itself is generic, so it can be adapted for other devices easily.
+The project has been developed for controling Kemper Profilers, but the framework itself is generic, so it can be adapted for other devices easily. Until now, the following devices are supported out of the box:
+
+- Kemper Profilers (Head, Rack, Stage, Player etc.)
+- Boomerang III Phrase Sampler
 
 Features are:
 
 - Program (Foot)switches and expression pedals to send MIDI messages. Each switch or pedal can do any amount of actions. Programming is done by setup scripts or graphically using a MIDI enabled, web based configuration tool, with lots of examples.
 
-- Establishes a bidirectional communication to reflect the states correctly when changed on the Kemper. 
-
-- Compatible with the Kemper Profiler Head, Rack and Player (all Levels)
+- Establishes a bidirectional communication to reflect the states correctly when changed on the Kemper.
 
 - Free MIDI routing capatbilities for MIDI over USB and/or DIN
 
