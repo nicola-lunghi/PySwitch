@@ -33,6 +33,7 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.mappings.looper import *
     from lib.pyswitch.clients.kemper.mappings.pedals import *
     from lib.pyswitch.clients.kemper.mappings.system import *
+    from lib.pyswitch.clients.kemper.mappings.fixed_fx import *
 
 
 class TestKemper(unittest.TestCase):
@@ -175,3 +176,13 @@ class TestKemper(unittest.TestCase):
         self.assertIn("MonVol", MAPPING_MONITOR_VOLUME().name)
         self.assertIn("LoopVol", MAPPING_LOOPER_VOLUME().name)
         self.assertIn("SpaceInt", MAPPING_SPACE_INTENSITY().name)
+
+        self.assertIn("TranspSt", MAPPING_FIXED_TRANSPOSE().name)
+        self.assertIn("FixGateSt", MAPPING_FIXED_GATE().name)
+        self.assertIn("FixCompSt", MAPPING_FIXED_COMP().name)
+        self.assertIn("FixBoost", MAPPING_FIXED_BOOST().name)
+        self.assertIn("FixWah", MAPPING_FIXED_WAH().name)
+        self.assertIn("FixChor", MAPPING_FIXED_CHORUS().name)
+
+        self.assertIn("FixAir", MAPPING_FIXED_AIR().name)
+        self.assertIn("FixTracker", MAPPING_FIXED_DBL_TRACKER().name)

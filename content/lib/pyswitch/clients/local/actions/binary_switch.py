@@ -44,7 +44,8 @@ def BINARY_SWITCH(mapping,
             display_dim_factor_on = display_dim_factor_on,
             display_dim_factor_off = display_dim_factor_off,
             led_brightness_on = led_brightness_on,
-            led_brightness_off = led_brightness_off
+            led_brightness_off = led_brightness_off,
+            use_internal_state = use_internal_state
         ),
         "mode": mode,
         "display": display,

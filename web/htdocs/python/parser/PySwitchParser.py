@@ -271,7 +271,7 @@ class PySwitchParser:
                 "importPath": "pyswitch.colors"
             },
 
-            # RIG_SELECT display modes
+            # RIG_SELECT display modes (TODO move to client code)
             {
                 "name": "RIG_SELECT_DISPLAY_CURRENT_RIG",
                 "importPath": "pyswitch.clients.kemper.actions.rig_select"
@@ -279,6 +279,46 @@ class PySwitchParser:
             {
                 "name": "RIG_SELECT_DISPLAY_TARGET_RIG",
                 "importPath": "pyswitch.clients.kemper.actions.rig_select"
+            },
+
+            # Fixed FX slot IDs (TODO move to client code)
+            {
+                "name": "FIXED_SLOT_ID_TRANSPOSE",
+                "importPath": "pyswitch.clients.kemper.actions.fixed_fx"
+            },
+            {
+                "name": "FIXED_SLOT_ID_GATE",
+                "importPath": "pyswitch.clients.kemper.actions.fixed_fx"
+            },
+            {
+                "name": "FIXED_SLOT_ID_COMP",
+                "importPath": "pyswitch.clients.kemper.actions.fixed_fx"
+            },
+            {
+                "name": "FIXED_SLOT_ID_BOOST",
+                "importPath": "pyswitch.clients.kemper.actions.fixed_fx"
+            },
+            {
+                "name": "FIXED_SLOT_ID_WAH",
+                "importPath": "pyswitch.clients.kemper.actions.fixed_fx"
+            },
+            {
+                "name": "FIXED_SLOT_ID_CHORUS",
+                "importPath": "pyswitch.clients.kemper.actions.fixed_fx"
+            },
+            {
+                "name": "FIXED_SLOT_ID_AIR",
+                "importPath": "pyswitch.clients.kemper.actions.fixed_fx"
+            },
+            {
+                "name": "FIXED_SLOT_ID_DBL_TRACKER",
+                "importPath": "pyswitch.clients.kemper.actions.fixed_fx"
+            },
+
+            # Effect slot definitions (TODO move to client code)
+            {
+                "name": "KemperEffectSlot",
+                "importPath": "pyswitch.clients.kemper"
             },
 
             # Callbacks
@@ -291,12 +331,6 @@ class PySwitchParser:
             {
                 "name": "PushButtonAction",
                 "importPath": "pyswitch.controller.actions"
-            },
-
-            # Effect slot definitions
-            {
-                "name": "KemperEffectSlot",
-                "importPath": "pyswitch.clients.kemper"
             },
 
             # HID Keycodes

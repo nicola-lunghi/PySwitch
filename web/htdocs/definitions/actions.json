@@ -773,6 +773,53 @@
                 "importPath": "pyswitch.clients.kemper.actions.amp"
             },
             {
+                "name": "FIXED_EFFECT_STATE",
+                "parameters": [
+                    {
+                        "name": "slot",
+                        "default": null,
+                        "comment": "Fixed Effect Slot ID"
+                    },
+                    {
+                        "name": "text",
+                        "default": "None",
+                        "comment": "Text (set to None for auto)"
+                    },
+                    {
+                        "name": "display",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "color",
+                        "default": "None",
+                        "comment": "Color (set to None for auto)"
+                    },
+                    {
+                        "name": "id",
+                        "default": "False",
+                        "comment": null
+                    },
+                    {
+                        "name": "use_leds",
+                        "default": "True",
+                        "comment": null
+                    },
+                    {
+                        "name": "enable_callback",
+                        "default": "None",
+                        "comment": null
+                    },
+                    {
+                        "name": "mode",
+                        "default": "PushButtonAction.HOLD_MOMENTARY",
+                        "comment": null
+                    }
+                ],
+                "comment": "Action to control the on/off state of all fixed FX slots.",
+                "importPath": "pyswitch.clients.kemper.actions.fixed_fx"
+            },
+            {
                 "name": "LOOPER_REC_PLAY_OVERDUB",
                 "parameters": [
                     {

@@ -17,6 +17,7 @@ class VirtualKemperClientUI {
         this.#container.empty();
 
         this.#buildGeneral();
+        this.#buildFixedFX();
         this.#buildEffectSlots();
         this.#buildTuner();
 
@@ -273,6 +274,57 @@ class VirtualKemperClientUI {
         this.#client.parameters.get(new NRPNKey([0, 3])).addChangeCallback(async function(param, value) {
             rigDate.text(value);
         });
+    }
+
+    /**
+     * Build fixed FX controls
+     */
+    #buildFixedFX() {
+        const that = this;
+
+        function addStateInput(name, address) {
+            let input = null;
+
+            const ret = [
+                $('<div class="label" />')
+                .text(name),
+
+                input = $('<input type="checkbox" autocomplete="off">')
+                .prop('checked', that.#client.parameters.get(new NRPNKey([5, address])).value == 1)
+                .on('change', function() {
+                    try {
+                        that.#client.parameters.get(new NRPNKey([5, address])).setValue(this.checked ? 1 : 0)
+                    } catch (e) {
+                        console.error(e);
+                    } 
+                })
+            ];
+
+            async function cb(param, value) {
+                input.prop('checked', !!value);
+            }
+
+            that.#client.parameters.get(new NRPNKey([5, address])).addChangeCallback(cb);
+
+            return ret;
+        }
+
+        this.#createBox(
+            "Fixed Effect Slots",
+            [].concat(
+                addStateInput("Transpose", 1),
+                addStateInput("Noise Gate", 6),
+                addStateInput("Compressor", 11),
+                addStateInput("Pure Booster", 16),
+                addStateInput("Wah", 21),
+                addStateInput("Vintage Chorus", 26),
+                
+                // [ $('<hr/>') ],
+                
+                addStateInput("Air Chorus", 36),
+                addStateInput("Double Tracker", 41)
+            )
+        );
     }
 
     /**

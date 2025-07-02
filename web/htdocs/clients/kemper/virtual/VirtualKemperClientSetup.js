@@ -16,6 +16,7 @@ class VirtualKemperClientSetup {
         this.#setupTempo();
         this.#setupTuner();
         this.#setupMorph();
+        this.#setupFixedFX();
 
         // Default values
         this.#client.parameters.initDefault({ value: 0 });         // Default for numeric parameters
@@ -163,6 +164,23 @@ class VirtualKemperClientSetup {
                 that.#client.morph.triggerButton();
             }
         } });
+    }
+
+    /**
+     * Sets up fixed FX params
+     */
+    #setupFixedFX() {
+        // Pre
+        this.#client.parameters.init({ name: "Transpose State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([5, 1]) }), value: 0 });    // Off
+        this.#client.parameters.init({ name: "Fixed Gate State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([5, 6]) }), value: 0 });    // Off
+        this.#client.parameters.init({ name: "Fixed Comp State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([5, 11]) }), value: 0 });    // Off
+        this.#client.parameters.init({ name: "Fixed Boost State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([5, 16]) }), value: 0 });    // Off
+        this.#client.parameters.init({ name: "Fixed Wah State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([5, 21]) }), value: 0 });    // Off
+        this.#client.parameters.init({ name: "Fixed VChorus State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([5, 26]) }), value: 0 });    // Off
+        
+        // Post
+        this.#client.parameters.init({ name: "Fixed Air Chorus State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([5, 36]) }), value: 0 });    // Off
+        this.#client.parameters.init({ name: "Fixed DblTracker State", keys: new VirtualKemperParameterKeys({ send: new NRPNKey([5, 41]) }), value: 0 });    // Off
     }
 
     /**

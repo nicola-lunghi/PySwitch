@@ -26,12 +26,13 @@ class KemperFunctionMeta extends FunctionMeta {
             case "EFFECT_BUTTON": return this.#getDisplayNameEffectButton(actionCallProxy);
             case "EFFECT_STATE": return this.#getDisplayNameEffectState(actionCallProxy);
             case "EFFECT_STATE_EXT": return this.#getDisplayNameEffectStateExt(actionCallProxy);
+            case "FIXED_EFFECT_STATE": return this.#getDisplayNameFixedEffectState(actionCallProxy);
             case "LOOPER_REC_PLAY_OVERDUB": return "Looper Rec|Play|OD";
             case "ENCODER_BPM": return "Tempo (BPM)";
             case "ENCODER_RIG_TRANSPOSE": return "Rig Transpose";
             case "ENCODER_BANK_SELECT": return "Bank Select";
         }
-        
+
         return super.getShortDisplayName(actionCallProxy);
     }
 
@@ -169,6 +170,28 @@ class KemperFunctionMeta extends FunctionMeta {
         }
 
         return "Effect State";
+    }
+
+    /**
+     * Special implementation for effect state (fixed fx)
+     */
+    #getDisplayNameFixedEffectState(actionCallProxy = null) {
+        const slot_id = this.getArgument(actionCallProxy, "slot");
+        if (actionCallProxy && slot_id) {
+            switch (slot_id.value) {
+                case "FIXED_SLOT_ID_TRANSPOSE": return "Transpose";
+                case "FIXED_SLOT_ID_GATE": return "Gate (fixed)";
+                case "FIXED_SLOT_ID_COMP": return "Compressor (fixed)";
+                case "FIXED_SLOT_ID_BOOST": return "Booster (fixed)";
+                case "FIXED_SLOT_ID_WAH": return "Wah (fixed)";
+                case "FIXED_SLOT_ID_CHORUS": return "Chorus (fixed)";
+
+                case "FIXED_SLOT_ID_AIR": return "Air Chorus (fixed)";
+                case "FIXED_SLOT_ID_DBL_TRACKER": return "Doubler (fixed)";
+            }
+        }
+
+        return "Fixed Effect State";
     }
 
     /**

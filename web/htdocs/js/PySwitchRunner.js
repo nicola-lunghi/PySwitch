@@ -190,6 +190,7 @@ class PySwitchRunner {
             this.#loadModule("pyswitch/clients/kemper/actions/tuner.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/actions/amp.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/actions/bank_select_encoder.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/actions/fixed_fx.py", circuitpyPath),
 
             this.#loadModule("pyswitch/clients/kemper/mappings/__init__.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/mappings/amp.py", circuitpyPath),
@@ -206,6 +207,7 @@ class PySwitchRunner {
             this.#loadModule("pyswitch/clients/kemper/mappings/tempo.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/mappings/tempo_bpm.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/mappings/system.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/mappings/fixed_fx.py", circuitpyPath),
             
             this.#loadModule("pyswitch/clients/kemper/callbacks/__init__.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/callbacks/tempo_bpm.py", circuitpyPath),

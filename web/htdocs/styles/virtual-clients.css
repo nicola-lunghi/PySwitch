@@ -2,7 +2,10 @@
     height: 100%;
     
     overflow: auto;
-    display: block;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
 
     /* background-color: darkgray; */
     padding: 1em;
@@ -28,6 +31,8 @@
     width: fit-content;
 
     background-color: lightgray;    
+
+    
 }
 
 
@@ -52,6 +57,7 @@
 
     top: -0.2em;
     grid-column: 2; 
+    height: fit-content;
 }
 
 .container .virtual-client .box input[type="checkbox"] {

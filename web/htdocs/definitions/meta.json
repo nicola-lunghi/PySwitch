@@ -612,6 +612,52 @@
             },
 
             {
+                "entityName": "FIXED_EFFECT_STATE",
+                "category": "effects",
+                "target": "AdafruitSwitch",
+                "parameters": [
+                    {
+                        "name": "slot",
+                        "type": "select",
+                        "values": [
+                            {
+                                "name": "Transpose",
+                                "value": "FIXED_SLOT_ID_TRANSPOSE"
+                            },
+                            {
+                                "name": "Noise Gate",
+                                "value": "FIXED_SLOT_ID_GATE"
+                            },
+                            {
+                                "name": "Compressor",
+                                "value": "FIXED_SLOT_ID_COMP"
+                            },
+                            {
+                                "name": "Pure Booster",
+                                "value": "FIXED_SLOT_ID_BOOST"
+                            },
+                            {
+                                "name": "Wah Wah",
+                                "value": "FIXED_SLOT_ID_WAH"
+                            },
+                            {
+                                "name": "Vintage Chorus",
+                                "value": "FIXED_SLOT_ID_CHORUS"
+                            },
+                            {
+                                "name": "Air Chorus (post)",
+                                "value": "FIXED_SLOT_ID_AIR"
+                            },
+                            {
+                                "name": "Double Tracker (post)",
+                                "value": "FIXED_SLOT_ID_DBL_TRACKER"
+                            }
+                        ]
+                    }
+                ]
+            },
+
+            {
                 "entityName": "ENCODER_BPM",
                 "category": "other",
                 "target": "AdafruitEncoder",

@@ -103,6 +103,54 @@
                 "importPath": "pyswitch.clients.kemper.mappings.rig"
             },
             {
+                "name": "MAPPING_FIXED_TRANSPOSE",
+                "parameters": [],
+                "comment": "Fixed FX: Transpose on/off",
+                "importPath": "pyswitch.clients.kemper.mappings.fixed_fx"
+            },
+            {
+                "name": "MAPPING_FIXED_GATE",
+                "parameters": [],
+                "comment": "Fixed FX: Gate on/off",
+                "importPath": "pyswitch.clients.kemper.mappings.fixed_fx"
+            },
+            {
+                "name": "MAPPING_FIXED_COMP",
+                "parameters": [],
+                "comment": "Fixed FX: Compressor on/off",
+                "importPath": "pyswitch.clients.kemper.mappings.fixed_fx"
+            },
+            {
+                "name": "MAPPING_FIXED_BOOST",
+                "parameters": [],
+                "comment": "Fixed FX: Boost on/off",
+                "importPath": "pyswitch.clients.kemper.mappings.fixed_fx"
+            },
+            {
+                "name": "MAPPING_FIXED_WAH",
+                "parameters": [],
+                "comment": "Fixed FX: Wah on/off",
+                "importPath": "pyswitch.clients.kemper.mappings.fixed_fx"
+            },
+            {
+                "name": "MAPPING_FIXED_CHORUS",
+                "parameters": [],
+                "comment": "Fixed FX: Vintage Chorus on/off",
+                "importPath": "pyswitch.clients.kemper.mappings.fixed_fx"
+            },
+            {
+                "name": "MAPPING_FIXED_AIR",
+                "parameters": [],
+                "comment": "Fixed FX: Air Chorus on/off",
+                "importPath": "pyswitch.clients.kemper.mappings.fixed_fx"
+            },
+            {
+                "name": "MAPPING_FIXED_DBL_TRACKER",
+                "parameters": [],
+                "comment": "Fixed FX: Double Tracker on/off",
+                "importPath": "pyswitch.clients.kemper.mappings.fixed_fx"
+            },
+            {
                 "name": "MAPPING_LOOPER_REC_PLAY_OVERDUB",
                 "parameters": [],
                 "comment": null,
