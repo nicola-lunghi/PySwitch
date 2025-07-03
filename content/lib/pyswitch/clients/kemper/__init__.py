@@ -320,6 +320,9 @@ class KemperEffectSlot:
     EFFECT_SLOT_ID_DLY = const(6)
     EFFECT_SLOT_ID_REV = const(7)
 
+    EFFECT_SLOT_ID_DLY_NO_SPILL = const(8)
+    EFFECT_SLOT_ID_REV_NO_SPILL = const(9)
+
     EFFECT_SLOT_NAME = (
         "A",
         "B",
@@ -329,7 +332,10 @@ class KemperEffectSlot:
         "X",
         "MOD",
         "DLY",
-        "REV"
+        "REV",
+
+        "DLYns",
+        "REVns"
     )
 
     # CC Address for Effect Slot enable/disable. Order has to match the one defined above!
@@ -340,9 +346,12 @@ class KemperEffectSlot:
         const(20),    # Slot D
 
         const(22),    # Slot X
-        const(24),    # Slot MOD        
-        const(27),    # Slot DLY (with Spillover)        
-        const(29)     # Slot REV (with Spillover)
+        const(24),    # Slot MOD
+        const(27),    # Slot DLY (with Spillover)
+        const(29),    # Slot REV (with Spillover)
+
+        const(26),    # Slot DLY (without Spillover)
+        const(28)     # Slot REV (without Spillover)
     )
 
     # Slot address pages. Order has to match the one defined above!
@@ -354,6 +363,9 @@ class KemperEffectSlot:
 
         const(0x38),   # Slot X
         const(0x3a),   # Slot MOD
+        const(0x3c),   # Slot DLY
+        const(0x3d),   # Slot REV
+
         const(0x3c),   # Slot DLY
         const(0x3d)    # Slot REV
     )    
@@ -368,6 +380,9 @@ class KemperEffectSlot:
 
         const(0x6f),   # Slot X
         const(0x71),   # Slot MOD
+        const(0x72),   # Slot DLY
+        const(0x73),   # Slot REV
+
         const(0x72),   # Slot DLY
         const(0x73)    # Slot REV
     ]   

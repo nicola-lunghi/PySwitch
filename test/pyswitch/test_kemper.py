@@ -58,10 +58,13 @@ class TestKemper(unittest.TestCase):
         self.assertEqual(KemperEffectSlot.EFFECT_SLOT_ID_MOD, 5)
         self.assertEqual(KemperEffectSlot.EFFECT_SLOT_ID_DLY, 6)
         self.assertEqual(KemperEffectSlot.EFFECT_SLOT_ID_REV, 7)
+        self.assertEqual(KemperEffectSlot.EFFECT_SLOT_ID_DLY_NO_SPILL, 8)
+        self.assertEqual(KemperEffectSlot.EFFECT_SLOT_ID_REV_NO_SPILL, 9)
 
-        self.assertEqual(len(KemperEffectSlot.CC_EFFECT_SLOT_ENABLE), 8)
-        self.assertEqual(len(KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE), 8)
-        self.assertEqual(len(KemperEffectSlot.NRPN_FREEZE_SLOT_PARAMETER_ADDRESSES), 8)
+        self.assertEqual(len(KemperEffectSlot.EFFECT_SLOT_NAME), 10)
+        self.assertEqual(len(KemperEffectSlot.CC_EFFECT_SLOT_ENABLE), 10)
+        self.assertEqual(len(KemperEffectSlot.NRPN_SLOT_ADDRESS_PAGE), 10)
+        self.assertEqual(len(KemperEffectSlot.NRPN_FREEZE_SLOT_PARAMETER_ADDRESSES), 10)
 
 
 ##########################################################################################################
@@ -76,6 +79,8 @@ class TestKemper(unittest.TestCase):
         self.assertIn("State MOD", KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
         self.assertIn("State DLY", KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
         self.assertIn("State REV", KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
+        self.assertIn("State DLY", KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_DLY_NO_SPILL).name)
+        self.assertIn("State REV", KemperMappings.EFFECT_STATE(KemperEffectSlot.EFFECT_SLOT_ID_REV_NO_SPILL).name)
 
         self.assertIn("Type A", KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
         self.assertIn("Type B", KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
@@ -85,6 +90,8 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Type MOD", KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
         self.assertIn("Type DLY", KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
         self.assertIn("Type REV", KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
+        self.assertIn("Type DLY", KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_DLY_NO_SPILL).name)
+        self.assertIn("Type REV", KemperMappings.EFFECT_TYPE(KemperEffectSlot.EFFECT_SLOT_ID_REV_NO_SPILL).name)
 
         self.assertIn("Speed A", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
         self.assertIn("Speed B", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
@@ -94,6 +101,8 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Speed MOD", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
         self.assertIn("Speed DLY", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
         self.assertIn("Speed REV", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
+        self.assertIn("Speed DLY", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_DLY_NO_SPILL).name)
+        self.assertIn("Speed REV", MAPPING_ROTARY_SPEED(KemperEffectSlot.EFFECT_SLOT_ID_REV_NO_SPILL).name)
 
         self.assertIn("Freeze A", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
         self.assertIn("Freeze B", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
@@ -103,6 +112,8 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Freeze MOD", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
         self.assertIn("Freeze DLY", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
         self.assertIn("Freeze REV", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
+        self.assertIn("Freeze DLY", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_DLY_NO_SPILL).name)
+        self.assertIn("Freeze REV", MAPPING_FREEZE(KemperEffectSlot.EFFECT_SLOT_ID_REV_NO_SPILL).name)
 
         self.assertIn("Mix A", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_A).name)
         self.assertIn("Mix B", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_B).name)
@@ -112,6 +123,8 @@ class TestKemper(unittest.TestCase):
         self.assertIn("Mix MOD", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_MOD).name)
         self.assertIn("Mix DLY", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_DLY).name)
         self.assertIn("Mix REV", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_REV).name)
+        self.assertIn("Mix DLY", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_DLY_NO_SPILL).name)
+        self.assertIn("Mix REV", MAPPING_DLY_REV_MIX(KemperEffectSlot.EFFECT_SLOT_ID_REV_NO_SPILL).name)
 
         self.assertIn("Button 1", MAPPING_EFFECT_BUTTON(1).name)
         self.assertIn("Button 2", MAPPING_EFFECT_BUTTON(2).name)

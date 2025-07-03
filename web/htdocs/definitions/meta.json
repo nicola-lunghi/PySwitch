@@ -199,12 +199,20 @@
                                 "value": "KemperEffectSlot.EFFECT_SLOT_ID_MOD"
                             },
                             {
-                                "name": "Slot DLY",
+                                "name": "Slot DLY (with spillover)",
                                 "value": "KemperEffectSlot.EFFECT_SLOT_ID_DLY"
                             },
                             {
-                                "name": "Slot REV",
+                                "name": "Slot REV (with spillover)",
                                 "value": "KemperEffectSlot.EFFECT_SLOT_ID_REV"
+                            },
+                            {
+                                "name": "Slot DLY (no spillover)",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_DLY_NO_SPILL"
+                            },
+                            {
+                                "name": "Slot REV (no spillover)",
+                                "value": "KemperEffectSlot.EFFECT_SLOT_ID_REV_NO_SPILL"
                             }
                         ]
                     },

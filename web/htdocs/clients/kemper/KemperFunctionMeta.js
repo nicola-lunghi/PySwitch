@@ -162,6 +162,9 @@ class KemperFunctionMeta extends FunctionMeta {
                     case "KemperEffectSlot.EFFECT_SLOT_ID_MOD": return "MOD";
                     case "KemperEffectSlot.EFFECT_SLOT_ID_DLY": return "DLY";
                     case "KemperEffectSlot.EFFECT_SLOT_ID_REV": return "REV";
+
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_DLY_NO_SPILL": return "DLY";
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_REV_NO_SPILL": return "REV";
                 }
                 return "?";
             }
@@ -211,6 +214,9 @@ class KemperFunctionMeta extends FunctionMeta {
                     case "KemperEffectSlot.EFFECT_SLOT_ID_MOD": return "MOD";
                     case "KemperEffectSlot.EFFECT_SLOT_ID_DLY": return "DLY";
                     case "KemperEffectSlot.EFFECT_SLOT_ID_REV": return "REV";
+
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_DLY_NO_SPILL": return "DLY";
+                    case "KemperEffectSlot.EFFECT_SLOT_ID_REV_NO_SPILL": return "REV";
                 }
                 return "?";
             }
