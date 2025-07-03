@@ -4,6 +4,7 @@
     - Added support for the Boomerang III Phrase Sampler (Added generic Program Change Mapping and an example, thanks to @manderscripts)
     - Added some parameters to the "Other Parameter" action which is now called "Other Paremeter with Feedback" (which it is: If you just want to send messages, there is the new "Rotating MIDI Messages" action you can use with just one message)
     - Added a Rotating MIDI Messages action. This can be used to set up certain scenarios with rotating messages, texts, colors (LED and/or display) etc. Has been added as a side-product of the boomerang support.
+    - Added new effect slot IDs which control the DLY and REV slots without spillover
 
 - Bugfix: use_internal_state parameter of BINARY_SWITCH action was not working
 
