@@ -2160,6 +2160,11 @@
                         "comment": "Text for the main display parameter's label. Can contain {val} which will be replaced with the current parameter value (percentage in range [0..100])"
                     },
                     {
+                        "name": "preview_text_callback",
+                        "default": "None",
+                        "comment": "Text callback for the preview display. Signature: (value:int) => text:string with value is in the mapping range)"
+                    },
+                    {
                         "name": "color",
                         "default": "Colors.LIGHT_GREEN",
                         "comment": null

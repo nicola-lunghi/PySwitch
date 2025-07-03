@@ -11,8 +11,12 @@ from display import DISPLAY_HEADER_2
 from display import DISPLAY_FOOTER_1
 from display import DISPLAY_FOOTER_2
 from display import DISPLAY_RIG_NAME
+from pyswitch.clients.kemper import convert_volume
 from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
 
+# The rig volume goes to +12, so we need to wrap the default volume conversion function.
+def _convert_volume(value):
+    return convert_volume(value, 12)
 
 Inputs = [
     {
@@ -57,7 +61,9 @@ Inputs = [
                 display = DISPLAY_FOOTER_1, 
                 change_display = DISPLAY_RIG_NAME, 
                 text = 'Leiser', 
-                color = Colors.PURPLE
+                preview_text_callback = _convert_volume, 
+                color = Colors.PURPLE, 
+                led_brightness = 0.15
             ),
             
         ],
@@ -74,7 +80,9 @@ Inputs = [
                 display = DISPLAY_FOOTER_2, 
                 change_display = DISPLAY_RIG_NAME, 
                 text = 'Lauter', 
-                color = Colors.PURPLE
+                preview_text_callback = _convert_volume, 
+                color = Colors.PURPLE, 
+                led_brightness = 0.15
             ),
             
         ],

@@ -93,13 +93,19 @@ class ValuePreview:
                         stay = False,                  # If True, the value will not disappear until reset is called.
                         timeout_millis = 1500,         # Set to a value to let the preview disappear after that amount of time. Set to None or 0 for no timeout.
                         blink_interval_millis = None,  # Set to a value for blinking. Set to None or 0 for no blinking.
-                        blink_color = (200, 200, 200)  # Blinking color
+                        blink_color = (200, 200, 200), # Blinking color
+                        text_callback = None           # Text callback (optional, signature: (value:int) => text:string with value is in the mapping range)
         ):
-        prefix = f"{ mapping.name }: " if mapping.name else ""
         val = round(value * 100 / max_value)
+
+        if text_callback:
+            text = text_callback(val)
+        else:
+            prefix = f"{ mapping.name }: " if mapping.name else ""
+            text = f"{ prefix }{ str(val) }%"
         
         self.preview(
-            text = f"{ prefix }{ str(val) }%",
+            text = text,
             client = client,
             stay = stay,
             timeout_millis = timeout_millis,

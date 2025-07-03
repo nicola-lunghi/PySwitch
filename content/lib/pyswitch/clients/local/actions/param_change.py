@@ -17,6 +17,7 @@ def PARAMETER_UP_DOWN(mapping,
                       change_display = None,             # Can be assigned to an additonal display label which is used to show the changed values for a period of time.
                       change_timeout_millis = 1500,      # Amount of time the value is shown in the change display, if change_display is set.
                       text = "{val}%",                   # Text for the main display parameter's label. Can contain {val} which will be replaced with the current parameter value (percentage in range [0..100])
+                      preview_text_callback = None,      # Text callback for the preview display. Signature: (value:int) => text:string with value is in the mapping range)
                       color = Colors.LIGHT_GREEN, 
                       id = False, 
                       use_leds = True,
@@ -29,6 +30,7 @@ def PARAMETER_UP_DOWN(mapping,
             offset = offset,
             max_value = max_value,
             text = text,
+            preview_text_callback = preview_text_callback,
             color = color,
             led_brightness = led_brightness,
             change_display = change_display,
@@ -49,6 +51,7 @@ class _ParameterChangeCallback(Callback):
                  max_value,
                  color, 
                  text, 
+                 preview_text_callback,
                  led_brightness,
                  change_display,
                  change_timeout_millis,
@@ -62,6 +65,7 @@ class _ParameterChangeCallback(Callback):
         self._led_brightness = led_brightness
         self._color = color
         self._text = text
+        self._preview_text_callback = preview_text_callback
         
         if change_display:
             from ....controller.preview import ValuePreview
@@ -114,7 +118,8 @@ class _ParameterChangeCallback(Callback):
                 mapping = self._mapping,
                 value = v,
                 max_value = self._max_value,
-                timeout_millis = self.__change_timeout_millis
+                timeout_millis = self.__change_timeout_millis,
+                text_callback = self._preview_text_callback
             )
 
         self.__pushed = True
