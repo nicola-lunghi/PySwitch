@@ -11,7 +11,7 @@ from display import DISPLAY_HEADER_2
 from display import DISPLAY_FOOTER_1
 from display import DISPLAY_FOOTER_2
 from display import DISPLAY_RIG_NAME
-from pyswitch.clients.kemper import convert_volume
+from pyswitch.clients.kemper.callbacks.convert_volume import convert_volume
 from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
 
 # The rig volume goes to +12, so we need to wrap the default volume conversion function.

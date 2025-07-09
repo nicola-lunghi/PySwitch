@@ -211,6 +211,7 @@ class PySwitchRunner {
             
             this.#loadModule("pyswitch/clients/kemper/callbacks/__init__.py", circuitpyPath),
             this.#loadModule("pyswitch/clients/kemper/callbacks/tempo_bpm.py", circuitpyPath),
+            this.#loadModule("pyswitch/clients/kemper/callbacks/convert_volume.py", circuitpyPath),
 
             this.#loadModule("pyswitch/clients/local/__init__.py", circuitpyPath),
             

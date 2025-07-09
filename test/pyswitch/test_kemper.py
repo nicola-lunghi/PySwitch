@@ -35,6 +35,8 @@ with patch.dict(sys.modules, {
     from lib.pyswitch.clients.kemper.mappings.system import *
     from lib.pyswitch.clients.kemper.mappings.fixed_fx import *
 
+    from lib.pyswitch.clients.kemper.callbacks.convert_volume import *
+
 
 class TestKemper(unittest.TestCase):
 
@@ -199,3 +201,33 @@ class TestKemper(unittest.TestCase):
 
         self.assertIn("FixAir", MAPPING_FIXED_AIR().name)
         self.assertIn("FixTracker", MAPPING_FIXED_DBL_TRACKER().name)
+
+
+##########################################################################################################
+
+
+    def test_convert_volume(self):
+        # No offset
+        self._test_convert_volume(0, 0, "-94.9dB")
+        self._test_convert_volume(30, 0, "-16.8dB")
+        self._test_convert_volume(40, 0, "-14.4dB")
+        self._test_convert_volume(50, 0, "-12.0dB")
+        self._test_convert_volume(60, 0, "-9.6dB")
+        self._test_convert_volume(70, 0, "-7.2dB")
+        self._test_convert_volume(80, 0, "-4.8dB")
+        self._test_convert_volume(90, 0, "-2.4dB")
+        self._test_convert_volume(100, 0, "0.0dB")
+
+        # With offset
+        self._test_convert_volume(0, 12, "-82.9dB")
+        self._test_convert_volume(30, 12, "-4.8dB")
+        self._test_convert_volume(40, 12, "-2.4dB")
+        self._test_convert_volume(50, 12, "0.0dB")
+        self._test_convert_volume(60, 12, "+2.4dB")
+        self._test_convert_volume(70, 12, "+4.8dB")
+        self._test_convert_volume(80, 12, "+7.2dB")
+        self._test_convert_volume(90, 12, "+9.6dB")
+        self._test_convert_volume(100, 12, "+12.0dB")
+
+    def _test_convert_volume(self, value, offset, exp_result):
+        self.assertEqual(convert_volume(value, offset), exp_result)
