@@ -19,15 +19,15 @@ def _convert_volume(value):
 Inputs = [
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
-        "actions": [],
-        "actionsHold": [
+        "actions": [
             TUNER_MODE(
                 display = DISPLAY_HEADER_1, 
-                use_leds = False, 
+                color = Colors.WHITE, 
                 text = 'Tuner'
             ),
             
         ],
+        "actionsHold": [],
         
     },
     {
