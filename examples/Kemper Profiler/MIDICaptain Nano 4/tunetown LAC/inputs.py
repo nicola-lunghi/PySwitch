@@ -1,23 +1,41 @@
-from pyswitch.clients.kemper.actions.rig_volume_boost import RIG_VOLUME_BOOST
-from pyswitch.clients.kemper.actions.morph import MORPH_DISPLAY
-from pyswitch.clients.kemper.actions.effect_state import EFFECT_STATE
+from pyswitch.clients.kemper.actions.effect_state_extended_names import EFFECT_STATE_EXT
 from pyswitch.clients.kemper.actions.tuner import TUNER_MODE
+from pyswitch.clients.local.actions.param_change import PARAMETER_UP_DOWN
 from pyswitch.colors import Colors
 from pyswitch.clients.kemper import KemperEffectSlot
+from pyswitch.clients.kemper.mappings.rig import MAPPING_RIG_VOLUME
 from display import DISPLAY_HEADER_1
 from display import DISPLAY_HEADER_2
 from display import DISPLAY_FOOTER_1
 from display import DISPLAY_FOOTER_2
+from display import DISPLAY_RIG_NAME
+from pyswitch.clients.kemper.callbacks.convert_volume import convert_volume
 from pyswitch.hardware.devices.pa_midicaptain_nano_4 import *
 
+# The rig volume goes to +12, so we need to wrap the default volume conversion function.
+def _convert_volume(value):
+    return convert_volume(value, 12)
 
 Inputs = [
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_1,
+        "actions": [],
+        "actionsHold": [
+            TUNER_MODE(
+                display = DISPLAY_HEADER_1, 
+                use_leds = False, 
+                text = 'Tuner'
+            ),
+            
+        ],
+        
+    },
+    {
+        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_2,
         "actions": [
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY, 
-                display = DISPLAY_HEADER_1
+            EFFECT_STATE_EXT(
+                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B, 
+                display = DISPLAY_HEADER_2
             ),
             
         ],
@@ -25,25 +43,18 @@ Inputs = [
         
     },
     {
-        "assignment": PA_MIDICAPTAIN_NANO_SWITCH_2,
-        "actions": [
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD, 
-                display = DISPLAY_HEADER_2
-            ),
-            
-        ],
-        
-    },
-    {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_A,
         "actions": [
-            TUNER_MODE(
+            PARAMETER_UP_DOWN(
+                mapping = MAPPING_RIG_VOLUME(), 
+                offset = -1024, 
+                repeat_interval_millis = 40, 
                 display = DISPLAY_FOOTER_1, 
-                text = 'Tuner'
-            ),
-            MORPH_DISPLAY(
-                text = 'Morph'
+                change_display = DISPLAY_RIG_NAME, 
+                text = 'Leiser', 
+                preview_text_callback = _convert_volume, 
+                color = Colors.PURPLE, 
+                led_brightness = 0.15
             ),
             
         ],
@@ -53,11 +64,16 @@ Inputs = [
     {
         "assignment": PA_MIDICAPTAIN_NANO_SWITCH_B,
         "actions": [
-            RIG_VOLUME_BOOST(
-                boost_volume = 0.625, 
+            PARAMETER_UP_DOWN(
+                mapping = MAPPING_RIG_VOLUME(), 
+                offset = 1024, 
+                repeat_interval_millis = 40, 
                 display = DISPLAY_FOOTER_2, 
-                color = Colors.RED, 
-                text = '+3dB'
+                change_display = DISPLAY_RIG_NAME, 
+                text = 'Lauter', 
+                preview_text_callback = _convert_volume, 
+                color = Colors.PURPLE, 
+                led_brightness = 0.15
             ),
             
         ],
