@@ -257,6 +257,9 @@ class MockAnalogAction:
     def process(self, value):
         self.process_calls.append(value)
 
+    def reset(self):
+        pass
+
 
 ##################################################################################################################################
 
@@ -277,6 +280,8 @@ class MockEncoderAction(Updateable):
     def process(self, position):
         self.process_calls.append(position)
 
+    def reset(self):
+        pass
 
 ##################################################################################################################################
 
@@ -456,3 +461,5 @@ class MockController(Updater):
         self.led_driver = MockNeoPixelDriver()
         self.led_driver.init(num_leds)
 
+    def reset_actions(self):
+        pass

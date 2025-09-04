@@ -1,3 +1,15 @@
+# PySwitch v2.4.8
+- Bug fixes:
+    - Reset memory of actions after page change (this guarantees correct LED states). Came up with the @GlanzGuitar example, which contained a workaround for this issue.
+    - Routing of external MIDI messages: Invalid incoming messages have been crashing the device sometimes. Now, messages without a valid status byte will not be forwarded. (@CurryFlurry)
+
+- Examples:
+    - Added @GlanzGuitar example (with removed workarounds)
+
+### Emulator 2.4.8.15
+- Bug Fixes:
+    - Fixed the "current is not defined" bug in the display editor for display callbacks
+
 # PySwitch v2.4.7
 - Features
     - Added an action to switch the new fixed effect slots of the Kemper MkII products on/off with bidirectional feedback from the Kemper. There is a simple demo example in the examples/Kemper/MIDICaptain 10 folder, and the states are also included in the Virtual Kemper.

@@ -246,6 +246,8 @@ class TestEncoderAction(unittest.TestCase):
         appl = MockController()
         action.init(appl)
 
+        action.reset()
+
         self.assertEqual(action.enabled, True)
         self.assertEqual(action._mapping, mapping)
         

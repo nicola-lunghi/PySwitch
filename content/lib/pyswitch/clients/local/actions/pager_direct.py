@@ -25,6 +25,7 @@ class DirectPagerProxy(Action):
         self.__pager.current_page_index = self.__page_index
         self.__pager.current_page_id = self.__pager.pages[self.__pager.current_page_index]["id"] if len(self.__pager.pages) > 0 else None
     
+        self.__pager.appl.reset_actions()
         self.__pager.update_displays()
 
     def update_displays(self):

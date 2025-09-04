@@ -86,8 +86,11 @@ class KemperBankSelectCallback(Callback):
         return (curr_bank == (self.__bank - 1))
 
     def reset(self):
-        if self.action.enabled:
-            self.update_displays()
+        self.__current_value = -1
+        self.__last_state = -1
+
+        # if self.action.enabled:
+        #     self.update_displays()
 
     def init(self, appl, listener = None):
         super().init(appl, listener)

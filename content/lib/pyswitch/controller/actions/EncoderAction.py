@@ -97,6 +97,9 @@ class EncoderAction(Updateable):
         if self.__preview:
             self.__preview.update()
 
+    def reset(self):
+        pass
+
     # Override this to scale the incoming mapping values
     def _get_value(self):
         return self._mapping.value

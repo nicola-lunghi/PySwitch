@@ -49,7 +49,7 @@ class DisplayCallbackParameterList extends ParameterList {
             }
 
             if (valueConverted == defaultValue) {
-                current.arguments = that.#callbackNode.arguments.filter((entry) => (entry.name != param.name));                
+                that.#callbackNode.arguments = that.#callbackNode.arguments.filter((entry) => (entry.name != param.name));                
             } else {
                 node.value = valueConverted;
             }

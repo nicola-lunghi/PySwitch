@@ -156,6 +156,12 @@ class Controller(Updater): #ClientRequestListener
 
         return True
 
+    # Resets all actions (which refreshes their buffer memories, triggering re-rendering of LEDs and displays)
+    def reset_actions(self):
+        for input in self.inputs:
+            for action in input.actions:
+                action.reset()
+
     # Receive MIDI messages, and in between check for switch state changes
     def __receive_midi_messages(self):
         cnt = 0

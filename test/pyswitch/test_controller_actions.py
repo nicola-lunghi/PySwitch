@@ -186,4 +186,49 @@ class TestControllerActions(unittest.TestCase):
         self.assertEqual(action_2.num_update_calls_overall, 2)
         self.assertEqual(action_3.num_update_calls_overall, 2)
         
+    def test_reset_actions(self):
+        switch_1 = MockSwitch()
+        switch_2 = MockSwitch()
         
+        action_1 = MockAction()
+        action_2 = MockAction()
+        action_3 = MockAction()
+
+        appl = Controller(
+            led_driver = MockNeoPixelDriver(),
+            midi = MockMidiController(),
+            inputs = [
+                {
+                    "assignment": {
+                        "model": switch_1
+                    },
+                    "actions": [
+                        action_1                        
+                    ]
+                },
+                MockInputControllerDefinition(),
+                {
+                    "assignment": {
+                        "model": switch_2
+                    },
+                    "actions": [
+                        action_2,
+                        action_3
+                    ]
+                }
+            ]
+        )
+
+        appl.init()
+
+        appl.reset_actions()
+
+        self.assertEqual(action_1.num_reset_calls, 1)
+        self.assertEqual(action_2.num_reset_calls, 1)
+        self.assertEqual(action_3.num_reset_calls, 1)
+
+        appl.reset_actions()
+
+        self.assertEqual(action_1.num_reset_calls, 2)
+        self.assertEqual(action_2.num_reset_calls, 2)
+        self.assertEqual(action_3.num_reset_calls, 2)

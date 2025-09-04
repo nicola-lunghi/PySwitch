@@ -51,17 +51,20 @@ class MockAdafruitMIDIControlChange:
         def __init__(self, control = 0, value = 0):
             self.control = control
             self.value = value
+            self._STATUS = 0xB0
 
 class MockAdafruitMIDIProgramChange:
     class ProgramChange:
         def __init__(self, patch = 0):
             self.patch = patch
+            self._STATUS = 0xC0
 
 class MockAdafruitMIDISystemExclusive:    
     class SystemExclusive:
         def __init__(self, manufacturer_id = [0x00, 0x00, 0x00], data = []):
             self.manufacturer_id = manufacturer_id
             self.data = data
+            self._STATUS = 0xF0
 
 #class MockAdafruitMIDIStart:
 #    class Start:

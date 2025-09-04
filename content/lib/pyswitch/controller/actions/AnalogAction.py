@@ -69,6 +69,9 @@ class AnalogAction(Updateable):
     def init(self, appl):
         self.__appl = appl
 
+    def reset(self):
+        pass
+    
     # Process a value in range [0..65535]
     def process(self, value):
         if self.__period.exceeded:

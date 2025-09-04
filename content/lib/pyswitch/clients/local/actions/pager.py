@@ -118,6 +118,7 @@ class PagerAction(Callback, Action):
 
         self.current_page_id = self.pages[self.current_page_index]["id"] if len(self.pages) > 0 else None
 
+        self.appl.reset_actions()
         self.update_displays()
 
     def update_displays(self):

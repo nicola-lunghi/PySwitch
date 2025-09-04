@@ -109,6 +109,9 @@ class MidiController:
                 if isinstance(msg, MIDIUnknownEvent):
                     continue
                 
+                if getattr(msg, "_STATUS", None) is None:
+                    continue
+                
                 r.target.send(msg)
 
                 break

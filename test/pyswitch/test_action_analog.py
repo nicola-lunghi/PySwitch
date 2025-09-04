@@ -202,6 +202,8 @@ class TestAnalogAction(unittest.TestCase):
             auto_calibrate = False
         )
 
+        action.reset()
+
         appl = MockController()
         action.init(appl)
 

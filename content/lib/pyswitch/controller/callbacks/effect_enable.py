@@ -32,7 +32,7 @@ class EffectEnableCallback(BinaryParameterCallback):
         
         self.__current_kpp_type = None
 
-    def update_displays(self):  
+    def update_displays(self):
         self.__effect_category = self.get_effect_category(self.mapping_fxtype.value) if self.mapping_fxtype.value != None else self.CATEGORY_NONE
         
         if self.__effect_category == self.CATEGORY_NONE:

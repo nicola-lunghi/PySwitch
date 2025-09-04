@@ -168,6 +168,7 @@ class KemperBankChangeCallback(Callback):
             self.update_displays()
 
     def reset(self):
+        # TODO this should not be necessary: Normally this just resets the memory, which this class doesnt have.
         if self.action.enabled:
             self.update_displays()
 
