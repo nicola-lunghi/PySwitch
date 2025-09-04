@@ -42,9 +42,7 @@ _pager = PagerAction(
     ]
 )
 
-
-
-##############################################################################################################################################
+###########################################################################################
 
 # Defines the switch assignments and other inputs
 Inputs = [
@@ -79,15 +77,7 @@ Inputs = [
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_X, 
-                display = DISPLAY_HEADER_1, 
-                id = 1, 
-                enable_callback = _pager.enable_callback
-            ),
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_X, 
-                display = DISPLAY_HEADER_1, 
-                id = 2, 
-                enable_callback = _pager.enable_callback
+                display = DISPLAY_HEADER_1
             ),
             
         ],
@@ -108,15 +98,7 @@ Inputs = [
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD, 
-                display = DISPLAY_HEADER_2, 
-                id = 1, 
-                enable_callback = _pager.enable_callback
-            ),
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_MOD, 
-                display = DISPLAY_HEADER_2, 
-                id = 2, 
-                enable_callback = _pager.enable_callback
+                display = DISPLAY_HEADER_2
             ),
             
         ],
@@ -137,15 +119,7 @@ Inputs = [
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY, 
-                display = DISPLAY_HEADER_3, 
-                id = 1, 
-                enable_callback = _pager.enable_callback
-            ),
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_DLY, 
-                display = DISPLAY_HEADER_3, 
-                id = 2, 
-                enable_callback = _pager.enable_callback
+                display = DISPLAY_HEADER_3
             ),
             
         ],
@@ -166,15 +140,7 @@ Inputs = [
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV, 
-                display = DISPLAY_HEADER_4, 
-                id = 1, 
-                enable_callback = _pager.enable_callback
-            ),
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_REV, 
-                display = DISPLAY_HEADER_4, 
-                id = 2, 
-                enable_callback = _pager.enable_callback
+                display = DISPLAY_HEADER_4
             ),
             
         ],
@@ -211,15 +177,7 @@ Inputs = [
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A, 
-                display = DISPLAY_FOOTER_1, 
-                id = 1, 
-                enable_callback = _pager.enable_callback
-            ),
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_A, 
-                display = DISPLAY_FOOTER_1, 
-                id = 2, 
-                enable_callback = _pager.enable_callback
+                display = DISPLAY_FOOTER_1
             ),
             
         ],
@@ -239,15 +197,7 @@ Inputs = [
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B, 
-                display = DISPLAY_FOOTER_2, 
-                id = 1, 
-                enable_callback = _pager.enable_callback
-            ),
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_B, 
-                display = DISPLAY_FOOTER_2, 
-                id = 2, 
-                enable_callback = _pager.enable_callback
+                display = DISPLAY_FOOTER_2
             ),
             
         ],
@@ -267,15 +217,7 @@ Inputs = [
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C, 
-                display = DISPLAY_FOOTER_3, 
-                id = 1, 
-                enable_callback = _pager.enable_callback
-            ),
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_C, 
-                display = DISPLAY_FOOTER_3, 
-                id = 2, 
-                enable_callback = _pager.enable_callback
+                display = DISPLAY_FOOTER_3
             ),
             
         ],
@@ -295,15 +237,7 @@ Inputs = [
         "actions": [
             EFFECT_STATE(
                 slot_id = KemperEffectSlot.EFFECT_SLOT_ID_D, 
-                display = DISPLAY_FOOTER_4, 
-                id = 1, 
-                enable_callback = _pager.enable_callback
-            ),
-            EFFECT_STATE(
-                slot_id = KemperEffectSlot.EFFECT_SLOT_ID_D, 
-                display = DISPLAY_FOOTER_4, 
-                id = 2, 
-                enable_callback = _pager.enable_callback
+                display = DISPLAY_FOOTER_4
             ),
             
         ],
