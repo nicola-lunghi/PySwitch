@@ -17,9 +17,9 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.clients.kemper import *
+    from pyswitch.clients.kemper import *
     
-    from lib.pyswitch.ui.elements import DisplayLabel
+    from pyswitch.ui.elements import DisplayLabel
     from .mocks_appl import *
     from .mocks_ui import MockUiController
           

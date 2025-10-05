@@ -1,9 +1,9 @@
 from uuid import uuid4
 from functools import wraps
 
-from lib.pyswitch.controller.actions import Action, PushButtonAction
-from lib.pyswitch.controller.client import ClientParameterMapping
-from lib.pyswitch.misc import Updateable, Updater
+from pyswitch.controller.actions import Action, PushButtonAction
+from pyswitch.controller.client import ClientParameterMapping
+from pyswitch.misc import Updateable, Updater
 
 from .mocks_lib import *
 

@@ -1,4 +1,4 @@
-import lib.pyswitch.misc as misc
+import pyswitch.misc as misc
 
 
 class MockMisc:

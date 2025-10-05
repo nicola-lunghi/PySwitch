@@ -20,8 +20,8 @@ with patch.dict(sys.modules, {
 }):
     from .mocks_callback import *
 
-    from lib.pyswitch.controller.preview import ValuePreview
-    from lib.pyswitch.ui.elements import DisplayLabel
+    from pyswitch.controller.preview import ValuePreview
+    from pyswitch.ui.elements import DisplayLabel
     from .mocks_appl import *
 
 

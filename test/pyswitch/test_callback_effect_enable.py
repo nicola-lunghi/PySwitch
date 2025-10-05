@@ -23,10 +23,10 @@ with patch.dict(sys.modules, {
 
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.callbacks.effect_enable import EffectEnableCallback
-    from lib.pyswitch.controller.actions import PushButtonAction
+    from pyswitch.controller.callbacks.effect_enable import EffectEnableCallback
+    from pyswitch.controller.actions import PushButtonAction
 
-    from lib.pyswitch.controller.controller import Controller
+    from pyswitch.controller.controller import Controller
 
 
 class MockEffectEnableCallback(EffectEnableCallback):

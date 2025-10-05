@@ -13,7 +13,7 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.ui import DisplayBounds
+    from pyswitch.ui.ui import DisplayBounds
 
 
 

@@ -212,7 +212,7 @@ class TestProcessScript(unittest.TestCase):
             MockImports.MockExploreModeController.controllers = []
             MockImports.MockController.raise_on_init = None
 
-            import lib.pyswitch.process
+            import pyswitch.process
 
             self.assertEqual(MockImports.MockHardwareAdafruit.AdafruitST7789DisplayDriver.init_calls, 1)
             self.assertEqual(MockImports.MockStats.Memory.start_calls, 0)   # Ensure memory monitoring is off
@@ -263,7 +263,7 @@ class TestProcessScript(unittest.TestCase):
             MockImports.MockExploreModeController.controllers = []
             MockImports.MockController.raise_on_process = None
 
-            import lib.pyswitch.process
+            import pyswitch.process
 
             self.assertEqual(MockImports.MockHardwareAdafruit.AdafruitST7789DisplayDriver.init_calls, 1)
             self.assertEqual(MockImports.MockStats.Memory.start_calls, 0)   # Ensure memory monitoring is off
@@ -314,7 +314,7 @@ class TestProcessScript(unittest.TestCase):
             MockImports.MockController.raise_on_process = Exception()
 
             with self.assertRaises(Exception):
-                import lib.pyswitch.process
+                import pyswitch.process
 
 
     def test_error_handling_with_bridge(self):
@@ -338,7 +338,7 @@ class TestProcessScript(unittest.TestCase):
             MockImports.MockExploreModeController.controllers = []
             MockImports.MockController.raise_on_process = Exception()
             
-            import lib.pyswitch.process
+            import pyswitch.process
 
             self.assertEqual(len(MockImports.MockController.controllers), 1)
             controller = MockImports.MockController.controllers[0]
@@ -369,7 +369,7 @@ class TestProcessScript(unittest.TestCase):
             MockImports.MockController.controllers = []
             MockImports.MockController.raise_on_init = None
 
-            import lib.pyswitch.process
+            import pyswitch.process
 
             self.assertEqual(MockImports.MockHardwareAdafruit.AdafruitST7789DisplayDriver.init_calls, 1)
             self.assertEqual(MockImports.MockStats.Memory.start_calls, 0)   # Ensure memory monitoring is off

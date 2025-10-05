@@ -17,10 +17,10 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
 
-    #from lib.pyswitch.controller.actions.actions import PushButtonAction
+    #from pyswitch.controller.actions.actions import PushButtonAction
     from .mocks_appl import *
     from .mocks_callback import *
-    from lib.pyswitch.controller.controller import Controller
+    from pyswitch.controller.controller import Controller
 
 
 class TestActionPushButton(unittest.TestCase):

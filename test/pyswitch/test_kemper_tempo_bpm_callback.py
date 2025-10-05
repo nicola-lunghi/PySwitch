@@ -17,10 +17,10 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.clients.kemper.callbacks.tempo_bpm import KemperTempoDisplayCallback
-    from lib.pyswitch.clients.kemper.mappings.tempo_bpm import MAPPING_TEMPO_BPM
+    from pyswitch.clients.kemper.callbacks.tempo_bpm import KemperTempoDisplayCallback
+    from pyswitch.clients.kemper.mappings.tempo_bpm import MAPPING_TEMPO_BPM
     
-    from lib.pyswitch.ui.elements import DisplayLabel
+    from pyswitch.ui.elements import DisplayLabel
     from .mocks_appl import *
     from .mocks_ui import MockUiController
           

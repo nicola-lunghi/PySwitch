@@ -16,8 +16,8 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.clients.local.actions.custom import *
-    from lib.pyswitch.ui.elements import DisplayLabel
+    from pyswitch.clients.local.actions.custom import *
+    from pyswitch.ui.elements import DisplayLabel
     
     from .mocks_appl import *
 

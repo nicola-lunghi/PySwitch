@@ -19,13 +19,13 @@ with patch.dict(sys.modules, {
     from .mocks_appl import *
     from .mocks_callback import *    
 
-    from lib.pyswitch.clients.kemper import *
-    from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.colors import Colors
+    from pyswitch.clients.kemper import *
+    from pyswitch.ui.elements import DisplayLabel
+    from pyswitch.colors import Colors
 
-    from lib.pyswitch.clients.kemper.actions.bank_select import *
-    from lib.pyswitch.clients.kemper.actions.rig_select import *
-    from lib.pyswitch.clients.kemper.mappings.select import *
+    from pyswitch.clients.kemper.actions.bank_select import *
+    from pyswitch.clients.kemper.actions.rig_select import *
+    from pyswitch.clients.kemper.mappings.select import *
     
 
 ####################################################################################################

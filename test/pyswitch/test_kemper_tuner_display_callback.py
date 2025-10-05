@@ -16,11 +16,11 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.clients.kemper import *
+    from pyswitch.clients.kemper import *
     
-    from lib.pyswitch.ui.ui import DisplayElement
-    from lib.pyswitch.ui.elements import TunerDisplay
-    from lib.pyswitch.misc import Updater
+    from pyswitch.ui.ui import DisplayElement
+    from pyswitch.ui.elements import TunerDisplay
+    from pyswitch.misc import Updater
 
     from .mocks_appl import MockClient, MockAction, MockInputControllerDefinition
 
@@ -204,7 +204,7 @@ class TestKemperTunerDisplayCallback(unittest.TestCase):
             "adafruit_midi.control_change": MockAdafruitMIDIControlChange(),
             "adafruit_midi.system_exclusive": MockAdafruitMIDISystemExclusive(),
             "adafruit_midi.program_change": MockAdafruitMIDIProgramChange(),
-            "lib.pyswitch.controller.strobe": MockStrobe(),
+            "pyswitch.controller.strobe": MockStrobe(),
         }):
             cb = TunerDisplayCallback(
                 splash_default = element,

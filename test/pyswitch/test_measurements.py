@@ -16,7 +16,7 @@ with patch.dict(sys.modules, {
     "time": MockTime,
     "gc": MockGC()
 }):
-    from lib.pyswitch.controller.measure import RuntimeMeasurement
+    from pyswitch.controller.measure import RuntimeMeasurement
 
 
 class MockRuntimeMeasurementListener:

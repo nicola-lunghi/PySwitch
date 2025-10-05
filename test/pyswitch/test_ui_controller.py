@@ -17,8 +17,8 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.ui.UiController import UiController
-    from lib.pyswitch.misc import Updater
+    from pyswitch.ui.UiController import UiController
+    from pyswitch.misc import Updater
 
     from .mocks_ui import *
     from .mocks_appl import *

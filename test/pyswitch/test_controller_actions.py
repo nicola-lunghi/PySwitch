@@ -15,8 +15,8 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.controller.controller import Controller
-    from lib.pyswitch.controller.inputs import SwitchController, ContinuousController
+    from pyswitch.controller.controller import Controller
+    from pyswitch.controller.inputs import SwitchController, ContinuousController
     from .mocks_appl import *
 
 

@@ -16,15 +16,15 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.colors import Colors
-    from lib.pyswitch.controller.callbacks import BinaryParameterCallback
+    from pyswitch.ui.elements import DisplayLabel
+    from pyswitch.colors import Colors
+    from pyswitch.controller.callbacks import BinaryParameterCallback
     
     from .mocks_appl import *
     from .mocks_callback import *
 
-    from lib.pyswitch.clients.kemper.actions.fixed_fx import *
-    from lib.pyswitch.clients.kemper.mappings.fixed_fx import *
+    from pyswitch.clients.kemper.actions.fixed_fx import *
+    from pyswitch.clients.kemper.mappings.fixed_fx import *
 
 class TestKemperActionDefinitionsFixed(unittest.TestCase):
 

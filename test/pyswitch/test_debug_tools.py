@@ -19,7 +19,7 @@ with patch.dict(sys.modules, {
     from adafruit_midi.program_change import ProgramChange
     from adafruit_midi.midi_message import MIDIUnknownEvent
     
-    from lib.pyswitch.debug_tools import *
+    from pyswitch.debug_tools import *
 
 
 ##############################################################################

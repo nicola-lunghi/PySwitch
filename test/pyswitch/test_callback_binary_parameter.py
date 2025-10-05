@@ -18,17 +18,17 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    #from lib.pyswitch.controller.Controller import Controller
+    #from pyswitch.controller.Controller import Controller
     from .mocks_appl import *
     from .mocks_ui import *
     from .mocks_callback import *
 
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.actions import PushButtonAction
-    from lib.pyswitch.controller.callbacks import BinaryParameterCallback
+    from pyswitch.controller.actions import PushButtonAction
+    from pyswitch.controller.callbacks import BinaryParameterCallback
     
-    from lib.pyswitch.controller.controller import Controller
+    from pyswitch.controller.controller import Controller
 
     from .tools import *
 

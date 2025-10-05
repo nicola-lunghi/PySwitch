@@ -21,13 +21,13 @@ with patch.dict(sys.modules, {
     from .mocks_misc import MockMisc
 
     with patch.dict(sys.modules, {
-        "lib.pyswitch.misc": MockMisc
+        "pyswitch.misc": MockMisc
     }):
 
         from .mocks_appl import *
         from .mocks_ui import *
-        from lib.pyswitch.controller.explore import ExploreModeController
-        from lib.pyswitch.colors import Colors
+        from pyswitch.controller.explore import ExploreModeController
+        from pyswitch.colors import Colors
 
 
 class MockSwitchFactory:

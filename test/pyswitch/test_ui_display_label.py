@@ -19,9 +19,9 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.ui.ui import DisplayBounds
-    from lib.pyswitch.ui.elements import DisplayLabel, DisplayLabelLayout    
-    from lib.pyswitch.misc import Updater
+    from pyswitch.ui.ui import DisplayBounds
+    from pyswitch.ui.elements import DisplayLabel, DisplayLabelLayout    
+    from pyswitch.misc import Updater
 
     from .mocks_appl import *
     from .mocks_ui import *

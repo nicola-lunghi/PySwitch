@@ -21,7 +21,7 @@ with patch.dict(sys.modules, {
     from adafruit_midi.control_change import ControlChange
     from adafruit_midi.program_change import ProgramChange
 
-    from lib.pyswitch.controller.client import *
+    from pyswitch.controller.client import *
 
 
 class TestClientParameterMapping(unittest.TestCase):

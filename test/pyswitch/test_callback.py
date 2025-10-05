@@ -20,7 +20,7 @@ with patch.dict(sys.modules, {
 
     from .mocks_appl import *
     from .mocks_callback import *
-    from lib.pyswitch.misc import Updater
+    from pyswitch.misc import Updater
 
 
 class TestCallback(unittest.TestCase):
