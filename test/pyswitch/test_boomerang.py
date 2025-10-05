@@ -16,14 +16,14 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.colors import Colors, dim_color
-    from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.clients.boomerang.actions.boomerang import *
+    from pyswitch.colors import Colors, dim_color
+    from pyswitch.ui.elements import DisplayLabel
+    from pyswitch.clients.boomerang.actions.boomerang import *
     from .mocks_callback import *
     from .mocks_appl import *
 
-    from lib.pyswitch.controller.callbacks import Callback
-    from lib.pyswitch.controller.actions import Action
+    from pyswitch.controller.callbacks import Callback
+    from pyswitch.controller.actions import Action
 
 
 class TestBoomerang(unittest.TestCase):

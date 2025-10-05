@@ -17,7 +17,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
-    from lib.pyswitch.controller.actions import Action
+    from pyswitch.controller.actions import Action
     
     from .mocks_ui import *
     from .mocks_appl import *

@@ -18,10 +18,10 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.actions import PushButtonAction
-    from lib.pyswitch.controller.callbacks import BinaryParameterCallback
-    from lib.pyswitch.controller.client import BidirectionalClient
-    from lib.pyswitch.controller.controller import Controller
+    from pyswitch.controller.actions import PushButtonAction
+    from pyswitch.controller.callbacks import BinaryParameterCallback
+    from pyswitch.controller.client import BidirectionalClient
+    from pyswitch.controller.controller import Controller
 
     from.mocks_appl import *
     

@@ -17,25 +17,25 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.clients.kemper import *
+    from pyswitch.clients.kemper import *
     
-    from lib.pyswitch.clients.kemper.mappings.select import *
-    from lib.pyswitch.clients.kemper.mappings.rotary import *
-    from lib.pyswitch.clients.kemper.mappings.freeze import *
-    from lib.pyswitch.clients.kemper.mappings.effects import *
-    from lib.pyswitch.clients.kemper.mappings.rig import *
-    from lib.pyswitch.clients.kemper.mappings.bank import *
-    from lib.pyswitch.clients.kemper.mappings.tempo import *
-    from lib.pyswitch.clients.kemper.mappings.tempo_bpm import *
-    from lib.pyswitch.clients.kemper.mappings.morph import *
-    from lib.pyswitch.clients.kemper.mappings.amp import *
-    from lib.pyswitch.clients.kemper.mappings.cabinet import *
-    from lib.pyswitch.clients.kemper.mappings.looper import *
-    from lib.pyswitch.clients.kemper.mappings.pedals import *
-    from lib.pyswitch.clients.kemper.mappings.system import *
-    from lib.pyswitch.clients.kemper.mappings.fixed_fx import *
+    from pyswitch.clients.kemper.mappings.select import *
+    from pyswitch.clients.kemper.mappings.rotary import *
+    from pyswitch.clients.kemper.mappings.freeze import *
+    from pyswitch.clients.kemper.mappings.effects import *
+    from pyswitch.clients.kemper.mappings.rig import *
+    from pyswitch.clients.kemper.mappings.bank import *
+    from pyswitch.clients.kemper.mappings.tempo import *
+    from pyswitch.clients.kemper.mappings.tempo_bpm import *
+    from pyswitch.clients.kemper.mappings.morph import *
+    from pyswitch.clients.kemper.mappings.amp import *
+    from pyswitch.clients.kemper.mappings.cabinet import *
+    from pyswitch.clients.kemper.mappings.looper import *
+    from pyswitch.clients.kemper.mappings.pedals import *
+    from pyswitch.clients.kemper.mappings.system import *
+    from pyswitch.clients.kemper.mappings.fixed_fx import *
 
-    from lib.pyswitch.clients.kemper.callbacks.convert_volume import *
+    from pyswitch.clients.kemper.callbacks.convert_volume import *
 
 
 class TestKemper(unittest.TestCase):

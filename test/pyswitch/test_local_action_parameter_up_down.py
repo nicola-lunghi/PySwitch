@@ -19,13 +19,13 @@ with patch.dict(sys.modules, {
     from adafruit_midi.system_exclusive import SystemExclusive
     from adafruit_midi.control_change import ControlChange
     
-    from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.misc import Updater
+    from pyswitch.ui.elements import DisplayLabel
+    from pyswitch.misc import Updater
     
     from .mocks_appl import *
     from .mocks_callback import *
 
-    from lib.pyswitch.clients.local.actions.param_change import *
+    from pyswitch.clients.local.actions.param_change import *
     
 
 class TestLocalActionParameterUpDown(unittest.TestCase):

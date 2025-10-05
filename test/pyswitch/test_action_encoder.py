@@ -25,13 +25,13 @@ with patch.dict(sys.modules, {
     from .mocks_callback import *
 
     with patch.dict(sys.modules, {
-        "lib.pyswitch.misc": MockMisc
+        "pyswitch.misc": MockMisc
     }):
         
-        from lib.pyswitch.controller.actions.EncoderAction import EncoderAction
+        from pyswitch.controller.actions.EncoderAction import EncoderAction
 
-        from lib.pyswitch.clients.local.actions.encoder_button import ENCODER_BUTTON
-        from lib.pyswitch.ui.elements import DisplayLabel
+        from pyswitch.clients.local.actions.encoder_button import ENCODER_BUTTON
+        from pyswitch.ui.elements import DisplayLabel
 
         from .mocks_appl import *
 

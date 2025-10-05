@@ -1,5 +1,5 @@
-from lib.pyswitch.ui.ui import DisplayBounds, DisplayElement
-from lib.pyswitch.misc import Updateable
+from pyswitch.ui.ui import DisplayBounds, DisplayElement
+from pyswitch.misc import Updateable
 
 def DisplayBoundsRepr(self):
     return repr(self.x) + " " + repr(self.y) + " " + repr(self.width) + " " + repr(self.height)

@@ -19,9 +19,9 @@ with patch.dict(sys.modules, {
 }):
     #from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.ui.ui import DisplayBounds, DisplayElement
-    from lib.pyswitch.ui.elements import BidirectionalProtocolState
-    from lib.pyswitch.controller.client import BidirectionalClient
+    from pyswitch.ui.ui import DisplayBounds, DisplayElement
+    from pyswitch.ui.elements import BidirectionalProtocolState
+    from pyswitch.controller.client import BidirectionalClient
     
     from .mocks_appl import MockBidirectionalProtocol, MockMidiController, MockClient, MockController
     from .mocks_ui import *

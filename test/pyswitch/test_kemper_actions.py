@@ -16,30 +16,30 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.controller.callbacks import BinaryParameterCallback
+    from pyswitch.ui.elements import DisplayLabel
+    from pyswitch.controller.callbacks import BinaryParameterCallback
     
     from .mocks_appl import *
     from .mocks_callback import *
 
-    from lib.pyswitch.clients.kemper.actions.amp import *
-    from lib.pyswitch.clients.kemper.actions.effect_state import *
-    from lib.pyswitch.clients.kemper.actions.tempo import *
-    from lib.pyswitch.clients.kemper.actions.effect_button import *
-    from lib.pyswitch.clients.kemper.actions.morph import *
-    from lib.pyswitch.clients.kemper.actions.looper import *
-    from lib.pyswitch.clients.kemper.actions.rig_volume_boost import *
-    from lib.pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
-    from lib.pyswitch.clients.kemper.actions.rig_transpose import *
-    from lib.pyswitch.clients.kemper.actions.tempo_bpm import *
+    from pyswitch.clients.kemper.actions.amp import *
+    from pyswitch.clients.kemper.actions.effect_state import *
+    from pyswitch.clients.kemper.actions.tempo import *
+    from pyswitch.clients.kemper.actions.effect_button import *
+    from pyswitch.clients.kemper.actions.morph import *
+    from pyswitch.clients.kemper.actions.looper import *
+    from pyswitch.clients.kemper.actions.rig_volume_boost import *
+    from pyswitch.clients.kemper.actions.rig_select_and_morph_state import *
+    from pyswitch.clients.kemper.actions.rig_transpose import *
+    from pyswitch.clients.kemper.actions.tempo_bpm import *
 
-    from lib.pyswitch.clients.kemper.mappings.tempo_bpm import *
-    from lib.pyswitch.clients.kemper.mappings.tempo import *
-    from lib.pyswitch.clients.kemper.mappings.morph import *
-    from lib.pyswitch.clients.kemper.mappings.looper import *
+    from pyswitch.clients.kemper.mappings.tempo_bpm import *
+    from pyswitch.clients.kemper.mappings.tempo import *
+    from pyswitch.clients.kemper.mappings.morph import *
+    from pyswitch.clients.kemper.mappings.looper import *
 
-    from lib.pyswitch.clients.local.actions.encoder_button import *
-    from lib.pyswitch.controller.actions.EncoderAction import EncoderAction
+    from pyswitch.clients.local.actions.encoder_button import *
+    from pyswitch.controller.actions.EncoderAction import EncoderAction
     
 
 class TestKemperActionDefinitions(unittest.TestCase):

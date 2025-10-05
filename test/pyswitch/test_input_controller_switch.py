@@ -19,11 +19,11 @@ with patch.dict(sys.modules, {
     from .mocks_callback import *
 
     with patch.dict(sys.modules, {
-        "lib.pyswitch.misc": MockMisc
+        "pyswitch.misc": MockMisc
     }):
         
-        from lib.pyswitch.controller.inputs import SwitchController
-        from lib.pyswitch.colors import Colors
+        from pyswitch.controller.inputs import SwitchController
+        from pyswitch.colors import Colors
         from .mocks_appl import *
 
 

@@ -17,7 +17,7 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     from adafruit_midi.control_change import ControlChange
-    from lib.pyswitch.controller.client import Client
+    from pyswitch.controller.client import Client
 
     from.mocks_appl import *
 

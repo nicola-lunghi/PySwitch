@@ -17,8 +17,8 @@ with patch.dict(sys.modules, {
     "adafruit_midi.midi_message": MockAdafruitMIDIMessage(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.ui import DisplayBounds, DisplayElement
-    from lib.pyswitch.ui.DisplaySplitContainer import DisplaySplitContainer
+    from pyswitch.ui.ui import DisplayBounds, DisplayElement
+    from pyswitch.ui.DisplaySplitContainer import DisplaySplitContainer
 
     from .mocks_appl import *
     from .mocks_ui import *

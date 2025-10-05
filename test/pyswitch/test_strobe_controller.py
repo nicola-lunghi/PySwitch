@@ -19,7 +19,7 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.controller.strobe import StrobeController
+    from pyswitch.controller.strobe import StrobeController
 
     from .mocks_appl import *
 

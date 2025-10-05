@@ -16,17 +16,17 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.elements import DisplayLabel
+    from pyswitch.ui.elements import DisplayLabel
     
     from .mocks_appl import *
     from .mocks_callback import *
 
-    from lib.pyswitch.controller.actions.EncoderAction import EncoderAction
+    from pyswitch.controller.actions.EncoderAction import EncoderAction
 
-    from lib.pyswitch.clients.kemper.actions.bank_select_encoder import *
-    from lib.pyswitch.clients.kemper.mappings.select import *
+    from pyswitch.clients.kemper.actions.bank_select_encoder import *
+    from pyswitch.clients.kemper.mappings.select import *
     
-    from lib.pyswitch.clients.kemper import NUM_RIGS_PER_BANK, NUM_BANKS
+    from pyswitch.clients.kemper import NUM_RIGS_PER_BANK, NUM_BANKS
     
     
 class TestKemperActionBankSelectEncoder(unittest.TestCase):

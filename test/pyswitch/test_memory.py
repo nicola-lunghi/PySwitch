@@ -17,10 +17,10 @@ with patch.dict(sys.modules, {
     from gc import gc_mock_data
 
     with patch.dict(sys.modules, {
-        "lib.pyswitch.misc": MockMisc
+        "pyswitch.misc": MockMisc
     }):
         
-        from lib.pyswitch.stats import Memory
+        from pyswitch.stats import Memory
 
 
 class TestMemory(unittest.TestCase):

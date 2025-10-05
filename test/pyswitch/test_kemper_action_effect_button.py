@@ -16,13 +16,13 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.controller.callbacks import BinaryParameterCallback
+    from pyswitch.ui.elements import DisplayLabel
+    from pyswitch.controller.callbacks import BinaryParameterCallback
     
     from .mocks_appl import *
     from .mocks_callback import *
 
-    from lib.pyswitch.clients.kemper.actions.effect_button import *
+    from pyswitch.clients.kemper.actions.effect_button import *
     
 
 

@@ -19,15 +19,15 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
 
-    from lib.pyswitch.ui.ui import DisplayBounds
-    from lib.pyswitch.ui.elements import TunerDisplay, DisplayLabel
-    from lib.pyswitch.ui.UiController import UiController
-    from lib.pyswitch.controller.controller import Controller
+    from pyswitch.ui.ui import DisplayBounds
+    from pyswitch.ui.elements import TunerDisplay, DisplayLabel
+    from pyswitch.ui.UiController import UiController
+    from pyswitch.controller.controller import Controller
 
     from .mocks_appl import *
     from .mocks_ui import MockDisplayDriver, MockFontLoader
     from .mocks_callback import *
-    from lib.pyswitch.colors import Colors
+    from pyswitch.colors import Colors
 
 
 

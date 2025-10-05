@@ -18,13 +18,13 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_midi.system_exclusive import SystemExclusive
     
-    from lib.pyswitch.ui.elements import DisplayLabel
-    from lib.pyswitch.controller.callbacks import BinaryParameterCallback
+    from pyswitch.ui.elements import DisplayLabel
+    from pyswitch.controller.callbacks import BinaryParameterCallback
     
     from .mocks_appl import *
     from .mocks_callback import *
 
-    from lib.pyswitch.clients.local.actions.binary_switch import *
+    from pyswitch.clients.local.actions.binary_switch import *
     
 
 class TestLocalActionDefinitions(unittest.TestCase):

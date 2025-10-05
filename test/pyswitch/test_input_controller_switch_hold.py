@@ -16,7 +16,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC()
 }):
 
-    from lib.pyswitch.controller.inputs import SwitchController
+    from pyswitch.controller.inputs import SwitchController
 
     from .mocks_appl import MockAction, MockPeriodCounter, MockSwitch, MockController
     from .mocks_callback import *

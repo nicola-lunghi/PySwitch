@@ -13,7 +13,7 @@ with patch.dict(sys.modules, {
     "gc": MockGC(),
     "time": MockTime
 }):
-    from lib.pyswitch.misc import *
+    from pyswitch.misc import *
 
 
 class MockUpdateable(Updateable):

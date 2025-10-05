@@ -17,7 +17,7 @@ with patch.dict(sys.modules, {
     "adafruit_display_shapes.rect": MockDisplayShapes().rect(),
     "gc": MockGC()
 }):
-    from lib.pyswitch.clients.local.mappings.generic import *
+    from pyswitch.clients.local.mappings.generic import *
     
 
 class TestLocal(unittest.TestCase):

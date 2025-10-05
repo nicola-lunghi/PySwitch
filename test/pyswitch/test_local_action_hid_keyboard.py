@@ -21,8 +21,8 @@ with patch.dict(sys.modules, {
 }):
     from adafruit_hid.keycode import Keycode
 
-    from lib.pyswitch.clients.local.actions.hid import *
-    from lib.pyswitch.ui.elements import DisplayLabel
+    from pyswitch.clients.local.actions.hid import *
+    from pyswitch.ui.elements import DisplayLabel
     
     from .mocks_appl import *
 
