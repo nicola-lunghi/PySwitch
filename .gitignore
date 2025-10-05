@@ -7,3 +7,4 @@ screenlog*
 **/memray*
 
 web/apache2-log
+.venv/
